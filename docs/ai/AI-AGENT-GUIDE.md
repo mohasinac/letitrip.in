@@ -1,42 +1,23 @@
 # AI Agent Development Guide - JustForView.in
 
-**Last Updated**: November 17, 2025  
+**Last Updated**: November 19, 2025  
 **Repository**: https://github.com/mohasinac/justforview.in  
-**Current Branch**: component
+**Current Branch**: Refactoring
 
 This guide helps AI agents understand and work effectively with this Next.js auction platform codebase.
 
 ## Quick Reference
 
-**Project Type**: Next.js 16+ (App Router) with TypeScript  
+**Project Type**: Next.js 14+ (App Router) with TypeScript  
 **Primary Domain**: Auction & E-commerce Platform for India  
 **No Mocks**: All APIs are real and ready - never suggest mock data  
-**Code Over Docs**: Focus on implementation, not documentationent Guide - JustForView.in
-
-This guide helps AI agents understand and work effectively with this Next.js auction platform codebase.
-
-## Quick Reference
-
-### 6. State Management
-
-````typescript
-// Use Context for global state
-import { useAuth } from "@/contexts/AuthContext";
-
-// Use custom hooks for feature state
-import { useCart } from "@/hooks/useCart";
-import { useAuctionSocket } from "@/hooks/useAuctionSocket";
-``` Type**: Next.js 14+ (App Router) with TypeScript
-**Primary Domain**: Auction & E-commerce Platform for India
-**No Mocks**: All APIs are real and ready - never suggest mock data
 **Code Over Docs**: Focus on implementation, not documentation
 
 ## Architecture Overview
 
 ### Application Structure
 
-````
-
+```
 ROUTING: Next.js App Router (src/app/)
 ├── Pages: Each folder in app/ is a route
 ├── API Routes: app/api/ contains backend endpoints
@@ -56,8 +37,7 @@ STATE: Context + Hooks pattern
 ├── AuthContext: User authentication
 ├── UploadContext: Media uploads
 └── Custom hooks: useCart, useAuctionSocket, etc.
-
-````
+```
 
 ### Core Technologies
 
@@ -310,7 +290,7 @@ All services inherit error handling from `apiService`, which:
 - `supportService` - Support tickets
 - `testDataService` - Test data generation (admin only)
 
-### 2. Component Patterns
+### 3. Component Patterns
 
 ```typescript
 // Client Components (interactive)
@@ -323,9 +303,9 @@ import { useState } from "react";
 // Component organization
 components / feature - name / ComponentName.tsx; // Main component
 SubComponent.tsx; // Related components
-````
+```
 
-### 3. API Route Pattern
+### 4. API Route Pattern
 
 ```typescript
 // API routes in src/app/api/[endpoint]/route.ts
@@ -338,7 +318,7 @@ export async function POST(request: Request) {
 }
 ```
 
-### 4. Media Upload Pattern (Images & Videos)
+### 5. Media Upload Pattern (Images & Videos)
 
 **CRITICAL**: All media uploads go through `mediaService.upload()` which handles Firebase Storage uploads and returns URLs for database storage.
 
@@ -523,7 +503,7 @@ class MediaService {
 - Videos: 100MB per file (MP4, WebM, MOV)
 - Multiple files: Up to 10 files per upload
 
-### 5. Firebase Storage Architecture Pattern (Advanced)
+### 6. Firebase Storage Architecture Pattern (Advanced)
 
 ```typescript
 // ✅ CORRECT: Client Service
@@ -591,7 +571,7 @@ export async function generateUploadUrl(fileName: string, contentType: string) {
 - **Videos**: All formats (`video/*`)
 - **Documents**: PDF, Word, Excel, Text
 
-### 5. Firebase Realtime Database Pattern (Socket.IO Replacement)
+### 7. Firebase Realtime Database Pattern (Socket.IO Replacement)
 
 **CRITICAL**: Firebase Realtime Database is used for real-time auction bidding instead of Socket.IO.
 
@@ -720,7 +700,7 @@ auctions/
 }
 ```
 
-### 6. State Management
+### 8. State Management
 
 ```typescript
 // Use Context for global state
@@ -731,283 +711,281 @@ import { useCart } from "@/hooks/useCart";
 import { useAuctionSocket } from "@/hooks/useAuctionSocket";
 ```
 
-### 7. FREE Tier Caching Pattern (Redis Replacement)
+### 9. FREE Tier Caching Pattern (Redis Replacement)
 
-**Location**: `src/lib/memory-cache.ts`
+**CRITICAL**: In-memory caching is used instead of Redis.
 
-**Usage in Services**:
+**Architecture**:
 
-```typescript
-import { memoryCache } from "@/lib/memory-cache";
-
-// Set cache with TTL (in seconds)
-memoryCache.set("products-list", products, 300); // Cache for 5 minutes
-
-// Get from cache
-const cached = memoryCache.get("products-list");
-if (cached) {
-  return cached;
-}
-
-// Delete specific key
-memoryCache.delete("products-list");
-
-// Clear all cache
-memoryCache.clear();
-
-// Get statistics
-const stats = memoryCache.getStats();
-console.log(`Cache hits: ${stats.hits}, misses: ${stats.misses}`);
+```
+Component/Service
+  ↓ Cache check (src/lib/memory-cache.ts)
+  ↓ Data fetch (if cache miss)
+  ↓ Cache write (on data change)
 ```
 
-**Usage in Middleware**:
+**Usage Pattern**:
 
 ```typescript
-// Updated cache middleware uses memoryCache automatically
-import { withCache } from "@/app/api/middleware/cache";
+// Import cache functions
+import { cacheSet, cacheGet, cacheDelete } from "@/lib/memory-cache";
 
-export async function GET(req: NextRequest) {
-  return withCache(req, handler, {
-    ttl: 300, // 5 minutes (in seconds)
-    key: "custom-cache-key", // Optional
-  });
+// In service or component
+async function getData(key: string) {
+  // Check cache first
+  const cached = cacheGet(key);
+  if (cached) return cached;
+
+  // Fetch from API or database
+  const data = await apiService.get(`/api/data/${key}`);
+
+  // Update cache
+  cacheSet(key, data, { ttl: 3600 }); // 1 hour TTL
+
+  return data;
+}
+
+// On data update
+async function updateData(key: string, newData: any) {
+  // Update API or database
+  await apiService.put(`/api/data/${key}`, newData);
+
+  // Update cache
+  cacheSet(key, newData);
+}
+
+// On data delete
+async function deleteData(key: string) {
+  // Delete API or database
+  await apiService.delete(`/api/data/${key}`);
+
+  // Invalidate cache
+  cacheDelete(key);
 }
 ```
 
-**Features**:
+**Cache Library API** (`src/lib/memory-cache.ts`):
 
-- ✅ TTL support with automatic expiration
-- ✅ Auto-cleanup every 5 minutes
-- ✅ Statistics tracking (hits, misses, size)
-- ✅ Zero external dependencies
-- ✅ Works on single server (perfect for Vercel)
+```typescript
+// In-memory cache with TTL
+const cache = new Map<string, { expire: number, value: any }>();
+
+export function cacheSet(key: string, value: any, options?: { ttl?: number }) {
+  const expire = Date.now() + (options?.ttl || 60) * 1000;
+  cache.set(key, { expire, value });
+}
+
+export function cacheGet(key: string) {
+  const data = cache.get(key);
+  if (!data) return null;
+
+  // Check expiration
+  if (Date.now() > data.expire) {
+    cache.delete(key);
+    return null;
+  }
+
+  return data.value;
+}
+
+export function cacheDelete(key: string) {
+  cache.delete(key);
+}
+```
+
+**Supported Patterns**:
+
+- Cache GET requests by URL
+- Cache POST/PUT response data
+- Invalidate cache on data change (create/update/delete)
+- Set custom TTL for each cache entry
+
+**Key Benefits**:
+
+- ✅ Zero cost - fully in-memory
+- ✅ No external dependencies
+- ✅ Fast access - local memory lookup
+- ✅ Simple API - drop-in replacement for Redis
 
 **Limitations**:
 
-- Cache clears on server restart (acceptable with Vercel's instant cold starts)
-- Not suitable for multi-server setups (use Redis if scaling beyond 1000 users)
+- ❌ Volatile - data lost on server restart
+- ❌ Limited by server memory
+- ❌ No advanced features (pub/sub, persistence)
 
-### 8. FREE Tier Rate Limiting Pattern
+### 10. FREE Tier Rate Limiting Pattern
 
 **Location**: `src/lib/rate-limiter.ts`
 
-**Usage in Middleware**:
-
-```typescript
-import { withRateLimit } from "@/app/api/middleware/ratelimiter";
-
-export async function POST(req: NextRequest) {
-  return withRateLimit(req, handler, {
-    limiterType: "auth", // 'api' | 'auth' | 'search'
-    message: "Too many login attempts",
-  });
-}
-```
-
-**Direct Usage**:
-
-```typescript
-import {
-  apiRateLimiter,
-  authRateLimiter,
-  strictRateLimiter,
-} from "@/lib/rate-limiter";
-
-// Check if request is allowed
-const allowed = apiRateLimiter.check(userId);
-if (!allowed) {
-  return { error: "Rate limit exceeded" };
-}
-
-// Reset specific identifier
-apiRateLimiter.reset(userId);
-
-// Get statistics
-const cleaned = apiRateLimiter.cleanup();
-console.log(`Cleaned ${cleaned} expired entries`);
-```
-
-**Pre-configured Limiters**:
-
-- `apiRateLimiter`: 200 requests per minute (general API)
-- `authRateLimiter`: 5 requests per minute (login/register)
-- `strictRateLimiter`: 10 requests per minute (sensitive operations)
-
-**Features**:
-
-- ✅ Sliding window algorithm
-- ✅ Multiple limiter instances
-- ✅ Auto-cleanup of expired entries
-- ✅ Zero external dependencies
-- ✅ Configurable limits per window
-
-### 9. FREE Tier Error Tracking Pattern (Sentry Replacement)
+### 11. FREE Tier Error Tracking Pattern (Sentry Replacement)
 
 **Location**: `src/lib/firebase-error-logger.ts`
 
-**Usage in Components**:
-
-```typescript
-import {
-  logError,
-  logPerformance,
-  logUserAction,
-} from "@/lib/firebase-error-logger";
-
-// Log errors (automatically sends to Firebase Analytics + Discord for critical)
-try {
-  await riskyOperation();
-} catch (error) {
-  logError(
-    error,
-    {
-      userId: currentUser?.uid,
-      url: window.location.href,
-      component: "ProductPage",
-      action: "addToCart",
-    },
-    "high"
-  ); // 'low' | 'medium' | 'high' | 'critical'
-}
-
-// Log performance metrics
-const start = performance.now();
-await fetchProducts();
-const duration = performance.now() - start;
-logPerformance("fetch-products", duration, { category: "electronics" });
-
-// Log user actions
-logUserAction("product-view", { productId, category });
-```
-
-**Automatic Error Handling**:
-
-Error handlers are initialized automatically in root layout via `ErrorInitializer` component.
-
-**Features**:
-
-- ✅ Firebase Analytics integration (FREE tier)
-- ✅ Discord notifications for critical errors
-- ✅ Global error and unhandled rejection handlers
-- ✅ Performance tracking
-- ✅ User action logging
-- ✅ Severity levels (low, medium, high, critical)
-
-**Discord Setup**:
-
-1. Create Discord server
-2. Create notification channel
-3. Channel Settings → Integrations → Webhooks
-4. Copy webhook URL to `.env` as `DISCORD_WEBHOOK_URL`
-
-### 10. FREE Tier Team Notifications (Slack Replacement)
+### 12. FREE Tier Team Notifications (Slack Replacement)
 
 **Location**: `src/lib/discord-notifier.ts`
 
-**Usage**:
+## Common Tasks Guide
+
+### Creating a New Feature
+
+1. **Plan the feature** - Define requirements, API endpoints, and UI components
+2. **Create API routes** - Add endpoints in `src/app/api/`
+3. **Add service layer** - Create/update service in `src/services/`
+4. **Create types** - Add FE/BE types in `src/types/`
+5. **Build components** - Create UI in `src/components/`
+6. **Add routing** - Create pages in `src/app/`
+7. **Test thoroughly** - Use existing patterns and test all scenarios
+
+### Adding a New API Endpoint
 
 ```typescript
-import {
-  notifyError,
-  notifyOrder,
-  notifyUser,
-  notifySystem,
-} from "@/lib/discord-notifier";
+// 1. Create API route: src/app/api/example/route.ts
+import { NextRequest, NextResponse } from 'next/server';
 
-// Error notifications
-await notifyError(new Error("Payment failed"), { userId, orderId, amount });
+export async function GET(req: NextRequest) {
+  try {
+    // Your logic here
+    return NextResponse.json({ data: 'example' });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed' }, { status: 500 });
+  }
+}
 
-// Order notifications
-await notifyOrder("new", {
-  orderId: "ORD123",
-  amount: 1999,
-  customer: "John Doe",
-});
-
-// User events
-await notifyUser("registration", {
-  userId: "user123",
-  email: "user@example.com",
-  name: "John Doe",
-});
-
-// System alerts
-await notifySystem("deployment", {
-  version: "1.2.0",
-  environment: "production",
-});
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    // Your logic here
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed' }, { status: 500 });
+  }
+}
 ```
 
-**Notification Types**:
+### Creating a New Service
 
-- **Errors**: Formatted with stack trace and context
-- **Orders**: New, completed, cancelled with order details
-- **Users**: Registrations, escalations
-- **System**: Health checks, deployments, low inventory
+```typescript
+// 2. Create service: src/services/example.service.ts
+import { apiService } from './api.service';
 
-**Features**:
+class ExampleService {
+  async getExamples(): Promise<Example[]> {
+    const response = await apiService.get('/api/examples');
+    return response.data;
+  }
 
-- ✅ Rich Discord embeds with colors
-- ✅ Severity indicators
-- ✅ Automatic retry on failure
-- ✅ Zero cost (webhook-based)
-- ✅ Team collaboration in Discord
+  async createExample(data: ExampleForm): Promise<Example> {
+    const response = await apiService.post('/api/examples', data);
+    return response.data;
+  }
+}
 
-## Cost Optimization & FREE Tier Architecture
+export const exampleService = new ExampleService();
+```
 
-### Overview
+### Adding Form Validation
 
-The platform has been optimized for small-scale businesses with **ZERO monthly costs** by eliminating all paid third-party services and using Firebase FREE tier + custom in-memory solutions.
+```typescript
+// Use existing validation patterns
+import { useState } from 'react';
 
-### Cost Savings
+export function useExampleForm() {
+  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-| Service        | Before              | After                        | Savings        |
-| -------------- | ------------------- | ---------------------------- | -------------- |
-| Error Tracking | Sentry ($26/mo)     | Firebase Analytics + Discord | **$26/mo**     |
-| Caching        | Redis ($10/mo)      | In-memory cache              | **$10/mo**     |
-| Real-time      | Socket.IO (hosting) | Firebase Realtime Database   | **Variable**   |
-| Notifications  | Slack ($0)          | Discord webhooks             | **$0**         |
-| **TOTAL**      | **$36+/mo**         | **$0/mo**                    | **$432+/year** |
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
 
-### Migration Strategy
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
 
-**Phase 1**: Remove paid dependencies
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
 
-- Uninstalled Sentry, Redis, Socket.IO packages
-- Removed config files and middleware references
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-**Phase 2**: Implement FREE alternatives
+  return { formData, setFormData, errors, validate };
+}
+```
 
-- Created `memory-cache.ts` for caching
-- Created `rate-limiter.ts` for API protection
-- Created `discord-notifier.ts` for team alerts
-- Created `firebase-error-logger.ts` for error tracking
-- Created `firebase-realtime.ts` for real-time features
+### File Upload Implementation
 
-**Phase 3**: Update architecture
+```typescript
+// Use mediaService for all uploads
+import { mediaService } from '@/services/media.service';
 
-- Updated middleware to use FREE libraries
-- Migrated auction system to Firebase Realtime Database
-- Added error tracking to root layout
-- Configured Vercel deployment
+const handleFileUpload = async (file: File) => {
+  try {
+    const result = await mediaService.upload({
+      file,
+      context: 'product' // or 'auction', 'shop', etc.
+    });
 
-**Phase 4**: Testing & validation
+    // Store result.url in your form/database
+    setFormData(prev => ({
+      ...prev,
+      imageUrl: result.url
+    }));
+  } catch (error) {
+    console.error('Upload failed:', error);
+  }
+};
+```
 
-- See `FIREBASE-MIGRATION-CHECKLIST.md` for complete steps
+### Real-time Updates
 
-### When to Scale Up
+```typescript
+// For auction bidding, use Firebase Realtime
+import { subscribeToAuction } from '@/lib/firebase-realtime';
 
-Stay on FREE tier until reaching these thresholds:
+useEffect(() => {
+  const unsubscribe = subscribeToAuction(auctionId, (status) => {
+    setCurrentBid(status.currentBid);
+    setBidCount(status.bidCount);
+  });
 
-1. **>1000 daily active users** → Consider Redis Cloud
-2. **>$10K monthly revenue** → Add Sentry for advanced monitoring
-3. **>100 concurrent auction bidders** → Upgrade Firebase plan
-4. **>10GB Firebase Storage** → Optimize or upgrade
+  return unsubscribe;
+}, [auctionId]);
+```
 
-### Documentation
+### Error Handling
 
-- **Migration Guide**: `FIREBASE-MIGRATION-CHECKLIST.md` (comprehensive checklist)
-- **Cost Analysis**: `COST-OPTIMIZATION-GUIDE.md` (detailed comparison)
-- **Setup Instructions**: See Firebase Console setup in migration checklist
+```typescript
+// Use try/catch with user-friendly messages
+try {
+  await exampleService.createExample(formData);
+  // Success - show success message or redirect
+} catch (error: any) {
+  // Error - show user-friendly message
+  const message = error.message || 'Something went wrong';
+  setError(message);
+}
+```
 
-## Common Tasks Guide
+### Testing Checklist
+
+- [ ] API endpoints return correct data
+- [ ] Form validation works for all fields
+- [ ] Error states are handled gracefully
+- [ ] Loading states are shown appropriately
+- [ ] Mobile responsiveness is tested
+- [ ] Authentication is required where needed
+- [ ] File uploads work correctly
+- [ ] Real-time updates work (if applicable)
+
+### Deployment Checklist
+
+- [ ] Build passes without TypeScript errors
+- [ ] All environment variables are set
+- [ ] Firebase configuration is correct
+- [ ] Database migrations are applied
+- [ ] Static assets are uploaded
+- [ ] Admin user is created
+- [ ] Test data is generated (if needed)
