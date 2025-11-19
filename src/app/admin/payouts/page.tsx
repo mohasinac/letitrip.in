@@ -9,9 +9,8 @@ import {
   TableCheckbox,
 } from "@/components/common/inline-edit";
 import { payoutsService } from "@/services/payouts.service";
-import { PAYOUT_FILTERS } from "@/constants/filters";
 import { toast } from "@/components/admin/Toast";
-import { Eye, Download, CheckCircle, XCircle } from "lucide-react";
+import { Eye, CheckCircle, XCircle } from "lucide-react";
 
 export default function AdminPayoutsPage() {
   const router = useRouter();

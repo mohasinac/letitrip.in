@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  Fragment,
-  Suspense,
-} from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { Grid, List, Loader2, Filter } from "lucide-react";
@@ -14,6 +8,8 @@ import { ProductCard } from "@/components/cards/ProductCard";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { PRODUCT_FILTERS } from "@/constants/filters";
+import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
+import { EmptyStates } from "@/components/common/EmptyState";
 import { useIsMobile } from "@/hooks/useMobile";
 import { productsService } from "@/services/products.service";
 import { categoriesService } from "@/services/categories.service";
@@ -34,7 +30,6 @@ function ProductsContent() {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [cursors, setCursors] = useState<(string | null)[]>([null]); // Track cursors for each page
   const itemsPerPage = 20;
 
@@ -180,7 +175,6 @@ function ProductsContent() {
 
       // Update pagination state
       setHasNextPage(response.pagination?.hasNextPage || false);
-      setNextCursor(response.pagination?.nextCursor || null);
 
       // Store cursor for next page if we don't have it yet
       if (response.pagination?.nextCursor && !cursors[currentPage]) {
@@ -360,18 +354,15 @@ function ProductsContent() {
             )}
 
             {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-              </div>
+              <ProductCardSkeletonGrid count={view === "grid" ? 12 : 8} />
             ) : products.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                <p className="text-gray-600 text-lg">No products found</p>
-                <button
-                  onClick={handleResetFilters}
-                  className="mt-4 text-blue-600 hover:underline"
-                >
-                  Clear filters
-                </button>
+              <div className="bg-white rounded-lg shadow-sm">
+                <EmptyStates.NoProducts
+                  action={{
+                    label: "Clear filters",
+                    onClick: handleResetFilters,
+                  }}
+                />
               </div>
             ) : (
               <>

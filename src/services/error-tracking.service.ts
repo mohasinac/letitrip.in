@@ -15,7 +15,6 @@
 import {
   ErrorLogger,
   ErrorSeverity,
-  type ErrorContext,
   type LoggedError,
 } from "@/lib/error-logger";
 
@@ -81,7 +80,6 @@ class ErrorTrackingService {
   private errorTrends: ErrorTrend[] = [];
   private alerts: ErrorAlert[] = [];
 
-  private readonly DEDUP_WINDOW = 60000; // 1 minute
   private readonly MAX_TRENDS = 1000;
   private readonly MAX_ALERTS = 50;
 
@@ -252,7 +250,6 @@ class ErrorTrackingService {
     interval: "minute" | "hour" | "day" = "hour",
     limit = 24
   ): ErrorTrend[] {
-    const now = new Date();
     const intervalMs =
       interval === "minute" ? 60000 : interval === "hour" ? 3600000 : 86400000;
     const buckets: Map<number, ErrorTrend> = new Map();

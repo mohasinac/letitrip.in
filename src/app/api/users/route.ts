@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import {
-  getUserFromRequest,
-  requireRole,
-} from "@/app/api/middleware/rbac-auth";
-import { ApiError } from "@/lib/api-errors";
-import {
-  parsePaginationParams,
-  executeCursorPaginatedQuery,
-} from "@/app/api/lib/utils/pagination";
+import { requireRole } from "@/app/api/middleware/rbac-auth";
+import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
 
 /**
  * GET /api/users
@@ -22,7 +15,6 @@ export async function GET(request: NextRequest) {
     const authResult = await requireRole(request, ["admin"]);
     if (authResult.error) return authResult.error;
 
-    const { user } = authResult;
     const { searchParams } = new URL(request.url);
 
     // Filter params
@@ -100,7 +92,6 @@ export async function POST(request: NextRequest) {
     const authResult = await requireRole(request, ["admin"]);
     if (authResult.error) return authResult.error;
 
-    const { user } = authResult;
     const body = await request.json();
     const { email, name, role = "user", phone } = body;
 

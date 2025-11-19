@@ -24,7 +24,6 @@ function SupportTicketsContent() {
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalTickets, setTotalTickets] = useState(0);
 
   const [stats, setStats] = useState({
     total: 0,
@@ -55,7 +54,6 @@ function SupportTicketsContent() {
       setTickets(response.data);
       // Calculate total pages from count
       setTotalPages(Math.ceil((response.count || 0) / 20));
-      setTotalTickets(response.count);
     } catch (err: any) {
       console.error("Failed to load tickets:", err);
       setError(err.message || "Failed to load support tickets");

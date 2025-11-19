@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
-  Plus,
   Search,
   Filter,
   Edit,
@@ -17,10 +16,8 @@ import {
   XCircle,
   Download,
   Ban,
-  Shield,
 } from "lucide-react";
 import { ViewToggle } from "@/components/seller/ViewToggle";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -28,7 +25,6 @@ import {
   BulkActionBar,
   TableCheckbox,
   InlineField,
-  BulkAction,
   UnifiedFilterSidebar,
 } from "@/components/common/inline-edit";
 import { shopsService } from "@/services/shops.service";
@@ -73,9 +69,6 @@ export default function AdminShopsPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
 
   const loadShops = useCallback(async () => {
     // Prevent concurrent calls
@@ -513,19 +506,16 @@ export default function AdminShopsPage() {
                                   SHOP_FIELDS,
                                   "table"
                                 );
-                                const { isValid, errors } = validateForm(
+                                const { isValid } = validateForm(
                                   values,
                                   fieldsToValidate
                                 );
 
                                 if (!isValid) {
-                                  setValidationErrors(errors);
                                   throw new Error(
                                     "Please fix validation errors"
                                   );
                                 }
-
-                                setValidationErrors({});
 
                                 if (values.isVerified !== shop.isVerified) {
                                   await shopsService.verify(shop.slug, {

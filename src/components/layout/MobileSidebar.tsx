@@ -4,26 +4,18 @@ import Link from "next/link";
 import { X, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import {
-  USER_MENU_ITEMS,
   ADMIN_MENU_ITEMS,
   SELLER_MENU_ITEMS,
   COMPANY_NAME,
 } from "@/constants/navigation";
 import {
   Package,
-  Clock,
   MessageSquare,
-  Heart,
-  Settings,
-  LogOut,
   ShoppingBag,
-  Store,
   Book,
-  ShoppingCart,
   Grid3x3,
   LayoutDashboard,
   Users,
-  BarChart,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -31,25 +23,6 @@ interface MobileSidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const userMenuIcons: Record<string, any> = {
-  orders: Package,
-  history: Clock,
-  messages: MessageSquare,
-  favorites: Heart,
-  settings: Settings,
-  logout: LogOut,
-  dashboard: LayoutDashboard,
-};
-
-const shopIcons: Record<string, any> = {
-  "1": Package,
-  "2": ShoppingBag,
-  "3": Store,
-  "4": ShoppingCart,
-  "5": Book,
-  more: Grid3x3,
-};
 
 const adminIcons: Record<string, any> = {
   dashboard: LayoutDashboard,
@@ -66,9 +39,6 @@ const sellerIcons: Record<string, any> = {
 export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const [adminOpen, setAdminOpen] = useState(false);
   const [sellerOpen, setSellerOpen] = useState(false);
-  const [userSectionOpen, setUserSectionOpen] = useState<
-    Record<string, boolean>
-  >({});
   const [adminSectionOpen, setAdminSectionOpen] = useState<
     Record<string, boolean>
   >({});
@@ -78,16 +48,6 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const { isAuthenticated, isAdmin, isAdminOrSeller } = useAuth();
 
   if (!isOpen) return null;
-
-  // Filter out logout from main menu
-  const userMenuWithoutLogout = USER_MENU_ITEMS.filter(
-    (item) => item.id !== "logout"
-  );
-  const logoutItem = USER_MENU_ITEMS.find((item) => item.id === "logout");
-
-  const toggleUserSection = (id: string) => {
-    setUserSectionOpen((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
 
   const toggleAdminSection = (id: string) => {
     setAdminSectionOpen((prev) => ({ ...prev, [id]: !prev[id] }));

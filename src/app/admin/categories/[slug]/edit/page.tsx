@@ -30,7 +30,7 @@ export default function EditCategoryPage() {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   const slug = params?.slug as string;
 

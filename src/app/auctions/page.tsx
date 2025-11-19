@@ -16,8 +16,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { CardGrid } from "@/components/cards/CardGrid";
-import { EmptyState } from "@/components/common/EmptyState";
+import { EmptyState, EmptyStates } from "@/components/common/EmptyState";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import { auctionsService } from "@/services/auctions.service";
@@ -367,15 +368,17 @@ function AuctionsContent() {
           </div>
 
           {/* Auctions Grid/List */}
-          {auctions.length === 0 ? (
-            <EmptyState
-              title="No auctions found"
-              description="Check back later for new auctions"
-              action={{
-                label: "Browse All",
-                onClick: () => router.push("/auctions"),
-              }}
-            />
+          {loading ? (
+            <AuctionCardSkeletonGrid count={view === "grid" ? 12 : 8} />
+          ) : auctions.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-sm">
+              <EmptyStates.NoAuctions
+                action={{
+                  label: "Browse All",
+                  onClick: () => router.push("/auctions"),
+                }}
+              />
+            </div>
           ) : view === "grid" ? (
             <CardGrid>
               {auctions.map((auction) => (

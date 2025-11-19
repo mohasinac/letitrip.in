@@ -1,15 +1,9 @@
 import { apiService } from "./api.service";
-import {
-  CategoryBE,
-  CreateCategoryRequestBE,
-  UpdateCategoryRequestBE,
-  CategoryTreeNodeBE,
-} from "@/types/backend/category.types";
+import { CategoryBE, CategoryTreeNodeBE } from "@/types/backend/category.types";
 import {
   CategoryFE,
   CategoryTreeNodeFE,
   CategoryFormFE,
-  CategoryCardFE,
 } from "@/types/frontend/category.types";
 import {
   toFECategory,
@@ -17,10 +11,7 @@ import {
   toFECategoryTreeNode,
   toBECreateCategoryRequest,
 } from "@/types/transforms/category.transforms";
-import type {
-  ProductBE,
-  ProductListItemBE,
-} from "@/types/backend/product.types";
+import type { ProductListItemBE } from "@/types/backend/product.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import { toFEProductCard } from "@/types/transforms/product.transforms";
 import type {

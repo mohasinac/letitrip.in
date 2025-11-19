@@ -12,14 +12,12 @@ import type {
   UpdateTicketFormFE,
   ReplyToTicketFormFE,
   AssignTicketFormFE,
-  EscalateTicketFormFE,
 } from "@/types/frontend/support-ticket.types";
 import type {
   PaginatedResponseBE,
   PaginatedResponseFE,
 } from "@/types/shared/common.types";
 import type {
-  TicketStatus,
   TicketCategory,
   TicketPriority,
 } from "@/types/shared/common.types";
@@ -32,7 +30,6 @@ import {
   toBEUpdateSupportTicketRequest,
   toBEReplyToTicketRequest,
   toBEAssignTicketRequest,
-  toBEEscalateTicketRequest,
 } from "@/types/transforms/support-ticket.transforms";
 
 /**
@@ -159,10 +156,7 @@ class SupportService {
   }
 
   // Escalate ticket (admin only - now uses bulk endpoint)
-  async escalateTicket(
-    id: string,
-    data: EscalateTicketFormFE
-  ): Promise<SupportTicketFE> {
+  async escalateTicket(id: string): Promise<SupportTicketFE> {
     await apiService.post(TICKET_ROUTES.BULK, {
       action: "escalate",
       ids: [id],

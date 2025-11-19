@@ -16,11 +16,6 @@ interface AssignTicketData {
   notes?: string;
 }
 
-interface EscalateTicketData {
-  reason: string;
-  notes?: string;
-}
-
 interface ReplyToTicketData {
   message: string;
   attachments?: string[];
@@ -169,11 +164,7 @@ function TicketDetailContent() {
 
     try {
       setEscalating(true);
-      const data: EscalateTicketData = {
-        reason: escalateReason,
-        notes: escalateNotes || undefined,
-      };
-      await supportService.escalateTicket(ticketId, data);
+      await supportService.escalateTicket(ticketId);
       setEscalateReason("");
       setEscalateNotes("");
       setShowEscalateModal(false);

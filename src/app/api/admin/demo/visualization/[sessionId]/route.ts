@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import {
   safeToISOString,
@@ -7,7 +7,7 @@ import {
 } from "@/lib/date-utils";
 
 export async function GET(
-  request: NextRequest,
+  _request: Request,
   { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {

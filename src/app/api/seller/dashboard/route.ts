@@ -89,14 +89,9 @@ export async function GET(req: NextRequest) {
 
     const db = getFirestoreAdmin();
 
-    // Get current date range (last 30 days)
-    const now = new Date();
-    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
-
     // Get current month date range
+    const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDayOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
     const firstDayOfLastMonth = new Date(
       now.getFullYear(),
       now.getMonth() - 1,

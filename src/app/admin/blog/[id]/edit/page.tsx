@@ -12,7 +12,7 @@ import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 export default function EditBlogPostPage() {
   const router = useRouter();
   const params = useParams();
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [loadingPost, setLoadingPost] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});

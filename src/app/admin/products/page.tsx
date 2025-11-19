@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
-  Plus,
   Search,
   Filter,
   Edit,
@@ -13,8 +12,6 @@ import {
   Loader2,
   AlertCircle,
   Package,
-  CheckCircle,
-  XCircle,
   Download,
 } from "lucide-react";
 import { ViewToggle } from "@/components/seller/ViewToggle";
@@ -23,18 +20,14 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   InlineEditRow,
-  QuickCreateRow,
   BulkActionBar,
-  InlineImageUpload,
   TableCheckbox,
   InlineField,
-  BulkAction,
   UnifiedFilterSidebar,
 } from "@/components/common/inline-edit";
 import { getProductBulkActions } from "@/constants/bulk-actions";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
-import type { ProductFiltersBE } from "@/types/backend/product.types";
 import type { ProductStatus } from "@/types/shared/common.types";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
@@ -74,9 +67,6 @@ export default function AdminProductsPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
 
   const loadProducts = useCallback(async () => {
     // Prevent concurrent calls
@@ -514,19 +504,16 @@ export default function AdminProductsPage() {
                                   PRODUCT_FIELDS,
                                   "table"
                                 );
-                                const { isValid, errors } = validateForm(
+                                const { isValid } = validateForm(
                                   values,
                                   fieldsToValidate
                                 );
 
                                 if (!isValid) {
-                                  setValidationErrors(errors);
                                   throw new Error(
                                     "Please fix validation errors"
                                   );
                                 }
-
-                                setValidationErrors({});
 
                                 await productsService.update(
                                   product.slug,

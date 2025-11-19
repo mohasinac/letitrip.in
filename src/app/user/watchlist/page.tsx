@@ -6,22 +6,11 @@ import { Heart, AlertCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { auctionsService } from "@/services/auctions.service";
 import AuctionCard from "@/components/cards/AuctionCard";
-import { EmptyState } from "@/components/common/EmptyState";
-import { formatCurrency } from "@/lib/formatters";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 
-interface WatchlistItem {
-  id: string;
-  auction_id: string;
-  user_id: string;
-  type: string;
-  created_at: any;
-}
-
 export default function WatchlistPage() {
   const { user } = useAuth();
-  const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

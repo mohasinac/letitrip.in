@@ -1,15 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import {
-  X,
-  RotateCw,
-  FlipHorizontal,
-  FlipVertical,
-  ZoomIn,
-  ZoomOut,
-  Crop,
-} from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { X, RotateCw, FlipHorizontal, FlipVertical } from "lucide-react";
 import { EditorState, MediaFile } from "@/types/media";
 import { applyImageEdits } from "@/lib/media/image-processor";
 import Image from "next/image";
@@ -112,7 +104,7 @@ export default function ImageEditor({
 
   const updateAdjustment = (
     key: "brightness" | "contrast" | "saturation",
-    value: number,
+    value: number
   ) => {
     setEditorState((prev) => ({
       ...prev,

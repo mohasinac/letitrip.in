@@ -3,8 +3,6 @@ import { AUCTION_ROUTES, buildUrl } from "@/constants/api-routes";
 import {
   AuctionBE,
   AuctionFiltersBE,
-  CreateAuctionRequestBE,
-  UpdateAuctionRequestBE,
   BidBE,
 } from "@/types/backend/auction.types";
 import {
@@ -27,44 +25,76 @@ import type {
   BulkActionResponse,
 } from "@/types/shared/common.types";
 import { logServiceError } from "@/lib/error-logger";
+import { getUserFriendlyError } from "@/components/common/ErrorMessage";
 
 class AuctionsService {
+  /**
+   * Handle service errors and convert to user-friendly messages
+   */
+  private handleError(error: any, context: string): never {
+    logServiceError(error, "AuctionsService", context);
+    const friendlyMessage = getUserFriendlyError(error);
+
+    // Create enhanced error with friendly message
+    const enhancedError: any = new Error(friendlyMessage);
+    enhancedError.originalError = error;
+    enhancedError.context = context;
+
+    throw enhancedError;
+  }
+
   // List auctions (role-filtered) with cursor-based pagination
   async list(
     filters?: Partial<AuctionFiltersBE>
   ): Promise<PaginatedResponseFE<AuctionCardFE>> {
-    const endpoint = buildUrl(AUCTION_ROUTES.LIST, filters);
-    const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
+    try {
+      const endpoint = buildUrl(AUCTION_ROUTES.LIST, filters);
+      const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
 
-    return {
-      data: (response.data || []).map(toFEAuctionCard),
-      count: response.count,
-      pagination: response.pagination,
-    };
+      return {
+        data: (response.data || []).map(toFEAuctionCard),
+        count: response.count,
+        pagination: response.pagination,
+      };
+    } catch (error) {
+      this.handleError(error, "list");
+    }
   }
 
   // Get auction by ID
   async getById(id: string): Promise<AuctionFE> {
-    const auctionBE = await apiService.get<AuctionBE>(AUCTION_ROUTES.BY_ID(id));
-    return toFEAuction(auctionBE);
+    try {
+      const auctionBE = await apiService.get<AuctionBE>(AUCTION_ROUTES.BY_ID(id));
+      return toFEAuction(auctionBE);
+    } catch (error) {
+      this.handleError(error, `getById(${id})`);
+    }
   }
 
   // Get auction by slug
   async getBySlug(slug: string): Promise<AuctionFE> {
-    const auctionBE = await apiService.get<AuctionBE>(
-      AUCTION_ROUTES.BY_SLUG(slug)
-    );
-    return toFEAuction(auctionBE);
+    try {
+      const auctionBE = await apiService.get<AuctionBE>(
+        AUCTION_ROUTES.BY_SLUG(slug)
+      );
+      return toFEAuction(auctionBE);
+    } catch (error) {
+      this.handleError(error, `getBySlug(${slug})`);
+    }
   }
 
   // Create auction (seller/admin)
   async create(formData: AuctionFormFE): Promise<AuctionFE> {
-    const request = toBECreateAuctionRequest(formData);
-    const auctionBE = await apiService.post<AuctionBE>(
-      AUCTION_ROUTES.LIST,
-      request
-    );
-    return toFEAuction(auctionBE);
+    try {
+      const request = toBECreateAuctionRequest(formData);
+      const auctionBE = await apiService.post<AuctionBE>(
+        AUCTION_ROUTES.LIST,
+        request
+      );
+      return toFEAuction(auctionBE);
+    } catch (error) {
+      this.handleError(error, "create");
+    }
   }
 
   // Update auction (owner/admin)
@@ -72,16 +102,24 @@ class AuctionsService {
     id: string,
     formData: Partial<AuctionFormFE>
   ): Promise<AuctionFE> {
-    const auctionBE = await apiService.patch<AuctionBE>(
-      AUCTION_ROUTES.BY_ID(id),
-      formData
-    );
-    return toFEAuction(auctionBE);
+    try {
+      const auctionBE = await apiService.patch<AuctionBE>(
+        AUCTION_ROUTES.BY_ID(id),
+        formData
+      );
+      return toFEAuction(auctionBE);
+    } catch (error) {
+      this.handleError(error, `update(${id})`);
+    }
   }
 
   // Delete auction (owner/admin)
   async delete(id: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(AUCTION_ROUTES.BY_ID(id));
+    try {
+      return apiService.delete<{ message: string }>(AUCTION_ROUTES.BY_ID(id));
+    } catch (error) {
+      this.handleError(error, `delete(${id})`);
+    }
   }
 
   // Validate slug availability
@@ -101,7 +139,6 @@ class AuctionsService {
   // Get auction bids
   async getBids(
     id: string,
-    page?: number,
     limit?: number,
     startAfter?: string | null,
     sortOrder: "asc" | "desc" = "desc"

@@ -3,10 +3,7 @@ import { ORDER_ROUTES, buildUrl } from "@/constants/api-routes";
 import {
   OrderBE,
   OrderFiltersBE,
-  CreateOrderRequestBE,
   UpdateOrderStatusRequestBE,
-  CreateShipmentRequestBE,
-  CancelOrderRequestBE,
 } from "@/types/backend/order.types";
 import {
   OrderFE,
@@ -16,7 +13,6 @@ import {
 } from "@/types/frontend/order.types";
 import {
   toFEOrder,
-  toFEOrders,
   toFEOrderCard,
   toBECreateOrderRequest,
   toBEUpdateOrderStatusRequest,

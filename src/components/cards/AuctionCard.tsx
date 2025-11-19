@@ -10,7 +10,7 @@
 import React from "react";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import Link from "next/link";
-import { Clock, Gavel, Eye, ExternalLink } from "lucide-react";
+import { Clock, Gavel, Eye } from "lucide-react";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
 import { formatCurrency, formatTimeRemaining } from "@/lib/formatters";
 import { getTimeRemaining } from "@/lib/validation/auction";
@@ -51,7 +51,6 @@ const AuctionCardComponent = ({
 }: AuctionCardProps) => {
   const [isHovered, setIsHovered] = React.useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = React.useState(0);
-  const [isPlayingVideo, setIsPlayingVideo] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -72,7 +71,6 @@ const AuctionCardComponent = ({
 
   const timeRemaining = getTimeRemaining(endTime);
   const currentBid = auction.currentBid || auction.startingBid;
-  const hasImage = auction.images && auction.images.length > 0;
 
   // Combine all media (video first if available, then images)
   const allMedia = React.useMemo(() => {
@@ -100,7 +98,6 @@ const AuctionCardComponent = ({
 
       // If current media is video, play it
       if (currentMedia.type === "video") {
-        setIsPlayingVideo(true);
         if (videoRef.current) {
           videoRef.current.play().catch(() => {
             // Autoplay failed, move to next media
@@ -109,13 +106,11 @@ const AuctionCardComponent = ({
         }
       } else {
         // For images, rotate every 3 seconds
-        setIsPlayingVideo(false);
         intervalRef.current = setInterval(() => {
           setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
         }, 3000);
       }
     } else {
-      setIsPlayingVideo(false);
       setCurrentMediaIndex(0);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -136,14 +131,6 @@ const AuctionCardComponent = ({
 
   const currentMedia = allMedia[currentMediaIndex] ||
     allMedia[0] || { type: "image", url: auction.images[0] };
-
-  const handleWatchClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onWatch) {
-      onWatch(auction.id);
-    }
-  };
 
   // Determine urgency level for styling
   const isEndingSoon =
