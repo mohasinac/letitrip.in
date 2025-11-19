@@ -52,12 +52,14 @@ STATE: Context + Hooks pattern
 **Cost Optimization**: Migrated from paid services to 100% FREE tier solutions saving $432/year.
 
 **Replaced Services**:
+
 - ❌ **Sentry** ($26/mo) → ✅ Firebase Analytics + Discord webhooks
 - ❌ **Redis** ($10/mo) → ✅ In-memory cache (`src/lib/memory-cache.ts`)
 - ❌ **Socket.IO** (hosting cost) → ✅ Firebase Realtime Database
 - ❌ **Slack** (unused) → ✅ Discord webhooks
 
 **FREE Libraries Created**:
+
 1. `src/lib/memory-cache.ts` - In-memory caching with TTL and auto-cleanup
 2. `src/lib/rate-limiter.ts` - Sliding window rate limiting
 3. `src/lib/discord-notifier.ts` - Team notifications via Discord webhooks
@@ -73,6 +75,7 @@ STATE: Context + Hooks pattern
 **Strict TypeScript with Frontend/Backend type separation. Zero `any` types allowed.**
 
 #### Core Principles
+
 - **FE/BE Separation**: Frontend types for UI, Backend types for API
 - **Service Layer Transformation**: Convert between FE and BE types automatically
 - **No `any` Types**: Use explicit types everywhere
@@ -80,6 +83,7 @@ STATE: Context + Hooks pattern
 - **Persistent Action Buttons**: Save/Create buttons always visible
 
 #### Type Directory Structure
+
 ```
 src/types/
   /frontend/       - UI-optimized types (ProductFE, UserFE, etc.)
@@ -89,6 +93,7 @@ src/types/
 ```
 
 #### Usage Pattern
+
 ```typescript
 // Backend type matches API response
 interface ProductBE {
@@ -127,6 +132,7 @@ const ProductCard: React.FC<{ product: ProductFE }> = ({ product }) => (
 ```
 
 #### Documentation
+
 - **[TYPE-MIGRATION-GUIDE.md](../../TYPE-MIGRATION-GUIDE.md)** - Examples and best practices
 - **[TYPE-REFACTOR-PLAN.md](../../TYPE-REFACTOR-PLAN.md)** - Implementation roadmap
 - **[TYPE-SYSTEM-STATUS.md](../../TYPE-SYSTEM-STATUS.md)** - Current completion status
@@ -142,26 +148,26 @@ export default function ProductPage() {
 
   useEffect(() => {
     // DON'T DO THIS
-    fetch('/api/products')
-      .then(res => res.json())
+    fetch("/api/products")
+      .then((res) => res.json())
       .then(setProducts);
   }, []);
 }
 
 // ❌ WRONG: Direct apiService in component
-import { apiService } from '@/services/api.service';
+import { apiService } from "@/services/api.service";
 
 export default function ProductPage() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
     // DON'T DO THIS
-    apiService.get('/api/products').then(setProducts);
+    apiService.get("/api/products").then(setProducts);
   }, []);
 }
 
 // ✅ CORRECT: Use service layer
-import { productService } from '@/services/products.service';
+import { productService } from "@/services/products.service";
 
 export default function ProductPage() {
   const [products, setProducts] = useState([]);
@@ -173,6 +179,7 @@ export default function ProductPage() {
 ```
 
 **Service Layer Benefits**:
+
 - Centralized business logic
 - Consistent error handling
 - Type safety for all requests/responses
@@ -184,16 +191,16 @@ export default function ProductPage() {
 
 ```typescript
 // src/services/feature.service.ts
-import { apiService } from './api.service';
-import { Feature, FeatureFilters } from '@/types/feature';
+import { apiService } from "./api.service";
+import { Feature, FeatureFilters } from "@/types/feature";
 
 class FeatureService {
-  private readonly BASE_PATH = '/api/features';
+  private readonly BASE_PATH = "/api/features";
 
   async getFeatures(filters?: FeatureFilters): Promise<Feature[]> {
     const params = new URLSearchParams();
-    if (filters?.status) params.set('status', filters.status);
-    if (filters?.category) params.set('category', filters.category);
+    if (filters?.status) params.set("status", filters.status);
+    if (filters?.category) params.set("category", filters.category);
 
     const url = params.toString()
       ? `${this.BASE_PATH}?${params}`
@@ -238,8 +245,8 @@ export const featureService = new FeatureService();
 
 ```typescript
 // ✅ CORRECT: Service layer in hooks
-import { useState, useEffect } from 'react';
-import { productService } from '@/services/products.service';
+import { useState, useEffect } from "react";
+import { productService } from "@/services/products.service";
 
 export function useProducts(filters?) {
   const [products, setProducts] = useState([]);
@@ -269,12 +276,14 @@ export function useProducts(filters?) {
 **Error Handling in Services**:
 
 All services inherit error handling from `apiService`, which:
+
 - Automatically retries on network errors
 - Parses error responses
 - Throws typed errors
 - Logs errors to console (dev) or tracking service (prod)
 
 **Available Services** (always check before creating new ones):
+
 - `authService` - Authentication (login, register, logout)
 - `productService` - Product CRUD and search
 - `auctionService` - Auction operations and bidding
@@ -768,7 +777,7 @@ async function deleteData(key: string) {
 
 ```typescript
 // In-memory cache with TTL
-const cache = new Map<string, { expire: number, value: any }>();
+const cache = new Map<string, { expire: number; value: any }>();
 
 export function cacheSet(key: string, value: any, options?: { ttl?: number }) {
   const expire = Date.now() + (options?.ttl || 60) * 1000;
@@ -841,14 +850,14 @@ export function cacheDelete(key: string) {
 
 ```typescript
 // 1. Create API route: src/app/api/example/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
     // Your logic here
-    return NextResponse.json({ data: 'example' });
+    return NextResponse.json({ data: "example" });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed' }, { status: 500 });
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
 
@@ -858,7 +867,7 @@ export async function POST(req: NextRequest) {
     // Your logic here
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed' }, { status: 500 });
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
 ```
@@ -867,16 +876,16 @@ export async function POST(req: NextRequest) {
 
 ```typescript
 // 2. Create service: src/services/example.service.ts
-import { apiService } from './api.service';
+import { apiService } from "./api.service";
 
 class ExampleService {
   async getExamples(): Promise<Example[]> {
-    const response = await apiService.get('/api/examples');
+    const response = await apiService.get("/api/examples");
     return response.data;
   }
 
   async createExample(data: ExampleForm): Promise<Example> {
-    const response = await apiService.post('/api/examples', data);
+    const response = await apiService.post("/api/examples", data);
     return response.data;
   }
 }
@@ -888,23 +897,23 @@ export const exampleService = new ExampleService();
 
 ```typescript
 // Use existing validation patterns
-import { useState } from 'react';
+import { useState } from "react";
 
 export function useExampleForm() {
-  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [formData, setFormData] = useState({ name: "", email: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = "Name is required";
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = "Email is invalid";
     }
 
     setErrors(newErrors);
@@ -919,22 +928,22 @@ export function useExampleForm() {
 
 ```typescript
 // Use mediaService for all uploads
-import { mediaService } from '@/services/media.service';
+import { mediaService } from "@/services/media.service";
 
 const handleFileUpload = async (file: File) => {
   try {
     const result = await mediaService.upload({
       file,
-      context: 'product' // or 'auction', 'shop', etc.
+      context: "product", // or 'auction', 'shop', etc.
     });
 
     // Store result.url in your form/database
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      imageUrl: result.url
+      imageUrl: result.url,
     }));
   } catch (error) {
-    console.error('Upload failed:', error);
+    console.error("Upload failed:", error);
   }
 };
 ```
@@ -943,7 +952,7 @@ const handleFileUpload = async (file: File) => {
 
 ```typescript
 // For auction bidding, use Firebase Realtime
-import { subscribeToAuction } from '@/lib/firebase-realtime';
+import { subscribeToAuction } from "@/lib/firebase-realtime";
 
 useEffect(() => {
   const unsubscribe = subscribeToAuction(auctionId, (status) => {
@@ -964,7 +973,7 @@ try {
   // Success - show success message or redirect
 } catch (error: any) {
   // Error - show user-friendly message
-  const message = error.message || 'Something went wrong';
+  const message = error.message || "Something went wrong";
   setError(message);
 }
 ```
