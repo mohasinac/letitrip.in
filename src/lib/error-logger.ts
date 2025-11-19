@@ -77,7 +77,7 @@ class ErrorLoggerClass {
         message: errorMessage,
         severity,
         context,
-        timestamp: loggedError.timestamp.toISOString(),
+        timestamp: loggedError.timestamp.toISOString(), // Safe: timestamp is always Date in LoggedError
       });
     }
 

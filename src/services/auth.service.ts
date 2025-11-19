@@ -1,6 +1,7 @@
 import { apiService } from "./api.service";
 import { UserFE } from "@/types/frontend/user.types";
 import { UserRole, UserStatus } from "@/types/shared/common.types";
+import { logServiceError } from "@/lib/error-logger";
 
 /**
  * Auth API response user (simplified, not full UserBE)
@@ -192,7 +193,7 @@ class AuthService {
       // Call logout endpoint to clear server session
       await apiService.post("/auth/logout", {});
     } catch (error) {
-      console.error("Logout error:", error);
+      logServiceError("AuthService", "logout", error as Error);
     } finally {
       // Always clear local storage
       if (typeof window !== "undefined") {
@@ -275,7 +276,7 @@ class AuthService {
       );
       return response.sessions;
     } catch (error) {
-      console.error("Get sessions error:", error);
+      logServiceError("AuthService", "getSessions", error as Error);
       return [];
     }
   }

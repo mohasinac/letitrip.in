@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import {
+  safeToISOString,
+  toDateInputValue,
+  getTodayDateInputValue,
+} from "@/lib/date-utils";
 
 export async function GET(
   request: NextRequest,
@@ -23,8 +28,8 @@ export async function GET(
     // Revenue over time (daily)
     const revenueByDate = orders.reduce((acc: any, order: any) => {
       const date = order.createdAt?.toDate
-        ? order.createdAt.toDate().toISOString().split("T")[0]
-        : new Date().toISOString().split("T")[0];
+        ? toDateInputValue(order.createdAt.toDate())
+        : getTodayDateInputValue();
 
       acc[date] = (acc[date] || 0) + (order.total || 0);
       return acc;

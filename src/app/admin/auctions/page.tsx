@@ -23,6 +23,7 @@ import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
+import { safeToISOString } from "@/lib/date-utils";
 import {
   InlineEditRow,
   QuickCreateRow,
@@ -217,9 +218,9 @@ export default function AdminAuctionsPage() {
       a.currentBid || a.startingBid || a.currentPrice,
       a.reservePrice || "",
       a.startTime
-        ? new Date(a.startTime).toISOString()
-        : new Date(a.endTime).toISOString(),
-      new Date(a.endTime).toISOString(),
+        ? safeToISOString(new Date(a.startTime)) ?? ""
+        : safeToISOString(new Date(a.endTime)) ?? "",
+      safeToISOString(new Date(a.endTime)) ?? "",
       a.bidCount || a.totalBids || 0,
       a.shopId || "",
       a.featured ? "Yes" : "No",

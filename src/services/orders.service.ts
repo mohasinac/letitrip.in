@@ -25,7 +25,9 @@ import {
 import type {
   PaginatedResponseBE,
   PaginatedResponseFE,
+  BulkActionResponse,
 } from "@/types/shared/common.types";
+import { logServiceError } from "@/lib/error-logger";
 
 class OrdersService {
   // List orders (role-filtered)
@@ -171,29 +173,34 @@ class OrdersService {
     action: string,
     orderIds: string[],
     data?: any
-  ): Promise<{ success: boolean; results: any[] }> {
-    return apiService.post(ORDER_ROUTES.BULK, {
-      action,
-      orderIds,
-      data,
-    });
+  ): Promise<BulkActionResponse> {
+    try {
+      const response = await apiService.post<BulkActionResponse>(
+        ORDER_ROUTES.BULK,
+        {
+          action,
+          orderIds,
+          data,
+        }
+      );
+      return response;
+    } catch (error) {
+      logServiceError("OrdersService", "bulkAction", error as Error);
+      throw error;
+    }
   }
 
   /**
    * Bulk confirm orders
    */
-  async bulkConfirm(
-    orderIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkConfirm(orderIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("confirm", orderIds);
   }
 
   /**
    * Bulk process orders
    */
-  async bulkProcess(
-    orderIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkProcess(orderIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("process", orderIds);
   }
 
@@ -203,16 +210,14 @@ class OrdersService {
   async bulkShip(
     orderIds: string[],
     trackingNumber?: string
-  ): Promise<{ success: boolean; results: any[] }> {
+  ): Promise<BulkActionResponse> {
     return this.bulkAction("ship", orderIds, { trackingNumber });
   }
 
   /**
    * Bulk deliver orders
    */
-  async bulkDeliver(
-    orderIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkDeliver(orderIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("deliver", orderIds);
   }
 
@@ -222,7 +227,7 @@ class OrdersService {
   async bulkCancel(
     orderIds: string[],
     reason?: string
-  ): Promise<{ success: boolean; results: any[] }> {
+  ): Promise<BulkActionResponse> {
     return this.bulkAction("cancel", orderIds, { reason });
   }
 
@@ -233,16 +238,14 @@ class OrdersService {
     orderIds: string[],
     refundAmount?: number,
     reason?: string
-  ): Promise<{ success: boolean; results: any[] }> {
+  ): Promise<BulkActionResponse> {
     return this.bulkAction("refund", orderIds, { refundAmount, reason });
   }
 
   /**
    * Bulk delete orders
    */
-  async bulkDelete(
-    orderIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkDelete(orderIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("delete", orderIds);
   }
 
@@ -252,7 +255,7 @@ class OrdersService {
   async bulkUpdate(
     orderIds: string[],
     updates: Partial<UpdateOrderStatusRequestBE>
-  ): Promise<{ success: boolean; results: any[] }> {
+  ): Promise<BulkActionResponse> {
     return this.bulkAction("update", orderIds, updates);
   }
 }

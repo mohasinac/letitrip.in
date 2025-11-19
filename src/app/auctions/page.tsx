@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useMemo, Suspense } from "react";
+import { useEffect, useState, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import {
   Gavel,
   Loader2,
@@ -139,13 +140,13 @@ function AuctionsContent() {
     }
   };
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setFilterValues({});
     setSearchQuery("");
     setShowFilters(false);
     setCurrentPage(1);
     setCursors([null]);
-  };
+  }, []);
 
   const renderPagination = () => {
     if (!hasNextPage && currentPage === 1) return null;
@@ -591,14 +592,16 @@ function AuctionsContent() {
 
 export default function AuctionsPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin" />
-        </div>
-      }
-    >
-      <AuctionsContent />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin" />
+          </div>
+        }
+      >
+        <AuctionsContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

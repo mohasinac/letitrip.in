@@ -22,6 +22,8 @@ import {
   toBEProductUpdate,
 } from "@/types/transforms/product.transforms";
 import type { PaginatedResponse } from "@/types/shared/pagination.types";
+import type { BulkActionResponse } from "@/types/shared/common.types";
+import { logServiceError } from "@/lib/error-logger";
 
 /**
  * Products Service - Reference Implementation
@@ -219,56 +221,55 @@ class ProductsService {
     action: string,
     productIds: string[],
     data?: any
-  ): Promise<{ success: boolean; results: any[] }> {
-    return apiService.post(PRODUCT_ROUTES.BULK, {
-      action,
-      productIds,
-      data,
-    });
+  ): Promise<BulkActionResponse> {
+    try {
+      const response = await apiService.post<BulkActionResponse>(
+        PRODUCT_ROUTES.BULK,
+        {
+          action,
+          ids: productIds,
+          updates: data,
+        }
+      );
+      return response;
+    } catch (error) {
+      logServiceError("Products", "bulkAction", error as Error);
+      throw error;
+    }
   }
 
   /**
    * Bulk publish products
    */
-  async bulkPublish(
-    productIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkPublish(productIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("publish", productIds);
   }
 
   /**
    * Bulk unpublish products
    */
-  async bulkUnpublish(
-    productIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkUnpublish(productIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("unpublish", productIds);
   }
 
   /**
    * Bulk archive products
    */
-  async bulkArchive(
-    productIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkArchive(productIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("archive", productIds);
   }
 
   /**
    * Bulk feature products
    */
-  async bulkFeature(
-    productIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkFeature(productIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("feature", productIds);
   }
 
   /**
    * Bulk unfeature products
    */
-  async bulkUnfeature(
-    productIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkUnfeature(productIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("unfeature", productIds);
   }
 
@@ -278,16 +279,14 @@ class ProductsService {
   async bulkUpdateStock(
     productIds: string[],
     stockCount: number
-  ): Promise<{ success: boolean; results: any[] }> {
+  ): Promise<BulkActionResponse> {
     return this.bulkAction("update-stock", productIds, { stockCount });
   }
 
   /**
    * Bulk delete products
    */
-  async bulkDelete(
-    productIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkDelete(productIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("delete", productIds);
   }
 
@@ -297,7 +296,7 @@ class ProductsService {
   async bulkUpdate(
     productIds: string[],
     updates: Partial<ProductFormFE>
-  ): Promise<{ success: boolean; results: any[] }> {
+  ): Promise<BulkActionResponse> {
     return this.bulkAction("update", productIds, toBEProductUpdate(updates));
   }
 

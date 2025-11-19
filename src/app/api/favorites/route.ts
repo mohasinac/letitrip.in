@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
+import { getCurrentUser } from "@/app/api/lib/session";
 
 // GET /api/favorites - Get user's favorites
 export async function GET(req: NextRequest) {
@@ -13,8 +14,15 @@ export async function GET(req: NextRequest) {
       | "asc"
       | "desc";
 
-    // TODO: Get user_id from session
-    const userId = req.headers.get("x-user-id") || "demo-user";
+    // Get user from session
+    const user = await getCurrentUser(req);
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please log in." },
+        { status: 401 }
+      );
+    }
+    const userId = user.id;
 
     let query = db
       .collection(COLLECTIONS.FAVORITES)
@@ -75,8 +83,15 @@ export async function POST(req: NextRequest) {
     const db = getFirestoreAdmin();
     const body = await req.json();
 
-    // TODO: Get user_id from session
-    const userId = req.headers.get("x-user-id") || "demo-user";
+    // Get user from session
+    const user = await getCurrentUser(req);
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please log in." },
+        { status: 401 }
+      );
+    }
+    const userId = user.id;
 
     if (!body.product_id) {
       return NextResponse.json(

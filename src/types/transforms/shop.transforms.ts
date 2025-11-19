@@ -41,7 +41,18 @@ export function toFEShop(shopBE: ShopBE): ShopFE {
     isActive: shopBE.status === Status.PUBLISHED,
     hasProducts: shopBE.totalProducts > 0,
     badges,
-    productCount: shopBE.totalProducts, // Backwards compatibility
+
+    // Extended fields from metadata
+    website: shopBE.metadata?.website || null,
+    socialLinks: shopBE.metadata?.socialLinks || undefined,
+    gst: shopBE.metadata?.gst || null,
+    pan: shopBE.metadata?.pan || null,
+    policies: shopBE.metadata?.policies || undefined,
+    bankDetails: shopBE.metadata?.bankDetails || undefined,
+    upiId: shopBE.metadata?.upiId || null,
+
+    // Backwards compatibility
+    productCount: shopBE.totalProducts,
     follower_count: 0, // Not in backend yet, placeholder
     featured: shopBE.metadata?.featured || false,
     isBanned: shopBE.status === Status.ARCHIVED, // Using ARCHIVED for banned shops

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE } from "@/types/frontend/coupon.types";
+import { toDateInputValue, getTodayDateInputValue } from "@/lib/date-utils";
 
 interface CouponInlineFormProps {
   coupon?: CouponFE;
@@ -27,13 +28,11 @@ export function CouponInlineForm({
     minPurchaseAmount: coupon?.minPurchaseAmount || 0,
     usageLimitPerUser: coupon?.usageLimitPerUser || 1,
     startDate: coupon?.startDate
-      ? new Date(coupon.startDate).toISOString().split("T")[0]
-      : new Date().toISOString().split("T")[0],
+      ? toDateInputValue(coupon.startDate)
+      : getTodayDateInputValue(),
     endDate: coupon?.endDate
-      ? new Date(coupon.endDate).toISOString().split("T")[0]
-      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split("T")[0],
+      ? toDateInputValue(coupon.endDate)
+      : toDateInputValue(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
   });
 
   const handleSubmit = async (e: React.FormEvent) => {

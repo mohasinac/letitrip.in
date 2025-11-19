@@ -77,6 +77,23 @@
     // CODE QUALITY RULES
     // ==========================================
 
+    // Prevent unsafe .toISOString() usage
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "CallExpression[callee.property.name='toISOString']:not(CallExpression[callee.object.callee.name='Date'])",
+        "message": "⚠️ Avoid calling .toISOString() directly on date variables. Use safeToISOString() from @/lib/date-utils to handle null/undefined values safely. Only new Date().toISOString() is allowed."
+      },
+      {
+        "selector": "CallExpression[callee.object.name='console'][callee.property.name='log']",
+        "message": "⚠️ console.log() statements should be removed before committing. Use ErrorLogger.info() for important logs or remove debug statements."
+      },
+      {
+        "selector": "CallExpression[callee.object.name='console'][callee.property.name='debug']",
+        "message": "⚠️ console.debug() statements should be removed before committing. Use ErrorLogger.debug() for development logs."
+      }
+    ],
+
     // Prevent console.log in production
     "no-console": [
       "warn",

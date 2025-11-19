@@ -7,6 +7,7 @@
 
 import * as functions from "firebase-functions/v1";
 import * as admin from "firebase-admin";
+import { notificationService } from "./services/notification.service";
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -47,7 +48,7 @@ export const processAuctions = functions
       // Log performance metrics
       if (duration > 8000) {
         console.warn(
-          `[Auction Cron] SLOW EXECUTION: ${duration}ms (threshold: 8000ms)`,
+          `[Auction Cron] SLOW EXECUTION: ${duration}ms (threshold: 8000ms)`
         );
       }
 
@@ -86,7 +87,7 @@ export const triggerAuctionProcessing = functions
     if (!context.auth) {
       throw new functions.https.HttpsError(
         "unauthenticated",
-        "User must be authenticated",
+        "User must be authenticated"
       );
     }
 
@@ -97,7 +98,7 @@ export const triggerAuctionProcessing = functions
     if (!user || user.role !== "admin") {
       throw new functions.https.HttpsError(
         "permission-denied",
-        "Admin access required",
+        "Admin access required"
       );
     }
 
@@ -115,7 +116,7 @@ export const triggerAuctionProcessing = functions
       console.error("[Auction Cron] Error in manual trigger:", error);
       throw new functions.https.HttpsError(
         "internal",
-        error instanceof Error ? error.message : String(error),
+        error instanceof Error ? error.message : String(error)
       );
     }
   });
@@ -141,7 +142,7 @@ async function processEndedAuctions(): Promise<{
   console.log(`[Auction Cron] Found ${snapshot.size} auctions to process`);
 
   if (snapshot.empty) {
-    return {processed: 0, successful: 0, failed: 0};
+    return { processed: 0, successful: 0, failed: 0 };
   }
 
   // Process each ended auction in batches
@@ -153,7 +154,7 @@ async function processEndedAuctions(): Promise<{
   const failed = results.filter((r) => r.status === "rejected").length;
 
   console.log(
-    `[Auction Cron] Processed ${snapshot.size}: ${successful} successful, ${failed} failed`,
+    `[Auction Cron] Processed ${snapshot.size}: ${successful} successful, ${failed} failed`
   );
 
   // Log failures
@@ -161,7 +162,7 @@ async function processEndedAuctions(): Promise<{
     if (result.status === "rejected") {
       console.error(
         `[Auction Cron] Failed to process auction ${snapshot.docs[index].id}:`,
-        result.reason,
+        result.reason
       );
     }
   });
@@ -206,7 +207,40 @@ async function closeAuction(auctionId: string): Promise<void> {
 
     console.log(`[Auction Cron] Auction ${auctionId} ended with no bids`);
 
-    // TODO: Notify seller (no winner)
+    // Notify seller (no winner)
+    try {
+      const sellerDoc = await db
+        .collection("users")
+        .doc(auction.seller_id as string)
+        .get();
+      const seller = sellerDoc.data();
+
+      if (seller) {
+        await notificationService.notifySellerNoBids({
+          auctionId,
+          auctionName: auction.name as string,
+          auctionSlug: auction.slug as string,
+          auctionImage:
+            Array.isArray(auction.images) && auction.images.length > 0
+              ? (auction.images[0] as string)
+              : undefined,
+          startingBid: auction.starting_bid as number,
+          reservePrice: auction.reserve_price
+            ? (auction.reserve_price as number)
+            : undefined,
+          seller: {
+            email: seller.email as string,
+            name: (seller.name as string) || (seller.email as string),
+          },
+        });
+        console.log(
+          `[Auction Cron] Notified seller of no-bid auction: ${auction.seller_id}`
+        );
+      }
+    } catch (error) {
+      console.error("[Auction Cron] Error notifying seller:", error);
+    }
+
     return;
   }
 
@@ -223,10 +257,51 @@ async function closeAuction(auctionId: string): Promise<void> {
     });
 
     console.log(
-      `[Auction Cron] Auction ${auctionId} ended - reserve price not met`,
+      `[Auction Cron] Auction ${auctionId} ended - reserve price not met`
     );
 
-    // TODO: Notify seller and highest bidder
+    // Notify seller and highest bidder
+    try {
+      const [sellerDoc, bidderDoc] = await Promise.all([
+        db
+          .collection("users")
+          .doc(auction.seller_id as string)
+          .get(),
+        db.collection("users").doc(winnerId).get(),
+      ]);
+
+      const seller = sellerDoc.data();
+      const bidder = bidderDoc.data();
+
+      if (seller && bidder) {
+        await notificationService.notifyReserveNotMet({
+          auctionId,
+          auctionName: auction.name as string,
+          auctionSlug: auction.slug as string,
+          auctionImage:
+            Array.isArray(auction.images) && auction.images.length > 0
+              ? (auction.images[0] as string)
+              : undefined,
+          startingBid: auction.starting_bid as number,
+          reservePrice: auction.reserve_price as number,
+          finalBid,
+          seller: {
+            email: seller.email as string,
+            name: (seller.name as string) || (seller.email as string),
+          },
+          bidder: {
+            email: bidder.email as string,
+            name: (bidder.name as string) || (bidder.email as string),
+          },
+        });
+        console.log(
+          `[Auction Cron] Notified seller and bidder of reserve not met`
+        );
+      }
+    } catch (error) {
+      console.error("[Auction Cron] Error notifying users:", error);
+    }
+
     return;
   }
 
@@ -239,7 +314,7 @@ async function closeAuction(auctionId: string): Promise<void> {
   });
 
   console.log(
-    `[Auction Cron] Auction ${auctionId} won by user ${winnerId} for ₹${finalBid}`,
+    `[Auction Cron] Auction ${auctionId} won by user ${winnerId} for ₹${finalBid}`
   );
 
   // Create order for winner
@@ -258,7 +333,46 @@ async function closeAuction(auctionId: string): Promise<void> {
     order_created: true,
   });
 
-  // TODO: Notify winner and seller
+  // Notify winner and seller
+  try {
+    const [sellerDoc, winnerDoc] = await Promise.all([
+      db
+        .collection("users")
+        .doc(auction.seller_id as string)
+        .get(),
+      db.collection("users").doc(winnerId).get(),
+    ]);
+
+    const seller = sellerDoc.data();
+    const winner = winnerDoc.data();
+
+    if (seller && winner) {
+      await notificationService.notifyAuctionWon({
+        auctionId,
+        auctionName: auction.name as string,
+        auctionSlug: auction.slug as string,
+        auctionImage:
+          Array.isArray(auction.images) && auction.images.length > 0
+            ? (auction.images[0] as string)
+            : undefined,
+        startingBid: auction.starting_bid as number,
+        finalBid,
+        seller: {
+          email: seller.email as string,
+          name: (seller.name as string) || (seller.email as string),
+        },
+        winner: {
+          email: winner.email as string,
+          name: (winner.name as string) || (winner.email as string),
+        },
+      });
+      console.log(
+        `[Auction Cron] Notified winner and seller of auction completion`
+      );
+    }
+  } catch (error) {
+    console.error("[Auction Cron] Error notifying winner/seller:", error);
+  }
 
   // Update product inventory if linked
   if (auction.product_id && typeof auction.product_id === "string") {
@@ -273,7 +387,7 @@ async function createWinnerOrder(
   auction: Record<string, unknown>,
   auctionId: string,
   winnerId: string,
-  finalBid: number,
+  finalBid: number
 ): Promise<void> {
   try {
     // Get winner details
@@ -358,7 +472,7 @@ async function createWinnerOrder(
     await db.collection("orders").add(orderData);
 
     console.log(
-      `[Auction Cron] Created order ${orderId} for winner ${winnerId}`,
+      `[Auction Cron] Created order ${orderId} for winner ${winnerId}`
     );
   } catch (error) {
     console.error("[Auction Cron] Error creating winner order:", error);
@@ -384,7 +498,7 @@ async function updateInventory(productId: string): Promise<void> {
       });
 
       console.log(
-        `[Auction Cron] Updated inventory for product ${productId}: ${newStock} remaining`,
+        `[Auction Cron] Updated inventory for product ${productId}: ${newStock} remaining`
       );
     }
   } catch (error) {

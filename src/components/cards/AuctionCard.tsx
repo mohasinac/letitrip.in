@@ -42,13 +42,13 @@ export interface AuctionCardProps {
   priority?: boolean;
 }
 
-export default function AuctionCard({
+const AuctionCardComponent = ({
   auction,
   onWatch,
   isWatched = false,
   showShopInfo = true,
   priority = false,
-}: AuctionCardProps) {
+}: AuctionCardProps) => {
   const [isHovered, setIsHovered] = React.useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = React.useState(0);
   const [isPlayingVideo, setIsPlayingVideo] = React.useState(false);
@@ -377,4 +377,8 @@ export default function AuctionCard({
       </div>
     </Link>
   );
-}
+};
+
+// Memoized export for performance optimization
+const AuctionCard = React.memo(AuctionCardComponent);
+export default AuctionCard;

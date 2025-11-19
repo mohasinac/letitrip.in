@@ -1,7 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, Fragment, Suspense } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  Fragment,
+  Suspense,
+} from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { Grid, List, Loader2, Filter } from "lucide-react";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
@@ -190,7 +197,7 @@ function ProductsContent() {
     }
   };
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setFilterValues({});
     setSearchQuery("");
     setSortBy("createdAt");
@@ -198,40 +205,43 @@ function ProductsContent() {
     setCurrentPage(1);
     setCursors([null]); // Reset pagination cursors
     router.push("/products", { scroll: false }); // Clear URL params
-  };
+  }, [router]);
 
-  const handleAddToCart = async (
-    productId: string,
-    productDetails?: {
-      name: string;
-      price: number;
-      image: string;
-      shopId: string;
-      shopName: string;
-    }
-  ) => {
-    try {
-      if (!productDetails) {
-        const product = products.find((p) => p.id === productId);
-        if (!product) {
-          throw new Error("Product not found");
-        }
-        productDetails = {
-          name: product.name,
-          price: product.price,
-          image: product.images?.[0] || "",
-          shopId: product.shopId,
-          shopName: product.shop?.name || "Unknown Shop",
-        };
+  const handleAddToCart = useCallback(
+    async (
+      productId: string,
+      productDetails?: {
+        name: string;
+        price: number;
+        image: string;
+        shopId: string;
+        shopName: string;
       }
+    ) => {
+      try {
+        if (!productDetails) {
+          const product = products.find((p) => p.id === productId);
+          if (!product) {
+            throw new Error("Product not found");
+          }
+          productDetails = {
+            name: product.name,
+            price: product.price,
+            image: product.images?.[0] || "",
+            shopId: product.shopId,
+            shopName: product.shop?.name || "Unknown Shop",
+          };
+        }
 
-      await addItem(productId, 1, undefined, productDetails);
+        await addItem(productId, 1, undefined, productDetails);
 
-      toast.success(`${productDetails.name} added to cart!`);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to add to cart");
-    }
-  };
+        toast.success(`${productDetails.name} added to cart!`);
+      } catch (error: any) {
+        toast.error(error.message || "Failed to add to cart");
+      }
+    },
+    [products, addItem]
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -566,14 +576,16 @@ function ProductsContent() {
 
 export default function ProductsPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin" />
-        </div>
-      }
-    >
-      <ProductsContent />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin" />
+          </div>
+        }
+      >
+        <ProductsContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

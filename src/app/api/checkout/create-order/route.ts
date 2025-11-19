@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "../../lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
 import { strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
+import { batchGetProducts } from "@/app/api/lib/batch-fetch";
 import { z } from "zod";
 import crypto from "crypto";
 
@@ -102,16 +103,13 @@ async function createOrderHandler(request: NextRequest) {
     for (const shopOrder of shopOrders) {
       const { shopId, shopName, items, couponCode } = shopOrder;
 
-      // Validate products
+      // Validate products using batch fetch
       const productIds = items.map((item: any) => item.productId);
-      const productSnapshots = await Promise.all(
-        productIds.map((id: string) => Collections.products().doc(id).get())
-      );
+      const productsMap = await batchGetProducts(productIds);
 
-      const products = productSnapshots.map((snap: any) => ({
-        id: snap.id,
-        ...snap.data(),
-      }));
+      const products = productIds
+        .map((id: string) => productsMap.get(id))
+        .filter(Boolean);
 
       // Validate stock and product status
       for (const item of items) {

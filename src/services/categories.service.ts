@@ -271,6 +271,30 @@ class CategoriesService {
     return toFECategories(res.data || []);
   }
 
+  // Get breadcrumb hierarchy for a category
+  async getBreadcrumb(categoryId: string): Promise<CategoryFE[]> {
+    const breadcrumb: CategoryFE[] = [];
+    let currentId: string | null = categoryId;
+
+    // Recursively fetch parent categories
+    while (currentId) {
+      try {
+        const category = await this.getById(currentId);
+        breadcrumb.unshift(category); // Add to front of array
+
+        // Get parent ID from the category
+        // Assuming category has parent_id or parentId field
+        currentId =
+          (category as any).parentId || (category as any).parent_id || null;
+      } catch (error) {
+        console.error(`Failed to load category ${currentId}:`, error);
+        break;
+      }
+    }
+
+    return breadcrumb;
+  }
+
   // Bulk operations (admin only)
   async bulkActivate(ids: string[]): Promise<void> {
     await apiService.post("/categories/bulk", {

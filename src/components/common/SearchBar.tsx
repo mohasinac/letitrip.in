@@ -11,12 +11,13 @@ import {
   Store,
   FolderTree,
 } from "lucide-react";
-import { searchService, SearchResult } from "@/services/search.service";
+import { searchService } from "@/services/search.service";
+import type { SearchResultFE } from "@/types/frontend/search.types";
 
 export default function SearchBar() {
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult | null>(null);
+  const [results, setResults] = useState<SearchResultFE | null>(null);
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);

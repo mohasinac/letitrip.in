@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { analyticsService } from "@/services/analytics.service";
+import { toDateInputValue, getTodayDateInputValue } from "@/lib/date-utils";
 import {
   TrendingUp,
   TrendingDown,
@@ -25,10 +26,10 @@ export default function SellerRevenuePage() {
     startDate: string;
     endDate: string;
   }>({
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
-    endDate: new Date().toISOString().split("T")[0],
+    startDate: toDateInputValue(
+      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    ),
+    endDate: getTodayDateInputValue(),
   });
   const [period, setPeriod] = useState<"day" | "week" | "month">("day");
 

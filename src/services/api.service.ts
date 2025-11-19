@@ -1,17 +1,134 @@
 import { trackSlowAPI, trackAPIError, trackCacheHit } from "@/lib/analytics";
+import {
+  DEFAULT_CACHE_CONFIG,
+  type CacheConfigEntry,
+} from "@/config/cache.config";
 
-// API Service - Base HTTP client with request deduplication
+// Cache entry type
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+  expiresAt: number;
+}
+
+// Cache configuration per endpoint
+interface CacheConfig {
+  ttl: number; // Time to live in milliseconds
+  staleWhileRevalidate?: number; // Additional time to serve stale content
+}
+
+// API Service - Base HTTP client with request deduplication and stale-while-revalidate caching
 class ApiService {
   private baseUrl: string;
   private pendingRequests: Map<string, Promise<any>>;
   private cacheHits: Map<string, number>;
   private cacheMisses: Map<string, number>;
+  private cache: Map<string, CacheEntry<any>>;
+  private cacheConfig: Map<string, CacheConfig>;
 
   constructor(baseUrl: string = "/api") {
     this.baseUrl = baseUrl;
     this.pendingRequests = new Map();
     this.cacheHits = new Map();
     this.cacheMisses = new Map();
+    this.cache = new Map();
+    this.cacheConfig = new Map();
+
+    // Set default cache configurations
+    this.initializeCacheConfig();
+  }
+
+  /**
+   * Initialize cache configuration for different endpoints
+   * Loads from centralized cache config file
+   */
+  private initializeCacheConfig() {
+    // Load default cache configurations
+    for (const [pattern, config] of Object.entries(DEFAULT_CACHE_CONFIG)) {
+      this.cacheConfig.set(pattern, {
+        ttl: config.ttl,
+        staleWhileRevalidate: config.staleWhileRevalidate,
+      });
+    }
+
+    console.log(
+      `[API Cache] Initialized ${this.cacheConfig.size} cache configurations`
+    );
+  }
+
+  /**
+   * Get cache configuration for an endpoint
+   */
+  private getCacheConfigForEndpoint(endpoint: string): CacheConfig | null {
+    // Check if endpoint matches any configured cache pattern
+    for (const [pattern, config] of this.cacheConfig.entries()) {
+      if (endpoint.startsWith(pattern)) {
+        return config;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Check if cached data is still fresh
+   */
+  private isFresh(entry: CacheEntry<any>): boolean {
+    return Date.now() < entry.expiresAt;
+  }
+
+  /**
+   * Check if cached data is stale but can be served while revalidating
+   */
+  private isStaleButUsable(
+    entry: CacheEntry<any>,
+    config: CacheConfig
+  ): boolean {
+    const staleUntil = entry.expiresAt + (config.staleWhileRevalidate || 0);
+    return Date.now() < staleUntil;
+  }
+
+  /**
+   * Get data from cache
+   */
+  private getCachedData<T>(
+    cacheKey: string,
+    config: CacheConfig | null
+  ): {
+    data: T | null;
+    status: "fresh" | "stale" | "miss";
+  } {
+    if (!config) {
+      return { data: null, status: "miss" };
+    }
+
+    const entry = this.cache.get(cacheKey);
+    if (!entry) {
+      return { data: null, status: "miss" };
+    }
+
+    if (this.isFresh(entry)) {
+      return { data: entry.data, status: "fresh" };
+    }
+
+    if (this.isStaleButUsable(entry, config)) {
+      return { data: entry.data, status: "stale" };
+    }
+
+    // Entry is too old, remove it
+    this.cache.delete(cacheKey);
+    return { data: null, status: "miss" };
+  }
+
+  /**
+   * Set data in cache
+   */
+  private setCachedData<T>(cacheKey: string, data: T, config: CacheConfig) {
+    const now = Date.now();
+    this.cache.set(cacheKey, {
+      data,
+      timestamp: now,
+      expiresAt: now + config.ttl,
+    });
   }
 
   /**
@@ -140,12 +257,39 @@ class ApiService {
   }
 
   /**
+   * Clear cache for specific endpoint pattern
+   */
+  invalidateCache(pattern: string): void {
+    let count = 0;
+    for (const key of this.cache.keys()) {
+      if (key.includes(pattern)) {
+        this.cache.delete(key);
+        count++;
+      }
+    }
+    console.log(
+      `[API Cache] Invalidated ${count} entries matching: ${pattern}`
+    );
+  }
+
+  /**
+   * Clear all cache
+   */
+  clearCache(): void {
+    const size = this.cache.size;
+    this.cache.clear();
+    console.log(`[API Cache] Cleared ${size} entries`);
+  }
+
+  /**
    * Get cache statistics for monitoring
    */
   getCacheStats(): {
     hits: Record<string, number>;
     misses: Record<string, number>;
     hitRate: number;
+    cacheSize: number;
+    oldestEntry: number | null;
   } {
     const hits = Object.fromEntries(this.cacheHits);
     const misses = Object.fromEntries(this.cacheMisses);
@@ -161,21 +305,93 @@ class ApiService {
     const hitRate =
       totalHits + totalMisses > 0 ? totalHits / (totalHits + totalMisses) : 0;
 
-    return { hits, misses, hitRate };
+    // Get oldest cache entry
+    let oldestTimestamp: number | null = null;
+    for (const entry of this.cache.values()) {
+      if (oldestTimestamp === null || entry.timestamp < oldestTimestamp) {
+        oldestTimestamp = entry.timestamp;
+      }
+    }
+
+    return {
+      hits,
+      misses,
+      hitRate,
+      cacheSize: this.cache.size,
+      oldestEntry: oldestTimestamp,
+    };
   }
 
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    // Create cache key for deduplication
+    // Create cache key for deduplication and caching
     const url = `${this.baseUrl}${endpoint}`;
     const cacheKey = this.getCacheKey(url, "GET");
 
-    // Deduplicate GET requests (safe since GET is idempotent)
-    return this.deduplicateRequest(cacheKey, () =>
+    // Get cache configuration for this endpoint
+    const cacheConfig = this.getCacheConfigForEndpoint(endpoint);
+
+    // Check cache first
+    const cached = this.getCachedData<T>(cacheKey, cacheConfig);
+
+    if (cached.status === "fresh") {
+      // Return fresh cached data immediately
+      console.log(`[API Cache] Fresh hit: ${endpoint}`);
+      const hits = this.cacheHits.get(cacheKey) || 0;
+      this.cacheHits.set(cacheKey, hits + 1);
+      trackCacheHit(cacheKey, true);
+      return cached.data!;
+    }
+
+    if (cached.status === "stale") {
+      // Return stale data immediately, revalidate in background
+      console.log(`[API Cache] Stale-while-revalidate: ${endpoint}`);
+      const hits = this.cacheHits.get(cacheKey) || 0;
+      this.cacheHits.set(cacheKey, hits + 1);
+      trackCacheHit(cacheKey, true);
+
+      // Trigger background revalidation (don't await)
+      this.deduplicateRequest(cacheKey, () =>
+        this.request<T>(endpoint, {
+          ...options,
+          method: "GET",
+        })
+      )
+        .then((freshData) => {
+          // Update cache with fresh data
+          if (cacheConfig) {
+            this.setCachedData(cacheKey, freshData, cacheConfig);
+          }
+        })
+        .catch((error) => {
+          console.error(
+            `[API Cache] Revalidation failed for ${endpoint}:`,
+            error
+          );
+        });
+
+      return cached.data!;
+    }
+
+    // Cache miss - fetch fresh data
+    console.log(`[API Cache] Miss: ${endpoint}`);
+    const misses = this.cacheMisses.get(cacheKey) || 0;
+    this.cacheMisses.set(cacheKey, misses + 1);
+    trackCacheHit(cacheKey, false);
+
+    // Deduplicate and fetch
+    const data = await this.deduplicateRequest(cacheKey, () =>
       this.request<T>(endpoint, {
         ...options,
         method: "GET",
       })
     );
+
+    // Store in cache if config exists
+    if (cacheConfig) {
+      this.setCachedData(cacheKey, data, cacheConfig);
+    }
+
+    return data;
   }
 
   async post<T>(
@@ -234,6 +450,73 @@ class ApiService {
       method: "DELETE",
       body: data ? JSON.stringify(data) : undefined,
     });
+  }
+
+  /**
+   * Configure cache settings for an endpoint pattern
+   * Allows runtime configuration of cache behavior
+   *
+   * @example
+   * ```typescript
+   * apiService.configureCacheFor('/products', {
+   *   ttl: 10 * 60 * 1000,  // 10 minutes
+   *   staleWhileRevalidate: 30 * 60 * 1000  // 30 minutes
+   * });
+   * ```
+   */
+  configureCacheFor(pattern: string, config: CacheConfig): void {
+    this.cacheConfig.set(pattern, config);
+    console.log(`[API Cache] Configured cache for ${pattern}:`, config);
+  }
+
+  /**
+   * Remove cache configuration for an endpoint pattern
+   * Disables caching for matching endpoints
+   */
+  removeCacheConfigFor(pattern: string): void {
+    this.cacheConfig.delete(pattern);
+    console.log(`[API Cache] Removed cache config for ${pattern}`);
+  }
+
+  /**
+   * Get all cache configurations
+   * Useful for debugging and admin panels
+   */
+  getCacheConfigurations(): Record<string, CacheConfig> {
+    return Object.fromEntries(this.cacheConfig);
+  }
+
+  /**
+   * Update cache TTL for an existing endpoint without changing stale time
+   */
+  updateCacheTTL(pattern: string, ttlMs: number): void {
+    const existing = this.cacheConfig.get(pattern);
+    if (existing) {
+      existing.ttl = ttlMs;
+      console.log(`[API Cache] Updated TTL for ${pattern}: ${ttlMs}ms`);
+    } else {
+      console.warn(`[API Cache] No cache config found for ${pattern}`);
+    }
+  }
+
+  /**
+   * Batch configure multiple endpoints at once
+   *
+   * @example
+   * ```typescript
+   * apiService.batchConfigureCache({
+   *   '/products': { ttl: 300000, staleWhileRevalidate: 900000 },
+   *   '/shops': { ttl: 600000, staleWhileRevalidate: 1800000 }
+   * });
+   * ```
+   */
+  batchConfigureCache(configs: Record<string, CacheConfig>): void {
+    for (const [pattern, config] of Object.entries(configs)) {
+      this.cacheConfig.set(pattern, config);
+    }
+    console.log(
+      `[API Cache] Batch configured ${Object.keys(configs).length} endpoints`
+    );
   }
 }
 

@@ -151,6 +151,7 @@ export interface ProductCardFE {
   reviewCount: number;
   shopId: string;
   shop?: ShopReference;
+  brand?: string; // Brand name for filtering
   featured: boolean;
   isFavorited?: boolean;
   badges: ProductBadge[];

@@ -113,6 +113,7 @@ export interface ProductListItemBE {
   averageRating: number;
   reviewCount: number;
   shopId: string;
+  brand?: string; // Brand name for filtering
   featured: boolean;
   createdAt: ISOTimestamp;
   // Admin list view needs these

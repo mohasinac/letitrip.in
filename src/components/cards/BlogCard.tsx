@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Calendar, User, Clock, Eye, Heart, Tag } from "lucide-react";
 import { formatDate } from "@/lib/formatters";
+import { safeToISOString } from "@/lib/date-utils";
 
 export interface BlogCardProps {
   id: string;
@@ -156,11 +157,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
             <div className="flex items-center gap-1 text-xs text-gray-500">
               <Calendar className="w-3 h-3" />
               <time
-                dateTime={
-                  publishDate instanceof Date
-                    ? publishDate.toISOString()
-                    : String(publishDate)
-                }
+                dateTime={safeToISOString(publishDate) ?? String(publishDate)}
               >
                 {formatDate(publishDate)}
               </time>

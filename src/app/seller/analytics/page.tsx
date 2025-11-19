@@ -10,6 +10,7 @@ import SalesChart from "@/components/seller/SalesChart";
 import TopProducts from "@/components/seller/TopProducts";
 import { Calendar } from "lucide-react";
 import { analyticsService } from "@/services/analytics.service";
+import { toDateInputValue } from "@/lib/date-utils";
 
 interface AnalyticsData {
   revenue: { total: number; average: number; trend: number };
@@ -72,8 +73,8 @@ export default function AnalyticsPage() {
 
         const data = await analyticsService.getOverview({
           shopId: selectedShopId || undefined,
-          startDate: startDate.toISOString().split("T")[0],
-          endDate: endDate.toISOString().split("T")[0],
+          startDate: toDateInputValue(startDate),
+          endDate: toDateInputValue(endDate),
         });
 
         // Map analytics overview to detailed analytics format

@@ -45,7 +45,7 @@ export interface ProductCardProps {
   compact?: boolean;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({
+const ProductCardComponent: React.FC<ProductCardProps> = ({
   id,
   name,
   slug,
@@ -375,3 +375,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     </Link>
   );
 };
+
+// Memoized export for performance optimization
+export const ProductCard = React.memo(ProductCardComponent);

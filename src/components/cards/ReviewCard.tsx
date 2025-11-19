@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Star, ThumbsUp, ShieldCheck, Calendar, Package } from "lucide-react";
 import { formatDate } from "@/lib/formatters";
+import { safeToISOString } from "@/lib/date-utils";
 
 export interface ReviewCardProps {
   id: string;
@@ -114,9 +115,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               </div>
               <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
                 <Calendar className="w-3 h-3" />
-                <time
-                  dateTime={reviewDate ? reviewDate.toISOString() : undefined}
-                >
+                <time dateTime={safeToISOString(reviewDate) ?? undefined}>
                   {reviewDate ? formatDate(reviewDate) : "N/A"}
                 </time>
               </div>
