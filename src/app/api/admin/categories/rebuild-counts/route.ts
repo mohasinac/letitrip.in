@@ -1,5 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
-import { requireRole } from "@/app/api/middleware/rbac-auth";
+import { NextResponse } from "next/server";
 import { rebuildAllCategoryCounts } from "@/lib/category-hierarchy";
 
 /**
@@ -7,7 +6,7 @@ import { rebuildAllCategoryCounts } from "@/lib/category-hierarchy";
  * Rebuild all category product counts (admin only)
  * Useful for fixing count discrepancies
  */
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     console.log("Starting category counts rebuild...");
     const result = await rebuildAllCategoryCounts();

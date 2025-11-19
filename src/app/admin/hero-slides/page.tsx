@@ -3,9 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Plus,
   Edit,
-  Trash2,
   Power,
   PowerOff,
   GripVertical,
@@ -28,7 +26,7 @@ import {
   toInlineFields,
 } from "@/constants/form-fields";
 import { validateForm } from "@/lib/form-validation";
-import { InlineField, BulkAction } from "@/types/inline-edit";
+import { InlineField } from "@/types/inline-edit";
 
 export default function HeroSlidesPage() {
   const router = useRouter();
@@ -38,9 +36,6 @@ export default function HeroSlidesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [draggedSlide, setDraggedSlide] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
 
   // Field configuration for inline edit and quick create (using centralized config)
   const fields: InlineField[] = toInlineFields(
@@ -281,17 +276,14 @@ export default function HeroSlidesPage() {
                           HERO_SLIDE_FIELDS,
                           "table"
                         );
-                        const { isValid, errors } = validateForm(
+                        const { isValid } = validateForm(
                           values,
                           fieldsToValidate
                         );
 
                         if (!isValid) {
-                          setValidationErrors(errors);
                           throw new Error("Please fix validation errors");
                         }
-
-                        setValidationErrors({});
 
                         await heroSlidesService.createHeroSlide(values as any);
                         await loadSlides();
@@ -326,17 +318,14 @@ export default function HeroSlidesPage() {
                             HERO_SLIDE_FIELDS,
                             "table"
                           );
-                          const { isValid, errors } = validateForm(
+                          const { isValid } = validateForm(
                             values,
                             fieldsToValidate
                           );
 
                           if (!isValid) {
-                            setValidationErrors(errors);
                             throw new Error("Please fix validation errors");
                           }
-
-                          setValidationErrors({});
 
                           await heroSlidesService.updateHeroSlide(
                             slide.id,

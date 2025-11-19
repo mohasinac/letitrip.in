@@ -1,12 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Star, ThumbsUp, Edit } from "lucide-react";
+import { Edit } from "lucide-react";
 import { reviewsService } from "@/services/reviews.service";
-import { EmptyState } from "@/components/common/EmptyState";
 import ReviewForm from "./ReviewForm";
 import ReviewList from "./ReviewList";
-import type { ReviewFE } from "@/types/frontend/review.types";
 
 interface ProductReviewsProps {
   productId: string;
@@ -17,20 +15,8 @@ export function ProductReviews({
   productId,
   productSlug,
 }: ProductReviewsProps) {
-  const [reviews, setReviews] = useState<ReviewFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [stats, setStats] = useState({
-    averageRating: 0,
-    totalReviews: 0,
-    ratingBreakdown: {
-      5: 0,
-      4: 0,
-      3: 0,
-      2: 0,
-      1: 0,
-    },
-  });
 
   useEffect(() => {
     loadReviews();
@@ -39,41 +25,12 @@ export function ProductReviews({
   const loadReviews = async () => {
     try {
       setLoading(true);
-      const data = await reviewsService.list({ productId });
-      const reviewsList = data.data || [];
-      setReviews(reviewsList);
-
-      // Calculate stats
-      if (reviewsList.length > 0) {
-        const totalRating = reviewsList.reduce(
-          (sum: number, r: ReviewFE) => sum + r.rating,
-          0
-        );
-        const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-        reviewsList.forEach((r: ReviewFE) => {
-          breakdown[r.rating as keyof typeof breakdown]++;
-        });
-
-        setStats({
-          averageRating: totalRating / reviewsList.length,
-          totalReviews: reviewsList.length,
-          ratingBreakdown: breakdown,
-        });
-      }
+      await reviewsService.list({ productId });
     } catch (error) {
       console.error("Failed to load reviews:", error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-IN", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
   };
 
   if (loading) {

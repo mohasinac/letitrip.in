@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import {
-  Gift,
   ShoppingCart,
   User,
   ChevronDown,
@@ -12,8 +11,6 @@ import {
   LogIn,
   UserPlus,
   LayoutDashboard,
-  Users,
-  Package,
   ShoppingBag,
   Database,
 } from "lucide-react";
@@ -33,8 +30,7 @@ export default function MainNavBar({
   onMobileMenuToggle: () => void;
   onSearchClick: () => void;
 }) {
-  const { user, isAuthenticated, loading, isAdmin, isAdminOrSeller } =
-    useAuth();
+  const { user, isAuthenticated, isAdmin, isAdminOrSeller } = useAuth();
   const { cart } = useCart();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);

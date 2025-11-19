@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, SlidersHorizontal, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { productsService } from "@/services/products.service";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { ShopCard } from "@/components/cards/ShopCard";
@@ -21,11 +21,11 @@ function SearchContent() {
 
   useEffect(() => {
     if (query) {
-      performSearch(query, activeTab);
+      performSearch(query);
     }
   }, [query, activeTab]);
 
-  const performSearch = async (searchQuery: string, type: string) => {
+  const performSearch = async (searchQuery: string) => {
     try {
       setLoading(true);
       const response = await productsService.list({

@@ -1,12 +1,6 @@
 import { apiService } from "./api.service";
 import { USER_ROUTES } from "@/constants/api-routes";
-import {
-  UserBE,
-  UserFiltersBE,
-  UpdateUserRequestBE,
-  BanUserRequestBE,
-  ChangeRoleRequestBE,
-} from "@/types/backend/user.types";
+import { UserBE, UserFiltersBE } from "@/types/backend/user.types";
 import {
   UserFE,
   UserProfileFormFE,

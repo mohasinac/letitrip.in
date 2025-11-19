@@ -10,10 +10,7 @@ import {
   Trash2,
   Plus,
   X,
-  Image as ImageIcon,
-  Video as VideoIcon,
 } from "lucide-react";
-import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { productsService } from "@/services/products.service";
 import { categoriesService } from "@/services/categories.service";
@@ -22,7 +19,7 @@ import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import MediaUploader from "@/components/media/MediaUploader";
 import SlugInput from "@/components/common/SlugInput";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import type { ProductFE, ProductFormFE } from "@/types/frontend/product.types";
+import type { ProductFE } from "@/types/frontend/product.types";
 import type { CategoryFE } from "@/types/frontend/category.types";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 import {
@@ -86,7 +83,6 @@ export default function AdminEditProductPage() {
   // Media upload
   const {
     uploadMedia,
-    uploadedMedia,
     isUploading,
     clearTracking,
     confirmNavigation,

@@ -3,22 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
-import {
-  UnifiedFilterSidebar,
-  TableCheckbox,
-} from "@/components/common/inline-edit";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { auctionsService } from "@/services/auctions.service";
 import { AuctionStatus } from "@/types/shared/common.types";
-import {
-  Eye,
-  CheckCircle,
-  XCircle,
-  Edit,
-  Flag,
-  AlertTriangle,
-  Clock,
-} from "lucide-react";
+import { Eye, CheckCircle, XCircle, Edit, Flag, Clock } from "lucide-react";
 
 export default function AuctionModerationPage() {
   const router = useRouter();

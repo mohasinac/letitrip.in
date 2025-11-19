@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { safeToISOString } from "@/lib/date-utils";
 
@@ -8,7 +8,7 @@ const DEMO_PREFIX = "DEMO_";
  * Get statistics for existing demo data with DEMO_ prefix
  * GET /api/admin/demo/stats
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const db = getFirestoreAdmin();
 

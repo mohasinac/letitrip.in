@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { nanoid } from "nanoid";
 
@@ -402,7 +402,7 @@ const ADDRESS_TEMPLATES = [
   },
 ];
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const db = getFirestoreAdmin();
     const timestamp = new Date();

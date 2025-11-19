@@ -10,13 +10,11 @@ import {
   Trash2,
   Ban,
   CheckCircle,
-  Store,
   Package,
   Star,
   Users,
   Eye,
   Edit,
-  Image as ImageIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";

@@ -16,7 +16,6 @@ export default function OrderDetailPage() {
   const orderId = (params.id as string) || "";
   const [order, setOrder] = useState<OrderFE | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
   // Status update
@@ -204,11 +203,11 @@ export default function OrderDetailPage() {
     );
   }
 
-  if (error || !order) {
+  if (!order) {
     return (
       <div className="p-6">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">{error || "Order not found"}</p>
+          <p className="text-red-800">Order not found</p>
           <button
             onClick={() => router.push("/admin/orders")}
             className="mt-2 text-sm text-red-600 hover:text-red-800 underline"

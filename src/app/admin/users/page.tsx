@@ -12,7 +12,6 @@ import {
   Mail,
   Phone,
   Calendar,
-  Filter,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -25,7 +24,6 @@ import {
   BulkActionBar,
   TableCheckbox,
   InlineField,
-  BulkAction,
 } from "@/components/common/inline-edit";
 import { getUserBulkActions } from "@/constants/bulk-actions";
 import { usersService } from "@/services/users.service";
@@ -86,9 +84,6 @@ export default function AdminUsersPage() {
   // Inline edit states
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
 
   // Load users with ref check to prevent duplicate calls
   const loadUsers = useCallback(async () => {
@@ -515,17 +510,14 @@ export default function AdminUsersPage() {
                                 USER_FIELDS,
                                 "table"
                               );
-                              const { isValid, errors } = validateForm(
+                              const { isValid } = validateForm(
                                 values,
                                 fieldsToValidate
                               );
 
                               if (!isValid) {
-                                setValidationErrors(errors);
                                 throw new Error("Please fix validation errors");
                               }
-
-                              setValidationErrors({});
 
                               await updateUser(user.id, values);
                               await loadUsers();

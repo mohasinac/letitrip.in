@@ -21,10 +21,8 @@ import {
   InlineEditRow,
   QuickCreateRow,
   BulkActionBar,
-  InlineImageUpload,
   TableCheckbox,
   InlineField,
-  BulkAction,
 } from "@/components/common/inline-edit";
 import { getCategoryBulkActions } from "@/constants/bulk-actions";
 import { categoriesService } from "@/services/categories.service";
@@ -64,9 +62,6 @@ export default function CategoriesPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
 
   useEffect(() => {
     if (user && isAdmin) {
@@ -419,17 +414,14 @@ export default function CategoriesPage() {
                         CATEGORY_FIELDS,
                         "table"
                       );
-                      const { isValid, errors } = validateForm(
+                      const { isValid } = validateForm(
                         values,
                         fieldsToValidate
                       );
 
                       if (!isValid) {
-                        setValidationErrors(errors);
                         throw new Error("Please fix validation errors");
                       }
-
-                      setValidationErrors({});
 
                       await categoriesService.create({
                         name: values.name,
@@ -482,17 +474,14 @@ export default function CategoriesPage() {
                               CATEGORY_FIELDS,
                               "table"
                             );
-                            const { isValid, errors } = validateForm(
+                            const { isValid } = validateForm(
                               values,
                               fieldsToValidate
                             );
 
                             if (!isValid) {
-                              setValidationErrors(errors);
                               throw new Error("Please fix validation errors");
                             }
-
-                            setValidationErrors({});
 
                             await categoriesService.update(category.slug, {
                               name: values.name,

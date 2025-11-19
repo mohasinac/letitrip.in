@@ -6,8 +6,6 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import {
   UnifiedFilterSidebar,
   BulkActionBar,
-  InlineEditRow,
-  QuickCreateRow,
   TableCheckbox,
 } from "@/components/common/inline-edit";
 import { REVIEW_FILTERS } from "@/constants/filters";

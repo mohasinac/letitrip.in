@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   Search,
@@ -20,18 +20,14 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { ordersService } from "@/services/orders.service";
-import { shopsService } from "@/services/shops.service";
 import type { OrderCardFE } from "@/types/frontend/order.types";
 import type { OrderFiltersBE } from "@/types/backend/order.types";
-import type { ShopCardFE } from "@/types/frontend/shop.types";
 import { OrderStatus, PaymentStatus } from "@/types/shared/common.types";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { ORDER_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 
 export default function AdminOrdersPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isAdmin } = useAuth();
   const isMobile = useIsMobile();
@@ -39,7 +35,6 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [orders, setOrders] = useState<OrderCardFE[]>([]);
-  const [shops, setShops] = useState<ShopCardFE[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -62,9 +57,6 @@ export default function AdminOrdersPage() {
   // Infinite loop prevention
   const loadingRef = useRef(false);
   const hasLoadedRef = useRef(false);
-
-  // Bulk selection
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   // Update URL when filters change
   useEffect(() => {
@@ -126,9 +118,8 @@ export default function AdminOrdersPage() {
       };
 
       console.log("[Orders] Loading with filters:", filters);
-      const [ordersData, shopsData, statsData] = await Promise.all([
+      const [ordersData, statsData] = await Promise.all([
         ordersService.list(filters),
-        shopsService.list({ limit: 1000 }),
         ordersService.getStats().catch(() => null),
       ]);
 
@@ -152,7 +143,6 @@ export default function AdminOrdersPage() {
         }
       }
 
-      setShops(shopsData.data || []);
       setStats(statsData);
 
       hasLoadedRef.current = true;

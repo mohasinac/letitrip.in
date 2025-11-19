@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 /**
@@ -10,7 +10,7 @@ import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 const DEMO_PREFIX = "DEMO_";
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE() {
   try {
     const db = getFirestoreAdmin();
     let totalDeleted = 0;

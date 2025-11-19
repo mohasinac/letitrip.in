@@ -13,7 +13,6 @@ import {
   AlertCircle,
   FileText,
   Star,
-  Home,
   Calendar,
   TrendingUp,
   Heart,

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  Plus,
   Search,
   Filter,
   Edit,
@@ -20,30 +19,21 @@ import {
   XCircle,
 } from "lucide-react";
 import { ViewToggle } from "@/components/seller/ViewToggle";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { safeToISOString } from "@/lib/date-utils";
 import {
-  InlineEditRow,
-  QuickCreateRow,
   BulkActionBar,
   TableCheckbox,
-  InlineField,
   UnifiedFilterSidebar,
 } from "@/components/common/inline-edit";
 import { getAuctionBulkActions } from "@/constants/bulk-actions";
 import { auctionsService } from "@/services/auctions.service";
-import type { AuctionFE, AuctionCardFE } from "@/types/frontend/auction.types";
+import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import type { AuctionFiltersBE } from "@/types/backend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
-import {
-  AUCTION_FIELDS,
-  getFieldsForContext,
-  toInlineFields,
-} from "@/constants/form-fields";
 
 export default function AdminAuctionsPage() {
   const { user, isAdmin } = useAuth();
@@ -69,7 +59,6 @@ export default function AdminAuctionsPage() {
 
   // Inline edit states
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
   // Stats
@@ -139,10 +128,6 @@ export default function AdminAuctionsPage() {
   };
 
   // Fields configuration for inline edit
-  const fields: InlineField[] = toInlineFields(
-    getFieldsForContext(AUCTION_FIELDS, "table")
-  );
-
   // Bulk actions configuration
   const bulkActions = getAuctionBulkActions(selectedIds.length);
 

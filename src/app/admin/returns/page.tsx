@@ -3,11 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
-import {
-  UnifiedFilterSidebar,
-  BulkActionBar,
-  TableCheckbox,
-} from "@/components/common/inline-edit";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { RETURN_FILTERS } from "@/constants/filters";
 import { returnsService } from "@/services/returns.service";
 import { toast } from "@/components/admin/Toast";
@@ -18,9 +14,6 @@ export default function AdminReturnsPage() {
   const [returns, setReturns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
-  const [selectedReturns, setSelectedReturns] = useState<Set<string>>(
-    new Set()
-  );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalReturns, setTotalReturns] = useState(0);

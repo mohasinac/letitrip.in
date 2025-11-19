@@ -1,20 +1,13 @@
 import { apiService } from "./api.service";
-import {
-  CartBE,
-  AddToCartRequestBE,
-  UpdateCartItemRequestBE,
-} from "@/types/backend/cart.types";
+import { CartBE } from "@/types/backend/cart.types";
 import {
   CartFE,
   CartItemFE,
   AddToCartFormFE,
-  CartSummaryFE,
 } from "@/types/frontend/cart.types";
 import {
   toFECart,
-  toFECartSummary,
   toBEAddToCartRequest,
-  createEmptyCart,
 } from "@/types/transforms/cart.transforms";
 
 /**
