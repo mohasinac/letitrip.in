@@ -4,7 +4,6 @@ import {
   getUserFromRequest,
   requireRole,
 } from "@/app/api/middleware/rbac-auth";
-import { ValidationError } from "@/lib/api-errors";
 
 /**
  * GET /api/categories/[slug]

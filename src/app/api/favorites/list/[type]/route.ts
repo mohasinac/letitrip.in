@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
-import { COLLECTIONS } from "@/constants/database";
 
 const VALID_TYPES = ["product", "shop", "category", "auction"];
 
