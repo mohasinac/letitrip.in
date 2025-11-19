@@ -85,7 +85,14 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                    <p className="text-gray-600">support@letitrip.in</p>
+                    <p className="text-gray-600">
+                      <a
+                        href="mailto:support@justforview.in"
+                        className="text-blue-600 hover:underline"
+                      >
+                        support@justforview.in
+                      </a>
+                    </p>
                     <p className="text-sm text-gray-500 mt-1">
                       We'll respond within 24 hours
                     </p>
@@ -98,7 +105,15 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
-                    <p className="text-gray-600">+91 (800) 123-4567</p>
+                    <p className="text-gray-600">
+                      <a
+                        href="tel:+918000000000"
+                        className="text-green-600 hover:underline"
+                      >
+                        1800-000-0000
+                      </a>{" "}
+                      (Toll-free)
+                    </p>
                     <p className="text-sm text-gray-500 mt-1">
                       Mon-Fri, 9am-6pm IST
                     </p>

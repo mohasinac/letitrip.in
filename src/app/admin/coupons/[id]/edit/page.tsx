@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { couponsService } from "@/services/coupons.service";
-// TODO: Add toast notifications when library is configured
+import { toast } from "@/components/admin/Toast";
 import { ArrowLeft, Save } from "lucide-react";
 
 export default function EditCouponPage() {
@@ -56,7 +56,7 @@ export default function EditCouponPage() {
       });
     } catch (error: any) {
       console.error("Failed to load coupon:", error);
-      // toast.error(error.message || "Failed to load coupon");
+      toast.error(error.message || "Failed to load coupon");
     } finally {
       setLoading(false);
     }
@@ -66,23 +66,23 @@ export default function EditCouponPage() {
     e.preventDefault();
 
     if (!formData.code.trim()) {
-      // toast.error("Coupon code is required");
+      toast.error("Coupon code is required");
       return;
     }
 
     if (formData.type !== "free-shipping" && formData.value <= 0) {
-      // toast.error("Discount value must be greater than 0");
+      toast.error("Discount value must be greater than 0");
       return;
     }
 
     try {
       setSaving(true);
       await couponsService.update(couponId, formData as any);
-      // toast.success("Coupon updated successfully");
+      toast.success("Coupon updated successfully");
       router.push("/admin/coupons");
     } catch (error: any) {
       console.error("Failed to update coupon:", error);
-      // toast.error(error.message || "Failed to update coupon");
+      toast.error(error.message || "Failed to update coupon");
     } finally {
       setSaving(false);
     }

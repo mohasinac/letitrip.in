@@ -5,6 +5,9 @@
  */
 
 import { apiService } from "./api.service";
+import type { OrderFE } from "@/types/frontend/order.types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
+import type { CategoryCardFE } from "@/types/frontend/category.types";
 
 export interface DemoDataConfig {
   includeCategories?: boolean;
@@ -37,6 +40,104 @@ export interface DemoProgress {
   progress: number;
   message: string;
   data?: any;
+}
+
+export interface DemoAnalyticsFE {
+  orders: OrderFE[];
+  shipments: Array<{
+    id: string;
+    orderId: string;
+    trackingNumber: string;
+    carrier: string;
+    status: string;
+    estimatedDelivery: string;
+  }>;
+  payments: Array<{
+    id: string;
+    orderId: string;
+    amount: number;
+    method: string;
+    status: string;
+    date: string;
+  }>;
+  payouts: Array<{
+    id: string;
+    shopId: string;
+    amount: number;
+    status: string;
+    date: string;
+  }>;
+  pendingPayouts: Array<{
+    shopId: string;
+    shopName: string;
+    amount: number;
+    orderCount: number;
+  }>;
+  userActivity: Array<{
+    userId: string;
+    userName: string;
+    ordersPlaced: number;
+    totalSpent: number;
+    lastActive: string;
+  }>;
+  auctionActivity: Array<{
+    auctionId: string;
+    title: string;
+    bidsCount: number;
+    currentBid: number;
+    status: string;
+  }>;
+  salesByCategory: Array<{
+    categoryId: string;
+    categoryName: string;
+    productCount: number;
+    totalSales: number;
+    revenue: number;
+  }>;
+  revenueOverTime: Array<{
+    date: string;
+    revenue: number;
+    orders: number;
+  }>;
+}
+
+export interface DemoVisualizationFE {
+  categoryTree: CategoryCardFE[];
+  productsByCategory: Record<string, ProductCardFE[]>;
+  ordersByUser: Record<
+    string,
+    Array<{
+      orderId: string;
+      total: number;
+      status: string;
+      date: string;
+    }>
+  >;
+  auctionCompetition: Array<{
+    auctionId: string;
+    title: string;
+    bidders: number;
+    highestBid: number;
+  }>;
+  paymentMethods: Record<string, number>;
+  shippingStatus: Record<string, number>;
+}
+
+export interface UserActionSimulation {
+  type: "browse" | "add-to-cart" | "purchase" | "bid" | "review";
+  productId?: string;
+  auctionId?: string;
+  data?: Record<string, unknown>;
+}
+
+export interface SimulationResultFE {
+  success: boolean;
+  results: Array<{
+    action: string;
+    status: "success" | "error";
+    message: string;
+    data?: Record<string, unknown>;
+  }>;
 }
 
 class DemoDataService {
@@ -89,50 +190,20 @@ class DemoDataService {
   /**
    * Get detailed analytics for a demo session
    */
-  async getAnalytics(sessionId: string): Promise<{
-    orders: any[];
-    shipments: any[];
-    payments: any[];
-    payouts: any[];
-    pendingPayouts: any[];
-    userActivity: any[];
-    auctionActivity: any[];
-    salesByCategory: any[];
-    revenueOverTime: any[];
-  }> {
-    const response = await apiService.get<{
-      orders: any[];
-      shipments: any[];
-      payments: any[];
-      payouts: any[];
-      pendingPayouts: any[];
-      userActivity: any[];
-      auctionActivity: any[];
-      salesByCategory: any[];
-      revenueOverTime: any[];
-    }>(`${this.BASE_PATH}/analytics/${sessionId}`);
+  async getAnalytics(sessionId: string): Promise<DemoAnalyticsFE> {
+    const response = await apiService.get<DemoAnalyticsFE>(
+      `${this.BASE_PATH}/analytics/${sessionId}`
+    );
     return response;
   }
 
   /**
    * Get visualization data
    */
-  async getVisualization(sessionId: string): Promise<{
-    categoryTree: any;
-    productsByCategory: any;
-    ordersByUser: any;
-    auctionCompetition: any;
-    paymentMethods: any;
-    shippingStatus: any;
-  }> {
-    const response = await apiService.get<{
-      categoryTree: any;
-      productsByCategory: any;
-      ordersByUser: any;
-      auctionCompetition: any;
-      paymentMethods: any;
-      shippingStatus: any;
-    }>(`${this.BASE_PATH}/visualization/${sessionId}`);
+  async getVisualization(sessionId: string): Promise<DemoVisualizationFE> {
+    const response = await apiService.get<DemoVisualizationFE>(
+      `${this.BASE_PATH}/visualization/${sessionId}`
+    );
     return response;
   }
 
@@ -206,17 +277,12 @@ class DemoDataService {
   async simulateUserActions(
     sessionId: string,
     userId: string,
-    actions: {
-      type: "browse" | "add-to-cart" | "purchase" | "bid" | "review";
-      productId?: string;
-      auctionId?: string;
-      data?: any;
-    }[]
-  ): Promise<{ success: boolean; results: any[] }> {
-    const response = await apiService.post<{
-      success: boolean;
-      results: any[];
-    }>(`${this.BASE_PATH}/simulate/${sessionId}/user/${userId}`, { actions });
+    actions: UserActionSimulation[]
+  ): Promise<SimulationResultFE> {
+    const response = await apiService.post<SimulationResultFE>(
+      `${this.BASE_PATH}/simulate/${sessionId}/user/${userId}`,
+      { actions }
+    );
     return response;
   }
 
@@ -242,7 +308,7 @@ class DemoDataService {
   /**
    * Get demo data for specific entity type
    */
-  async getEntityData(
+  async getEntityData<T = unknown>(
     sessionId: string,
     entityType:
       | "categories"
@@ -252,8 +318,8 @@ class DemoDataService {
       | "auctions"
       | "orders"
       | "bids"
-  ): Promise<any[]> {
-    const response = await apiService.get<{ data: any[] }>(
+  ): Promise<T[]> {
+    const response = await apiService.get<{ data: T[] }>(
       `${this.BASE_PATH}/${sessionId}/${entityType}`
     );
     return response.data || [];

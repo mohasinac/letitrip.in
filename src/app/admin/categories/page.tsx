@@ -105,28 +105,27 @@ export default function CategoriesPage() {
   const handleBulkAction = async (actionId: string) => {
     try {
       setActionLoading(true);
-      // TODO: Implement bulk action API endpoint and add to categoriesService
-      // For now, handle individual actions
-      if (actionId === "delete") {
-        await Promise.all(
-          selectedIds.map(async (id) => {
-            const category = categories.find((c) => c.id === id);
-            if (category) {
-              await categoriesService.delete(category.slug);
-            }
-          })
-        );
-      } else if (actionId === "activate" || actionId === "deactivate") {
-        await Promise.all(
-          selectedIds.map(async (id) => {
-            const category = categories.find((c) => c.id === id);
-            if (category) {
-              await categoriesService.update(category.slug, {
-                isActive: actionId === "activate",
-              });
-            }
-          })
-        );
+
+      // Use bulk action API endpoint for efficient batch operations
+      switch (actionId) {
+        case "delete":
+          await categoriesService.bulkDelete(selectedIds);
+          break;
+        case "activate":
+          await categoriesService.bulkActivate(selectedIds);
+          break;
+        case "deactivate":
+          await categoriesService.bulkDeactivate(selectedIds);
+          break;
+        case "feature":
+          await categoriesService.bulkFeature(selectedIds);
+          break;
+        case "unfeature":
+          await categoriesService.bulkUnfeature(selectedIds);
+          break;
+        default:
+          console.error(`Unknown bulk action: ${actionId}`);
+          return;
       }
 
       await loadCategories();

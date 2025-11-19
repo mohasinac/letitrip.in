@@ -1,21 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { getCurrentUser } from "@/app/api/lib/session";
 
 // POST /api/reviews/[id]/helpful - Mark review as helpful
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
     const { id } = await params;
 
-    // TODO: Get user_id from session
-    const userId = req.headers.get("x-user-id");
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Get user from session
+    const user = await getCurrentUser(req);
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please log in." },
+        { status: 401 }
+      );
     }
+    const userId = user.id;
 
     // Check if review exists
     const doc = await db.collection(COLLECTIONS.REVIEWS).doc(id).get();
@@ -34,7 +39,7 @@ export async function POST(
     if (helpfulDoc.exists) {
       return NextResponse.json(
         { error: "You have already marked this review as helpful" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -65,7 +70,7 @@ export async function POST(
     console.error("Error marking review as helpful:", error);
     return NextResponse.json(
       { error: "Failed to mark review as helpful" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -1,0 +1,222 @@
+name: Bundle Size Analysis
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+jobs:
+  analyze:
+    name: Analyze Bundle Size
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with bundle analysis
+        env:
+          ANALYZE: "true"
+          NODE_ENV: "production"
+        run: npm run build
+
+      - name: Check bundle size
+        id: bundle-check
+        run: |
+          # Get bundle sizes
+          BUNDLE_SIZE=$(du -sh .next/static | awk '{print $1}')
+          echo "Bundle size: $BUNDLE_SIZE"
+          echo "bundle_size=$BUNDLE_SIZE" >> $GITHUB_OUTPUT
+
+          # Check if bundle is too large (warn at 5MB, fail at 10MB)
+          BUNDLE_SIZE_BYTES=$(du -sb .next/static | awk '{print $1}')
+          MAX_SIZE_BYTES=$((10 * 1024 * 1024))  # 10MB
+          WARN_SIZE_BYTES=$((5 * 1024 * 1024))   # 5MB
+
+          echo "bundle_size_bytes=$BUNDLE_SIZE_BYTES" >> $GITHUB_OUTPUT
+          echo "max_size_bytes=$MAX_SIZE_BYTES" >> $GITHUB_OUTPUT
+
+          if [ $BUNDLE_SIZE_BYTES -gt $MAX_SIZE_BYTES ]; then
+            echo "❌ Bundle size exceeds maximum of 10MB!"
+            exit 1
+          elif [ $BUNDLE_SIZE_BYTES -gt $WARN_SIZE_BYTES ]; then
+            echo "⚠️ Bundle size exceeds recommended 5MB threshold"
+          else
+            echo "✅ Bundle size is within acceptable limits"
+          fi
+
+      - name: Comment bundle size on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const bundleSize = '${{ steps.bundle-check.outputs.bundle_size }}';
+            const bundleSizeBytes = parseInt('${{ steps.bundle-check.outputs.bundle_size_bytes }}');
+            const maxSizeBytes = parseInt('${{ steps.bundle-check.outputs.max_size_bytes }}');
+            const warnSizeBytes = 5 * 1024 * 1024;
+
+            let emoji = '✅';
+            let status = 'Acceptable';
+            if (bundleSizeBytes > maxSizeBytes) {
+              emoji = '❌';
+              status = 'Too Large';
+            } else if (bundleSizeBytes > warnSizeBytes) {
+              emoji = '⚠️';
+              status = 'Warning';
+            }
+
+            const comment = `## ${emoji} Bundle Size Analysis
+
+            **Bundle Size**: ${bundleSize} (${(bundleSizeBytes / (1024 * 1024)).toFixed(2)} MB)
+            **Status**: ${status}
+            **Threshold**: 5 MB (warning), 10 MB (error)
+
+            ### Recommendations
+            ${bundleSizeBytes > warnSizeBytes ? `
+            - Consider code splitting large components
+            - Review and optimize third-party dependencies
+            - Use dynamic imports for rarely-used features
+            - Check for duplicate dependencies
+            ` : '- Bundle size is optimal! 🎉'}
+
+            <details>
+            <summary>View Bundle Analysis</summary>
+
+            Run \`ANALYZE=true npm run build\` locally to see detailed bundle analysis.
+
+            </details>
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Upload bundle stats
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-stats
+          path: .next/analyze/
+          retention-days: 30
+
+  compare:
+    name: Compare with Base Branch
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build PR bundle
+        env:
+          ANALYZE: "true"
+        run: npm run build
+
+      - name: Get PR bundle size
+        id: pr-size
+        run: |
+          PR_SIZE=$(du -sb .next/static | awk '{print $1}')
+          echo "pr_size=$PR_SIZE" >> $GITHUB_OUTPUT
+
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+
+      - name: Install base dependencies
+        run: npm ci
+
+      - name: Build base bundle
+        env:
+          ANALYZE: "true"
+        run: npm run build
+
+      - name: Get base bundle size
+        id: base-size
+        run: |
+          BASE_SIZE=$(du -sb .next/static | awk '{print $1}')
+          echo "base_size=$BASE_SIZE" >> $GITHUB_OUTPUT
+
+      - name: Calculate difference
+        id: diff
+        run: |
+          PR_SIZE=${{ steps.pr-size.outputs.pr_size }}
+          BASE_SIZE=${{ steps.base-size.outputs.base_size }}
+          DIFF=$((PR_SIZE - BASE_SIZE))
+          DIFF_PERCENT=$(awk "BEGIN {printf \"%.2f\", ($DIFF / $BASE_SIZE) * 100}")
+
+          echo "diff=$DIFF" >> $GITHUB_OUTPUT
+          echo "diff_percent=$DIFF_PERCENT" >> $GITHUB_OUTPUT
+
+          if [ $DIFF -gt 0 ]; then
+            echo "Bundle size increased by $(numfmt --to=iec $DIFF) ($DIFF_PERCENT%)"
+          elif [ $DIFF -lt 0 ]; then
+            echo "Bundle size decreased by $(numfmt --to=iec ${DIFF#-}) ($DIFF_PERCENT%)"
+          else
+            echo "Bundle size unchanged"
+          fi
+
+      - name: Comment comparison on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prSize = parseInt('${{ steps.pr-size.outputs.pr_size }}');
+            const baseSize = parseInt('${{ steps.base-size.outputs.base_size }}');
+            const diff = parseInt('${{ steps.diff.outputs.diff }}');
+            const diffPercent = parseFloat('${{ steps.diff.outputs.diff_percent }}');
+
+            const formatBytes = (bytes) => {
+              return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+            };
+
+            let emoji = '📊';
+            let status = 'No change';
+            if (diff > 0) {
+              emoji = diffPercent > 5 ? '🔴' : '⚠️';
+              status = 'Increased';
+            } else if (diff < 0) {
+              emoji = '✅';
+              status = 'Decreased';
+            }
+
+            const comment = `## ${emoji} Bundle Size Comparison
+
+            | Metric | Base | PR | Difference |
+            |--------|------|----|-----------:|
+            | Total Size | ${formatBytes(baseSize)} | ${formatBytes(prSize)} | ${diff > 0 ? '+' : ''}${formatBytes(Math.abs(diff))} (${diffPercent > 0 ? '+' : ''}${diffPercent}%) |
+
+            **Status**: ${status}
+            ${Math.abs(diffPercent) > 5 ? '\n⚠️ **Warning**: Bundle size changed by more than 5%' : ''}
+            ${diffPercent > 10 ? '\n❌ **Action Required**: Significant bundle size increase detected!' : ''}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

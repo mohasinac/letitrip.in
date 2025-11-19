@@ -78,13 +78,6 @@ export { usersService } from "./users.service";
 
 // Analytics service
 export { analyticsService } from "./analytics.service";
-export type {
-  AnalyticsFilters,
-  AnalyticsOverview,
-  SalesData,
-  TopProduct,
-  CategoryPerformance,
-} from "./analytics.service";
 
 // Media service
 export { mediaService } from "./media.service";

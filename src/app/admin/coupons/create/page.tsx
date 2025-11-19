@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { couponsService } from "@/services/coupons.service";
-// TODO: Add toast notifications when library is configured
+import { toast } from "@/components/admin/Toast";
 import { ArrowLeft } from "lucide-react";
 
 export default function CreateCouponPage() {
@@ -30,10 +30,10 @@ export default function CreateCouponPage() {
     try {
       setLoading(true);
       await couponsService.create(formData as any);
-      // toast.success("Coupon created successfully");
+      toast.success("Coupon created successfully");
       router.push("/admin/coupons");
     } catch (error: any) {
-      // toast.error(error.message || "Failed to create coupon");
+      toast.error(error.message || "Failed to create coupon");
     } finally {
       setLoading(false);
     }

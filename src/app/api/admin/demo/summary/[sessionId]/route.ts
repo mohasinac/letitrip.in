@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { safeToISOString } from "@/lib/date-utils";
 
 export async function GET(
   request: NextRequest,
@@ -73,7 +74,8 @@ export async function GET(
 
     const createdAt = firstCategory.empty
       ? new Date().toISOString()
-      : firstCategory.docs[0].data().createdAt?.toDate().toISOString();
+      : safeToISOString(firstCategory.docs[0].data().createdAt?.toDate()) ??
+        new Date().toISOString();
 
     return NextResponse.json({
       categories: categoriesSnap.data().count,

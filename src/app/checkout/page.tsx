@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import {
   ChevronLeft,
   Check,
@@ -242,259 +243,264 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-5xl mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={() => router.push("/cart")}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
-          >
-            <ChevronLeft className="w-5 h-5" />
-            Back to Cart
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
-        </div>
-
-        {/* Progress Steps */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
-              const isCompleted = index < currentStepIndex;
-              const isCurrent = index === currentStepIndex;
-
-              return (
-                <div key={step.id} className="flex items-center flex-1">
-                  <div className="flex flex-col items-center flex-1">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
-                        isCompleted
-                          ? "bg-green-500 text-white"
-                          : isCurrent
-                          ? "bg-primary text-white"
-                          : "bg-gray-200 text-gray-400"
-                      }`}
-                    >
-                      {isCompleted ? (
-                        <Check className="w-6 h-6" />
-                      ) : (
-                        <Icon className="w-6 h-6" />
-                      )}
-                    </div>
-                    <span
-                      className={`mt-2 text-sm font-medium ${
-                        isCurrent ? "text-primary" : "text-gray-600"
-                      }`}
-                    >
-                      {step.label}
-                    </span>
-                  </div>
-
-                  {index < steps.length - 1 && (
-                    <div
-                      className={`h-1 flex-1 mx-4 rounded transition-all ${
-                        isCompleted ? "bg-green-500" : "bg-gray-200"
-                      }`}
-                    />
-                  )}
-                </div>
-              );
-            })}
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-5xl mx-auto px-4">
+          {/* Header */}
+          <div className="mb-8">
+            <button
+              onClick={() => router.push("/cart")}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              Back to Cart
+            </button>
+            <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Address Step */}
-            {currentStep === "address" && (
-              <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
-                <AddressSelector
-                  selectedId={shippingAddressId}
-                  onSelect={setShippingAddressId}
-                  type="shipping"
-                />
+          {/* Progress Steps */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div className="flex items-center justify-between">
+              {steps.map((step, index) => {
+                const Icon = step.icon;
+                const isCompleted = index < currentStepIndex;
+                const isCurrent = index === currentStepIndex;
 
-                <div className="border-t pt-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <input
-                      type="checkbox"
-                      id="sameAddress"
-                      checked={useSameAddress}
-                      onChange={(e) => setUseSameAddress(e.target.checked)}
-                      className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
-                    />
-                    <label
-                      htmlFor="sameAddress"
-                      className="text-sm text-gray-700"
-                    >
-                      Billing address same as shipping
-                    </label>
+                return (
+                  <div key={step.id} className="flex items-center flex-1">
+                    <div className="flex flex-col items-center flex-1">
+                      <div
+                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                          isCompleted
+                            ? "bg-green-500 text-white"
+                            : isCurrent
+                            ? "bg-primary text-white"
+                            : "bg-gray-200 text-gray-400"
+                        }`}
+                      >
+                        {isCompleted ? (
+                          <Check className="w-6 h-6" />
+                        ) : (
+                          <Icon className="w-6 h-6" />
+                        )}
+                      </div>
+                      <span
+                        className={`mt-2 text-sm font-medium ${
+                          isCurrent ? "text-primary" : "text-gray-600"
+                        }`}
+                      >
+                        {step.label}
+                      </span>
+                    </div>
+
+                    {index < steps.length - 1 && (
+                      <div
+                        className={`h-1 flex-1 mx-4 rounded transition-all ${
+                          isCompleted ? "bg-green-500" : "bg-gray-200"
+                        }`}
+                      />
+                    )}
                   </div>
-
-                  {!useSameAddress && (
-                    <AddressSelector
-                      selectedId={billingAddressId}
-                      onSelect={setBillingAddressId}
-                      type="billing"
-                    />
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Payment Step */}
-            {currentStep === "payment" && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <PaymentMethod
-                  selected={paymentMethod}
-                  onSelect={setPaymentMethod}
-                />
-              </div>
-            )}
-
-            {/* Review Step */}
-            {currentStep === "review" && (
-              <div className="space-y-6">
-                {shopGroups.map((shop) => (
-                  <ShopOrderSummary
-                    key={shop.shopId}
-                    shopId={shop.shopId}
-                    shopName={shop.shopName}
-                    items={shop.items}
-                    appliedCoupon={shopCoupons[shop.shopId]}
-                    onApplyCoupon={handleApplyCoupon}
-                    onRemoveCoupon={handleRemoveCoupon}
-                  />
-                ))}
-
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h4 className="font-semibold text-gray-900 mb-2">
-                    Delivery Notes (Optional)
-                  </h4>
-                  <textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                    rows={3}
-                    placeholder="Add any special instructions for delivery..."
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Navigation Buttons */}
-            <div className="flex gap-3">
-              {currentStep !== "address" && (
-                <button
-                  onClick={handleBack}
-                  className="btn-secondary flex-1"
-                  disabled={processing}
-                >
-                  Back
-                </button>
-              )}
-              {currentStep !== "review" ? (
-                <button onClick={handleContinue} className="btn-primary flex-1">
-                  Continue
-                </button>
-              ) : (
-                <button
-                  onClick={handlePlaceOrder}
-                  className="btn-primary flex-1"
-                  disabled={processing}
-                >
-                  {processing ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Processing...
-                    </>
-                  ) : (
-                    "Place Order"
-                  )}
-                </button>
-              )}
+                );
+              })}
             </div>
           </div>
 
-          {/* Order Summary Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-              <h3 className="font-semibold text-gray-900 mb-4">
-                Order Summary
-              </h3>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Address Step */}
+              {currentStep === "address" && (
+                <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
+                  <AddressSelector
+                    selectedId={shippingAddressId}
+                    onSelect={setShippingAddressId}
+                    type="shipping"
+                  />
 
-              <div className="space-y-4 mb-4">
-                {shopGroups.map((shop) => {
-                  const subtotal = shop.items.reduce(
-                    (sum, item) => sum + item.price * item.quantity,
-                    0
-                  );
-                  const discount =
-                    shopCoupons[shop.shopId]?.discountAmount || 0;
-                  const shipping = subtotal >= 5000 ? 0 : 100;
-                  const tax = Math.round(subtotal * 0.18);
-                  const shopTotal = subtotal + shipping + tax - discount;
+                  <div className="border-t pt-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <input
+                        type="checkbox"
+                        id="sameAddress"
+                        checked={useSameAddress}
+                        onChange={(e) => setUseSameAddress(e.target.checked)}
+                        className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                      />
+                      <label
+                        htmlFor="sameAddress"
+                        className="text-sm text-gray-700"
+                      >
+                        Billing address same as shipping
+                      </label>
+                    </div>
 
-                  return (
-                    <div
+                    {!useSameAddress && (
+                      <AddressSelector
+                        selectedId={billingAddressId}
+                        onSelect={setBillingAddressId}
+                        type="billing"
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Payment Step */}
+              {currentStep === "payment" && (
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                  <PaymentMethod
+                    selected={paymentMethod}
+                    onSelect={setPaymentMethod}
+                  />
+                </div>
+              )}
+
+              {/* Review Step */}
+              {currentStep === "review" && (
+                <div className="space-y-6">
+                  {shopGroups.map((shop) => (
+                    <ShopOrderSummary
                       key={shop.shopId}
-                      className="pb-4 border-b last:border-b-0"
-                    >
-                      <p className="text-sm font-medium text-gray-900 mb-2">
-                        {shop.shopName}
-                      </p>
-                      <div className="space-y-1 text-xs text-gray-600">
-                        <div className="flex justify-between">
-                          <span>{shop.items.length} items</span>
-                          <span>₹{subtotal.toLocaleString()}</span>
-                        </div>
-                        {discount > 0 && (
-                          <div className="flex justify-between text-green-600">
-                            <span>Discount</span>
-                            <span>-₹{discount.toLocaleString()}</span>
+                      shopId={shop.shopId}
+                      shopName={shop.shopName}
+                      items={shop.items}
+                      appliedCoupon={shopCoupons[shop.shopId]}
+                      onApplyCoupon={handleApplyCoupon}
+                      onRemoveCoupon={handleRemoveCoupon}
+                    />
+                  ))}
+
+                  <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h4 className="font-semibold text-gray-900 mb-2">
+                      Delivery Notes (Optional)
+                    </h4>
+                    <textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      rows={3}
+                      placeholder="Add any special instructions for delivery..."
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation Buttons */}
+              <div className="flex gap-3">
+                {currentStep !== "address" && (
+                  <button
+                    onClick={handleBack}
+                    className="btn-secondary flex-1"
+                    disabled={processing}
+                  >
+                    Back
+                  </button>
+                )}
+                {currentStep !== "review" ? (
+                  <button
+                    onClick={handleContinue}
+                    className="btn-primary flex-1"
+                  >
+                    Continue
+                  </button>
+                ) : (
+                  <button
+                    onClick={handlePlaceOrder}
+                    className="btn-primary flex-1"
+                    disabled={processing}
+                  >
+                    {processing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        Processing...
+                      </>
+                    ) : (
+                      "Place Order"
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Order Summary Sidebar */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
+                <h3 className="font-semibold text-gray-900 mb-4">
+                  Order Summary
+                </h3>
+
+                <div className="space-y-4 mb-4">
+                  {shopGroups.map((shop) => {
+                    const subtotal = shop.items.reduce(
+                      (sum, item) => sum + item.price * item.quantity,
+                      0
+                    );
+                    const discount =
+                      shopCoupons[shop.shopId]?.discountAmount || 0;
+                    const shipping = subtotal >= 5000 ? 0 : 100;
+                    const tax = Math.round(subtotal * 0.18);
+                    const shopTotal = subtotal + shipping + tax - discount;
+
+                    return (
+                      <div
+                        key={shop.shopId}
+                        className="pb-4 border-b last:border-b-0"
+                      >
+                        <p className="text-sm font-medium text-gray-900 mb-2">
+                          {shop.shopName}
+                        </p>
+                        <div className="space-y-1 text-xs text-gray-600">
+                          <div className="flex justify-between">
+                            <span>{shop.items.length} items</span>
+                            <span>₹{subtotal.toLocaleString()}</span>
                           </div>
-                        )}
-                        <div className="flex justify-between">
-                          <span>Shipping</span>
-                          <span>
-                            {shipping === 0 ? "FREE" : `₹${shipping}`}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Tax</span>
-                          <span>₹{tax.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between font-semibold text-gray-900 pt-1">
-                          <span>Shop Total</span>
-                          <span>₹{shopTotal.toLocaleString()}</span>
+                          {discount > 0 && (
+                            <div className="flex justify-between text-green-600">
+                              <span>Discount</span>
+                              <span>-₹{discount.toLocaleString()}</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between">
+                            <span>Shipping</span>
+                            <span>
+                              {shipping === 0 ? "FREE" : `₹${shipping}`}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Tax</span>
+                            <span>₹{tax.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between font-semibold text-gray-900 pt-1">
+                            <span>Shop Total</span>
+                            <span>₹{shopTotal.toLocaleString()}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
 
-              <div className="flex justify-between text-lg font-bold mb-6 pt-4 border-t">
-                <span>Grand Total</span>
-                <span className="text-primary">
-                  ₹{grandTotal.toLocaleString()}
-                </span>
-              </div>
+                <div className="flex justify-between text-lg font-bold mb-6 pt-4 border-t">
+                  <span>Grand Total</span>
+                  <span className="text-primary">
+                    ₹{grandTotal.toLocaleString()}
+                  </span>
+                </div>
 
-              <div className="text-xs text-gray-500 space-y-1">
-                <p>✓ Safe and secure payments</p>
-                <p>✓ Easy returns and refunds</p>
-                <p>✓ 100% authentic products</p>
+                <div className="text-xs text-gray-500 space-y-1">
+                  <p>✓ Safe and secure payments</p>
+                  <p>✓ Easy returns and refunds</p>
+                  <p>✓ 100% authentic products</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Razorpay Script */}
-      <script src="https://checkout.razorpay.com/v1/checkout.js" async />
-    </div>
+        {/* Razorpay Script */}
+        <script src="https://checkout.razorpay.com/v1/checkout.js" async />
+      </div>
+    </ErrorBoundary>
   );
 }

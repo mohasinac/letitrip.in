@@ -119,10 +119,11 @@ function CategoryDetailContent({ params }: PageProps) {
 
         setBreadcrumb(pathCategories);
       } else {
-        // TODO: Load default breadcrumb (getBreadcrumb method not implemented yet)
-        // const breadcrumbData = await categoriesService.getBreadcrumb(categoryData.id);
-        // setBreadcrumb(breadcrumbData);
-        setBreadcrumb([]);
+        // Load default breadcrumb using parent hierarchy
+        const breadcrumbData = await categoriesService.getBreadcrumb(
+          categoryData.id
+        );
+        setBreadcrumb(breadcrumbData);
       }
 
       // Load subcategories

@@ -1,5 +1,6 @@
 import { apiService } from "./api.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import { logServiceError } from "@/lib/error-logger";
 
 interface FavoriteItem {
   id: string;
@@ -121,7 +122,7 @@ class FavoritesService {
 
       return result;
     } catch (error) {
-      console.error("Failed to sync favorites:", error);
+      logServiceError("FavoritesService", "syncGuestFavorites", error as Error);
       return { synced: 0 };
     }
   }

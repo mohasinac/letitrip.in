@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { safeToISOString } from "@/lib/date-utils";
 
 const DEMO_PREFIX = "DEMO_";
 
@@ -121,7 +122,7 @@ export async function GET(request: NextRequest) {
         shipments,
         reviews,
         createdAt: latestCreatedAt
-          ? latestCreatedAt.toISOString()
+          ? safeToISOString(latestCreatedAt) ?? new Date().toISOString()
           : new Date().toISOString(),
       },
     });

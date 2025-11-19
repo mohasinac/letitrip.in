@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { getCurrentUser } from "@/app/api/lib/session";
 
 /**
  * GET /admin/dashboard
@@ -12,8 +13,21 @@ export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
 
-    // TODO: Verify admin role from session
-    // For now, we'll allow all requests
+    // Verify admin role from session
+    const user = await getCurrentUser(req);
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please log in." },
+        { status: 401 }
+      );
+    }
+
+    if (user.role !== "admin") {
+      return NextResponse.json(
+        { error: "Forbidden. Admin access required." },
+        { status: 403 }
+      );
+    }
 
     // Get all users
     const usersSnapshot = await db.collection(COLLECTIONS.USERS).get();

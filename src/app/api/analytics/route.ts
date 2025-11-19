@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "../lib/session";
 import { Collections } from "../lib/firebase/collections";
+import { safeToISOString } from "@/lib/date-utils";
 
 /**
  * GET /api/analytics
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
     if (!user?.email) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
     if (!(role === "seller" || role === "admin")) {
       return NextResponse.json(
         { success: false, error: "Forbidden" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "shop_id is required",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -64,8 +65,16 @@ export async function GET(request: NextRequest) {
 
     // Fetch orders
     let ordersQuery: FirebaseFirestore.Query = Collections.orders()
-      .where("created_at", ">=", start.toISOString())
-      .where("created_at", "<=", end.toISOString());
+      .where(
+        "created_at",
+        ">=",
+        safeToISOString(start) ?? new Date().toISOString()
+      )
+      .where(
+        "created_at",
+        "<=",
+        safeToISOString(end) ?? new Date().toISOString()
+      );
 
     if (shopId) {
       // Filter by shop - need to query orderItems for shop_id
@@ -75,7 +84,7 @@ export async function GET(request: NextRequest) {
 
       const orderIds = [
         ...new Set(
-          orderItemsSnapshot.docs.map((doc: any) => doc.data().order_id),
+          orderItemsSnapshot.docs.map((doc: any) => doc.data().order_id)
         ),
       ];
 
@@ -86,8 +95,16 @@ export async function GET(request: NextRequest) {
           const batch = orderIds.slice(i, i + 10);
           const batchSnapshot = await Collections.orders()
             .where("__name__", "in", batch)
-            .where("created_at", ">=", start.toISOString())
-            .where("created_at", "<=", end.toISOString())
+            .where(
+              "created_at",
+              ">=",
+              safeToISOString(start) ?? new Date().toISOString()
+            )
+            .where(
+              "created_at",
+              "<=",
+              safeToISOString(end) ?? new Date().toISOString()
+            )
             .get();
           batches.push(...batchSnapshot.docs);
         }
@@ -101,13 +118,13 @@ export async function GET(request: NextRequest) {
 
         analytics.orders.total = orders.length;
         analytics.orders.pending = orders.filter(
-          (o: any) => o.status === "pending" || o.status === "confirmed",
+          (o: any) => o.status === "pending" || o.status === "confirmed"
         ).length;
         analytics.orders.completed = orders.filter(
-          (o: any) => o.status === "delivered",
+          (o: any) => o.status === "delivered"
         ).length;
         analytics.orders.cancelled = orders.filter(
-          (o: any) => o.status === "cancelled",
+          (o: any) => o.status === "cancelled"
         ).length;
 
         analytics.revenue.average =
@@ -123,11 +140,14 @@ export async function GET(request: NextRequest) {
         // Sales over time (group by day)
         const salesByDay = new Map<string, number>();
         orders.forEach((order: any) => {
-          const date = new Date(order.created_at).toISOString().split("T")[0];
-          salesByDay.set(
-            date,
-            (salesByDay.get(date) || 0) + (order.total || 0),
-          );
+          const isoDate = safeToISOString(new Date(order.created_at));
+          const date = isoDate ? isoDate.split("T")[0] : "";
+          if (date) {
+            salesByDay.set(
+              date,
+              (salesByDay.get(date) || 0) + (order.total || 0)
+            );
+          }
         });
 
         analytics.salesOverTime = Array.from(salesByDay.entries())
@@ -148,13 +168,13 @@ export async function GET(request: NextRequest) {
 
       analytics.orders.total = orders.length;
       analytics.orders.pending = orders.filter(
-        (o: any) => o.status === "pending" || o.status === "confirmed",
+        (o: any) => o.status === "pending" || o.status === "confirmed"
       ).length;
       analytics.orders.completed = orders.filter(
-        (o: any) => o.status === "delivered",
+        (o: any) => o.status === "delivered"
       ).length;
       analytics.orders.cancelled = orders.filter(
-        (o: any) => o.status === "cancelled",
+        (o: any) => o.status === "cancelled"
       ).length;
 
       analytics.revenue.average =
@@ -169,8 +189,14 @@ export async function GET(request: NextRequest) {
       // Sales over time
       const salesByDay = new Map<string, number>();
       orders.forEach((order: any) => {
-        const date = new Date(order.created_at).toISOString().split("T")[0];
-        salesByDay.set(date, (salesByDay.get(date) || 0) + (order.total || 0));
+        const isoDate = safeToISOString(new Date(order.created_at));
+        const date = isoDate ? isoDate.split("T")[0] : "";
+        if (date) {
+          salesByDay.set(
+            date,
+            (salesByDay.get(date) || 0) + (order.total || 0)
+          );
+        }
       });
 
       analytics.salesOverTime = Array.from(salesByDay.entries())
@@ -191,10 +217,10 @@ export async function GET(request: NextRequest) {
 
       analytics.products.total = products.length;
       analytics.products.active = products.filter(
-        (p: any) => p.status === "published",
+        (p: any) => p.status === "published"
       ).length;
       analytics.products.outOfStock = products.filter(
-        (p: any) => (p.stock_count || 0) === 0,
+        (p: any) => (p.stock_count || 0) === 0
       ).length;
 
       // Top products by sales
@@ -234,10 +260,10 @@ export async function GET(request: NextRequest) {
 
       analytics.products.total = products.length;
       analytics.products.active = products.filter(
-        (p: any) => p.status === "published",
+        (p: any) => p.status === "published"
       ).length;
       analytics.products.outOfStock = products.filter(
-        (p: any) => (p.stock_count || 0) === 0,
+        (p: any) => (p.stock_count || 0) === 0
       ).length;
     }
 
@@ -259,7 +285,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to fetch analytics",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

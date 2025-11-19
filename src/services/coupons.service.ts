@@ -10,7 +10,9 @@ import type {
 import type {
   PaginatedResponseBE,
   PaginatedResponseFE,
+  BulkActionResponse,
 } from "@/types/shared/common.types";
+import { logServiceError } from "@/lib/error-logger";
 import {
   toFECoupon,
   toFECoupons,
@@ -136,38 +138,41 @@ class CouponsService {
     action: string,
     couponIds: string[],
     data?: any
-  ): Promise<{ success: boolean; results: any[] }> {
-    return apiService.post(COUPON_ROUTES.BULK, {
-      action,
-      couponIds,
-      data,
-    });
+  ): Promise<BulkActionResponse> {
+    try {
+      const response = await apiService.post<BulkActionResponse>(
+        COUPON_ROUTES.BULK,
+        {
+          action,
+          couponIds,
+          data,
+        }
+      );
+      return response;
+    } catch (error) {
+      logServiceError("CouponsService", "bulkAction", error as Error);
+      throw error;
+    }
   }
 
   /**
    * Bulk activate coupons
    */
-  async bulkActivate(
-    couponIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkActivate(couponIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("activate", couponIds);
   }
 
   /**
    * Bulk deactivate coupons
    */
-  async bulkDeactivate(
-    couponIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkDeactivate(couponIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("deactivate", couponIds);
   }
 
   /**
    * Bulk delete coupons
    */
-  async bulkDelete(
-    couponIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkDelete(couponIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("delete", couponIds);
   }
 
@@ -177,7 +182,7 @@ class CouponsService {
   async bulkUpdate(
     couponIds: string[],
     updates: Partial<CouponFormFE>
-  ): Promise<{ success: boolean; results: any[] }> {
+  ): Promise<BulkActionResponse> {
     return this.bulkAction(
       "update",
       couponIds,

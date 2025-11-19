@@ -19,7 +19,7 @@ import {
   toInlineFields,
 } from "@/constants/form-fields";
 import { validateForm } from "@/lib/form-validation";
-// TODO: Add toast notifications when library is configured
+import { toast } from "@/components/admin/Toast";
 import { Eye, Edit, Trash2, Plus, Copy } from "lucide-react";
 
 export default function AdminCouponsPage() {
@@ -77,7 +77,11 @@ export default function AdminCouponsPage() {
               couponsService.update(id, { is_active: true } as any)
             )
           );
-          // toast.success(`${couponIds.length} coupons activated`);
+          toast.success(
+            `${couponIds.length} coupon${
+              couponIds.length > 1 ? "s" : ""
+            } activated successfully`
+          );
           break;
         case "deactivate":
           await Promise.all(
@@ -85,25 +89,40 @@ export default function AdminCouponsPage() {
               couponsService.update(id, { is_active: false } as any)
             )
           );
-          // toast.success(`${couponIds.length} coupons deactivated`);
+          toast.success(
+            `${couponIds.length} coupon${
+              couponIds.length > 1 ? "s" : ""
+            } deactivated successfully`
+          );
           break;
         case "delete":
-          if (!confirm(`Delete ${couponIds.length} coupons?`)) return;
+          if (
+            !confirm(
+              `Delete ${couponIds.length} coupon${
+                couponIds.length > 1 ? "s" : ""
+              }?`
+            )
+          )
+            return;
           await Promise.all(couponIds.map((id) => couponsService.delete(id)));
-          // toast.success(`${couponIds.length} coupons deleted`);
+          toast.success(
+            `${couponIds.length} coupon${
+              couponIds.length > 1 ? "s" : ""
+            } deleted successfully`
+          );
           break;
       }
 
       setSelectedCoupons(new Set());
       loadCoupons();
     } catch (error: any) {
-      // toast.error(error.message || "Bulk action failed");
+      toast.error(error.message || "Bulk action failed");
     }
   };
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
-    // toast.success("Coupon code copied");
+    toast.success("Coupon code copied to clipboard");
   };
 
   const handleDelete = async (id: string) => {
@@ -111,10 +130,10 @@ export default function AdminCouponsPage() {
 
     try {
       await couponsService.delete(id);
-      // toast.success("Coupon deleted");
+      toast.success("Coupon deleted successfully");
       loadCoupons();
     } catch (error: any) {
-      // toast.error(error.message || "Failed to delete coupon");
+      toast.error(error.message || "Failed to delete coupon");
     }
   };
 

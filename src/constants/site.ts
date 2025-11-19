@@ -26,9 +26,9 @@ export const SOCIAL_LINKS = {
 };
 
 // Contact Information
-export const CONTACT_EMAIL = "support@letitrip.in";
+export const CONTACT_EMAIL = "support@justforview.in";
 export const CONTACT_PHONE =
-  process.env.NEXT_PUBLIC_CONTACT_PHONE || "+91-9876543210";
+  process.env.NEXT_PUBLIC_CONTACT_PHONE || "+91-8000000000"; // 1800-000-0000 (toll-free)
 
 // Business Information
 export const BUSINESS_NAME = "Letitrip Private Limited";

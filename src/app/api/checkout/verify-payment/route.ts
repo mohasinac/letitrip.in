@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "../../lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
+import { batchGetOrders, batchGetProducts } from "@/app/api/lib/batch-fetch";
 import { z } from "zod";
 import crypto from "crypto";
 
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: validation.error.issues[0].message },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -43,23 +44,21 @@ export async function POST(request: NextRequest) {
     if (orderIdsToProcess.length === 0) {
       return NextResponse.json(
         { error: "No order IDs provided" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    // Fetch all orders
-    const orderDocs = await Promise.all(
-      orderIdsToProcess.map((id: string) => Collections.orders().doc(id).get()),
-    );
+    // Fetch all orders using batch fetch
+    const ordersMap = await batchGetOrders(orderIdsToProcess);
 
     // Validate all orders exist and belong to user
-    for (const orderDoc of orderDocs) {
-      if (!orderDoc.exists) {
+    for (const orderId of orderIdsToProcess) {
+      const order = ordersMap.get(orderId);
+      if (!order) {
         return NextResponse.json({ error: "Order not found" }, { status: 404 });
       }
 
-      const order = orderDoc.data();
-      if (order?.user_id !== user.id) {
+      if (order.user_id !== user.id) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
     }
@@ -82,8 +81,9 @@ export async function POST(request: NextRequest) {
 
       // Mark all orders as failed
       const failBatch = Collections.orders().firestore.batch();
-      for (const orderDoc of orderDocs) {
-        failBatch.update(orderDoc.ref, {
+      for (const orderId of orderIdsToProcess) {
+        const orderRef = Collections.orders().doc(orderId);
+        failBatch.update(orderRef, {
           payment_status: "failed",
           payment_error: "Signature verification failed",
           updated_at: new Date(),
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         { error: "Payment verification failed" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -103,15 +103,16 @@ export async function POST(request: NextRequest) {
     const allCoupons: any[] = [];
 
     // Update all orders to paid status
-    for (const orderDoc of orderDocs) {
-      batch.update(orderDoc.ref, {
+    for (const orderId of orderIdsToProcess) {
+      const orderRef = Collections.orders().doc(orderId);
+      const order = ordersMap.get(orderId);
+
+      batch.update(orderRef, {
         payment_status: "paid",
         razorpay_payment_id,
         paid_at: new Date(),
         updated_at: new Date(),
       });
-
-      const order = orderDoc.data();
 
       // Collect product IDs for stock update
       const productIds =
@@ -124,23 +125,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Fetch and update product stock
+    // Fetch and update product stock using batch fetch
     const uniqueProductIds = [...new Set(allProductIds)];
-    const productSnapshots = await Promise.all(
-      uniqueProductIds.map((id: string) =>
-        Collections.products().doc(id).get(),
-      ),
-    );
-
-    const products = productSnapshots.map((snap: any) => ({
-      id: snap.id,
-      ...snap.data(),
-    }));
+    const productsMap = await batchGetProducts(uniqueProductIds);
 
     // Calculate total quantity per product across all orders
     const productQuantities: Record<string, number> = {};
-    for (const orderDoc of orderDocs) {
-      const order = orderDoc.data();
+    for (const orderId of orderIdsToProcess) {
+      const order = ordersMap.get(orderId);
       for (const item of order?.items || []) {
         productQuantities[item.product_id] =
           (productQuantities[item.product_id] || 0) + item.quantity;
@@ -149,13 +141,13 @@ export async function POST(request: NextRequest) {
 
     // Update stock
     for (const productId in productQuantities) {
-      const product = products.find((p: any) => p.id === productId);
+      const product = productsMap.get(productId);
       if (product) {
         const productRef = Collections.products().doc(productId);
         batch.update(productRef, {
           stock_count: Math.max(
             0,
-            product.stock_count - productQuantities[productId],
+            product.stock_count - productQuantities[productId]
           ),
           updated_at: new Date(),
         });
@@ -199,7 +191,7 @@ export async function POST(request: NextRequest) {
     console.error("Verify payment error:", error);
     return NextResponse.json(
       { error: error.message || "Failed to verify payment" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

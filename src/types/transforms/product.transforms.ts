@@ -318,6 +318,7 @@ export function toFEProductCard(productBE: ProductListItemBE): ProductCardFE {
     ratingStars,
     reviewCount: productBE.reviewCount,
     shopId: productBE.shopId,
+    brand: productBE.brand || undefined,
     featured: productBE.featured,
     badges,
 

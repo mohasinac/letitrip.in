@@ -1,5 +1,6 @@
 import { apiService } from "./api.service";
 import { HOMEPAGE_ROUTES } from "@/constants/api-routes";
+import { logServiceError } from "@/lib/error-logger";
 
 interface HeroSlide {
   id: string;
@@ -27,7 +28,7 @@ class HomepageService {
       );
       return response.slides || [];
     } catch (error) {
-      console.error("Error fetching hero slides:", error);
+      logServiceError("HomepageService", "getHeroSlides", error as Error);
       return [];
     }
   }
@@ -40,7 +41,7 @@ class HomepageService {
       const response = await apiService.get(HOMEPAGE_ROUTES.BANNER);
       return response;
     } catch (error) {
-      console.error("Error fetching banner:", error);
+      logServiceError("HomepageService", "getBanner", error as Error);
       return null;
     }
   }

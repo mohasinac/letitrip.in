@@ -1,11 +1,72 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { safeToISOString } from "@/lib/date-utils";
 import {
   requireRole,
   getShopIdFromRequest,
   handleAuthError,
 } from "@/app/api/lib/auth-helpers";
+
+/**
+ * Calculate average response time from order creation to first status update
+ */
+function calculateAverageResponseTime(orders: any[]): string {
+  if (orders.length === 0) return "N/A";
+
+  // Filter orders that have been updated after creation
+  const processedOrders = orders.filter((order: any) => {
+    const created = new Date(order.created_at).getTime();
+    const updated = new Date(order.updated_at).getTime();
+    return updated > created && order.status !== "pending";
+  });
+
+  if (processedOrders.length === 0) return "N/A";
+
+  // Calculate average time difference in hours
+  const totalHours = processedOrders.reduce((sum: number, order: any) => {
+    const created = new Date(order.created_at).getTime();
+    const updated = new Date(order.updated_at).getTime();
+    const hours = (updated - created) / (1000 * 60 * 60);
+    return sum + hours;
+  }, 0);
+
+  const avgHours = totalHours / processedOrders.length;
+
+  // Format the response time
+  if (avgHours < 1) {
+    return "< 1 hour";
+  } else if (avgHours < 24) {
+    return `${Math.round(avgHours)} hours`;
+  } else {
+    const days = Math.round(avgHours / 24);
+    return `${days} day${days > 1 ? "s" : ""}`;
+  }
+}
+
+/**
+ * Get count of reviews from last 7 days
+ */
+async function getNewReviewsCount(
+  db: FirebaseFirestore.Firestore,
+  shopId: string
+): Promise<number> {
+  try {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const reviewsSnapshot = await db
+      .collection(COLLECTIONS.REVIEWS)
+      .where("shop_id", "==", shopId)
+      .where("created_at", ">=", sevenDaysAgo)
+      .get();
+
+    return reviewsSnapshot.size;
+  } catch (error) {
+    console.error("Error fetching new reviews:", error);
+    return 0;
+  }
+}
 
 /**
  * GET /api/seller/dashboard
@@ -122,7 +183,7 @@ export async function GET(req: NextRequest) {
         customer: order.customer_name || "Unknown",
         amount: order.total_amount || 0,
         status: order.status || "pending",
-        date: order.created_at || new Date().toISOString(),
+        date: safeToISOString(order.created_at) || new Date().toISOString(),
       }));
 
     // Get top products by revenue (need to aggregate order items)
@@ -205,7 +266,7 @@ export async function GET(req: NextRequest) {
                   100
               )
             : 0,
-        responseTime: totalOrders > 0 ? "< 24 hours" : "N/A", // Estimated based on order processing
+        responseTime: calculateAverageResponseTime(allOrders),
       },
       alerts: {
         lowStock: allProducts.filter(
@@ -213,7 +274,7 @@ export async function GET(req: NextRequest) {
         ).length,
         pendingShipment: allOrders.filter((o: any) => o.status === "confirmed")
           .length,
-        newReviews: shopData.review_count || 0, // Use shop's review count
+        newReviews: await getNewReviewsCount(db, shopId),
       },
     };
 

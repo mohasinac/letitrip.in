@@ -24,7 +24,9 @@ import {
 import type {
   PaginatedResponseBE,
   PaginatedResponseFE,
+  BulkActionResponse,
 } from "@/types/shared/common.types";
+import { logServiceError } from "@/lib/error-logger";
 
 class AuctionsService {
   // List auctions (role-filtered) with cursor-based pagination
@@ -228,65 +230,62 @@ class AuctionsService {
     action: string,
     auctionIds: string[],
     data?: any
-  ): Promise<{ success: boolean; results: any[] }> {
-    return apiService.post(AUCTION_ROUTES.BULK, {
-      action,
-      auctionIds,
-      data,
-    });
+  ): Promise<BulkActionResponse> {
+    try {
+      const response = await apiService.post<BulkActionResponse>(
+        AUCTION_ROUTES.BULK,
+        {
+          action,
+          ids: auctionIds,
+          updates: data,
+        }
+      );
+      return response;
+    } catch (error) {
+      logServiceError("Auctions", "bulkAction", error as Error);
+      throw error;
+    }
   }
 
   /**
    * Bulk start auctions
    */
-  async bulkStart(
-    auctionIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkStart(auctionIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("start", auctionIds);
   }
 
   /**
    * Bulk end auctions
    */
-  async bulkEnd(
-    auctionIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkEnd(auctionIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("end", auctionIds);
   }
 
   /**
    * Bulk cancel auctions
    */
-  async bulkCancel(
-    auctionIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkCancel(auctionIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("cancel", auctionIds);
   }
 
   /**
    * Bulk feature auctions
    */
-  async bulkFeature(
-    auctionIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkFeature(auctionIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("feature", auctionIds);
   }
 
   /**
    * Bulk unfeature auctions
    */
-  async bulkUnfeature(
-    auctionIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkUnfeature(auctionIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("unfeature", auctionIds);
   }
 
   /**
    * Bulk delete auctions
    */
-  async bulkDelete(
-    auctionIds: string[]
-  ): Promise<{ success: boolean; results: any[] }> {
+  async bulkDelete(auctionIds: string[]): Promise<BulkActionResponse> {
     return this.bulkAction("delete", auctionIds);
   }
 
@@ -296,7 +295,7 @@ class AuctionsService {
   async bulkUpdate(
     auctionIds: string[],
     updates: Partial<AuctionFormFE>
-  ): Promise<{ success: boolean; results: any[] }> {
+  ): Promise<BulkActionResponse> {
     return this.bulkAction("update", auctionIds, updates);
   }
 

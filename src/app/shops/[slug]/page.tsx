@@ -120,9 +120,15 @@ export default function ShopPage({ params }: ShopPageProps) {
       const productsData = response.data || [];
       setProducts(productsData);
 
-      // TODO: Brand extraction requires full ProductFE, not ProductCardFE
-      // For now, set empty brands
-      setAvailableBrands([]);
+      // Extract unique brands from products for filtering
+      const brands = [
+        ...new Set(
+          productsData
+            .map((p) => p.brand)
+            .filter((brand): brand is string => Boolean(brand))
+        ),
+      ];
+      setAvailableBrands(brands);
     } catch (error) {
       console.error("Failed to load products:", error);
     } finally {
@@ -808,26 +814,31 @@ export default function ShopPage({ params }: ShopPageProps) {
               <p className="text-gray-600 mb-8">No description available.</p>
             )}
 
-            {/* TODO: Add policies to ShopFE type 
-            <div className="grid md:grid-cols-2 gap-6">
-              {shop.shippingPolicy && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    Shipping Policy
-                  </h3>
-                  <div className="text-gray-700">{shop.shippingPolicy}</div>
-                </div>
-              )}
-              {shop.returnPolicy && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    Return Policy
-                  </h3>
-                  <div className="text-gray-700">{shop.returnPolicy}</div>
-                </div>
-              )}
-            </div>
-            */}
+            {/* Policies Section */}
+            {(shop.policies?.shippingPolicy || shop.policies?.returnPolicy) && (
+              <div className="grid md:grid-cols-2 gap-6">
+                {shop.policies.shippingPolicy && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                      Shipping Policy
+                    </h3>
+                    <div className="text-gray-700">
+                      {shop.policies.shippingPolicy}
+                    </div>
+                  </div>
+                )}
+                {shop.policies.returnPolicy && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                      Return Policy
+                    </h3>
+                    <div className="text-gray-700">
+                      {shop.policies.returnPolicy}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Contact & Social */}
             {(shop.email || shop.phone) && (
@@ -838,7 +849,6 @@ export default function ShopPage({ params }: ShopPageProps) {
                 <div className="space-y-2 text-gray-700">
                   {shop.email && <div>Email: {shop.email}</div>}
                   {shop.phone && <div>Phone: {shop.phone}</div>}
-                  {/* TODO: Add website to ShopFE type
                   {shop.website && (
                     <div>
                       Website:{" "}
@@ -852,7 +862,6 @@ export default function ShopPage({ params }: ShopPageProps) {
                       </a>
                     </div>
                   )}
-                  */}
                 </div>
               </div>
             )}

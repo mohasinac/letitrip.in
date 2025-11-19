@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "../../../lib/session";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { safeToISOString } from "@/lib/date-utils";
 
 // GET /api/shops/[slug]/stats - seller/admin analytics
 export async function GET(
@@ -88,7 +89,7 @@ export async function GET(
 
     // Daily sales last 14 days
     const startDate = new Date(Date.now() - 13 * 86400000);
-    const startIso = startDate.toISOString();
+    const startIso = safeToISOString(startDate) ?? new Date().toISOString();
     const recentOrdersSnap = await Collections.orders()
       .where("shop_id", "==", shop.id)
       .where("created_at", ">=", startIso)
@@ -103,7 +104,7 @@ export async function GET(
     }
     const dailySales = Array.from({ length: 14 }).map((_, i) => {
       const dt = new Date(Date.now() - (13 - i) * 86400000);
-      const key = dt.toISOString().slice(0, 10);
+      const key = safeToISOString(dt)?.slice(0, 10) ?? "";
       return { date: key, revenue: dailyMap[key] || 0 };
     });
 

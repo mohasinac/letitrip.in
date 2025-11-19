@@ -1,49 +1,19 @@
 import { apiService } from "./api.service";
-
-interface AnalyticsFilters {
-  shopId?: string;
-  startDate?: string;
-  endDate?: string;
-  period?: "day" | "week" | "month" | "year";
-}
-
-interface AnalyticsOverview {
-  totalRevenue: number;
-  totalOrders: number;
-  totalProducts: number;
-  totalCustomers: number;
-  averageOrderValue: number;
-  conversionRate: number;
-  revenueGrowth: number;
-  ordersGrowth: number;
-}
-
-interface SalesData {
-  date: string;
-  revenue: number;
-  orders: number;
-  customers: number;
-}
-
-interface TopProduct {
-  productId: string;
-  productName: string;
-  sales: number;
-  revenue: number;
-  views: number;
-}
-
-interface CategoryPerformance {
-  categoryId: string;
-  categoryName: string;
-  revenue: number;
-  orders: number;
-  products: number;
-}
+import type {
+  AnalyticsFiltersFE,
+  AnalyticsOverviewFE,
+  SalesDataPointFE,
+  TopProductFE,
+  CategoryPerformanceFE,
+  CustomerAnalyticsFE,
+  TrafficAnalyticsFE,
+} from "@/types/frontend/analytics.types";
 
 class AnalyticsService {
   // Get analytics overview (seller: own, admin: all)
-  async getOverview(filters?: AnalyticsFilters): Promise<AnalyticsOverview> {
+  async getOverview(
+    filters?: AnalyticsFiltersFE
+  ): Promise<AnalyticsOverviewFE> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -57,11 +27,13 @@ class AnalyticsService {
     const queryString = params.toString();
     const endpoint = queryString ? `/analytics?${queryString}` : "/analytics";
 
-    return apiService.get<AnalyticsOverview>(endpoint);
+    return apiService.get<AnalyticsOverviewFE>(endpoint);
   }
 
   // Get sales data (time series)
-  async getSalesData(filters?: AnalyticsFilters): Promise<SalesData[]> {
+  async getSalesData(
+    filters?: AnalyticsFiltersFE
+  ): Promise<SalesDataPointFE[]> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -77,13 +49,13 @@ class AnalyticsService {
       ? `/analytics/sales?${queryString}`
       : "/analytics/sales";
 
-    return apiService.get<SalesData[]>(endpoint);
+    return apiService.get<SalesDataPointFE[]>(endpoint);
   }
 
   // Get top products
   async getTopProducts(
-    filters?: AnalyticsFilters & { limit?: number },
-  ): Promise<TopProduct[]> {
+    filters?: AnalyticsFiltersFE & { limit?: number }
+  ): Promise<TopProductFE[]> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -99,13 +71,13 @@ class AnalyticsService {
       ? `/analytics/top-products?${queryString}`
       : "/analytics/top-products";
 
-    return apiService.get<TopProduct[]>(endpoint);
+    return apiService.get<TopProductFE[]>(endpoint);
   }
 
   // Get category performance
   async getCategoryPerformance(
-    filters?: AnalyticsFilters,
-  ): Promise<CategoryPerformance[]> {
+    filters?: AnalyticsFiltersFE
+  ): Promise<CategoryPerformanceFE[]> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -121,11 +93,13 @@ class AnalyticsService {
       ? `/analytics/categories?${queryString}`
       : "/analytics/categories";
 
-    return apiService.get<CategoryPerformance[]>(endpoint);
+    return apiService.get<CategoryPerformanceFE[]>(endpoint);
   }
 
   // Get customer analytics
-  async getCustomerAnalytics(filters?: AnalyticsFilters): Promise<any> {
+  async getCustomerAnalytics(
+    filters?: AnalyticsFiltersFE
+  ): Promise<CustomerAnalyticsFE[]> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -141,11 +115,13 @@ class AnalyticsService {
       ? `/analytics/customers?${queryString}`
       : "/analytics/customers";
 
-    return apiService.get<any>(endpoint);
+    return apiService.get<CustomerAnalyticsFE[]>(endpoint);
   }
 
   // Get traffic analytics
-  async getTrafficAnalytics(filters?: AnalyticsFilters): Promise<any> {
+  async getTrafficAnalytics(
+    filters?: AnalyticsFiltersFE
+  ): Promise<TrafficAnalyticsFE> {
     const params = new URLSearchParams();
 
     if (filters) {
@@ -161,13 +137,13 @@ class AnalyticsService {
       ? `/analytics/traffic?${queryString}`
       : "/analytics/traffic";
 
-    return apiService.get<any>(endpoint);
+    return apiService.get<TrafficAnalyticsFE>(endpoint);
   }
 
   // Export analytics data
   async exportData(
-    filters?: AnalyticsFilters,
-    format: "csv" | "pdf" = "csv",
+    filters?: AnalyticsFiltersFE,
+    format: "csv" | "pdf" = "csv"
   ): Promise<Blob> {
     const params = new URLSearchParams();
 
@@ -197,10 +173,3 @@ class AnalyticsService {
 }
 
 export const analyticsService = new AnalyticsService();
-export type {
-  AnalyticsFilters,
-  AnalyticsOverview,
-  SalesData,
-  TopProduct,
-  CategoryPerformance,
-};

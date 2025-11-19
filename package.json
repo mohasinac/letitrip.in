@@ -12,6 +12,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "tsx --test src/**/*.test.ts",
+    "test:watch": "tsx --test --watch src/**/*.test.ts",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf .next node_modules",
     "clean:logs": "rm -rf logs/*.log",
@@ -60,6 +62,8 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.0.3",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.11.0",
     "@types/pdfkit": "^0.17.3",
@@ -73,6 +77,7 @@
     "eslint-config-next": "^15.0.0",
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.20.6",
     "typescript": "^5.3.0"
   },
   "overrides": {

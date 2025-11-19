@@ -4,6 +4,7 @@ import {
   requireRole,
   getUserFromRequest,
 } from "@/app/api/middleware/rbac-auth";
+import { safeToISOString } from "@/lib/date-utils";
 import { executeOffsetPaginatedQuery } from "@/app/api/lib/utils/pagination";
 
 /**
@@ -73,18 +74,16 @@ export async function GET(request: NextRequest) {
 
     // Date filters
     if (startDate) {
-      query = query.where(
-        "created_at",
-        ">=",
-        new Date(startDate).toISOString()
-      ) as any;
+      const startIso = safeToISOString(new Date(startDate));
+      if (startIso) {
+        query = query.where("created_at", ">=", startIso) as any;
+      }
     }
     if (endDate) {
-      query = query.where(
-        "created_at",
-        "<=",
-        new Date(endDate).toISOString()
-      ) as any;
+      const endIso = safeToISOString(new Date(endDate));
+      if (endIso) {
+        query = query.where("created_at", "<=", endIso) as any;
+      }
     }
 
     // Execute paginated query

@@ -115,10 +115,30 @@ async function registerHandler(req: NextRequest) {
       const verificationLink = await adminAuth.generateEmailVerificationLink(
         email
       );
-      // TODO: Send email with verification link using your email service
-      console.log("Verification link:", verificationLink);
+
+      // Import email service dynamically to avoid circular dependencies
+      const { emailService } = await import(
+        "@/app/api/lib/email/email.service"
+      );
+
+      // Send verification email
+      const emailResult = await emailService.sendVerificationEmail(
+        email,
+        name,
+        verificationLink
+      );
+
+      if (emailResult.success) {
+        console.log("✅ Verification email sent successfully to:", email);
+      } else {
+        console.error(
+          "❌ Failed to send verification email:",
+          emailResult.error
+        );
+      }
     } catch (error) {
       console.error("Error sending verification email:", error);
+      // Don't fail registration if email sending fails
     }
 
     // Create session for immediate login
