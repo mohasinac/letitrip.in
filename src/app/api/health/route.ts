@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withMiddleware } from "../middleware";
 
-async function healthCheckHandler(req: NextRequest) {
+async function healthCheckHandler() {
   return NextResponse.json({
     status: "healthy",
     timestamp: new Date().toISOString(),

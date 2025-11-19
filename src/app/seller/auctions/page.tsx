@@ -58,9 +58,7 @@ export default function SellerAuctionsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
+  const [, setValidationErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     loadAuctions();

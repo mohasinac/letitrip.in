@@ -65,7 +65,7 @@ export default function AuctionDetailPage() {
       setAuction(data);
 
       // Load bids
-      const bidsResponse = await auctionsService.getBids(data.id, 1, 20);
+      const bidsResponse = await auctionsService.getBids(data.id, 20, null);
       setBids(bidsResponse.data || []);
 
       // Load shop

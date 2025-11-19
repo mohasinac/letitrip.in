@@ -53,9 +53,7 @@ export default function ProductsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
+  const [, setValidationErrors] = useState<Record<string, string>>({});
   const [categories, setCategories] = useState<
     Array<{ id: string; name: string }>
   >([]);

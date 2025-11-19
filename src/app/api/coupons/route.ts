@@ -6,7 +6,6 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { getUserShops } from "../lib/auth-helpers";
-import { ValidationError } from "@/lib/api-errors";
 
 /**
  * GET /api/coupons
@@ -20,7 +19,6 @@ export async function GET(request: NextRequest) {
     const user = await getUserFromRequest(request);
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
-    const shopSlug = searchParams.get("shop_slug");
     let shopId = searchParams.get("shop_id");
 
     let query: FirebaseFirestore.Query = Collections.coupons();

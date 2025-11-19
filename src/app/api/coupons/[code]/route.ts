@@ -5,7 +5,6 @@ import {
   requireAuth,
 } from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
-import { ValidationError } from "@/lib/api-errors";
 
 /**
  * GET /api/coupons/[code]

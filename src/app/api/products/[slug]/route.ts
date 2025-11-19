@@ -5,7 +5,6 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
-import { ValidationError } from "@/lib/api-errors";
 import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
 
 /**
