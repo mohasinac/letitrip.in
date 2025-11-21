@@ -262,6 +262,7 @@ export function formatDiscount(
   originalPrice: number,
   currentPrice: number
 ): string {
+  if (originalPrice <= currentPrice) return "0%";
   const discount = ((originalPrice - currentPrice) / originalPrice) * 100;
   return formatPercentage(discount, { decimals: 0 });
 }
