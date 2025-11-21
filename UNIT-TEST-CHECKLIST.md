@@ -24,8 +24,8 @@ This checklist covers writing unit tests with appropriate mocks for all pages, c
 
 ### Auction Pages
 
-- [ ] Auctions listing (`auctions/page.tsx`) - Mock auctions service, filters
-- [ ] Auction details (`auctions/[id]/page.tsx`) - Mock single auction fetch, bidding
+- [x] Auctions listing (`auctions/page.tsx`) - Mock auctions service, filters
+- [x] Auction details (`auctions/[id]/page.tsx`) - Mock single auction fetch, bidding
 - [ ] Create auction (`auctions/create/page.tsx`) - Mock form, media upload
 - [ ] Edit auction (`auctions/[id]/edit/page.tsx`) - Mock existing data, update
 
