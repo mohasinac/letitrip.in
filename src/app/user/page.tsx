@@ -73,8 +73,11 @@ export default function UserDashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div
+        role="status"
+        className="flex justify-center items-center min-h-screen"
+      >
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
       </div>
     );
   }
@@ -201,12 +204,18 @@ export default function UserDashboardPage() {
                   <Link
                     key={order.id}
                     href={`/user/orders/${order.id}`}
+                    data-testid={`recent-order-${order.id}`}
                     className="block p-4 border border-gray-200 rounded-lg hover:border-primary hover:shadow-sm transition-all"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <p className="font-semibold text-gray-900">
-                          Order #{order.id.slice(0, 8).toUpperCase()}
+                        <p
+                          className="font-semibold text-gray-900"
+                          data-order-number={order.orderNumber}
+                        >
+                          Order #
+                          {order.orderNumber ||
+                            order.id.slice(0, 8).toUpperCase()}
                         </p>
                         <p className="text-sm text-gray-600">
                           {new Date(order.createdAt || 0).toLocaleDateString(
@@ -224,6 +233,7 @@ export default function UserDashboardPage() {
                           ₹{order.total.toLocaleString("en-IN")}
                         </p>
                         <span
+                          data-testid={`order-status-${order.id}`}
                           className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
                             order.status === "delivered"
                               ? "bg-green-100 text-green-700"

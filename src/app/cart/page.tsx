@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, ArrowLeft, Trash2, Loader2 } from "lucide-react";
@@ -57,11 +57,11 @@ export default function CartPage() {
   };
 
   // Show toast when merge succeeds
-  useState(() => {
+  useEffect(() => {
     if (mergeSuccess) {
       setShowToast(true);
     }
-  });
+  }, [mergeSuccess]);
 
   if (loading) {
     return (

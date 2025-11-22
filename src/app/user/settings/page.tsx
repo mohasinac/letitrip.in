@@ -61,12 +61,14 @@ export default function SettingsPage() {
   return (
     <main id="user-settings-page" className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">
+        {/* TODO: Replace with constant */}
         Account Settings
       </h1>
 
       {/* Profile Form */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">
+          {/* TODO: Replace with constant */}
           Profile Information
         </h2>
 
@@ -75,6 +77,7 @@ export default function SettingsPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <User className="w-4 h-4 inline mr-2" />
+              {/* TODO: Replace with constant */}
               Full Name
             </label>
             <input
@@ -92,6 +95,7 @@ export default function SettingsPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <Mail className="w-4 h-4 inline mr-2" />
+              {/* TODO: Replace with constant */}
               Email Address
             </label>
             <input
@@ -104,6 +108,7 @@ export default function SettingsPage() {
               required
             />
             <p className="text-xs text-gray-500 mt-1">
+              {/* TODO: Replace with constant */}
               We'll send order confirmations to this email
             </p>
           </div>
@@ -112,6 +117,7 @@ export default function SettingsPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <Phone className="w-4 h-4 inline mr-2" />
+              {/* TODO: Replace with constant */}
               Phone Number
             </label>
             <input
@@ -121,9 +127,10 @@ export default function SettingsPage() {
                 setFormData({ ...formData, phone: e.target.value })
               }
               className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="+91 9876543210"
+              placeholder="+91 9876543210" // TODO: Make dynamic based on country
             />
             <p className="text-xs text-gray-500 mt-1">
+              {/* TODO: Replace with constant */}
               Used for order updates and delivery coordination
             </p>
           </div>
@@ -131,6 +138,7 @@ export default function SettingsPage() {
           {/* Success Message */}
           {success && (
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+              {/* TODO: Replace with constant */}
               Profile updated successfully!
             </div>
           )}
@@ -150,6 +158,7 @@ export default function SettingsPage() {
               className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
+              {/* TODO: Replace with constant */}
               {loading ? "Saving..." : "Save Changes"}
             </button>
           </div>
@@ -159,6 +168,7 @@ export default function SettingsPage() {
       {/* Account Actions */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          {/* TODO: Replace with constant */}
           Account Actions
         </h2>
 
@@ -170,9 +180,11 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium text-gray-900">
+                  {/* TODO: Replace with constant */}
                   Manage Addresses
                 </div>
                 <div className="text-sm text-gray-600">
+                  {/* TODO: Replace with constant */}
                   Add, edit, or delete shipping addresses
                 </div>
               </div>
@@ -184,8 +196,14 @@ export default function SettingsPage() {
             onClick={() => router.push("/logout")}
             className="w-full text-left px-4 py-3 border border-red-200 rounded-lg hover:bg-red-50 transition-colors text-red-600"
           >
-            <div className="font-medium">Log Out</div>
-            <div className="text-sm">Sign out of your account</div>
+            <div className="font-medium">
+              {/* TODO: Replace with constant */}
+              Log Out
+            </div>
+            <div className="text-sm">
+              {/* TODO: Replace with constant */}
+              Sign out of your account
+            </div>
           </button>
         </div>
       </div>
