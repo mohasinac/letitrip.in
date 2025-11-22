@@ -107,7 +107,7 @@ export default function OrdersPage() {
           onClick={() => router.push(`/user/orders/${order.id}`)}
           className="font-medium text-primary hover:underline"
         >
-          #{order.orderId}
+          #{order.orderNumber}
         </button>
       ),
     },
@@ -157,7 +157,10 @@ export default function OrdersPage() {
         <div className="bg-white rounded-lg shadow-sm">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              <Loader2
+                className="w-8 h-8 text-primary animate-spin"
+                role="status"
+              />
             </div>
           ) : orders.length === 0 ? (
             <EmptyState
@@ -215,3 +218,6 @@ export default function OrdersPage() {
     </div>
   );
 }
+
+// TODO: Replace hardcoded strings with constants from site constants
+// Texts to consider: "My Orders", "Track and manage your orders", "No orders found", "You haven't placed any orders yet", "Start Shopping", "Previous", "Page {currentPage} • {orders.length} orders", "Next"

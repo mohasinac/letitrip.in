@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ChevronLeft,
   Loader2,
@@ -27,10 +27,15 @@ interface OrderPageProps {
 
 export default function OrderDetailPage({ params }: OrderPageProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const [order, setOrder] = useState<OrderFE | null>(null);
   const [loading, setLoading] = useState(true);
   const [orderId, setOrderId] = useState<string | null>(null);
+
+  // Success state from URL params
+  const isSuccess = searchParams.get("success") === "true";
+  const isMultiOrder = searchParams.get("multi") === "true";
 
   // Unwrap async params
   useEffect(() => {
@@ -103,6 +108,27 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-5xl mx-auto px-4">
+        {/* Success Message */}
+        {isSuccess && (
+          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <CheckCircle className="w-6 h-6 text-green-600 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-green-900">
+                  {isMultiOrder
+                    ? "Orders placed successfully!"
+                    : "Order placed successfully!"}
+                </h3>
+                <p className="text-green-700 mt-1">
+                  {isMultiOrder
+                    ? "You can view all your orders below."
+                    : "Your order has been confirmed and is being processed."}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-6">
           <button

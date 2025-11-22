@@ -112,28 +112,7 @@ export default function SellerDashboardPage() {
       console.error("Error loading dashboard:", err);
       setError(err instanceof Error ? err.message : "Failed to load dashboard");
 
-      // Set empty data structure
-      setData({
-        stats: {
-          shops: { total: 0, active: 0 },
-          products: { total: 0, active: 0 },
-          orders: { pending: 0, total: 0 },
-          revenue: { thisMonth: 0, lastMonth: 0 },
-        },
-        recentOrders: [],
-        topProducts: [],
-        shopPerformance: {
-          averageRating: 0,
-          totalRatings: 0,
-          orderFulfillment: 0,
-          responseTime: "N/A",
-        },
-        alerts: {
-          lowStock: 0,
-          pendingShipment: 0,
-          newReviews: 0,
-        },
-      });
+      // Don't set data on error - let the error UI show
     } finally {
       setLoading(false);
     }
@@ -141,13 +120,16 @@ export default function SellerDashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div
+        className="flex items-center justify-center min-h-[60vh]"
+        role="status"
+      >
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
       </div>
     );
   }
 
-  if (!data) {
+  if (error || !data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <AlertCircle className="h-12 w-12 text-red-500" />
@@ -208,9 +190,13 @@ export default function SellerDashboardPage() {
           icon={<DollarSign className="h-6 w-6 text-blue-600" />}
           trend={{
             value:
-              ((stats.revenue.thisMonth - stats.revenue.lastMonth) /
-                stats.revenue.lastMonth) *
-              100,
+              stats.revenue.lastMonth > 0
+                ? ((stats.revenue.thisMonth - stats.revenue.lastMonth) /
+                    stats.revenue.lastMonth) *
+                  100
+                : stats.revenue.thisMonth > 0
+                ? 100
+                : 0,
             isPositive: stats.revenue.thisMonth > stats.revenue.lastMonth,
           }}
         />
@@ -502,3 +488,6 @@ export default function SellerDashboardPage() {
     </div>
   );
 }
+
+// TODO: Replace hardcoded strings with constants from site constants
+// Texts to consider: "Dashboard", "Welcome back! Here's what's happening with your business today.", "Active Shops", "Products", "Pending Orders", "Revenue (This Month)", "Quick Actions", "Create Shop", "Set up a new shop", "Add Product", "List a new product", "View Orders", "Manage your orders", "View Analytics", "Check your performance", "Recent Orders", "View All", "Top Products", "Alerts & Notifications", "Low Stock Alert", "products are running low on stock", "Pending Actions", "orders waiting for shipment", "New Reviews", "You have new product reviews", "No alerts at this time", "Shop Performance", "Average Rating", "Based on ratings", "Order Fulfillment", "Response Time", "View Detailed Analytics", "Failed to load dashboard", "Retry"

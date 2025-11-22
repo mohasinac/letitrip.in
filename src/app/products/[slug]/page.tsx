@@ -89,7 +89,8 @@ export default function ProductPage({ params }: ProductPageProps) {
           message={error}
           showRetry
           onRetry={loadProduct}
-          onGoBack={() => router.back()}
+          showGoBack
+          onGoBack={() => router.push("/products")}
         />
       </div>
     );
@@ -100,6 +101,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <ErrorMessage
           message="Product not found. It may have been removed or is no longer available."
+          showGoBack
           onGoBack={() => router.push("/products")}
         />
       </div>

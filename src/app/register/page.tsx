@@ -14,7 +14,6 @@ export default function RegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "user",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,7 +46,7 @@ export default function RegisterPage() {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        role: formData.role,
+        role: "user",
       });
 
       // Small delay to ensure state is updated before redirect
@@ -128,37 +127,6 @@ export default function RegisterPage() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 placeholder="you@example.com"
               />
-            </div>
-
-            {/* Role */}
-            <div>
-              <label
-                htmlFor="role"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Account Type
-              </label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={(e) =>
-                  setFormData({ ...formData, role: e.target.value })
-                }
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all bg-white"
-              >
-                <option value="user">User - Browse and shop products</option>
-                <option value="seller">Seller - List and sell products</option>
-                <option value="admin">Admin - Full platform management</option>
-              </select>
-              <p className="mt-1 text-xs text-gray-500">
-                {formData.role === "user" &&
-                  "Perfect for shopping and browsing products"}
-                {formData.role === "seller" &&
-                  "Start selling your products to customers"}
-                {formData.role === "admin" &&
-                  "Manage the entire platform and users"}
-              </p>
             </div>
 
             {/* Password */}

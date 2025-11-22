@@ -683,3 +683,6 @@ export default function ProductsPage() {
     </>
   );
 }
+
+// TODO: Replace hardcoded strings with constants from site constants
+// Texts to consider: "Products", "Manage your product listings", "Add Product", "Search products...", "Product", "Price", "Stock", "Category", "Status", "Actions", "Loading products...", "Low stock", "Out of stock", "Edit", "View", "Delete Product", "Are you sure you want to delete this product? This action cannot be undone.", "Delete", "Cancel", "No alerts at this time"

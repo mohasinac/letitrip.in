@@ -24,8 +24,11 @@ jest.mock("next/navigation", () => ({
 }));
 
 // Mock Firebase
+const mockApp = { name: "[DEFAULT]" };
 jest.mock("firebase/app", () => ({
-  initializeApp: jest.fn(),
+  initializeApp: jest.fn(() => mockApp),
+  getApps: jest.fn(() => []),
+  getApp: jest.fn(() => mockApp),
 }));
 
 jest.mock("firebase/auth", () => ({
@@ -69,6 +72,16 @@ jest.mock("firebase/storage", () => ({
   deleteObject: jest.fn(),
 }));
 
+jest.mock("firebase/database", () => ({
+  getDatabase: jest.fn(() => ({})),
+}));
+
+jest.mock("firebase/analytics", () => ({
+  getAnalytics: jest.fn(() => ({})),
+  isSupported: jest.fn(() => Promise.resolve(false)),
+  logEvent: jest.fn(),
+}));
+
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),
@@ -109,3 +122,9 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }));
+
+// Mock window.scrollTo
+Object.defineProperty(window, "scrollTo", {
+  writable: true,
+  value: jest.fn(),
+});

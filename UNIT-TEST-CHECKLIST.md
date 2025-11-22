@@ -26,39 +26,39 @@ This checklist covers writing unit tests with appropriate mocks for all pages, c
 
 - [x] Auctions listing (`auctions/page.tsx`) - Mock auctions service, filters
 - [x] Auction details (`auctions/[id]/page.tsx`) - Mock single auction fetch, bidding
-- [ ] Create auction (`auctions/create/page.tsx`) - Mock form, media upload
-- [ ] Edit auction (`auctions/[id]/edit/page.tsx`) - Mock existing data, update
+- [x] Create auction (`auctions/create/page.tsx`) - Mock form, media upload
+- [x] Edit auction (`auctions/[id]/edit/page.tsx`) - Mock existing data, update
 
 ### Product Pages
 
-- [ ] Products listing (`products/page.tsx`) - Mock products service, pagination
-- [ ] Product details (`products/[id]/page.tsx`) - Mock product fetch, reviews
-- [ ] Create product (`products/create/page.tsx`) - Mock form, categories
-- [ ] Edit product (`products/[id]/edit/page.tsx`) - Mock existing data
+- [x] Products listing (`products/page.tsx`) - Mock products service, pagination
+- [x] Product details (`products/[slug]/page.tsx`) - Mock product fetch, reviews
+- [x] Create product (`products/create/page.tsx`) - Mock form, categories
+- [x] Edit product (`products/[id]/edit/page.tsx`) - Mock existing data
 
 ### Cart & Checkout
 
-- [ ] Cart page (`cart/page.tsx`) - Mock cart context, items
-- [ ] Checkout page (`checkout/page.tsx`) - Mock cart, payment, shipping
+- [x] Cart page (`cart/page.tsx`) - Mock cart context, items
+- [x] Checkout page (`checkout/page.tsx`) - Mock cart, payment, shipping
 - [ ] Order confirmation (`checkout/success/page.tsx`) - Mock order data
 
 ### User Account
 
-- [ ] User profile (`user/page.tsx`) - Mock user service, auth
-- [ ] User settings (`user/settings/page.tsx`) - Mock update operations
-- [ ] Order history (`user/orders/page.tsx`) - Mock orders service
-- [ ] Favorites (`user/favorites/page.tsx`) - Mock favorites service
+- [x] User profile (`user/page.tsx`) - Mock user service, auth
+- [x] User settings (`user/settings/page.tsx`) - Mock update operations
+- [x] Order history (`user/orders/page.tsx`) - Mock orders service
+- [x] Favorites (`user/favorites/page.tsx`) - Mock favorites service
 
 ### Seller Pages
 
-- [ ] Seller dashboard (`seller/page.tsx`) - Mock seller data, stats
-- [ ] Seller products (`seller/products/page.tsx`) - Mock products management
-- [ ] Seller orders (`seller/orders/page.tsx`) - Mock order management
-- [ ] Seller payouts (`seller/payouts/page.tsx`) - Mock payout service
+- [x] Seller dashboard (`seller/page.tsx`) - Mock seller data, stats
+- [x] Seller products (`seller/products/page.tsx`) - Mock products management
+- [ ] Seller orders (`seller/orders/page.tsx`) - Mock order management (tests created but have rendering issues)
+- [ ] Seller revenue (`seller/revenue/page.tsx`) - Mock revenue analytics (tests created but have rendering issues)
 
 ### Shop Pages
 
-- [ ] Shop listing (`shops/page.tsx`) - Mock shops service
+- [x] Shop listing (`shops/page.tsx`) - Mock shops service
 - [ ] Shop details (`shops/[id]/page.tsx`) - Mock shop data, products
 - [ ] Create shop (`shops/create/page.tsx`) - Mock shop creation
 
@@ -419,3 +419,9 @@ This checklist covers writing unit tests with appropriate mocks for all pages, c
 ### Performance
 
 - [x] performance.test.ts - Performance monitoring utilities
+
+## TODOs for Constants and Dynamic Texts
+
+- [ ] Extract hardcoded strings to constants in site constants (e.g., "Account Settings", "Profile Information", "Full Name", etc. from user/settings/page.tsx)
+- [ ] Make phone placeholder dynamic based on country (currently "+91 9876543210")
+- [ ] Review other pages for hardcoded texts that could be constants (e.g., support, contact, etc.)

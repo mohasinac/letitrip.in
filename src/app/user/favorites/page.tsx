@@ -97,14 +97,19 @@ export default function FavoritesPage() {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <Heart className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-        <h2 className="text-2xl font-bold mb-2">Sign in to view favorites</h2>
+        <h2 className="text-2xl font-bold mb-2">
+          {/* TODO: Replace with constant */}
+          Sign in to view favorites
+        </h2>
         <p className="text-gray-600 mb-6">
+          {/* TODO: Replace with constant */}
           Save your favorite items and access them anytime
         </p>
         <Link
           href="/auth/login"
           className="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90"
         >
+          {/* TODO: Replace with constant */}
           Sign In
         </Link>
       </div>
@@ -115,8 +120,14 @@ export default function FavoritesPage() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">My Favorites</h1>
-        <p className="text-gray-600">All your favorite items in one place</p>
+        <h1 className="text-3xl font-bold mb-2">
+          {/* TODO: Replace with constant */}
+          My Favorites
+        </h1>
+        <p className="text-gray-600">
+          {/* TODO: Replace with constant */}
+          All your favorite items in one place
+        </p>
       </div>
 
       {/* Tabs */}
@@ -157,14 +168,19 @@ export default function FavoritesPage() {
       ) : items.length === 0 ? (
         <div className="text-center py-16">
           <Heart className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-          <h3 className="text-xl font-semibold mb-2">No favorites yet</h3>
+          <h3 className="text-xl font-semibold mb-2">
+            {/* TODO: Replace with constant */}
+            No favorites yet
+          </h3>
           <p className="text-gray-600 mb-6">
+            {/* TODO: Replace with constant */}
             Start adding your favorite {activeTab}s to see them here
           </p>
           <Link
             href={activeTab === "product" ? "/products" : `/${activeTab}s`}
             className="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90"
           >
+            {/* TODO: Replace with constant */}
             Browse {tabs.find((t) => t.type === activeTab)?.label}
           </Link>
         </div>
@@ -204,6 +220,7 @@ export default function FavoritesPage() {
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
                 >
                   <Heart className="h-4 w-4 fill-red-500" />
+                  {/* TODO: Replace with constant */}
                   Remove
                 </button>
               </div>
@@ -214,3 +231,7 @@ export default function FavoritesPage() {
     </div>
   );
 }
+
+// TODO: Replace hardcoded strings with constants from site constants
+// Texts to consider: "Sign in to view favorites", "Save your favorite items and access them anytime", "Sign In", "My Favorites", "All your favorite items in one place", "No favorites yet", "Start adding your favorite {activeTab}s to see them here", "Browse {label}", "Remove"
+// Also, consider creating a favorites service instead of direct fetch calls

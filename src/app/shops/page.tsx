@@ -21,7 +21,7 @@ function ShopsContent() {
     searchParams.get("search") || ""
   );
   const [sortBy, setSortBy] = useState<string>(
-    searchParams.get("sortBy") || "created_at"
+    searchParams.get("sortBy") || "rating"
   );
   const [sortOrder, setSortOrder] = useState<string>(
     searchParams.get("sortOrder") || "desc"
@@ -85,7 +85,7 @@ function ShopsContent() {
   const handleReset = () => {
     setSearchQuery("");
     setFilterValues({});
-    setSortBy("created_at");
+    setSortBy("rating");
     setSortOrder("desc");
     setCurrentPage(1);
     setCursors([null]);
