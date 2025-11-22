@@ -18,6 +18,7 @@ export default function AuthGuard({
   redirectTo = "/login",
   allowedRoles,
 }: AuthGuardProps) {
+  // TODO: For unit tests, wrap AuthGuard in a test AuthProvider or provide a mock context for useAuth.
   const router = useRouter();
   const pathname = usePathname();
   const { user, isAuthenticated, loading } = useAuth();
@@ -59,7 +60,7 @@ export default function AuthGuard({
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        <div role="status" className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
       </div>
     );
   }

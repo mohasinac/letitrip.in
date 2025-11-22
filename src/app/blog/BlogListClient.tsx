@@ -38,6 +38,7 @@ export default function BlogListClient() {
     sortOrder: (searchParams.get("sortOrder") as any) || "desc",
     category: searchParams.get("category") || undefined,
     featured: searchParams.get("featured") === "true" || undefined,
+    search: searchParams.get("search") || undefined,
   });
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export default function BlogListClient() {
   // Update URL when filters change
   useEffect(() => {
     const params = new URLSearchParams();
-    if (searchQuery) params.set("search", searchQuery);
+    if (filters.search) params.set("search", filters.search);
     if (filters.sortBy) params.set("sortBy", filters.sortBy);
     if (filters.sortOrder) params.set("sortOrder", filters.sortOrder);
     if (filters.category) params.set("category", filters.category);
@@ -65,7 +66,7 @@ export default function BlogListClient() {
       const response = await blogService.list({
         ...filters,
         startAfter: startAfter || undefined,
-        search: searchQuery || undefined,
+        search: filters.search || undefined,
       });
 
       setBlogs(response.data || []);
@@ -94,7 +95,11 @@ export default function BlogListClient() {
     }
   };
 
-  const handleSearch = () => {
+  const handleSearch = (searchValue?: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      search: searchValue || searchQuery,
+    }));
     setCurrentPage(1);
     setCursors([null]);
   };
@@ -146,16 +151,23 @@ export default function BlogListClient() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
           <div className="lg:col-span-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                placeholder="Search blog posts..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+            <div className="relative flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search blog posts..."
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <button
+                onClick={() => handleSearch(searchQuery)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Search
+              </button>
             </div>
           </div>
 
