@@ -6,52 +6,35 @@ This checklist covers writing unit tests with appropriate mocks for all pages, c
 
 - [x] Install testing dependencies (Jest, React Testing Library, etc.)
 - [x] Configure Jest for Next.js and TypeScript
-- [x] Set up test utilities and mock helpers
-- [x] Configure test environment for Firebase mocking
-
-## Pages (src/app/)
-
-### Main Pages
-
-- [x] Home page (`page.tsx`) - Mock API calls, contexts
-- [x] About page (`about/page.tsx`) - Mock static content if needed
-- [x] Contact page (`contact/page.tsx`) - Mock form submission
-- [x] FAQ page (`faq/page.tsx`) - Mock data fetching
-- [x] Search page (`search/page.tsx`) - Mock search API, filters
-- [x] Login page (`login/page.tsx`) - Mock auth context, form validation
-- [x] Register page (`register/page.tsx`) - Mock auth service, validation
-- [x] Logout page (`logout/page.tsx`) - Mock auth cleanup
+      [x] Next.js router mocks
+      [x] Fetch API mocks
+      [x] LocalStorage mocks
+      [x] Date/Time mocks
+      [x] File API mocks
+      [ ] Window/location mocks (jsdom limitation, see TODO)
 
 ### Auction Pages
 
-- [x] Auctions listing (`auctions/page.tsx`) - Mock auctions service, filters
-- [x] Auction details (`auctions/[id]/page.tsx`) - Mock single auction fetch, bidding
-- [x] Create auction (`auctions/create/page.tsx`) - Mock form, media upload
-- [x] Edit auction (`auctions/[id]/edit/page.tsx`) - Mock existing data, update
+[x] Create reusable mock factories
+[ ] Mock data generators
+[x] API response mocks
+[x] Error scenario mocks
 
-### Product Pages
-
-- [x] Products listing (`products/page.tsx`) - Mock products service, pagination
 - [x] Product details (`products/[slug]/page.tsx`) - Mock product fetch, reviews
 - [x] Create product (`products/create/page.tsx`) - Mock form, categories
 - [x] Edit product (`products/[id]/edit/page.tsx`) - Mock existing data
 
 ### Cart & Checkout
 
-- [x] Cart page (`cart/page.tsx`) - Mock cart context, items
-- [x] Checkout page (`checkout/page.tsx`) - Mock cart, payment, shipping
-- [ ] Order confirmation (`checkout/success/page.tsx`) - Mock order data
-
-### User Account
+[x] Create `__tests__/` or `*.test.ts` files alongside source files
+[x] Group related tests in describe blocks
+[x] Use consistent naming conventions
 
 - [x] User profile (`user/page.tsx`) - Mock user service, auth
 - [x] User settings (`user/settings/page.tsx`) - Mock update operations
-- [x] Order history (`user/orders/page.tsx`) - Mock orders service
-- [x] Favorites (`user/favorites/page.tsx`) - Mock favorites service
-
-### Seller Pages
-
-- [x] Seller dashboard (`seller/page.tsx`) - Mock seller data, stats
+      [x] Happy path tests
+      [x] Error handling tests
+      [x] Edge case tests
 - [x] Seller products (`seller/products/page.tsx`) - Mock products management
 - [ ] Seller orders (`seller/orders/page.tsx`) - Mock order management (tests created but have rendering issues)
 - [ ] Seller revenue (`seller/revenue/page.tsx`) - Mock revenue analytics (tests created but have rendering issues)
@@ -112,7 +95,8 @@ This checklist covers writing unit tests with appropriate mocks for all pages, c
 
 ### Auth Components
 
-- [ ] LoginForm, RegisterForm, AuthGuard - Mock auth context, validation
+- [ ] LoginForm, RegisterForm
+- [ ] AuthGuard - Mock auth context, validation (TODO: Needs AuthProvider or mock context for tests)
 
 ### Card Components
 

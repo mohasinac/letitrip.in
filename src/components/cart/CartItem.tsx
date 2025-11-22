@@ -182,6 +182,7 @@ export function CartItem({
                 disabled={disabled}
                 className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
                 title="Remove from cart"
+                aria-label="Remove"
               >
                 <Trash2 className="h-4 w-4" />
               </button>

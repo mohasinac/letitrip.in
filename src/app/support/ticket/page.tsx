@@ -1,5 +1,39 @@
 "use client";
 
+// Constants for all hardcoded strings
+const SUPPORT_TICKET_TITLE = "Create Support Ticket";
+const SUBJECT_LABEL = "Subject";
+const SUBJECT_PLACEHOLDER = "Brief description of your issue";
+const CATEGORY_LABEL = "Category";
+const CATEGORY_OPTIONS = [
+  { value: "order-issue", label: "Order Issue" },
+  { value: "return-refund", label: "Return/Refund" },
+  { value: "product-question", label: "Product Question" },
+  { value: "account", label: "Account" },
+  { value: "payment", label: "Payment" },
+  { value: "other", label: "Other" },
+];
+const PRIORITY_LABEL = "Priority";
+const PRIORITY_OPTIONS = [
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+  { value: "urgent", label: "Urgent" },
+];
+const DESCRIPTION_LABEL = "Description";
+const DESCRIPTION_PLACEHOLDER =
+  "Describe your issue in detail (minimum 10 characters)";
+const SUBMIT_BTN = "Submit Ticket";
+const SUBMITTING_BTN = "Submitting...";
+const CANCEL_BTN = "Cancel";
+const TIPS_TITLE = "Tips for faster resolution:";
+const TIPS_LIST = [
+  "Be specific about the issue you're facing",
+  "Include order number if related to an order",
+  "Mention steps you've already tried",
+  "Add any relevant screenshots or documents",
+];
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supportService } from "@/services/support.service";
@@ -43,13 +77,14 @@ export default function SupportTicketPage() {
     }
   };
 
+  // ...existing code...
   return (
     <main
       id="support-ticket-page"
       className="container mx-auto px-4 py-8 max-w-2xl"
     >
       <h1 className="text-3xl font-bold text-gray-900 mb-6">
-        Create Support Ticket
+        {SUPPORT_TICKET_TITLE}
       </h1>
 
       {error && (
@@ -61,26 +96,34 @@ export default function SupportTicketPage() {
       <div className="bg-white rounded-lg border p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-800 mb-2 font-semibold">
-              Subject <span className="text-red-500">*</span>
+            <label
+              htmlFor="support-subject"
+              className="block text-gray-800 mb-2 font-semibold"
+            >
+              {SUBJECT_LABEL} <span className="text-red-500">*</span>
             </label>
             <input
+              id="support-subject"
               type="text"
               value={formData.subject}
               onChange={(e) =>
                 setFormData({ ...formData, subject: e.target.value })
               }
               className="w-full border border-gray-300 rounded px-4 py-2 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              placeholder="Brief description of your issue"
+              placeholder={SUBJECT_PLACEHOLDER}
               required
             />
           </div>
 
           <div>
-            <label className="block text-gray-800 mb-2 font-semibold">
-              Category <span className="text-red-500">*</span>
+            <label
+              htmlFor="support-category"
+              className="block text-gray-800 mb-2 font-semibold"
+            >
+              {CATEGORY_LABEL} <span className="text-red-500">*</span>
             </label>
             <select
+              id="support-category"
               value={formData.category}
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value })
@@ -88,44 +131,52 @@ export default function SupportTicketPage() {
               className="w-full border border-gray-300 rounded px-4 py-2 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-yellow-500"
               required
             >
-              <option value="order-issue">Order Issue</option>
-              <option value="return-refund">Return/Refund</option>
-              <option value="product-question">Product Question</option>
-              <option value="account">Account</option>
-              <option value="payment">Payment</option>
-              <option value="other">Other</option>
+              {CATEGORY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-gray-800 mb-2 font-semibold">
-              Priority
+            <label
+              htmlFor="support-priority"
+              className="block text-gray-800 mb-2 font-semibold"
+            >
+              {PRIORITY_LABEL}
             </label>
             <select
+              id="support-priority"
               value={formData.priority}
               onChange={(e) =>
                 setFormData({ ...formData, priority: e.target.value })
               }
               className="w-full border border-gray-300 rounded px-4 py-2 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-yellow-500"
             >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
+              {PRIORITY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-gray-800 mb-2 font-semibold">
-              Description <span className="text-red-500">*</span>
+            <label
+              htmlFor="support-description"
+              className="block text-gray-800 mb-2 font-semibold"
+            >
+              {DESCRIPTION_LABEL} <span className="text-red-500">*</span>
             </label>
             <textarea
+              id="support-description"
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
               className="w-full border border-gray-300 rounded px-4 py-2 h-32 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              placeholder="Describe your issue in detail (minimum 10 characters)"
+              placeholder={DESCRIPTION_PLACEHOLDER}
               required
             />
             <p className="text-sm text-gray-500 mt-1">
@@ -139,14 +190,14 @@ export default function SupportTicketPage() {
               disabled={isSubmitting}
               className="bg-yellow-500 text-gray-900 px-6 py-2 rounded hover:bg-yellow-600 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Submitting..." : "Submit Ticket"}
+              {isSubmitting ? SUBMITTING_BTN : SUBMIT_BTN}
             </button>
             <button
               type="button"
               onClick={() => router.back()}
               className="border border-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-50 font-semibold"
             >
-              Cancel
+              {CANCEL_BTN}
             </button>
           </div>
         </form>
@@ -154,13 +205,12 @@ export default function SupportTicketPage() {
 
       <div className="mt-6 text-sm text-gray-600">
         <p className="mb-2">
-          <strong>Tips for faster resolution:</strong>
+          <strong>{TIPS_TITLE}</strong>
         </p>
         <ul className="list-disc list-inside space-y-1">
-          <li>Be specific about the issue you're facing</li>
-          <li>Include order number if related to an order</li>
-          <li>Mention steps you've already tried</li>
-          <li>Add any relevant screenshots or documents</li>
+          {TIPS_LIST.map((tip, idx) => (
+            <li key={idx}>{tip}</li>
+          ))}
         </ul>
       </div>
     </main>

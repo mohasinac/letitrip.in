@@ -623,4 +623,46 @@ describe("ShopPage", () => {
       expect(calledUrl).toContain("resource=nonexistent-shop");
     });
   });
+
+  it("renders shop details on load", async () => {
+    (shopsService.getBySlug as jest.Mock).mockResolvedValue({
+      id: "1",
+      name: "Test Shop",
+      slug: "test-shop",
+      description: "A great shop",
+      image: null,
+      banner: null,
+      ownerId: "owner1",
+      ownerName: "Owner",
+      status: "active",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isVerified: true,
+      isBanned: false,
+      featured: false,
+      productCount: 10,
+      urlPath: "/shops/test-shop",
+    });
+    await act(async () => {
+      render(<ShopPage params={Promise.resolve({ slug: "test-shop" })} />);
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId("shop-header")).toBeInTheDocument();
+      expect(screen.getByText("Test Shop")).toBeInTheDocument();
+    });
+  });
+
+  it("shows empty state if shop not found", async () => {
+    (shopsService.getBySlug as jest.Mock).mockRejectedValue(
+      new Error("Not found")
+    );
+    await act(async () => {
+      render(<ShopPage params={Promise.resolve({ slug: "missing-shop" })} />);
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId("empty-state")).toBeInTheDocument();
+    });
+  });
+
+  // TODO: Extract hardcoded strings like "A great shop", "Test Shop" to constants
 });
