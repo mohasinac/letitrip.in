@@ -1,4 +1,3 @@
-
 import { render, screen } from "@testing-library/react";
 import AuthGuard from "./AuthGuard";
 import { AuthContext } from "@/contexts/AuthContext";

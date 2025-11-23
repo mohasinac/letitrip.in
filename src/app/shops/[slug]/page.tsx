@@ -96,9 +96,29 @@ export default function ShopPage({ params }: ShopPageProps) {
   const loadProducts = async () => {
     try {
       setProductsLoading(true);
+      // Map sortBy and sortOrder to the correct format for the API
+      let apiSortBy:
+        | "relevance"
+        | "price-asc"
+        | "price-desc"
+        | "newest"
+        | "popular"
+        | "rating"
+        | undefined;
+      if (sortBy === "price") {
+        apiSortBy = sortOrder === "asc" ? "price-asc" : "price-desc";
+      } else if (sortBy === "createdAt") {
+        apiSortBy = "newest";
+      } else if (sortBy === "sales") {
+        apiSortBy = "popular";
+      } else if (sortBy === "rating") {
+        apiSortBy = "rating";
+      }
+
       const response = await productsService.list({
         shopId: slug,
         search: searchQuery || undefined,
+        sortBy: apiSortBy, // BUG FIX: Added sort parameter with correct type mapping
         categoryId: productFilters.categories?.[0],
         priceRange:
           productFilters.priceMin || productFilters.priceMax

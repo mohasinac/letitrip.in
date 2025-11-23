@@ -15,7 +15,7 @@ describe("CartSummary", () => {
     );
     expect(screen.getByText(/Order Summary/i)).toBeInTheDocument();
     expect(screen.getByText(/Subtotal/i)).toBeInTheDocument();
-    expect(screen.getByText(/1050/)).toBeInTheDocument();
+    expect(screen.getByText(/₹1,050/)).toBeInTheDocument();
   });
 
   it("calls onApplyCoupon when coupon is applied", async () => {
@@ -31,7 +31,7 @@ describe("CartSummary", () => {
         onApplyCoupon={mockApply}
       />
     );
-    fireEvent.change(screen.getByPlaceholderText(/Coupon/i), {
+    fireEvent.change(screen.getByPlaceholderText(/Enter code/i), {
       target: { value: "SAVE10" },
     });
     fireEvent.click(screen.getByRole("button", { name: /Apply/i }));
