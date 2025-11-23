@@ -1,5 +1,11 @@
-dcfffffvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvimport React from "react";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
+import React from "react";
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  act,
+} from "@testing-library/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import BlogListClient from "./BlogListClient";
 import { blogService } from "@/services/blog.service";
@@ -140,11 +146,18 @@ describe("BlogListClient", () => {
   it("shows loading state initially", async () => {
     // Delay the mock response
     mockBlogService.list.mockImplementation(
-      () => new Promise(resolve => setTimeout(() => resolve({
-        data: mockBlogPosts,
-        count: 2,
-        pagination: { hasNextPage: false, nextCursor: null },
-      }), 100))
+      () =>
+        new Promise((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                data: mockBlogPosts,
+                count: 2,
+                pagination: { hasNextPage: false, nextCursor: null },
+              }),
+            100
+          )
+        )
     );
 
     await act(async () => {
@@ -152,9 +165,11 @@ describe("BlogListClient", () => {
     });
 
     // Should show loading skeletons
-    expect(screen.getAllByRole("generic", { hidden: true }).some(el =>
-      el.classList.contains("animate-pulse")
-    )).toBeTruthy();
+    expect(
+      screen
+        .getAllByRole("generic", { hidden: true })
+        .some((el) => el.classList.contains("animate-pulse"))
+    ).toBeTruthy();
   });
 
   it("handles search functionality", async () => {
@@ -163,7 +178,9 @@ describe("BlogListClient", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText("Search blog posts...")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("Search blog posts...")
+      ).toBeInTheDocument();
     });
 
     const searchInput = screen.getByPlaceholderText("Search blog posts...");
@@ -206,7 +223,9 @@ describe("BlogListClient", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Failed to load blog posts. Please try again later.")).toBeInTheDocument();
+      expect(
+        screen.getByText("Failed to load blog posts. Please try again later.")
+      ).toBeInTheDocument();
       expect(screen.getByText("Try Again")).toBeInTheDocument();
     });
   });
@@ -224,7 +243,9 @@ describe("BlogListClient", () => {
 
     await waitFor(() => {
       expect(screen.getByText("No blog posts found")).toBeInTheDocument();
-      expect(screen.getByText("Check back later for new content")).toBeInTheDocument();
+      expect(
+        screen.getByText("Check back later for new content")
+      ).toBeInTheDocument();
     });
   });
 
