@@ -65,7 +65,10 @@ describe("Textarea", () => {
 
     it("sets aria-invalid when error exists", () => {
       render(<Textarea error="Error" />);
-      expect(screen.getByRole("textbox")).toHaveAttribute("aria-invalid", "true");
+      expect(screen.getByRole("textbox")).toHaveAttribute(
+        "aria-invalid",
+        "true"
+      );
     });
 
     it("associates error with textarea via aria-describedby", () => {
@@ -96,7 +99,14 @@ describe("Textarea", () => {
 
   describe("Character Count", () => {
     it("shows character count when enabled", () => {
-      render(<Textarea showCharCount maxLength={100} value="Hello" onChange={() => {}} />);
+      render(
+        <Textarea
+          showCharCount
+          maxLength={100}
+          value="Hello"
+          onChange={() => {}}
+        />
+      );
       expect(screen.getByText("5 / 100")).toBeInTheDocument();
     });
 
@@ -112,16 +122,30 @@ describe("Textarea", () => {
 
     it("updates count when value changes", () => {
       const { rerender } = render(
-        <Textarea showCharCount maxLength={100} value="Test" onChange={() => {}} />
+        <Textarea
+          showCharCount
+          maxLength={100}
+          value="Test"
+          onChange={() => {}}
+        />
       );
       expect(screen.getByText("4 / 100")).toBeInTheDocument();
 
-      rerender(<Textarea showCharCount maxLength={100} value="Test123" onChange={() => {}} />);
+      rerender(
+        <Textarea
+          showCharCount
+          maxLength={100}
+          value="Test123"
+          onChange={() => {}}
+        />
+      );
       expect(screen.getByText("7 / 100")).toBeInTheDocument();
     });
 
     it("shows 0 count for empty value", () => {
-      render(<Textarea showCharCount maxLength={100} value="" onChange={() => {}} />);
+      render(
+        <Textarea showCharCount maxLength={100} value="" onChange={() => {}} />
+      );
       expect(screen.getByText("0 / 100")).toBeInTheDocument();
     });
   });
@@ -149,7 +173,10 @@ describe("Textarea", () => {
     it("applies disabled styling", () => {
       render(<Textarea disabled />);
       const textarea = screen.getByRole("textbox");
-      expect(textarea).toHaveClass("disabled:bg-gray-100", "disabled:cursor-not-allowed");
+      expect(textarea).toHaveClass(
+        "disabled:bg-gray-100",
+        "disabled:cursor-not-allowed"
+      );
     });
   });
 
@@ -170,15 +197,17 @@ describe("Textarea", () => {
     it("calls onChange when text is entered", () => {
       const onChange = jest.fn();
       render(<Textarea onChange={onChange} />);
-      
+
       const textarea = screen.getByRole("textbox");
       fireEvent.change(textarea, { target: { value: "New text" } });
-      
+
       expect(onChange).toHaveBeenCalled();
     });
 
     it("updates value on change", () => {
-      const { rerender } = render(<Textarea value="Initial" onChange={() => {}} />);
+      const { rerender } = render(
+        <Textarea value="Initial" onChange={() => {}} />
+      );
       expect(screen.getByDisplayValue("Initial")).toBeInTheDocument();
 
       rerender(<Textarea value="Updated" onChange={() => {}} />);
@@ -188,7 +217,7 @@ describe("Textarea", () => {
     it("calls onFocus when focused", () => {
       const onFocus = jest.fn();
       render(<Textarea onFocus={onFocus} />);
-      
+
       fireEvent.focus(screen.getByRole("textbox"));
       expect(onFocus).toHaveBeenCalled();
     });
@@ -196,7 +225,7 @@ describe("Textarea", () => {
     it("calls onBlur when blurred", () => {
       const onBlur = jest.fn();
       render(<Textarea onBlur={onBlur} />);
-      
+
       const textarea = screen.getByRole("textbox");
       fireEvent.focus(textarea);
       fireEvent.blur(textarea);
@@ -208,7 +237,7 @@ describe("Textarea", () => {
     it("forwards ref to textarea element", () => {
       const ref = React.createRef<HTMLTextAreaElement>();
       render(<Textarea ref={ref} />);
-      
+
       expect(ref.current).toBeInstanceOf(HTMLTextAreaElement);
       expect(ref.current?.tagName).toBe("TEXTAREA");
     });
@@ -216,7 +245,7 @@ describe("Textarea", () => {
     it("can focus via ref", () => {
       const ref = React.createRef<HTMLTextAreaElement>();
       render(<Textarea ref={ref} />);
-      
+
       ref.current?.focus();
       expect(document.activeElement).toBe(ref.current);
     });
@@ -237,7 +266,10 @@ describe("Textarea", () => {
 
     it("applies aria attributes", () => {
       render(<Textarea aria-label="Custom label" />);
-      expect(screen.getByRole("textbox")).toHaveAttribute("aria-label", "Custom label");
+      expect(screen.getByRole("textbox")).toHaveAttribute(
+        "aria-label",
+        "Custom label"
+      );
     });
   });
 
@@ -263,12 +295,18 @@ describe("Textarea", () => {
     it("handles very long error messages", () => {
       const longError = "This is a very long error message ".repeat(10);
       render(<Textarea error={longError} />);
-      expect(screen.getByText(/This is a very long error message/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/This is a very long error message/)
+      ).toBeInTheDocument();
     });
 
     it("handles special characters in value", () => {
-      render(<Textarea value="<script>alert('test')</script>" onChange={() => {}} />);
-      expect(screen.getByDisplayValue("<script>alert('test')</script>")).toBeInTheDocument();
+      render(
+        <Textarea value="<script>alert('test')</script>" onChange={() => {}} />
+      );
+      expect(
+        screen.getByDisplayValue("<script>alert('test')</script>")
+      ).toBeInTheDocument();
     });
 
     it("handles multiline text", () => {
