@@ -16,13 +16,17 @@ describe("FormActions", () => {
 
     it("renders cancel button when onCancel provided", () => {
       render(<FormActions onCancel={() => {}} />);
-      expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Cancel" })
+      ).toBeInTheDocument();
     });
 
     it("renders both buttons when both handlers provided", () => {
       render(<FormActions onSubmit={() => {}} onCancel={() => {}} />);
       expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Cancel" })
+      ).toBeInTheDocument();
     });
   });
 
@@ -34,12 +38,16 @@ describe("FormActions", () => {
 
     it("uses custom submit label", () => {
       render(<FormActions onSubmit={() => {}} submitLabel="Create" />);
-      expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Create" })
+      ).toBeInTheDocument();
     });
 
     it("uses default cancel label", () => {
       render(<FormActions onCancel={() => {}} />);
-      expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Cancel" })
+      ).toBeInTheDocument();
     });
 
     it("uses custom cancel label", () => {
@@ -52,7 +60,7 @@ describe("FormActions", () => {
     it("calls onSubmit when submit button clicked", () => {
       const onSubmit = jest.fn();
       render(<FormActions onSubmit={onSubmit} />);
-      
+
       fireEvent.click(screen.getByRole("button", { name: "Save" }));
       expect(onSubmit).toHaveBeenCalledTimes(1);
     });
@@ -60,7 +68,7 @@ describe("FormActions", () => {
     it("calls onCancel when cancel button clicked", () => {
       const onCancel = jest.fn();
       render(<FormActions onCancel={onCancel} />);
-      
+
       fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
       expect(onCancel).toHaveBeenCalledTimes(1);
     });
@@ -69,7 +77,10 @@ describe("FormActions", () => {
   describe("Submit Button", () => {
     it("has submit type", () => {
       render(<FormActions onSubmit={() => {}} />);
-      expect(screen.getByRole("button", { name: "Save" })).toHaveAttribute("type", "submit");
+      expect(screen.getByRole("button", { name: "Save" })).toHaveAttribute(
+        "type",
+        "submit"
+      );
     });
 
     it("uses primary variant by default", () => {
@@ -104,7 +115,10 @@ describe("FormActions", () => {
   describe("Cancel Button", () => {
     it("has button type", () => {
       render(<FormActions onCancel={() => {}} />);
-      expect(screen.getByRole("button", { name: "Cancel" })).toHaveAttribute("type", "button");
+      expect(screen.getByRole("button", { name: "Cancel" })).toHaveAttribute(
+        "type",
+        "button"
+      );
     });
 
     it("uses outline variant", () => {
@@ -125,12 +139,16 @@ describe("FormActions", () => {
 
     it("can be hidden with showCancel false", () => {
       render(<FormActions onCancel={() => {}} showCancel={false} />);
-      expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Cancel" })
+      ).not.toBeInTheDocument();
     });
 
     it("is hidden when onCancel is not provided", () => {
       render(<FormActions onSubmit={() => {}} />);
-      expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Cancel" })
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -141,12 +159,16 @@ describe("FormActions", () => {
     });
 
     it("can align to left", () => {
-      const { container } = render(<FormActions onSubmit={() => {}} position="left" />);
+      const { container } = render(
+        <FormActions onSubmit={() => {}} position="left" />
+      );
       expect(container.firstChild).toHaveClass("justify-start");
     });
 
     it("can use space-between", () => {
-      const { container } = render(<FormActions onSubmit={() => {}} position="space-between" />);
+      const { container } = render(
+        <FormActions onSubmit={() => {}} position="space-between" />
+      );
       expect(container.firstChild).toHaveClass("justify-between");
     });
   });
@@ -154,38 +176,42 @@ describe("FormActions", () => {
   describe("Additional Actions", () => {
     it("renders additional actions", () => {
       render(
-        <FormActions 
-          onSubmit={() => {}} 
+        <FormActions
+          onSubmit={() => {}}
           additionalActions={<button>Delete</button>}
         />
       );
-      expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Delete" })
+      ).toBeInTheDocument();
     });
 
     it("renders additional actions in left container with space-between", () => {
       const { container } = render(
-        <FormActions 
-          onSubmit={() => {}} 
+        <FormActions
+          onSubmit={() => {}}
           position="space-between"
           additionalActions={<button>Extra</button>}
         />
       );
-      
+
       expect(screen.getByRole("button", { name: "Extra" })).toBeInTheDocument();
-      const wrapper = container.querySelector(".flex.items-center.gap-3:first-child");
+      const wrapper = container.querySelector(
+        ".flex.items-center.gap-3:first-child"
+      );
       expect(wrapper).toBeInTheDocument();
     });
 
     it("renders additional actions inline without space-between", () => {
       render(
-        <FormActions 
-          onSubmit={() => {}} 
+        <FormActions
+          onSubmit={() => {}}
           onCancel={() => {}}
           position="right"
           additionalActions={<button>Help</button>}
         />
       );
-      
+
       const buttons = screen.getAllByRole("button");
       expect(buttons).toHaveLength(3);
       expect(screen.getByRole("button", { name: "Help" })).toBeInTheDocument();
@@ -193,8 +219,8 @@ describe("FormActions", () => {
 
     it("renders multiple additional actions", () => {
       render(
-        <FormActions 
-          onSubmit={() => {}} 
+        <FormActions
+          onSubmit={() => {}}
           additionalActions={
             <>
               <button>Action 1</button>
@@ -203,9 +229,13 @@ describe("FormActions", () => {
           }
         />
       );
-      
-      expect(screen.getByRole("button", { name: "Action 1" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Action 2" })).toBeInTheDocument();
+
+      expect(
+        screen.getByRole("button", { name: "Action 1" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Action 2" })
+      ).toBeInTheDocument();
     });
   });
 
@@ -213,7 +243,13 @@ describe("FormActions", () => {
     it("applies base styling", () => {
       const { container } = render(<FormActions />);
       const wrapper = container.firstChild as HTMLElement;
-      expect(wrapper).toHaveClass("rounded-lg", "border", "border-gray-200", "bg-gray-50", "p-4");
+      expect(wrapper).toHaveClass(
+        "rounded-lg",
+        "border",
+        "border-gray-200",
+        "bg-gray-50",
+        "p-4"
+      );
     });
 
     it("applies custom className", () => {
@@ -232,9 +268,9 @@ describe("FormActions", () => {
     it("renders complete form actions with all features", () => {
       const onSubmit = jest.fn();
       const onCancel = jest.fn();
-      
+
       render(
-        <FormActions 
+        <FormActions
           onSubmit={onSubmit}
           onCancel={onCancel}
           submitLabel="Update"
@@ -243,20 +279,26 @@ describe("FormActions", () => {
           additionalActions={<button>Preview</button>}
         />
       );
-      
-      expect(screen.getByRole("button", { name: "Update" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Discard" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Preview" })).toBeInTheDocument();
+
+      expect(
+        screen.getByRole("button", { name: "Update" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Discard" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Preview" })
+      ).toBeInTheDocument();
     });
 
     it("handles form submission flow", () => {
       const onSubmit = jest.fn();
       const { rerender } = render(<FormActions onSubmit={onSubmit} />);
-      
+
       // Click submit
       fireEvent.click(screen.getByRole("button", { name: "Save" }));
       expect(onSubmit).toHaveBeenCalled();
-      
+
       // Show submitting state
       rerender(<FormActions onSubmit={onSubmit} isSubmitting />);
       expect(screen.getByRole("button", { name: /Save/ })).toBeDisabled();
@@ -286,27 +328,23 @@ describe("FormActions", () => {
 
     it("handles both disabled states simultaneously", () => {
       render(
-        <FormActions 
-          onSubmit={() => {}} 
+        <FormActions
+          onSubmit={() => {}}
           onCancel={() => {}}
           submitDisabled
           cancelDisabled
         />
       );
-      
+
       expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
       expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
     });
 
     it("handles submitting state for both buttons", () => {
       render(
-        <FormActions 
-          onSubmit={() => {}} 
-          onCancel={() => {}}
-          isSubmitting
-        />
+        <FormActions onSubmit={() => {}} onCancel={() => {}} isSubmitting />
       );
-      
+
       expect(screen.getByRole("button", { name: /Save/ })).toBeDisabled();
       expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
     });
@@ -314,18 +352,14 @@ describe("FormActions", () => {
     it("does not call handlers when disabled", () => {
       const onSubmit = jest.fn();
       const onCancel = jest.fn();
-      
+
       render(
-        <FormActions 
-          onSubmit={onSubmit} 
-          onCancel={onCancel}
-          isSubmitting
-        />
+        <FormActions onSubmit={onSubmit} onCancel={onCancel} isSubmitting />
       );
-      
+
       fireEvent.click(screen.getByRole("button", { name: /Save/ }));
       fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
-      
+
       expect(onSubmit).not.toHaveBeenCalled();
       expect(onCancel).not.toHaveBeenCalled();
     });

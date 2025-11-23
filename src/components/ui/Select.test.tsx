@@ -22,19 +22,29 @@ describe("Select", () => {
 
     it("renders all options", () => {
       render(<Select options={mockOptions} />);
-      expect(screen.getByRole("option", { name: "Option 1" })).toBeInTheDocument();
-      expect(screen.getByRole("option", { name: "Option 2" })).toBeInTheDocument();
-      expect(screen.getByRole("option", { name: "Option 3" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "Option 1" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "Option 2" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "Option 3" })
+      ).toBeInTheDocument();
     });
 
     it("renders placeholder option", () => {
       render(<Select options={mockOptions} placeholder="Select an option" />);
-      expect(screen.getByRole("option", { name: "Select an option" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "Select an option" })
+      ).toBeInTheDocument();
     });
 
     it("placeholder option is disabled", () => {
       render(<Select options={mockOptions} placeholder="Select..." />);
-      const placeholder = screen.getByRole("option", { name: "Select..." }) as HTMLOptionElement;
+      const placeholder = screen.getByRole("option", {
+        name: "Select...",
+      }) as HTMLOptionElement;
       expect(placeholder).toBeDisabled();
       expect(placeholder).toHaveAttribute("value", "");
     });
@@ -69,7 +79,9 @@ describe("Select", () => {
   describe("Options", () => {
     it("renders options with correct values", () => {
       render(<Select options={mockOptions} />);
-      const option1 = screen.getByRole("option", { name: "Option 1" }) as HTMLOptionElement;
+      const option1 = screen.getByRole("option", {
+        name: "Option 1",
+      }) as HTMLOptionElement;
       expect(option1).toHaveValue("option1");
     });
 
@@ -79,8 +91,10 @@ describe("Select", () => {
         { value: "2", label: "Disabled", disabled: true },
       ];
       render(<Select options={optionsWithDisabled} />);
-      
-      const disabledOption = screen.getByRole("option", { name: "Disabled" }) as HTMLOptionElement;
+
+      const disabledOption = screen.getByRole("option", {
+        name: "Disabled",
+      }) as HTMLOptionElement;
       expect(disabledOption).toBeDisabled();
     });
 
@@ -90,8 +104,10 @@ describe("Select", () => {
         { value: 2, label: "Two" },
       ];
       render(<Select options={numericOptions} />);
-      
-      const option = screen.getByRole("option", { name: "One" }) as HTMLOptionElement;
+
+      const option = screen.getByRole("option", {
+        name: "One",
+      }) as HTMLOptionElement;
       expect(option).toHaveValue("1");
     });
 
@@ -116,17 +132,24 @@ describe("Select", () => {
 
     it("sets aria-invalid when error exists", () => {
       render(<Select options={mockOptions} error="Error" />);
-      expect(screen.getByRole("combobox")).toHaveAttribute("aria-invalid", "true");
+      expect(screen.getByRole("combobox")).toHaveAttribute(
+        "aria-invalid",
+        "true"
+      );
     });
 
     it("associates error with select via aria-describedby", () => {
-      render(<Select label="Type" options={mockOptions} error="Error message" />);
+      render(
+        <Select label="Type" options={mockOptions} error="Error message" />
+      );
       const select = screen.getByRole("combobox");
       expect(select).toHaveAttribute("aria-describedby", "type-error");
     });
 
     it("hides helper text when error is shown", () => {
-      render(<Select options={mockOptions} helperText="Helper" error="Error" />);
+      render(
+        <Select options={mockOptions} helperText="Helper" error="Error" />
+      );
       expect(screen.queryByText("Helper")).not.toBeInTheDocument();
       expect(screen.getByText("Error")).toBeInTheDocument();
     });
@@ -139,7 +162,9 @@ describe("Select", () => {
     });
 
     it("associates helper text with select", () => {
-      render(<Select label="Status" options={mockOptions} helperText="Helper" />);
+      render(
+        <Select label="Status" options={mockOptions} helperText="Helper" />
+      );
       const select = screen.getByRole("combobox");
       expect(select).toHaveAttribute("aria-describedby", "status-helper");
     });
@@ -153,7 +178,9 @@ describe("Select", () => {
     });
 
     it("can disable fullWidth", () => {
-      const { container } = render(<Select options={mockOptions} fullWidth={false} />);
+      const { container } = render(
+        <Select options={mockOptions} fullWidth={false} />
+      );
       const wrapper = container.firstChild as HTMLElement;
       expect(wrapper).not.toHaveClass("w-full");
     });
@@ -168,7 +195,10 @@ describe("Select", () => {
     it("applies disabled styling", () => {
       render(<Select options={mockOptions} disabled />);
       const select = screen.getByRole("combobox");
-      expect(select).toHaveClass("disabled:bg-gray-100", "disabled:cursor-not-allowed");
+      expect(select).toHaveClass(
+        "disabled:bg-gray-100",
+        "disabled:cursor-not-allowed"
+      );
     });
   });
 
@@ -176,26 +206,30 @@ describe("Select", () => {
     it("calls onChange when option is selected", () => {
       const onChange = jest.fn();
       render(<Select options={mockOptions} onChange={onChange} />);
-      
+
       const select = screen.getByRole("combobox");
       fireEvent.change(select, { target: { value: "option2" } });
-      
+
       expect(onChange).toHaveBeenCalled();
     });
 
     it("updates selected value", () => {
-      const { rerender } = render(<Select options={mockOptions} value="option1" onChange={() => {}} />);
+      const { rerender } = render(
+        <Select options={mockOptions} value="option1" onChange={() => {}} />
+      );
       const select = screen.getByRole("combobox") as HTMLSelectElement;
       expect(select.value).toBe("option1");
 
-      rerender(<Select options={mockOptions} value="option2" onChange={() => {}} />);
+      rerender(
+        <Select options={mockOptions} value="option2" onChange={() => {}} />
+      );
       expect(select.value).toBe("option2");
     });
 
     it("calls onFocus when focused", () => {
       const onFocus = jest.fn();
       render(<Select options={mockOptions} onFocus={onFocus} />);
-      
+
       fireEvent.focus(screen.getByRole("combobox"));
       expect(onFocus).toHaveBeenCalled();
     });
@@ -203,7 +237,7 @@ describe("Select", () => {
     it("calls onBlur when blurred", () => {
       const onBlur = jest.fn();
       render(<Select options={mockOptions} onBlur={onBlur} />);
-      
+
       const select = screen.getByRole("combobox");
       fireEvent.focus(select);
       fireEvent.blur(select);
@@ -215,7 +249,7 @@ describe("Select", () => {
     it("forwards ref to select element", () => {
       const ref = React.createRef<HTMLSelectElement>();
       render(<Select options={mockOptions} ref={ref} />);
-      
+
       expect(ref.current).toBeInstanceOf(HTMLSelectElement);
       expect(ref.current?.tagName).toBe("SELECT");
     });
@@ -223,7 +257,7 @@ describe("Select", () => {
     it("can focus via ref", () => {
       const ref = React.createRef<HTMLSelectElement>();
       render(<Select options={mockOptions} ref={ref} />);
-      
+
       ref.current?.focus();
       expect(document.activeElement).toBe(ref.current);
     });
@@ -231,7 +265,7 @@ describe("Select", () => {
     it("can change value via ref", () => {
       const ref = React.createRef<HTMLSelectElement>();
       render(<Select options={mockOptions} ref={ref} />);
-      
+
       if (ref.current) {
         ref.current.value = "option2";
         expect(ref.current.value).toBe("option2");
@@ -254,7 +288,10 @@ describe("Select", () => {
 
     it("applies aria attributes", () => {
       render(<Select options={mockOptions} aria-label="Custom label" />);
-      expect(screen.getByRole("combobox")).toHaveAttribute("aria-label", "Custom label");
+      expect(screen.getByRole("combobox")).toHaveAttribute(
+        "aria-label",
+        "Custom label"
+      );
     });
   });
 
@@ -273,7 +310,7 @@ describe("Select", () => {
     it("options are keyboard navigable", () => {
       render(<Select options={mockOptions} />);
       const select = screen.getByRole("combobox");
-      
+
       select.focus();
       expect(document.activeElement).toBe(select);
     });
@@ -288,15 +325,19 @@ describe("Select", () => {
     it("handles very long error messages", () => {
       const longError = "This is a very long error message ".repeat(10);
       render(<Select options={mockOptions} error={longError} />);
-      expect(screen.getByText(/This is a very long error message/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/This is a very long error message/)
+      ).toBeInTheDocument();
     });
 
     it("handles special characters in labels", () => {
       const specialOptions: SelectOption[] = [
-        { value: "1", label: "<Option> & \"Quotes\"" },
+        { value: "1", label: '<Option> & "Quotes"' },
       ];
       render(<Select options={specialOptions} />);
-      expect(screen.getByRole("option", { name: "<Option> & \"Quotes\"" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: '<Option> & "Quotes"' })
+      ).toBeInTheDocument();
     });
 
     it("handles label with multiple spaces", () => {
@@ -311,7 +352,7 @@ describe("Select", () => {
         { value: "2", label: "Second" },
       ];
       render(<Select options={duplicateOptions} />);
-      
+
       const options = screen.getAllByRole("option");
       expect(options).toHaveLength(2);
     });
