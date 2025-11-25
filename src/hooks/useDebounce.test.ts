@@ -436,17 +436,16 @@ describe("useApi", () => {
     expect(result.current.loading).toBe(true);
     expect(mockApiCall).toHaveBeenCalledTimes(1);
 
-    // Advance time for the API call to resolve
-    act(() => {
-      jest.advanceTimersByTime(100);
+    // Advance time for the API call to resolve and flush all promises
+    await act(async () => {
+      jest.runAllTimers();
+      await Promise.resolve();
+      await Promise.resolve(); // Double flush for nested promises
     });
 
-    // Wait for the state update
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-      expect(result.current.data).toBe("success");
-    });
-
+    // Loading should now be false
+    expect(result.current.loading).toBe(false);
+    expect(result.current.data).toBe("success");
     expect(mockApiCall).toHaveBeenCalledTimes(1);
   });
 
@@ -513,17 +512,16 @@ describe("useApi", () => {
     expect(mockApiCall).toHaveBeenCalledTimes(2);
     expect(result.current.loading).toBe(true); // Still loading from second call
 
-    // Advance time for second call to resolve
-    act(() => {
-      jest.advanceTimersByTime(100);
+    // Advance time for second call to resolve and flush all promises
+    await act(async () => {
+      jest.runAllTimers();
+      await Promise.resolve();
+      await Promise.resolve(); // Double flush for nested promises
     });
 
-    // Wait for second call to complete
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-      expect(result.current.data).toBe("success");
-    });
-
+    // Loading should now be false
+    expect(result.current.loading).toBe(false);
+    expect(result.current.data).toBe("success");
     expect(mockApiCall).toHaveBeenCalledTimes(2);
   });
 

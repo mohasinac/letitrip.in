@@ -213,4 +213,154 @@ describe("EmptyState", () => {
       expect(container.querySelector(".custom")).toBeInTheDocument();
     });
   });
+
+  describe("Edge Cases", () => {
+    it("handles very long title text", () => {
+      const longTitle = "A".repeat(200);
+      render(<EmptyState title={longTitle} />);
+      expect(screen.getByText(longTitle)).toBeInTheDocument();
+    });
+
+    it("handles very long description text", () => {
+      const longDesc = "B".repeat(500);
+      render(<EmptyState title="Test" description={longDesc} />);
+      expect(screen.getByText(longDesc)).toBeInTheDocument();
+    });
+
+    it("handles empty string action label", () => {
+      render(
+        <EmptyState title="Test" action={{ label: "", onClick: jest.fn() }} />
+      );
+      const button = screen.getByRole("button");
+      expect(button).toHaveTextContent("");
+    });
+
+    it("handles multiple rapid action button clicks", () => {
+      const onClick = jest.fn();
+      render(<EmptyState title="Test" action={{ label: "Click", onClick }} />);
+
+      const button = screen.getByText("Click");
+      fireEvent.click(button);
+      fireEvent.click(button);
+      fireEvent.click(button);
+
+      expect(onClick).toHaveBeenCalledTimes(3);
+    });
+
+    it("handles special characters in title", () => {
+      render(<EmptyState title="No items! @#$%^&*()" />);
+      expect(screen.getByText("No items! @#$%^&*()")).toBeInTheDocument();
+    });
+
+    it("handles custom React node as icon", () => {
+      render(
+        <EmptyState
+          title="Test"
+          icon={<div data-testid="custom-icon">Custom</div>}
+        />
+      );
+      expect(screen.getByTestId("custom-icon")).toBeInTheDocument();
+    });
+  });
+
+  describe("Layout and Spacing", () => {
+    it("applies centered layout with flex-col", () => {
+      const { container } = render(<EmptyState title="Test" />);
+      const mainDiv = container.firstChild;
+      expect(mainDiv).toHaveClass(
+        "flex",
+        "flex-col",
+        "items-center",
+        "justify-center"
+      );
+    });
+
+    it("applies py-16 padding", () => {
+      const { container } = render(<EmptyState title="Test" />);
+      expect(container.firstChild).toHaveClass("py-16");
+    });
+
+    it("icon has mb-6 margin", () => {
+      const { container } = render(
+        <EmptyState title="Test" icon={<ShoppingBag />} />
+      );
+      const iconContainer = container.querySelector(".rounded-full");
+      expect(iconContainer).toHaveClass("mb-6");
+    });
+
+    it("description has max-w-md constraint", () => {
+      const { container } = render(
+        <EmptyState title="Test" description="Description" />
+      );
+      const description = container.querySelector("p");
+      expect(description).toHaveClass("max-w-md");
+    });
+
+    it("actions container has gap-3 between buttons", () => {
+      const { container } = render(
+        <EmptyState
+          title="Test"
+          action={{ label: "Action", onClick: jest.fn() }}
+          secondaryAction={{ label: "Secondary", onClick: jest.fn() }}
+        />
+      );
+      const actionsContainer = container.querySelector(
+        ".flex-col.sm\\:flex-row"
+      );
+      expect(actionsContainer).toHaveClass("gap-3");
+    });
+  });
+
+  describe("Accessibility", () => {
+    it("uses semantic h3 heading for title", () => {
+      render(<EmptyState title="Test Title" />);
+      const heading = screen.getByRole("heading", { level: 3 });
+      expect(heading).toHaveTextContent("Test Title");
+    });
+
+    it("action button has accessible role", () => {
+      render(
+        <EmptyState
+          title="Test"
+          action={{ label: "Click Me", onClick: jest.fn() }}
+        />
+      );
+      expect(
+        screen.getByRole("button", { name: "Click Me" })
+      ).toBeInTheDocument();
+    });
+
+    it("secondary action button has accessible role", () => {
+      render(
+        <EmptyState
+          title="Test"
+          secondaryAction={{ label: "Cancel", onClick: jest.fn() }}
+        />
+      );
+      expect(
+        screen.getByRole("button", { name: "Cancel" })
+      ).toBeInTheDocument();
+    });
+
+    it("applies text-center for better readability", () => {
+      const { container } = render(<EmptyState title="Test" />);
+      expect(container.firstChild).toHaveClass("text-center");
+    });
+  });
+
+  describe("Responsive Behavior", () => {
+    it("buttons stack on mobile (flex-col) and side-by-side on desktop (sm:flex-row)", () => {
+      const { container } = render(
+        <EmptyState
+          title="Test"
+          action={{ label: "Primary", onClick: jest.fn() }}
+          secondaryAction={{ label: "Secondary", onClick: jest.fn() }}
+        />
+      );
+      const actionsContainer = container.querySelector(
+        ".flex-col.sm\\:flex-row"
+      );
+      expect(actionsContainer).toHaveClass("flex-col", "sm:flex-row");
+    });
+  });
 });

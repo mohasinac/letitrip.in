@@ -54,6 +54,9 @@ describe("SearchBar", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (categoriesService.list as jest.Mock).mockResolvedValue(mockCategories);
+
+    // Mock scrollIntoView (not implemented in jsdom)
+    Element.prototype.scrollIntoView = jest.fn();
   });
 
   // Basic Rendering

@@ -57,7 +57,9 @@ describe("FAQSection", () => {
   describe("Basic Rendering", () => {
     it("renders FAQ section with default title", () => {
       render(<FAQSection />);
-      expect(screen.getByText("Frequently Asked Questions")).toBeInTheDocument();
+      expect(
+        screen.getByText("Frequently Asked Questions")
+      ).toBeInTheDocument();
     });
 
     it("renders FAQ section with custom title and description", () => {
@@ -90,7 +92,9 @@ describe("FAQSection", () => {
   describe("Search Functionality", () => {
     it("does not show search bar by default", () => {
       render(<FAQSection />);
-      expect(screen.queryByPlaceholderText("Search FAQs...")).not.toBeInTheDocument();
+      expect(
+        screen.queryByPlaceholderText("Search FAQs...")
+      ).not.toBeInTheDocument();
     });
 
     it("shows search bar when showSearch is true", () => {
@@ -101,44 +105,52 @@ describe("FAQSection", () => {
     it("filters FAQs by question text", () => {
       render(<FAQSection showSearch={true} />);
       const searchInput = screen.getByPlaceholderText("Search FAQs...");
-      
+
       fireEvent.change(searchInput, { target: { value: "Mock Q2" } });
-      
+
       expect(screen.getAllByText("Mock Q2?").length).toBeGreaterThan(0);
     });
 
     it("filters FAQs by answer text", () => {
       render(<FAQSection showSearch={true} defaultCategory="cat-1" />);
       const searchInput = screen.getByPlaceholderText("Search FAQs...");
-      
+
       fireEvent.change(searchInput, { target: { value: "Mock A1" } });
-      
+
       expect(screen.getByText("Mock Q1?")).toBeInTheDocument();
     });
 
     it("search is case-insensitive", () => {
       render(<FAQSection showSearch={true} />);
       const searchInput = screen.getByPlaceholderText("Search FAQs...");
-      
+
       fireEvent.change(searchInput, { target: { value: "MOCK q2" } });
-      
+
       expect(screen.getAllByText("Mock Q2?").length).toBeGreaterThan(0);
     });
 
     it("shows empty state when search returns no results", () => {
       render(<FAQSection showSearch={true} />);
       const searchInput = screen.getByPlaceholderText("Search FAQs...");
-      
-      fireEvent.change(searchInput, { target: { value: "NonexistentQuery123" } });
-      
+
+      fireEvent.change(searchInput, {
+        target: { value: "NonexistentQuery123" },
+      });
+
       expect(screen.getByText(/No FAQs found/)).toBeInTheDocument();
     });
 
     it("search input has proper styling", () => {
       render(<FAQSection showSearch={true} />);
       const searchInput = screen.getByPlaceholderText("Search FAQs...");
-      
-      expect(searchInput).toHaveClass("w-full", "px-4", "py-3", "border", "rounded-lg");
+
+      expect(searchInput).toHaveClass(
+        "w-full",
+        "px-4",
+        "py-3",
+        "border",
+        "rounded-lg"
+      );
     });
   });
 
@@ -162,27 +174,27 @@ describe("FAQSection", () => {
 
     it("switches to specific category when clicked", () => {
       render(<FAQSection />);
-      
+
       const cat2Btn = screen.getByText("Cat 2");
       fireEvent.click(cat2Btn);
-      
+
       expect(cat2Btn).toHaveClass("bg-blue-600", "text-white");
       expect(mockGetFAQsByCategory).toHaveBeenCalledWith("cat-2");
     });
 
     it("switches back to 'All Categories' when clicked", () => {
       render(<FAQSection defaultCategory="cat-1" />);
-      
+
       const allCategoriesBtn = screen.getByText("All Categories");
       fireEvent.click(allCategoriesBtn);
-      
+
       expect(allCategoriesBtn).toHaveClass("bg-blue-600", "text-white");
     });
 
     it("renders category icons", () => {
       const { container } = render(<FAQSection />);
       const categoryButtons = container.querySelectorAll("button");
-      
+
       // Should have icons (SVG elements) in category buttons
       const svgs = container.querySelectorAll("svg");
       expect(svgs.length).toBeGreaterThan(0);
@@ -191,14 +203,14 @@ describe("FAQSection", () => {
     it("inactive category buttons have gray styling", () => {
       render(<FAQSection defaultCategory="cat-1" />);
       const cat2Btn = screen.getByText("Cat 2");
-      
+
       expect(cat2Btn).toHaveClass("bg-gray-100", "text-gray-700");
     });
 
     it("category buttons have hover effect classes", () => {
       render(<FAQSection />);
       const cat1Btn = screen.getByText("Cat 1");
-      
+
       expect(cat1Btn).toHaveClass("hover:bg-gray-200");
     });
   });
@@ -206,14 +218,14 @@ describe("FAQSection", () => {
   describe("FAQ Items Display", () => {
     it("renders FAQ items from selected category", () => {
       render(<FAQSection defaultCategory="cat-1" />);
-      
+
       expect(screen.getByText("Mock Q1?")).toBeInTheDocument();
       expect(screen.getByText("Mock Q2?")).toBeInTheDocument();
     });
 
     it("first FAQ item has defaultOpen set to true", () => {
       render(<FAQSection />);
-      
+
       // First item should be expanded by default
       const firstAnswer = screen.getAllByText("Mock A1.")[0];
       expect(firstAnswer).toBeVisible();
@@ -221,23 +233,27 @@ describe("FAQSection", () => {
 
     it("renders FAQs in a white bordered container", () => {
       const { container } = render(<FAQSection />);
-      const faqContainer = container.querySelector(".bg-white.rounded-lg.shadow-sm.border");
-      
+      const faqContainer = container.querySelector(
+        ".bg-white.rounded-lg.shadow-sm.border"
+      );
+
       expect(faqContainer).toBeInTheDocument();
     });
 
     it("shows empty state when no FAQs available", () => {
       mockGetFAQsByCategory.mockReturnValue([]);
       render(<FAQSection defaultCategory="cat-1" />);
-      
+
       expect(screen.getByText(/No FAQs found/)).toBeInTheDocument();
     });
 
     it("empty state has proper styling", () => {
       mockGetFAQsByCategory.mockReturnValue([]);
       const { container } = render(<FAQSection />);
-      const emptyState = container.querySelector(".py-12.text-center.text-gray-500");
-      
+      const emptyState = container.querySelector(
+        ".py-12.text-center.text-gray-500"
+      );
+
       expect(emptyState).toBeInTheDocument();
     });
   });
@@ -249,9 +265,9 @@ describe("FAQSection", () => {
         { id: "2", question: "Q2?", answer: "A2", category: "cat-1" },
         { id: "3", question: "Q3?", answer: "A3", category: "cat-1" },
       ]);
-      
+
       render(<FAQSection maxItemsToShow={2} defaultCategory="cat-1" />);
-      
+
       expect(screen.getByText("Q1?")).toBeInTheDocument();
       expect(screen.getByText("Q2?")).toBeInTheDocument();
       expect(screen.queryByText("Q3?")).not.toBeInTheDocument();
@@ -262,9 +278,9 @@ describe("FAQSection", () => {
         { id: "1", question: "Q1?", answer: "A1", category: "cat-1" },
         { id: "2", question: "Q2?", answer: "A2", category: "cat-1" },
       ]);
-      
+
       render(<FAQSection maxItemsToShow={2} defaultCategory="cat-1" />);
-      
+
       expect(screen.getByText("View all FAQs")).toBeInTheDocument();
     });
 
@@ -273,16 +289,16 @@ describe("FAQSection", () => {
         { id: "1", question: "Q1?", answer: "A1", category: "cat-1" },
         { id: "2", question: "Q2?", answer: "A2", category: "cat-1" },
       ]);
-      
+
       render(<FAQSection maxItemsToShow={2} defaultCategory="cat-1" />);
       const link = screen.getByText("View all FAQs").closest("a");
-      
+
       expect(link).toHaveAttribute("href", "/faq");
     });
 
     it("does not show 'View all FAQs' link when no limit set", () => {
       render(<FAQSection defaultCategory="cat-1" />);
-      
+
       expect(screen.queryByText("View all FAQs")).not.toBeInTheDocument();
     });
 
@@ -290,9 +306,9 @@ describe("FAQSection", () => {
       mockGetFAQsByCategory.mockReturnValue([
         { id: "1", question: "Q1?", answer: "A1", category: "cat-1" },
       ]);
-      
+
       render(<FAQSection maxItemsToShow={5} defaultCategory="cat-1" />);
-      
+
       expect(screen.queryByText("View all FAQs")).not.toBeInTheDocument();
     });
   });
@@ -300,7 +316,7 @@ describe("FAQSection", () => {
   describe("Default Category", () => {
     it("uses defaultCategory prop to set initial category", () => {
       render(<FAQSection defaultCategory="cat-2" />);
-      
+
       const cat2Btn = screen.getByText("Cat 2");
       expect(cat2Btn).toHaveClass("bg-blue-600", "text-white");
       expect(mockGetFAQsByCategory).toHaveBeenCalledWith("cat-2");
@@ -308,7 +324,7 @@ describe("FAQSection", () => {
 
     it("shows all categories when defaultCategory is not provided", () => {
       render(<FAQSection defaultCategory="cat-1" />);
-      
+
       const allCategoriesBtn = screen.getByText("All Categories");
       fireEvent.click(allCategoriesBtn);
       expect(allCategoriesBtn).toHaveClass("bg-blue-600", "text-white");
@@ -319,9 +335,9 @@ describe("FAQSection", () => {
     it("handles empty string search gracefully", () => {
       render(<FAQSection showSearch={true} defaultCategory="cat-1" />);
       const searchInput = screen.getByPlaceholderText("Search FAQs...");
-      
+
       fireEvent.change(searchInput, { target: { value: "" } });
-      
+
       expect(screen.getByText("Mock Q1?")).toBeInTheDocument();
       expect(screen.getByText("Mock Q2?")).toBeInTheDocument();
     });
@@ -329,16 +345,16 @@ describe("FAQSection", () => {
     it("handles special characters in search - search by text without special char", () => {
       render(<FAQSection showSearch={true} defaultCategory="cat-1" />);
       const searchInput = screen.getByPlaceholderText("Search FAQs...");
-      
+
       fireEvent.change(searchInput, { target: { value: "Mock Q1" } });
-      
+
       expect(screen.getByText("Mock Q1?")).toBeInTheDocument();
     });
 
     it("handles maxItemsToShow of 0 - BUG: shows all FAQs instead of limiting", () => {
       render(<FAQSection maxItemsToShow={0} defaultCategory="cat-1" />);
-      
-      // BUG: When maxItemsToShow=0, the component doesn't apply slice because of 
+
+      // BUG: When maxItemsToShow=0, the component doesn't apply slice because of
       // `if (maxItemsToShow)` check which is falsy for 0
       // Expected behavior: Should show 0 items or empty state
       // Actual behavior: Shows all FAQs (2 items in this case)
@@ -350,14 +366,14 @@ describe("FAQSection", () => {
     it("handles very long title text", () => {
       const longTitle = "A".repeat(200);
       render(<FAQSection title={longTitle} defaultCategory="cat-1" />);
-      
+
       expect(screen.getByText(longTitle)).toBeInTheDocument();
     });
 
     it("handles very long description text", () => {
       const longDesc = "B".repeat(300);
       render(<FAQSection description={longDesc} defaultCategory="cat-1" />);
-      
+
       expect(screen.getByText(longDesc)).toBeInTheDocument();
     });
   });

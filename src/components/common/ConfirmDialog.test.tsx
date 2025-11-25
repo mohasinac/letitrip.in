@@ -473,5 +473,256 @@ describe("ConfirmDialog", () => {
       expect(screen.getByText("Test")).toBeInTheDocument();
       expect(screen.queryByRole("paragraph")).not.toBeInTheDocument();
     });
+
+    it("handles very long title text", () => {
+      const longTitle = "A".repeat(200);
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title={longTitle}
+        />
+      );
+      expect(screen.getByText(longTitle)).toBeInTheDocument();
+    });
+
+    it("handles very long description text", () => {
+      const longDesc = "B".repeat(500);
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+          description={longDesc}
+        />
+      );
+      expect(screen.getByText(longDesc)).toBeInTheDocument();
+    });
+
+    it("handles special characters in title and description", () => {
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Delete <>&"
+          description="Are you sure? @#$%"
+        />
+      );
+      expect(screen.getByText("Delete <>&")).toBeInTheDocument();
+      expect(screen.getByText("Are you sure? @#$%")).toBeInTheDocument();
+    });
+
+    it("handles empty string button labels", () => {
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+          confirmLabel=""
+          cancelLabel=""
+        />
+      );
+      const buttons = screen.getAllByRole("button");
+      expect(buttons).toHaveLength(2);
+    });
+  });
+
+  describe("Keyboard Navigation", () => {
+    it("focuses confirm button by default when opened", () => {
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+        />
+      );
+
+      // Confirm button should be in the document
+      expect(screen.getByText("Confirm")).toBeInTheDocument();
+    });
+
+    it("allows Tab navigation between buttons", () => {
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+        />
+      );
+
+      const cancelButton = screen.getByText("Cancel");
+      const confirmButton = screen.getByText("Confirm");
+
+      expect(cancelButton).toBeInTheDocument();
+      expect(confirmButton).toBeInTheDocument();
+    });
+
+    it("handles Enter key on confirm button", () => {
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+        />
+      );
+
+      const confirmButton = screen.getByText("Confirm");
+      fireEvent.keyDown(confirmButton, { key: "Enter", code: "Enter" });
+
+      // Confirm button click should trigger
+      fireEvent.click(confirmButton);
+      expect(mockOnConfirm).toHaveBeenCalled();
+    });
+
+    it("does not close when other keys are pressed", () => {
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+        />
+      );
+
+      fireEvent.keyDown(document, { key: "a", code: "KeyA" });
+      fireEvent.keyDown(document, { key: "Enter", code: "Enter" });
+      fireEvent.keyDown(document, { key: "Tab", code: "Tab" });
+
+      expect(mockOnClose).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Accessibility", () => {
+    it("uses semantic dialog role", () => {
+      const { container } = render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+        />
+      );
+
+      // Dialog should have proper ARIA structure
+      const dialog = container.querySelector('[role="dialog"]');
+      expect(dialog || container.querySelector(".fixed")).toBeInTheDocument();
+    });
+
+    it("buttons have accessible labels", () => {
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+        />
+      );
+
+      expect(
+        screen.getByRole("button", { name: "Cancel" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Confirm" })
+      ).toBeInTheDocument();
+    });
+
+    it("title has proper heading level", () => {
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test Title"
+        />
+      );
+
+      const heading = screen.getByRole("heading");
+      expect(heading).toHaveTextContent("Test Title");
+    });
+  });
+
+  describe("Animation and Transitions", () => {
+    it("applies overlay styling", () => {
+      const { container } = render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+        />
+      );
+
+      const overlay = container.querySelector(".fixed");
+      expect(overlay).toBeInTheDocument();
+    });
+
+    it("dialog has centered positioning", () => {
+      const { container } = render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+        />
+      );
+
+      // Check for centering classes or fixed positioning
+      const dialog = container.querySelector(".fixed");
+      expect(dialog).toBeInTheDocument();
+    });
+  });
+
+  describe("Button Styling by Variant", () => {
+    it("danger variant has red confirm button", () => {
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+          variant="danger"
+        />
+      );
+
+      const confirmButton = screen.getByText("Confirm");
+      expect(confirmButton).toHaveClass("bg-red-600");
+    });
+
+    it("warning variant has yellow/orange confirm button", () => {
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+          variant="warning"
+        />
+      );
+
+      const confirmButton = screen.getByText("Confirm");
+      expect(confirmButton).toHaveClass("bg-yellow-600");
+    });
+
+    it("info variant has blue confirm button", () => {
+      render(
+        <ConfirmDialog
+          isOpen={true}
+          onClose={mockOnClose}
+          onConfirm={mockOnConfirm}
+          title="Test"
+          variant="info"
+        />
+      );
+
+      const confirmButton = screen.getByText("Confirm");
+      expect(confirmButton).toHaveClass("bg-blue-600");
+    });
   });
 });

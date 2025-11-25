@@ -103,15 +103,36 @@ describe("CategoriesContent", () => {
   });
 
   it("shows loading state initially", async () => {
-    mockCategoriesService.list.mockResolvedValue({
-      data: [],
-      count: 0,
-      pagination: { limit: 50, hasNextPage: false, nextCursor: null, count: 0 },
-    });
-    await act(async () => {
-      render(<CategoriesContent />);
-    });
+    // Delay the mock resolution to catch the loading state
+    mockCategoriesService.list.mockImplementation(
+      () =>
+        new Promise((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                data: [],
+                count: 0,
+                pagination: {
+                  limit: 50,
+                  hasNextPage: false,
+                  nextCursor: null,
+                  count: 0,
+                },
+              }),
+            100
+          )
+        )
+    );
+
+    render(<CategoriesContent />);
+
+    // Check for loading state immediately
     expect(screen.getByTestId("loader2-icon")).toBeInTheDocument();
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.queryByTestId("loader2-icon")).not.toBeInTheDocument();
+    });
   });
 
   it("handles search functionality", async () => {
@@ -149,7 +170,8 @@ describe("CategoriesContent", () => {
     });
     const searchInput = screen.getByPlaceholderText("Search categories...");
     fireEvent.change(searchInput, { target: { value: "cat" } });
-    fireEvent.submit(searchInput.closest("form"));
+    const form = searchInput.closest("form");
+    if (form) fireEvent.submit(form);
     await waitFor(() => {
       expect(mockCategoriesService.list).toHaveBeenCalledWith(
         expect.objectContaining({ search: "cat" })
