@@ -66,6 +66,7 @@ function CategoriesContent() {
         sortBy,
         sortOrder,
         featured: featured || undefined,
+        search: searchQuery || undefined,
       });
 
       setCategories(response.data || []);

@@ -18,6 +18,16 @@ jest.mock("next/navigation", () => ({
 describe("useFilters", () => {
   beforeEach(() => {
     mockPush.mockClear();
+    // Mock localStorage
+    Object.defineProperty(global, "localStorage", {
+      value: {
+        getItem: jest.fn(),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+      },
+      writable: true,
+    });
   });
 
   it("initializes with initial filters", () => {
@@ -31,8 +41,8 @@ describe("useFilters", () => {
 
     expect(result.current.filters).toEqual(initialFilters);
     expect(result.current.appliedFilters).toEqual(initialFilters);
-    expect(result.current.hasActiveFilters).toBe(true);
-    expect(result.current.activeFilterCount).toBe(1);
+    expect(result.current.hasActiveFilters).toBe(true); // price: 0 counts as active
+    expect(result.current.activeFilterCount).toBe(1); // price: 0 is active
   });
 
   it("loads filters from URL", () => {
@@ -108,6 +118,9 @@ describe("useFilters", () => {
 
     act(() => {
       result.current.updateFilters({ category: "electronics", price: 200 });
+    });
+
+    act(() => {
       result.current.applyFilters();
     });
 
@@ -189,6 +202,9 @@ describe("useFilters", () => {
 
     act(() => {
       result.current.updateFilters({ category: "electronics", price: 200 });
+    });
+
+    act(() => {
       result.current.clearFilter("price");
     });
 

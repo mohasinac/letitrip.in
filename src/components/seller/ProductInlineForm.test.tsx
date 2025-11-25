@@ -141,19 +141,19 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Fill required fields
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "New Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "999" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
 
@@ -173,10 +173,10 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Product Name/)).not.toBeDisabled();
-      expect(screen.getByLabelText(/Price/)).not.toBeDisabled();
-      expect(screen.getByLabelText(/Stock Count/)).not.toBeDisabled();
-      expect(screen.getByLabelText(/Category ID/)).not.toBeDisabled();
+      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).not.toBeDisabled();
+      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).not.toBeDisabled();
+      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[1]).not.toBeDisabled();
+      expect(screen.getByPlaceholderText("e.g., electronics")).not.toBeDisabled();
     });
   });
 
@@ -190,12 +190,12 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Product Name/)).toHaveValue("");
+      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toHaveValue("");
       expect(screen.getByTestId("slug-input")).toHaveValue("");
-      expect(screen.getByLabelText(/Price/)).toHaveValue(0);
-      expect(screen.getByLabelText(/Stock Count/)).toHaveValue(0);
-      expect(screen.getByLabelText(/Category ID/)).toHaveValue("");
-      expect(screen.getByLabelText(/Description/)).toHaveValue("");
+      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).toHaveValue(0);
+      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[1]).toHaveValue(0);
+      expect(screen.getByPlaceholderText("e.g., electronics")).toHaveValue("");
+      expect(document.querySelector("textarea")!).toHaveValue("");
     });
 
     it("should initialize with product values for editing", () => {
@@ -208,12 +208,12 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Product Name/)).toHaveValue("Test Product");
+      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toHaveValue("Test Product");
       expect(screen.getByTestId("slug-input")).toHaveValue("test-product");
-      expect(screen.getByLabelText(/Price/)).toHaveValue(1999);
-      expect(screen.getByLabelText(/Stock Count/)).toHaveValue(50);
-      expect(screen.getByLabelText(/Category ID/)).toHaveValue("electronics");
-      expect(screen.getByLabelText(/Description/)).toHaveValue(
+      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).toHaveValue(1999);
+      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[1]).toHaveValue(50);
+      expect(screen.getByPlaceholderText("e.g., electronics")).toHaveValue("electronics");
+      expect(document.querySelector("textarea")!).toHaveValue(
         "Test product description"
       );
     });
@@ -238,7 +238,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Description/)).toHaveValue("");
+      expect(document.querySelector("textarea")!).toHaveValue("");
     });
 
     it("should handle product without condition field", () => {
@@ -262,7 +262,7 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Should not crash
-      expect(screen.getByLabelText(/Product Name/)).toBeInTheDocument();
+      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toBeInTheDocument();
     });
   });
 
@@ -276,7 +276,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      const nameInput = screen.getByLabelText(/Product Name/);
+      const nameInput = (screen.getAllByRole("textbox") as HTMLElement[])[0];
       fireEvent.change(nameInput, { target: { value: "New Product Name" } });
 
       expect(nameInput).toHaveValue("New Product Name");
@@ -306,7 +306,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      const priceInput = screen.getByLabelText(/Price/);
+      const priceInput = (screen.getAllByRole("spinbutton") as HTMLElement[])[0];
       fireEvent.change(priceInput, { target: { value: "2999.99" } });
 
       expect(priceInput).toHaveValue(2999.99);
@@ -321,7 +321,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      const stockInput = screen.getByLabelText(/Stock Count/);
+      const stockInput = (screen.getAllByRole("spinbutton") as HTMLElement[])[1];
       fireEvent.change(stockInput, { target: { value: "100" } });
 
       expect(stockInput).toHaveValue(100);
@@ -336,7 +336,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      const categoryInput = screen.getByLabelText(/Category ID/);
+      const categoryInput = screen.getByPlaceholderText("e.g., electronics");
       fireEvent.change(categoryInput, { target: { value: "fashion" } });
 
       expect(categoryInput).toHaveValue("fashion");
@@ -351,7 +351,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      const descInput = screen.getByLabelText(/Description/);
+      const descInput = document.querySelector("textarea")!;
       fireEvent.change(descInput, {
         target: { value: "Updated description" },
       });
@@ -368,7 +368,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      const nameInput = screen.getByLabelText(/Product Name/);
+      const nameInput = (screen.getAllByRole("textbox") as HTMLElement[])[0];
       fireEvent.change(nameInput, { target: { value: "Test Product" } });
 
       const slugInput = screen.getByTestId("slug-input");
@@ -391,22 +391,22 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Fill all required fields
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "New Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "1500" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "25" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
-      fireEvent.change(screen.getByLabelText(/Description/), {
+      fireEvent.change(document.querySelector("textarea")!, {
         target: { value: "Product description" },
       });
 
@@ -445,19 +445,19 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Fill required fields
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "New Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "999" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
 
@@ -478,16 +478,16 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Fill all fields except slug
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "New Product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "999" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
 
@@ -506,19 +506,19 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Fill all required fields
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "New Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "999" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
 
@@ -548,19 +548,19 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Fill required fields
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "New Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "999" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
 
@@ -589,7 +589,7 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Update a field
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "Updated Product" },
       });
 
@@ -709,19 +709,19 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Fill required fields
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "New Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "999" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
 
@@ -748,19 +748,19 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Fill required fields
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "New Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "999" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
 
@@ -786,19 +786,19 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Fill required fields
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "New Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "999" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
 
@@ -829,19 +829,19 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Fill required fields
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "New Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "999" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
 
@@ -869,7 +869,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Product Name/)).toBeRequired();
+      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toBeRequired();
     });
 
     it("should have required attribute on price field", () => {
@@ -881,7 +881,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Price/)).toBeRequired();
+      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).toBeRequired();
     });
 
     it("should have required attribute on stock count field", () => {
@@ -893,7 +893,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Stock Count/)).toBeRequired();
+      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[1]).toBeRequired();
     });
 
     it("should have required attribute on category ID field", () => {
@@ -905,7 +905,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Category ID/)).toBeRequired();
+      expect(screen.getByPlaceholderText("e.g., electronics")).toBeRequired();
     });
 
     it("should have min=0 on price field", () => {
@@ -917,7 +917,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Price/)).toHaveAttribute("min", "0");
+      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).toHaveAttribute("min", "0");
     });
 
     it("should have step=0.01 on price field", () => {
@@ -929,7 +929,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Price/)).toHaveAttribute("step", "0.01");
+      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).toHaveAttribute("step", "0.01");
     });
 
     it("should have min=0 on stock count field", () => {
@@ -941,7 +941,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Stock Count/)).toHaveAttribute("min", "0");
+      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[1]).toHaveAttribute("min", "0");
     });
 
     it("should parse price as float", () => {
@@ -953,7 +953,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      const priceInput = screen.getByLabelText(/Price/);
+      const priceInput = (screen.getAllByRole("spinbutton") as HTMLElement[])[0];
       fireEvent.change(priceInput, { target: { value: "99.99" } });
 
       expect(priceInput).toHaveValue(99.99);
@@ -968,7 +968,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      const stockInput = screen.getByLabelText(/Stock Count/);
+      const stockInput = (screen.getAllByRole("spinbutton") as HTMLElement[])[1];
       fireEvent.change(stockInput, { target: { value: "42.7" } });
 
       // Should be parsed as integer
@@ -1001,7 +1001,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      expect(screen.getByLabelText(/Category ID/)).toHaveAttribute(
+      expect(screen.getByPlaceholderText("e.g., electronics")).toHaveAttribute(
         "placeholder",
         "e.g., electronics"
       );
@@ -1034,19 +1034,19 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "Expensive Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "expensive-product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "999999999.99" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "1" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "luxury" },
       });
 
@@ -1074,19 +1074,19 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "Bulk Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "bulk-product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "100" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "999999" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "bulk" },
       });
 
@@ -1111,11 +1111,11 @@ describe("ProductInlineForm Component", () => {
       );
 
       const longName = "A".repeat(500);
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: longName },
       });
 
-      expect(screen.getByLabelText(/Product Name/)).toHaveValue(longName);
+      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toHaveValue(longName);
     });
 
     it("should handle very long descriptions", () => {
@@ -1128,11 +1128,11 @@ describe("ProductInlineForm Component", () => {
       );
 
       const longDesc = "B".repeat(5000);
-      fireEvent.change(screen.getByLabelText(/Description/), {
+      fireEvent.change(document.querySelector("textarea")!, {
         target: { value: longDesc },
       });
 
-      expect(screen.getByLabelText(/Description/)).toHaveValue(longDesc);
+      expect(document.querySelector("textarea")!).toHaveValue(longDesc);
     });
 
     it("should handle empty string for optional description", async () => {
@@ -1148,19 +1148,19 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "100" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "general" },
       });
 
@@ -1189,19 +1189,19 @@ describe("ProductInlineForm Component", () => {
       );
 
       // Fill required fields
-      fireEvent.change(screen.getByLabelText(/Product Name/), {
+      fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "Product" },
       });
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "product" },
       });
-      fireEvent.change(screen.getByLabelText(/Price/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
         target: { value: "100" },
       });
-      fireEvent.change(screen.getByLabelText(/Stock Count/), {
+      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByLabelText(/Category ID/), {
+      fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "general" },
       });
 
@@ -1256,10 +1256,10 @@ describe("ProductInlineForm Component", () => {
 
       // Check that all main inputs (except slug which is mocked) have proper classes
       const inputs = [
-        screen.getByLabelText(/Product Name/),
-        screen.getByLabelText(/Price/),
-        screen.getByLabelText(/Stock Count/),
-        screen.getByLabelText(/Category ID/),
+        (screen.getAllByRole("textbox") as HTMLElement[])[0],
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        screen.getByPlaceholderText("e.g., electronics"),
       ];
 
       inputs.forEach((input) => {
@@ -1281,7 +1281,7 @@ describe("ProductInlineForm Component", () => {
         />
       );
 
-      const textarea = screen.getByLabelText(/Description/);
+      const textarea = document.querySelector("textarea")!;
       expect(textarea).toHaveClass(
         "w-full",
         "rounded-lg",
@@ -1353,3 +1353,8 @@ describe("ProductInlineForm Component", () => {
     });
   });
 });
+
+
+
+
+

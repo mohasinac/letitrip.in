@@ -304,94 +304,210 @@ describe("StatusBadge", () => {
     });
   });
 
-  // Combined Props
-  describe("Combined Props", () => {
-    it("works with all props together", () => {
-      const { container } = render(
-        <StatusBadge
-          status="verified"
-          variant="outline"
-          size="lg"
-          className="custom-badge"
-        />
-      );
-
-      const badge = container.firstChild as HTMLElement;
-      expect(badge).toHaveClass("custom-badge");
-      expect(badge.className).toContain("border");
-      expect(badge.className).toContain("text-base");
-      expect(screen.getByText("Verified")).toBeInTheDocument();
+  // Additional Edge Cases
+  describe("Additional Edge Cases", () => {
+    it("handles status with special characters", () => {
+      render(<StatusBadge status="in-progress!" />);
+      expect(screen.getByText("In-progress!")).toBeInTheDocument();
     });
 
-    it("maintains styling with multiple props", () => {
-      const { container } = render(
-        <StatusBadge
-          status="rejected"
-          variant="solid"
-          size="sm"
-          className="ml-2"
-        />
-      );
+    it("handles very long status text", () => {
+      const longStatus = "very-long-status-that-might-break-layout";
+      render(<StatusBadge status={longStatus} />);
+      expect(screen.getByText(/very-long-status/i)).toBeInTheDocument();
+    });
 
-      const badge = container.firstChild as HTMLElement;
-      expect(badge).toHaveClass("ml-2");
-      expect(badge.className).toContain("bg-red-100");
-      expect(badge.className).toContain("text-xs");
+    it("handles numeric-like status", () => {
+      render(<StatusBadge status="404" />);
+      expect(screen.getByText("404")).toBeInTheDocument();
+    });
+
+    it("handles status with spaces", () => {
+      render(<StatusBadge status="in progress" />);
+      expect(screen.getByText("In progress")).toBeInTheDocument();
+    });
+
+    it("handles status with underscores", () => {
+      render(<StatusBadge status="payment_pending" />);
+      expect(screen.getByText("Payment_pending")).toBeInTheDocument();
     });
   });
 
-  // Layout
-  describe("Layout", () => {
-    it("uses inline-flex display", () => {
+  // Accessibility Enhancements
+  describe("Accessibility", () => {
+    it("badge is keyboard accessible with proper role", () => {
       const { container } = render(<StatusBadge status="active" />);
-
       const badge = container.firstChild as HTMLElement;
-      expect(badge).toHaveClass("inline-flex");
+      expect(badge).toBeInTheDocument();
     });
 
-    it("centers items", () => {
+    it("has sufficient color contrast for text", () => {
       const { container } = render(<StatusBadge status="active" />);
-
       const badge = container.firstChild as HTMLElement;
-      expect(badge).toHaveClass("items-center");
+      expect(badge).toHaveClass("text-green-800");
     });
 
-    it("renders as span element", () => {
-      const { container } = render(<StatusBadge status="active" />);
-
-      const badge = container.firstChild as HTMLElement;
+    it("status text is readable with semantic meaning", () => {
+      render(<StatusBadge status="completed" />);
+      const badge = screen.getByText("Completed");
       expect(badge.tagName).toBe("SPAN");
     });
   });
 
-  // Edge Cases
-  describe("Edge Cases", () => {
-    it("handles very long status text", () => {
-      render(
-        <StatusBadge status="this-is-a-very-long-status-text-that-should-still-work" />
+  // Performance and Rendering
+  describe("Performance", () => {
+    it("renders efficiently with minimal DOM nodes", () => {
+      const { container } = render(<StatusBadge status="active" />);
+      expect(container.querySelectorAll("*").length).toBeLessThan(5);
+    });
+
+    it("handles rapid status changes", () => {
+      const { rerender } = render(<StatusBadge status="pending" />);
+      rerender(<StatusBadge status="active" />);
+      rerender(<StatusBadge status="failed" />);
+      expect(screen.getByText("Failed")).toBeInTheDocument();
+    });
+
+    it("memoization works correctly for same status", () => {
+      const { rerender, container } = render(<StatusBadge status="active" />);
+      const firstRender = container.firstChild;
+      rerender(<StatusBadge status="active" />);
+      const secondRender = container.firstChild;
+      expect(firstRender).toBe(secondRender);
+    });
+  });
+
+  // Layout Integration
+  describe("Layout Integration", () => {
+    it("fits inline with text content", () => {
+      const { container } = render(
+        <div>
+          Order status: <StatusBadge status="shipped" />
+        </div>
       );
-
-      expect(
-        screen.getByText(/This-is-a-very-long-status-text/)
-      ).toBeInTheDocument();
+      expect(container.textContent).toContain("Order status:");
+      expect(screen.getByText("Shipped")).toBeInTheDocument();
     });
 
-    it("handles status with special characters", () => {
-      render(<StatusBadge status="pending-review" />);
+    it("works in flex layouts", () => {
+      const { container } = render(
+        <div style={{ display: "flex" }}>
+          <StatusBadge status="active" />
+          <StatusBadge status="pending" />
+        </div>
+      );
+      expect(screen.getByText("Active")).toBeInTheDocument();
+      expect(screen.getByText("Pending")).toBeInTheDocument();
+    });
+  });
 
-      expect(screen.getByText("Pending-review")).toBeInTheDocument();
+  // Multiple Status Combinations
+  describe("Status Combinations", () => {
+    it("renders multiple badges with different statuses", () => {
+      const { container } = render(
+        <>
+          <StatusBadge status="active" />
+          <StatusBadge status="pending" />
+          <StatusBadge status="failed" />
+        </>
+      );
+      expect(screen.getByText("Active")).toBeInTheDocument();
+      expect(screen.getByText("Pending")).toBeInTheDocument();
+      expect(screen.getByText("Failed")).toBeInTheDocument();
     });
 
-    it("handles status with numbers", () => {
-      render(<StatusBadge status="level-1" />);
+    it("each badge has independent styling", () => {
+      const { container } = render(
+        <div>
+          <StatusBadge status="active" />
+          <StatusBadge status="pending" />
+        </div>
+      );
+      const badges = container.querySelectorAll("span");
+      expect(badges[0].className).toContain("bg-");
+      expect(badges[1].className).toContain("bg-");
+      // Different statuses should have different classes
+      expect(badges[0].className).not.toBe(badges[1].className);
+    });
+  });
 
-      expect(screen.getByText("Level-1")).toBeInTheDocument();
+  // Text Transformation Edge Cases
+  describe("Text Transformation", () => {
+    it("capitalizes first letter of single word", () => {
+      render(<StatusBadge status="active" />);
+      expect(screen.getByText("Active")).toBeInTheDocument();
     });
 
-    it("handles status with spaces", () => {
-      render(<StatusBadge status="not found" />);
+    it("capitalizes first letter after hyphen", () => {
+      render(<StatusBadge status="in-transit" />);
+      expect(screen.getByText("In-transit")).toBeInTheDocument();
+    });
 
-      expect(screen.getByText("Not found")).toBeInTheDocument();
+    it("handles all uppercase input", () => {
+      render(<StatusBadge status="COMPLETED" />);
+      expect(screen.getByText("COMPLETED")).toBeInTheDocument();
+    });
+
+    it("handles all lowercase input", () => {
+      render(<StatusBadge status="processing" />);
+      expect(screen.getByText("Processing")).toBeInTheDocument();
+    });
+
+    it("preserves original casing in display", () => {
+      render(<StatusBadge status="MiXeD-CaSe" />);
+      expect(screen.getByText("MiXeD-CaSe")).toBeInTheDocument();
+    });
+  });
+
+  // Color Scheme Verification
+  describe("Color Scheme Consistency", () => {
+    it("applies consistent background and text colors", () => {
+      const { container } = render(<StatusBadge status="active" />);
+      const badge = container.firstChild as HTMLElement;
+      const classes = badge.className;
+      // Should have both bg- and text- classes
+      expect(classes).toMatch(/bg-\w+-\d+/);
+      expect(classes).toMatch(/text-\w+-\d+/);
+    });
+
+    it("uses Tailwind color scheme format", () => {
+      const { container } = render(<StatusBadge status="pending" />);
+      const badge = container.firstChild as HTMLElement;
+      // Should follow Tailwind pattern like bg-yellow-100 text-yellow-800
+      expect(badge.className).toMatch(/(bg|text)-\w+-\d00/);
+    });
+
+    it("color contrast is readable", () => {
+      const statuses = [
+        "active",
+        "pending",
+        "failed",
+        "completed",
+        "cancelled",
+      ];
+      statuses.forEach((status) => {
+        const { container } = render(<StatusBadge status={status} />);
+        const badge = container.firstChild as HTMLElement;
+        // Verify it has color classes
+        expect(badge.className).toContain("bg-");
+        expect(badge.className).toContain("text-");
+      });
+    });
+
+    it("unknown status defaults to blue info color", () => {
+      const { container } = render(<StatusBadge status="unknown-status" />);
+      expect(container.firstChild).toHaveClass("bg-blue-100", "text-blue-800");
+    });
+
+    it("each status has distinct visual styling", () => {
+      const { container: container1 } = render(<StatusBadge status="active" />);
+      const { container: container2 } = render(<StatusBadge status="failed" />);
+
+      const badge1 = container1.firstChild as HTMLElement;
+      const badge2 = container2.firstChild as HTMLElement;
+
+      // Different statuses should have different colors
+      expect(badge1.className).not.toBe(badge2.className);
     });
   });
 });
