@@ -380,8 +380,15 @@ describe("FeaturedCategories", () => {
     it("categories have hover effect", async () => {
       render(<FeaturedCategories />);
       await waitFor(() => {
+        // Next.js Link renders the anchor, check for hover-related classes in the structure
         const link = screen.getByText("Electronics").closest("a");
-        expect(link?.className).toContain("group");
+        expect(link).toBeInTheDocument();
+        // Verify hover effect by checking icon container has transition classes
+        const iconContainer = link?.querySelector(".bg-yellow-100");
+        expect(iconContainer).toHaveClass(
+          "group-hover:bg-yellow-200",
+          "transition-colors"
+        );
       });
     });
 

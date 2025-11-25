@@ -7,7 +7,11 @@ import { useCart } from "@/hooks/useCart";
 // Mock dependencies
 jest.mock("next/link", () => ({
   __esModule: true,
-  default: ({ children, href }: any) => <a href={href}>{children}</a>,
+  default: ({ children, href, className, ...props }: any) => (
+    <a href={href} className={className} {...props}>
+      {children}
+    </a>
+  ),
 }));
 
 const mockUsePathname = jest.fn();
@@ -155,7 +159,9 @@ describe("BottomNav", () => {
       render(<BottomNav />);
       const productsLink = screen.getByText("Products").closest("a");
       expect(productsLink?.className).toContain("text-gray-600");
-      expect(productsLink?.className).not.toContain("text-yellow-600");
+      // Should not have the active yellow color (only hover variant is OK)
+      const classes = productsLink?.className.split(" ") || [];
+      expect(classes.includes("text-yellow-600")).toBe(false);
     });
   });
 

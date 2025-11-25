@@ -172,7 +172,7 @@ describe("ProductCard", () => {
       });
     });
 
-    it("does not call onAddToCart when out of stock", () => {
+    it("does not show add to cart button when out of stock", () => {
       const onAddToCart = jest.fn();
       render(
         <ProductCard
@@ -182,10 +182,8 @@ describe("ProductCard", () => {
         />
       );
 
-      const button = screen.getByText("Add to Cart");
-      fireEvent.click(button);
-
-      expect(onAddToCart).not.toHaveBeenCalled();
+      expect(screen.queryByText("Add to Cart")).not.toBeInTheDocument();
+      expect(screen.getByText("Out of Stock")).toBeInTheDocument();
     });
 
     it("prevents navigation when add to cart clicked", () => {

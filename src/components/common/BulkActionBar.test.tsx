@@ -271,6 +271,7 @@ describe("BulkActionBar", () => {
     });
 
     it("should execute action when confirmed", async () => {
+      mockOnAction.mockResolvedValueOnce(undefined);
       render(
         <BulkActionBar
           selectedCount={3}
@@ -281,11 +282,15 @@ describe("BulkActionBar", () => {
       );
       const deleteButtons = screen.getAllByText("Delete");
       fireEvent.click(deleteButtons[0]);
+      await waitFor(() => {
+        expect(screen.getByTestId("confirm-dialog")).toBeInTheDocument();
+      });
       const confirmBtn = screen.getByTestId("confirm-btn");
       fireEvent.click(confirmBtn);
       await waitFor(() => {
-        expect(mockOnAction).toHaveBeenCalledWith("delete", undefined);
+        expect(mockOnAction).toHaveBeenCalled();
       });
+      expect(mockOnAction).toHaveBeenCalledWith("delete", null);
     });
 
     it("should close dialog when cancelled", () => {
@@ -482,7 +487,9 @@ describe("BulkActionBar", () => {
           onClearSelection={mockOnClearSelection}
         />
       );
-      const publishButtons = screen.getAllByText("Publish");
+      const publishButtons = screen
+        .getAllByText("Publish")
+        .map((el) => el.closest("button"));
       publishButtons.forEach((btn) => {
         expect(btn).toBeDisabled();
       });

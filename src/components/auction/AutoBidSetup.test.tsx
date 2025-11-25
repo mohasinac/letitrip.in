@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import AutoBidSetup from "./AutoBidSetup";
 
 jest.mock("lucide-react", () => ({
@@ -205,22 +205,16 @@ describe("AutoBidSetup", () => {
       fireEvent.click(setupButton);
     });
 
-    it("calls onSetup with correct amount", () => {
-      const onSetup = jest.fn();
-      const { rerender } = render(
-        <AutoBidSetup {...mockProps} onSetup={onSetup} />
-      );
-
-      const setupButton = screen.getAllByText("Set Up Auto-Bid")[0];
-      fireEvent.click(setupButton);
-
+    it("calls onSetup with correct amount", async () => {
       const input = screen.getByPlaceholderText(/Min:/);
       fireEvent.change(input, { target: { value: "15000" } });
 
       const activateButton = screen.getByText("Activate Auto-Bid");
       fireEvent.click(activateButton);
 
-      expect(onSetup).toHaveBeenCalledWith(15000);
+      await waitFor(() => {
+        expect(mockProps.onSetup).toHaveBeenCalledWith(15000);
+      });
     });
 
     it("closes form after activation", () => {

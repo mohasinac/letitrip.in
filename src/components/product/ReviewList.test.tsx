@@ -481,14 +481,11 @@ describe("ReviewList", () => {
     it("displays filtered empty state", async () => {
       render(<ReviewList productId="prod-1" />);
       await waitFor(() => {
-        const fiveStarButton = screen.getByText("5 star").closest("button");
-        fireEvent.click(fiveStarButton!);
+        expect(screen.getByText("5 star")).toBeInTheDocument();
       });
       (reviewsService.list as jest.Mock).mockResolvedValue({ data: [] });
-      await waitFor(() => {
-        const fiveStarButton = screen.getByText("5 star").closest("button");
-        fireEvent.click(fiveStarButton!);
-      });
+      const fiveStarButton = screen.getByText("5 star").closest("button");
+      fireEvent.click(fiveStarButton!);
       await waitFor(() => {
         // EmptyState component shows generic message for all empty states
         expect(
