@@ -32,18 +32,26 @@ jest.mock("@/components/common/DataTable", () => ({
   DataTable: ({ data, columns, onRowClick }: any) => (
     <div data-testid="data-table">
       {data.map((item: any) => (
-        <div key={item.id} data-testid={`row-${item.id}`} onClick={() => onRowClick(item)}>
+        <div
+          key={item.id}
+          data-testid={`row-${item.id}`}
+          onClick={() => onRowClick(item)}
+        >
           {columns.map((col: any) => (
             <div key={col.key} data-testid={`cell-${col.key}-${item.id}`}>
               {col.render ? col.render(item) : item[col.key]}
             </div>
           ))}
+        </div>
+      ))}
     </div>
   ),
 }));
 
 jest.mock("@/components/common/StatusBadge", () => ({
-  StatusBadge: ({ status }: any) => <span data-testid={`status-${status}`}>{status}</span>,
+  StatusBadge: ({ status }: any) => (
+    <span data-testid={`status-${status}`}>{status}</span>
+  ),
 }));
 
 jest.mock("@/components/common/EmptyState", () => ({
@@ -140,7 +148,10 @@ describe("OrdersPage", () => {
       render(<OrdersPage />);
 
       // Should not redirect to login, but may update URL for filters
-      expect(mockPush).toHaveBeenCalledWith("/user/orders?sortBy=created_at&sortOrder=desc", { scroll: false });
+      expect(mockPush).toHaveBeenCalledWith(
+        "/user/orders?sortBy=created_at&sortOrder=desc",
+        { scroll: false }
+      );
     });
   });
 
@@ -192,7 +203,9 @@ describe("OrdersPage", () => {
       });
 
       expect(screen.getByText("No orders found")).toBeInTheDocument();
-      expect(screen.getByText("You haven't placed any orders yet")).toBeInTheDocument();
+      expect(
+        screen.getByText("You haven't placed any orders yet")
+      ).toBeInTheDocument();
     });
 
     it("shows loading spinner while loading", () => {
@@ -258,7 +271,9 @@ describe("OrdersPage", () => {
         expect(screen.getByTestId("empty-state")).toBeInTheDocument();
       });
 
-      const startShoppingButton = screen.getByRole("button", { name: "Start Shopping" });
+      const startShoppingButton = screen.getByRole("button", {
+        name: "Start Shopping",
+      });
       fireEvent.click(startShoppingButton);
 
       expect(mockPush).toHaveBeenCalledWith("/");
