@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`HistoryPage Snapshot Testing should match snapshot 1`] = `
+<main
+  class="container mx-auto px-4 py-8"
+  id="user-history-page"
+>
+  <h1
+    class="text-3xl font-bold text-gray-800 mb-6"
+  >
+    History
+  </h1>
+  <div
+    class="bg-white rounded-lg border p-8 text-center"
+  >
+    <p
+      class="text-gray-600"
+    >
+      No history available
+    </p>
+  </div>
+</main>
+`;
