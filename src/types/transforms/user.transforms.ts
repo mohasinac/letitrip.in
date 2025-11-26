@@ -190,8 +190,8 @@ function generateUserBadges(user: UserBE, createdAt: Date): string[] {
  * Transform Backend User to Frontend User
  */
 export function toFEUser(userBE: UserBE): UserFE {
-  const createdAt = parseDate(userBE.createdAt)!;
-  const updatedAt = parseDate(userBE.updatedAt)!;
+  const createdAt = parseDate(userBE.createdAt) || new Date();
+  const updatedAt = parseDate(userBE.updatedAt) || new Date();
   const lastLoginAt = parseDate(userBE.lastLoginAt);
 
   const fullName = getFullName(
@@ -279,7 +279,7 @@ export function toFEUser(userBE: UserBE): UserFE {
 export function toFEUserCard(userBE: UserListItemBE): UserCardFE {
   const fullName = getFullName(userBE.displayName, null, null, userBE.email);
   const initials = getInitials(userBE.displayName, null, null);
-  const createdAt = parseDate(userBE.createdAt)!;
+  const createdAt = parseDate(userBE.createdAt) || new Date();
 
   return {
     id: userBE.id,

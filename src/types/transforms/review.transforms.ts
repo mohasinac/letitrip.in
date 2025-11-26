@@ -19,7 +19,9 @@ function parseDate(date: Timestamp | string | null): Date | null {
   return date instanceof Timestamp ? date.toDate() : new Date(date);
 }
 
-function formatTimeAgo(date: Date): string {
+function formatTimeAgo(date: Date | null): string {
+  if (!date) return "Unknown";
+  
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / 86400000);
@@ -36,14 +38,15 @@ export function toFEReview(
   reviewBE: ReviewBE,
   currentUserId?: string
 ): ReviewFE {
-  const createdAt = parseDate(reviewBE.createdAt)!;
+  const createdAt = parseDate(reviewBE.createdAt) || new Date();
+  const updatedAt = parseDate(reviewBE.updatedAt) || new Date();
   const replyAt = parseDate(reviewBE.replyAt);
 
   return {
     ...reviewBE,
     replyAt,
     createdAt,
-    updatedAt: parseDate(reviewBE.updatedAt)!,
+    updatedAt,
     ratingStars: Math.round(reviewBE.rating),
     timeAgo: formatTimeAgo(createdAt),
     hasReply: !!reviewBE.replyText,

@@ -74,7 +74,7 @@ function formatExpiresIn(expiresAt: Date | null): string | null {
  * Transform Backend Cart Item to Frontend
  */
 function toFECartItem(itemBE: CartItemBE): CartItemFE {
-  const addedAt = parseDate(itemBE.addedAt)!;
+  const addedAt = parseDate(itemBE.addedAt) || new Date();
 
   return {
     id: itemBE.id,
@@ -179,8 +179,8 @@ function getValidationWarnings(items: CartItemFE[]): string[] {
  * Transform Backend Cart to Frontend Cart
  */
 export function toFECart(cartBE: CartBE): CartFE {
-  const createdAt = parseDate(cartBE.createdAt)!;
-  const updatedAt = parseDate(cartBE.updatedAt)!;
+  const createdAt = parseDate(cartBE.createdAt) || new Date();
+  const updatedAt = parseDate(cartBE.updatedAt) || new Date();
   const expiresAt = parseDate(cartBE.expiresAt);
 
   const items = (cartBE.items || []).map(toFECartItem);
