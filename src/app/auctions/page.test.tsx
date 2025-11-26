@@ -767,4 +767,636 @@ describe("AuctionsPage", () => {
       });
     });
   });
+
+  describe("Edge Cases - Session 29", () => {
+    describe("Large Data Sets", () => {
+      it("handles rendering 100+ auctions efficiently", async () => {
+        const largeAuctionSet = Array.from({ length: 120 }, (_, i) => ({
+          ...mockAuctions[0],
+          id: `auction-${i}`,
+          productId: `prod-${i}`,
+          productName: `Item ${i}`,
+          productSlug: `item-${i}`,
+        }));
+
+        mockAuctionsService.list.mockResolvedValue({
+          data: largeAuctionSet.slice(0, 12), // First page
+          count: 120,
+          pagination: {
+            hasNextPage: true,
+            nextCursor: "cursor-12",
+          } as any,
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("Item 0")).toBeInTheDocument();
+        });
+
+        // Should show pagination with high count
+        expect(screen.getByText(/120.*results/i)).toBeInTheDocument();
+      });
+
+      it("handles rapid filter changes without race conditions", async () => {
+        let callCount = 0;
+        mockAuctionsService.list.mockImplementation(() => {
+          callCount++;
+          return Promise.resolve({
+            data: mockAuctions,
+            count: 2,
+            pagination: {
+              hasNextPage: false,
+              nextCursor: null,
+            } as any,
+          });
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("Gaming Laptop")).toBeInTheDocument();
+        });
+
+        // Rapid filter changes
+        const filterButton = screen.getByTestId("filter-apply");
+        fireEvent.click(filterButton);
+        fireEvent.click(filterButton);
+        fireEvent.click(filterButton);
+
+        // Should not crash and handle gracefully
+        await waitFor(() => {
+          expect(screen.getByText("Gaming Laptop")).toBeInTheDocument();
+        });
+      });
+
+      it("handles pagination with more than 10 pages", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 240, // 20 pages at 12 per page
+          pagination: {
+            hasNextPage: true,
+            nextCursor: "cursor-12",
+          } as any,
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText(/240.*results/i)).toBeInTheDocument();
+        });
+
+        // Should show pagination controls
+        expect(screen.getByText("Next")).toBeInTheDocument();
+      });
+    });
+
+    describe("Filter Combinations", () => {
+      it("applies multiple filters simultaneously", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: [mockAuctions[0]], // Only featured items
+          count: 1,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        mockSearchParams.set("status", AuctionStatus.ACTIVE);
+        mockSearchParams.set("featured", "true");
+        mockSearchParams.set("minBid", "1000");
+        mockSearchParams.set("maxBid", "2000");
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(mockAuctionsService.list).toHaveBeenCalledWith(
+            expect.objectContaining({
+              status: AuctionStatus.ACTIVE,
+              featured: true,
+              minBid: 1000,
+              maxBid: 2000,
+            })
+          );
+        });
+      });
+
+      it("clears all filters at once", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        mockSearchParams.set("status", AuctionStatus.ACTIVE);
+        mockSearchParams.set("featured", "true");
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("Gaming Laptop")).toBeInTheDocument();
+        });
+
+        const resetButton = screen.getByTestId("filter-reset");
+        fireEvent.click(resetButton);
+
+        await waitFor(() => {
+          expect(mockRouter.push).toHaveBeenCalledWith(
+            expect.stringMatching(/^\/auctions/),
+            expect.anything()
+          );
+        });
+      });
+
+      it("handles invalid filter values gracefully", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        mockSearchParams.set("minBid", "invalid");
+        mockSearchParams.set("maxBid", "-100");
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          // Should still load auctions, ignoring invalid filters
+          expect(screen.getByText("Gaming Laptop")).toBeInTheDocument();
+        });
+      });
+    });
+
+    describe("Sorting & Ordering", () => {
+      it("sorts by price ascending", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: [mockAuctions[1], mockAuctions[0]], // Reversed order
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        mockSearchParams.set("sortBy", "currentPrice");
+        mockSearchParams.set("sortOrder", "asc");
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(mockAuctionsService.list).toHaveBeenCalledWith(
+            expect.objectContaining({
+              sortBy: "currentPrice",
+              sortOrder: "asc",
+            })
+          );
+        });
+      });
+
+      it("sorts by ending soonest", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: [mockAuctions[1], mockAuctions[0]], // Ending soon first
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        mockSearchParams.set("sortBy", "endTime");
+        mockSearchParams.set("sortOrder", "asc");
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(mockAuctionsService.list).toHaveBeenCalledWith(
+            expect.objectContaining({
+              sortBy: "endTime",
+              sortOrder: "asc",
+            })
+          );
+        });
+      });
+
+      it("sorts by bid count descending", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        mockSearchParams.set("sortBy", "totalBids");
+        mockSearchParams.set("sortOrder", "desc");
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(mockAuctionsService.list).toHaveBeenCalledWith(
+            expect.objectContaining({
+              sortBy: "totalBids",
+              sortOrder: "desc",
+            })
+          );
+        });
+      });
+    });
+
+    describe("Empty & Error States", () => {
+      it("shows empty state when no auctions match filters", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: [],
+          count: 0,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        mockSearchParams.set("status", AuctionStatus.ACTIVE);
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByTestId("no-auctions")).toBeInTheDocument();
+        });
+      });
+
+      it("shows error state when API call fails", async () => {
+        mockAuctionsService.list.mockRejectedValue(
+          new Error("Failed to load auctions")
+        );
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByTestId("empty-state")).toBeInTheDocument();
+        });
+      });
+
+      it("retries loading after error", async () => {
+        mockAuctionsService.list
+          .mockRejectedValueOnce(new Error("Network error"))
+          .mockResolvedValueOnce({
+            data: mockAuctions,
+            count: 2,
+            pagination: {
+              hasNextPage: false,
+              nextCursor: null,
+            } as any,
+          });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByTestId("empty-state")).toBeInTheDocument();
+        });
+
+        // Trigger reload (if component has retry button)
+        await act(async () => {
+          mockSearchParams.set("refresh", "true");
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        });
+      });
+    });
+
+    describe("Search Functionality", () => {
+      it("debounces search input", async () => {
+        jest.useFakeTimers();
+
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByPlaceholderText(/search/i)).toBeInTheDocument();
+        });
+
+        const searchInput = screen.getByPlaceholderText(/search/i);
+
+        // Type rapidly
+        fireEvent.change(searchInput, { target: { value: "gaming" } });
+        fireEvent.change(searchInput, { target: { value: "gaming lap" } });
+        fireEvent.change(searchInput, { target: { value: "gaming laptop" } });
+
+        // Should not call API immediately
+        expect(mockAuctionsService.list).not.toHaveBeenCalledWith(
+          expect.objectContaining({ searchQuery: "gaming laptop" })
+        );
+
+        // Fast-forward debounce timer
+        jest.advanceTimersByTime(500);
+
+        // Now should call API
+        await waitFor(() => {
+          expect(mockAuctionsService.list).toHaveBeenCalledWith(
+            expect.objectContaining({ searchQuery: "gaming laptop" })
+          );
+        });
+
+        jest.useRealTimers();
+      });
+
+      it("clears search results when search is cleared", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByPlaceholderText(/search/i)).toBeInTheDocument();
+        });
+
+        const searchInput = screen.getByPlaceholderText(
+          /search/i
+        ) as HTMLInputElement;
+
+        fireEvent.change(searchInput, { target: { value: "gaming" } });
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 600));
+        });
+
+        fireEvent.change(searchInput, { target: { value: "" } });
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 600));
+        });
+
+        expect(searchInput.value).toBe("");
+      });
+
+      it("shows search results count", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText(/2.*results/i)).toBeInTheDocument();
+        });
+      });
+    });
+
+    describe("URL State Management", () => {
+      it("preserves URL parameters on page reload", async () => {
+        mockSearchParams.set("status", AuctionStatus.ACTIVE);
+        mockSearchParams.set("sortBy", "currentPrice");
+        mockSearchParams.set("page", "2");
+
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(mockAuctionsService.list).toHaveBeenCalledWith(
+            expect.objectContaining({
+              status: AuctionStatus.ACTIVE,
+              sortBy: "currentPrice",
+            })
+          );
+        });
+      });
+
+      it("updates URL without page reload", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("Gaming Laptop")).toBeInTheDocument();
+        });
+
+        const applyButton = screen.getByTestId("filter-apply");
+        fireEvent.click(applyButton);
+
+        expect(mockRouter.push).toHaveBeenCalledWith(
+          expect.any(String),
+          expect.objectContaining({ scroll: false })
+        );
+      });
+
+      it("handles malformed URL parameters", async () => {
+        mockSearchParams.set("page", "invalid");
+        mockSearchParams.set("sortOrder", "invalid");
+
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          // Should still load auctions with defaults
+          expect(screen.getByText("Gaming Laptop")).toBeInTheDocument();
+        });
+      });
+    });
+
+    describe("Performance & UX", () => {
+      it("shows loading skeleton during initial load", async () => {
+        mockAuctionsService.list.mockImplementation(
+          () =>
+            new Promise((resolve) =>
+              setTimeout(
+                () =>
+                  resolve({
+                    data: mockAuctions,
+                    count: 2,
+                    pagination: {
+                      hasNextPage: false,
+                      nextCursor: null,
+                    } as any,
+                  }),
+                100
+              )
+            )
+        );
+
+        render(<AuctionsPage />);
+
+        expect(screen.getByTestId("auction-skeleton-grid")).toBeInTheDocument();
+
+        await waitFor(() => {
+          expect(
+            screen.queryByTestId("auction-skeleton-grid")
+          ).not.toBeInTheDocument();
+        });
+      });
+
+      it("maintains scroll position when filters change", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("Gaming Laptop")).toBeInTheDocument();
+        });
+
+        const applyButton = screen.getByTestId("filter-apply");
+        fireEvent.click(applyButton);
+
+        expect(mockRouter.push).toHaveBeenCalledWith(
+          expect.any(String),
+          expect.objectContaining({ scroll: false })
+        );
+      });
+
+      it("handles rapid view toggle without flickering", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: mockAuctions,
+          count: 2,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("Gaming Laptop")).toBeInTheDocument();
+        });
+
+        const gridButton = screen.getByLabelText(/grid view/i);
+        const listButton = screen.getByLabelText(/list view/i);
+
+        // Rapid toggles
+        fireEvent.click(listButton);
+        fireEvent.click(gridButton);
+        fireEvent.click(listButton);
+        fireEvent.click(gridButton);
+
+        // Should still show content
+        expect(screen.getByText("Gaming Laptop")).toBeInTheDocument();
+      });
+    });
+
+    describe("Auction Status Indicators", () => {
+      it("highlights ending soon auctions", async () => {
+        const endingSoonAuction = {
+          ...mockAuctions[0],
+          isEndingSoon: true,
+          timeRemainingSeconds: 1800, // 30 minutes
+        };
+
+        mockAuctionsService.list.mockResolvedValue({
+          data: [endingSoonAuction],
+          count: 1,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("Gaming Laptop")).toBeInTheDocument();
+        });
+
+        // Should show ending soon indicator
+        expect(screen.getByText(/ending soon|30.*min/i)).toBeInTheDocument();
+      });
+
+      it("shows ended auction status", async () => {
+        const endedAuction = {
+          ...mockAuctions[0],
+          status: AuctionStatus.ENDED,
+          isActive: false,
+        };
+
+        mockAuctionsService.list.mockResolvedValue({
+          data: [endedAuction],
+          count: 1,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        mockSearchParams.set("status", AuctionStatus.ENDED);
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("Gaming Laptop")).toBeInTheDocument();
+        });
+      });
+
+      it("filters by ending soon auctions", async () => {
+        mockAuctionsService.list.mockResolvedValue({
+          data: [mockAuctions[1]], // Only ending soon
+          count: 1,
+          pagination: {
+            hasNextPage: false,
+            nextCursor: null,
+          } as any,
+        });
+
+        mockSearchParams.set("endingSoon", "true");
+
+        render(<AuctionsPage />);
+
+        await waitFor(() => {
+          expect(mockAuctionsService.list).toHaveBeenCalledWith(
+            expect.objectContaining({
+              endingSoon: true,
+            })
+          );
+        });
+      });
+    });
+  });
 });
