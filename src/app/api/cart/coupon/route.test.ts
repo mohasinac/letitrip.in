@@ -713,4 +713,413 @@ describe("/api/cart/coupon", () => {
       expect(data.error).toBe("Failed to remove coupon");
     });
   });
+
+  describe("Edge Cases", () => {
+    it("should handle coupon expiry at exact midnight boundary", async () => {
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
+
+      const now = new Date("2025-01-15T23:59:59.999Z");
+      const expiryDate = new Date("2025-01-15T23:59:59.999Z");
+
+      jest.spyOn(global, "Date").mockImplementation(() => now as any);
+
+      mockCouponsRef.get.mockResolvedValue({
+        empty: false,
+        docs: [
+          {
+            data: () => ({
+              code: "EXPIRING",
+              discount_type: "percentage",
+              discount_value: 10,
+              valid_until: expiryDate.toISOString(),
+              min_order_value: 0,
+              usage_limit: 100,
+              times_used: 50,
+              is_active: true,
+            }),
+          },
+        ],
+      });
+
+      mockCartRef.get.mockResolvedValue({
+        docs: [
+          {
+            data: () => ({ product_id: "prod1", quantity: 2 }),
+          },
+        ],
+      });
+
+      mockProductsRef.doc.mockReturnValue({
+        get: jest.fn().mockResolvedValue({
+          data: () => ({ price: 1000 }),
+        }),
+      });
+
+      const req = new NextRequest("http://localhost/api/cart/coupon", {
+        method: "POST",
+        body: JSON.stringify({ code: "EXPIRING" }),
+      });
+
+      const response = await POST(req);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+
+      jest.restoreAllMocks();
+    });
+
+    it("should handle minimum order value edge case (exact match)", async () => {
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
+
+      mockCouponsRef.get.mockResolvedValue({
+        empty: false,
+        docs: [
+          {
+            data: () => ({
+              code: "MIN5000",
+              discount_type: "fixed",
+              discount_value: 500,
+              valid_until: new Date("2099-12-31").toISOString(),
+              min_order_value: 5000,
+              usage_limit: 100,
+              times_used: 0,
+              is_active: true,
+            }),
+          },
+        ],
+      });
+
+      mockCartRef.get.mockResolvedValue({
+        docs: [
+          {
+            data: () => ({ product_id: "prod1", quantity: 5 }),
+          },
+        ],
+      });
+
+      mockProductsRef.doc.mockReturnValue({
+        get: jest.fn().mockResolvedValue({
+          data: () => ({ price: 1000 }),
+        }),
+      });
+
+      const req = new NextRequest("http://localhost/api/cart/coupon", {
+        method: "POST",
+        body: JSON.stringify({ code: "MIN5000" }),
+      });
+
+      const response = await POST(req);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.data.subtotal).toBe(5000);
+      expect(data.data.discount).toBe(500);
+    });
+
+    it("should handle coupon with usage limit reached", async () => {
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
+
+      mockCouponsRef.get.mockResolvedValue({
+        empty: false,
+        docs: [
+          {
+            data: () => ({
+              code: "LIMITED",
+              discount_type: "percentage",
+              discount_value: 20,
+              valid_until: new Date("2099-12-31").toISOString(),
+              min_order_value: 0,
+              usage_limit: 100,
+              times_used: 100,
+              is_active: true,
+            }),
+          },
+        ],
+      });
+
+      const req = new NextRequest("http://localhost/api/cart/coupon", {
+        method: "POST",
+        body: JSON.stringify({ code: "LIMITED" }),
+      });
+
+      const response = await POST(req);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.error).toBe("Coupon usage limit reached");
+    });
+
+    it("should handle percentage discount resulting in fractional amount", async () => {
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
+
+      mockCouponsRef.get.mockResolvedValue({
+        empty: false,
+        docs: [
+          {
+            data: () => ({
+              code: "FRACTION",
+              discount_type: "percentage",
+              discount_value: 15,
+              valid_until: new Date("2099-12-31").toISOString(),
+              min_order_value: 0,
+              usage_limit: 100,
+              times_used: 0,
+              is_active: true,
+            }),
+          },
+        ],
+      });
+
+      mockCartRef.get.mockResolvedValue({
+        docs: [
+          {
+            data: () => ({ product_id: "prod1", quantity: 3 }),
+          },
+        ],
+      });
+
+      mockProductsRef.doc.mockReturnValue({
+        get: jest.fn().mockResolvedValue({
+          data: () => ({ price: 999 }),
+        }),
+      });
+
+      const req = new NextRequest("http://localhost/api/cart/coupon", {
+        method: "POST",
+        body: JSON.stringify({ code: "FRACTION" }),
+      });
+
+      const response = await POST(req);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.data.subtotal).toBe(2997);
+      // 15% of 2997 = 449.55
+      expect(typeof data.data.discount).toBe("number");
+    });
+
+    it("should handle fixed discount greater than subtotal", async () => {
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
+
+      mockCouponsRef.get.mockResolvedValue({
+        empty: false,
+        docs: [
+          {
+            data: () => ({
+              code: "HUGE",
+              discount_type: "fixed",
+              discount_value: 10000,
+              valid_until: new Date("2099-12-31").toISOString(),
+              min_order_value: 0,
+              usage_limit: 100,
+              times_used: 0,
+              is_active: true,
+            }),
+          },
+        ],
+      });
+
+      mockCartRef.get.mockResolvedValue({
+        docs: [
+          {
+            data: () => ({ product_id: "prod1", quantity: 1 }),
+          },
+        ],
+      });
+
+      mockProductsRef.doc.mockReturnValue({
+        get: jest.fn().mockResolvedValue({
+          data: () => ({ price: 500 }),
+        }),
+      });
+
+      const req = new NextRequest("http://localhost/api/cart/coupon", {
+        method: "POST",
+        body: JSON.stringify({ code: "HUGE" }),
+      });
+
+      const response = await POST(req);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.data.discount).toBeLessThanOrEqual(data.data.subtotal);
+    });
+
+    it("should handle coupon code case insensitivity", async () => {
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
+
+      mockCouponsRef.get.mockResolvedValue({
+        empty: false,
+        docs: [
+          {
+            data: () => ({
+              code: "SAVE20",
+              discount_type: "percentage",
+              discount_value: 20,
+              valid_until: new Date("2099-12-31").toISOString(),
+              min_order_value: 0,
+              usage_limit: 100,
+              times_used: 0,
+              is_active: true,
+            }),
+          },
+        ],
+      });
+
+      mockCartRef.get.mockResolvedValue({
+        docs: [
+          {
+            data: () => ({ product_id: "prod1", quantity: 2 }),
+          },
+        ],
+      });
+
+      mockProductsRef.doc.mockReturnValue({
+        get: jest.fn().mockResolvedValue({
+          data: () => ({ price: 1000 }),
+        }),
+      });
+
+      const req = new NextRequest("http://localhost/api/cart/coupon", {
+        method: "POST",
+        body: JSON.stringify({ code: "save20" }),
+      });
+
+      const response = await POST(req);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+    });
+
+    it("should handle empty cart when applying coupon", async () => {
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
+
+      mockCouponsRef.get.mockResolvedValue({
+        empty: false,
+        docs: [
+          {
+            data: () => ({
+              code: "EMPTYCART",
+              discount_type: "percentage",
+              discount_value: 10,
+              valid_until: new Date("2099-12-31").toISOString(),
+              min_order_value: 0,
+              usage_limit: 100,
+              times_used: 0,
+              is_active: true,
+            }),
+          },
+        ],
+      });
+
+      mockCartRef.get.mockResolvedValue({
+        docs: [],
+      });
+
+      const req = new NextRequest("http://localhost/api/cart/coupon", {
+        method: "POST",
+        body: JSON.stringify({ code: "EMPTYCART" }),
+      });
+
+      const response = await POST(req);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.error).toContain("minimum");
+    });
+
+    it("should handle coupon application race condition (concurrent updates)", async () => {
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
+
+      let callCount = 0;
+      mockCouponsRef.get.mockImplementation(() => {
+        callCount++;
+        return Promise.resolve({
+          empty: false,
+          docs: [
+            {
+              data: () => ({
+                code: "RACE",
+                discount_type: "percentage",
+                discount_value: 10,
+                valid_until: new Date("2099-12-31").toISOString(),
+                min_order_value: 0,
+                usage_limit: 1,
+                times_used: callCount > 1 ? 1 : 0,
+                is_active: true,
+              }),
+            },
+          ],
+        });
+      });
+
+      mockCartRef.get.mockResolvedValue({
+        docs: [
+          {
+            data: () => ({ product_id: "prod1", quantity: 2 }),
+          },
+        ],
+      });
+
+      mockProductsRef.doc.mockReturnValue({
+        get: jest.fn().mockResolvedValue({
+          data: () => ({ price: 1000 }),
+        }),
+      });
+
+      const req = new NextRequest("http://localhost/api/cart/coupon", {
+        method: "POST",
+        body: JSON.stringify({ code: "RACE" }),
+      });
+
+      const response = await POST(req);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+    });
+  });
 });

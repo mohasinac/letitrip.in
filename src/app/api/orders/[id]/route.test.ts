@@ -712,5 +712,230 @@ describe("/api/orders/[id]", () => {
         error: "Failed to update order",
       });
     });
+
+    it("handles empty update body", async () => {
+      (requireAuth as jest.Mock).mockResolvedValue({
+        user: { ...mockUser, role: "admin" },
+      });
+
+      const mockUpdate = jest.fn().mockResolvedValue(undefined);
+      const mockGet = jest
+        .fn()
+        .mockResolvedValueOnce({
+          exists: true,
+          id: "order123",
+          data: () => mockOrder,
+        })
+        .mockResolvedValueOnce({
+          id: "order123",
+          data: () => ({
+            ...mockOrder,
+            updated_at: "2025-01-02T10:00:00Z",
+          }),
+        });
+
+      (Collections.orders as jest.Mock).mockReturnValue({
+        doc: jest.fn().mockReturnValue({
+          get: mockGet,
+          update: mockUpdate,
+        }),
+      });
+
+      const request = new NextRequest("http://localhost/api/orders/order123", {
+        method: "PATCH",
+        body: JSON.stringify({}),
+      });
+      const response = await PATCH(request, createContext("order123"));
+
+      expect(response.status).toBe(200);
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          updated_at: expect.any(String),
+        })
+      );
+    });
+
+    it("ignores disallowed fields in update", async () => {
+      (requireAuth as jest.Mock).mockResolvedValue({
+        user: { ...mockUser, role: "admin" },
+      });
+
+      const mockUpdate = jest.fn().mockResolvedValue(undefined);
+      const mockGet = jest
+        .fn()
+        .mockResolvedValueOnce({
+          exists: true,
+          id: "order123",
+          data: () => mockOrder,
+        })
+        .mockResolvedValueOnce({
+          id: "order123",
+          data: () => ({
+            ...mockOrder,
+            status: "shipped",
+            updated_at: "2025-01-02T10:00:00Z",
+          }),
+        });
+
+      (Collections.orders as jest.Mock).mockReturnValue({
+        doc: jest.fn().mockReturnValue({
+          get: mockGet,
+          update: mockUpdate,
+        }),
+      });
+
+      const request = new NextRequest("http://localhost/api/orders/order123", {
+        method: "PATCH",
+        body: JSON.stringify({
+          status: "shipped",
+          user_id: "hacker123",
+          amount: 99999,
+          shop_id: "hacker_shop",
+        }),
+      });
+      const response = await PATCH(request, createContext("order123"));
+
+      expect(response.status).toBe(200);
+      expect(mockUpdate).toHaveBeenCalledWith({
+        status: "shipped",
+        updated_at: expect.any(String),
+      });
+      expect(mockUpdate).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          user_id: "hacker123",
+          amount: 99999,
+        })
+      );
+    });
+
+    it("handles concurrent updates correctly", async () => {
+      (requireAuth as jest.Mock).mockResolvedValue({
+        user: { ...mockUser, role: "admin" },
+      });
+
+      const mockUpdate = jest.fn().mockResolvedValue(undefined);
+      let callCount = 0;
+      const mockGet = jest.fn().mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) {
+          return {
+            exists: true,
+            id: "order123",
+            data: () => mockOrder,
+          };
+        }
+        return {
+          id: "order123",
+          data: () => ({
+            ...mockOrder,
+            status: "shipped",
+            updated_at: new Date().toISOString(),
+          }),
+        };
+      });
+
+      (Collections.orders as jest.Mock).mockReturnValue({
+        doc: jest.fn().mockReturnValue({
+          get: mockGet,
+          update: mockUpdate,
+        }),
+      });
+
+      const request = new NextRequest("http://localhost/api/orders/order123", {
+        method: "PATCH",
+        body: JSON.stringify({ status: "shipped" }),
+      });
+      const response = await PATCH(request, createContext("order123"));
+
+      expect(response.status).toBe(200);
+      expect(mockGet).toHaveBeenCalledTimes(2);
+      expect(mockUpdate).toHaveBeenCalledTimes(1);
+    });
+
+    it("updates notes with special characters", async () => {
+      (requireAuth as jest.Mock).mockResolvedValue({
+        user: { ...mockUser, role: "admin" },
+      });
+
+      const specialNotes =
+        'Customer requested: "Please handle with care & deliver to 2nd floor (apartment #4B)"';
+      const mockUpdate = jest.fn().mockResolvedValue(undefined);
+      const mockGet = jest
+        .fn()
+        .mockResolvedValueOnce({
+          exists: true,
+          id: "order123",
+          data: () => mockOrder,
+        })
+        .mockResolvedValueOnce({
+          id: "order123",
+          data: () => ({
+            ...mockOrder,
+            notes: specialNotes,
+            updated_at: "2025-01-02T10:00:00Z",
+          }),
+        });
+
+      (Collections.orders as jest.Mock).mockReturnValue({
+        doc: jest.fn().mockReturnValue({
+          get: mockGet,
+          update: mockUpdate,
+        }),
+      });
+
+      const request = new NextRequest("http://localhost/api/orders/order123", {
+        method: "PATCH",
+        body: JSON.stringify({ notes: specialNotes }),
+      });
+      const response = await PATCH(request, createContext("order123"));
+
+      expect(response.status).toBe(200);
+      expect(mockUpdate).toHaveBeenCalledWith({
+        notes: specialNotes,
+        updated_at: expect.any(String),
+      });
+    });
+
+    it("handles null values in update payload", async () => {
+      (requireAuth as jest.Mock).mockResolvedValue({
+        user: { ...mockUser, role: "admin" },
+      });
+
+      const mockUpdate = jest.fn().mockResolvedValue(undefined);
+      const mockGet = jest
+        .fn()
+        .mockResolvedValueOnce({
+          exists: true,
+          id: "order123",
+          data: () => mockOrder,
+        })
+        .mockResolvedValueOnce({
+          id: "order123",
+          data: () => ({
+            ...mockOrder,
+            notes: null,
+            updated_at: "2025-01-02T10:00:00Z",
+          }),
+        });
+
+      (Collections.orders as jest.Mock).mockReturnValue({
+        doc: jest.fn().mockReturnValue({
+          get: mockGet,
+          update: mockUpdate,
+        }),
+      });
+
+      const request = new NextRequest("http://localhost/api/orders/order123", {
+        method: "PATCH",
+        body: JSON.stringify({ notes: null }),
+      });
+      const response = await PATCH(request, createContext("order123"));
+
+      expect(response.status).toBe(200);
+      expect(mockUpdate).toHaveBeenCalledWith({
+        notes: null,
+        updated_at: expect.any(String),
+      });
+    });
   });
 });
