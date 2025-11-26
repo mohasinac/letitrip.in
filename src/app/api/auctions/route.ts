@@ -120,8 +120,24 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response);
   } catch (error) {
     console.error("Error listing auctions:", error);
+    
+    // Log more detailed error info in development
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : undefined,
+      });
+    }
+    
     return NextResponse.json(
-      { success: false, error: "Failed to list auctions" },
+      { 
+        success: false, 
+        error: "Failed to list auctions",
+        ...(process.env.NODE_ENV === "development" && {
+          details: error instanceof Error ? error.message : String(error)
+        })
+      },
       { status: 500 }
     );
   }

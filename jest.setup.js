@@ -94,20 +94,22 @@ global.localStorage = localStorageMock;
 // Mock fetch
 global.fetch = jest.fn();
 
-// Mock window.matchMedia
-Object.defineProperty(window, "matchMedia", {
-  writable: true,
-  value: jest.fn().mockImplementation((query) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
+// Mock window.matchMedia (only if window is defined - jsdom environment)
+if (typeof window !== "undefined") {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: jest.fn().mockImplementation((query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: jest.fn(), // deprecated
+      removeListener: jest.fn(), // deprecated
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    })),
+  });
+}
 
 // Mock ResizeObserver
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
@@ -123,8 +125,10 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   disconnect: jest.fn(),
 }));
 
-// Mock window.scrollTo
-Object.defineProperty(window, "scrollTo", {
-  writable: true,
-  value: jest.fn(),
-});
+// Mock window.scrollTo (only if window is defined - jsdom environment)
+if (typeof window !== "undefined") {
+  Object.defineProperty(window, "scrollTo", {
+    writable: true,
+    value: jest.fn(),
+  });
+}

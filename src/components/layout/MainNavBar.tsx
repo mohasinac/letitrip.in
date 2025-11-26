@@ -69,17 +69,34 @@ export default function MainNavBar({
 
   // Get user initials or first letter of name
   const getUserInitials = () => {
-    if (!user?.fullName) return "U";
-    const names = user.fullName.split(" ");
+    if (!user) return "U";
+
+    // Try displayName first, then fullName, then email
+    const name = user.displayName || user.fullName || user.email;
+    if (!name) return "U";
+
+    const names = name.split(" ").filter((n) => n.length > 0);
     if (names.length >= 2) {
       return `${names[0][0]}${names[1][0]}`.toUpperCase();
     }
-    return user.fullName[0].toUpperCase();
+    return name[0].toUpperCase();
   };
 
   // Get profile picture URL
   const getProfilePicture = () => {
     return user?.photoURL || null;
+  };
+
+  // Get display name
+  const getDisplayName = () => {
+    if (!user) return "Guest";
+    return (
+      user.displayName ||
+      user.fullName ||
+      user.firstName ||
+      user.email?.split("@")[0] ||
+      "User"
+    );
   };
 
   return (
@@ -307,12 +324,14 @@ export default function MainNavBar({
                     setIsSellerMenuOpen(false);
                   }}
                   className="flex items-center gap-2 hover:bg-gray-700 px-3 py-2 rounded"
+                  aria-label="User menu"
+                  aria-expanded={isUserMenuOpen}
                 >
                   <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center overflow-hidden">
                     {getProfilePicture() ? (
                       <img
                         src={getProfilePicture()!}
-                        alt={user.fullName}
+                        alt={getDisplayName()}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -321,8 +340,8 @@ export default function MainNavBar({
                       </span>
                     )}
                   </div>
-                  <span className="hidden sm:inline text-sm">
-                    {user.fullName}
+                  <span className="hidden sm:inline text-sm max-w-[120px] truncate">
+                    {getDisplayName()}
                   </span>
                   <ChevronDown className="w-4 h-4 hidden sm:inline" />
                 </button>
@@ -330,9 +349,24 @@ export default function MainNavBar({
                 {/* User Dropdown Menu */}
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50 max-h-[80vh] overflow-y-auto">
-                    <div className="px-4 py-2 border-b border-gray-200">
-                      <p className="font-semibold text-sm">{user.fullName}</p>
-                      <p className="text-xs text-gray-500">{user.email}</p>
+                    <div className="px-4 py-3 border-b border-gray-200">
+                      <p
+                        className="font-semibold text-sm truncate"
+                        title={getDisplayName()}
+                      >
+                        {getDisplayName()}
+                      </p>
+                      <p
+                        className="text-xs text-gray-500 truncate"
+                        title={user.email || ""}
+                      >
+                        {user.email || "No email"}
+                      </p>
+                      {user.role && (
+                        <p className="text-xs text-yellow-600 font-medium mt-1 capitalize">
+                          {user.role}
+                        </p>
+                      )}
                     </div>
                     {USER_MENU_ITEMS.map((item) =>
                       "link" in item && item.link ? (
