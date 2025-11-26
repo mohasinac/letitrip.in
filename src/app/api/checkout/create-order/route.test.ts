@@ -24,6 +24,7 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { batchGetProducts } from "@/app/api/lib/batch-fetch";
 import { strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
+import crypto from "crypto";
 
 describe("POST /api/checkout/create-order", () => {
   let mockUser: any;
@@ -33,6 +34,11 @@ describe("POST /api/checkout/create-order", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Mock crypto
+    (crypto.randomBytes as jest.Mock) = jest.fn().mockReturnValue({
+      toString: jest.fn().mockReturnValue("abc123"),
+    });
 
     // Mock user
     mockUser = {
@@ -106,6 +112,7 @@ describe("POST /api/checkout/create-order", () => {
 
     (Collections.orders as jest.Mock).mockReturnValue({
       doc: jest.fn().mockReturnValue({ id: "order123" }),
+      add: jest.fn().mockResolvedValue({ id: "order123" }),
       firestore: {
         batch: jest.fn().mockReturnValue(mockBatch),
       },
