@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 
 /**
  * Hook to prevent infinite API calls in admin pages
@@ -44,8 +44,8 @@ export function useSafeLoad(
     skipIfLoaded = false,
   } = options;
 
-  const loadingRef = useRef(false);
-  const hasLoadedRef = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   const safeLoad = useCallback(async () => {
@@ -53,28 +53,28 @@ export function useSafeLoad(
     if (!enabled) return;
 
     // Skip if already loading (prevents concurrent calls)
-    if (loadingRef.current) {
+    if (isLoading) {
       console.log("[useSafeLoad] Already loading, skipping...");
       return;
     }
 
     // Skip if already loaded and skipIfLoaded is true
-    if (skipIfLoaded && hasLoadedRef.current) {
+    if (skipIfLoaded && hasLoaded) {
       console.log("[useSafeLoad] Already loaded, skipping...");
       return;
     }
 
     try {
-      loadingRef.current = true;
+      setIsLoading(true);
       await loadFn();
-      hasLoadedRef.current = true;
+      setHasLoaded(true);
     } catch (error) {
       console.error("[useSafeLoad] Error:", error);
       throw error;
     } finally {
-      loadingRef.current = false;
+      setIsLoading(false);
     }
-  }, [enabled, loadFn, skipIfLoaded]);
+  }, [enabled, loadFn, skipIfLoaded, isLoading, hasLoaded]);
 
   useEffect(() => {
     // Clear any pending timeout
@@ -103,15 +103,15 @@ export function useSafeLoad(
   return {
     /** Force a reload regardless of loading state */
     forceReload: useCallback(async () => {
-      hasLoadedRef.current = false;
+      setHasLoaded(false);
       await safeLoad();
     }, [safeLoad]),
 
     /** Check if currently loading */
-    isLoading: loadingRef.current,
+    isLoading,
 
     /** Check if has been loaded */
-    hasLoaded: hasLoadedRef.current,
+    hasLoaded,
   };
 }
 
