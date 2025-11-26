@@ -29,7 +29,7 @@ class ProductsService {
    * Handle service errors and convert to user-friendly messages
    */
   private handleError(error: any, context: string): never {
-    logServiceError(error, "ProductsService", context);
+    logServiceError("ProductsService", context, error);
     const friendlyMessage = getUserFriendlyError(error);
 
     // Create enhanced error with friendly message

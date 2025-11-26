@@ -440,6 +440,7 @@
 ## � Planned Testing Sessions (20-30 Tests Each)
 
 ### 🔴 Session 25: Payment API Routes (CRITICAL)
+
 **Goal**: 25-30 tests | **Time**: 2 hours | **Priority**: HIGHEST
 
 - [ ] `api/payments/razorpay/create` - 12-15 tests
@@ -456,6 +457,7 @@
 ---
 
 ### 🔴 Session 26: Order Management APIs (CRITICAL)
+
 **Goal**: 25-30 tests | **Time**: 2 hours | **Priority**: HIGHEST
 
 - [ ] `api/orders/create` - 15-18 tests
@@ -474,6 +476,7 @@
 ---
 
 ### 🔴 Session 27: Cart & Coupon APIs (CRITICAL)
+
 **Goal**: 25-30 tests | **Time**: 2 hours | **Priority**: HIGH
 
 - [ ] `api/cart/add` - 8-10 tests
@@ -491,6 +494,7 @@
 ---
 
 ### 🔴 Session 28: Live Auction Page & Components (CRITICAL)
+
 **Goal**: 25-30 tests | **Time**: 2.5 hours | **Priority**: HIGH
 
 - [ ] Live auction page (`auctions/[id]/page.tsx`) - 15-18 tests
@@ -508,6 +512,7 @@
 ---
 
 ### 🟠 Session 29: Auction Components (HIGH)
+
 **Goal**: 25-30 tests | **Time**: 2 hours | **Priority**: HIGH
 
 - [ ] LiveBidStream component - 12-15 tests
@@ -525,6 +530,7 @@
 ---
 
 ### 🟠 Session 30: Auction APIs (HIGH)
+
 **Goal**: 25-30 tests | **Time**: 2 hours | **Priority**: HIGH
 
 - [ ] `api/auctions/[id]/bid` - 15-18 tests
@@ -542,6 +548,7 @@
 ---
 
 ### 🟠 Session 31: Product Management Components (HIGH)
+
 **Goal**: 25-30 tests | **Time**: 2.5 hours | **Priority**: MEDIUM-HIGH
 
 - [ ] ImageUpload component - 15-18 tests
@@ -557,6 +564,7 @@
 ---
 
 ### 🟠 Session 32: Product & Media APIs (HIGH)
+
 **Goal**: 25-30 tests | **Time**: 2 hours | **Priority**: MEDIUM-HIGH
 
 - [ ] `api/products/create` - 12-15 tests
@@ -573,6 +581,7 @@
 ---
 
 ### 🟡 Session 33: Component Fixes Sprint (MEDIUM)
+
 **Goal**: 20-25 tests fixed | **Time**: 2 hours | **Priority**: MEDIUM
 
 - [ ] Fix ProductGallery - 6 tests (video player, lightbox)
@@ -587,6 +596,7 @@
 ---
 
 ### 🟡 Session 34: Admin Pages (MEDIUM)
+
 **Goal**: 25-30 tests | **Time**: 2 hours | **Priority**: MEDIUM
 
 - [ ] Admin dashboard (`admin/page.tsx`) - 12-15 tests
@@ -601,6 +611,7 @@
 ---
 
 ### 🟢 Session 35: Backlog Sprint (LOW)
+
 **Goal**: 20-25 tests | **Time**: 2 hours | **Priority**: LOW
 
 - [ ] Complete any unfinished tasks from Sessions 25-34
@@ -618,9 +629,11 @@
 Tasks that don't get completed in their planned session move here:
 
 ### From Session 25-35 (To Be Populated)
+
 - (No items yet - will be added as sessions progress)
 
 ### Lower Priority Items (Can Be Deferred)
+
 - [ ] AuctionList component (25-30 tests)
 - [ ] SearchResults component (25-30 tests)
 - [ ] ShopProfile component (20-25 tests)
@@ -632,6 +645,7 @@ Tasks that don't get completed in their planned session move here:
 - [ ] FAQ management (15-20 tests)
 
 **Backlog Rules:**
+
 1. Any task taking >2.5 hours moves to backlog
 2. Tasks >15min per test move to backlog
 3. Nice-to-have features go here
@@ -662,29 +676,34 @@ Tasks that don't get completed in their planned session move here:
 ### How to Use These Sessions
 
 **Before Starting:**
+
 1. Read the session plan (5 min)
 2. Set up mocks if needed (10 min)
 3. Set timer for 2 hours
 4. Focus mode ON - no distractions
 
 **During Session:**
+
 - Write 20-30 tests (no more, no less)
 - If test takes >15min, skip to backlog
 - If component has issues, document and move on
 - Take 5min break every hour
 
 **After Session:**
+
 - Run all tests, check pass rate
 - Document bugs found
 - Move unfinished items to backlog
 - Update checklist with ✅ or ⚠️
 
 **Session Velocity:**
+
 - 🚀 **Fast**: 30 tests in 90min (1 test per 3min)
 - ⚡ **Normal**: 25 tests in 2 hours (1 test per 5min)
 - 🐢 **Slow**: 20 tests in 2.5 hours (1 test per 7min)
 
 **When to Stop:**
+
 - ✅ Reached test target (20-30 tests)
 - ⏰ Time limit reached (2 hours max)
 - 🔁 Same test failing 3+ times (move to backlog)
@@ -693,6 +712,7 @@ Tasks that don't get completed in their planned session move here:
 ### Testing Best Practices
 
 **Do:**
+
 - ✅ Write 20-30 tests per session (focused sessions)
 - ✅ Prioritize revenue-impacting features (APIs, payments, orders)
 - ✅ Test happy paths, errors, edge cases
@@ -702,6 +722,7 @@ Tasks that don't get completed in their planned session move here:
 - ✅ Take breaks between sessions
 
 **Don't:**
+
 - ❌ Write 100+ tests in one session (burnout risk)
 - ❌ Spend hours debugging test selectors
 - ❌ Fix cosmetic test issues before writing new tests
@@ -781,6 +802,7 @@ Tasks that don't get completed in their planned session move here:
 ## 📝 Session Progress Tracker
 
 ### Session 25: Payment API Routes
+
 - **Status**: ⏳ Not Started
 - **Tests Written**: 0/30
 - **Pass Rate**: N/A
@@ -790,6 +812,7 @@ Tasks that don't get completed in their planned session move here:
 - **Notes**: N/A
 
 ### Session 26: Order Management APIs
+
 - **Status**: ⏳ Not Started
 - **Tests Written**: 0/30
 - **Pass Rate**: N/A
@@ -799,6 +822,7 @@ Tasks that don't get completed in their planned session move here:
 - **Notes**: N/A
 
 ### Session 27: Cart & Coupon APIs
+
 - **Status**: ⏳ Not Started
 - **Tests Written**: 0/30
 - **Pass Rate**: N/A
@@ -807,13 +831,14 @@ Tasks that don't get completed in their planned session move here:
 - **Bugs Found**: N/A
 - **Notes**: N/A
 
-*(Update each session as you complete it)*
+_(Update each session as you complete it)_
 
 ---
 
 ## 📊 Sprint Summary
 
 **Sessions 25-35 (Planned):**
+
 - Total Sessions: 11
 - Target Tests: 275-330 tests
 - Estimated Time: 22-25 hours
@@ -824,6 +849,7 @@ Tasks that don't get completed in their planned session move here:
   - 🟢 LOW: 1 session (20-25 tests)
 
 **Expected Outcomes:**
+
 - ✅ Payment & Order APIs fully tested
 - ✅ Live auction features complete
 - ✅ Product management working

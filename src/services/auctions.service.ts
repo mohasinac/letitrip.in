@@ -32,7 +32,7 @@ class AuctionsService {
    * Handle service errors and convert to user-friendly messages
    */
   private handleError(error: any, context: string): never {
-    logServiceError(error, "AuctionsService", context);
+    logServiceError("AuctionsService", context, error);
     const friendlyMessage = getUserFriendlyError(error);
 
     // Create enhanced error with friendly message

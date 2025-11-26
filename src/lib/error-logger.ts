@@ -61,11 +61,26 @@ class ErrorLoggerClass {
     // Log to console in development
     if (process.env.NODE_ENV === "development") {
       const prefix = this.getSeverityPrefix(severity);
-      console.error(`${prefix} [${context.component || "Unknown"}]`, {
-        message: errorMessage,
-        context,
-        stack: errorStack,
-      });
+      
+      // Use appropriate console method based on severity
+      if (severity === ErrorSeverity.CRITICAL || severity === ErrorSeverity.HIGH) {
+        console.error(`${prefix} [${context.component || "Unknown"}]`, {
+          message: errorMessage,
+          context,
+          stack: errorStack,
+        });
+      } else if (severity === ErrorSeverity.MEDIUM) {
+        console.warn(`${prefix} [${context.component || "Unknown"}]`, {
+          message: errorMessage,
+          context,
+        });
+      } else {
+        // LOW severity - use info
+        console.info(`${prefix} [${context.component || "Unknown"}]`, {
+          message: errorMessage,
+          context,
+        });
+      }
     }
 
     // Always log critical and high severity errors

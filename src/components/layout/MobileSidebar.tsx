@@ -45,7 +45,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const [sellerSectionOpen, setSellerSectionOpen] = useState<
     Record<string, boolean>
   >({});
-  const { isAuthenticated, isAdmin, isAdminOrSeller } = useAuth();
+  const { isAuthenticated, isAdmin, isAdminOrSeller, user } = useAuth();
 
   if (!isOpen) return null;
 
@@ -55,6 +55,30 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
   const toggleSellerSection = (id: string) => {
     setSellerSectionOpen((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // Get user initials
+  const getUserInitials = () => {
+    if (!user) return "U";
+    const name = user.displayName || user.fullName || user.email;
+    if (!name) return "U";
+    const names = name.split(" ").filter((n) => n.length > 0);
+    if (names.length >= 2) {
+      return `${names[0][0]}${names[1][0]}`.toUpperCase();
+    }
+    return name[0].toUpperCase();
+  };
+
+  // Get display name
+  const getDisplayName = () => {
+    if (!user) return "Guest";
+    return (
+      user.displayName ||
+      user.fullName ||
+      user.firstName ||
+      user.email?.split("@")[0] ||
+      "User"
+    );
   };
 
   return (
@@ -82,6 +106,63 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
             <X className="w-6 h-6" />
           </button>
         </div>
+
+        {/* User Profile Section */}
+        {isAuthenticated && user ? (
+          <div className="p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 border-b border-yellow-200">
+            <Link
+              href="/user/profile"
+              onClick={onClose}
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            >
+              <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center overflow-hidden">
+                {user.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt={getDisplayName()}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-gray-900 font-bold text-lg">
+                    {getUserInitials()}
+                  </span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gray-900 truncate">
+                  {getDisplayName()}
+                </p>
+                <p className="text-xs text-gray-600 truncate">
+                  {user.email || "No email"}
+                </p>
+                {user.role && (
+                  <p className="text-xs text-yellow-700 font-medium mt-0.5 capitalize">
+                    {user.role}
+                  </p>
+                )}
+              </div>
+            </Link>
+          </div>
+        ) : (
+          <div className="p-4 bg-gray-50 border-b border-gray-200">
+            <div className="space-y-2">
+              <Link
+                href="/login"
+                onClick={onClose}
+                className="block w-full text-center bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-2.5 px-4 rounded-lg transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/register"
+                onClick={onClose}
+                className="block w-full text-center bg-white hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-lg border border-gray-300 transition-colors"
+              >
+                Register
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Menu Sections */}
         <div className="p-4 space-y-6">
