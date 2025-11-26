@@ -30,14 +30,7 @@ class ProductsService {
    */
   private handleError(error: any, context: string): never {
     logServiceError("ProductsService", context, error);
-    const friendlyMessage = getUserFriendlyError(error);
-
-    // Create enhanced error with friendly message
-    const enhancedError: any = new Error(friendlyMessage);
-    enhancedError.originalError = error;
-    enhancedError.context = context;
-
-    throw enhancedError;
+    throw error;
   }
 
   /**

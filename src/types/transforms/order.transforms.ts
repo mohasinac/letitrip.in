@@ -116,7 +116,7 @@ function calculateProgress(status: OrderStatus): number {
  * Generate progress steps
  */
 function generateProgressSteps(orderBE: OrderBE): OrderProgressStep[] {
-  const createdAt = parseDate(orderBE.createdAt)!;
+  const createdAt = parseDate(orderBE.createdAt) || new Date();
   const deliveredAt = parseDate(orderBE.deliveredAt);
   const cancelledAt = parseDate(orderBE.cancelledAt);
 
@@ -256,7 +256,7 @@ function formatEstimatedDelivery(
  */
 function getDeliveryStatus(orderBE: OrderBE): string {
   if (orderBE.status === OrderStatus.DELIVERED && orderBE.deliveredAt) {
-    return `Delivered on ${formatDate(parseDate(orderBE.deliveredAt)!)}`;
+    return `Delivered on ${formatDate(parseDate(orderBE.deliveredAt) || new Date())}`;
   }
   if (orderBE.status === OrderStatus.SHIPPED) {
     return "In transit";
@@ -309,8 +309,8 @@ function toFEShippingAddress(addressBE: ShippingAddressBE): ShippingAddressFE {
  * Transform Backend Order to Frontend Order
  */
 export function toFEOrder(orderBE: OrderBE): OrderFE {
-  const createdAt = parseDate(orderBE.createdAt)!;
-  const updatedAt = parseDate(orderBE.updatedAt)!;
+  const createdAt = parseDate(orderBE.createdAt) || new Date();
+  const updatedAt = parseDate(orderBE.updatedAt) || new Date();
   const paidAt = parseDate(orderBE.paidAt);
   const estimatedDelivery = parseDate(orderBE.estimatedDelivery);
   const deliveredAt = parseDate(orderBE.deliveredAt);
@@ -424,7 +424,7 @@ export function toFEOrder(orderBE: OrderBE): OrderFE {
  * Transform Backend Order List Item to Frontend Order Card
  */
 export function toFEOrderCard(orderBE: OrderListItemBE): OrderCardFE {
-  const createdAt = parseDate(orderBE.createdAt)!;
+  const createdAt = parseDate(orderBE.createdAt) || new Date();
 
   return {
     id: orderBE.id,

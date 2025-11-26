@@ -79,7 +79,7 @@ export function toFEBid(
   currentUserId?: string,
   highestBidId?: string
 ): BidFE {
-  const createdAt = parseDate(bidBE.createdAt)!;
+  const createdAt = parseDate(bidBE.createdAt) || new Date();
   const now = new Date();
   const diffMins = Math.floor((now.getTime() - createdAt.getTime()) / 60000);
 
