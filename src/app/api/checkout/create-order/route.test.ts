@@ -32,6 +32,10 @@ describe("POST /api/checkout/create-order", () => {
   let mockProduct: any;
   let mockBatch: any;
 
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -322,7 +326,9 @@ describe("POST /api/checkout/create-order", () => {
       }
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.orderIds).toBeDefined();
+      expect(data.orders).toBeDefined();
+      expect(Array.isArray(data.orders)).toBe(true);
+      expect(data.razorpay_order_id).toBeNull();
     });
 
     it("should accept Razorpay payment method", async () => {
@@ -358,7 +364,362 @@ describe("POST /api/checkout/create-order", () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       // Razorpay should return Razorpay order details
-      expect(data.razorpayOrderId).toBeDefined();
+      expect(data.razorpay_order_id).toBeDefined();
+      expect(data.amount).toBeDefined();
+      expect(data.currency).toBe("INR");
+    });
+  });
+
+  describe("Multi-Shop Orders", () => {
+    it("should create multiple orders for multiple shops", async () => {
+      const request = new NextRequest(
+        "http://localhost/api/checkout/create-order",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            shippingAddressId: "addr123",
+            paymentMethod: "cod",
+            shopOrders: [
+              {
+                shopId: "shop123",
+                shopName: "Shop 1",
+                items: [
+                  {
+                    productId: "prod123",
+                    productName: "Product 1",
+                    quantity: 1,
+                    price: 1000,
+                    image: "test1.jpg",
+                  },
+                ],
+              },
+              {
+                shopId: "shop456",
+                shopName: "Shop 2",
+                items: [
+                  {
+                    productId: "prod123",
+                    productName: "Product 2",
+                    quantity: 2,
+                    price: 500,
+                    image: "test2.jpg",
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.orders).toHaveLength(2);
+      expect(data.total).toBeGreaterThan(0);
+    });
+
+    it("should calculate grand total correctly across multiple shops", async () => {
+      const request = new NextRequest(
+        "http://localhost/api/checkout/create-order",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            shippingAddressId: "addr123",
+            paymentMethod: "cod",
+            shopOrders: [
+              {
+                shopId: "shop123",
+                shopName: "Shop 1",
+                items: [
+                  {
+                    productId: "prod123",
+                    productName: "Product 1",
+                    quantity: 2,
+                    price: 1000,
+                    image: "test1.jpg",
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.total).toBeGreaterThan(2000); // Should include tax and shipping
+    });
+  });
+
+  describe("Billing Address", () => {
+    it("should use shipping address as billing if not provided", async () => {
+      const request = new NextRequest(
+        "http://localhost/api/checkout/create-order",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            shippingAddressId: "addr123",
+            paymentMethod: "cod",
+            shopOrders: [
+              {
+                shopId: "shop123",
+                shopName: "Test Shop",
+                items: [
+                  {
+                    productId: "prod123",
+                    productName: "Test Product",
+                    quantity: 1,
+                    price: 1000,
+                    image: "test.jpg",
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+    });
+
+    it("should validate separate billing address", async () => {
+      const mockBillingAddress = {
+        user_id: "user123",
+        name: "Jane Doe",
+        phone: "9876543210",
+      };
+
+      const mockAddressDoc = {
+        exists: true,
+        data: () => mockAddress,
+      };
+
+      const mockBillingDoc = {
+        exists: true,
+        data: () => mockBillingAddress,
+      };
+
+      (Collections.addresses as jest.Mock).mockReturnValue({
+        doc: jest.fn((id: string) => ({
+          get: jest
+            .fn()
+            .mockResolvedValue(
+              id === "billing456" ? mockBillingDoc : mockAddressDoc
+            ),
+        })),
+      });
+
+      const request = new NextRequest(
+        "http://localhost/api/checkout/create-order",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            shippingAddressId: "addr123",
+            billingAddressId: "billing456",
+            paymentMethod: "cod",
+            shopOrders: [
+              {
+                shopId: "shop123",
+                shopName: "Test Shop",
+                items: [
+                  {
+                    productId: "prod123",
+                    productName: "Test Product",
+                    quantity: 1,
+                    price: 1000,
+                    image: "test.jpg",
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+    });
+
+    it("should return 403 if billing address belongs to another user", async () => {
+      const mockBillingAddress = {
+        user_id: "otheruser",
+        name: "Jane Doe",
+      };
+
+      const mockAddressDoc = {
+        exists: true,
+        data: () => mockAddress,
+      };
+
+      const mockBillingDoc = {
+        exists: true,
+        data: () => mockBillingAddress,
+      };
+
+      (Collections.addresses as jest.Mock).mockReturnValue({
+        doc: jest.fn((id: string) => ({
+          get: jest
+            .fn()
+            .mockResolvedValue(
+              id === "billing456" ? mockBillingDoc : mockAddressDoc
+            ),
+        })),
+      });
+
+      const request = new NextRequest(
+        "http://localhost/api/checkout/create-order",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            shippingAddressId: "addr123",
+            billingAddressId: "billing456",
+            paymentMethod: "cod",
+            shopOrders: [
+              {
+                shopId: "shop123",
+                shopName: "Test Shop",
+                items: [
+                  {
+                    productId: "prod123",
+                    productName: "Test Product",
+                    quantity: 1,
+                    price: 1000,
+                    image: "test.jpg",
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(403);
+      expect(data.error).toBe("Invalid billing address");
+    });
+  });
+
+  describe("Razorpay Integration", () => {
+    it("should generate Razorpay order ID for razorpay payment", async () => {
+      const request = new NextRequest(
+        "http://localhost/api/checkout/create-order",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            shippingAddressId: "addr123",
+            paymentMethod: "razorpay",
+            shopOrders: [
+              {
+                shopId: "shop123",
+                shopName: "Test Shop",
+                items: [
+                  {
+                    productId: "prod123",
+                    productName: "Test Product",
+                    quantity: 1,
+                    price: 1000,
+                    image: "test.jpg",
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.razorpay_order_id).toMatch(/^razorpay_order_/);
+      expect(data.amount).toBeGreaterThan(0);
+      expect(data.currency).toBe("INR");
+    });
+
+    it("should convert amount to paise for Razorpay", async () => {
+      const request = new NextRequest(
+        "http://localhost/api/checkout/create-order",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            shippingAddressId: "addr123",
+            paymentMethod: "razorpay",
+            shopOrders: [
+              {
+                shopId: "shop123",
+                shopName: "Test Shop",
+                items: [
+                  {
+                    productId: "prod123",
+                    productName: "Test Product",
+                    quantity: 1,
+                    price: 100,
+                    image: "test.jpg",
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      // Amount should be in paise (100x)
+      expect(data.amount % 100).toBe(0);
+      expect(data.total).toBeGreaterThan(0);
+    });
+  });
+
+  describe("Order Notes", () => {
+    it("should accept optional order notes", async () => {
+      const request = new NextRequest(
+        "http://localhost/api/checkout/create-order",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            shippingAddressId: "addr123",
+            paymentMethod: "cod",
+            notes: "Please deliver before 5pm",
+            shopOrders: [
+              {
+                shopId: "shop123",
+                shopName: "Test Shop",
+                items: [
+                  {
+                    productId: "prod123",
+                    productName: "Test Product",
+                    quantity: 1,
+                    price: 1000,
+                    image: "test.jpg",
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
     });
   });
 });

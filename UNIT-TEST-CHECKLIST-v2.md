@@ -2,7 +2,7 @@
 
 ## 📊 Executive Summary
 
-**Overall Progress**: 4,900+ tests | 97%+ pass rate | 60+ test suites
+**Overall Progress**: 4,949+ tests | 97%+ pass rate | 62+ test suites
 
 ### Test Coverage by Priority
 
@@ -45,13 +45,13 @@
 
 **Latest 5 Sessions:**
 
+- Session 25: Payment API Routes (2 endpoints, 49 tests, 18 new) ✅
 - Session 24: User dashboard pages (9 components, 400+ tests) ✅
 - Session 23: Legal/Error pages (10 components, 570+ tests) ✅
 - Session 22: Hook fixes (useFilters, useSafeLoad) ✅
 - Session 21: Component fixes (CategoryForm, SearchBar) ✅
-- Session 20: Test debugging (ProductInlineForm, AuctionForm, DateTimePicker) ✅
 
-**Total New Tests (Last 10 Sessions)**: 2,000+ tests written
+**Total New Tests (Last 10 Sessions)**: 2,018+ tests written
 
 ---
 
@@ -73,11 +73,10 @@
 
 ### 🔴 CRITICAL - Revenue Impact (Write These First)
 
-**API Routes - Payment & Orders** (UNTESTED - TOP PRIORITY)
+**API Routes - Payment & Orders** (PARTIALLY COMPLETE - HIGH PRIORITY)
 
-- [ ] `api/payments/razorpay/create` - Payment initiation (mock Razorpay SDK)
-- [ ] `api/payments/razorpay/verify` - Payment verification (mock crypto)
-- [ ] `api/orders/create` - Order creation flow (mock Firestore)
+- [x] `api/checkout/create-order` - Order creation flow (16 tests, 100% ✅)
+- [x] `api/checkout/verify-payment` - Payment verification (33 tests, 100% ✅)
 - [ ] `api/checkout/validate` - Cart validation (mock services)
 - [ ] `api/coupons/validate` - Coupon verification (mock database)
 - [ ] `api/cart/*` - Cart management endpoints
@@ -439,20 +438,25 @@
 
 ## � Planned Testing Sessions (20-30 Tests Each)
 
-### 🔴 Session 25: Payment API Routes (CRITICAL)
+### ✅ Session 25: Payment API Routes (COMPLETED)
 
-**Goal**: 25-30 tests | **Time**: 2 hours | **Priority**: HIGHEST
+**Goal**: 25-30 tests | **Time**: 1.5 hours | **Priority**: HIGHEST | **Status**: ✅ DONE
 
-- [ ] `api/payments/razorpay/create` - 12-15 tests
+- [x] `api/checkout/create-order` - 16 tests (8 original + 8 new)
   - Valid payment creation, amount validation, currency checks
   - User auth, order validation, Razorpay SDK mocking
+  - Multi-shop orders, billing address validation
+  - COD vs Razorpay payment methods, order notes
   - Error handling (invalid amounts, missing data, API failures)
-- [ ] `api/payments/razorpay/verify` - 12-15 tests
+- [x] `api/checkout/verify-payment` - 33 tests (23 original + 10 new)
   - Signature verification, payment status checks
-  - Order updates after payment, webhooks
-  - Error handling (invalid signatures, expired payments)
+  - Order updates after payment, stock reduction
+  - Cart clearing, coupon usage tracking
+  - Environment configuration, multi-shop support
+  - Error handling (invalid signatures, failed commits, missing data)
 
-**Success Criteria**: 90%+ pass rate, all payment flows covered
+**Results**: 49/49 tests passing (100% ✅) | All payment flows covered
+**Bugs Fixed**: crypto mock, batch.delete mock, response field names
 
 ---
 
@@ -803,13 +807,17 @@ Tasks that don't get completed in their planned session move here:
 
 ### Session 25: Payment API Routes
 
-- **Status**: ⏳ Not Started
-- **Tests Written**: 0/30
-- **Pass Rate**: N/A
-- **Time Spent**: 0h
-- **Moved to Backlog**: N/A
-- **Bugs Found**: N/A
-- **Notes**: N/A
+- **Status**: ✅ Complete
+- **Tests Written**: 49/49 (18 new + 31 existing fixed)
+- **Pass Rate**: 100%
+- **Time Spent**: 1.5h
+- **Moved to Backlog**: None
+- **Bugs Fixed**:
+  - crypto.randomBytes mock missing toString()
+  - Collections.orders().add() method not mocked
+  - mockBatch.delete() method missing
+  - Response field names (orderIds → orders, razorpayOrderId → razorpay_order_id)
+- **Notes**: Tests already existed but had issues. Fixed all mocks and added 18 new comprehensive tests covering edge cases, multi-shop orders, coupon management, cart clearing, and environment configuration.
 
 ### Session 26: Order Management APIs
 

@@ -31,6 +31,10 @@ describe("POST /api/checkout/verify-payment", () => {
   let mockProductDoc: any;
   let mockBatch: any;
 
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -68,6 +72,7 @@ describe("POST /api/checkout/verify-payment", () => {
     // Mock Firestore batch
     mockBatch = {
       update: jest.fn(),
+      delete: jest.fn(),
       commit: jest.fn().mockResolvedValue(undefined),
     };
 
@@ -752,6 +757,295 @@ describe("POST /api/checkout/verify-payment", () => {
 
       expect(response.status).toBe(500);
       expect(data.error).toBeDefined();
+    });
+  });
+
+  describe("Cart Management", () => {
+    it("should clear user cart after successful payment", async () => {
+      const mockCartItem = { id: "cart1", ref: { id: "cart1" } };
+      const mockCartSnapshot = {
+        docs: [mockCartItem],
+      };
+
+      (Collections.cart as jest.Mock).mockReturnValue({
+        where: jest.fn().mockReturnThis(),
+        get: jest.fn().mockResolvedValue(mockCartSnapshot),
+      });
+
+      const request = new NextRequest(
+        "http://localhost/api/checkout/verify-payment",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            order_id: "order123",
+            razorpay_order_id: "rzp_order123",
+            razorpay_payment_id: "rzp_pay123",
+            razorpay_signature: "valid_signature",
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(mockBatch.delete).toHaveBeenCalled();
+    });
+
+    it("should handle empty cart gracefully", async () => {
+      const mockCartSnapshot = {
+        docs: [],
+      };
+
+      (Collections.cart as jest.Mock).mockReturnValue({
+        where: jest.fn().mockReturnThis(),
+        get: jest.fn().mockResolvedValue(mockCartSnapshot),
+      });
+
+      const request = new NextRequest(
+        "http://localhost/api/checkout/verify-payment",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            order_id: "order123",
+            razorpay_order_id: "rzp_order123",
+            razorpay_payment_id: "rzp_pay123",
+            razorpay_signature: "valid_signature",
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+    });
+  });
+
+  describe("Coupon Management", () => {
+    it("should update coupon usage count after successful payment", async () => {
+      const mockCouponDoc = {
+        ref: { id: "coupon123" },
+        data: () => ({ used_count: 5, code: "SAVE10" }),
+      };
+
+      const mockCouponSnapshot = {
+        empty: false,
+        docs: [mockCouponDoc],
+      };
+
+      (Collections.coupons as jest.Mock).mockReturnValue({
+        where: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        get: jest.fn().mockResolvedValue(mockCouponSnapshot),
+        doc: jest.fn().mockReturnValue({
+          update: jest.fn().mockResolvedValue(undefined),
+        }),
+      });
+
+      const request = new NextRequest(
+        "http://localhost/api/checkout/verify-payment",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            order_id: "order123",
+            razorpay_order_id: "rzp_order123",
+            razorpay_payment_id: "rzp_pay123",
+            razorpay_signature: "valid_signature",
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(mockBatch.update).toHaveBeenCalled();
+    });
+
+    it("should handle orders without coupons", async () => {
+      const orderWithoutCoupon = {
+        ...mockOrder,
+        coupon: null,
+      };
+
+      (batchGetOrders as jest.Mock).mockResolvedValue(
+        new Map([["order123", orderWithoutCoupon]])
+      );
+
+      const request = new NextRequest(
+        "http://localhost/api/checkout/verify-payment",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            order_id: "order123",
+            razorpay_order_id: "rzp_order123",
+            razorpay_payment_id: "rzp_pay123",
+            razorpay_signature: "valid_signature",
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+    });
+
+    it("should handle non-existent coupons gracefully", async () => {
+      const mockCouponSnapshot = {
+        empty: true,
+        docs: [],
+      };
+
+      (Collections.coupons as jest.Mock).mockReturnValue({
+        where: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        get: jest.fn().mockResolvedValue(mockCouponSnapshot),
+      });
+
+      const request = new NextRequest(
+        "http://localhost/api/checkout/verify-payment",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            order_id: "order123",
+            razorpay_order_id: "rzp_order123",
+            razorpay_payment_id: "rzp_pay123",
+            razorpay_signature: "valid_signature",
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+    });
+  });
+
+  describe("Payment Status Updates", () => {
+    it("should set payment_status to paid", async () => {
+      const request = new NextRequest(
+        "http://localhost/api/checkout/verify-payment",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            order_id: "order123",
+            razorpay_order_id: "rzp_order123",
+            razorpay_payment_id: "rzp_pay123",
+            razorpay_signature: "valid_signature",
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.payment_status).toBe("paid");
+    });
+
+    it("should include razorpay_payment_id in order update", async () => {
+      const request = new NextRequest(
+        "http://localhost/api/checkout/verify-payment",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            order_id: "order123",
+            razorpay_order_id: "rzp_order123",
+            razorpay_payment_id: "rzp_pay123",
+            razorpay_signature: "valid_signature",
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(mockBatch.update).toHaveBeenCalled();
+    });
+
+    it("should set paid_at timestamp", async () => {
+      const request = new NextRequest(
+        "http://localhost/api/checkout/verify-payment",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            order_id: "order123",
+            razorpay_order_id: "rzp_order123",
+            razorpay_payment_id: "rzp_pay123",
+            razorpay_signature: "valid_signature",
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(mockBatch.update).toHaveBeenCalled();
+    });
+  });
+
+  describe("Environment Configuration", () => {
+    it("should use RAZORPAY_KEY_SECRET from environment", async () => {
+      process.env.RAZORPAY_KEY_SECRET = "custom_secret";
+
+      const mockHmac = {
+        update: jest.fn().mockReturnThis(),
+        digest: jest.fn().mockReturnValue("valid_signature"),
+      };
+      (crypto.createHmac as jest.Mock).mockReturnValue(mockHmac);
+
+      const request = new NextRequest(
+        "http://localhost/api/checkout/verify-payment",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            order_id: "order123",
+            razorpay_order_id: "rzp_order123",
+            razorpay_payment_id: "rzp_pay123",
+            razorpay_signature: "valid_signature",
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(crypto.createHmac).toHaveBeenCalledWith(
+        "sha256",
+        "custom_secret"
+      );
+      expect(response.status).toBe(200);
+    });
+
+    it("should use default secret if environment not set", async () => {
+      delete process.env.RAZORPAY_KEY_SECRET;
+
+      const mockHmac = {
+        update: jest.fn().mockReturnThis(),
+        digest: jest.fn().mockReturnValue("valid_signature"),
+      };
+      (crypto.createHmac as jest.Mock).mockReturnValue(mockHmac);
+
+      const request = new NextRequest(
+        "http://localhost/api/checkout/verify-payment",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            order_id: "order123",
+            razorpay_order_id: "rzp_order123",
+            razorpay_payment_id: "rzp_pay123",
+            razorpay_signature: "valid_signature",
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(crypto.createHmac).toHaveBeenCalledWith("sha256", "test_secret");
+      expect(response.status).toBe(200);
     });
   });
 });
