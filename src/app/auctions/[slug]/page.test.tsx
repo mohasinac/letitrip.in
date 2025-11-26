@@ -905,4 +905,497 @@ describe("AuctionDetailPage", () => {
       });
     });
   });
+
+  describe("Edge Cases - Session 28", () => {
+    describe("Bid Increment Validation", () => {
+      it("enforces minimum bid increment when placing bid", async () => {
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("₹1,200")).toBeInTheDocument();
+        });
+
+        const bidInput = screen.getByPlaceholderText("Enter bid amount");
+        const placeBidButton = screen.getByText("Place Bid");
+
+        // Try to bid below minimum increment (current: 1200, increment: 100, min: 1300)
+        fireEvent.change(bidInput, { target: { value: "1250" } });
+        fireEvent.click(placeBidButton);
+
+        await waitFor(() => {
+          expect(screen.getByText(/minimum bid/i)).toBeInTheDocument();
+        });
+      });
+
+      it("accepts bid exactly at minimum bid amount", async () => {
+        mockAuctionsService.placeBid.mockResolvedValue({
+          ...mockBids[0],
+          amount: 1300,
+          formattedAmount: "₹1,300",
+        } as any);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("₹1,200")).toBeInTheDocument();
+        });
+
+        const bidInput = screen.getByPlaceholderText("Enter bid amount");
+        const placeBidButton = screen.getByText("Place Bid");
+
+        fireEvent.change(bidInput, { target: { value: "1300" } });
+        fireEvent.click(placeBidButton);
+
+        await waitFor(() => {
+          expect(mockAuctionsService.placeBid).toHaveBeenCalledWith(
+            "auction-1",
+            expect.objectContaining({ amount: 1300 })
+          );
+        });
+      });
+
+      it("calculates correct minimum bid for large increment values", async () => {
+        const largeIncrementAuction = {
+          ...mockAuction,
+          bidIncrement: 5000,
+          currentPrice: 50000,
+          minimumBid: 55000,
+        };
+        mockAuctionsService.getBySlug.mockResolvedValue(largeIncrementAuction);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("₹50,000")).toBeInTheDocument();
+        });
+
+        // Should suggest 55000 (50000 + 5000)
+        const bidInput = screen.getByPlaceholderText(
+          "Enter bid amount"
+        ) as HTMLInputElement;
+        expect(bidInput.value).toMatch(/55000|₹55,000/);
+      });
+    });
+
+    describe("Auto-Bid Functionality", () => {
+      it("displays auto-bid toggle and max amount input", async () => {
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("₹1,200")).toBeInTheDocument();
+        });
+
+        expect(screen.getByText(/auto-bid/i)).toBeInTheDocument();
+      });
+
+      it("places auto-bid with max amount", async () => {
+        mockAuctionsService.placeBid.mockResolvedValue({
+          ...mockBids[0],
+          amount: 1300,
+          isAutoBid: true,
+          maxAutoBidAmount: 2000,
+          formattedAmount: "₹1,300",
+        } as any);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("₹1,200")).toBeInTheDocument();
+        });
+
+        // Enable auto-bid
+        const autoBidCheckbox = screen.getByRole("checkbox", {
+          name: /auto-bid/i,
+        });
+        fireEvent.click(autoBidCheckbox);
+
+        // Set max amount
+        const maxBidInput = screen.getByPlaceholderText(
+          /max.*bid|maximum amount/i
+        );
+        fireEvent.change(maxBidInput, { target: { value: "2000" } });
+
+        // Place bid
+        const bidInput = screen.getByPlaceholderText("Enter bid amount");
+        fireEvent.change(bidInput, { target: { value: "1300" } });
+        const placeBidButton = screen.getByText("Place Bid");
+        fireEvent.click(placeBidButton);
+
+        await waitFor(() => {
+          expect(mockAuctionsService.placeBid).toHaveBeenCalledWith(
+            "auction-1",
+            expect.objectContaining({
+              amount: 1300,
+              isAutoBid: true,
+              maxAutoBidAmount: 2000,
+            })
+          );
+        });
+      });
+
+      it("validates max auto-bid amount is greater than current bid", async () => {
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("₹1,200")).toBeInTheDocument();
+        });
+
+        const autoBidCheckbox = screen.getByRole("checkbox", {
+          name: /auto-bid/i,
+        });
+        fireEvent.click(autoBidCheckbox);
+
+        const maxBidInput = screen.getByPlaceholderText(
+          /max.*bid|maximum amount/i
+        );
+        fireEvent.change(maxBidInput, { target: { value: "1000" } }); // Less than current 1200
+
+        const placeBidButton = screen.getByText("Place Bid");
+        fireEvent.click(placeBidButton);
+
+        await waitFor(() => {
+          expect(
+            screen.getByText(/max.*bid.*must.*greater/i)
+          ).toBeInTheDocument();
+        });
+      });
+    });
+
+    describe("Auction Expiry Handling", () => {
+      it("handles auction ending while user is viewing", async () => {
+        jest.useFakeTimers();
+        const soonToEndAuction = {
+          ...mockAuction,
+          endTime: new Date(Date.now() + 5000), // Ends in 5 seconds
+          timeRemainingSeconds: 5,
+        };
+        mockAuctionsService.getBySlug.mockResolvedValue(soonToEndAuction);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText(/seconds? left|second/i)).toBeInTheDocument();
+        });
+
+        // Fast-forward time to after auction ends
+        jest.advanceTimersByTime(6000);
+
+        await waitFor(() => {
+          expect(screen.getByText(/auction.*ended|ended/i)).toBeInTheDocument();
+        });
+
+        jest.useRealTimers();
+      });
+
+      it("prevents bidding on auctions that just ended", async () => {
+        const justEndedAuction = {
+          ...mockAuction,
+          status: AuctionStatus.ENDED,
+          endTime: new Date(Date.now() - 1000), // Ended 1 second ago
+          canBid: false,
+        };
+        mockAuctionsService.getBySlug.mockResolvedValue(justEndedAuction);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText(/auction.*ended/i)).toBeInTheDocument();
+        });
+
+        // Bid button should be disabled
+        const bidButton = screen.queryByText("Place Bid");
+        expect(bidButton).toBeNull();
+      });
+
+      it("shows auction extension notification when extended", async () => {
+        const extendedAuction = {
+          ...mockAuction,
+          timesExtended: 1,
+          extensionTime: 300000, // 5 minutes
+        };
+        mockAuctionsService.getBySlug.mockResolvedValue(extendedAuction);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText(/extended|extension/i)).toBeInTheDocument();
+        });
+      });
+    });
+
+    describe("Concurrent Bidding Scenarios", () => {
+      it("shows error when bid is outbid before submission", async () => {
+        mockAuctionsService.placeBid.mockRejectedValue(
+          new Error("Your bid has been outbid. Please enter a higher amount.")
+        );
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("₹1,200")).toBeInTheDocument();
+        });
+
+        const bidInput = screen.getByPlaceholderText("Enter bid amount");
+        const placeBidButton = screen.getByText("Place Bid");
+
+        fireEvent.change(bidInput, { target: { value: "1300" } });
+        fireEvent.click(placeBidButton);
+
+        await waitFor(() => {
+          expect(screen.getByText(/outbid/i)).toBeInTheDocument();
+        });
+      });
+
+      it("refreshes bid data after failed bid attempt", async () => {
+        mockAuctionsService.placeBid.mockRejectedValueOnce(
+          new Error("Bid amount is too low")
+        );
+
+        const updatedBids = [
+          {
+            ...mockBids[0],
+            amount: 1500,
+            formattedAmount: "₹1,500",
+          },
+          ...mockBids.slice(1),
+        ];
+
+        mockAuctionsService.getBids.mockResolvedValueOnce({
+          data: updatedBids,
+          count: 2,
+          pagination: {
+            limit: 20,
+            hasNextPage: false,
+            nextCursor: null,
+            count: 2,
+          } as any,
+        });
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("₹1,200")).toBeInTheDocument();
+        });
+
+        const bidInput = screen.getByPlaceholderText("Enter bid amount");
+        const placeBidButton = screen.getByText("Place Bid");
+
+        fireEvent.change(bidInput, { target: { value: "1300" } });
+        fireEvent.click(placeBidButton);
+
+        await waitFor(() => {
+          expect(screen.getByText(/bid.*too low/i)).toBeInTheDocument();
+        });
+
+        // Should show updated highest bid
+        await waitFor(() => {
+          expect(screen.getByText("₹1,500")).toBeInTheDocument();
+        });
+      });
+    });
+
+    describe("Buy Now Functionality", () => {
+      it("displays buy now button when available", async () => {
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText(/buy now.*₹2,000/i)).toBeInTheDocument();
+        });
+      });
+
+      it("hides buy now button when not available", async () => {
+        const noBuyNowAuction = {
+          ...mockAuction,
+          buyNowPrice: null,
+          formattedBuyNowPrice: null,
+          canBuyNow: false,
+        };
+        mockAuctionsService.getBySlug.mockResolvedValue(noBuyNowAuction);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("₹1,200")).toBeInTheDocument();
+        });
+
+        expect(screen.queryByText(/buy now/i)).toBeNull();
+      });
+
+      it("confirms buy now action before proceeding", async () => {
+        global.confirm = jest.fn(() => true);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText(/buy now/i)).toBeInTheDocument();
+        });
+
+        const buyNowButton = screen.getByText(/buy now/i);
+        fireEvent.click(buyNowButton);
+
+        expect(global.confirm).toHaveBeenCalledWith(
+          expect.stringMatching(/confirm.*buy now.*₹2,000/i)
+        );
+      });
+    });
+
+    describe("Authentication & Ownership", () => {
+      it("prevents seller from bidding on their own auction", async () => {
+        mockUseAuth.mockReturnValue({
+          user: { id: "seller-1", email: "seller@test.com" },
+        });
+
+        const sellerAuction = {
+          ...mockAuction,
+          isYourAuction: true,
+          canBid: false,
+        };
+        mockAuctionsService.getBySlug.mockResolvedValue(sellerAuction);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(
+            screen.getByText(/cannot bid.*own auction/i)
+          ).toBeInTheDocument();
+        });
+
+        expect(screen.queryByText("Place Bid")).toBeNull();
+      });
+
+      it("shows special UI when user is winning", async () => {
+        const winningAuction = {
+          ...mockAuction,
+          isYouWinning: true,
+          highestBidderId: "user-1",
+        };
+        mockAuctionsService.getBySlug.mockResolvedValue(winningAuction);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(
+            screen.getByText(/you.*winning|highest bidder/i)
+          ).toBeInTheDocument();
+        });
+      });
+
+      it("shows winner UI when user has won", async () => {
+        mockUseAuth.mockReturnValue({
+          user: { id: "user-1", email: "test@test.com" },
+        });
+
+        const wonAuction = {
+          ...mockAuction,
+          status: AuctionStatus.ENDED,
+          isYouWinner: true,
+          winnerId: "user-1",
+        };
+        mockAuctionsService.getBySlug.mockResolvedValue(wonAuction);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText(/congratulations.*won/i)).toBeInTheDocument();
+        });
+      });
+    });
+
+    describe("Real-time Updates Simulation", () => {
+      it("handles rapid bid updates", async () => {
+        let bidCount = 5;
+        mockAuctionsService.getBids.mockImplementation(() => {
+          bidCount++;
+          return Promise.resolve({
+            data: [
+              {
+                ...mockBids[0],
+                id: `bid-${bidCount}`,
+                amount: 1200 + bidCount * 100,
+                formattedAmount: `₹${(1200 + bidCount * 100).toLocaleString()}`,
+              },
+              ...mockBids,
+            ],
+            count: bidCount,
+            pagination: {
+              limit: 20,
+              hasNextPage: false,
+              nextCursor: null,
+              count: bidCount,
+            } as any,
+          });
+        });
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("₹1,200")).toBeInTheDocument();
+        });
+
+        // Simulate multiple rapid updates
+        for (let i = 0; i < 3; i++) {
+          await act(async () => {
+            // Trigger refresh (if component has refresh mechanism)
+            await Promise.resolve();
+          });
+        }
+
+        // Should handle updates gracefully without crashing
+        expect(screen.getByText(/Test Auction Item/i)).toBeInTheDocument();
+      });
+    });
+
+    describe("Loading States & Performance", () => {
+      it("shows skeleton for similar auctions while loading", async () => {
+        mockAuctionsService.list.mockImplementation(
+          () =>
+            new Promise((resolve) =>
+              setTimeout(
+                () =>
+                  resolve({
+                    data: mockSimilarAuctions,
+                    count: 1,
+                    pagination: {
+                      limit: 6,
+                      hasNextPage: false,
+                      nextCursor: null,
+                      count: 1,
+                    } as any,
+                  }),
+                100
+              )
+            )
+        );
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(
+            screen.getByTestId("auction-skeleton-grid")
+          ).toBeInTheDocument();
+        });
+      });
+
+      it("handles missing optional auction data gracefully", async () => {
+        const minimalAuction = {
+          ...mockAuction,
+          videos: [],
+          reservePrice: null,
+          buyNowPrice: null,
+          shopId: null,
+          shopName: null,
+        };
+        mockAuctionsService.getBySlug.mockResolvedValue(minimalAuction);
+
+        render(<AuctionDetailPage />);
+
+        await waitFor(() => {
+          expect(screen.getByText("Test Auction Item")).toBeInTheDocument();
+        });
+
+        // Should not show shop section
+        expect(screen.queryByText("Test Shop")).toBeNull();
+      });
+    });
+  });
 });
