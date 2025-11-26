@@ -449,6 +449,268 @@ describe("/api/orders", () => {
         error: "Failed to list orders",
       });
     });
+
+    it("handles pagination with hasNextPage true", async () => {
+      (getUserFromRequest as jest.Mock).mockResolvedValue(mockUser);
+
+      const mockQuery = {
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+      };
+      (Collections.orders as jest.Mock).mockReturnValue(mockQuery);
+
+      (executeCursorPaginatedQuery as jest.Mock).mockResolvedValue({
+        success: true,
+        data: mockOrders,
+        count: 2,
+        pagination: {
+          limit: 50,
+          hasNextPage: true,
+          nextCursor: "cursor123",
+          count: 2,
+        },
+      });
+
+      const request = new NextRequest("http://localhost/api/orders?limit=2");
+      const response = await GET(request);
+
+      expect(response.status).toBe(200);
+      const json = await response.json();
+      expect(json.pagination.hasNextPage).toBe(true);
+      expect(json.pagination.nextCursor).toBe("cursor123");
+    });
+
+    it("applies cursor pagination correctly", async () => {
+      (getUserFromRequest as jest.Mock).mockResolvedValue(mockUser);
+
+      const mockQuery = {
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+      };
+      (Collections.orders as jest.Mock).mockReturnValue(mockQuery);
+
+      const mockDocGet = jest.fn().mockResolvedValue({
+        exists: true,
+        data: () => mockOrders[0],
+      });
+
+      (Collections.orders as jest.Mock).mockReturnValue({
+        ...mockQuery,
+        doc: jest.fn().mockReturnValue({
+          get: mockDocGet,
+        }),
+      });
+
+      (executeCursorPaginatedQuery as jest.Mock).mockImplementation(
+        async (query, searchParams, docFetcher) => {
+          await docFetcher("order1");
+          return {
+            success: true,
+            data: [mockOrders[1]],
+            count: 1,
+            pagination: {
+              limit: 50,
+              hasNextPage: false,
+              nextCursor: null,
+              count: 1,
+            },
+          };
+        }
+      );
+
+      const request = new NextRequest(
+        "http://localhost/api/orders?cursor=order1"
+      );
+      const response = await GET(request);
+
+      expect(response.status).toBe(200);
+      expect(executeCursorPaginatedQuery).toHaveBeenCalled();
+    });
+
+    it("respects limit parameter", async () => {
+      (getUserFromRequest as jest.Mock).mockResolvedValue(mockUser);
+
+      const mockQuery = {
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+      };
+      (Collections.orders as jest.Mock).mockReturnValue(mockQuery);
+
+      (executeCursorPaginatedQuery as jest.Mock).mockResolvedValue({
+        success: true,
+        data: [mockOrders[0]],
+        count: 1,
+        pagination: {
+          limit: 10,
+          hasNextPage: true,
+          nextCursor: "cursor123",
+          count: 1,
+        },
+      });
+
+      const request = new NextRequest("http://localhost/api/orders?limit=10");
+      const response = await GET(request);
+
+      expect(response.status).toBe(200);
+      const json = await response.json();
+      expect(json.pagination.limit).toBe(10);
+    });
+
+    it("handles empty result set", async () => {
+      (getUserFromRequest as jest.Mock).mockResolvedValue(mockUser);
+
+      const mockQuery = {
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+      };
+      (Collections.orders as jest.Mock).mockReturnValue(mockQuery);
+
+      (executeCursorPaginatedQuery as jest.Mock).mockResolvedValue({
+        success: true,
+        data: [],
+        count: 0,
+        pagination: {
+          limit: 50,
+          hasNextPage: false,
+          nextCursor: null,
+          count: 0,
+        },
+      });
+
+      const request = new NextRequest(
+        "http://localhost/api/orders?status=nonexistent"
+      );
+      const response = await GET(request);
+
+      expect(response.status).toBe(200);
+      const json = await response.json();
+      expect(json.data).toEqual([]);
+      expect(json.count).toBe(0);
+    });
+
+    it("filters by status with case sensitivity", async () => {
+      (getUserFromRequest as jest.Mock).mockResolvedValue(mockUser);
+
+      const mockQuery = {
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+      };
+      (Collections.orders as jest.Mock).mockReturnValue(mockQuery);
+
+      (executeCursorPaginatedQuery as jest.Mock).mockResolvedValue({
+        success: true,
+        data: [mockOrders[0]],
+        count: 1,
+        pagination: {
+          limit: 50,
+          hasNextPage: false,
+          nextCursor: null,
+          count: 1,
+        },
+      });
+
+      const request = new NextRequest(
+        "http://localhost/api/orders?status=pending"
+      );
+      const response = await GET(request);
+
+      expect(response.status).toBe(200);
+      expect(mockQuery.where).toHaveBeenCalledWith("status", "==", "pending");
+    });
+
+    it("combines shop_id filter with status filter for admin", async () => {
+      (getUserFromRequest as jest.Mock).mockResolvedValue({
+        ...mockUser,
+        role: "admin",
+      });
+
+      const mockQuery = {
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+      };
+      (Collections.orders as jest.Mock).mockReturnValue(mockQuery);
+
+      (executeCursorPaginatedQuery as jest.Mock).mockResolvedValue({
+        success: true,
+        data: [mockOrders[0]],
+        count: 1,
+        pagination: {
+          limit: 50,
+          hasNextPage: false,
+          nextCursor: null,
+          count: 1,
+        },
+      });
+
+      const request = new NextRequest(
+        "http://localhost/api/orders?shop_id=shop123&status=pending"
+      );
+      const response = await GET(request);
+
+      expect(response.status).toBe(200);
+      expect(mockQuery.where).toHaveBeenCalledWith("shop_id", "==", "shop123");
+      expect(mockQuery.where).toHaveBeenCalledWith("status", "==", "pending");
+    });
+
+    it("sorts by total_amount when specified", async () => {
+      (getUserFromRequest as jest.Mock).mockResolvedValue(mockUser);
+
+      const mockQuery = {
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+      };
+      (Collections.orders as jest.Mock).mockReturnValue(mockQuery);
+
+      (executeCursorPaginatedQuery as jest.Mock).mockResolvedValue({
+        success: true,
+        data: mockOrders,
+        count: 2,
+        pagination: {
+          limit: 50,
+          hasNextPage: false,
+          nextCursor: null,
+          count: 2,
+        },
+      });
+
+      const request = new NextRequest(
+        "http://localhost/api/orders?sortBy=total_amount&sortOrder=asc"
+      );
+      const response = await GET(request);
+
+      expect(response.status).toBe(200);
+      expect(mockQuery.orderBy).toHaveBeenCalledWith("total_amount", "asc");
+    });
+
+    it("rejects invalid sortBy field", async () => {
+      (getUserFromRequest as jest.Mock).mockResolvedValue(mockUser);
+
+      const mockQuery = {
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+      };
+      (Collections.orders as jest.Mock).mockReturnValue(mockQuery);
+
+      (executeCursorPaginatedQuery as jest.Mock).mockResolvedValue({
+        success: true,
+        data: mockOrders,
+        count: 2,
+        pagination: {
+          limit: 50,
+          hasNextPage: false,
+          nextCursor: null,
+          count: 2,
+        },
+      });
+
+      const request = new NextRequest(
+        "http://localhost/api/orders?sortBy=invalid_field"
+      );
+      const response = await GET(request);
+
+      expect(response.status).toBe(200);
+      expect(mockQuery.orderBy).toHaveBeenCalledWith("created_at", "desc");
+    });
   });
 
   describe("POST /api/orders", () => {
