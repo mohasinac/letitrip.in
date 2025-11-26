@@ -69,7 +69,14 @@ describe("useFilters", () => {
   });
 
   it("loads filters from localStorage when persist is enabled", () => {
-    (global.localStorage.getItem as jest.Mock).mockReturnValue(
+    const mockSearchParams = new URLSearchParams();
+    (require("next/navigation").useSearchParams as jest.Mock).mockReturnValue(
+      mockSearchParams
+    );
+
+    // Set up localStorage mock BEFORE rendering hook
+    const mockGetItem = global.localStorage.getItem as jest.Mock;
+    mockGetItem.mockReturnValue(
       JSON.stringify({ category: "books", price: 50 })
     );
 
@@ -147,6 +154,9 @@ describe("useFilters", () => {
 
     act(() => {
       result.current.updateFilters({ category: "electronics", price: 200 });
+    });
+
+    act(() => {
       result.current.applyFilters();
     });
 
@@ -173,6 +183,9 @@ describe("useFilters", () => {
 
     act(() => {
       result.current.updateFilters({ category: "electronics", price: 200 });
+    });
+
+    act(() => {
       result.current.applyFilters();
     });
 
@@ -226,6 +239,9 @@ describe("useFilters", () => {
         price: 0,
         tags: ["new"],
       });
+    });
+
+    act(() => {
       result.current.applyFilters();
     });
 
@@ -247,6 +263,9 @@ describe("useFilters", () => {
 
     act(() => {
       result.current.updateFilters({ category: "electronics", price: 200 });
+    });
+
+    act(() => {
       result.current.applyFilters();
     });
 
