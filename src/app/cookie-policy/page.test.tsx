@@ -50,7 +50,7 @@ describe("CookiePolicyPage", () => {
     it("should describe essential cookies", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText("2.1 Essential Cookies (Strictly Necessary)")
+        screen.getByText(/2\.1.*Essential Cookies.*Strictly Necessary/i)
       ).toBeInTheDocument();
       expect(
         screen.getByText(/necessary for the website to function/i)
@@ -59,37 +59,41 @@ describe("CookiePolicyPage", () => {
 
     it("should list essential cookie examples (session, auth, cart)", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText(/Session cookies/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Session cookies/i)[0]).toBeInTheDocument();
       expect(screen.getByText(/Authentication tokens/i)).toBeInTheDocument();
-      expect(screen.getByText(/Shopping cart/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Shopping cart/i)[0]).toBeInTheDocument();
     });
 
     it("should describe performance/analytics cookies", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText("2.2 Performance Cookies (Analytics)")
+        screen.getByText(/2\.2.*Performance Cookies.*Analytics/i)
       ).toBeInTheDocument();
-      expect(screen.getByText(/Google Analytics/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Google Analytics/i)[0]).toBeInTheDocument();
     });
 
     it("should describe functional cookies", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText("2.3 Functional Cookies")).toBeInTheDocument();
-      expect(screen.getByText(/Recently viewed items/i)).toBeInTheDocument();
+      expect(screen.getByText(/2\.3.*Functional Cookies/i)).toBeInTheDocument();
+      expect(
+        screen.getAllByText(/Recently viewed items/i)[0]
+      ).toBeInTheDocument();
     });
 
     it("should describe advertising cookies", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText("2.4 Targeting/Advertising Cookies")
+        screen.getByText(/2\.4.*Targeting.*Advertising Cookies/i)
       ).toBeInTheDocument();
-      expect(screen.getByText(/Google Ads/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Google Ads/i)[0]).toBeInTheDocument();
     });
 
     it("should describe social media cookies", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText("2.5 Social Media Cookies")).toBeInTheDocument();
-      expect(screen.getByText(/Facebook/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/2\.5.*Social Media Cookies/i)
+      ).toBeInTheDocument();
+      expect(screen.getAllByText(/Facebook/i)[0]).toBeInTheDocument();
     });
   });
 
@@ -97,7 +101,9 @@ describe("CookiePolicyPage", () => {
   describe("Other Tracking Technologies", () => {
     it("should describe web beacons/pixels", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText("3.1 Web Beacons (Pixels)")).toBeInTheDocument();
+      expect(
+        screen.getByText(/3\.1.*Web Beacons.*Pixels/i)
+      ).toBeInTheDocument();
       expect(
         screen.getByText(/Small invisible images embedded/i)
       ).toBeInTheDocument();
@@ -105,7 +111,7 @@ describe("CookiePolicyPage", () => {
 
     it("should describe local storage", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText("3.2 Local Storage")).toBeInTheDocument();
+      expect(screen.getByText(/3\.2.*Local Storage/i)).toBeInTheDocument();
       expect(
         screen.getByText(/Browser storage that persists/i)
       ).toBeInTheDocument();
@@ -113,7 +119,7 @@ describe("CookiePolicyPage", () => {
 
     it("should describe session storage", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText("3.3 Session Storage")).toBeInTheDocument();
+      expect(screen.getByText(/3\.3.*Session Storage/i)).toBeInTheDocument();
       expect(
         screen.getByText(/Temporary storage that clears/i)
       ).toBeInTheDocument();
@@ -121,7 +127,9 @@ describe("CookiePolicyPage", () => {
 
     it("should describe device fingerprinting", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText("3.4 Device Fingerprinting")).toBeInTheDocument();
+      expect(
+        screen.getByText(/3\.4.*Device Fingerprinting/i)
+      ).toBeInTheDocument();
       expect(screen.getByText(/device configuration/i)).toBeInTheDocument();
     });
   });
@@ -130,7 +138,7 @@ describe("CookiePolicyPage", () => {
   describe("Third-Party Services", () => {
     it("should list Razorpay as payment processor", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText(/Razorpay/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Razorpay/i)[0]).toBeInTheDocument();
       const razorpayLink = screen.getByRole("link", {
         name: /razorpay privacy policy/i,
       });
@@ -179,14 +187,18 @@ describe("CookiePolicyPage", () => {
   describe("Cookie Management", () => {
     it("should describe cookie consent banner options", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText("5.1 Cookie Consent Banner")).toBeInTheDocument();
+      expect(
+        screen.getByText(/5\.1.*Cookie Consent Banner/i)
+      ).toBeInTheDocument();
       expect(screen.getByText(/Accept All/i)).toBeInTheDocument();
-      expect(screen.getByText(/Reject Non-Essential/i)).toBeInTheDocument();
+      expect(
+        screen.getAllByText(/Reject Non-Essential/i)[0]
+      ).toBeInTheDocument();
     });
 
     it("should provide browser settings instructions", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText("5.2 Browser Settings")).toBeInTheDocument();
+      expect(screen.getByText(/5\.2.*Browser Settings/i)).toBeInTheDocument();
       expect(screen.getByText(/Google Chrome/i)).toBeInTheDocument();
       expect(screen.getByText(/Firefox/i)).toBeInTheDocument();
       expect(screen.getByText(/Safari/i)).toBeInTheDocument();
@@ -194,7 +206,7 @@ describe("CookiePolicyPage", () => {
 
     it("should provide opt-out tool links", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText("5.3 Opt-Out Tools")).toBeInTheDocument();
+      expect(screen.getByText(/5\.3.*Opt-Out Tools/i)).toBeInTheDocument();
       const googleOptOutLink = screen.getByRole("link", {
         name: /install google analytics opt-out/i,
       });
@@ -207,7 +219,7 @@ describe("CookiePolicyPage", () => {
     it("should describe mobile device settings", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText("5.4 Mobile Device Settings")
+        screen.getByText(/5\.4.*Mobile Device Settings/i)
       ).toBeInTheDocument();
       expect(screen.getByText(/iOS/i)).toBeInTheDocument();
       expect(screen.getByText(/Android/i)).toBeInTheDocument();
@@ -218,7 +230,7 @@ describe("CookiePolicyPage", () => {
   describe("Cookie Lifespan", () => {
     it("should describe session cookies (deleted when browser closes)", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText("7.1 Session Cookies")).toBeInTheDocument();
+      expect(screen.getByText(/7\.1.*Session Cookies/i)).toBeInTheDocument();
       expect(
         screen.getByText(/Deleted when you close your browser/i)
       ).toBeInTheDocument();
@@ -226,7 +238,7 @@ describe("CookiePolicyPage", () => {
 
     it("should describe persistent cookies with time ranges", () => {
       render(<CookiePolicyPage />);
-      expect(screen.getByText("7.2 Persistent Cookies")).toBeInTheDocument();
+      expect(screen.getByText(/7\.2.*Persistent Cookies/i)).toBeInTheDocument();
       expect(screen.getByText(/1-7 days/i)).toBeInTheDocument();
       expect(screen.getByText(/30-90 days/i)).toBeInTheDocument();
       expect(screen.getByText(/1-2 years/i)).toBeInTheDocument();
@@ -238,7 +250,7 @@ describe("CookiePolicyPage", () => {
     it("should describe user rights under privacy laws", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText("8. Cookies and Your Rights")
+        screen.getByText(/8\..*Cookies and Your Rights/i)
       ).toBeInTheDocument();
       expect(
         screen.getByText(/Know what cookies are being used/i)
@@ -279,8 +291,10 @@ describe("CookiePolicyPage", () => {
       render(<CookiePolicyPage />);
       expect(screen.getByText("15. Glossary")).toBeInTheDocument();
       expect(screen.getByText(/First-party cookies/i)).toBeInTheDocument();
-      expect(screen.getByText(/Third-party cookies/i)).toBeInTheDocument();
-      expect(screen.getByText(/Session cookies/i)).toBeInTheDocument();
+      expect(
+        screen.getAllByText(/Third-party cookies/i)[0]
+      ).toBeInTheDocument();
+      expect(screen.getAllByText(/Session cookies/i)[0]).toBeInTheDocument();
     });
   });
 

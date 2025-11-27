@@ -70,7 +70,8 @@ export function useSafeLoad(
       setHasLoaded(true);
     } catch (error) {
       console.error("[useSafeLoad] Error:", error);
-      throw error;
+      setHasLoaded(false);
+      // Don't throw - let the component handle errors gracefully
     } finally {
       setIsLoading(false);
     }

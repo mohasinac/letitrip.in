@@ -462,7 +462,7 @@ describe("CategoryForm", () => {
 
   // VALIDATION TESTS
   describe("Validation", () => {
-    it.skip("should show error when name is empty", async () => {
+    it("should show error when name is empty", async () => {
       const user = userEvent.setup();
       render(<CategoryForm mode="create" />);
 
@@ -503,7 +503,7 @@ describe("CategoryForm", () => {
       });
     });
 
-    it.skip("should clear error when field is corrected", async () => {
+    it("should clear error when field is corrected", async () => {
       const user = userEvent.setup();
       render(<CategoryForm mode="create" />);
 
@@ -684,7 +684,7 @@ describe("CategoryForm", () => {
       expect(mockBack).toHaveBeenCalled();
     });
 
-    it.skip("should confirm navigation with uploaded media", async () => {
+    it("should confirm navigation with uploaded media", async () => {
       const user = userEvent.setup();
       const useMediaUploadWithCleanup =
         require("@/hooks/useMediaUploadWithCleanup")

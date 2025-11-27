@@ -115,7 +115,11 @@ describe("useSafeLoad", () => {
       expect(loadFn).toHaveBeenCalled();
     });
 
-    expect(result.current.isLoading).toBe(false);
+    // Wait for error handling to complete
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
     expect(result.current.hasLoaded).toBe(false);
     expect(consoleSpy).toHaveBeenCalledWith(
       "[useSafeLoad] Error:",
@@ -130,18 +134,22 @@ describe("useSafeLoad", () => {
 
     const { result } = renderHook(() => useSafeLoad(loadFn, { enabled: true }));
 
+    // Wait for initial load to complete
     await waitFor(() => {
-      expect(loadFn).toHaveBeenCalledTimes(1);
+      expect(result.current.hasLoaded).toBe(true);
     });
 
-    expect(result.current.hasLoaded).toBe(true);
+    expect(loadFn).toHaveBeenCalledTimes(1);
 
     // Force reload
     await act(async () => {
       await result.current.forceReload();
     });
 
-    expect(loadFn).toHaveBeenCalledTimes(2);
+    await waitFor(() => {
+      expect(loadFn).toHaveBeenCalledTimes(2);
+    });
+    
     expect(result.current.hasLoaded).toBe(true);
   });
 

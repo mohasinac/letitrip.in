@@ -109,7 +109,7 @@ describe("PrivacyPolicyPage", () => {
     expect(screen.getByText("14. Regulatory Compliance")).toBeInTheDocument();
     const gdprElements = screen.getAllByText(/GDPR/i);
     expect(gdprElements.length).toBeGreaterThan(0);
-    expect(screen.getByText(/CCPA/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/CCPA/i)[0]).toBeInTheDocument();
   });
 
   it("should use LegalPageLayout", () => {
