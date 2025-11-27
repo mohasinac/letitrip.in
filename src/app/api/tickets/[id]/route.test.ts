@@ -532,12 +532,9 @@ describe("DELETE /api/tickets/[id]", () => {
       doc: jest.fn().mockReturnValue(mockTicketRef),
     });
 
-    const mockDb = {
+    (getFirestoreAdmin as jest.Mock).mockReturnValue({
+      collection: (name: string) => Collections[name as keyof typeof Collections]?.() || jest.fn(),
       batch: jest.fn().mockReturnValue(mockBatch),
-    };
-    Collections.support_tickets.mockReturnValue({
-      ...mockDb,
-      doc: jest.fn().mockReturnValue(mockTicketRef),
     });
 
     const request = new NextRequest("http://localhost/api/tickets/ticket123", {

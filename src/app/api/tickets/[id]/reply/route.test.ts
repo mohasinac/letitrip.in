@@ -21,6 +21,12 @@ describe("POST /api/tickets/[id]/reply", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    // Re-setup getFirestoreAdmin mock after clearAll
+    (getFirestoreAdmin as jest.Mock).mockReturnValue({
+      collection: (name: string) => Collections[name as keyof typeof Collections]?.() || jest.fn(),
+      batch: jest.fn(),
+    });
   });
 
   it("should require authentication", async () => {

@@ -398,7 +398,9 @@ describe("CreateAuctionWizardPage", () => {
     fireEvent.change(categorySelect, { target: { value: "cat1" } });
 
     // Select Reserve Auction type before moving to step 2
-    const auctionTypeButtons = screen.getAllByRole("button", { name: /Reserve Auction/i });
+    const auctionTypeButtons = screen.getAllByRole("button", {
+      name: /Reserve Auction/i,
+    });
     fireEvent.click(auctionTypeButtons[0]);
 
     fireEvent.click(screen.getByText("Next"));
