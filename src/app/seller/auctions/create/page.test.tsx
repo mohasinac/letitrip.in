@@ -32,12 +32,17 @@ jest.mock("@/contexts/AuthContext", () => ({
 jest.mock("@/components/common/SlugInput", () => {
   const React = require("react");
   const MockSlugInput = ({ value, onChange, error }: any) => {
-    return React.createElement("input", {
-      "data-testid": "slug-input",
-      value,
-      onChange: (e: any) => onChange(e.target.value),
-      className: error ? "border-red-500" : "",
-    });
+    return React.createElement(
+      "div",
+      {},
+      React.createElement("input", {
+        "data-testid": "slug-input",
+        value,
+        onChange: (e: any) => onChange(e.target.value),
+        className: error ? "border-red-500" : "",
+      }),
+      error && React.createElement("div", {}, error)
+    );
   };
   return {
     __esModule: true,
@@ -281,6 +286,12 @@ describe("CreateAuctionWizardPage", () => {
         hasPrevPage: false,
       },
     });
+
+    // Default validateSlug mock (available by default)
+    mockAuctionsService.validateSlug.mockResolvedValue({
+      available: true,
+      message: "Slug is available",
+    });
   });
 
   it("renders initial step with basic info form", async () => {
@@ -359,7 +370,8 @@ describe("CreateAuctionWizardPage", () => {
     fireEvent.click(nextButton);
 
     expect(screen.getByText("Step 2 of 5: Bidding Rules")).toBeInTheDocument();
-    expect(screen.getByText("Bidding Rules")).toBeInTheDocument();
+    const biddingRulesElements = screen.getAllByText("Bidding Rules");
+    expect(biddingRulesElements.length).toBeGreaterThan(0);
 
     // Go back to step 1
     const prevButton = screen.getByText("Previous");
@@ -385,6 +397,10 @@ describe("CreateAuctionWizardPage", () => {
     const categorySelect = screen.getByDisplayValue("Select a category");
     fireEvent.change(categorySelect, { target: { value: "cat1" } });
 
+    // Select Reserve Auction type before moving to step 2
+    const auctionTypeButtons = screen.getAllByRole("button", { name: /Reserve Auction/i });
+    fireEvent.click(auctionTypeButtons[0]);
+
     fireEvent.click(screen.getByText("Next"));
 
     // Try to go to next step without starting bid
@@ -396,10 +412,6 @@ describe("CreateAuctionWizardPage", () => {
     // Fill starting bid
     const startingBidInput = screen.getByPlaceholderText("1000");
     fireEvent.change(startingBidInput, { target: { value: "100" } });
-
-    // Try with invalid reserve price
-    const auctionTypeButtons = screen.getAllByText("Reserve Auction");
-    fireEvent.click(auctionTypeButtons[0]);
 
     const reservePriceInput = screen.getByPlaceholderText("5000");
     fireEvent.change(reservePriceInput, { target: { value: "50" } }); // Less than starting bid
