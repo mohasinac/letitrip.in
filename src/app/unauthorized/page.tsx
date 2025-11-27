@@ -101,7 +101,7 @@ function UnauthorizedContent() {
           {isDevelopment && decodedDetails && (
             <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-xs font-semibold text-yellow-900 uppercase mb-2">
-                🛠️ Developer Info
+                Developer Information
               </p>
               <pre className="text-xs text-yellow-800 font-mono whitespace-pre-wrap break-words">
                 {decodedDetails}
@@ -124,7 +124,7 @@ function UnauthorizedContent() {
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg font-semibold hover:from-red-700 hover:to-orange-700 transition-all shadow-md hover:shadow-lg"
               >
                 <LogIn className="w-4 h-4" />
-                Sign In
+                Log In
               </Link>
             </div>
 
@@ -133,7 +133,7 @@ function UnauthorizedContent() {
               className="flex items-center justify-center gap-2 w-full px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:border-red-500 hover:text-red-600 transition-colors"
             >
               <Home className="w-4 h-4" />
-              Go to Homepage
+              Home
             </Link>
           </div>
 

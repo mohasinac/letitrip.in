@@ -11,9 +11,12 @@ jest.mock("@/contexts/AuthContext");
 jest.mock("@/hooks/useDebounce", () => ({
   useDebounce: (value: any) => value,
 }));
+
+const mockUseIsMobile = jest.fn(() => false);
 jest.mock("@/hooks/useMobile", () => ({
-  useIsMobile: () => false,
+  useIsMobile: () => mockUseIsMobile(),
 }));
+
 jest.mock("next/link", () => {
   return ({ children, href }: any) => <a href={href}>{children}</a>;
 });
@@ -760,7 +763,7 @@ describe("AdminShopsPage", () => {
       await waitFor(() => {
         expect(shopsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
-            isVerified: true,
+            is_verified: ["true"],
           })
         );
       });
@@ -770,20 +773,29 @@ describe("AdminShopsPage", () => {
       const user = userEvent.setup();
       render(<AdminShopsPage />);
 
+      // First apply a filter to make reset button visible
+      await waitFor(() => {
+        expect(screen.getByTestId("filter-sidebar")).toBeInTheDocument();
+      });
+
+      const verifiedCheckbox = screen.getByLabelText(/verified/i);
+      await user.click(verifiedCheckbox);
+
+      // Wait for reset button to appear
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: /reset/i })
+          screen.getByRole("button", { name: /reset all/i })
         ).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole("button", { name: /reset/i }));
+      await user.click(screen.getByRole("button", { name: /reset all/i }));
 
+      // Verify filters were reset (should call without filter params)
       await waitFor(() => {
-        expect(shopsService.list).toHaveBeenCalledWith(
-          expect.not.objectContaining({
-            isVerified: expect.anything(),
-          })
-        );
+        const lastCall = (shopsService.list as jest.Mock).mock.calls[
+          (shopsService.list as jest.Mock).mock.calls.length - 1
+        ];
+        expect(lastCall[0]).not.toHaveProperty("is_verified");
       });
     });
   });
@@ -807,19 +819,25 @@ describe("AdminShopsPage", () => {
   });
 
   describe("Responsive Design", () => {
+    beforeEach(() => {
+      mockUseIsMobile.mockReturnValue(false);
+    });
+
     it("should hide filters sidebar on mobile", async () => {
-      jest.requireMock("@/hooks/useMobile").useIsMobile.mockReturnValue(true);
+      mockUseIsMobile.mockReturnValue(true);
       render(<AdminShopsPage />);
       await waitFor(() => {
-        expect(screen.queryByTestId("filter-sidebar")).not.toBeVisible();
+        const sidebar = screen.getByTestId("filter-sidebar");
+        expect(sidebar).toHaveClass("-translate-x-full");
       });
     });
 
     it("should show filters button on mobile", async () => {
-      jest.requireMock("@/hooks/useMobile").useIsMobile.mockReturnValue(true);
+      mockUseIsMobile.mockReturnValue(true);
       render(<AdminShopsPage />);
       await waitFor(() => {
-        expect(screen.getByText(/filters/i)).toBeInTheDocument();
+        const filterButton = screen.getByRole("button", { name: /filters/i });
+        expect(filterButton).toBeInTheDocument();
       });
     });
   });

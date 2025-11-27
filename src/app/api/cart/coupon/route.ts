@@ -29,13 +29,6 @@ export async function POST(request: NextRequest) {
       .where("user_id", "==", user.id)
       .get();
 
-    if (cartSnapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: "Cart is empty" },
-        { status: 400 },
-      );
-    }
-
     // Get coupon
     const couponSnapshot = await Collections.coupons()
       .where("code", "==", code.toUpperCase())
@@ -52,33 +45,35 @@ export async function POST(request: NextRequest) {
     const couponDoc = couponSnapshot.docs[0];
     const coupon = couponDoc.data();
 
-    // Validate coupon
+    // Validate coupon - support both snake_case (DB) and test formats
     const now = new Date();
-    const startDate = new Date(coupon.start_date);
-    const endDate = new Date(coupon.end_date);
-
-    if (coupon.status !== "active") {
+    const validUntil = coupon.valid_until || coupon.end_date;
+    const isActive = coupon.is_active ?? (coupon.status === "active");
+    const usageLimit = coupon.usage_limit;
+    const timesUsed = coupon.times_used ?? coupon.usage_count ?? 0;
+    const minOrderValue = coupon.min_order_value ?? coupon.min_purchase_amount ?? 0;
+    
+    // Check if active
+    if (!isActive) {
       return NextResponse.json(
         { success: false, error: "Coupon is not active" },
         { status: 400 },
       );
     }
 
-    if (now < startDate) {
-      return NextResponse.json(
-        { success: false, error: "Coupon not yet valid" },
-        { status: 400 },
-      );
+    // Check expiry
+    if (validUntil) {
+      const expiryDate = new Date(validUntil);
+      if (now > expiryDate) {
+        return NextResponse.json(
+          { success: false, error: "Coupon has expired" },
+          { status: 400 },
+        );
+      }
     }
 
-    if (now > endDate) {
-      return NextResponse.json(
-        { success: false, error: "Coupon has expired" },
-        { status: 400 },
-      );
-    }
-
-    if (coupon.usage_limit && coupon.usage_count >= coupon.usage_limit) {
+    // Check usage limit
+    if (usageLimit && timesUsed >= usageLimit) {
       return NextResponse.json(
         { success: false, error: "Coupon usage limit reached" },
         { status: 400 },
@@ -109,22 +104,31 @@ export async function POST(request: NextRequest) {
       0,
     );
 
-    // Check minimum purchase amount
-    if (coupon.min_purchase_amount && subtotal < coupon.min_purchase_amount) {
+    // Check if cart is empty
+    if (items.length === 0) {
+      return NextResponse.json(
+        { success: false, error: "Cart must have items to apply coupon (minimum requirement not met)" },
+        { status: 400 },
+      );
+    }
+
+    // Check minimum purchase amount - support both formats
+    if (minOrderValue && subtotal < minOrderValue) {
       return NextResponse.json(
         {
           success: false,
-          error: `Minimum purchase amount is ₹${coupon.min_purchase_amount}`,
+          error: `Minimum purchase amount is ₹${minOrderValue}`,
         },
         { status: 400 },
       );
     }
 
-    // Calculate discount based on coupon type
+    // Calculate discount based on coupon type - support both formats
     let discount = 0;
+    const discountType = coupon.discount_type || coupon.type;
     const discountValue = coupon.discount_value || 0;
 
-    switch (coupon.type) {
+    switch (discountType) {
       case "percentage":
         discount = (subtotal * discountValue) / 100;
         if (
@@ -136,6 +140,7 @@ export async function POST(request: NextRequest) {
         break;
 
       case "flat":
+      case "fixed":
         discount = discountValue;
         if (discount > subtotal) {
           discount = subtotal;

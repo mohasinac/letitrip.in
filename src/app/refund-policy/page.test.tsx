@@ -79,13 +79,15 @@ describe("RefundPolicyPage", () => {
       expect(
         screen.getByText(/Minimum 5-10 clear photos/i)
       ).toBeInTheDocument();
-      expect(screen.getByText(/same day as delivery/i)).toBeInTheDocument();
+      expect(
+        screen.getAllByText(/same day as delivery/i)[0]
+      ).toBeInTheDocument();
     });
 
     it("should explain why strict requirements exist", () => {
       render(<RefundPolicyPage />);
       expect(
-        screen.getByText("2.3 Why These Requirements?")
+        screen.getByText(/2\.3.*Why These Requirements/i)
       ).toBeInTheDocument();
       expect(screen.getByText(/imported internationally/i)).toBeInTheDocument();
     });
@@ -95,27 +97,33 @@ describe("RefundPolicyPage", () => {
   describe("Return Eligibility", () => {
     it("should specify 30-day return window", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText(/Within 30 Days/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Within 30 Days/i)[0]).toBeInTheDocument();
       expect(screen.getByText(/30 days of delivery/i)).toBeInTheDocument();
     });
 
     it("should list eligible return reasons", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText(/Damaged or Defective/i)).toBeInTheDocument();
-      expect(screen.getByText(/Wrong Item/i)).toBeInTheDocument();
-      expect(screen.getByText(/Missing Parts/i)).toBeInTheDocument();
+      expect(
+        screen.getAllByText(/Damaged or Defective/i)[0]
+      ).toBeInTheDocument();
+      expect(screen.getAllByText(/Wrong Item/i)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(/Missing Parts/i)[0]).toBeInTheDocument();
     });
 
     it("should list non-returnable items", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText("3.2 Non-Returnable Items")).toBeInTheDocument();
+      expect(
+        screen.getByText(/3\.2.*Non-Returnable Items/i)
+      ).toBeInTheDocument();
       expect(screen.getByText(/Final Sale/i)).toBeInTheDocument();
       expect(screen.getByText(/Opened collectibles/i)).toBeInTheDocument();
     });
 
     it("should describe return window variations", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText(/Report within 48 hours/i)).toBeInTheDocument();
+      expect(
+        screen.getAllByText(/Report within 48 hours/i)[0]
+      ).toBeInTheDocument();
     });
   });
 
@@ -135,7 +143,7 @@ describe("RefundPolicyPage", () => {
 
     it("should describe seller review timeline", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText(/24-48 Hours/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/24-48 Hours/i)[0]).toBeInTheDocument();
     });
 
     it("should explain return shipping costs", () => {
@@ -143,7 +151,7 @@ describe("RefundPolicyPage", () => {
       expect(
         screen.getByText(/Damaged\/Defective\/Wrong Item/i)
       ).toBeInTheDocument();
-      expect(screen.getByText(/Buyer's Remorse/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Buyer's Remorse/i)[0]).toBeInTheDocument();
     });
   });
 
@@ -158,13 +166,13 @@ describe("RefundPolicyPage", () => {
 
     it("should specify refund timelines for each method", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText(/1-3 business days/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/1-3 business days/i)[0]).toBeInTheDocument();
       expect(screen.getByText(/5-7 business days/i)).toBeInTheDocument();
     });
 
     it("should describe refund amount calculation", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText("5.2 Refund Amount")).toBeInTheDocument();
+      expect(screen.getByText(/5\.2.*Refund Amount/i)).toBeInTheDocument();
       expect(screen.getByText(/Product price/i)).toBeInTheDocument();
       expect(screen.getByText(/Original shipping/i)).toBeInTheDocument();
     });
@@ -177,7 +185,7 @@ describe("RefundPolicyPage", () => {
 
     it("should describe partial refund scenarios", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText("5.3 Partial Refunds")).toBeInTheDocument();
+      expect(screen.getByText(/5\.3.*Partial Refunds/i)).toBeInTheDocument();
     });
   });
 
@@ -192,16 +200,16 @@ describe("RefundPolicyPage", () => {
 
     it("should list resolution options", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText(/Full Refund/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Full Refund/i)[0]).toBeInTheDocument();
       expect(screen.getByText(/Replacement/i)).toBeInTheDocument();
-      expect(screen.getByText(/Partial Refund/i)).toBeInTheDocument();
-      expect(screen.getByText(/Repair/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Partial Refund/i)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(/Repair/i)[0]).toBeInTheDocument();
     });
 
     it("should differentiate shipping damage vs product defect", () => {
       render(<RefundPolicyPage />);
       expect(
-        screen.getByText("6.3 Shipping Damage vs. Product Defect")
+        screen.getByText(/6\.3.*Shipping Damage vs.*Product Defect/i)
       ).toBeInTheDocument();
     });
   });
@@ -211,7 +219,7 @@ describe("RefundPolicyPage", () => {
     it("should describe wrong item process", () => {
       render(<RefundPolicyPage />);
       expect(
-        screen.getByText("7. Wrong Item or Missing Items")
+        screen.getByText(/7\..*Wrong Item or Missing Items/i)
       ).toBeInTheDocument();
       expect(
         screen.getByText(/Seller will arrange pickup\/return/i)
@@ -223,21 +231,21 @@ describe("RefundPolicyPage", () => {
   describe("Seller Disputes & Admin Intervention", () => {
     it("should outline escalation process", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText("8.1 Escalation Process")).toBeInTheDocument();
-      expect(screen.getByText(/Escalate to Admin/i)).toBeInTheDocument();
+      expect(screen.getByText(/8\.1.*Escalation Process/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Escalate to Admin/i)[0]).toBeInTheDocument();
     });
 
     it("should describe admin intervention scenarios", () => {
       render(<RefundPolicyPage />);
       expect(
-        screen.getByText("8.2 Admin Intervention Scenarios")
+        screen.getByText(/8\.2.*Admin Intervention Scenarios/i)
       ).toBeInTheDocument();
     });
 
     it("should list admin resolution powers", () => {
       render(<RefundPolicyPage />);
       expect(
-        screen.getByText("8.3 Admin Resolution Powers")
+        screen.getByText(/8\.3.*Admin Resolution Powers/i)
       ).toBeInTheDocument();
       expect(screen.getByText(/Override seller decision/i)).toBeInTheDocument();
     });
@@ -247,7 +255,7 @@ describe("RefundPolicyPage", () => {
   describe("Auction Items", () => {
     it("should specify special rules for auction items", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText("9. Auction Items")).toBeInTheDocument();
+      expect(screen.getByText(/9\..*Auction Items/i)).toBeInTheDocument();
       expect(
         screen.getByText(/All auction sales are final/i)
       ).toBeInTheDocument();
@@ -266,7 +274,7 @@ describe("RefundPolicyPage", () => {
     it("should break down total refund timeline", () => {
       render(<RefundPolicyPage />);
       expect(
-        screen.getByText("10. Refund Processing Time")
+        screen.getByText(/10\..*Refund Processing Time/i)
       ).toBeInTheDocument();
       expect(
         screen.getByText(/7-14 days from return approval to refund in account/i)
@@ -279,7 +287,7 @@ describe("RefundPolicyPage", () => {
     it("should mention Consumer Protection Act 2019", () => {
       render(<RefundPolicyPage />);
       expect(
-        screen.getByText("11. Consumer Rights (India)")
+        screen.getByText(/11\..*Consumer Rights.*India/i)
       ).toBeInTheDocument();
       expect(
         screen.getByText(/Consumer Protection Act, 2019/i)
@@ -291,13 +299,15 @@ describe("RefundPolicyPage", () => {
   describe("Non-Delivery & Lost Packages", () => {
     it("should describe non-delivery process", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText("12.1 Package Not Received")).toBeInTheDocument();
+      expect(
+        screen.getByText(/12\.1.*Package Not Received/i)
+      ).toBeInTheDocument();
     });
 
     it("should describe lost package process", () => {
       render(<RefundPolicyPage />);
       expect(
-        screen.getByText("12.2 Package Lost in Transit")
+        screen.getByText(/12\.2.*Package Lost in Transit/i)
       ).toBeInTheDocument();
     });
   });
@@ -314,14 +324,16 @@ describe("RefundPolicyPage", () => {
     it("should describe electronics warranty", () => {
       render(<RefundPolicyPage />);
       expect(
-        screen.getByText("13.2 Electronics & Gadgets")
+        screen.getByText(/13\.2.*Electronics.*Gadgets/i)
       ).toBeInTheDocument();
       expect(screen.getByText(/30-day warranty/i)).toBeInTheDocument();
     });
 
     it("should explain import duty refunds", () => {
       render(<RefundPolicyPage />);
-      expect(screen.getByText("13.3 Import Duty Refunds")).toBeInTheDocument();
+      expect(
+        screen.getByText(/13\.3.*Import Duty Refunds/i)
+      ).toBeInTheDocument();
     });
   });
 
@@ -330,7 +342,7 @@ describe("RefundPolicyPage", () => {
     it("should provide helpful return tips", () => {
       render(<RefundPolicyPage />);
       expect(
-        screen.getByText("14. Tips for Smooth Returns")
+        screen.getByText(/14\..*Tips for Smooth Returns/i)
       ).toBeInTheDocument();
       expect(screen.getByText(/Always record unboxing/i)).toBeInTheDocument();
     });

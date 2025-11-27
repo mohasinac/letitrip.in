@@ -7,12 +7,13 @@ import { Suspense } from "react";
 
 function NotFoundContent() {
   const searchParams = useSearchParams();
-  const reason = searchParams.get("reason");
-  const resource = searchParams.get("resource");
-  const details = searchParams.get("details");
+  const reason = searchParams?.get("reason");
+  const resource = searchParams?.get("resource");
+  const details = searchParams?.get("details");
 
   // Decode URL-encoded details
   const decodedDetails = details ? decodeURIComponent(details) : null;
+  const isDevelopment = process.env.NODE_ENV === "development";
 
   const getErrorMessage = () => {
     if (reason === "product-not-found") {
@@ -68,7 +69,6 @@ function NotFoundContent() {
   };
 
   const errorInfo = getErrorMessage();
-  const isDevelopment = process.env.NODE_ENV === "development";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 px-4">
@@ -113,7 +113,7 @@ function NotFoundContent() {
           {isDevelopment && decodedDetails && (
             <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-xs font-semibold text-yellow-900 uppercase mb-2">
-                🛠️ Developer Info
+                Developer Information
               </p>
               <pre className="text-xs text-yellow-800 font-mono whitespace-pre-wrap break-words">
                 {decodedDetails}

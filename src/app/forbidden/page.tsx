@@ -7,11 +7,11 @@ import { Suspense } from "react";
 
 function ForbiddenContent() {
   const searchParams = useSearchParams();
-  const reason = searchParams.get("reason");
-  const requiredRole = searchParams.get("role");
-  const currentRole = searchParams.get("current");
-  const resource = searchParams.get("resource");
-  const details = searchParams.get("details");
+  const reason = searchParams?.get("reason");
+  const requiredRole = searchParams?.get("role");
+  const currentRole = searchParams?.get("current");
+  const resource = searchParams?.get("resource");
+  const details = searchParams?.get("details");
 
   const decodedDetails = details ? decodeURIComponent(details) : null;
   const isDevelopment = process.env.NODE_ENV === "development";
@@ -127,7 +127,7 @@ function ForbiddenContent() {
           {isDevelopment && decodedDetails && (
             <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-xs font-semibold text-yellow-900 uppercase mb-2">
-                🛠️ Developer Info
+                Developer Information
               </p>
               <pre className="text-xs text-yellow-800 font-mono whitespace-pre-wrap break-words">
                 {decodedDetails}

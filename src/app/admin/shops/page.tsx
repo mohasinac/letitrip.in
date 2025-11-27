@@ -345,7 +345,10 @@ export default function AdminShopsPage() {
         <div className="flex-1 space-y-6">
           {/* Grid View */}
           {view === "grid" && (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div
+              data-testid="grid-view"
+              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            >
               {shops.map((shop) => (
                 <div
                   key={shop.id}
@@ -402,7 +405,12 @@ export default function AdminShopsPage() {
                       )}
                     </div>
                     <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
-                      <span>⭐ {shop.rating.toFixed(1)}</span>
+                      <span>
+                        ⭐{" "}
+                        <span data-testid="shop-rating">
+                          {shop.rating.toFixed(1)}
+                        </span>
+                      </span>
                       <span>{shop.productCount} products</span>
                     </div>
                     <div className="mt-4 flex gap-2">
@@ -462,7 +470,7 @@ export default function AdminShopsPage() {
                               checked ? shops.map((s) => s.id) : []
                             );
                           }}
-                          aria-label="Select all shops"
+                          label="Select all shops"
                         />
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -564,7 +572,7 @@ export default function AdminShopsPage() {
                                     : prev.filter((id) => id !== shop.id)
                                 );
                               }}
-                              aria-label={`Select ${shop.name}`}
+                              label={`Select ${shop.name}`}
                             />
                           </td>
                           <td className="px-6 py-4">
