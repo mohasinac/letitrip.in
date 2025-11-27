@@ -836,6 +836,21 @@ describe("/api/cart/coupon", () => {
         role: "user",
       });
 
+      mockCartRef.get.mockResolvedValue({
+        empty: false,
+        docs: [
+          {
+            data: () => ({ product_id: "prod1", quantity: 1 }),
+          },
+        ],
+      });
+
+      mockProductsRef.doc.mockReturnValue({
+        get: jest.fn().mockResolvedValue({
+          data: () => ({ price: 1000 }),
+        }),
+      });
+
       mockCouponsRef.get.mockResolvedValue({
         empty: false,
         docs: [

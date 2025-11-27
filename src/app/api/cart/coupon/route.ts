@@ -29,6 +29,14 @@ export async function POST(request: NextRequest) {
       .where("user_id", "==", user.id)
       .get();
 
+    // Check if cart is empty
+    if (cartSnapshot.empty) {
+      return NextResponse.json(
+        { success: false, error: "Cart is empty" },
+        { status: 400 },
+      );
+    }
+
     // Get coupon
     const couponSnapshot = await Collections.coupons()
       .where("code", "==", code.toUpperCase())
@@ -47,6 +55,7 @@ export async function POST(request: NextRequest) {
 
     // Validate coupon - support both snake_case (DB) and test formats
     const now = new Date();
+    const validFrom = coupon.valid_from || coupon.start_date;
     const validUntil = coupon.valid_until || coupon.end_date;
     const isActive = coupon.is_active ?? (coupon.status === "active");
     const usageLimit = coupon.usage_limit;
@@ -59,6 +68,17 @@ export async function POST(request: NextRequest) {
         { success: false, error: "Coupon is not active" },
         { status: 400 },
       );
+    }
+
+    // Check if coupon is not yet valid
+    if (validFrom) {
+      const startDate = new Date(validFrom);
+      if (now < startDate) {
+        return NextResponse.json(
+          { success: false, error: "Coupon not yet valid" },
+          { status: 400 },
+        );
+      }
     }
 
     // Check expiry
