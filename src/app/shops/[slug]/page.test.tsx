@@ -41,7 +41,9 @@ jest.mock("next/navigation", () => {
 });
 jest.mock("@/lib/error-redirects", () => ({
   notFound: {
-    shop: jest.fn(() => "/not-found"),
+    shop: jest.fn(
+      (slug: string) => `/not-found?reason=shop-not-found&resource=${slug}`
+    ),
   },
 }));
 
@@ -308,6 +310,7 @@ describe("ShopPage", () => {
         expect(mockProductsService.list).toHaveBeenCalledWith({
           shopId: "test-shop",
           search: undefined,
+          sortBy: "newest", // Default sortBy is "createdAt" which maps to "newest"
           categoryId: undefined,
           priceRange: undefined,
           inStock: undefined,
@@ -652,7 +655,8 @@ describe("ShopPage", () => {
     });
   });
 
-  it("shows empty state if shop not found", async () => {
+  it("redirects when shop not found", async () => {
+    const mockPush = require("next/navigation").__mockPush;
     (shopsService.getBySlug as jest.Mock).mockRejectedValue(
       new Error("Not found")
     );
@@ -660,7 +664,11 @@ describe("ShopPage", () => {
       render(<ShopPage params={Promise.resolve({ slug: "missing-shop" })} />);
     });
     await waitFor(() => {
-      expect(screen.getByTestId("empty-state")).toBeInTheDocument();
+      expect(mockPush).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "/not-found?reason=shop-not-found&resource=missing-shop"
+        )
+      );
     });
   });
 

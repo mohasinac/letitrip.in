@@ -396,7 +396,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
 
       {/* Actions */}
       <FormActions
-        onCancel={() => router.back()}
+        onCancel={handleCancel}
         submitLabel={mode === "create" ? "Create Category" : "Save Changes"}
         isSubmitting={loading}
         cancelDisabled={loading}
