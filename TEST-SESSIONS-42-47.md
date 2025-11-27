@@ -2,9 +2,9 @@
 
 ## 📊 Current State
 
-**Total Tests**: 5,657 tests | **Pass Rate**: 96.3% (5,429 passing, 211 failing, 17 skipped) | **Test Suites**: 222 (197 passing, 22 failing, 3 skipped)
+**Total Tests**: 5,657 tests | **Pass Rate**: 96.2% (5,442 passing, 198 failing, 17 skipped) | **Test Suites**: 222 (201 passing, 18 failing, 3 skipped)
 **Completed Sessions**: 1-41 (All complete)
-**Last Updated**: Session 42-43 (Nov 27, 2025) - Bug Fix Round 10 In Progress (search error handling + multi-file fixes)
+**Last Updated**: Session 42-43 (Nov 27, 2025) - Bug Fix Round 11 In Progress (tickets API + component fixes)
 
 ## 🎯 Sprint Goals (Sessions 42-47)
 
@@ -1493,3 +1493,204 @@ These require implementation changes, not just test fixes:
 7. **Test Assertions**: Match API's actual response structure, not assumed structure
 8. **Subtotal vs Total**: Distinguish between subtotal (items only) and total (with tax/shipping)
 9. **Item Count**: `itemCount` typically means total quantity, not unique products
+
+---
+
+## Bug Fix Round 10 - Reviews & Auction Create (Nov 27, 2025)
+
+**Target**: Quick wins (files with 3 failures each)
+**Status**: ✅ 6 tests fixed
+**Time**: ~45 minutes
+
+### 1. Search Page Error Handling (src/app/search/page.tsx)
+
+**Issue**: Component accessing `response.data` and `response.count` without null checks
+
+**Fix**: Added optional chaining for defensive programming
+
+```typescript
+// Before:
+setProducts(response.data);
+setProductCount(response.count);
+
+// After:
+setProducts(response?.data || []);
+setProductCount(response?.count || 0);
+```
+
+**Result**: Component more robust (tests still have mock issues, addressed separately)
+
+### 2. Reviews Page Tests (src/app/reviews/page.test.tsx) - 3 fixes
+
+**Issue 1**: Mock ReviewCard wasn't rendering `title` prop
+**Fix**: Added `title` prop to mock and conditional rendering
+
+```tsx
+// Before:
+ReviewCard: ({ id, rating, comment, onMarkHelpful }: any) => (...)
+// After:
+ReviewCard: ({ id, rating, title, comment, onMarkHelpful }: any) => (
+  <>
+    {title && <p>{title}</p>}
+    <p>{comment}</p>
+  </>
+)
+```
+
+**Issue 2**: "disables next button on last page" test - pagination not showing
+**Fix**: Changed mock to create multi-page scenario, navigate to last page, then check
+
+```typescript
+// Before: count=20 (only 1 page, no pagination UI)
+// After: count=40, navigate from page 1 to page 2, then verify disabled
+```
+
+**Issue 3**: "navigates to previous page" test - Previous button disabled when expecting enabled
+**Fix**: Component always starts on page 1; changed mock to set `hasPrevPage: true` on page 2
+
+**Result**: ✅ 28/28 tests passing (was 25/28)
+
+### 3. Seller Auctions Create Tests (src/app/seller/auctions/create/page.test.tsx) - 3 fixes
+
+**Issue 1**: validateSlug mock not set up, causing "Cannot read properties of undefined"
+**Fix**: Added default mock in beforeEach
+
+```typescript
+mockAuctionsService.validateSlug.mockResolvedValue({
+  available: true,
+  message: "Slug is available",
+});
+```
+
+**Issue 2**: "navigates between steps" - Multiple "Bidding Rules" text elements (nav + heading)
+**Fix**: Use `getAllByText` instead of `getByText` and check length
+
+```typescript
+const biddingRulesElements = screen.getAllByText("Bidding Rules");
+expect(biddingRulesElements.length).toBeGreaterThan(0);
+```
+
+**Issue 3a**: "validates bidding rules" - Reserve Auction button not found on step 2
+**Fix**: Select auction type in step 1 BEFORE navigating to step 2
+
+**Issue 3b**: "validates slug uniqueness" - Mock SlugInput didn't render error messages
+**Fix**: Enhanced mock to render error text
+
+```tsx
+// Before: Only input element
+// After: Wrapper div with input + error message rendering
+error && React.createElement("div", {}, error);
+```
+
+**Result**: ✅ 11/11 tests passing (was 8/11)
+
+### Impact
+
+- **Tests Fixed**: 6 total (1 component improvement + 3 reviews + 3 seller auctions = 7 code changes)
+- **Pass Rate**: 96.3% → 96.3% (5,429 → 5,435 passing)
+- **Failing Tests**: 211 → 205 (-6)
+- **Test Suites**: 22 → 20 failing (-2)
+
+### Key Learnings
+
+1. **Optional Chaining**: Always use `?.` when accessing API response properties
+2. **Pagination UI**: Only renders when `totalPages > 1` - mock data must create multi-page scenario
+3. **Initial Component State**: Components start with default state (page: 1); tests must account for this
+4. **Step-based Forms**: Select all options in current step BEFORE navigating to next step
+5. **Mock Completeness**: Mocks must render ALL props that real component renders (including error messages)
+6. **Multiple Elements**: Use `getAllByText` when text appears in multiple places (nav + content)
+7. **Test Realism**: Navigate through UI like a user would, don't try to access hidden elements
+8. **Default Mocks**: Set up service mocks in beforeEach to prevent undefined errors
+
+---
+
+## Bug Fix Round 11 - Tickets API (Nov 27, 2025)
+
+**Target**: Fix remaining API failures
+**Status**: ✅ 7 tests fixed
+**Time**: ~30 minutes
+
+### 1. Tickets Reply API (src/app/api/tickets/[id]/reply/route.ts) - 4 fixes
+
+**Issue 1**: `isInternal` field was `undefined` instead of `false` when not provided
+**Root Cause**: Code used `isInternal && user.role === "admin"` which returns `undefined` when isInternal is falsy
+**Fix**: Changed to `isInternal === true && user.role === "admin"` for explicit boolean check
+
+```typescript
+// Before:
+const messageIsInternal = isInternal && user.role === "admin";
+
+// After:
+const messageIsInternal = isInternal === true && user.role === "admin";
+```
+
+**Issue 2**: Mock setup being cleared by `jest.clearAllMocks()` in beforeEach
+**Fix**: Moved getFirestoreAdmin mock setup into beforeEach after clearAllMocks
+
+```typescript
+beforeEach(() => {
+  jest.clearAllMocks();
+
+  // Re-setup mock after clearAll
+  (getFirestoreAdmin as jest.Mock).mockReturnValue({
+    collection: (name: string) => Collections[name]?.() || jest.fn(),
+    batch: jest.fn(),
+  });
+});
+```
+
+**Tests Fixed**:
+
+- "should add reply to ticket" - Now sets isInternal: false correctly
+- "should allow admin to send internal messages" - Mock setup preserved
+- "should prevent non-admin from sending internal messages" - Mock setup preserved
+- "should return 404 for non-existent ticket" - Mock setup preserved
+
+**Result**: ✅ 4 tests fixed in reply route
+
+### 2. Tickets Delete API (src/app/api/tickets/[id]/route.test.ts) - 3 fixes
+
+**Issue**: DELETE test mock wasn't providing batch() from getFirestoreAdmin
+**Root Cause**: Test was overriding Collections.support_tickets but not setting up db.batch()
+**Fix**: Updated mock to use getFirestoreAdmin.mockReturnValue with proper batch setup
+
+```typescript
+// Before: (broken mock that didn't provide batch)
+const mockDb = { batch: jest.fn().mockReturnValue(mockBatch) };
+Collections.support_tickets.mockReturnValue({
+  ...mockDb,
+  doc: jest.fn().mockReturnValue(mockTicketRef),
+});
+
+// After:
+(getFirestoreAdmin as jest.Mock).mockReturnValue({
+  collection: (name: string) => Collections[name]?.() || jest.fn(),
+  batch: jest.fn().mockReturnValue(mockBatch),
+});
+```
+
+**Tests Fixed**:
+
+- "should delete ticket and all messages" - Now properly accesses batch()
+- Related DELETE authorization tests - Mock chain complete
+- DELETE error handling tests - Proper mock structure
+
+**Result**: ✅ 3 tests fixed in DELETE route
+
+### Impact
+
+- **Tests Fixed**: 7 total (4 reply + 3 DELETE)
+- **Pass Rate**: 96.3% → 96.2% (displayed, but 5,442/5,657 = 96.2%)
+- **Passing Tests**: 5,435 → 5,442 (+7)
+- **Failing Tests**: 205 → 198 (-7)
+- **Test Suites**: 20 → 18 failing (-2)
+- **Tickets API**: ✅ 57/57 passing (was 50/57)
+
+### Key Learnings
+
+1. **Boolean Defaults**: Use explicit `=== true/false` checks instead of truthy/falsy for boolean fields
+2. **Mock Persistence**: Mocks set before describe block get cleared by jest.clearAllMocks() - reset in beforeEach
+3. **Firestore Mock Chain**: Every API route needs: collection() → doc() → subcollection operations
+4. **Batch Operations**: When testing DELETE with subcollections, ensure db.batch() is mocked at root level
+5. **Test Isolation**: Each test should be independent - shared mock state causes cascading failures
+6. **Default Values**: API should set sensible defaults for optional boolean fields (false, not undefined)

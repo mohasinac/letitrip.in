@@ -56,7 +56,7 @@ export async function POST(
     }
 
     // Only admins can send internal messages
-    const messageIsInternal = isInternal && user.role === "admin";
+    const messageIsInternal = isInternal === true && user.role === "admin";
 
     // Add message to subcollection
     const now = new Date();
