@@ -55,7 +55,7 @@ export default function BlogListClient() {
     if (filters.featured) params.set("featured", "true");
 
     router.push(`/blog?${params.toString()}`, { scroll: false });
-  }, [searchQuery, filters]);
+  }, [filters, router]);
 
   const fetchBlogs = async () => {
     try {
@@ -158,6 +158,11 @@ export default function BlogListClient() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearch(searchQuery);
+                    }
+                  }}
                   placeholder="Search blog posts..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />

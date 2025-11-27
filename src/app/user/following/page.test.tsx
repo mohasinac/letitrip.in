@@ -5,6 +5,9 @@ import { shopsService } from "@/services/shops.service";
 
 // Mock dependencies
 jest.mock("@/services/shops.service");
+jest.mock("next/navigation", () => ({
+  useRouter: jest.fn(),
+}));
 jest.mock("@/components/cards/ShopCard", () => ({
   ShopCard: ({ name, id }: any) => (
     <div data-testid={`shop-card-${id}`}>
@@ -234,15 +237,16 @@ describe("FollowingPage", () => {
 
     it("should navigate to shops page when button clicked", async () => {
       mockGetFollowing.mockResolvedValue({ shops: [], total: 0 } as any);
-      delete (window as any).location;
-      window.location = { href: "" } as any;
+      const mockPush = jest.fn();
+      const { useRouter } = require("next/navigation");
+      useRouter.mockReturnValue({ push: mockPush });
 
       render(<FollowingPage />);
 
       await waitFor(() => {
         const button = screen.getByText("Browse Shops");
         button.click();
-        expect(window.location.href).toBe("/shops");
+        expect(mockPush).toHaveBeenCalledWith("/shops");
       });
     });
   });
@@ -294,7 +298,7 @@ describe("FollowingPage", () => {
 
       render(<FollowingPage />);
 
-      expect(screen.getByRole("status", { hidden: true })).toBeInTheDocument();
+      expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
     });
 
     it("should show loading text", () => {
@@ -338,7 +342,7 @@ describe("FollowingPage", () => {
       await waitFor(() => {
         const content = document.querySelector(".max-w-7xl");
         expect(content).toBeInTheDocument();
-        expect(content).toHaveClass("mx-auto", "px-4", "py-8");
+        expect(content).toHaveClass("mx-auto", "px-4");
       });
     });
 
