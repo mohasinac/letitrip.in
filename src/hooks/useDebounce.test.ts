@@ -402,7 +402,7 @@ describe("useApi", () => {
     expect(mockApiCall).toHaveBeenCalledTimes(3);
   });
 
-  it.skip("should debounce API calls", async () => {
+  it("should debounce API calls", async () => {
     const mockApiCall = jest.fn<() => Promise<string>>().mockImplementation(
       () =>
         new Promise((resolve) => {

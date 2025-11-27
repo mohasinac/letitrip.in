@@ -24,9 +24,13 @@ jest.mock("next/navigation", () => ({
 }));
 
 // Mock next/link
-jest.mock("next/link", () => ({
-  default: ({ children, ...props }: any) => <a {...props}>{children}</a>,
-}));
+jest.mock("next/link", () => {
+  const Link = ({ children, ...props }: any) => <a {...props}>{children}</a>;
+  return {
+    __esModule: true,
+    default: Link,
+  };
+});
 
 // Mock services
 jest.mock("@/services/auctions.service");
@@ -84,31 +88,29 @@ jest.mock("@/components/seller/AuctionForm", () => {
   };
 });
 
-jest.mock("@/components/ui", () => {
-  const Card = ({ children, title, className }: any) => (
-    <div className={className}>
+jest.mock("@/components/ui", () => ({
+  __esModule: true,
+  Card: ({ children, title, className }: any) => (
+    <div className={className} data-testid="card">
       {title && <h2>{title}</h2>}
       {children}
     </div>
-  );
-  return {
-    Card,
-  };
-});
+  ),
+}));
 
 // Mock lucide-react icons
-jest.mock("lucide-react", () => {
-  const ArrowLeft = () => <div>ArrowLeft</div>;
-  const AlertCircle = () => <div>AlertCircle</div>;
-  return {
-    ArrowLeft,
-    AlertCircle,
-  };
-});
+jest.mock("lucide-react", () => ({
+  ArrowLeft: () => <div>ArrowLeft</div>,
+  AlertCircle: () => <div>AlertCircle</div>,
+}));
 
 describe("CreateAuctionPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Reset useAuth to authenticated user
+    const { useAuth } = require("@/contexts/AuthContext");
+    useAuth.mockReturnValue({ user: { id: "test-user" } });
 
     // Default mocks
     mockShopsService.list.mockResolvedValue({
@@ -265,8 +267,13 @@ describe("CreateAuctionPage", () => {
     });
   });
 
-  it("navigates back to dashboard", () => {
+  it("navigates back to dashboard", async () => {
     render(<CreateAuctionPage />);
+
+    // Wait for shops to load
+    await waitFor(() => {
+      expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+    });
 
     const backLink = screen.getByText("Back to Dashboard");
     expect(backLink.closest("a")).toHaveAttribute("href", "/seller");

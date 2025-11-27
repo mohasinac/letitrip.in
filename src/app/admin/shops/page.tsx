@@ -466,9 +466,11 @@ export default function AdminShopsPage() {
                             selectedIds.length < shops.length
                           }
                           onChange={(checked) => {
-                            setSelectedIds(
-                              checked ? shops.map((s) => s.id) : []
-                            );
+                            if (checked) {
+                              setSelectedIds(shops.map((s) => s.id));
+                            } else {
+                              setSelectedIds([]);
+                            }
                           }}
                           label="Select all shops"
                         />

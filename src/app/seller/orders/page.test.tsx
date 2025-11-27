@@ -1,6 +1,12 @@
 import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 
+// Mock Next.js navigation
+jest.mock("next/navigation", () => ({
+  useRouter: jest.fn(),
+  useSearchParams: jest.fn(),
+}));
+
 // Mock Next.js Link
 jest.mock("next/link", () => {
   return ({ children, href }: any) => <a href={href}>{children}</a>;
@@ -17,11 +23,19 @@ jest.mock("@/services/orders.service");
 const mockOrdersService = require("@/services/orders.service").ordersService;
 
 // Mock components
-jest.mock("@/components/auth/AuthGuard", () => ({
-  default: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="auth-guard">{children}</div>
-  ),
-}));
+jest.mock("@/components/auth/AuthGuard", () => {
+  const MockAuthGuard = ({ children }: { children: any }) => {
+    return React.createElement(
+      "div",
+      { "data-testid": "auth-guard" },
+      children
+    );
+  };
+  return {
+    __esModule: true,
+    default: MockAuthGuard,
+  };
+});
 
 jest.mock("@/components/common/ErrorBoundary", () => ({
   ErrorBoundary: ({ children }: { children: React.ReactNode }) => (
@@ -30,10 +44,14 @@ jest.mock("@/components/common/ErrorBoundary", () => ({
 }));
 
 jest.mock("@/components/common/inline-edit", () => ({
-  UnifiedFilterSidebar: jest.fn(() => (
-    <div data-testid="unified-filter-sidebar" />
-  )),
-  TableCheckbox: jest.fn(() => <div data-testid="table-checkbox" />),
+  UnifiedFilterSidebar: ({ resultCount, isLoading }: any) => (
+    <div data-testid="unified-filter-sidebar">
+      <div>Filters</div>
+      <div>Results: {resultCount}</div>
+      <div>Loading: {isLoading ? "true" : "false"}</div>
+    </div>
+  ),
+  TableCheckbox: () => <div data-testid="table-checkbox" />,
 }));
 
 // Mock constants
@@ -84,8 +102,32 @@ jest.mock("lucide-react", () => ({
   ChevronRight: () => <div data-testid="chevron-right-icon" />,
 }));
 
-// Import page after mocks
-const SellerOrdersPage = require("./page").default;
+const mockRouter = {
+  push: jest.fn(),
+  back: jest.fn(),
+  forward: jest.fn(),
+  refresh: jest.fn(),
+  replace: jest.fn(),
+  prefetch: jest.fn(),
+};
+
+const mockSearchParams = {
+  get: jest.fn(() => null),
+  getAll: jest.fn(() => []),
+  has: jest.fn(() => false),
+  toString: jest.fn(() => ""),
+};
+
+const { useRouter, useSearchParams } = require("next/navigation");
+
+// Mock window methods
+Object.defineProperty(window, "scrollTo", {
+  writable: true,
+  value: jest.fn(),
+});
+
+// Import page after ALL mocks are set up
+import SellerOrdersPage from "./page";
 
 describe("SellerOrdersPage", () => {
   const mockUser = {
@@ -127,6 +169,9 @@ describe("SellerOrdersPage", () => {
       count: mockOrdersData.length,
       pagination: { hasNextPage: false },
     });
+    useRouter.mockReturnValue(mockRouter);
+    useSearchParams.mockReturnValue(mockSearchParams);
+    mockSearchParams.get.mockReturnValue(null);
   });
 
   describe("Authentication and Layout", () => {
@@ -165,7 +210,10 @@ describe("SellerOrdersPage", () => {
 
       render(<SellerOrdersPage />);
 
-      expect(screen.getByRole("status")).toBeInTheDocument();
+      // Check for loading spinner by class
+      expect(screen.getByText("My Orders")).toBeInTheDocument();
+      const spinner = document.querySelector(".animate-spin");
+      expect(spinner).toBeInTheDocument();
     });
 
     it("loads orders data on mount", async () => {
@@ -250,7 +298,7 @@ describe("SellerOrdersPage", () => {
       });
 
       expect(screen.getByTestId("package-icon")).toBeInTheDocument();
-      expect(screen.getByTestId("eye-icon")).toBeInTheDocument();
+      expect(screen.getAllByTestId("eye-icon").length).toBeGreaterThan(0);
     });
   });
 
@@ -268,15 +316,16 @@ describe("SellerOrdersPage", () => {
         pagination: { hasNextPage: false },
       });
 
-      const { rerender } = render(<SellerOrdersPage />);
+      const { unmount } = render(<SellerOrdersPage />);
 
-      // Wait for first call to fail
+      // Wait for first call to complete
       await waitFor(() => {
         expect(mockOrdersService.getSellerOrders).toHaveBeenCalledTimes(1);
       });
 
-      // Remount component to trigger retry
-      rerender(<SellerOrdersPage />);
+      // Unmount and remount to trigger another call
+      unmount();
+      render(<SellerOrdersPage />);
 
       await waitFor(() => {
         expect(mockOrdersService.getSellerOrders).toHaveBeenCalledTimes(2);

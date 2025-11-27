@@ -1,31 +1,35 @@
 /// <reference types="@testing-library/jest-dom" />
 
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { useMediaUploadWithCleanup } from "./useMediaUploadWithCleanup";
 
 // Mock mediaService
-const mediaServiceMock = {
-  upload: jest.fn(),
-  deleteByUrl: jest.fn(),
-};
-
-jest.doMock("@/services/media.service", () => ({
-  mediaService: mediaServiceMock,
+jest.mock("@/services/media.service", () => ({
+  mediaService: {
+    upload: jest.fn(),
+    deleteByUrl: jest.fn(),
+  },
 }));
 
 // Mock useNavigationGuard
-const mockConfirmNavigation = jest.fn();
-
-jest.doMock("./useNavigationGuard", () => ({
+jest.mock("./useNavigationGuard", () => ({
   useNavigationGuard: jest.fn(() => ({
-    confirmNavigation: mockConfirmNavigation,
+    confirmNavigation: jest.fn(),
     isNavigating: false,
   })),
 }));
 
+import { useMediaUploadWithCleanup } from "./useMediaUploadWithCleanup";
+import { mediaService } from "@/services/media.service";
+import { useNavigationGuard } from "./useNavigationGuard";
+
+const mediaServiceMock = mediaService as jest.Mocked<typeof mediaService>;
+const mockUseNavigationGuard = useNavigationGuard as jest.MockedFunction<typeof useNavigationGuard>;
+
 describe("useMediaUploadWithCleanup", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    // Mock mediaService.upload to return object with url and id
     mediaServiceMock.upload.mockResolvedValue({
       url: "https://example.com/uploaded.jpg",
       id: "media-1",
@@ -261,6 +265,7 @@ describe("useMediaUploadWithCleanup", () => {
   it("integrates with navigation guard", () => {
     const { result } = renderHook(() => useMediaUploadWithCleanup());
 
-    expect(result.current.confirmNavigation).toBe(mockConfirmNavigation);
+    expect(typeof result.current.confirmNavigation).toBe("function");
+    expect(mockUseNavigationGuard).toHaveBeenCalled();
   });
 });

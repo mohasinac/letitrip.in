@@ -122,10 +122,14 @@ export default function UserTicketsPage() {
         <div className="bg-white rounded-lg border p-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="status-filter"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 Filter by Status
               </label>
               <select
+                id="status-filter"
                 value={filter.status}
                 onChange={(e) => {
                   setFilter({ ...filter, status: e.target.value });
@@ -143,10 +147,14 @@ export default function UserTicketsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="category-filter"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 Filter by Category
               </label>
               <select
+                id="category-filter"
                 value={filter.category}
                 onChange={(e) => {
                   setFilter({ ...filter, category: e.target.value });
