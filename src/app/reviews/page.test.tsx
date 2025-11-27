@@ -22,9 +22,10 @@ jest.mock("lucide-react", () => ({
   ),
 }));
 jest.mock("@/components/cards/ReviewCard", () => ({
-  ReviewCard: ({ id, rating, comment, onMarkHelpful }: any) => (
+  ReviewCard: ({ id, rating, title, comment, onMarkHelpful }: any) => (
     <div data-testid={`review-card-${id}`}>
       <p>Rating: {rating}</p>
+      {title && <p>{title}</p>}
       <p>{comment}</p>
       <button onClick={() => onMarkHelpful(id)}>Mark Helpful</button>
     </div>
@@ -730,18 +731,37 @@ describe("ReviewsListClient", () => {
     it("disables next button on last page", async () => {
       mockReviewsService.list.mockResolvedValue({
         data: mockReviews,
-        count: 20,
+        count: 40,
         pagination: {
           page: 1,
           limit: 20,
-          total: 20,
-          hasNextPage: false,
+          total: 40,
+          hasNextPage: true,
           hasPrevPage: false,
         },
       });
 
       await act(async () => {
         render(<ReviewsListClient />);
+      });
+
+      // Navigate to last page (page 2)
+      const nextButton = screen.getByText("Next");
+
+      mockReviewsService.list.mockResolvedValue({
+        data: mockReviews,
+        count: 40,
+        pagination: {
+          page: 2,
+          limit: 20,
+          total: 40,
+          hasNextPage: false,
+          hasPrevPage: true,
+        },
+      });
+
+      await act(async () => {
+        fireEvent.click(nextButton);
       });
 
       await waitFor(() => {
@@ -787,14 +807,15 @@ describe("ReviewsListClient", () => {
     });
 
     it("navigates to previous page", async () => {
+      // Start on page 1
       mockReviewsService.list.mockResolvedValue({
         data: mockReviews,
         count: 50,
         pagination: {
-          page: 2,
+          page: 1,
           limit: 20,
           total: 50,
-          hasNextPage: false,
+          hasNextPage: true,
           hasPrevPage: false,
         },
       });
@@ -803,11 +824,31 @@ describe("ReviewsListClient", () => {
         render(<ReviewsListClient />);
       });
 
+      // Navigate to page 2 first
+      const nextButton = screen.getByText("Next");
+
+      mockReviewsService.list.mockResolvedValue({
+        data: mockReviews,
+        count: 50,
+        pagination: {
+          page: 2,
+          limit: 20,
+          total: 50,
+          hasNextPage: true,
+          hasPrevPage: true,
+        },
+      });
+
+      await act(async () => {
+        fireEvent.click(nextButton);
+      });
+
       await waitFor(() => {
         const prevButton = screen.getByText("Previous");
         expect(prevButton).not.toBeDisabled();
       });
 
+      // Now navigate back to page 1
       const prevButton = screen.getByText("Previous");
 
       await act(async () => {
