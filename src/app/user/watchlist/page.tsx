@@ -65,7 +65,10 @@ export default function WatchlistPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2
+          className="h-8 w-8 animate-spin text-blue-600"
+          data-testid="loading-spinner"
+        />
       </div>
     );
   }

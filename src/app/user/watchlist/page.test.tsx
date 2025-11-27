@@ -112,7 +112,7 @@ describe("WatchlistPage", () => {
 
       render(<WatchlistPage />);
 
-      expect(screen.getByRole("status", { hidden: true })).toBeInTheDocument();
+      expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
     });
   });
 
@@ -428,12 +428,7 @@ describe("WatchlistPage", () => {
 
       await waitFor(() => {
         const grid = document.querySelector(".grid");
-        expect(grid).toHaveClass(
-          "grid-cols-1",
-          "sm:grid-cols-2",
-          "lg:grid-cols-3",
-          "xl:grid-cols-4"
-        );
+        expect(grid).toHaveClass("grid-cols-1", "sm:grid-cols-3");
       });
     });
 

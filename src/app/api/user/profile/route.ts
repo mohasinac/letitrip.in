@@ -55,7 +55,8 @@ export async function PATCH(req: NextRequest) {
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    const trimmedEmail = email.trim();
+    if (!emailRegex.test(trimmedEmail)) {
       return NextResponse.json(
         { error: "Invalid email format" },
         { status: 400 },
@@ -64,9 +65,10 @@ export async function PATCH(req: NextRequest) {
 
     // Check if email is already taken by another user
     if (email) {
+      const normalizedEmail = trimmedEmail.toLowerCase();
       const existingUserSnapshot = await db
         .collection(COLLECTIONS.USERS)
-        .where("email", "==", email)
+        .where("email", "==", normalizedEmail)
         .get();
 
       if (!existingUserSnapshot.empty) {
@@ -83,7 +85,7 @@ export async function PATCH(req: NextRequest) {
     // Update user document
     const updateData: any = {
       name: name.trim(),
-      email: email.trim().toLowerCase(),
+      email: trimmedEmail.toLowerCase(),
       updated_at: new Date().toISOString(),
     };
 

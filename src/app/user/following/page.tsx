@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Heart, Loader2, Store } from "lucide-react";
 import { shopsService } from "@/services/shops.service";
 import { ShopCard } from "@/components/cards/ShopCard";
@@ -9,6 +10,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 
 export default function FollowingPage() {
+  const router = useRouter();
   const [shops, setShops] = useState<ShopCardFE[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +34,10 @@ export default function FollowingPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto" />
+          <Loader2
+            className="h-8 w-8 animate-spin text-blue-600 mx-auto"
+            data-testid="loading-spinner"
+          />
           <p className="mt-2 text-sm text-gray-600">
             Loading followed shops...
           </p>
@@ -69,7 +74,7 @@ export default function FollowingPage() {
             description="Start following your favorite shops to get updates on new products and special offers"
             action={{
               label: "Browse Shops",
-              onClick: () => (window.location.href = "/shops"),
+              onClick: () => router.push("/shops"),
             }}
           />
         ) : (

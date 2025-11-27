@@ -274,20 +274,23 @@ describe("PATCH /api/user/profile", () => {
       }),
     });
 
+    const localMockWhere = {
+      get: jest.fn().mockResolvedValue({ empty: true, docs: [] }),
+    };
+    
     const localMockCollection = {
       doc: jest.fn().mockReturnValue({
         update: localMockUpdate,
         get: localMockGet,
       }),
-      where: jest.fn().mockReturnThis(),
-      get: jest.fn().mockResolvedValue({ empty: true, docs: [] }),
+      where: jest.fn().mockReturnValue(localMockWhere),
     };
 
     const localMockDb = {
       collection: jest.fn().mockReturnValue(localMockCollection),
     };
 
-    mockGetFirestoreAdmin.mockReturnValue(localMockDb);
+    mockGetFirestoreAdmin.mockReturnValue(localMockDb as any);
     mockRequireAuth.mockResolvedValue({ id: "user1", email: "test@example.com" } as any);
 
     const request = new NextRequest("http://localhost:3000/api/user/profile", {
@@ -300,11 +303,9 @@ describe("PATCH /api/user/profile", () => {
 
     await profilePATCH(request);
 
-    expect(localMockUpdate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        email: "test@example.com",
-      })
-    );
+    expect(localMockUpdate).toHaveBeenCalled();
+    const updateCall = localMockUpdate.mock.calls[0][0];
+    expect(updateCall.email).toBe("test@example.com");
   });
 
   it("should only update phone if provided", async () => {
