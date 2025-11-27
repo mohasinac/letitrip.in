@@ -19,7 +19,7 @@ jest.mock("@/services/blog.service", () => ({
 }));
 
 jest.mock("@/components/cards/BlogCard", () => ({
-  BlogCard: ({ post }: any) => <div data-testid="blog-card">{post.title}</div>,
+  BlogCard: ({ title }: any) => <div data-testid="blog-card">{title}</div>,
 }));
 
 jest.mock("lucide-react", () => ({
@@ -39,15 +39,16 @@ const mockPost = {
   slug: "test-blog-post",
   excerpt: "This is a test excerpt",
   content: "<p>This is the full content of the blog post.</p>",
-  author: "John Doe",
-  author_id: "author-1",
-  published_at: "2025-01-01T00:00:00Z",
-  image: "/test-image.jpg",
+  author: {
+    name: "John Doe",
+    avatar: null,
+  },
+  publishedAt: "2025-01-01T00:00:00Z",
+  featuredImage: "/test-image.jpg",
   category: "Technology",
   tags: ["react", "testing"],
   views: 100,
   likes: 50,
-  reading_time: 5,
 };
 
 const mockRelatedPosts = [
@@ -90,7 +91,7 @@ describe("BlogPostClient", () => {
 
       render(<BlogPostClient slug="test" />);
 
-      expect(screen.getByText(/loading/i)).toBeInTheDocument;
+      // Loading skeleton doesn't have text, just visual skeleton with animate-pulse
       const pulseElements = document.querySelectorAll(".animate-pulse");
       expect(pulseElements.length).toBeGreaterThan(0);
     });
@@ -124,8 +125,9 @@ describe("BlogPostClient", () => {
 
       await waitFor(() => {
         expect(screen.getByText("John Doe")).toBeInTheDocument();
-        expect(screen.getByText("100")).toBeInTheDocument(); // views
-        expect(screen.getByText("5 min read")).toBeInTheDocument();
+        expect(screen.getByText("100 views")).toBeInTheDocument(); // views formatted with "views" suffix
+        // readTime is calculated from content word count, not a fixed value
+        expect(screen.getByText(/min read/)).toBeInTheDocument();
       });
     });
 
@@ -133,8 +135,9 @@ describe("BlogPostClient", () => {
       render(<BlogPostClient slug="test-blog-post" />);
 
       await waitFor(() => {
-        expect(screen.getByText("react")).toBeInTheDocument();
-        expect(screen.getByText("testing")).toBeInTheDocument();
+        // Tags are rendered with # prefix in the component
+        expect(screen.getByText(/#react/)).toBeInTheDocument();
+        expect(screen.getByText(/#testing/)).toBeInTheDocument();
       });
     });
   });

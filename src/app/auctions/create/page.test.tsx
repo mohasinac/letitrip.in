@@ -53,50 +53,58 @@ jest.mock("@/components/common/ErrorBoundary", () => ({
   ErrorBoundary: ({ children }: any) => <div>{children}</div>,
 }));
 
-jest.mock("@/components/seller/AuctionForm", () => ({
-  default: ({ onSubmit, isSubmitting }: any) =>
-    React.createElement(
-      "div",
-      { "data-testid": "auction-form" },
-      React.createElement(
-        "button",
-        {
-          key: "submit",
-          "data-testid": "submit-auction",
-          onClick: () =>
-            onSubmit({
-              name: "Test Auction",
-              slug: "test-auction",
-              startingBid: 100,
-              reservePrice: 200,
-              startTime: new Date(),
-              endTime: new Date(Date.now() + 86400000),
-              status: "scheduled",
-              images: ["image1.jpg"],
-              videos: [],
-              description: "Test description",
-            }),
-          disabled: isSubmitting,
-        },
-        isSubmitting ? "Creating..." : "Create Auction"
-      )
-    ),
-}));
+jest.mock("@/components/seller/AuctionForm", () => {
+  const MockAuctionForm = ({ onSubmit, isSubmitting }: any) => (
+    <div data-testid="auction-form">
+      <button
+        data-testid="submit-auction"
+        onClick={() =>
+          onSubmit({
+            name: "Test Auction",
+            slug: "test-auction",
+            startingBid: 100,
+            reservePrice: 200,
+            startTime: new Date(),
+            endTime: new Date(Date.now() + 86400000),
+            status: "scheduled",
+            images: ["image1.jpg"],
+            videos: [],
+            description: "Test description",
+          })
+        }
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Creating..." : "Create Auction"}
+      </button>
+    </div>
+  );
+  return {
+    __esModule: true,
+    default: MockAuctionForm,
+  };
+});
 
-jest.mock("@/components/ui", () => ({
-  Card: ({ children, title }: any) => (
-    <div>
+jest.mock("@/components/ui", () => {
+  const Card = ({ children, title, className }: any) => (
+    <div className={className}>
       {title && <h2>{title}</h2>}
       {children}
     </div>
-  ),
-}));
+  );
+  return {
+    Card,
+  };
+});
 
 // Mock lucide-react icons
-jest.mock("lucide-react", () => ({
-  ArrowLeft: () => <div>ArrowLeft</div>,
-  AlertCircle: () => <div>AlertCircle</div>,
-}));
+jest.mock("lucide-react", () => {
+  const ArrowLeft = () => <div>ArrowLeft</div>;
+  const AlertCircle = () => <div>AlertCircle</div>;
+  return {
+    ArrowLeft,
+    AlertCircle,
+  };
+});
 
 describe("CreateAuctionPage", () => {
   beforeEach(() => {

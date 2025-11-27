@@ -79,6 +79,12 @@ jest.mock("@/components/common/EmptyState", () => ({
   },
 }));
 
+// Mock lucide-react icons
+jest.mock("lucide-react", () => ({
+  Loader2: () => <div role="img" aria-label="Loading" />,
+  Search: () => <div role="img" aria-label="Search" />,
+}));
+
 const mockProductsService = productsService as jest.Mocked<
   typeof productsService
 >;
