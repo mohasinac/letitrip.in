@@ -4,10 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import {
-  UnifiedFilterSidebar,
-  TableCheckbox,
-} from "@/components/common/inline-edit";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { ORDER_FILTERS } from "@/constants/filters";
 import { ordersService } from "@/services/orders.service";
 import type { OrderCardFE, OrderFiltersFE } from "@/types/frontend/order.types";

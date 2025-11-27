@@ -149,6 +149,26 @@ function CreateAuctionContent() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full p-6 text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Error Loading Shops
+          </h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </Card>
+      </div>
+    );
+  }
+
   if (shops.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">

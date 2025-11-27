@@ -128,7 +128,8 @@ describe("MyBidsPage", () => {
 
       render(<MyBidsPage />);
 
-      expect(screen.getByRole("status", { hidden: true })).toBeInTheDocument();
+      const spinner = document.querySelector(".animate-spin");
+      expect(spinner).toBeInTheDocument();
     });
   });
 
@@ -169,7 +170,7 @@ describe("MyBidsPage", () => {
       render(<MyBidsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("Total Bids")).toBeInTheDocument();
+        expect(screen.getAllByText("Total Bids").length).toBeGreaterThan(0);
         expect(screen.getByText("3")).toBeInTheDocument();
       });
     });
@@ -180,7 +181,7 @@ describe("MyBidsPage", () => {
       render(<MyBidsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("Winning")).toBeInTheDocument();
+        expect(screen.getAllByText("Winning").length).toBeGreaterThan(0);
         // Should show 1 winning bid (auction2)
         const stats = document.querySelector(
           ".text-2xl.font-bold.text-green-600"
@@ -195,7 +196,7 @@ describe("MyBidsPage", () => {
       render(<MyBidsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("Outbid")).toBeInTheDocument();
+        expect(screen.getAllByText("Outbid").length).toBeGreaterThan(0);
         // Should show 1 outbid (auction1)
         const stats = document.querySelector(
           ".text-2xl.font-bold.text-red-600"
@@ -210,7 +211,7 @@ describe("MyBidsPage", () => {
       render(<MyBidsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("Ended")).toBeInTheDocument();
+        expect(screen.getAllByText("Ended").length).toBeGreaterThan(0);
         // Should show 1 ended (auction3)
         const stats = document.querySelector(
           ".text-2xl.font-bold.text-gray-600"
@@ -250,9 +251,10 @@ describe("MyBidsPage", () => {
       render(<MyBidsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("₹50,000")).toBeInTheDocument(); // bid1
-        expect(screen.getByText("₹30,000")).toBeInTheDocument(); // bid2
-        expect(screen.getByText("₹15,000")).toBeInTheDocument(); // bid3
+        // Amounts may appear multiple times (Your Bid + Current Bid), formatCurrency adds .00
+        expect(screen.getAllByText("₹50,000.00").length).toBeGreaterThan(0); // bid1
+        expect(screen.getAllByText("₹30,000.00").length).toBeGreaterThan(0); // bid2
+        expect(screen.getAllByText("₹15,000.00").length).toBeGreaterThan(0); // bid3
       });
     });
 
@@ -262,7 +264,7 @@ describe("MyBidsPage", () => {
       render(<MyBidsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("₹55,000")).toBeInTheDocument(); // auction1 current
+        expect(screen.getByText("₹55,000.00")).toBeInTheDocument(); // auction1 current, formatCurrency adds .00
       });
     });
 
@@ -343,7 +345,11 @@ describe("MyBidsPage", () => {
       render(<MyBidsPage />);
 
       await waitFor(() => {
-        const winningBadge = screen.getAllByText("Winning")[0].closest("span");
+        const winningBadges = screen.getAllByText("Winning");
+        // Get the badge span (not the stats label)
+        const winningBadge = winningBadges
+          .find((el) => el.closest(".bg-green-100"))
+          ?.closest("span");
         expect(winningBadge).toHaveClass("bg-green-100", "text-green-800");
       });
     });
@@ -536,9 +542,9 @@ describe("MyBidsPage", () => {
       render(<MyBidsPage />);
 
       await waitFor(() => {
-        // Should only show 1 bid for auction1 (the latest one)
-        expect(screen.getByText("₹52,000")).toBeInTheDocument();
-        expect(screen.queryByText("₹50,000")).not.toBeInTheDocument();
+        // Should only show 1 bid for auction1 (the latest one), formatCurrency adds .00
+        expect(screen.getByText("₹52,000.00")).toBeInTheDocument();
+        expect(screen.queryByText("₹50,000.00")).not.toBeInTheDocument();
       });
     });
 

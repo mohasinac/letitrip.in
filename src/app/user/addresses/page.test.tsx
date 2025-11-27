@@ -24,16 +24,24 @@ jest.mock("@/components/auth/AuthGuard", () => ({
 jest.mock("@/components/common/ConfirmDialog", () => ({
   ConfirmDialog: ({
     isOpen,
+    title,
+    description,
     onConfirm,
     onClose,
+    confirmLabel,
   }: {
     isOpen: boolean;
+    title?: string;
+    description?: string;
     onConfirm: () => void;
     onClose: () => void;
+    confirmLabel?: string;
   }) =>
     isOpen ? (
       <div data-testid="confirm-dialog">
-        <button onClick={onConfirm}>Confirm</button>
+        {title && <h2>{title}</h2>}
+        {description && <p>{description}</p>}
+        <button onClick={onConfirm}>{confirmLabel || "Confirm"}</button>
         <button onClick={onClose}>Cancel</button>
       </div>
     ) : null,
@@ -251,7 +259,8 @@ describe("AddressesPage", () => {
 
       await waitFor(() => {
         expect(screen.getByTestId("form-modal")).toBeInTheDocument();
-        expect(screen.getByText("Add New Address")).toBeInTheDocument();
+        const modal = screen.getByTestId("form-modal");
+        expect(within(modal).getByText("Add New Address")).toBeInTheDocument();
       });
     });
 
@@ -299,16 +308,42 @@ describe("AddressesPage", () => {
       const modal = screen.getByTestId("form-modal");
       const nameInput = within(modal).getByPlaceholderText("John Doe");
       const phoneInput = within(modal).getByPlaceholderText("+91 98765 43210");
+      const addressInput = within(modal).getByPlaceholderText(
+        "House/Flat No., Street Name"
+      );
+      const cityInputs = within(modal).getAllByRole("textbox");
+      const cityInput = cityInputs.find((input) =>
+        input
+          .closest("div")
+          ?.querySelector("label")
+          ?.textContent?.includes("City")
+      );
+      const stateInput = cityInputs.find((input) =>
+        input
+          .closest("div")
+          ?.querySelector("label")
+          ?.textContent?.includes("State")
+      );
+      const postalInput = cityInputs.find((input) =>
+        input
+          .closest("div")
+          ?.querySelector("label")
+          ?.textContent?.includes("Postal")
+      );
 
       await user.clear(nameInput);
       await user.type(nameInput, "Test User");
       await user.clear(phoneInput);
       await user.type(phoneInput, "+91 99999 99999");
+      await user.type(addressInput, "123 Test Street");
+      if (cityInput) await user.type(cityInput, "Mumbai");
+      if (stateInput) await user.type(stateInput, "Maharashtra");
+      if (postalInput) await user.type(postalInput, "400001");
 
-      const form = modal.querySelector("form");
-      if (form) {
-        await user.click(form.querySelector('button[type="submit"]')!);
-      }
+      const submitButton = within(modal).getByRole("button", {
+        name: /add address/i,
+      });
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(mockCreate).toHaveBeenCalled();
@@ -347,7 +382,10 @@ describe("AddressesPage", () => {
       });
 
       const editButtons = screen.getAllByRole("button");
-      const editButton = editButtons.find((btn) => btn.querySelector("svg"));
+      const editButton = editButtons.find(
+        (btn) =>
+          btn.className.includes("border-gray-300") && btn.querySelector("svg")
+      );
 
       if (editButton) {
         await user.click(editButton);
@@ -358,13 +396,10 @@ describe("AddressesPage", () => {
       });
 
       const modal = screen.getByTestId("form-modal");
-      const form = modal.querySelector("form");
-      if (form) {
-        const submitButton = form.querySelector('button[type="submit"]');
-        if (submitButton) {
-          await user.click(submitButton);
-        }
-      }
+      const submitButton = within(modal).getByRole("button", {
+        name: /update address/i,
+      });
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(mockUpdate).toHaveBeenCalled();
@@ -382,10 +417,9 @@ describe("AddressesPage", () => {
       });
 
       const deleteButtons = screen.getAllByRole("button");
-      const deleteButton = deleteButtons.find((btn) => {
-        const svg = btn.querySelector("svg");
-        return svg?.parentElement === btn;
-      });
+      const deleteButton = deleteButtons.find((btn) =>
+        btn.className.includes("border-red-300")
+      );
 
       if (deleteButton) {
         await user.click(deleteButton);
@@ -406,10 +440,9 @@ describe("AddressesPage", () => {
       });
 
       const deleteButtons = screen.getAllByRole("button");
-      const deleteButton = deleteButtons.find((btn) => {
-        const svg = btn.querySelector("svg");
-        return svg?.parentElement === btn;
-      });
+      const deleteButton = deleteButtons.find((btn) =>
+        btn.className.includes("border-red-300")
+      );
 
       if (deleteButton) {
         await user.click(deleteButton);
@@ -419,7 +452,7 @@ describe("AddressesPage", () => {
         expect(screen.getByTestId("confirm-dialog")).toBeInTheDocument();
       });
 
-      const confirmButton = screen.getByText("Confirm");
+      const confirmButton = screen.getByText("Delete");
       await user.click(confirmButton);
 
       await waitFor(() => {
@@ -436,10 +469,9 @@ describe("AddressesPage", () => {
       });
 
       const deleteButtons = screen.getAllByRole("button");
-      const deleteButton = deleteButtons.find((btn) => {
-        const svg = btn.querySelector("svg");
-        return svg?.parentElement === btn;
-      });
+      const deleteButton = deleteButtons.find((btn) =>
+        btn.className.includes("border-red-300")
+      );
 
       if (deleteButton) {
         await user.click(deleteButton);
@@ -548,10 +580,42 @@ describe("AddressesPage", () => {
       });
 
       const modal = screen.getByTestId("form-modal");
-      const form = modal.querySelector("form");
-      if (form) {
-        await user.click(form.querySelector('button[type="submit"]')!);
-      }
+      const nameInput = within(modal).getByPlaceholderText("John Doe");
+      const phoneInput = within(modal).getByPlaceholderText("+91 98765 43210");
+      const addressInput = within(modal).getByPlaceholderText(
+        "House/Flat No., Street Name"
+      );
+      const cityInputs = within(modal).getAllByRole("textbox");
+      const cityInput = cityInputs.find((input) =>
+        input
+          .closest("div")
+          ?.querySelector("label")
+          ?.textContent?.includes("City")
+      );
+      const stateInput = cityInputs.find((input) =>
+        input
+          .closest("div")
+          ?.querySelector("label")
+          ?.textContent?.includes("State")
+      );
+      const postalInput = cityInputs.find((input) =>
+        input
+          .closest("div")
+          ?.querySelector("label")
+          ?.textContent?.includes("Postal")
+      );
+
+      await user.type(nameInput, "Test User");
+      await user.type(phoneInput, "+91 99999 99999");
+      await user.type(addressInput, "123 Test Street");
+      if (cityInput) await user.type(cityInput, "Mumbai");
+      if (stateInput) await user.type(stateInput, "Maharashtra");
+      if (postalInput) await user.type(postalInput, "400001");
+
+      const submitButton = within(modal).getByRole("button", {
+        name: /add address/i,
+      });
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(alertSpy).toHaveBeenCalledWith(
@@ -574,10 +638,9 @@ describe("AddressesPage", () => {
       });
 
       const deleteButtons = screen.getAllByRole("button");
-      const deleteButton = deleteButtons.find((btn) => {
-        const svg = btn.querySelector("svg");
-        return svg?.parentElement === btn;
-      });
+      const deleteButton = deleteButtons.find((btn) =>
+        btn.className.includes("border-red-300")
+      );
 
       if (deleteButton) {
         await user.click(deleteButton);
@@ -587,7 +650,7 @@ describe("AddressesPage", () => {
         expect(screen.getByTestId("confirm-dialog")).toBeInTheDocument();
       });
 
-      const confirmButton = screen.getByText("Confirm");
+      const confirmButton = screen.getByText("Delete");
       await user.click(confirmButton);
 
       await waitFor(() => {
@@ -735,10 +798,42 @@ describe("AddressesPage", () => {
       });
 
       const modal = screen.getByTestId("form-modal");
-      const form = modal.querySelector("form");
-      if (form) {
-        await user.click(form.querySelector('button[type="submit"]')!);
-      }
+      const nameInput = within(modal).getByPlaceholderText("John Doe");
+      const phoneInput = within(modal).getByPlaceholderText("+91 98765 43210");
+      const addressInput = within(modal).getByPlaceholderText(
+        "House/Flat No., Street Name"
+      );
+      const cityInputs = within(modal).getAllByRole("textbox");
+      const cityInput = cityInputs.find((input) =>
+        input
+          .closest("div")
+          ?.querySelector("label")
+          ?.textContent?.includes("City")
+      );
+      const stateInput = cityInputs.find((input) =>
+        input
+          .closest("div")
+          ?.querySelector("label")
+          ?.textContent?.includes("State")
+      );
+      const postalInput = cityInputs.find((input) =>
+        input
+          .closest("div")
+          ?.querySelector("label")
+          ?.textContent?.includes("Postal")
+      );
+
+      await user.type(nameInput, "Test User");
+      await user.type(phoneInput, "+91 99999 99999");
+      await user.type(addressInput, "123 Test Street");
+      if (cityInput) await user.type(cityInput, "Mumbai");
+      if (stateInput) await user.type(stateInput, "Maharashtra");
+      if (postalInput) await user.type(postalInput, "400001");
+
+      const submitButton = within(modal).getByRole("button", {
+        name: /add address/i,
+      });
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(mockGetAll).toHaveBeenCalledTimes(1);
@@ -757,10 +852,9 @@ describe("AddressesPage", () => {
       mockGetAll.mockClear();
 
       const deleteButtons = screen.getAllByRole("button");
-      const deleteButton = deleteButtons.find((btn) => {
-        const svg = btn.querySelector("svg");
-        return svg?.parentElement === btn;
-      });
+      const deleteButton = deleteButtons.find((btn) =>
+        btn.className.includes("border-red-300")
+      );
 
       if (deleteButton) {
         await user.click(deleteButton);
@@ -770,7 +864,7 @@ describe("AddressesPage", () => {
         expect(screen.getByTestId("confirm-dialog")).toBeInTheDocument();
       });
 
-      const confirmButton = screen.getByText("Confirm");
+      const confirmButton = screen.getByText("Delete");
       await user.click(confirmButton);
 
       await waitFor(() => {

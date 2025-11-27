@@ -298,7 +298,7 @@ describe("AuctionForm Component", () => {
       fireEvent.change(slugInput, { target: { value: "test-auction" } });
       fireEvent.change(bidInput, { target: { value: "1000" } });
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", { name: "Create Auction" });
       fireEvent.click(submitButton);
 
       expect(mockOnSubmit).toHaveBeenCalledWith(
@@ -320,7 +320,7 @@ describe("AuctionForm Component", () => {
       // Manually trigger slug error state (in real test would come from validation)
       window.alert = jest.fn();
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", { name: "Create Auction" });
       fireEvent.click(submitButton);
 
       // Alert should be shown for missing slug
@@ -334,7 +334,7 @@ describe("AuctionForm Component", () => {
 
       window.alert = jest.fn();
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", { name: "Create Auction" });
       fireEvent.click(submitButton);
 
       expect(window.alert).toHaveBeenCalledWith("Please select a shop");
@@ -352,7 +352,7 @@ describe("AuctionForm Component", () => {
 
       window.alert = jest.fn();
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", { name: "Create Auction" });
       fireEvent.click(submitButton);
 
       expect(window.alert).toHaveBeenCalledWith(
@@ -375,7 +375,7 @@ describe("AuctionForm Component", () => {
 
       window.alert = jest.fn();
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", { name: "Create Auction" });
       fireEvent.click(submitButton);
 
       expect(window.alert).toHaveBeenCalledWith(
@@ -386,7 +386,7 @@ describe("AuctionForm Component", () => {
     it("disables submit while submitting", () => {
       render(<AuctionForm {...defaultProps} isSubmitting={true} />);
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", { name: "Create Auction" });
       expect(submitButton).toBeDisabled();
     });
 
@@ -486,7 +486,7 @@ describe("AuctionForm Component", () => {
       fireEvent.change(slugInput, { target: { value: "test" } });
       fireEvent.change(bidInput, { target: { value: "100" } });
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", { name: "Create Auction" });
       fireEvent.click(submitButton);
 
       expect(mockOnSubmit).toHaveBeenCalledWith(
@@ -532,7 +532,7 @@ describe("AuctionForm Component", () => {
       fireEvent.change(slugInput, { target: { value: "test" } });
       fireEvent.change(bidInput, { target: { value: "100" } });
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", { name: "Create Auction" });
       fireEvent.click(submitButton);
 
       expect(mockOnSubmit).toHaveBeenCalledWith(
@@ -565,7 +565,7 @@ describe("AuctionForm Component", () => {
       fireEvent.change(slugInput, { target: { value: "test" } });
       fireEvent.change(bidInput, { target: { value: "100" } });
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", { name: "Create Auction" });
       fireEvent.click(submitButton);
 
       expect(mockOnSubmit).toHaveBeenCalledWith(
@@ -660,5 +660,6 @@ describe("AuctionForm Component", () => {
     });
   });
 });
+
 
 

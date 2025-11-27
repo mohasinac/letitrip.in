@@ -1,27 +1,75 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import AdminDashboardPage from "./page";
+import { useAuth } from "@/contexts/AuthContext";
+import { analyticsService } from "@/services/analytics.service";
+
+jest.mock("@/contexts/AuthContext");
+jest.mock("@/services/analytics.service", () => ({
+  analyticsService: {
+    getOverview: jest.fn(),
+  },
+}));
+jest.mock("next/link", () => {
+  return ({ children, href }: any) => <a href={href}>{children}</a>;
+});
+jest.mock("lucide-react", () => ({
+  Users: ({ className }: any) => (
+    <div data-testid="users-icon" className={className} />
+  ),
+  FolderTree: ({ className }: any) => (
+    <div data-testid="folder-icon" className={className} />
+  ),
+  Store: ({ className }: any) => (
+    <div data-testid="store-icon" className={className} />
+  ),
+  Package: ({ className }: any) => (
+    <div data-testid="package-icon" className={className} />
+  ),
+  ShoppingCart: ({ className }: any) => (
+    <div data-testid="cart-icon" className={className} />
+  ),
+  TrendingUp: ({ className }: any) => (
+    <div data-testid="trending-icon" className={className} />
+  ),
+  ArrowRight: ({ className }: any) => (
+    <div data-testid="arrow-icon" className={className} />
+  ),
+  Loader2: ({ className }: any) => (
+    <div data-testid="loader-icon" className={className} />
+  ),
+}));
 
 describe("AdminDashboardPage", () => {
-  it.skip("renders loading spinner when loading", () => {
-    // Simulate loading state
-    jest
-      .spyOn(React, "useState")
-      .mockImplementationOnce(() => [null, jest.fn()])
-      .mockImplementationOnce(() => [true, jest.fn()]);
-    render(<AdminDashboardPage />);
-    expect(screen.getByRole("status")).toBeInTheDocument();
+  beforeEach(() => {
+    (useAuth as jest.Mock).mockReturnValue({
+      user: { uid: "admin" },
+      isAdmin: true,
+    });
+    (analyticsService.getOverview as jest.Mock).mockResolvedValue({
+      totalUsers: 100,
+      totalCustomers: 100,
+      totalSellers: 50,
+      totalShops: 30,
+      totalCategories: 20,
+      totalProducts: 200,
+      totalOrders: 150,
+      activeUsers: 80,
+      pendingOrders: 10,
+    });
   });
 
-  it.skip("renders dashboard stats after loading", async () => {
+  it("renders loading spinner when loading", () => {
     render(<AdminDashboardPage />);
-    // Should show stats labels
-    expect(screen.getByText(/Total Users/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Sellers/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Shops/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Categories/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Products/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Orders/i)).toBeInTheDocument();
-    expect(screen.getByText(/Active Users/i)).toBeInTheDocument();
-    expect(screen.getByText(/Pending Orders/i)).toBeInTheDocument();
+    expect(screen.getByTestId("loader-icon")).toBeInTheDocument();
+  });
+
+  it("renders dashboard stats after loading", async () => {
+    render(<AdminDashboardPage />);
+    await waitFor(
+      () => {
+        expect(screen.getByText("Total Users")).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 });
