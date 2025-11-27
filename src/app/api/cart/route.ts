@@ -148,6 +148,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate quantity
+    if (quantity <= 0) {
+      return NextResponse.json(
+        { success: false, error: "Insufficient stock" },
+        { status: 400 }
+      );
+    }
+
     // Check if product exists and has stock
     const productDoc = await Collections.products().doc(productId).get();
     if (!productDoc.exists) {

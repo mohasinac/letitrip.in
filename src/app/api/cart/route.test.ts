@@ -769,7 +769,7 @@ describe("/api/cart", () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.items.length).toBe(100);
+      expect(data.data.items.length).toBe(100);
       expect(data.pagination.hasNextPage).toBe(true);
     });
 
@@ -819,7 +819,7 @@ describe("/api/cart", () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.items[0].stockCount).toBe(0);
+      expect(data.data.items[0].stockCount).toBe(0);
     });
 
     it("should handle multiple products from different shops in cart summary", async () => {
@@ -895,9 +895,9 @@ describe("/api/cart", () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.items.length).toBe(2);
-      expect(data.summary.total).toBe(5000);
-      expect(data.summary.count).toBe(2);
+      expect(data.data.items.length).toBe(2);
+      expect(data.data.subtotal).toBe(5000);
+      expect(data.data.itemCount).toBe(3); // 2 + 1 quantity
     });
 
     it("should handle adding item with quantity exceeding available stock", async () => {
@@ -1020,7 +1020,7 @@ describe("/api/cart", () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.items[0].variant).toEqual({ size: "L", color: "Red" });
+      expect(data.data.items[0].variant).toEqual({ size: "L", color: "Red" });
     });
 
     it("should handle cart subtotal calculation with discounted prices", async () => {
@@ -1070,9 +1070,9 @@ describe("/api/cart", () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.items[0].price).toBe(800);
-      expect(data.items[0].originalPrice).toBe(1000);
-      expect(data.summary.total).toBe(1600);
+      expect(data.data.items[0].price).toBe(800);
+      expect(data.data.items[0].originalPrice).toBe(1000);
+      expect(data.data.subtotal).toBe(1600);
     });
   });
 });
