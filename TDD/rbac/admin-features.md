@@ -23,6 +23,16 @@ Admin users have full platform access with permission level 100.
 - `/admin/homepage` - Homepage settings
 - `/admin/static-assets` - Asset management
 - `/admin/blog` - Blog management
+- `/admin/blog/categories` - Blog categories
+- `/admin/blog/tags` - Blog tags
+- `/admin/settings` - System settings
+- `/admin/settings/general` - General settings
+- `/admin/settings/payment` - Payment gateway config
+- `/admin/settings/shipping` - Shipping settings
+- `/admin/settings/email` - Email/SMTP settings
+- `/admin/settings/notifications` - Notification settings
+- `/admin/settings/features` - Feature flags
+- `/admin/messages` - All messages (moderation)
 - `/admin/demo` - Demo data generation
 
 ## Exclusive Admin Actions
@@ -70,8 +80,23 @@ Admin users have full platform access with permission level 100.
 - Manage categories (full CRUD)
 - Manage hero slides
 - Configure homepage
-- Manage blog posts
+- Manage blog posts, categories, tags
 - Upload static assets
+
+### System Configuration
+
+- Update site settings (name, logo, contact)
+- Configure payment gateways (Razorpay, PayU, COD)
+- Configure shipping zones and carriers
+- Configure SMTP and email templates
+- Toggle feature flags
+- Enable/disable maintenance mode
+
+### Messaging
+
+- View all conversations
+- Reply as support
+- Moderate messages
 
 ### Moderation
 
@@ -99,3 +124,11 @@ if (user.role === "admin") {
 - [ ] Admin can verify/unverify shops
 - [ ] Admin can manage categories
 - [ ] Admin can manage homepage content
+- [ ] Admin can create/edit/delete blog posts
+- [ ] Admin can manage blog categories and tags
+- [ ] Admin can update system settings
+- [ ] Admin can configure payment gateways
+- [ ] Admin can enable maintenance mode
+- [ ] Admin can toggle feature flags
+- [ ] Admin can view all messages
+- [ ] Admin can reply to any conversation

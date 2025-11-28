@@ -15,6 +15,8 @@ Unauthenticated visitors with permission level 0.
 - `/shops/:slug` - Shop details (active only)
 - `/categories` - Browse categories
 - `/categories/:slug` - Category products
+- `/blog` - Read blog posts
+- `/blog/:slug` - Read single post
 - `/search` - Search (public results)
 - `/login` - Login page
 - `/register` - Registration page
@@ -30,11 +32,19 @@ Unauthenticated visitors with permission level 0.
 - Browse auctions (active)
 - Browse shops (active)
 - Browse categories
+- Read blog posts (published)
 - Search products/auctions/shops
 - View product details
 - View auction details
 - View shop pages
 - View approved reviews
+
+### Favorites (Local Only)
+
+- Add to favorites (stored in browser localStorage)
+- View local favorites
+- Remove from local favorites
+- Prompted to login to sync
 
 ### Authentication
 
@@ -43,12 +53,14 @@ Unauthenticated visitors with permission level 0.
 
 ## Guest Cannot
 
-- ❌ Add to cart
+- ❌ Add to cart (server-side)
 - ❌ Place bids
 - ❌ Make purchases
 - ❌ Write reviews
 - ❌ Follow shops
-- ❌ Add to favorites/watchlist
+- ❌ Sync favorites to server
+- ❌ Enable favorite notifications
+- ❌ Send messages to sellers
 - ❌ Create support tickets
 - ❌ Access any dashboard
 - ❌ View order history
@@ -76,7 +88,9 @@ Guest sees prompts when attempting:
 
 - Add to cart → "Login to add items to cart"
 - Place bid → "Login to place a bid"
-- Add to favorites → "Login to save favorites"
+- Sync favorites → "Login to save your favorites"
+- Enable notifications → "Login to enable price alerts"
+- Contact seller → "Login to message the seller"
 - Write review → "Login to write a review"
 - Follow shop → "Login to follow shops"
 
@@ -86,8 +100,13 @@ Guest sees prompts when attempting:
 - [ ] Guest can browse published products
 - [ ] Guest can view product details
 - [ ] Guest can browse active auctions
+- [ ] Guest can read blog posts
 - [ ] Guest can search
+- [ ] Guest can add local favorites
+- [ ] Guest favorites persist in localStorage
 - [ ] Guest is prompted to login for cart
 - [ ] Guest is prompted to login for bidding
+- [ ] Guest is prompted to login for messaging
 - [ ] Guest cannot access any dashboard
 - [ ] Guest can register new account
+- [ ] Guest favorites merge on login

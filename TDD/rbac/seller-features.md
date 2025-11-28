@@ -15,6 +15,8 @@ Seller users can manage their own shop with permission level 50.
 - `/seller/revenue` - Revenue tracking
 - `/seller/analytics` - Shop analytics
 - `/seller/my-shops` - Shop management
+- `/seller/messages` - Buyer messages
+- `/seller/messages/:id` - Conversation view
 
 ## Seller Actions
 
@@ -70,6 +72,14 @@ Seller users can manage their own shop with permission level 50.
 - Reply to shop tickets
 - Create tickets (as user)
 
+### Messaging
+
+- View buyer messages for own shop
+- Reply to buyer inquiries
+- View order-related messages
+- Attach images to responses
+- Track response time
+
 ### Financial
 
 - View revenue/earnings
@@ -111,3 +121,7 @@ if (user.role === "seller") {
 - [ ] Seller can reply to reviews on own products
 - [ ] Seller can process returns for own shop
 - [ ] Seller can request payouts
+- [ ] Seller can view messages from buyers
+- [ ] Seller can reply to buyer messages
+- [ ] Seller cannot view other sellers' messages
+- [ ] Seller can see which products are favorited
