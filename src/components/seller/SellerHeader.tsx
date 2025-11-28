@@ -89,12 +89,13 @@ export function SellerHeader() {
                   <p className="text-xs text-gray-500">{user?.email}</p>
                 </div>
                 <div className="py-2">
+                  {/* NOTE: /seller/settings does not exist - redirect to my-shops to edit shop settings */}
                   <Link
-                    href="/seller/settings"
+                    href="/seller/my-shops"
                     className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                   >
                     <Settings className="h-4 w-4" />
-                    Settings
+                    Shop Settings
                   </Link>
                   <Link
                     href="/user/settings"

@@ -148,8 +148,9 @@ function SellerSupportTicketsContent() {
             Manage your support inquiries
           </p>
         </div>
+        {/* NOTE: /seller/support-tickets/create does not exist - use /support/create */}
         <Link
-          href="/seller/support-tickets/create"
+          href="/support/create"
           className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
         >
           <Plus className="h-4 w-4" />
@@ -285,7 +286,7 @@ function SellerSupportTicketsContent() {
                   : "Create your first support ticket to get help"}
               </p>
               <Link
-                href="/seller/support-tickets/create"
+                href="/support/create"
                 className="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
               >
                 <Plus className="h-4 w-4" />
