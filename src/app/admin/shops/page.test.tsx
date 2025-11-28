@@ -384,6 +384,7 @@ describe("AdminShopsPage", () => {
     });
 
     it("should select all shops on select-all click", async () => {
+      const user = userEvent.setup();
       render(<AdminShopsPage />);
 
       await waitFor(() => {
@@ -391,7 +392,7 @@ describe("AdminShopsPage", () => {
       });
 
       const selectAllCheckbox = screen.getAllByRole("checkbox")[0];
-      fireEvent.click(selectAllCheckbox);
+      await user.click(selectAllCheckbox);
 
       await waitFor(() => {
         const allCheckboxes = screen.getAllByRole("checkbox");
@@ -402,6 +403,7 @@ describe("AdminShopsPage", () => {
     });
 
     it("should deselect all when clicking select-all again", async () => {
+      const user = userEvent.setup();
       render(<AdminShopsPage />);
 
       await waitFor(() => {
@@ -409,13 +411,13 @@ describe("AdminShopsPage", () => {
       });
 
       const selectAllCheckbox = screen.getAllByRole("checkbox")[0];
-      fireEvent.click(selectAllCheckbox);
+      await user.click(selectAllCheckbox);
 
       await waitFor(() => {
         expect(selectAllCheckbox).toBeChecked();
       });
 
-      fireEvent.click(selectAllCheckbox);
+      await user.click(selectAllCheckbox);
 
       await waitFor(() => {
         const allCheckboxes = screen.getAllByRole("checkbox");
@@ -428,6 +430,7 @@ describe("AdminShopsPage", () => {
 
   describe("Bulk Actions", () => {
     it("should show bulk action bar when shops are selected", async () => {
+      const user = userEvent.setup();
       render(<AdminShopsPage />);
 
       await waitFor(() => {
@@ -435,7 +438,7 @@ describe("AdminShopsPage", () => {
       });
 
       const checkboxes = screen.getAllByRole("checkbox");
-      fireEvent.click(checkboxes[1]);
+      await user.click(checkboxes[1]);
 
       await waitFor(() => {
         expect(screen.getByText(/1.*shop/i)).toBeInTheDocument();
@@ -450,6 +453,7 @@ describe("AdminShopsPage", () => {
     });
 
     it("should perform verify action on selected shops", async () => {
+      const user = userEvent.setup();
       (shopsService.verify as jest.Mock).mockResolvedValue({});
       render(<AdminShopsPage />);
 
@@ -458,14 +462,14 @@ describe("AdminShopsPage", () => {
       });
 
       const checkboxes = screen.getAllByRole("checkbox");
-      fireEvent.click(checkboxes[1]);
+      await user.click(checkboxes[1]);
 
       await waitFor(() => {
         expect(screen.getByText(/1.*shop/i)).toBeInTheDocument();
       });
 
       const verifyButton = screen.getByRole("button", { name: /verify/i });
-      fireEvent.click(verifyButton);
+      await user.click(verifyButton);
 
       await waitFor(() => {
         expect(shopsService.verify).toHaveBeenCalled();
@@ -473,6 +477,7 @@ describe("AdminShopsPage", () => {
     });
 
     it("should perform delete action on selected shops", async () => {
+      const user = userEvent.setup();
       (shopsService.delete as jest.Mock).mockResolvedValue({});
       render(<AdminShopsPage />);
 
@@ -481,7 +486,7 @@ describe("AdminShopsPage", () => {
       });
 
       const checkboxes = screen.getAllByRole("checkbox");
-      fireEvent.click(checkboxes[1]);
+      await user.click(checkboxes[1]);
 
       await waitFor(() => {
         expect(screen.getByText(/1.*shop/i)).toBeInTheDocument();
@@ -492,7 +497,7 @@ describe("AdminShopsPage", () => {
         btn.textContent?.includes("Delete")
       );
       if (bulkDeleteButton) {
-        fireEvent.click(bulkDeleteButton);
+        await user.click(bulkDeleteButton);
       }
 
       await waitFor(() => {
