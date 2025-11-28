@@ -142,3 +142,17 @@ interface ReturnBE {
 - Integration tests for return lifecycle
 - E2E tests for complete return and refund flow
 - RBAC tests for seller and admin processing
+
+---
+
+## Pending Routes
+
+| Route             | Priority  | Status     | Notes                                                                      |
+| ----------------- | --------- | ---------- | -------------------------------------------------------------------------- |
+| `/user/returns`   | 🟡 MEDIUM | ⬜ PENDING | User's return requests list. Alternative: Navigate through `/user/orders`. |
+| `/seller/returns` | 🟡 MEDIUM | ⬜ PENDING | Seller's return management.                                                |
+| `/admin/returns`  | 🟡 MEDIUM | ⬜ PENDING | Admin returns moderation. Escalated returns.                               |
+
+**Navigation Change**: Removed `/user/returns` from USER_MENU_ITEMS in `navigation.ts`.
+
+**See**: `TDD/PENDING-ROUTES.md` for full details
