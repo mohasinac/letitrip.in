@@ -393,10 +393,39 @@ Time:        ~35 seconds
 
 ---
 
+## Phase 5 Updates (Session 5)
+
+### Placeholder Tests Created
+
+| File                                               | Epic | Description         |
+| -------------------------------------------------- | ---- | ------------------- |
+| `src/app/api/notifications/(tests)/route.test.ts`  | E016 | Notifications API   |
+| `src/app/api/admin/settings/(tests)/route.test.ts` | E021 | Admin Settings API  |
+| `src/app/api/admin/blog/(tests)/route.test.ts`     | E020 | Admin Blog Extended |
+| `src/app/api/messages/(tests)/route.test.ts`       | E023 | Messages API        |
+| `src/app/admin/settings/(tests)/page.test.tsx`     | E021 | Settings Pages      |
+| `src/app/seller/messages/(tests)/page.test.tsx`    | E023 | Seller Messages     |
+
+### TDD Documentation Updated
+
+| Document                            | Changes                           |
+| ----------------------------------- | --------------------------------- |
+| `ACCEPTANCE-CRITERIA.md`            | Marked tested features with ✅    |
+| `E2E-SCENARIOS.md`                  | Marked completed journeys with ✅ |
+| `PROGRESS.md`                       | Added Session 5 log               |
+| `README.md`                         | Updated master checklist          |
+| `resources/blog/README.md`          | Added test file locations         |
+| `resources/messages/README.md`      | Added test file locations         |
+| `resources/settings/README.md`      | Added test file locations         |
+| `resources/notifications/README.md` | Added test status                 |
+
+---
+
 ## Next Steps
 
-1. **Create tests for new epics** - Blog, Settings, Wishlist, Messaging API routes
-2. **Homepage component tests** - Additional coverage for page.tsx dynamic sections
-3. **Service layer tests** - Cover remaining service files
-4. **Coverage thresholds** - Enforce minimum coverage
-5. **Documentation** - Add test instructions to README
+1. **Implement Notifications API** - Create actual API routes for E016
+2. **Implement Settings API** - Create actual API routes for E021
+3. **Complete Messaging API** - Add missing endpoints for E023
+4. **Convert Placeholders to Real Tests** - As APIs are implemented
+5. **Add Coverage Thresholds** - Enforce minimum coverage in CI
+6. **Add Coverage Badges** - Display coverage in README

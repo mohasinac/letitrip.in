@@ -103,8 +103,18 @@ interface Message {
 
 - E023: Messaging System
 
-## Status: 📋 Documentation Complete
+## Test Files
+
+| Test File                                       | Coverage           | Status         |
+| ----------------------------------------------- | ------------------ | -------------- |
+| `src/app/user/messages/page.test.tsx`           | User messages page | ✅ Complete    |
+| `src/app/api/messages/(tests)/route.test.ts`    | Messages API       | 📋 Placeholder |
+| `src/app/seller/messages/(tests)/page.test.tsx` | Seller messages    | 📋 Placeholder |
+
+## Status: 🟡 Partially Tested
 
 - [x] User stories (E023)
 - [x] API specifications
-- [ ] Test cases
+- [x] User messages page tests
+- [ ] API tests (placeholder)
+- [ ] Seller messages tests (placeholder)

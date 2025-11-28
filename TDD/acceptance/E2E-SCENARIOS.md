@@ -2,7 +2,7 @@
 
 ## User Journeys
 
-### UJ001: New User Purchase Journey
+### UJ001: New User Purchase Journey ✅ TESTED
 
 ```
 1. Guest visits homepage
@@ -24,7 +24,7 @@
 17. Writes product review
 ```
 
-### UJ002: Auction Bidding Journey
+### UJ002: Auction Bidding Journey ✅ TESTED
 
 ```
 1. User logs in
@@ -43,7 +43,7 @@
 14. Receives item
 ```
 
-### UJ003: Seller Product Listing Journey
+### UJ003: Seller Product Listing Journey ✅ TESTED
 
 ```
 1. User creates shop
@@ -62,7 +62,7 @@
 14. Requests payout
 ```
 
-### UJ004: Return/Refund Journey
+### UJ004: Return/Refund Journey ✅ TESTED
 
 ```
 1. User views order history
@@ -79,7 +79,7 @@
 12. User receives refund
 ```
 
-### UJ005: Support Ticket Journey
+### UJ005: Support Ticket Journey ✅ TESTED
 
 ```
 1. User has issue with order
@@ -96,7 +96,7 @@
 12. Ticket closed
 ```
 
-### UJ006: Favorites/Wishlist Journey
+### UJ006: Favorites/Wishlist Journey ✅ TESTED
 
 ```
 1. Guest browses products
@@ -111,23 +111,23 @@
 10. User removes item from favorites after purchase
 ```
 
-### UJ007: Messaging Journey
+### UJ007: Messaging Journey 🟡 PARTIAL
 
 ```
 1. User views product page
 2. Clicks "Contact Seller" button
 3. Writes inquiry about product
 4. Message sent to seller
-5. Seller receives notification
+5. Seller receives notification       ← NOT FULLY TESTED
 6. Seller replies with answer
-7. User receives reply notification
+7. User receives reply notification   ← NOT FULLY TESTED
 8. User opens conversation thread
 9. User sends follow-up question
 10. Conversation continues until resolved
 11. User archives conversation
 ```
 
-### UJ008: Blog Reading Journey
+### UJ008: Blog Reading Journey ✅ TESTED
 
 ```
 1. User visits blog page
@@ -144,7 +144,7 @@
 
 ## Admin Scenarios
 
-### AS001: User Management
+### AS001: User Management ✅ TESTED
 
 ```
 1. Admin logs in
@@ -157,7 +157,7 @@
 8. User can login again
 ```
 
-### AS002: Content Moderation
+### AS002: Content Moderation ✅ TESTED
 
 ```
 1. New review submitted
@@ -168,7 +168,7 @@
 6. Approved reviews appear on product
 ```
 
-### AS003: Payout Processing
+### AS003: Payout Processing ✅ TESTED
 
 ```
 1. Admin views pending payouts
@@ -180,7 +180,7 @@
 7. Transaction recorded
 ```
 
-### AS004: Blog Management
+### AS004: Blog Management ✅ TESTED
 
 ```
 1. Admin navigates to Blog section
@@ -197,7 +197,7 @@
 12. Manages comments (if enabled)
 ```
 
-### AS005: System Settings
+### AS005: System Settings ⬜ PENDING
 
 ```
 1. Admin navigates to Settings
@@ -216,44 +216,44 @@
 
 ## Negative Scenarios
 
-### NS001: Invalid Registration
+### NS001: Invalid Registration ✅ TESTED
 
 - Email already exists → Error message
 - Weak password → Validation error
 - Invalid email format → Validation error
 
-### NS002: Failed Payment
+### NS002: Failed Payment ✅ TESTED
 
 - Card declined → Retry option
 - Network error → Resume checkout
 - Timeout → Order cancelled after 30 min
 
-### NS003: Out of Stock
+### NS003: Out of Stock ✅ TESTED
 
 - User adds to cart → OK
 - Stock drops to 0 → Warning in cart
 - User tries to checkout → Cannot proceed
 
-### NS004: Expired Auction
+### NS004: Expired Auction ✅ TESTED
 
 - User viewing auction → Countdown ends
 - User tries to bid → "Auction ended" error
 - Winner announced → Correct winner
 
-### NS005: Unauthorized Access
+### NS005: Unauthorized Access ✅ TESTED
 
 - User tries admin route → Redirect to forbidden
 - Seller tries other shop → 403 error
 - Expired session → Redirect to login
 
-### NS006: Messaging Failures
+### NS006: Messaging Failures 🟡 PARTIAL
 
 - Message to blocked user → "Cannot send" error
 - Attachment too large → Size limit error
 - Spam detected → Message rejected
 - Rate limit exceeded → "Try again later"
 
-### NS007: Favorites Errors
+### NS007: Favorites Errors ✅ TESTED
 
 - Add non-existent product → 404 error
 - Sync with invalid token → Re-authenticate

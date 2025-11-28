@@ -126,8 +126,16 @@ interface FeatureFlags {
 
 - E021: System Configuration
 
-## Status: 📋 Documentation Complete
+## Test Files
+
+| Test File                                          | Coverage       | Status         |
+| -------------------------------------------------- | -------------- | -------------- |
+| `src/app/api/admin/settings/(tests)/route.test.ts` | Settings API   | 📋 Placeholder |
+| `src/app/admin/settings/(tests)/page.test.tsx`     | Settings pages | 📋 Placeholder |
+
+## Status: 📋 Placeholder Tests Only
 
 - [x] User stories (E021)
 - [x] API specifications
-- [ ] Test cases
+- [ ] API tests (placeholder only)
+- [ ] Page tests (placeholder only)
