@@ -108,9 +108,9 @@ describe("AdminUsersPage", () => {
     });
     (usersService.list as jest.Mock).mockResolvedValue({
       data: [],
+      count: 0,
       pagination: {
         hasNextPage: false,
-        total: 0,
       },
     });
   });
@@ -118,14 +118,18 @@ describe("AdminUsersPage", () => {
   it("renders user management table", async () => {
     render(<AdminUsersPage />);
     await waitFor(() => {
-      expect(screen.getByText(/Users/i)).toBeInTheDocument();
+      expect(screen.getByText(/No users found/i)).toBeInTheDocument();
     });
+    const usersHeadings = screen.getAllByText(/Users/i);
+    expect(usersHeadings.length).toBeGreaterThan(0);
   });
 
   it("filters users by role", async () => {
     render(<AdminUsersPage />);
     await waitFor(() => {
-      expect(screen.getByText(/Users/i)).toBeInTheDocument();
+      expect(screen.getByText(/No users found/i)).toBeInTheDocument();
     });
+    const usersHeadings = screen.getAllByText(/Users/i);
+    expect(usersHeadings.length).toBeGreaterThan(0);
   });
 });

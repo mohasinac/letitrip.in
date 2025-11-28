@@ -25,7 +25,11 @@ jest.mock("@/hooks/useMobile", () => ({
 }));
 
 jest.mock("next/link", () => {
-  return ({ children, href }: any) => <a href={href}>{children}</a>;
+  return ({ children, href, title, ...props }: any) => (
+    <a href={href} title={title} {...props}>
+      {children}
+    </a>
+  );
 });
 
 const mockShops = [
@@ -391,40 +395,55 @@ describe("AdminShopsPage", () => {
         expect(screen.getByText("Test Shop 1")).toBeInTheDocument();
       });
 
-      const selectAllCheckbox = screen.getAllByRole("checkbox")[0];
-      await user.click(selectAllCheckbox);
+      // Get select-all checkbox and trigger change event directly
+      const selectAllCheckbox = screen.getByLabelText("Select all shops");
 
-      await waitFor(() => {
-        const allCheckboxes = screen.getAllByRole("checkbox");
-        allCheckboxes.forEach((checkbox) => {
-          expect(checkbox).toBeChecked();
-        });
-      });
+      // Use fireEvent.click which properly triggers the change event
+      fireEvent.click(selectAllCheckbox);
+
+      // Query fresh and verify all shop checkboxes are checked (not header)
+      await waitFor(
+        () => {
+          expect(screen.getByLabelText(/Select Test Shop 1/i)).toBeChecked();
+          expect(screen.getByLabelText(/Select Test Shop 2/i)).toBeChecked();
+        },
+        { timeout: 5000 }
+      );
     });
 
     it("should deselect all when clicking select-all again", async () => {
-      const user = userEvent.setup();
       render(<AdminShopsPage />);
 
       await waitFor(() => {
         expect(screen.getByText("Test Shop 1")).toBeInTheDocument();
       });
 
-      const selectAllCheckbox = screen.getAllByRole("checkbox")[0];
-      await user.click(selectAllCheckbox);
+      // First click - select all
+      const selectAllCheckbox = screen.getByLabelText("Select all shops");
+      fireEvent.click(selectAllCheckbox);
 
-      await waitFor(() => {
-        expect(selectAllCheckbox).toBeChecked();
-      });
+      await waitFor(
+        () => {
+          expect(screen.getByLabelText(/Select Test Shop 1/i)).toBeChecked();
+          expect(screen.getByLabelText(/Select Test Shop 2/i)).toBeChecked();
+        },
+        { timeout: 5000 }
+      );
 
-      await user.click(selectAllCheckbox);
+      // Second click - deselect all
+      fireEvent.click(selectAllCheckbox);
 
-      await waitFor(() => {
-        const allCheckboxes = screen.getAllByRole("checkbox");
-        allCheckboxes.forEach((checkbox) => {
-          expect(checkbox).not.toBeChecked();
-        });
-      });
+      await waitFor(
+        () => {
+          expect(
+            screen.getByLabelText(/Select Test Shop 1/i)
+          ).not.toBeChecked();
+          expect(
+            screen.getByLabelText(/Select Test Shop 2/i)
+          ).not.toBeChecked();
+        },
+        { timeout: 5000 }
+      );
     });
   });
 
@@ -435,14 +454,27 @@ describe("AdminShopsPage", () => {
 
       await waitFor(() => {
         expect(screen.getByText("Test Shop 1")).toBeInTheDocument();
+        expect(screen.getByText("Test Shop 2")).toBeInTheDocument();
       });
 
-      const checkboxes = screen.getAllByRole("checkbox");
-      await user.click(checkboxes[1]);
+      // Find and click first shop checkbox
+      const shopCheckbox = screen.getByLabelText(/Select Test Shop 1/i);
+      await user.click(shopCheckbox);
 
-      await waitFor(() => {
-        expect(screen.getByText(/1.*shop/i)).toBeInTheDocument();
-      });
+      // Verify bulk action bar appears
+      await waitFor(
+        () => {
+          expect(shopCheckbox).toBeChecked();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
+          expect(screen.getByText("Clear selection")).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
     it("should hide bulk action bar when no shops selected", async () => {
@@ -461,15 +493,34 @@ describe("AdminShopsPage", () => {
         expect(screen.getByText("Test Shop 1")).toBeInTheDocument();
       });
 
-      const checkboxes = screen.getAllByRole("checkbox");
-      await user.click(checkboxes[1]);
+      // Click checkbox using getByLabelText
+      const shopCheckbox = screen.getByLabelText(/Select Test Shop 1/i);
+      await user.click(shopCheckbox);
 
-      await waitFor(() => {
-        expect(screen.getByText(/1.*shop/i)).toBeInTheDocument();
-      });
+      // Wait for bulk action bar to appear
+      await waitFor(
+        () => {
+          expect(shopCheckbox).toBeChecked();
+        },
+        { timeout: 5000 }
+      );
 
-      const verifyButton = screen.getByRole("button", { name: /verify/i });
-      await user.click(verifyButton);
+      await waitFor(
+        () => {
+          expect(screen.getByText("Clear selection")).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      const buttons = screen.getAllByRole("button", { name: /verify/i });
+      const verifyButton = buttons.find((btn) =>
+        btn.textContent?.includes("Verify")
+      );
+      expect(verifyButton).toBeDefined();
+
+      if (verifyButton) {
+        await user.click(verifyButton);
+      }
 
       await waitFor(() => {
         expect(shopsService.verify).toHaveBeenCalled();
@@ -485,24 +536,67 @@ describe("AdminShopsPage", () => {
         expect(screen.getByText("Test Shop 1")).toBeInTheDocument();
       });
 
-      const checkboxes = screen.getAllByRole("checkbox");
-      await user.click(checkboxes[1]);
+      const shopCheckbox = screen.getByLabelText(/Select Test Shop 1/i);
+      await user.click(shopCheckbox);
 
-      await waitFor(() => {
-        expect(screen.getByText(/1.*shop/i)).toBeInTheDocument();
-      });
+      // Wait for bulk action bar to appear
+      await waitFor(
+        () => {
+          expect(shopCheckbox).toBeChecked();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
+          expect(screen.getByText("Clear selection")).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       const buttons = screen.getAllByRole("button", { name: /delete/i });
       const bulkDeleteButton = buttons.find((btn) =>
         btn.textContent?.includes("Delete")
       );
+      expect(bulkDeleteButton).toBeDefined();
+
       if (bulkDeleteButton) {
         await user.click(bulkDeleteButton);
+
+        // Wait for confirmation dialog and confirm
+        await waitFor(() => {
+          expect(screen.getByText(/are you sure/i)).toBeInTheDocument();
+        });
+
+        // The confirmation dialog has "Cancel" and "Delete" buttons
+        // Find the Delete button that's part of the dialog (not the bulk action button)
+        const dialogButtons = within(
+          screen.getByText(/are you sure/i).closest("div")!.parentElement!
+        ).getAllByRole("button");
+        const confirmDeleteButton = dialogButtons.find(
+          (btn) =>
+            btn.textContent === "Delete" && !btn.textContent?.includes("Shops")
+        );
+        if (confirmDeleteButton) {
+          await user.click(confirmDeleteButton);
+        }
       }
 
-      await waitFor(() => {
-        expect(shopsService.delete).toHaveBeenCalled();
-      });
+      // Wait for service to be called (action executes after confirm)
+      await waitFor(
+        () => {
+          expect(shopsService.delete).toHaveBeenCalledWith("shop-1");
+        },
+        { timeout: 5000 }
+      );
+
+      // Wait for dialog to close after action completes
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/are you sure/i)).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
   });
 

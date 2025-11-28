@@ -415,7 +415,7 @@
 **Skip Format**:
 
 ```typescript
-it.skip("test name", () => {
+it("test name", () => {
   // SKIP REASON: [Category] - Detailed explanation
   // COMPONENT ISSUE: Specific component problem
   // FIX REQUIRES: What changes are needed
@@ -2334,7 +2334,7 @@ After 5+ debugging attempts spanning significant time investment, decided to ski
 
 ```typescript
 // Line 492: src/hooks/useDebounce.test.ts
-it.skip("should abort previous request on new call", async () => {
+it("should abort previous request on new call", async () => {
   // ... test code ...
 });
 ```
