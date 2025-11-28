@@ -229,11 +229,50 @@ Guest (Level 0)
 
 ### Resource: Favorites
 
-| Action          | Admin | Seller | User | Guest |
-| --------------- | ----- | ------ | ---- | ----- |
-| List favorites  | ✅    | ✅     | ✅   | ❌    |
-| Add favorite    | ✅    | ✅     | ✅   | ❌    |
-| Remove favorite | ✅    | ✅     | ✅   | ❌    |
+| Action               | Admin | Seller | User | Guest         |
+| -------------------- | ----- | ------ | ---- | ------------- |
+| List favorites       | ✅    | ✅     | ✅   | Local storage |
+| Add favorite         | ✅    | ✅     | ✅   | Local storage |
+| Remove favorite      | ✅    | ✅     | ✅   | Local storage |
+| Enable notifications | ✅    | ✅     | ✅   | ❌            |
+| Sync on login        | ✅    | ✅     | ✅   | N/A           |
+| View analytics       | ✅    | Own    | ❌   | ❌            |
+
+### Resource: Blog
+
+| Action            | Admin | Seller    | User      | Guest     |
+| ----------------- | ----- | --------- | --------- | --------- |
+| List posts        | ✅    | Published | Published | Published |
+| View post         | ✅    | Published | Published | Published |
+| Create post       | ✅    | ❌        | ❌        | ❌        |
+| Update post       | ✅    | ❌        | ❌        | ❌        |
+| Delete post       | ✅    | ❌        | ❌        | ❌        |
+| Manage categories | ✅    | ❌        | ❌        | ❌        |
+| Manage tags       | ✅    | ❌        | ❌        | ❌        |
+
+### Resource: Messages
+
+| Action               | Admin | Seller   | User     | Guest |
+| -------------------- | ----- | -------- | -------- | ----- |
+| List conversations   | ✅    | Own only | Own only | ❌    |
+| View conversation    | ✅    | Own only | Own only | ❌    |
+| Send message         | ✅    | ✅       | ✅       | ❌    |
+| Reply to message     | ✅    | Own only | Own only | ❌    |
+| Archive conversation | ✅    | Own only | Own only | ❌    |
+| Delete message       | ✅    | Own only | Own only | ❌    |
+| View all messages    | ✅    | ❌       | ❌       | ❌    |
+
+### Resource: Settings
+
+| Action             | Admin | Seller | User | Guest |
+| ------------------ | ----- | ------ | ---- | ----- |
+| View settings      | ✅    | ❌     | ❌   | ❌    |
+| Update general     | ✅    | ❌     | ❌   | ❌    |
+| Update payment     | ✅    | ❌     | ❌   | ❌    |
+| Update shipping    | ✅    | ❌     | ❌   | ❌    |
+| Update email       | ✅    | ❌     | ❌   | ❌    |
+| Toggle features    | ✅    | ❌     | ❌   | ❌    |
+| Enable maintenance | ✅    | ❌     | ❌   | ❌    |
 
 ### Resource: Search
 
