@@ -95,3 +95,17 @@ Combined results from products, auctions, shops
 - E002: Product Catalog
 - E003: Auction System
 - E006: Shop Management
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/search/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/search/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for search relevance scoring
+- Integration tests for all endpoints
+- E2E tests for product and auction discovery flows
+- Performance tests for search latency

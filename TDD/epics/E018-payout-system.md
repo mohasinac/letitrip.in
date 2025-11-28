@@ -105,3 +105,18 @@ interface PayoutBE {
 
 - E005: Order Management (order completion)
 - E006: Shop Management (shop earnings)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/payouts/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/payouts/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for payout calculations
+- Unit tests for fee deductions
+- Integration tests for payout lifecycle
+- E2E tests for payout request to completion
+- RBAC tests for seller and admin operations

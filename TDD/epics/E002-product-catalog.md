@@ -517,3 +517,18 @@ interface ProductBE {
 - E004: Shopping Cart (add products)
 - E007: Review System (product reviews)
 - E013: Category Management (product categories)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/products/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/products/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for product validation
+- Unit tests for slug generation
+- Integration tests for CRUD operations
+- E2E tests for seller product lifecycle
+- RBAC tests for seller/admin access

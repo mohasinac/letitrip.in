@@ -127,3 +127,18 @@ interface CouponBE {
 
 - E004: Shopping Cart (coupon application)
 - E005: Order Management (coupon in orders)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/coupons/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/coupons/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for discount calculations
+- Unit tests for coupon validation logic
+- Integration tests for CRUD operations
+- E2E tests for coupon application flow
+- RBAC tests for seller and admin management

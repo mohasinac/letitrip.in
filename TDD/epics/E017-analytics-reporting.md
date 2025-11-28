@@ -68,3 +68,18 @@ Metrics:
 - E005: Order Management (sales data)
 - E002: Product Catalog (product metrics)
 - E001: User Management (user metrics)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/analytics/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/analytics/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for analytics calculations
+- Unit tests for dashboard aggregations
+- Integration tests for admin/seller dashboards
+- RBAC tests for analytics access
+- Performance tests for dashboard load times

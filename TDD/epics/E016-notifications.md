@@ -67,3 +67,18 @@ interface NotificationBE {
 - E005: Order Management
 - E003: Auction System
 - E010: Support Tickets
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/notifications/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/notifications/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for notification service
+- Unit tests for preference management
+- Integration tests for all endpoints
+- E2E tests for order and auction notification flows
+- RBAC tests for notification access

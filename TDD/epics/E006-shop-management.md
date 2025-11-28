@@ -154,3 +154,18 @@ interface ShopBE {
 - E001: User Management (seller role)
 - E002: Product Catalog (shop products)
 - E018: Payout System (seller earnings)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/shops/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/shops/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for shop validation and slug generation
+- Unit tests for settings management
+- Integration tests for CRUD operations
+- E2E tests for seller shop lifecycle
+- RBAC tests for owner and admin access

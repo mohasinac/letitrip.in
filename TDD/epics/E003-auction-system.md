@@ -684,3 +684,18 @@ auctions/
 - E002: Product Catalog (auction items)
 - E005: Order Management (won auction orders)
 - E011: Payment System (auction payments)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/auctions/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/auctions/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for bid validation
+- Unit tests for auction timing logic
+- Integration tests for real-time bidding
+- E2E tests for complete auction lifecycle
+- Performance tests for concurrent bidding

@@ -98,3 +98,18 @@ Formats: PDF, Word, Excel
 - E003: Auction System (auction media)
 - E006: Shop Management (shop media)
 - E007: Review System (review media)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/media/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/media/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for file validation
+- Unit tests for size and format checks
+- Integration tests for Firebase Storage
+- E2E tests for upload and management flow
+- RBAC tests for media ownership

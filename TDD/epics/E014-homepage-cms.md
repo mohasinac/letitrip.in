@@ -99,3 +99,18 @@ interface HeroSlideBE {
 - E013: Category Management (featured categories)
 - E002: Product Catalog (featured products)
 - E003: Auction System (featured auctions)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/hero-slides/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/hero-slides/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for slide validation
+- Unit tests for date range scheduling
+- Integration tests for CRUD operations
+- E2E tests for homepage configuration
+- RBAC tests for admin-only operations
