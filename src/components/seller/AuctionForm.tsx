@@ -128,7 +128,12 @@ export default function AuctionForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+      }}
+      className="space-y-6"
+    >
       {/* Basic Information */}
       <Card title="Basic Information">
         <div className="space-y-4">
@@ -304,6 +309,7 @@ export default function AuctionForm({
       {/* Submit Buttons */}
       <FormActions
         onCancel={() => window.history.back()}
+        onSubmit={handleSubmit}
         submitLabel={mode === "create" ? "Create Auction" : "Save Changes"}
         isSubmitting={isSubmitting}
         submitDisabled={!!slugError || isValidatingSlug}

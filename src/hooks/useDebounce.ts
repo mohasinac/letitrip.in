@@ -154,6 +154,8 @@ export function useApi<T>(
   const debouncedExecute = useDebouncedCallback(execute, debounce);
 
   useEffect(() => {
+    mountedRef.current = true; // Reset mounted state when effect runs
+    
     if (debounce > 0) {
       debouncedExecute();
     } else {

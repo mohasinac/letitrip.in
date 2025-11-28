@@ -337,6 +337,15 @@ describe("useThrottle", () => {
 });
 
 describe("useApi", () => {
+  // Use real timers for useApi tests since they involve async operations
+  beforeEach(() => {
+    jest.useRealTimers();
+  });
+
+  afterEach(() => {
+    jest.useFakeTimers();
+  });
+
   it("should handle successful API call", async () => {
     const mockApiCall = jest
       .fn<() => Promise<string>>()
@@ -403,15 +412,10 @@ describe("useApi", () => {
   });
 
   it("should debounce API calls", async () => {
-    const mockApiCall = jest.fn<() => Promise<string>>().mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(() => resolve("success"), 100);
-        })
-    );
+    const mockApiCall = jest.fn<() => Promise<string>>().mockResolvedValue("success");
 
     const { result, rerender } = renderHook(
-      ({ deps }) => useApi(mockApiCall, deps, { enabled: true, debounce: 300 }),
+      ({ deps }) => useApi(mockApiCall, deps, { enabled: true, debounce: 100 }),
       {
         initialProps: { deps: [1] },
       }
@@ -427,30 +431,21 @@ describe("useApi", () => {
     // API should not have been called yet due to debouncing
     expect(mockApiCall).not.toHaveBeenCalled();
 
-    // Advance time past debounce delay
-    act(() => {
-      jest.advanceTimersByTime(500);
-    });
+    // Wait for debounce delay and API call to complete
+    await waitFor(
+      () => {
+        expect(mockApiCall).toHaveBeenCalledTimes(1);
+      },
+      { timeout: 500 }
+    );
 
-    // Now loading should be true and API should be called
-    expect(result.current.loading).toBe(true);
-    expect(mockApiCall).toHaveBeenCalledTimes(1);
-
-    // Advance time for the API call to resolve and flush all promises
-    await act(async () => {
-      jest.runAllTimers();
-      await Promise.resolve();
-      await Promise.resolve(); // Double flush for nested promises
-      await Promise.resolve(); // Triple flush for more nested promises
-      await Promise.resolve(); // Ensure all state updates complete
-    });
-
-    // Wait for loading state to update
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-    expect(result.current.data).toBe("success");
-    expect(mockApiCall).toHaveBeenCalledTimes(1);
+    await waitFor(
+      () => {
+        expect(result.current.loading).toBe(false);
+        expect(result.current.data).toBe("success");
+      },
+      { timeout: 500 }
+    );
   });
 
   it("should not execute when disabled", () => {
@@ -467,10 +462,11 @@ describe("useApi", () => {
     expect(mockApiCall).not.toHaveBeenCalled();
   });
 
-  it.skip("should handle dependency changes", async () => {
+  it("should handle dependency changes", async () => {
     const mockApiCall = jest
       .fn<() => Promise<string>>()
       .mockResolvedValue("success");
+      
     const { result, rerender } = renderHook(
       ({ deps }) => useApi(mockApiCall, deps, { enabled: true }),
       {
@@ -478,25 +474,42 @@ describe("useApi", () => {
       }
     );
 
+    // Wait for first API call to complete
     await waitFor(() => {
       expect(result.current.data).toBe("success");
+      expect(result.current.loading).toBe(false);
     });
+    
+    expect(mockApiCall).toHaveBeenCalledTimes(1);
 
-    // Change dependencies
+    // Change dependencies - should trigger new API call
     rerender({ deps: [2] });
 
-    expect(result.current.loading).toBe(true);
-    expect(mockApiCall).toHaveBeenCalledTimes(2);
+    await waitFor(() => {
+      expect(mockApiCall).toHaveBeenCalledTimes(2);
+    });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.data).toBe("success");
+    });
   });
 
-  it.skip("should abort previous request on new call", async () => {
+  it("should abort previous request on new call", async () => {
+    let resolveFirst: (value: string) => void;
+    let resolveSecond: (value: string) => void;
+    
+    const firstPromise = new Promise<string>((resolve) => {
+      resolveFirst = resolve;
+    });
+    const secondPromise = new Promise<string>((resolve) => {
+      resolveSecond = resolve;
+    });
+
     const mockApiCall = jest
       .fn<() => Promise<string>>()
-      .mockImplementationOnce(() => new Promise(() => {})) // Never resolves
-      .mockImplementationOnce(
-        () =>
-          new Promise((resolve) => setTimeout(() => resolve("success"), 100))
-      );
+      .mockReturnValueOnce(firstPromise)
+      .mockReturnValueOnce(secondPromise);
 
     const { result, rerender } = renderHook(
       ({ deps }) => useApi(mockApiCall, deps, { enabled: true }),
@@ -509,33 +522,27 @@ describe("useApi", () => {
     expect(mockApiCall).toHaveBeenCalledTimes(1);
     expect(result.current.loading).toBe(true);
 
-    // Change dependencies - should abort first call and start second
-    await act(async () => {
-      rerender({ deps: [2] });
-      await Promise.resolve();
-    });
+    // Immediately change dependencies before first call completes - should abort first call
+    rerender({ deps: [2] });
 
     // Second call should be made
-    expect(mockApiCall).toHaveBeenCalledTimes(2);
-    expect(result.current.loading).toBe(true); // Still loading from second call
-
-    // Advance time for second call (which has setTimeout of 100ms)
-    await act(async () => {
-      jest.advanceTimersByTime(100);
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(mockApiCall).toHaveBeenCalledTimes(2);
     });
 
-    // Flush any remaining promises
-    await act(async () => {
-      await Promise.resolve();
-      await Promise.resolve();
-    });
+    // Resolve first promise - but it should be ignored due to abort
+    resolveFirst!("first");
+    await Promise.resolve();
 
-    // Wait for loading state to update
+    // Resolve second promise
+    resolveSecond!("second");
+
+    // Wait for final state to update with second result only
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
+      expect(result.current.data).toBe("second");
     });
-    expect(result.current.data).toBe("success");
+    
     expect(mockApiCall).toHaveBeenCalledTimes(2);
   });
 
