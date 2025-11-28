@@ -5,6 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Trash2, Loader2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import {
+  MobileSwipeActions,
+  createDeleteAction,
+} from "@/components/mobile/MobileSwipeActions";
 import type { CartItemFE as CartItemType } from "@/types/frontend/cart.types";
 
 interface CartItemProps {
@@ -60,20 +64,22 @@ export function CartItem({
       )
     : 0;
 
-  return (
-    <>
-      <div className="flex gap-4 py-4 border-b border-gray-200">
-        {/* Product Image */}
-        <Link href={`/products/${item.productId}`} className="flex-shrink-0">
-          <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
-            {item.productImage ? (
-              <Image
-                src={item.productImage}
-                alt={item.productName}
-                fill
-                className="object-cover"
-              />
-            ) : (
+  // Swipe-to-delete action for mobile
+  const deleteAction = createDeleteAction(() => setShowDeleteDialog(true));
+
+  const cartItemContent = (
+    <div className="flex gap-4 py-4 border-b border-gray-200 bg-white">
+      {/* Product Image */}
+      <Link href={`/products/${item.productId}`} className="flex-shrink-0">
+        <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
+          {item.productImage ? (
+            <Image
+              src={item.productImage}
+              alt={item.productName}
+              fill
+              className="object-cover"
+            />
+          ) : (
               <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
                 No image
               </div>
@@ -171,7 +177,7 @@ export function CartItem({
               )}
             </div>
 
-            {/* Subtotal & Remove */}
+            {/* Subtotal & Remove - hide on mobile when swipe is available */}
             <div className="flex items-center gap-4">
               <div className="text-sm font-semibold text-gray-900">
                 ₹{subtotal.toLocaleString("en-IN")}
@@ -180,7 +186,7 @@ export function CartItem({
               <button
                 onClick={() => setShowDeleteDialog(true)}
                 disabled={disabled}
-                className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                className="hidden sm:block p-2 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
                 title="Remove from cart"
                 aria-label="Remove"
               >
@@ -190,6 +196,20 @@ export function CartItem({
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile: Swipe to delete */}
+      <div className="sm:hidden">
+        <MobileSwipeActions rightActions={[deleteAction]}>
+          {cartItemContent}
+        </MobileSwipeActions>
+      </div>
+
+      {/* Desktop: Regular display */}
+      <div className="hidden sm:block">{cartItemContent}</div>
 
       {/* Delete Confirmation */}
       <ConfirmDialog
