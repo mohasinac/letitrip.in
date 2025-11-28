@@ -237,24 +237,50 @@ interface BlogTag {
 ### AC020.2: Blog Post Display
 
 - [ ] Published posts appear on `/blog` page
-- [ ] Posts are paginated (10 per page)
-- [ ] Posts can be filtered by category
+
+### AC020.2: Blog Post Display
+
+- [x] Published posts appear on `/blog` page
+- [x] Posts are paginated (10 per page)
+- [x] Posts can be filtered by category
 - [ ] Posts can be filtered by tag
-- [ ] Single post displays full content
+- [x] Single post displays full content
 - [ ] Related posts are shown
 
 ### AC020.3: Category Management
 
-- [ ] Admin can create categories
-- [ ] Categories have unique slugs
-- [ ] Categories can be nested (parent-child)
-- [ ] Post count is displayed per category
+- [x] Admin can create categories
+- [x] Categories have unique slugs
+- [x] Categories can be nested (parent-child)
+- [x] Post count is displayed per category
 
 ### AC020.4: SEO
 
-- [ ] Each post has meta title and description
-- [ ] Blog posts are included in sitemap
-- [ ] Open Graph tags are generated
+- [x] Each post has meta title and description
+- [x] Blog posts are included in sitemap
+- [x] Open Graph tags are generated
+
+---
+
+## Implementation Status
+
+**Status**: ✅ COMPLETE (Core features tested)
+
+**Implemented**:
+
+- Blog post CRUD (create, read, update, delete)
+- Category filtering
+- Status management (draft, published)
+- Featured image support
+- View count tracking
+- Admin blog management page
+
+**Pending**:
+
+- Tag filtering
+- Related posts
+- Blog post scheduling
+- Comments system
 
 ---
 
@@ -262,13 +288,14 @@ interface BlogTag {
 
 ### Unit Tests
 
-| Test File                               | Coverage         |
-| --------------------------------------- | ---------------- |
-| `src/app/api/blog/route.test.ts`        | Blog list API    |
-| `src/app/api/blog/[slug]/route.test.ts` | Single post API  |
-| `src/app/api/admin/blog/route.test.ts`  | Admin blog CRUD  |
-| `src/app/blog/page.test.tsx`            | Blog list page   |
-| `src/app/blog/[slug]/page.test.tsx`     | Single post page |
+| Test File                                      | Status | Coverage              |
+| ---------------------------------------------- | ------ | --------------------- |
+| `src/app/api/blog/blog.test.ts`                | ✅     | Blog API (CRUD)       |
+| `src/app/blog/page.test.tsx`                   | ✅     | Blog list page        |
+| `src/app/blog/BlogListClient.test.tsx`         | ✅     | Blog list component   |
+| `src/app/blog/[slug]/BlogPostClient.test.tsx`  | ✅     | Single post component |
+| `src/app/admin/blog/(tests)/page.test.tsx`     | ✅     | Admin blog page       |
+| `src/app/api/admin/blog/(tests)/route.test.ts` | 📋     | Extended features     |
 
 ### Integration Tests
 
