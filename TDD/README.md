@@ -35,7 +35,8 @@ TDD/
 │   ├── E020-blog-system.md
 │   ├── E021-system-configuration.md
 │   ├── E022-wishlist-favorites.md
-│   └── E023-messaging-system.md
+│   ├── E023-messaging-system.md
+│   └── E024-mobile-pwa-experience.md
 │
 ├── rbac/
 │   ├── RBAC-OVERVIEW.md         # Role hierarchy & permissions matrix
@@ -66,7 +67,9 @@ TDD/
 │   ├── favorites/
 │   ├── blog/
 │   ├── settings/
-│   └── messages/
+│   ├── messages/
+│   └── mobile/
+│       └── TEST-CASES.md
 │
 └── acceptance/
     ├── ACCEPTANCE-CRITERIA.md
@@ -190,6 +193,7 @@ Acceptance Criteria:
 - E016-E018: Analytics & operations
 - E019: Common code architecture
 - E020-E023: Additional features (Blog, Settings, Wishlist, Messaging)
+- E024: Mobile PWA Experience
 
 ### Status Indicators
 
