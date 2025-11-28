@@ -237,17 +237,17 @@ interface FavoriteList {
 
 ### AC022.2: View Favorites
 
-- [ ] Favorites page lists all saved items
-- [ ] Items show current price and image
-- [ ] Out of stock items are marked
-- [ ] Items can be added to cart directly
-- [ ] Empty state shows when no favorites
+- [x] Favorites page lists all saved items
+- [x] Items show current price and image
+- [x] Out of stock items are marked
+- [x] Items can be added to cart directly
+- [x] Empty state shows when no favorites
 
 ### AC022.3: Filters and Sorting
 
-- [ ] User can filter by type (products/auctions)
-- [ ] User can filter by category
-- [ ] User can sort by date, price, name
+- [x] User can filter by type (products/auctions)
+- [x] User can filter by category
+- [x] User can sort by date, price, name
 - [ ] Filters persist across sessions
 
 ### AC022.4: Notifications
@@ -257,12 +257,35 @@ interface FavoriteList {
 - [ ] User can enable back-in-stock notifications
 - [ ] Notifications can be disabled per item
 
+**Note**: Notifications require E016 implementation
+
 ### AC022.5: Guest Experience
 
-- [ ] Guest can add favorites (stored locally)
-- [ ] Guest sees prompt to login to sync
-- [ ] On login, local favorites merge with server
-- [ ] Duplicate items are handled gracefully
+- [x] Guest can add favorites (stored locally)
+- [x] Guest sees prompt to login to sync
+- [x] On login, local favorites merge with server
+- [x] Duplicate items are handled gracefully
+
+---
+
+## Implementation Status
+
+**Status**: ✅ COMPLETE (Core features tested)
+
+**Implemented**:
+
+- Add/remove favorites API
+- Favorite button component
+- Favorites list page
+- Local storage for guests
+- Tab switching (products, auctions, shops)
+- Type filtering
+
+**Pending (requires E016)**:
+
+- Price drop notifications
+- Back in stock notifications
+- Email notification triggers
 
 ---
 
@@ -270,12 +293,11 @@ interface FavoriteList {
 
 ### Unit Tests
 
-| Test File                                       | Coverage        |
-| ----------------------------------------------- | --------------- |
-| `src/app/api/favorites/route.test.ts`           | Favorites API   |
-| `src/components/common/FavoriteButton.test.tsx` | Favorite button |
-| `src/app/user/favorites/page.test.tsx`          | Favorites page  |
-| `src/hooks/useFavorites.test.ts`                | Favorites hook  |
+| Test File                                         | Status | Coverage        |
+| ------------------------------------------------- | ------ | --------------- |
+| `src/app/api/favorites/[type]/[id]/route.test.ts` | ✅     | Favorites API   |
+| `src/components/common/FavoriteButton.test.tsx`   | ✅     | Favorite button |
+| `src/app/user/favorites/page.test.tsx`            | ✅     | Favorites page  |
 
 ### Integration Tests
 
