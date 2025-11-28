@@ -315,17 +315,37 @@ interface Message {
 
 ---
 
+## Implementation Status
+
+**Status**: ⬜ PENDING (API and pages are placeholders)
+
+**Current State**:
+
+- User messages page exists at `/user/messages` with empty state
+- Seller messages page exists at `/seller/messages` with placeholder
+- API at `/api/messages` returns 501 Not Implemented
+- Page tests exist but test placeholder UI only
+
+**Requires Implementation**:
+
+- Messages API with Firestore persistence
+- Conversation data model
+- Message thread component
+- Real-time updates (WebSocket or polling)
+- Attachment support
+- Notification integration (depends on E016)
+
+---
+
 ## Test Documentation
 
 ### Unit Tests
 
-| Test File                                        | Coverage           |
-| ------------------------------------------------ | ------------------ |
-| `src/app/api/messages/route.test.ts`             | Messages API       |
-| `src/app/api/messages/[id]/route.test.ts`        | Single message API |
-| `src/components/messages/MessageThread.test.tsx` | Thread component   |
-| `src/app/user/messages/page.test.tsx`            | Messages page      |
-| `src/hooks/useMessages.test.ts`                  | Messages hook      |
+| Test File                                       | Status | Coverage               |
+| ----------------------------------------------- | ------ | ---------------------- |
+| `src/app/api/messages/(tests)/route.test.ts`    | 📋     | Messages API (todo)    |
+| `src/app/user/messages/page.test.tsx`           | ✅     | Messages page UI       |
+| `src/app/seller/messages/(tests)/page.test.tsx` | 📋     | Seller messages (todo) |
 
 ### Integration Tests
 

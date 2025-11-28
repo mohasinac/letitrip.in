@@ -380,15 +380,36 @@ interface FeatureFlags {
 
 ---
 
+## Implementation Status
+
+**Status**: ⬜ PENDING (API and pages are placeholders)
+
+**Current State**:
+
+- Settings page exists at `/admin/settings` with placeholder UI
+- API at `/api/admin/settings` returns 501 Not Implemented
+- Settings cards link to sub-pages (not yet implemented)
+
+**Requires Implementation**:
+
+- Settings API with Firestore persistence
+- Encryption for sensitive credentials
+- Settings service
+- Settings form components
+- Feature flag system
+- Maintenance mode middleware
+
+---
+
 ## Test Documentation
 
 ### Unit Tests
 
-| Test File                                  | Coverage         |
-| ------------------------------------------ | ---------------- |
-| `src/app/api/admin/settings/route.test.ts` | Settings API     |
-| `src/app/admin/settings/page.test.tsx`     | Settings pages   |
-| `src/services/settings.service.test.ts`    | Settings service |
+| Test File                                          | Status | Coverage              |
+| -------------------------------------------------- | ------ | --------------------- |
+| `src/app/api/admin/settings/(tests)/route.test.ts` | 📋     | Settings API (todo)   |
+| `src/app/admin/settings/(tests)/page.test.tsx`     | 📋     | Settings pages (todo) |
+| `src/services/settings.service.test.ts`            | ⬜     | Not created yet       |
 
 ### Integration Tests
 
