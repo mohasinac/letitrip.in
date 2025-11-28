@@ -7,6 +7,11 @@
 
 # testing
 /coverage
+test-results.txt
+test-output.txt
+test-err.txt
+test4.txt
+test5.txt
 
 # next.js
 /.next/
