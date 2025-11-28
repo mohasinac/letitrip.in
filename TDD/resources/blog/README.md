@@ -103,8 +103,20 @@ interface BlogTag {
 
 - E020: Blog System
 
-## Status: 📋 Documentation Complete
+## Test Files
+
+| Test File                                      | Coverage         | Status         |
+| ---------------------------------------------- | ---------------- | -------------- |
+| `src/app/blog/page.test.tsx`                   | Blog list page   | ✅ Complete    |
+| `src/app/blog/BlogListClient.test.tsx`         | Blog list client | ✅ Complete    |
+| `src/app/blog/[slug]/BlogPostClient.test.tsx`  | Single post      | ✅ Complete    |
+| `src/app/api/blog/blog.test.ts`                | Blog API         | ✅ Complete    |
+| `src/app/api/admin/blog/(tests)/route.test.ts` | Admin blog API   | 📋 Placeholder |
+
+## Status: 🟡 Partially Tested
 
 - [x] User stories (E020)
 - [x] API specifications
-- [ ] Test cases
+- [x] Public blog page tests
+- [x] Blog client tests
+- [ ] Admin blog tests (placeholder)
