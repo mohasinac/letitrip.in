@@ -29,7 +29,12 @@ TDD/
 │   ├── E015-search-discovery.md
 │   ├── E016-notifications.md
 │   ├── E017-analytics-reporting.md
-│   └── E018-payout-system.md
+│   ├── E018-payout-system.md
+│   ├── E019-common-code-architecture.md
+│   ├── E020-blog-system.md
+│   ├── E021-system-configuration.md
+│   ├── E022-wishlist-favorites.md
+│   └── E023-messaging-system.md
 │
 ├── rbac/
 │   ├── RBAC-OVERVIEW.md         # Role hierarchy & permissions matrix
@@ -158,6 +163,8 @@ Acceptance Criteria:
 - E006-E010: Extended features
 - E011-E015: Infrastructure features
 - E016-E018: Analytics & operations
+- E019: Common code architecture
+- E020-E023: Additional features (Blog, Settings, Wishlist, Messaging)
 
 ### Status Indicators
 

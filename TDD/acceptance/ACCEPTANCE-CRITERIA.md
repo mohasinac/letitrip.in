@@ -161,6 +161,55 @@ Each feature must meet its acceptance criteria before being considered complete.
 - [ ] Bank details validated
 - [ ] Payout history accurate
 
+### E020: Blog System
+
+- [ ] Admin can create blog posts with all fields
+- [ ] Posts support rich text content
+- [ ] Posts can be saved as draft
+- [ ] Posts can be scheduled for future
+- [ ] Published posts appear on /blog
+- [ ] Posts are paginated correctly
+- [ ] Category filtering works
+- [ ] Tag filtering works
+- [ ] SEO metadata is generated
+- [ ] Featured blogs show on homepage
+
+### E021: System Configuration
+
+- [ ] Admin can update site settings
+- [ ] Logo upload works (light/dark)
+- [ ] Payment gateway configuration saves
+- [ ] SMTP configuration works
+- [ ] Test email sends correctly
+- [ ] Feature flags toggle features
+- [ ] Maintenance mode blocks users
+- [ ] Admin IPs bypass maintenance
+- [ ] Credentials are encrypted
+
+### E022: Wishlist/Favorites
+
+- [ ] User can add product to favorites
+- [ ] Heart icon toggles correctly
+- [ ] Favorites persist across sessions
+- [ ] Favorites page lists all items
+- [ ] Items can be added to cart from favorites
+- [ ] Price drop notifications work
+- [ ] Back in stock notifications work
+- [ ] Guest favorites stored locally
+- [ ] Local favorites merge on login
+
+### E023: Messaging System
+
+- [ ] User can send message to seller
+- [ ] Message includes product context
+- [ ] Seller receives notification
+- [ ] Conversation thread displays correctly
+- [ ] Read receipts work
+- [ ] Attachments upload correctly
+- [ ] Unread count shows in header
+- [ ] Messages can be archived
+- [ ] Admin can view all messages
+
 ---
 
 ## Cross-Cutting Acceptance Criteria
