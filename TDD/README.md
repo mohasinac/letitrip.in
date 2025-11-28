@@ -62,7 +62,10 @@ TDD/
 │   ├── categories/
 │   ├── media/
 │   ├── hero-slides/
-│   └── favorites/
+│   ├── favorites/
+│   ├── blog/
+│   ├── settings/
+│   └── messages/
 │
 └── acceptance/
     ├── ACCEPTANCE-CRITERIA.md

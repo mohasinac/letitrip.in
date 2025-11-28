@@ -11,6 +11,8 @@ Regular users can browse, buy, and interact with permission level 10.
 - `/auctions` - Browse auctions
 - `/shops` - Browse shops
 - `/categories` - Browse categories
+- `/blog` - Read blog posts
+- `/blog/:slug` - Read single post
 - `/search` - Search
 - `/cart` - Shopping cart
 - `/checkout` - Checkout
@@ -21,8 +23,11 @@ Regular users can browse, buy, and interact with permission level 10.
 - `/user/watchlist` - Auction watchlist
 - `/user/bids` - My bids
 - `/user/won-auctions` - Won auctions
+- `/user/messages` - Messages inbox
+- `/user/messages/:id` - Conversation view
 - `/user/tickets` - Support tickets
 - `/user/settings` - Settings
+- `/user/notifications` - Notifications
 
 ## User Actions
 
@@ -73,6 +78,18 @@ Regular users can browse, buy, and interact with permission level 10.
 - Add products to favorites
 - Remove from favorites
 - Add auctions to watchlist
+- Enable price drop notifications
+- Enable back-in-stock notifications
+- Sync favorites on login
+
+### Messaging
+
+- Send messages to sellers
+- View conversation history
+- Reply to messages
+- Archive conversations
+- Attach images to messages
+- Receive message notifications
 
 ### Shops
 
@@ -114,4 +131,9 @@ if (user.role === "user") {
 - [ ] User can place bids on auctions
 - [ ] User can write reviews after purchase
 - [ ] User can create support tickets
+- [ ] User can add/remove favorites
+- [ ] User can enable favorite notifications
+- [ ] User can send messages to sellers
+- [ ] User can view own conversations only
+- [ ] User can read blog posts
 - [ ] User cannot access seller/admin routes

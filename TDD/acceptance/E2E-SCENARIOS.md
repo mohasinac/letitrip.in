@@ -96,6 +96,50 @@
 12. Ticket closed
 ```
 
+### UJ006: Favorites/Wishlist Journey
+
+```
+1. Guest browses products
+2. Clicks heart icon on product
+3. Product saved to local storage
+4. Guest registers/logs in
+5. Local favorites sync to server
+6. User enables price drop notification
+7. Product price drops
+8. User receives notification email
+9. User adds item to cart from favorites
+10. User removes item from favorites after purchase
+```
+
+### UJ007: Messaging Journey
+
+```
+1. User views product page
+2. Clicks "Contact Seller" button
+3. Writes inquiry about product
+4. Message sent to seller
+5. Seller receives notification
+6. Seller replies with answer
+7. User receives reply notification
+8. User opens conversation thread
+9. User sends follow-up question
+10. Conversation continues until resolved
+11. User archives conversation
+```
+
+### UJ008: Blog Reading Journey
+
+```
+1. User visits blog page
+2. Views list of published posts
+3. Filters by category
+4. Clicks on article
+5. Reads full content
+6. Views related posts
+7. Shares on social media
+8. Navigates to another article via tag
+```
+
 ---
 
 ## Admin Scenarios
@@ -136,6 +180,38 @@
 7. Transaction recorded
 ```
 
+### AS004: Blog Management
+
+```
+1. Admin navigates to Blog section
+2. Views all published/draft posts
+3. Creates new blog post
+4. Adds title and content
+5. Selects/creates category
+6. Adds tags for SEO
+7. Sets featured image
+8. Previews post
+9. Publishes post
+10. Views analytics
+11. Edits existing post
+12. Manages comments (if enabled)
+```
+
+### AS005: System Settings
+
+```
+1. Admin navigates to Settings
+2. Views current configuration
+3. Updates site name/logo
+4. Configures payment gateways
+5. Sets up shipping options
+6. Updates email templates
+7. Configures tax settings
+8. Toggles feature flags
+9. Saves all changes
+10. Views change audit log
+```
+
 ---
 
 ## Negative Scenarios
@@ -170,6 +246,20 @@
 - Seller tries other shop → 403 error
 - Expired session → Redirect to login
 
+### NS006: Messaging Failures
+
+- Message to blocked user → "Cannot send" error
+- Attachment too large → Size limit error
+- Spam detected → Message rejected
+- Rate limit exceeded → "Try again later"
+
+### NS007: Favorites Errors
+
+- Add non-existent product → 404 error
+- Sync with invalid token → Re-authenticate
+- Duplicate add → Silently ignored
+- Remove non-favorited → No error
+
 ---
 
 ## Performance Scenarios
@@ -194,6 +284,20 @@
 - Results return < 1 second
 - Filters apply correctly
 - Pagination works
+
+### PS004: Messaging System Load
+
+- 1000 concurrent users sending messages
+- Message delivery < 2 seconds
+- Real-time notifications work
+- No message loss
+
+### PS005: Blog Traffic
+
+- 5000 concurrent blog readers
+- Page loads < 2 seconds
+- Images load correctly
+- SEO tags render properly
 
 ---
 
@@ -226,3 +330,24 @@
 - With and without coupons
 - Various payment methods
 - COD and prepaid
+
+### Blog Posts
+
+- 50+ blog posts
+- Various categories
+- Published and draft states
+- With featured images
+
+### Messages
+
+- Buyer-seller conversations
+- Order-related messages
+- Support conversations
+- Read and unread states
+
+### Favorites
+
+- Users with various favorites counts
+- Price drop enabled/disabled
+- Shared wishlists
+- Guest favorites (local storage)
