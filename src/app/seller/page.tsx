@@ -393,8 +393,9 @@ export default function SellerDashboardPage() {
               </Link>
             )}
             {alerts.newReviews > 0 && (
+              // NOTE: /seller/reviews does not exist - link to admin reviews page for now
               <Link
-                href="/seller/reviews"
+                href="/reviews"
                 className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
               >
                 <Star className="h-5 w-5 flex-shrink-0 text-yellow-500" />

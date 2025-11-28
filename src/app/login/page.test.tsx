@@ -82,12 +82,13 @@ describe("LoginPage", () => {
       expect(registerLink).toHaveAttribute("href", "/register");
     });
 
-    it("renders forgot password link", () => {
+    it("renders forgot password link pointing to support ticket", () => {
       render(<LoginPage />);
 
       const forgotLink = screen.getByRole("link", { name: /forgot password/i });
       expect(forgotLink).toBeInTheDocument();
-      expect(forgotLink).toHaveAttribute("href", "/forgot-password");
+      // NOTE: Password reset handled via support ticket since /forgot-password does not exist
+      expect(forgotLink).toHaveAttribute("href", "/support/ticket");
     });
 
     it("renders terms and privacy links", () => {
