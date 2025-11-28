@@ -5,7 +5,7 @@ import { Button, ButtonProps } from "./Button";
 
 export interface FormActionsProps {
   onCancel?: () => void;
-  onSubmit?: () => void;
+  onSubmit?: (() => void) | ((e: React.FormEvent) => void);
   submitLabel?: string;
   cancelLabel?: string;
   isSubmitting?: boolean;
