@@ -426,6 +426,24 @@ interface FeatureFlags {
 
 ---
 
+## Pending Routes
+
+| Route                           | Priority  | Status     | Notes                                                 |
+| ------------------------------- | --------- | ---------- | ----------------------------------------------------- |
+| `/admin/settings`               | ✅ EXISTS | 🟢 DONE    | Main settings page with cards. Links to child routes. |
+| `/admin/settings/general`       | 🔴 HIGH   | ⬜ PENDING | General site settings form.                           |
+| `/admin/settings/payment`       | 🔴 HIGH   | ⬜ PENDING | Payment gateway configuration.                        |
+| `/admin/settings/shipping`      | 🟡 MEDIUM | ⬜ PENDING | Shipping zones and carriers.                          |
+| `/admin/settings/email`         | 🟡 MEDIUM | ⬜ PENDING | SMTP and email templates.                             |
+| `/admin/settings/notifications` | 🟡 MEDIUM | ⬜ PENDING | Push/SMS notification config.                         |
+| `/admin/settings/features`      | 🟡 MEDIUM | ⬜ PENDING | Feature flags management.                             |
+
+**Navigation Change**: Converted from expandable children to single link in `navigation.ts` since child routes don't exist.
+
+**See**: `TDD/PENDING-ROUTES.md` for full details
+
+---
+
 ## Implementation Notes
 
 1. All sensitive credentials must be encrypted at rest

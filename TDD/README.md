@@ -10,6 +10,7 @@ This folder contains comprehensive TDD documentation including user stories, epi
 TDD/
 ├── README.md                    # This file - Overview & Checklist
 ├── PROGRESS.md                  # Session progress tracker
+├── PENDING-ROUTES.md            # Missing routes documentation
 │
 ├── epics/
 │   ├── E001-user-management.md
@@ -150,8 +151,14 @@ TDD/
 - [ ] E016 Notifications API implementation
 - [ ] E021 System Configuration API implementation
 - [ ] E023 Messaging System API implementation
+- [ ] `/forgot-password` route (password reset flow)
+- [ ] `/user/notifications` page
+- [ ] `/admin/analytics` pages
+- [ ] `/admin/settings/*` individual settings pages
 - [ ] Performance tests with k6
 - [ ] E2E tests with Playwright
+
+**See**: `TDD/PENDING-ROUTES.md` for full list of missing routes
 
 ## 🔄 How to Continue
 

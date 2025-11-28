@@ -120,3 +120,14 @@ All tests in `route.test.ts` are `it.todo()` placeholders covering:
 - DELETE /api/notifications/clear-all
 - POST /api/notifications/preferences
 - GET /api/notifications/preferences
+
+---
+
+## Pending Routes
+
+| Route                           | Priority  | Status     | Notes                                                               |
+| ------------------------------- | --------- | ---------- | ------------------------------------------------------------------- |
+| `/user/notifications`           | 🔴 HIGH   | ⬜ PENDING | User notifications page. Depends on this epic's API implementation. |
+| `/admin/settings/notifications` | 🟡 MEDIUM | ⬜ PENDING | Admin notification settings. Part of E021.                          |
+
+**See**: `TDD/PENDING-ROUTES.md` for full details
