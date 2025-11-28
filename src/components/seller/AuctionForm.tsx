@@ -120,7 +120,16 @@ export default function AuctionForm({
       return;
     }
 
-    onSubmit(formData);
+    // Clean images before submit
+    const cleanedImages = (formData.images || [])
+      .map((s) => s.trim())
+      .filter(Boolean);
+    // Always prefer shopId prop over initialData.shopId
+    onSubmit({
+      ...formData,
+      shopId: shopId || formData.shopId,
+      images: cleanedImages,
+    });
   };
 
   const handleChange = (field: string, value: any) => {
@@ -131,6 +140,7 @@ export default function AuctionForm({
     <form
       onSubmit={(e) => {
         e.preventDefault();
+        handleSubmit(e);
       }}
       className="space-y-6"
     >
@@ -310,7 +320,7 @@ export default function AuctionForm({
       <FormActions
         onCancel={() => window.history.back()}
         onSubmit={handleSubmit}
-        submitLabel={mode === "create" ? "Create Auction" : "Save Changes"}
+        submitLabel={mode === "edit" ? "Save Changes" : "Create Auction"}
         isSubmitting={isSubmitting}
         submitDisabled={!!slugError || isValidatingSlug}
         cancelDisabled={isSubmitting}

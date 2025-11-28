@@ -75,7 +75,7 @@ describe("AuctionForm Component", () => {
 
       const nameInput = screen.getByLabelText(/Auction Name/i);
       expect(nameInput).toBeInTheDocument();
-      expect(nameInput).toHaveAttribute("required");
+      expect(nameInput).toHaveAttribute("aria-required", "true");
     });
 
     it("renders slug input", () => {
@@ -287,7 +287,7 @@ describe("AuctionForm Component", () => {
 
   // ===== Form Submission =====
   describe("Form Submission", () => {
-    it("calls onSubmit with form data", () => {
+    it("calls onSubmit with form data", async () => {
       render(<AuctionForm {...defaultProps} />);
 
       const nameInput = screen.getByLabelText(/Auction Name/i);
@@ -298,17 +298,29 @@ describe("AuctionForm Component", () => {
       fireEvent.change(slugInput, { target: { value: "test-auction" } });
       fireEvent.change(bidInput, { target: { value: "1000" } });
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      // Wait for slug validation to complete
+      await waitFor(() => {
+        const submitButton = screen.getByRole("button", {
+          name: /Create Auction/i,
+        });
+        expect(submitButton).not.toBeDisabled();
+      });
+
+      const submitButton = screen.getByRole("button", {
+        name: /Create Auction/i,
+      });
       fireEvent.click(submitButton);
 
-      expect(mockOnSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: "Test Auction",
-          slug: "test-auction",
-          startingBid: 1000,
-          shopId: "shop-123",
-        })
-      );
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: "Test Auction",
+            slug: "test-auction",
+            startingBid: 1000,
+            shopId: "shop-123",
+          })
+        );
+      });
     });
 
     it("prevents submission with slug error", () => {
@@ -320,7 +332,9 @@ describe("AuctionForm Component", () => {
       // Manually trigger slug error state (in real test would come from validation)
       window.alert = jest.fn();
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", {
+        name: /Create Auction/i,
+      });
       fireEvent.click(submitButton);
 
       // Alert should be shown for missing slug
@@ -334,14 +348,16 @@ describe("AuctionForm Component", () => {
 
       window.alert = jest.fn();
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", {
+        name: /Create Auction/i,
+      });
       fireEvent.click(submitButton);
 
       expect(window.alert).toHaveBeenCalledWith("Please select a shop");
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
-    it("prevents submission with zero starting bid", () => {
+    it("prevents submission with zero starting bid", async () => {
       render(<AuctionForm {...defaultProps} />);
 
       const nameInput = screen.getByLabelText(/Auction Name/i);
@@ -352,15 +368,26 @@ describe("AuctionForm Component", () => {
 
       window.alert = jest.fn();
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      await waitFor(() => {
+        const submitButton = screen.getByRole("button", {
+          name: /Create Auction/i,
+        });
+        expect(submitButton).not.toBeDisabled();
+      });
+
+      const submitButton = screen.getByRole("button", {
+        name: /Create Auction/i,
+      });
       fireEvent.click(submitButton);
 
-      expect(window.alert).toHaveBeenCalledWith(
-        "Starting bid must be greater than 0"
-      );
+      await waitFor(() => {
+        expect(window.alert).toHaveBeenCalledWith(
+          "Starting bid must be greater than 0"
+        );
+      });
     });
 
-    it("prevents submission with reserve less than starting bid", () => {
+    it("prevents submission with reserve less than starting bid", async () => {
       render(<AuctionForm {...defaultProps} />);
 
       const nameInput = screen.getByLabelText(/Auction Name/i);
@@ -375,18 +402,31 @@ describe("AuctionForm Component", () => {
 
       window.alert = jest.fn();
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      await waitFor(() => {
+        const submitButton = screen.getByRole("button", {
+          name: /Create Auction/i,
+        });
+        expect(submitButton).not.toBeDisabled();
+      });
+
+      const submitButton = screen.getByRole("button", {
+        name: /Create Auction/i,
+      });
       fireEvent.click(submitButton);
 
-      expect(window.alert).toHaveBeenCalledWith(
-        expect.stringContaining("Reserve price must be greater than or equal")
-      );
+      await waitFor(() => {
+        expect(window.alert).toHaveBeenCalledWith(
+          expect.stringContaining("Reserve price must be greater than or equal")
+        );
+      });
     });
 
     it("disables submit while submitting", () => {
       render(<AuctionForm {...defaultProps} isSubmitting={true} />);
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", {
+        name: /Create Auction/i,
+      });
       expect(submitButton).toBeDisabled();
     });
 
@@ -454,16 +494,19 @@ describe("AuctionForm Component", () => {
       expect(bidInput.value).toBe("100");
     });
 
-    it("prefers shopId prop over initialData", () => {
+    it("prefers shopId prop over initialData", async () => {
+      const now = new Date();
+      const laterDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days later
+
       const initialData = {
         shopId: "old-shop",
         name: "Test",
         slug: "test",
-        description: "",
+        description: "Test description",
         startingBid: 100,
         reservePrice: 0,
-        startTime: new Date(),
-        endTime: new Date(),
+        startTime: now,
+        endTime: laterDate,
         status: AuctionStatus.DRAFT,
         images: [],
         videos: [],
@@ -471,29 +514,34 @@ describe("AuctionForm Component", () => {
 
       render(
         <AuctionForm
-          {...defaultProps}
+          mode="edit"
           shopId="new-shop"
           initialData={initialData}
+          onSubmit={mockOnSubmit}
+          isSubmitting={false}
         />
       );
 
-      // Submit and check shopId in submitted data
-      const nameInput = screen.getByLabelText(/Auction Name/i);
-      const slugInput = screen.getByTestId("slug-input");
-      const bidInput = screen.getByLabelText(/Starting Bid/i);
+      // Wait for submit button to be enabled (no slug validation in edit mode for unchanged slug)
+      await waitFor(() => {
+        const submitButton = screen.getByRole("button", {
+          name: /Save Changes/i,
+        });
+        expect(submitButton).not.toBeDisabled();
+      });
 
-      fireEvent.change(nameInput, { target: { value: "Test" } });
-      fireEvent.change(slugInput, { target: { value: "test" } });
-      fireEvent.change(bidInput, { target: { value: "100" } });
-
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      const submitButton = screen.getByRole("button", {
+        name: /Save Changes/i,
+      });
       fireEvent.click(submitButton);
 
-      expect(mockOnSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({
-          shopId: "new-shop", // Should use prop, not initialData
-        })
-      );
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            shopId: "new-shop", // Should use prop, not initialData
+          })
+        );
+      });
     });
   });
 
@@ -510,7 +558,7 @@ describe("AuctionForm Component", () => {
       expect(imagesInput.value).toBe("");
     });
 
-    it("handles whitespace in image URLs", () => {
+    it("handles whitespace in image URLs", async () => {
       render(<AuctionForm {...defaultProps} />);
 
       const imagesInput = screen.getByLabelText(
@@ -532,20 +580,32 @@ describe("AuctionForm Component", () => {
       fireEvent.change(slugInput, { target: { value: "test" } });
       fireEvent.change(bidInput, { target: { value: "100" } });
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      // Wait for slug validation to complete
+      await waitFor(() => {
+        const submitButton = screen.getByRole("button", {
+          name: /Create Auction/i,
+        });
+        expect(submitButton).not.toBeDisabled();
+      });
+
+      const submitButton = screen.getByRole("button", {
+        name: /Create Auction/i,
+      });
       fireEvent.click(submitButton);
 
-      expect(mockOnSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({
-          images: [
-            "https://example.com/img1.jpg",
-            "https://example.com/img2.jpg",
-          ],
-        })
-      );
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            images: [
+              "https://example.com/img1.jpg",
+              "https://example.com/img2.jpg",
+            ],
+          })
+        );
+      });
     });
 
-    it("filters out empty URLs from images", () => {
+    it("filters out empty URLs from images", async () => {
       render(<AuctionForm {...defaultProps} />);
 
       const imagesInput = screen.getByLabelText(
@@ -565,17 +625,29 @@ describe("AuctionForm Component", () => {
       fireEvent.change(slugInput, { target: { value: "test" } });
       fireEvent.change(bidInput, { target: { value: "100" } });
 
-      const submitButton = screen.getByRole("button", { name: "Cancel" }); // Form uses native submit, button not rendered
+      // Wait for slug validation to complete
+      await waitFor(() => {
+        const submitButton = screen.getByRole("button", {
+          name: /Create Auction/i,
+        });
+        expect(submitButton).not.toBeDisabled();
+      });
+
+      const submitButton = screen.getByRole("button", {
+        name: /Create Auction/i,
+      });
       fireEvent.click(submitButton);
 
-      expect(mockOnSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({
-          images: [
-            "https://example.com/img1.jpg",
-            "https://example.com/img2.jpg",
-          ],
-        })
-      );
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            images: [
+              "https://example.com/img1.jpg",
+              "https://example.com/img2.jpg",
+            ],
+          })
+        );
+      });
     });
 
     it("handles undefined videos in initialData", () => {
@@ -660,7 +732,3 @@ describe("AuctionForm Component", () => {
     });
   });
 });
-
-
-
-

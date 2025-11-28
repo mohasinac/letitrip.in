@@ -87,24 +87,26 @@ describe("AdminProductsPage", () => {
     });
     (productsService.list as jest.Mock).mockResolvedValue({
       data: [],
-      pagination: {
-        hasNextPage: false,
-        total: 0,
-      },
+      count: 0,
+      hasNextPage: false,
     });
   });
 
   it("renders product moderation table", async () => {
     render(<AdminProductsPage />);
     await waitFor(() => {
-      expect(screen.getByText(/Products/i)).toBeInTheDocument();
+      expect(screen.getByText(/No products yet/i)).toBeInTheDocument();
     });
+    const productsHeadings = screen.getAllByText(/Products/i);
+    expect(productsHeadings.length).toBeGreaterThan(0);
   });
 
   it("filters products by status", async () => {
     render(<AdminProductsPage />);
     await waitFor(() => {
-      expect(screen.getByText(/Products/i)).toBeInTheDocument();
+      expect(screen.getByText(/No products yet/i)).toBeInTheDocument();
     });
+    const productsHeadings = screen.getAllByText(/Products/i);
+    expect(productsHeadings.length).toBeGreaterThan(0);
   });
 });

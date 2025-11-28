@@ -95,7 +95,11 @@ export default function AdminShopsPage() {
       console.log("[Shops] Loading with filters:", filters);
       const response = await shopsService.list(filters);
 
-      setShops(response.data || []);
+      // Deduplicate shops by ID to prevent React key warnings
+      const uniqueShops = Array.from(
+        new Map((response.data || []).map((shop) => [shop.id, shop])).values()
+      );
+      setShops(uniqueShops);
       // Calculate total pages from count
       setTotalPages(Math.ceil((response.count || 0) / limit));
       setTotalShops(response.count || 0);
@@ -455,7 +459,10 @@ export default function AdminShopsPage() {
                 <table className="w-full">
                   <thead className="border-b border-gray-200 bg-gray-50">
                     <tr>
-                      <th className="w-12 px-6 py-3">
+                      <th
+                        className="w-12 px-6 py-3"
+                        data-testid="select-all-header"
+                      >
                         <TableCheckbox
                           checked={
                             selectedIds.length === shops.length &&
