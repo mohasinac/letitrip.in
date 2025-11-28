@@ -116,3 +116,18 @@ interface SupportTicketMessageBE {
 
 - E005: Order Management (order-related tickets)
 - E009: Returns & Refunds (return-related tickets)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/tickets/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/tickets/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for ticket validation
+- Unit tests for status transitions
+- Integration tests for CRUD operations
+- E2E tests for ticket creation to resolution flow
+- RBAC tests for admin ticket management

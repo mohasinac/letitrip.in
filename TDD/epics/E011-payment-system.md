@@ -96,3 +96,18 @@ interface PaymentBE {
 - E005: Order Management (order payments)
 - E003: Auction System (auction payments)
 - E009: Returns & Refunds (refund processing)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/payments/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/payments/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for payment validation
+- Unit tests for Razorpay signature verification
+- Integration tests for payment lifecycle
+- E2E tests for complete payment flow
+- Webhook tests for payment callbacks

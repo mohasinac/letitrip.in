@@ -113,3 +113,18 @@ interface CategoryBE {
 - E002: Product Catalog (product categories)
 - E003: Auction System (auction categories)
 - E014: Homepage CMS (category display)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/categories/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/categories/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for category validation
+- Unit tests for multi-parent hierarchy
+- Integration tests for CRUD operations
+- E2E tests for category tree management
+- RBAC tests for admin-only operations

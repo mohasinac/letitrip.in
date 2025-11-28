@@ -588,3 +588,18 @@ interface OrderBE {
 - E009: Returns & Refunds (post-delivery returns)
 - E011: Payment System (order payments)
 - E018: Payout System (seller payments)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/orders/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/orders/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for order totals and status transitions
+- Unit tests for order number generation
+- Integration tests for order lifecycle
+- E2E tests for complete purchase flow
+- RBAC tests for seller and admin order management

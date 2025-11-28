@@ -127,3 +127,18 @@ interface ReturnBE {
 
 - E005: Order Management (order returns)
 - E011: Payment System (refund processing)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/returns/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/returns/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for return validation
+- Unit tests for refund calculations
+- Integration tests for return lifecycle
+- E2E tests for complete return and refund flow
+- RBAC tests for seller and admin processing

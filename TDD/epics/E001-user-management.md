@@ -475,3 +475,18 @@ interface AddressBE {
 - E006: Shop Management (seller profile)
 - E005: Order Management (order history)
 - E010: Support Tickets (user tickets)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/users/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/users/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for authentication flows
+- Unit tests for profile validation
+- Integration tests for all user endpoints
+- E2E tests for registration to login flow
+- RBAC tests for admin user management

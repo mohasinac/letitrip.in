@@ -117,3 +117,18 @@ interface ReviewBE {
 - E002: Product Catalog (product reviews)
 - E006: Shop Management (shop reviews)
 - E005: Order Management (verified purchase)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/reviews/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/reviews/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for rating calculations
+- Unit tests for review validation
+- Integration tests for CRUD operations
+- E2E tests for verified purchase review flow
+- RBAC tests for moderation and seller response

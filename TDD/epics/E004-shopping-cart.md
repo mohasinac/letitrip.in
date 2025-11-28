@@ -419,3 +419,18 @@ interface CartItemBE {
 - E005: Order Management (cart to order)
 - E008: Coupon System (cart discounts)
 - E011: Payment System (checkout)
+
+---
+
+## Test Documentation
+
+- **API Specs**: `/TDD/resources/carts/API-SPECS.md`
+- **Test Cases**: `/TDD/resources/carts/TEST-CASES.md`
+
+### Test Coverage
+
+- Unit tests for cart totals calculation
+- Unit tests for coupon application
+- Integration tests for CRUD operations
+- E2E tests for add to cart → checkout flow
+- Session merge tests for login scenarios
