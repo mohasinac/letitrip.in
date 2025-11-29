@@ -23,7 +23,9 @@ export default function FAQItem({
         className="w-full py-5 px-6 flex items-start justify-between gap-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         aria-expanded={isOpen}
       >
-        <span className="font-medium text-gray-900 dark:text-white flex-1">{question}</span>
+        <span className="font-medium text-gray-900 dark:text-white flex-1">
+          {question}
+        </span>
         <ChevronDown
           className={`w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -32,7 +34,9 @@ export default function FAQItem({
       </button>
 
       {isOpen && (
-        <div className="px-6 pb-5 text-gray-600 dark:text-gray-400 leading-relaxed">{answer}</div>
+        <div className="px-6 pb-5 text-gray-600 dark:text-gray-400 leading-relaxed">
+          {answer}
+        </div>
       )}
     </div>
   );
