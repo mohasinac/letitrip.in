@@ -20,14 +20,14 @@ export default function AdminLayout({
   return (
     <AuthGuard allowedRoles={["admin"]}>
       <AdminLayoutClient>
-        <div className="flex min-h-screen bg-gray-50">
+        <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
           {/* Desktop Sidebar */}
           <AdminSidebar />
 
           {/* Main Content Area */}
           <div className="flex flex-1 flex-col lg:ml-64">
             {/* Main Content */}
-            <main className="flex-1">
+            <main className="flex-1 bg-gray-50 dark:bg-gray-900">
               <div className="container mx-auto px-4 py-6 lg:px-8">
                 {children}
               </div>

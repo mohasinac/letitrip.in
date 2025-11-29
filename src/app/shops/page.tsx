@@ -92,32 +92,32 @@ function ShopsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Browse Shops
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             Discover trusted sellers and their unique collections
           </p>
         </div>
 
         {/* Search & Controls */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 flex gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                 <input
                   type="search"
                   placeholder="Search shops..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && loadShops()}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <button
@@ -132,7 +132,7 @@ function ShopsContent() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
             >
               <option value="rating">Highest Rated</option>
               <option value="products">Most Products</option>
@@ -140,13 +140,13 @@ function ShopsContent() {
             </select>
 
             {/* View Toggle */}
-            <div className="hidden md:flex border border-gray-300 rounded-lg overflow-hidden">
+            <div className="hidden md:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
               <button
                 onClick={() => setView("grid")}
                 className={`px-3 py-2 ${
                   view === "grid"
                     ? "bg-blue-600 text-white"
-                    : "bg-white text-gray-600"
+                    : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                 }`}
               >
                 <Grid className="w-5 h-5" />
@@ -156,7 +156,7 @@ function ShopsContent() {
                 className={`px-3 py-2 ${
                   view === "list"
                     ? "bg-blue-600 text-white"
-                    : "bg-white text-gray-600"
+                    : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                 }`}
               >
                 <List className="w-5 h-5" />
@@ -166,7 +166,7 @@ function ShopsContent() {
             {/* Filter Toggle (Mobile) */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden px-4 py-2 border border-gray-300 rounded-lg flex items-center gap-2"
+              className="lg:hidden px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg flex items-center gap-2 text-gray-700 dark:text-gray-300"
             >
               <Filter className="w-5 h-5" />
               Filters
@@ -202,18 +202,18 @@ function ShopsContent() {
                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
               </div>
             ) : shops.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                <p className="text-gray-600 text-lg mb-4">No shops found</p>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
+                <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">No shops found</p>
                 <button
                   onClick={handleReset}
-                  className="text-blue-600 hover:underline"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
                   Clear filters
                 </button>
               </div>
             ) : (
               <>
-                <div className="mb-4 text-sm text-gray-600">
+                <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
                   Showing {shops.length} shop{shops.length !== 1 ? "s" : ""}
                 </div>
 
