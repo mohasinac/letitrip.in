@@ -125,3 +125,70 @@ if (user.role === "seller") {
 - [ ] Seller can reply to buyer messages
 - [ ] Seller cannot view other sellers' messages
 - [ ] Seller can see which products are favorited
+
+## Mobile Feature Access (E025)
+
+### Mobile Navigation
+
+- ✅ MobileSellerSidebar for navigation
+- ✅ Hamburger menu in header
+- ✅ Collapsible seller sections
+- ✅ MobileQuickActions FAB (Add Product, View Orders, etc.)
+
+### Mobile Dashboard
+
+- ✅ Dashboard stat cards responsive
+- ✅ Pull-to-refresh on dashboard
+- ✅ Revenue charts mobile-sized
+- ✅ Quick action buttons prominent
+
+### Mobile Product Management
+
+- ✅ Product list as MobileDataTable cards
+- ✅ Product swipe actions (Edit, Delete, Status)
+- ✅ Product create wizard mobile-optimized
+- ✅ MobileFormInput for all fields
+- ✅ Camera capture for product photos
+- ✅ Image editor with touch gestures
+- ✅ Category selector via MobileFormSelect
+
+### Mobile Auction Management
+
+- ✅ Auction list as MobileDataTable cards
+- ✅ Auction create form mobile-optimized
+- ✅ Date/time picker native mobile pickers
+- ✅ Bid list as cards in detail view
+
+### Mobile Order Management
+
+- ✅ Orders as MobileDataTable cards
+- ✅ Swipe right to accept orders
+- ✅ Order status via MobileActionSheet
+- ✅ Tracking info via MobileFormInput
+- ✅ Bulk select with touch checkboxes
+
+### Mobile Coupon Management
+
+- ✅ Coupon create form mobile-optimized
+- ✅ Date pickers as native mobile pickers
+- ✅ Discount type via MobileFormSelect
+
+### Mobile Media Upload
+
+- ✅ MediaUploader touch-friendly
+- ✅ CameraCapture fullscreen mode
+- ✅ ImageEditor touch crop/rotate
+- ✅ MediaGallery touch reorder
+- ✅ Swipe to delete media
+
+### Mobile Returns
+
+- ✅ Returns list as MobileDataTable cards
+- ✅ Return approval via MobileActionSheet
+- ✅ Evidence images in lightbox with zoom
+
+### Mobile Messaging
+
+- ✅ Message list as cards
+- ✅ Reply via MobileBottomSheet
+- ✅ Attachment upload touch-friendly

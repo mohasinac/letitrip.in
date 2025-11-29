@@ -283,6 +283,23 @@ Guest (Level 0)
 | Search shops    | ✅    | ✅     | ✅   | ✅    |
 | Global search   | ✅    | ✅     | ✅   | ✅    |
 
+### Resource: Mobile Features
+
+| Action                 | Admin | Seller | User | Guest               |
+| ---------------------- | ----- | ------ | ---- | ------------------- |
+| PWA install            | ✅    | ✅     | ✅   | ✅                  |
+| Offline browsing       | ✅    | ✅     | ✅   | ✅ (cached pages)   |
+| Push notifications     | ✅    | ✅     | ✅   | ❌                  |
+| Camera access          | ✅    | ✅     | ✅   | ❌                  |
+| Pull-to-refresh        | ✅    | ✅     | ✅   | ✅                  |
+| Swipe actions          | ✅    | ✅     | ✅   | ❌ (requires auth)  |
+| Mobile sidebar (Admin) | ✅    | ❌     | ❌   | ❌                  |
+| Mobile sidebar (Sell)  | ✅    | ✅     | ❌   | ❌                  |
+| Quick actions FAB      | ✅    | ✅     | ❌   | ❌                  |
+| Mobile data tables     | ✅    | ✅     | ✅   | ✅ (public data)    |
+| Mobile filters         | ✅    | ✅     | ✅   | ✅                  |
+| Mobile forms           | ✅    | ✅     | ✅   | ✅ (contact/search) |
+
 ## Ownership Rules
 
 ### Shop Ownership

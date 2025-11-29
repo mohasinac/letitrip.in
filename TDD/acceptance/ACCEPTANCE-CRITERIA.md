@@ -260,6 +260,62 @@ Each feature must meet its acceptance criteria before being considered complete.
 **Status**: API returns 501 Not Implemented, Pages are placeholder  
 **Tests**: `src/app/api/messages/(tests)/route.test.ts`, `src/app/seller/messages/(tests)/page.test.tsx` (placeholders with `it.todo`)
 
+### E024: Mobile PWA Experience ✅ COMPLETE (Tested)
+
+- [x] Bottom navigation displays on mobile (< 1024px)
+- [x] Mobile sidebar opens/closes with animation
+- [x] PWA install prompt appears when criteria met
+- [x] Offline indicator shows when network unavailable
+- [x] Touch targets are minimum 44px
+- [x] Pull-to-refresh component created
+- [x] Swipe actions component created
+- [x] Mobile form inputs created (48px height)
+- [x] Mobile bottom sheet component created
+- [x] Mobile action sheet component created
+- [x] Mobile data table (card layout) created
+- [x] Mobile skeleton loading created
+- [x] Admin/Seller mobile sidebars created
+- [x] Quick actions FAB component created
+
+**Tests**: `TDD/resources/mobile/TEST-CASES.md`, `src/components/mobile/*.test.tsx`
+
+### E025: Mobile Component Integration ⬜ PENDING
+
+- [ ] All forms use MobileFormInput on mobile
+- [ ] All forms use MobileFormSelect for dropdowns
+- [ ] All data pages support pull-to-refresh
+- [ ] All list items support swipe actions
+- [ ] All modals use MobileBottomSheet on mobile
+- [ ] All confirmations use MobileActionSheet
+- [ ] All loading states use MobileSkeleton
+- [ ] All touch targets are 44px minimum
+- [ ] Admin tables use MobileDataTable
+- [ ] Seller tables use MobileDataTable
+- [ ] User tables use MobileDataTable
+- [ ] Filters open in MobileBottomSheet
+- [ ] Category filter section is reusable
+- [ ] Price range filter section is reusable
+- [ ] Rating filter section is reusable
+- [ ] Status filter section is reusable
+- [ ] Date range filter section is reusable
+- [ ] ProductCard has touch-optimized targets
+- [ ] AuctionCard has touch-optimized targets
+- [ ] CardGrid uses mobile-first columns
+- [ ] Horizontal scrollers have snap scrolling
+- [ ] Hero carousel supports swipe gestures
+- [ ] MobileInfiniteScroll for product lists
+- [ ] MobilePagination for admin tables
+- [ ] ProductGallery supports swipe navigation
+- [ ] ProductGallery supports pinch-to-zoom
+- [ ] ProductGallery lightbox is touch-optimized
+- [ ] MediaUploader is touch-friendly
+- [ ] Image editor supports touch gestures
+- [ ] Static pages are mobile-readable
+- [ ] FAQ accordion is touch-friendly
+
+**Status**: Components created in E024, integration pending  
+**Tests**: `TDD/resources/mobile/E025-TEST-CASES.md` (to be implemented)
+
 ---
 
 ## Cross-Cutting Acceptance Criteria

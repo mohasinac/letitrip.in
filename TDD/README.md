@@ -36,14 +36,15 @@ TDD/
 │   ├── E021-system-configuration.md
 │   ├── E022-wishlist-favorites.md
 │   ├── E023-messaging-system.md
-│   └── E024-mobile-pwa-experience.md
+│   ├── E024-mobile-pwa-experience.md
+│   └── E025-mobile-component-integration.md
 │
 ├── rbac/
 │   ├── RBAC-OVERVIEW.md         # Role hierarchy & permissions matrix
-│   ├── admin-features.md        # Admin-specific features
-│   ├── seller-features.md       # Seller-specific features
-│   ├── user-features.md         # User-specific features
-│   └── guest-features.md        # Guest/Public features
+│   ├── admin-features.md        # Admin-specific features (with mobile)
+│   ├── seller-features.md       # Seller-specific features (with mobile)
+│   ├── user-features.md         # User-specific features (with mobile)
+│   └── guest-features.md        # Guest/Public features (with mobile)
 │
 ├── resources/
 │   ├── users/
@@ -69,7 +70,8 @@ TDD/
 │   ├── settings/
 │   ├── messages/
 │   └── mobile/
-│       └── TEST-CASES.md
+│       ├── TEST-CASES.md        # E024 Mobile PWA test cases
+│       └── E025-TEST-CASES.md   # E025 Mobile Integration test cases
 │
 └── acceptance/
     ├── ACCEPTANCE-CRITERIA.md
@@ -163,6 +165,27 @@ TDD/
 
 **See**: `TDD/PENDING-ROUTES.md` for full list of missing routes
 
+### Phase 7: Mobile Component Integration (E025) ⬜
+
+- [ ] Phase 1: Critical User Flows (Week 1-2)
+- [ ] Phase 2: Browsing Experience (Week 2-3)
+- [ ] Phase 3: User Dashboard (Week 3-4)
+- [ ] Phase 4: Seller Dashboard (Week 4-5)
+- [ ] Phase 5: Admin Dashboard (Week 5-6)
+- [ ] Phase 6: Polish & Edge Cases (Week 6)
+- [ ] Phase 7: Reusable Filter Sections (Week 6-7)
+- [ ] Phase 8: Homepage & Carousels (Week 7)
+- [ ] Phase 9: Search & Static Pages (Week 7-8)
+- [ ] Phase 10: Cards & Catalog (Week 8-9)
+- [ ] Phase 11: Horizontal Scrollers & Sliders (Week 9)
+- [ ] Phase 12: Pagination & Infinite Scroll (Week 9-10)
+- [ ] Phase 13: Catalog & List Views (Week 10)
+- [ ] Phase 14: Media Upload & Preview (Week 10-11)
+- [ ] Phase 15: Product Gallery & Zoom (Week 11)
+
+**See**: `TDD/epics/E025-mobile-component-integration.md` for detailed implementation plan  
+**See**: `TDD/resources/mobile/E025-TEST-CASES.md` for comprehensive test cases
+
 ## 🔄 How to Continue
 
 1. Open `TDD/PROGRESS.md` to see current status
@@ -193,7 +216,8 @@ Acceptance Criteria:
 - E016-E018: Analytics & operations
 - E019: Common code architecture
 - E020-E023: Additional features (Blog, Settings, Wishlist, Messaging)
-- E024: Mobile PWA Experience
+- E024: Mobile PWA Experience (component creation)
+- E025: Mobile Component Integration (integration across app)
 
 ### Status Indicators
 

@@ -221,6 +221,92 @@
 
 ---
 
+## Mobile User Journeys
+
+### MUJ001: Mobile Purchase Journey ⬜ PENDING (E025)
+
+```
+1. User opens app on mobile                 ⬜ MobileInstallPrompt
+2. Browses products via bottom nav          ⬜ BottomNav integration
+3. Pulls down to refresh products           ⬜ MobilePullToRefresh
+4. Swipes through product gallery           ⬜ ProductGallery swipe
+5. Pinch-to-zoom on product image           ⬜ ProductGallery zoom
+6. Taps filter button                       ⬜ Opens MobileBottomSheet
+7. Selects category filter                  ⬜ MobileCategoryFilterSection
+8. Applies filters and views results        ⬜ 2-column CardGrid
+9. Adds product to cart                     ⬜ Touch-friendly button
+10. Swipes to remove unwanted item          ⬜ MobileSwipeActions
+11. Proceeds to checkout                    ⬜ MobileBottomSheet forms
+12. Fills address with mobile inputs        ⬜ MobileFormInput
+13. Selects payment method                  ⬜ MobileFormSelect
+14. Completes payment                       ⬜ Touch-optimized flow
+15. Views order in user dashboard           ⬜ MobileDataTable
+```
+
+**Status**: E025 mobile component integration pending
+
+### MUJ002: Mobile Auction Journey ⬜ PENDING (E025)
+
+```
+1. User opens auctions via bottom nav       ⬜ BottomNav integration
+2. Pulls to refresh auction list            ⬜ MobilePullToRefresh
+3. Browses auctions in 2-column grid        ⬜ Mobile CardGrid
+4. Taps auction card                        ⬜ Touch-optimized card
+5. Views countdown timer                    ⬜ Mobile-sized timer
+6. Taps "Place Bid" button                  ⬜ Opens MobileBottomSheet
+7. Enters bid amount                        ⬜ Numeric keyboard
+8. Confirms bid with action sheet           ⬜ MobileActionSheet
+9. Sets up auto-bid                         ⬜ MobileFormInput
+10. Adds to watchlist                       ⬜ Touch-friendly toggle
+11. Receives outbid notification            ⬜ Push/in-app notification
+12. Places winning bid                      ⬜ MobileBottomSheet
+13. Completes checkout on mobile            ⬜ Mobile checkout flow
+```
+
+**Status**: E025 mobile component integration pending
+
+### MUJ003: Mobile Seller Journey ⬜ PENDING (E025)
+
+```
+1. Seller opens app via PWA                 ⬜ Installed PWA
+2. Views seller dashboard                   ⬜ MobileSellerSidebar
+3. Taps quick action FAB                    ⬜ MobileQuickActions
+4. Selects "Add Product"                    ⬜ Opens product form
+5. Fills product details                    ⬜ MobileFormInput
+6. Takes photo with camera                  ⬜ CameraCapture fullscreen
+7. Edits image with touch gestures          ⬜ ImageEditor touch
+8. Reorders images with drag                ⬜ Touch reorder
+9. Selects category                         ⬜ MobileFormSelect
+10. Sets price with numeric keyboard        ⬜ MobileFormInput
+11. Publishes product                       ⬜ Touch-friendly button
+12. Views orders list                       ⬜ MobileDataTable
+13. Swipes to accept order                  ⬜ MobileSwipeActions
+14. Updates order status                    ⬜ MobileActionSheet
+```
+
+**Status**: E025 mobile component integration pending
+
+### MUJ004: Mobile Admin Journey ⬜ PENDING (E025)
+
+```
+1. Admin opens admin panel on mobile        ⬜ MobileAdminSidebar
+2. Views dashboard stats                    ⬜ Responsive stat cards
+3. Pulls to refresh dashboard               ⬜ MobilePullToRefresh
+4. Navigates to users via sidebar           ⬜ MobileAdminSidebar
+5. Views users as cards                     ⬜ MobileDataTable
+6. Searches for user                        ⬜ MobileFormInput
+7. Swipes to ban user                       ⬜ MobileSwipeActions
+8. Confirms with action sheet               ⬜ MobileActionSheet
+9. Views products list                      ⬜ MobileDataTable
+10. Bulk selects products                   ⬜ Touch checkboxes
+11. Opens bulk actions                      ⬜ MobileActionSheet
+12. Deletes selected products               ⬜ Confirmation sheet
+```
+
+**Status**: E025 mobile component integration pending
+
+---
+
 ## Negative Scenarios
 
 ### NS001: Invalid Registration ✅ TESTED
@@ -267,6 +353,17 @@
 - Duplicate add → Silently ignored ✅ src/app/api/favorites/[type]/[id]/route.test.ts
 - Remove non-favorited → No error ✅ src/app/api/favorites/[type]/[id]/route.test.ts
 
+### NS008: Mobile Interaction Errors ⬜ PENDING (E025)
+
+- Swipe action incomplete → Action cancelled, item returns ⬜ E025
+- Pull-to-refresh fails → Error toast, retry option ⬜ E025
+- Offline action → Queued with indicator, syncs when online ⬜ E025
+- Touch target too small → Accessibility warning in dev ⬜ E025
+- Form input zoom → Prevented with 16px font-size ⬜ E025
+- Bottom sheet dismiss → Confirmation if unsaved changes ⬜ E025
+- Image upload fails → Retry button, error message ⬜ E025
+- Camera permission denied → Fallback to file picker ⬜ E025
+
 ---
 
 ## Performance Scenarios (Future - k6/Playwright)
@@ -305,6 +402,26 @@
 - Page loads < 2 seconds
 - Images load correctly
 - SEO tags render properly
+
+### PS006: Mobile Performance ⬜ PENDING (E025)
+
+- Mobile homepage LCP < 2.5 seconds on 3G
+- Mobile FID < 100ms
+- Mobile CLS < 0.1
+- Touch response < 100ms
+- Swipe animation 60fps
+- Pull-to-refresh smooth
+- Bottom sheet animation smooth
+- Image gallery swipe smooth
+- Pinch-to-zoom responsive
+
+### PS007: Mobile Gestures Load ⬜ PENDING (E025)
+
+- 100 concurrent swipe actions
+- All swipes register correctly
+- No gesture conflicts
+- Haptic feedback (if supported)
+- Scroll hijacking prevented
 
 ---
 
@@ -358,3 +475,11 @@
 - Price drop enabled/disabled
 - Shared wishlists
 - Guest favorites (local storage)
+
+### Mobile Test Data ⬜ PENDING (E025)
+
+- Devices: iPhone SE (375px), iPhone 13 (390px), Pixel 5 (393px), iPad (768px)
+- Networks: 4G, Slow 3G, Offline
+- Browsers: Safari iOS, Chrome Mobile, Samsung Internet
+- User states: Guest, Logged in, Seller, Admin
+- Content: Long product names, many images, complex forms
