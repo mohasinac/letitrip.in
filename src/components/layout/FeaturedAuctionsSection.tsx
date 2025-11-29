@@ -76,8 +76,14 @@ export default function FeaturedAuctionsSection() {
                 id: auction.id,
                 name: auction.productName || auction.name || "",
                 slug: auction.productSlug || auction.slug || "",
-                images: auction.images || (auction.productImage ? [auction.productImage] : []),
-                currentBid: auction.currentPrice || auction.currentBid || auction.startingBid || 0,
+                images:
+                  auction.images ||
+                  (auction.productImage ? [auction.productImage] : []),
+                currentBid:
+                  auction.currentPrice ||
+                  auction.currentBid ||
+                  auction.startingBid ||
+                  0,
                 startingBid: auction.startingBid || 0,
                 bidCount: auction.totalBids || auction.bidCount || 0,
                 endTime: auction.endTime,

@@ -129,8 +129,12 @@ const AuctionCardComponent = ({
     };
   }, [isHovered, currentMediaIndex, allMedia]);
 
-  const currentMedia = allMedia[currentMediaIndex] ||
-    allMedia[0] || (auction.images && auction.images[0] ? { type: "image" as const, url: auction.images[0] } : null);
+  const currentMedia =
+    allMedia[currentMediaIndex] ||
+    allMedia[0] ||
+    (auction.images && auction.images[0]
+      ? { type: "image" as const, url: auction.images[0] }
+      : null);
 
   // Determine urgency level for styling
   const isEndingSoon =
