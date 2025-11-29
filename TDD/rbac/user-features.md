@@ -137,3 +137,46 @@ if (user.role === "user") {
 - [ ] User can view own conversations only
 - [ ] User can read blog posts
 - [ ] User cannot access seller/admin routes
+
+## Mobile Feature Access (E025)
+
+### Mobile Navigation
+
+- ✅ Bottom navigation visible on mobile
+- ✅ Mobile sidebar for account navigation
+- ✅ Pull-to-refresh on all data pages
+- ✅ Swipe actions on cart items, addresses, favorites
+
+### Mobile Forms
+
+- ✅ MobileFormInput on all user forms
+- ✅ MobileFormSelect for dropdowns
+- ✅ MobileBottomSheet for address form
+- ✅ Touch-friendly input sizes (48px+)
+
+### Mobile Shopping
+
+- ✅ ProductGallery swipe/zoom
+- ✅ Product filters via MobileBottomSheet
+- ✅ Cart swipe-to-delete
+- ✅ Checkout in mobile-optimized flow
+
+### Mobile Auctions
+
+- ✅ Auction bid via MobileBottomSheet
+- ✅ Auto-bid setup in bottom sheet
+- ✅ Watchlist swipe actions
+
+### Mobile User Dashboard
+
+- ✅ Orders as MobileDataTable cards
+- ✅ Bids as MobileDataTable cards
+- ✅ Addresses with swipe actions
+- ✅ Favorites with swipe actions
+
+### Mobile Interactions
+
+- ✅ MobileActionSheet for confirmations
+- ✅ MobileSkeleton for loading states
+- ✅ Touch targets 44px+ minimum
+- ✅ PWA install prompt available

@@ -110,3 +110,62 @@ Guest sees prompts when attempting:
 - [ ] Guest cannot access any dashboard
 - [ ] Guest can register new account
 - [ ] Guest favorites merge on login
+
+## Mobile Feature Access (E025)
+
+### Mobile Navigation
+
+- ✅ Bottom navigation visible (Home, Products, Auctions, Cart, Account)
+- ✅ Mobile sidebar shows login/register options
+- ✅ Search accessible via header or nav
+- ✅ Categories browseable
+
+### Mobile Browsing
+
+- ✅ Product listing as 2-column grid
+- ✅ Product filters via MobileBottomSheet
+- ✅ ProductGallery swipe navigation
+- ✅ ProductGallery pinch-to-zoom
+- ✅ Auction listing as 2-column grid
+- ✅ Shop listing as cards
+- ✅ Category grid touch-friendly
+
+### Mobile Interaction
+
+- ✅ Pull-to-refresh on public listings
+- ✅ Horizontal scroll for featured sections
+- ✅ Hero carousel swipe gestures
+- ✅ Blog posts mobile-readable
+
+### Mobile Favorites (Local)
+
+- ✅ Add to favorites (heart icon)
+- ✅ View local favorites in sidebar
+- ✅ Prompt to login to sync (MobileBottomSheet)
+
+### Mobile Static Pages
+
+- ✅ About page mobile layout
+- ✅ Contact form with MobileFormInput
+- ✅ FAQ accordion touch-friendly
+- ✅ Legal pages mobile reading mode
+
+### Mobile Authentication
+
+- ✅ Login form with MobileFormInput
+- ✅ Register form with MobileFormInput
+- ✅ Social login buttons touch-friendly
+- ✅ Password show/hide toggle
+
+### Mobile PWA
+
+- ✅ PWA install prompt available
+- ✅ Offline browsing (cached pages)
+- ✅ Offline indicator when no network
+
+### Mobile Limitations
+
+- ❌ Swipe actions on cart (requires login)
+- ❌ Push notifications (requires login)
+- ❌ Camera access for uploads (requires login)
+- ❌ Message seller (prompts login)
