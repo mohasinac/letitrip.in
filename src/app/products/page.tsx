@@ -36,7 +36,7 @@ function ProductsContent() {
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [filterOptions, setFilterOptions] = useState(PRODUCT_FILTERS);
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || "",
+    searchParams.get("search") || ""
   );
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -210,7 +210,7 @@ function ProductsContent() {
         image: string;
         shopId: string;
         shopName: string;
-      },
+      }
     ) => {
       try {
         if (!productDetails) {
@@ -234,7 +234,7 @@ function ProductsContent() {
         toast.error(error.message || "Failed to add to cart");
       }
     },
-    [products, addItem],
+    [products, addItem]
   );
 
   return (
@@ -248,7 +248,7 @@ function ProductsContent() {
           <p className="text-gray-600">Browse our complete collection</p>
         </div>
 
-        {/* Search & Controls */}
+        {/* Search & Controls - Mobile Optimized */}
         <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
@@ -259,16 +259,16 @@ function ProductsContent() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && loadProducts()}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 min-h-[48px] text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent touch-manipulation"
               />
             </div>
 
             {/* Sort */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap sm:flex-nowrap">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 touch-manipulation"
               >
                 <option value="createdAt">Newest</option>
                 <option value="price">Price</option>
@@ -279,17 +279,17 @@ function ProductsContent() {
               <select
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 touch-manipulation"
               >
                 <option value="desc">High to Low</option>
                 <option value="asc">Low to High</option>
               </select>
 
-              {/* View Toggle */}
-              <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+              {/* View Toggle - Hidden on mobile */}
+              <div className="hidden sm:flex border border-gray-300 rounded-lg overflow-hidden">
                 <button
                   onClick={() => setView("grid")}
-                  className={`px-3 py-2 ${
+                  className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                     view === "grid"
                       ? "bg-blue-600 text-white"
                       : "bg-white text-gray-600"
@@ -299,7 +299,7 @@ function ProductsContent() {
                 </button>
                 <button
                   onClick={() => setView("table")}
-                  className={`px-3 py-2 ${
+                  className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                     view === "table"
                       ? "bg-blue-600 text-white"
                       : "bg-white text-gray-600"
@@ -313,10 +313,10 @@ function ProductsContent() {
             {/* Filter Toggle Button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors"
+              className="px-4 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
             >
               <Filter className="w-4 h-4" />
-              {showFilters ? "Hide" : "Show"} Filters
+              <span>{showFilters ? "Hide" : "Show"} Filters</span>
             </button>
           </div>
         </div>
@@ -504,7 +504,7 @@ function ProductsContent() {
                   </div>
                 )}
 
-                {/* Pagination - Cursor Based */}
+                {/* Pagination - Mobile Optimized */}
                 {(currentPage > 1 || hasNextPage) && (
                   <div className="mt-8 flex justify-center items-center gap-4">
                     <button
@@ -516,19 +516,19 @@ function ProductsContent() {
                         }
                       }}
                       disabled={currentPage === 1}
-                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                      className="px-6 py-3 min-h-[48px] border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 active:bg-gray-100 transition-colors touch-manipulation"
                     >
                       Previous
                     </button>
 
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-gray-600 font-medium">
                       Page {currentPage}
                     </span>
 
                     <button
                       onClick={() => setCurrentPage((p) => p + 1)}
                       disabled={!hasNextPage}
-                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                      className="px-6 py-3 min-h-[48px] border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 active:bg-gray-100 transition-colors touch-manipulation"
                     >
                       Next
                     </button>

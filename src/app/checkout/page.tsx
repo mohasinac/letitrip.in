@@ -18,6 +18,7 @@ import { AddressSelector } from "@/components/checkout/AddressSelector";
 import { PaymentMethod } from "@/components/checkout/PaymentMethod";
 import { ShopOrderSummary } from "@/components/checkout/ShopOrderSummary";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
+import { MobileTextarea } from "@/components/mobile/MobileTextarea";
 import { checkoutService } from "@/services/checkout.service";
 
 declare global {
@@ -47,7 +48,7 @@ export default function CheckoutPage() {
   const [shippingAddressId, setShippingAddressId] = useState("");
   const [billingAddressId, setBillingAddressId] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">(
-    "razorpay",
+    "razorpay"
   );
   const [useSameAddress, setUseSameAddress] = useState(true);
   const [notes, setNotes] = useState("");
@@ -86,7 +87,7 @@ export default function CheckoutPage() {
     return shopGroups.reduce((sum, shop) => {
       const subtotal = shop.items.reduce(
         (s, item) => s + item.price * item.quantity,
-        0,
+        0
       );
       const discount = shop.coupon?.discountAmount || 0;
       const shipping = subtotal >= 5000 ? 0 : 100;
@@ -166,7 +167,7 @@ export default function CheckoutPage() {
 
       const subtotal = shop.items.reduce(
         (sum, item) => sum + item.price * item.quantity,
-        0,
+        0
       );
       const discountAmount = Math.round(subtotal * 0.1); // 10% discount
 
@@ -226,7 +227,7 @@ export default function CheckoutPage() {
         // Check if Razorpay is loaded
         if (!window.Razorpay) {
           throw new Error(
-            "Payment gateway not available. Please try Cash on Delivery or refresh the page.",
+            "Payment gateway not available. Please try Cash on Delivery or refresh the page."
           );
         }
 
@@ -250,7 +251,7 @@ export default function CheckoutPage() {
 
               // Redirect to first order (or create a multi-order success page)
               router.push(
-                `/user/orders/${orderIds[0]}?success=true&multi=true`,
+                `/user/orders/${orderIds[0]}?success=true&multi=true`
               );
             } catch (error: any) {
               console.error("Payment verification failed:", error);
@@ -271,7 +272,7 @@ export default function CheckoutPage() {
           modal: {
             ondismiss: function () {
               setError(
-                "Payment was cancelled. Your order has not been placed.",
+                "Payment was cancelled. Your order has not been placed."
               );
               setProcessing(false);
             },
@@ -283,7 +284,7 @@ export default function CheckoutPage() {
           console.error("Payment failed:", response.error);
           setError(
             response.error.description ||
-              "Payment failed. Please try again or use a different payment method.",
+              "Payment failed. Please try again or use a different payment method."
           );
           setProcessing(false);
         });
@@ -342,20 +343,22 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {/* Header */}
+          {/* Header - Mobile Optimized */}
           <div className="mb-8">
             <button
               onClick={() => router.push("/cart")}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 active:text-gray-700 transition-colors mb-4 min-h-[44px] touch-manipulation"
             >
               <ChevronLeft className="w-5 h-5" />
               Back to Cart
             </button>
-            <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              Checkout
+            </h1>
           </div>
 
-          {/* Progress Steps */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          {/* Progress Steps - Mobile Optimized */}
+          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6">
             <div className="flex items-center justify-between">
               {steps.map((step, index) => {
                 const Icon = step.icon;
@@ -366,22 +369,22 @@ export default function CheckoutPage() {
                   <div key={step.id} className="flex items-center flex-1">
                     <div className="flex flex-col items-center flex-1">
                       <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all ${
                           isCompleted
                             ? "bg-green-500 text-white"
                             : isCurrent
-                              ? "bg-primary text-white"
-                              : "bg-gray-200 text-gray-400"
+                            ? "bg-primary text-white"
+                            : "bg-gray-200 text-gray-400"
                         }`}
                       >
                         {isCompleted ? (
-                          <Check className="w-6 h-6" />
+                          <Check className="w-5 h-5 sm:w-6 sm:h-6" />
                         ) : (
-                          <Icon className="w-6 h-6" />
+                          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                         )}
                       </div>
                       <span
-                        className={`mt-2 text-sm font-medium ${
+                        className={`mt-1.5 sm:mt-2 text-xs sm:text-sm font-medium ${
                           isCurrent ? "text-primary" : "text-gray-600"
                         }`}
                       >
@@ -391,7 +394,7 @@ export default function CheckoutPage() {
 
                     {index < steps.length - 1 && (
                       <div
-                        className={`h-1 flex-1 mx-4 rounded transition-all ${
+                        className={`h-1 flex-1 mx-2 sm:mx-4 rounded transition-all ${
                           isCompleted ? "bg-green-500" : "bg-gray-200"
                         }`}
                       />
@@ -415,21 +418,21 @@ export default function CheckoutPage() {
                   />
 
                   <div className="border-t pt-6">
-                    <div className="flex items-center gap-2 mb-4">
+                    <label
+                      htmlFor="sameAddress"
+                      className="flex items-center gap-3 mb-4 cursor-pointer min-h-[44px] touch-manipulation"
+                    >
                       <input
                         type="checkbox"
                         id="sameAddress"
                         checked={useSameAddress}
                         onChange={(e) => setUseSameAddress(e.target.checked)}
-                        className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                        className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary"
                       />
-                      <label
-                        htmlFor="sameAddress"
-                        className="text-sm text-gray-700"
-                      >
+                      <span className="text-sm text-gray-700">
                         Billing address same as shipping
-                      </label>
-                    </div>
+                      </span>
+                    </label>
 
                     {!useSameAddress && (
                       <AddressSelector
@@ -467,27 +470,25 @@ export default function CheckoutPage() {
                     />
                   ))}
 
-                  <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h4 className="font-semibold text-gray-900 mb-2">
-                      Delivery Notes (Optional)
-                    </h4>
-                    <textarea
+                  <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+                    <MobileTextarea
+                      label="Delivery Notes (Optional)"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                       rows={3}
                       placeholder="Add any special instructions for delivery..."
+                      helperText="E.g., ring the doorbell twice, leave at gate"
                     />
                   </div>
                 </div>
               )}
 
-              {/* Navigation Buttons */}
+              {/* Navigation Buttons - Mobile Optimized */}
               <div className="flex gap-3">
                 {currentStep !== "address" && (
                   <button
                     onClick={handleBack}
-                    className="btn-secondary flex-1"
+                    className="btn-secondary flex-1 min-h-[48px] touch-manipulation"
                     disabled={processing}
                   >
                     Back
@@ -496,14 +497,14 @@ export default function CheckoutPage() {
                 {currentStep !== "review" ? (
                   <button
                     onClick={handleContinue}
-                    className="btn-primary flex-1"
+                    className="btn-primary flex-1 min-h-[48px] touch-manipulation"
                   >
                     Continue
                   </button>
                 ) : (
                   <button
                     onClick={handlePlaceOrder}
-                    className="btn-primary flex-1"
+                    className="btn-primary flex-1 min-h-[48px] touch-manipulation flex items-center justify-center"
                     disabled={processing}
                   >
                     {processing ? (
@@ -530,7 +531,7 @@ export default function CheckoutPage() {
                   {shopGroups.map((shop) => {
                     const subtotal = shop.items.reduce(
                       (sum, item) => sum + item.price * item.quantity,
-                      0,
+                      0
                     );
                     const discount =
                       shopCoupons[shop.shopId]?.discountAmount || 0;

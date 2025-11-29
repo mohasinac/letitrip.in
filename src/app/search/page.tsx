@@ -97,17 +97,17 @@ function SearchContent() {
           </p>
         </div>
 
-        {/* Tabs */}
-        <div className="border-b border-gray-200 mb-6">
-          <div className="flex gap-8">
+        {/* Tabs - Mobile Optimized */}
+        <div className="border-b border-gray-200 mb-6 overflow-x-auto">
+          <div className="flex gap-2 sm:gap-8 min-w-max">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                className={`pb-4 px-3 sm:px-1 min-h-[48px] border-b-2 font-medium text-sm transition-colors touch-manipulation whitespace-nowrap ${
                   activeTab === tab.id
                     ? "border-purple-600 text-purple-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    : "border-transparent text-gray-500 hover:text-gray-700 active:text-gray-800 hover:border-gray-300"
                 }`}
               >
                 {tab.label} {tab.count > 0 && `(${tab.count})`}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -8,15 +8,13 @@ import {
   Edit,
   Trash2,
   Package,
-  Gavel,
+  Store,
   Clock,
   ThumbsUp,
-  Filter,
   Search,
   Loader2,
   AlertCircle,
   MessageSquare,
-  ImageIcon,
   CheckCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -112,15 +110,15 @@ function ReviewCard({
     if (review.productId) {
       return `/products/${review.productId}`;
     }
-    if (review.auctionId) {
-      return `/auctions/${review.auctionId}`;
+    if (review.shopId) {
+      return `/shops/${review.shopId}`;
     }
     return "#";
   };
 
   const getItemIcon = () => {
-    if (review.auctionId) {
-      return <Gavel className="h-4 w-4 text-purple-500" />;
+    if (review.shopId) {
+      return <Store className="h-4 w-4 text-purple-500" />;
     }
     return <Package className="h-4 w-4 text-blue-500" />;
   };
@@ -150,7 +148,7 @@ function ReviewCard({
                 href={getItemLink()}
                 className="font-medium text-gray-900 hover:text-blue-600 line-clamp-1"
               >
-                {review.productId ? "Product Review" : "Auction Review"}
+                {review.productId ? "Product Review" : "Shop Review"}
               </Link>
               <div className="flex items-center gap-2 mt-1">
                 <Stars rating={review.rating} />
@@ -160,7 +158,7 @@ function ReviewCard({
               </div>
             </div>
           </div>
-          {getStatusBadge(review.isApproved ? "approved" : "pending")}
+          {getStatusBadge(review.status)}
         </div>
       </div>
 
@@ -169,7 +167,7 @@ function ReviewCard({
         {review.title && (
           <h4 className="font-medium text-gray-900 mb-2">{review.title}</h4>
         )}
-        <p className="text-gray-600 text-sm line-clamp-3">{review.content}</p>
+        <p className="text-gray-600 text-sm line-clamp-3">{review.comment}</p>
 
         {/* Review Images */}
         {review.images && review.images.length > 0 && (
@@ -211,12 +209,12 @@ function ReviewCard({
         </div>
 
         {/* Seller Response */}
-        {review.sellerResponse && (
+        {review.replyText && (
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-xs font-medium text-blue-800 mb-1">
               Seller Response:
             </p>
-            <p className="text-sm text-blue-700">{review.sellerResponse}</p>
+            <p className="text-sm text-blue-700">{review.replyText}</p>
           </div>
         )}
       </div>
@@ -263,13 +261,7 @@ export default function UserReviewsPage() {
     averageRating: 0,
   });
 
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      loadReviews();
-    }
-  }, [authLoading, isAuthenticated, statusFilter, ratingFilter]);
-
-  const loadReviews = async () => {
+  const loadReviews = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -295,7 +287,12 @@ export default function UserReviewsPage() {
 
       // Calculate stats
       const allReviews = response.data || [];
-      const approvedCount = allReviews.filter((r) => r.isApproved).length;
+      const approvedCount = allReviews.filter(
+        (r) => r.status === "approved"
+      ).length;
+      const pendingCount = allReviews.filter(
+        (r) => r.status === "pending"
+      ).length;
       const avgRating =
         allReviews.length > 0
           ? allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length
@@ -304,7 +301,7 @@ export default function UserReviewsPage() {
       setStats({
         total: allReviews.length,
         approved: approvedCount,
-        pending: allReviews.length - approvedCount,
+        pending: pendingCount,
         averageRating: Math.round(avgRating * 10) / 10,
       });
     } catch (error) {
@@ -312,7 +309,13 @@ export default function UserReviewsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id, statusFilter, ratingFilter]);
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      loadReviews();
+    }
+  }, [authLoading, isAuthenticated, loadReviews]);
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -339,7 +342,7 @@ export default function UserReviewsPage() {
     const query = searchQuery.toLowerCase();
     return (
       review.title?.toLowerCase().includes(query) ||
-      review.content.toLowerCase().includes(query)
+      review.comment.toLowerCase().includes(query)
     );
   });
 
