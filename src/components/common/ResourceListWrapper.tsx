@@ -88,9 +88,13 @@ export default function ResourceListWrapper({
           {/* Title and Create Button */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{title}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                {title}
+              </h1>
               {description && (
-                <p className="text-gray-600 dark:text-gray-400 mt-1">{description}</p>
+                <p className="text-gray-600 dark:text-gray-400 mt-1">
+                  {description}
+                </p>
               )}
             </div>
             {createButton && <div>{createButton}</div>}
@@ -103,18 +107,23 @@ export default function ResourceListWrapper({
                 <div
                   key={index}
                   className={`bg-gradient-to-br ${
-                    stat.color || "from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30"
+                    stat.color ||
+                    "from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30"
                   } p-4 rounded-lg`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{stat.label}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                        {stat.label}
+                      </p>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">
                         {stat.value}
                       </p>
                     </div>
                     {stat.icon && (
-                      <div className="text-gray-600 dark:text-gray-400">{stat.icon}</div>
+                      <div className="text-gray-600 dark:text-gray-400">
+                        {stat.icon}
+                      </div>
                     )}
                   </div>
                 </div>
