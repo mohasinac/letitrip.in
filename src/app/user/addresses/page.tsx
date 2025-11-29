@@ -89,10 +89,10 @@ function AddressesContent() {
           </p>
         </div>
 
-        {/* Add Address Button */}
+        {/* Add Address Button - Mobile Optimized */}
         <button
           onClick={() => handleOpenForm()}
-          className="mb-6 inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+          className="mb-6 inline-flex items-center gap-2 px-6 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors font-semibold touch-manipulation"
         >
           <Plus className="w-5 h-5" />
           Add New Address
@@ -110,7 +110,7 @@ function AddressesContent() {
             </p>
             <button
               onClick={() => handleOpenForm()}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+              className="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors font-semibold touch-manipulation"
             >
               <Plus className="w-5 h-5" />
               Add Address
@@ -150,24 +150,24 @@ function AddressesContent() {
                   <p>{address.country}</p>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {!address.isDefault && (
                     <button
                       onClick={() => handleSetDefault(address.id)}
-                      className="flex-1 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-semibold text-sm"
+                      className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 active:bg-blue-100 transition-colors font-semibold text-sm touch-manipulation"
                     >
                       Set as Default
                     </button>
                   )}
                   <button
                     onClick={() => handleOpenForm(address.id)}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-semibold text-sm"
+                    className="px-4 py-3 min-h-[48px] border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors font-semibold text-sm touch-manipulation flex items-center justify-center"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setDeleteId(address.id)}
-                    className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors font-semibold text-sm"
+                    className="px-4 py-3 min-h-[48px] border border-red-300 text-red-600 rounded-lg hover:bg-red-50 active:bg-red-100 transition-colors font-semibold text-sm touch-manipulation flex items-center justify-center"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

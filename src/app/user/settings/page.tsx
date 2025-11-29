@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { User, Mail, Phone, MapPin, Save } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { authService } from "@/services/auth.service";
+import { MobileFormInput } from "@/components/mobile/MobileFormInput";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -60,85 +61,59 @@ export default function SettingsPage() {
 
   return (
     <main id="user-settings-page" className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">
-        {/* TODO: Replace with constant */}
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
         Account Settings
       </h1>
 
       {/* Profile Form */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">
-          {/* TODO: Replace with constant */}
           Profile Information
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <User className="w-4 h-4 inline mr-2" />
-              {/* TODO: Replace with constant */}
-              Full Name
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              required
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Name - Mobile Optimized */}
+          <MobileFormInput
+            label="Full Name"
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
+            leftIcon={<User className="w-5 h-5" />}
+            autoComplete="name"
+          />
 
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <Mail className="w-4 h-4 inline mr-2" />
-              {/* TODO: Replace with constant */}
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              required
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              {/* TODO: Replace with constant */}
-              We'll send order confirmations to this email
-            </p>
-          </div>
+          {/* Email - Mobile Optimized */}
+          <MobileFormInput
+            label="Email Address"
+            type="email"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+            required
+            leftIcon={<Mail className="w-5 h-5" />}
+            helperText="We'll send order confirmations to this email"
+            autoComplete="email"
+          />
 
-          {/* Phone */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <Phone className="w-4 h-4 inline mr-2" />
-              {/* TODO: Replace with constant */}
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
-              }
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="+91 9876543210" // TODO: Make dynamic based on country
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              {/* TODO: Replace with constant */}
-              Used for order updates and delivery coordination
-            </p>
-          </div>
+          {/* Phone - Mobile Optimized */}
+          <MobileFormInput
+            label="Phone Number"
+            type="tel"
+            value={formData.phone}
+            onChange={(e) =>
+              setFormData({ ...formData, phone: e.target.value })
+            }
+            placeholder="+91 9876543210"
+            leftIcon={<Phone className="w-5 h-5" />}
+            helperText="Used for order updates and delivery coordination"
+            autoComplete="tel"
+          />
 
           {/* Success Message */}
           {success && (
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-              {/* TODO: Replace with constant */}
               Profile updated successfully!
             </div>
           )}
@@ -150,41 +125,37 @@ export default function SettingsPage() {
             </div>
           )}
 
-          {/* Submit Button */}
+          {/* Submit Button - Mobile Optimized */}
           <div className="flex justify-end">
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-6 py-3 min-h-[48px] bg-primary text-white rounded-lg hover:bg-primary/90 active:bg-primary/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 touch-manipulation"
             >
               <Save className="w-4 h-4" />
-              {/* TODO: Replace with constant */}
               {loading ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>
       </div>
 
-      {/* Account Actions */}
+      {/* Account Actions - Mobile Optimized */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          {/* TODO: Replace with constant */}
           Account Actions
         </h2>
 
         <div className="space-y-4">
           <button
             onClick={() => router.push("/user/addresses")}
-            className="w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-gray-50 transition-colors"
+            className="w-full text-left px-4 py-4 min-h-[64px] border border-gray-200 rounded-lg hover:border-primary hover:bg-gray-50 active:bg-gray-100 transition-colors touch-manipulation"
           >
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium text-gray-900">
-                  {/* TODO: Replace with constant */}
                   Manage Addresses
                 </div>
                 <div className="text-sm text-gray-600">
-                  {/* TODO: Replace with constant */}
                   Add, edit, or delete shipping addresses
                 </div>
               </div>
@@ -194,14 +165,12 @@ export default function SettingsPage() {
 
           <button
             onClick={() => router.push("/logout")}
-            className="w-full text-left px-4 py-3 border border-red-200 rounded-lg hover:bg-red-50 transition-colors text-red-600"
+            className="w-full text-left px-4 py-4 min-h-[64px] border border-red-200 rounded-lg hover:bg-red-50 active:bg-red-100 transition-colors text-red-600 touch-manipulation"
           >
             <div className="font-medium">
-              {/* TODO: Replace with constant */}
               Log Out
             </div>
             <div className="text-sm">
-              {/* TODO: Replace with constant */}
               Sign out of your account
             </div>
           </button>

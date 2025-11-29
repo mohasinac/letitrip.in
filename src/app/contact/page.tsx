@@ -160,7 +160,7 @@ export default function ContactPage() {
               </p>
               <a
                 href="/faq"
-                className="inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                className="inline-block bg-white text-blue-600 px-6 py-3 min-h-[48px] rounded-lg font-semibold hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation"
               >
                 View FAQ
               </a>
