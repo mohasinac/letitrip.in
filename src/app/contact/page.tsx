@@ -193,105 +193,79 @@ export default function ContactPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Your Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="John Doe"
-                />
-              </div>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Name - Mobile Optimized */}
+              <MobileFormInput
+                label="Your Name"
+                type="text"
+                id="name"
+                name="name"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="John Doe"
+                leftIcon={<User className="w-5 h-5" />}
+                autoComplete="name"
+              />
 
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Email Address <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="john@example.com"
-                />
-              </div>
+              {/* Email - Mobile Optimized */}
+              <MobileFormInput
+                label="Email Address"
+                type="email"
+                id="email"
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="john@example.com"
+                leftIcon={<Mail className="w-5 h-5" />}
+                autoComplete="email"
+              />
 
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Phone Number (Optional)
-                </label>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="+91 98765 43210"
-                />
-              </div>
+              {/* Phone - Mobile Optimized */}
+              <MobileFormInput
+                label="Phone Number"
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="+91 98765 43210"
+                leftIcon={<Phone className="w-5 h-5" />}
+                helperText="Optional"
+                autoComplete="tel"
+              />
 
-              <div>
-                <label
-                  htmlFor="subject"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Subject <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="subject"
-                  name="subject"
-                  type="text"
-                  required
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="How can we help you?"
-                />
-              </div>
+              {/* Subject - Mobile Optimized */}
+              <MobileFormInput
+                label="Subject"
+                type="text"
+                id="subject"
+                name="subject"
+                required
+                value={formData.subject}
+                onChange={handleChange}
+                placeholder="How can we help you?"
+                leftIcon={<FileText className="w-5 h-5" />}
+              />
 
-              <div>
-                <label
-                  htmlFor="message"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Message <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  required
-                  rows={6}
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                  placeholder="Tell us more about your inquiry..."
-                />
-              </div>
+              {/* Message - Mobile Optimized */}
+              <MobileTextarea
+                label="Message"
+                id="message"
+                name="message"
+                required
+                rows={5}
+                value={formData.message}
+                onChange={handleChange}
+                placeholder="Tell us more about your inquiry..."
+              />
 
+              {/* Submit Button - Mobile Optimized */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full min-h-[48px] bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 active:from-blue-800 active:to-purple-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 touch-manipulation"
               >
                 {loading ? (
                   <>
