@@ -170,13 +170,13 @@ export default function CouponForm({
     <form onSubmit={handleSubmit} className="space-y-6 p-6">
       {/* Basic Information */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Basic Information
         </h3>
 
         {/* Coupon Code */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Coupon Code *
           </label>
           <div className="relative">
@@ -186,11 +186,11 @@ export default function CouponForm({
               value={formData.code}
               onChange={(e) => handleCodeChange(e.target.value)}
               disabled={mode === "edit"}
-              className={`w-full rounded-lg border px-3 py-2 text-sm font-mono uppercase focus:outline-none focus:ring-1 ${
+              className={`w-full rounded-lg border px-3 py-2 text-sm font-mono uppercase focus:outline-none focus:ring-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
                 codeError
-                  ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-              } ${mode === "edit" ? "bg-gray-50 cursor-not-allowed" : ""}`}
+                  ? "border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500"
+                  : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+              } ${mode === "edit" ? "bg-gray-50 dark:bg-gray-700 cursor-not-allowed" : ""}`}
               placeholder="SUMMER2024"
               maxLength={20}
             />
@@ -201,16 +201,16 @@ export default function CouponForm({
             )}
           </div>
           {codeError && (
-            <p className="mt-1 text-xs text-red-600">{codeError}</p>
+            <p className="mt-1 text-xs text-red-600 dark:text-red-400">{codeError}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Use uppercase letters, numbers, and hyphens only (3-20 characters)
           </p>
         </div>
 
         {/* Coupon Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Display Name *
           </label>
           <input
@@ -218,7 +218,7 @@ export default function CouponForm({
             required
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             placeholder="Summer Sale 2024"
             maxLength={100}
           />
@@ -226,7 +226,7 @@ export default function CouponForm({
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Description
           </label>
           <textarea
@@ -235,7 +235,7 @@ export default function CouponForm({
             onChange={(e) =>
               setFormData({ ...formData, description: e.target.value })
             }
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             placeholder="Additional details about this coupon..."
             maxLength={500}
           />
@@ -243,14 +243,14 @@ export default function CouponForm({
       </div>
 
       {/* Discount Configuration */}
-      <div className="space-y-4 border-t border-gray-200 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900">
+      <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Discount Configuration
         </h3>
 
         {/* Coupon Type */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Discount Type *
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -259,8 +259,8 @@ export default function CouponForm({
                 key={type.value}
                 className={`relative flex items-start p-4 border rounded-lg cursor-pointer transition-colors ${
                   formData.type === type.value
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-300 hover:border-gray-400"
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                    : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
                 }`}
               >
                 <input
@@ -277,10 +277,10 @@ export default function CouponForm({
                   className="mt-1 h-4 w-4 text-blue-600"
                 />
                 <div className="ml-3">
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">
                     {type.label}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
                     {type.description}
                   </div>
                 </div>
@@ -293,7 +293,7 @@ export default function CouponForm({
         {(formData.type === "percentage" || formData.type === "flat") && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Discount Value *{" "}
                 {formData.type === "percentage" ? "(%)" : "(₹)"}
               </label>
@@ -310,13 +310,13 @@ export default function CouponForm({
                     discountValue: parseFloat(e.target.value),
                   })
                 }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
 
             {formData.type === "percentage" && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Max Discount Amount (₹)
                 </label>
                 <input
@@ -332,10 +332,10 @@ export default function CouponForm({
                         : 0,
                     })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   placeholder="Optional"
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Leave empty for no limit
                 </p>
               </div>
@@ -345,13 +345,13 @@ export default function CouponForm({
       </div>
 
       {/* Requirements */}
-      <div className="space-y-4 border-t border-gray-200 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900">Requirements</h3>
+      <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Requirements</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Minimum Purchase */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Minimum Purchase Amount (₹)
             </label>
             <input
@@ -365,13 +365,13 @@ export default function CouponForm({
                   minPurchaseAmount: parseFloat(e.target.value),
                 })
               }
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
           {/* Minimum Quantity */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Minimum Quantity
             </label>
             <input
@@ -384,26 +384,26 @@ export default function CouponForm({
                   minQuantity: parseInt(e.target.value),
                 })
               }
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
         </div>
       </div>
 
       {/* Applicability */}
-      <div className="space-y-4 border-t border-gray-200 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900">Applicability</h3>
+      <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Applicability</h3>
 
         {/* Applicability Type */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Applies To *
           </label>
           <div className="space-y-2">
             {APPLICABILITY_OPTIONS.map((option) => (
               <label
                 key={option.value}
-                className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50"
+                className="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 <input
                   type="radio"
@@ -419,10 +419,10 @@ export default function CouponForm({
                   className="h-4 w-4 text-blue-600"
                 />
                 <div className="ml-3">
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">
                     {option.label}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
                     {option.description}
                   </div>
                 </div>
@@ -434,7 +434,7 @@ export default function CouponForm({
         {/* Category/Product Selection */}
         {formData.applicability === "category" && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Applicable Categories
             </label>
             <TagInput
@@ -444,7 +444,7 @@ export default function CouponForm({
               }
               placeholder="Enter category IDs..."
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Enter category IDs (e.g., electronics, fashion)
             </p>
           </div>
@@ -452,7 +452,7 @@ export default function CouponForm({
 
         {formData.applicability === "product" && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Applicable Products
             </label>
             <TagInput
@@ -462,7 +462,7 @@ export default function CouponForm({
               }
               placeholder="Enter product slugs..."
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Enter product slugs (e.g., iphone-14-pro)
             </p>
           </div>
@@ -470,13 +470,13 @@ export default function CouponForm({
       </div>
 
       {/* Usage Limits */}
-      <div className="space-y-4 border-t border-gray-200 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900">Usage Limits</h3>
+      <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Usage Limits</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Total Usage Limit */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Total Usage Limit
             </label>
             <input
@@ -491,17 +491,17 @@ export default function CouponForm({
                     : undefined,
                 })
               }
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="Unlimited"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Leave empty for unlimited
             </p>
           </div>
 
           {/* Per User Limit */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Usage Limit Per User *
             </label>
             <input
@@ -515,20 +515,20 @@ export default function CouponForm({
                   usageLimitPerUser: parseInt(e.target.value),
                 })
               }
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
         </div>
       </div>
 
       {/* Validity Period */}
-      <div className="space-y-4 border-t border-gray-200 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900">Validity Period</h3>
+      <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Validity Period</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Start Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Start Date *
             </label>
             <DateTimePicker
@@ -542,7 +542,7 @@ export default function CouponForm({
 
           {/* End Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               End Date *
             </label>
             <DateTimePicker
@@ -557,8 +557,8 @@ export default function CouponForm({
       </div>
 
       {/* Restrictions */}
-      <div className="space-y-4 border-t border-gray-200 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900">Restrictions</h3>
+      <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Restrictions</h3>
 
         <div className="space-y-3">
           {/* First Order Only */}
@@ -569,9 +569,9 @@ export default function CouponForm({
               onChange={(e) =>
                 setFormData({ ...formData, firstOrderOnly: e.target.checked })
               }
-              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
             />
-            <span className="ml-2 text-sm text-gray-700">
+            <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
               First order only (valid for new customers)
             </span>
           </label>
@@ -581,7 +581,7 @@ export default function CouponForm({
       {/* Status - Managed by backend, coupons start active by default */}
 
       {/* Submit Button */}
-      <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+      <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
         <button
           type="submit"
           disabled={isSubmitting || !!codeError}

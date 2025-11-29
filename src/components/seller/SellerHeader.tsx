@@ -50,7 +50,9 @@ export function SellerHeader() {
             {showNotifications && (
               <div className="absolute right-0 mt-2 w-80 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 py-3">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                    Notifications
+                  </h3>
                 </div>
                 <div className="max-h-96 overflow-y-auto">
                   <div className="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
@@ -86,7 +88,9 @@ export function SellerHeader() {
                   <p className="text-sm font-medium text-gray-900 dark:text-white">
                     {user?.fullName || user?.email?.split("@")[0] || "Seller"}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {user?.email}
+                  </p>
                 </div>
                 <div className="py-2">
                   {/* NOTE: /seller/settings does not exist - redirect to my-shops to edit shop settings */}

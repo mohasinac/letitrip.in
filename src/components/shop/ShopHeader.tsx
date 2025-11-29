@@ -150,8 +150,8 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
                   {checkingFollow
                     ? "..."
                     : isFollowing
-                      ? "Following"
-                      : "Follow"}
+                    ? "Following"
+                    : "Follow"}
                 </button>
                 <button
                   onClick={handleShare}
@@ -168,11 +168,15 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
                 <span className="font-semibold text-gray-900 dark:text-white">
                   {shop.productCount || 0}
                 </span>
-                <span className="text-gray-600 dark:text-gray-400 ml-1">Products</span>
+                <span className="text-gray-600 dark:text-gray-400 ml-1">
+                  Products
+                </span>
               </div>
               {shop.createdAt && (
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">Joined </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Joined{" "}
+                  </span>
                   <span className="font-semibold text-gray-900 dark:text-white">
                     {new Date(shop.createdAt).toLocaleDateString("en-IN", {
                       year: "numeric",
