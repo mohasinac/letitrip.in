@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { MobileAdminSidebar } from "@/components/mobile/MobileAdminSidebar";
+import {
+  MobileNavRow,
+  adminMobileNavItems,
+} from "@/components/layout/MobileNavRow";
 
 interface AdminLayoutClientProps {
   children: React.ReactNode;
@@ -33,6 +37,9 @@ export function AdminLayoutClient({ children }: AdminLayoutClientProps) {
 
       {/* Page Content */}
       {children}
+
+      {/* Mobile Navigation Row - above bottom nav, hidden on desktop */}
+      <MobileNavRow items={adminMobileNavItems} variant="admin" />
     </>
   );
 }

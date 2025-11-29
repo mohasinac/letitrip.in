@@ -283,10 +283,26 @@ export default function MainNavBar({
             <Search className="w-6 h-6" aria-hidden="true" />
           </button>
 
-          {/* Theme Toggle */}
-          <div className="hidden lg:block">
-            <ThemeToggle size="sm" />
-          </div>
+          {/* Theme Toggle - Visible on all screen sizes */}
+          <ThemeToggle size="sm" />
+
+          {/* Notifications - Mobile/Tablet version */}
+          {isAuthenticated && (
+            <Link
+              href="/user/notifications"
+              className="lg:hidden relative hover:bg-gray-700 p-2 rounded"
+              aria-label={`Notifications${
+                totalNotifications > 0 ? ` (${totalNotifications} unread)` : ""
+              }`}
+            >
+              <Bell className="w-6 h-6" />
+              {totalNotifications > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-extrabold">
+                  {totalNotifications > 99 ? "99+" : totalNotifications}
+                </span>
+              )}
+            </Link>
+          )}
 
           {/* RipLimit Balance - For authenticated users */}
           {isAuthenticated && ripLimitBalance !== null && (
@@ -308,7 +324,7 @@ export default function MainNavBar({
             </Link>
           )}
 
-          {/* Notifications - For authenticated users */}
+          {/* Notifications - Desktop version */}
           {isAuthenticated && (
             <Link
               href="/user/notifications"

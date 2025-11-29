@@ -56,7 +56,7 @@ export function FilterSidebar({
   isLoading = false,
 }: FilterSidebarProps) {
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export function FilterSidebar({
   const handleCheckboxChange = (
     key: string,
     optionValue: string | number,
-    checked: boolean,
+    checked: boolean
   ) => {
     const currentValues = values[key] || [];
     const newValues = checked
@@ -112,7 +112,7 @@ export function FilterSidebar({
             value={value || ""}
             onChange={(e) => onChange(field.key, e.target.value)}
             placeholder={field.placeholder}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
           />
         );
 
@@ -126,7 +126,7 @@ export function FilterSidebar({
             min={field.min}
             max={field.max}
             step={field.step}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
           />
         );
 
@@ -135,7 +135,7 @@ export function FilterSidebar({
           <select
             value={value || ""}
             onChange={(e) => onChange(field.key, e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="">All</option>
             {field.options?.map((option) => (
@@ -154,7 +154,7 @@ export function FilterSidebar({
             {field.options?.map((option) => (
               <label
                 key={option.value}
-                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50:bg-gray-700 p-1 rounded"
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-1 rounded"
               >
                 <input
                   type="checkbox"
@@ -163,16 +163,18 @@ export function FilterSidebar({
                     handleCheckboxChange(
                       field.key,
                       option.value,
-                      e.target.checked,
+                      e.target.checked
                     )
                   }
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                 />
-                <span className="text-sm text-gray-700 flex-1">
+                <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">
                   {option.label}
                 </span>
                 {option.count !== undefined && (
-                  <span className="text-xs text-gray-500">{option.count}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {option.count}
+                  </span>
                 )}
               </label>
             ))}
@@ -185,7 +187,7 @@ export function FilterSidebar({
             {field.options?.map((option) => (
               <label
                 key={option.value}
-                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50:bg-gray-700 p-1 rounded"
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-1 rounded"
               >
                 <input
                   type="radio"
@@ -193,13 +195,15 @@ export function FilterSidebar({
                   value={option.value}
                   checked={value === option.value}
                   onChange={(e) => onChange(field.key, e.target.value)}
-                  className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                  className="w-4 h-4 text-blue-600 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                 />
-                <span className="text-sm text-gray-700 flex-1">
+                <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">
                   {option.label}
                 </span>
                 {option.count !== undefined && (
-                  <span className="text-xs text-gray-500">{option.count}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {option.count}
+                  </span>
                 )}
               </label>
             ))}
@@ -212,7 +216,7 @@ export function FilterSidebar({
             type="date"
             value={value || ""}
             onChange={(e) => onChange(field.key, e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           />
         );
 
@@ -226,7 +230,7 @@ export function FilterSidebar({
                 onChange(field.key, { ...value, from: e.target.value })
               }
               placeholder="From"
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
             <input
               type="date"
@@ -235,7 +239,7 @@ export function FilterSidebar({
                 onChange(field.key, { ...value, to: e.target.value })
               }
               placeholder="To"
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
         );
@@ -254,9 +258,9 @@ export function FilterSidebar({
                 min={field.min}
                 max={field.max}
                 step={field.step}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               />
-              <span className="text-gray-500">-</span>
+              <span className="text-gray-500 dark:text-gray-400">-</span>
               <input
                 type="number"
                 value={value?.max || ""}
@@ -267,7 +271,7 @@ export function FilterSidebar({
                 min={field.min}
                 max={field.max}
                 step={field.step}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               />
             </div>
           </div>
@@ -290,17 +294,19 @@ export function FilterSidebar({
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-xl border-r border-gray-200 flex flex-col transform transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-gray-800 shadow-xl border-r border-gray-200 dark:border-gray-700 flex flex-col transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } ${className}`}
         style={{ top: "80px", height: "calc(100vh - 80px)" }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Filters
+            </h2>
             {resultCount !== undefined && (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {resultCount} result{resultCount !== 1 ? "s" : ""}
               </p>
             )}
@@ -308,10 +314,10 @@ export function FilterSidebar({
           {onClose && (
             <button
               onClick={onClose}
-              className="lg:hidden p-2 hover:bg-gray-100:bg-gray-700 rounded-lg"
+              className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <svg
-                className="w-5 h-5"
+                className="w-5 h-5 text-gray-600 dark:text-gray-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -343,12 +349,12 @@ export function FilterSidebar({
                     section.collapsible ? "cursor-pointer" : "cursor-default"
                   }`}
                 >
-                  <h3 className="text-sm font-semibold text-gray-900">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                     {section.title}
                   </h3>
                   {section.collapsible && (
                     <svg
-                      className={`w-4 h-4 text-gray-500 transition-transform ${
+                      className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${
                         isCollapsed ? "" : "rotate-180"
                       }`}
                       fill="none"
@@ -370,9 +376,11 @@ export function FilterSidebar({
                   <div className="space-y-4">
                     {section.fields.map((field) => (
                       <div key={field.key} className="space-y-1">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                           {field.icon && (
-                            <span className="text-gray-400">{field.icon}</span>
+                            <span className="text-gray-400 dark:text-gray-500">
+                              {field.icon}
+                            </span>
                           )}
                           {field.label}
                         </label>
@@ -387,7 +395,7 @@ export function FilterSidebar({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-gray-200 space-y-2">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
           <button
             onClick={onApply}
             disabled={isLoading}
@@ -399,7 +407,7 @@ export function FilterSidebar({
             <button
               onClick={onReset}
               disabled={isLoading}
-              className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Reset All
             </button>

@@ -18,13 +18,13 @@ function ShopsContent() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || "",
+    searchParams.get("search") || ""
   );
   const [sortBy, setSortBy] = useState<string>(
-    searchParams.get("sortBy") || "rating",
+    searchParams.get("sortBy") || "rating"
   );
   const [sortOrder, setSortOrder] = useState<string>(
-    searchParams.get("sortOrder") || "desc",
+    searchParams.get("sortOrder") || "desc"
   );
   const [showFilters, setShowFilters] = useState(false);
   const [totalShops, setTotalShops] = useState(0);
@@ -203,7 +203,9 @@ function ShopsContent() {
               </div>
             ) : shops.length === 0 ? (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
-                <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">No shops found</p>
+                <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">
+                  No shops found
+                </p>
                 <button
                   onClick={handleReset}
                   className="text-blue-600 dark:text-blue-400 hover:underline"

@@ -286,7 +286,9 @@ export default function AdminDashboardPage() {
       {/* Welcome Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Admin Dashboard
+          </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
             Welcome back, {user?.fullName || "Admin"}! Here's your platform
             overview.
@@ -313,19 +315,27 @@ export default function AdminDashboardPage() {
               className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:border-yellow-200 dark:hover:border-yellow-600 transition-all"
             >
               <div className="flex items-center justify-between">
-                <div className={`p-3 bg-${stat.color}-100 dark:bg-${stat.color}-900/30 rounded-lg`}>
-                  <Icon className={`h-6 w-6 text-${stat.color}-600 dark:text-${stat.color}-400`} />
+                <div
+                  className={`p-3 bg-${stat.color}-100 dark:bg-${stat.color}-900/30 rounded-lg`}
+                >
+                  <Icon
+                    className={`h-6 w-6 text-${stat.color}-600 dark:text-${stat.color}-400`}
+                  />
                 </div>
                 {stat.change > 0 && (
                   <div className="flex items-center gap-1 text-sm">
                     <TrendIcon
                       className={`h-4 w-4 ${
-                        stat.trend === "up" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                        stat.trend === "up"
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
                       }`}
                     />
                     <span
                       className={`font-medium ${
-                        stat.trend === "up" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                        stat.trend === "up"
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
                       }`}
                     >
                       {stat.change}%
@@ -364,8 +374,12 @@ export default function AdminDashboardPage() {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 bg-${action.color}-100 dark:bg-${action.color}-900/40 rounded-lg`}>
-                      <Icon className={`h-5 w-5 text-${action.color}-600 dark:text-${action.color}-400`} />
+                    <div
+                      className={`p-2 bg-${action.color}-100 dark:bg-${action.color}-900/40 rounded-lg`}
+                    >
+                      <Icon
+                        className={`h-5 w-5 text-${action.color}-600 dark:text-${action.color}-400`}
+                      />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -388,7 +402,9 @@ export default function AdminDashboardPage() {
       {/* Recent Activity */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            Recent Activity
+          </h2>
           {/* NOTE: /admin/analytics does not exist - link to orders for now */}
           <Link
             href="/admin/orders"
@@ -410,7 +426,9 @@ export default function AdminDashboardPage() {
                   <div
                     className={`h-10 w-10 rounded-full bg-${color}-100 dark:bg-${color}-900/30 flex items-center justify-center`}
                   >
-                    <Icon className={`h-5 w-5 text-${color}-600 dark:text-${color}-400`} />
+                    <Icon
+                      className={`h-5 w-5 text-${color}-600 dark:text-${color}-400`}
+                    />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -418,7 +436,9 @@ export default function AdminDashboardPage() {
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <Clock className="h-3 w-3 text-gray-400 dark:text-gray-500" />
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {activity.time}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -440,7 +460,9 @@ export default function AdminDashboardPage() {
 
       {/* Quick Links Grid */}
       <div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Links</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          Quick Links
+        </h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {[
             { label: "Users", href: "/admin/users", icon: Users },
