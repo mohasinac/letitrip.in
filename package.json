@@ -51,6 +51,7 @@
     "next-auth": "^4.24.13",
     "pdfkit": "^0.17.2",
     "quill": "^2.0.3",
+    "razorpay": "^2.9.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.66.0",

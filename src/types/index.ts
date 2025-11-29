@@ -125,6 +125,40 @@ export type {
 } from "./backend/address.types";
 
 // ============================================================================
+// RIPLIMIT TYPES (E028 - Virtual Bidding Currency)
+// ============================================================================
+export type {
+  RipLimitAccountBE,
+  RipLimitBlockedBidBE,
+  RipLimitTransactionBE,
+  RipLimitPurchaseBE,
+  RipLimitRefundBE,
+  RipLimitPurchaseRequestBE,
+  RipLimitVerifyPurchaseRequestBE,
+  RipLimitRefundRequestBE,
+  RipLimitAdjustmentRequestBE,
+  RipLimitBalanceResponseBE,
+  RipLimitPurchaseResponseBE,
+  RipLimitAdminStatsBE,
+} from "./backend/riplimit.types";
+
+export {
+  RipLimitTransactionType,
+  RipLimitTransactionStatus,
+  RipLimitPurchaseStatus,
+  RipLimitRefundStatus,
+  RIPLIMIT_EXCHANGE_RATE,
+  RIPLIMIT_MIN_PURCHASE,
+  RIPLIMIT_MIN_REFUND,
+  AUCTION_PAYMENT_WINDOW_HOURS,
+  AUCTION_CANCEL_GRACE_HOURS,
+  inrToRipLimit,
+  ripLimitToInr,
+  canUserBid,
+  hasSufficientBalance,
+} from "./backend/riplimit.types";
+
+// ============================================================================
 // SHARED PAGINATION & API TYPES
 // ============================================================================
 export type {
