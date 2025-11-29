@@ -1,43 +1,61 @@
-# Epic E030: Code Quality & SonarQube Integration
+# Epic E030: Code Quality & SonarCloud Integration
 
 ## Overview
 
-Integrate SonarQube for continuous code quality analysis to identify code duplication, complexity issues, security vulnerabilities, and code smells. Based on SonarQube reports, create actionable tasks to improve code quality and reduce technical debt.
+Integrate SonarCloud for continuous code quality analysis to identify code duplication, complexity issues, security vulnerabilities, and code smells. Based on SonarCloud reports, create actionable tasks to improve code quality and reduce technical debt.
+
+## Current Status (November 29, 2025)
+
+### SonarCloud Dashboard Summary
+
+| Metric                         | Current Value       | Target | Status                            |
+| ------------------------------ | ------------------- | ------ | --------------------------------- |
+| **Quality Gate**               | ❌ Failed           | Passed | 3 failed conditions               |
+| **Lines of Code**              | 21k                 | -      | TypeScript, JavaScript, CSS, YAML |
+| **Issues**                     | 2.5k (+126 new)     | < 100  | ❌ Needs reduction                |
+| **Reliability Rating**         | B                   | A      | ❌ Bugs need fixing               |
+| **Security Hotspots Reviewed** | 0%                  | 100%   | ❌ Review required                |
+| **Duplicated Lines**           | 39.55%              | ≤ 3%   | ❌ Major duplication              |
+| **Test Coverage**              | 0% (not configured) | > 80%  | ⚠️ Coverage report needed         |
+
+### Quality Gate Failed Conditions
+
+1. **Reliability Rating on New Code**: B (Required: A)
+2. **Security Hotspots Reviewed on New Code**: 0% (Required: 100%)
+3. **Duplicated Lines (%) on New Code**: 39.55% (Reduce to ≤ 3.0%)
+
+---
 
 ## Scope
 
-- Set up SonarQube locally and/or in CI/CD
-- Configure rules for Next.js/TypeScript/React
-- Identify and fix code duplications
-- Reduce code complexity
-- Fix security vulnerabilities
-- Establish quality gates
-- Create remediation plan for issues
+- ✅ Set up SonarCloud (completed)
+- ✅ Configure rules for Next.js/TypeScript/React (completed)
+- 🔲 Identify and fix code duplications (39.55% → ≤3%)
+- 🔲 Fix reliability issues (Rating B → A)
+- 🔲 Review security hotspots (0% → 100%)
+- 🔲 Configure coverage reporting
+- 🔲 Establish quality gates
+- 🔲 Create remediation plan for 2.5k issues
 
-## SonarQube Configuration
+## SonarCloud Configuration
 
-### Quality Profile Settings
+### Current Configuration
 
-```yaml
+```properties
 # sonar-project.properties
-sonar.projectKey=justforview
-sonar.projectName=JustForView.in
-sonar.projectVersion=1.0
+sonar.projectKey=mohasinac_letitrip.in
+sonar.organization=mohasin-ac
+sonar.projectName=letitrip.in
+sonar.projectVersion=1.0.0
 
 sonar.sources=src
 sonar.tests=src
-sonar.test.inclusions=**/*.test.ts,**/*.test.tsx
-sonar.exclusions=**/node_modules/**,**/*.test.ts,**/*.test.tsx,**/coverage/**
+sonar.test.inclusions=**/*.test.ts,**/*.test.tsx,**/tests/**/*
+sonar.exclusions=**/node_modules/**,**/*.test.ts,**/*.test.tsx,**/tests/**/*,**/__mocks__/**,**/coverage/**,.next/**,public/**,scripts/**
 
-sonar.typescript.lcov.reportPaths=coverage/lcov.info
 sonar.javascript.lcov.reportPaths=coverage/lcov.info
-
-sonar.typescript.tsconfigPath=tsconfig.json
-
-# Duplication detection
-sonar.cpd.exclusions=**/types/**,**/constants/**
-sonar.cpd.typescript.minimumTokens=50
-sonar.cpd.typescript.minimumLines=10
+sonar.typescript.lcov.reportPaths=coverage/lcov.info
+sonar.sourceEncoding=UTF-8
 ```
 
 ### Quality Gates
@@ -57,23 +75,25 @@ sonar.cpd.typescript.minimumLines=10
 
 ## Features
 
-### F030.1: SonarQube Setup
+### F030.1: SonarCloud Setup
 
-**Priority**: P0 (Critical)
+**Priority**: P0 (Critical)  
+**Status**: ✅ Completed
 
-Set up SonarQube for the project.
+Set up SonarCloud for the project.
 
 #### Tasks
 
 | Task                            | Description                        | Status  |
 | ------------------------------- | ---------------------------------- | ------- |
-| Install SonarQube locally       | Docker-based local instance        | 🔲 Todo |
-| Create sonar-project.properties | Configuration file                 | 🔲 Todo |
-| Configure TypeScript analysis   | Enable TS/TSX analysis             | 🔲 Todo |
-| Set up quality profile          | Custom rules for React/Next.js     | 🔲 Todo |
-| Configure exclusions            | Exclude test files, generated code | 🔲 Todo |
-| Integrate with GitHub Actions   | Run on PR and main branch          | 🔲 Todo |
-| Set up quality gates            | Define pass/fail criteria          | 🔲 Todo |
+| Install SonarQube scanner       | npm package sonarqube-scanner      | ✅ Done |
+| Create sonar-project.properties | Configuration file                 | ✅ Done |
+| Configure TypeScript analysis   | Enable TS/TSX analysis             | ✅ Done |
+| Set up quality profile          | Using Sonar way profile            | ✅ Done |
+| Configure exclusions            | Exclude test files, generated code | ✅ Done |
+| Integrate with GitHub Actions   | .github/workflows/sonar.yml        | ✅ Done |
+| Set up quality gates            | Define pass/fail criteria          | ✅ Done |
+| Add npm script                  | `npm run sonar`                    | ✅ Done |
 
 #### User Stories
 
@@ -107,26 +127,27 @@ Acceptance Criteria:
 
 ---
 
-### F030.2: Code Duplication Detection
+### F030.2: Code Duplication Reduction
 
-**Priority**: P0 (Critical)
+**Priority**: P0 (Critical)  
+**Status**: 🔴 Critical - 39.55% duplication (Target: ≤3%)
 
-Identify and reduce code duplication.
+Identify and reduce code duplication - this is the biggest issue.
 
-#### Common Duplication Patterns
+#### Current Duplication Analysis
 
-| Area               | Expected Duplications                | Action                 |
-| ------------------ | ------------------------------------ | ---------------------- |
-| API Route Handlers | Similar CRUD patterns                | Create base handler    |
-| Form Components    | Similar validation, state management | Create FormBuilder     |
-| Filter Components  | Similar filter sections              | Already in E025        |
-| Card Components    | Similar card layouts                 | Create CardBase        |
-| Table Components   | Similar table/list patterns          | Create TableBase       |
-| Modal Components   | Similar modal structures             | Create ModalBase       |
-| Pagination Logic   | Repeated in many pages               | E026 addresses this    |
-| Auth Checks        | Repeated session checks              | Create auth middleware |
-| Error Handling     | Repeated try/catch patterns          | Create error wrapper   |
-| Loading States     | Repeated loading logic               | Create loading hook    |
+| Area               | Expected Duplications                | Action                 | Priority |
+| ------------------ | ------------------------------------ | ---------------------- | -------- |
+| API Route Handlers | Similar CRUD patterns                | Create base handler    | P0       |
+| Form Components    | Similar validation, state management | Create FormBuilder     | P1       |
+| Filter Components  | Similar filter sections              | Already in E025        | ✅       |
+| Card Components    | Similar card layouts                 | Create CardBase        | P1       |
+| Table Components   | Similar table/list patterns          | Create TableBase       | P1       |
+| Modal Components   | Similar modal structures             | Create ModalBase       | P1       |
+| Pagination Logic   | Repeated in many pages               | E026 addresses this    | ✅       |
+| Auth Checks        | Repeated session checks              | Create auth middleware | P0       |
+| Error Handling     | Repeated try/catch patterns          | Create error wrapper   | P1       |
+| Loading States     | Repeated loading logic               | Create loading hook    | P2       |
 
 #### User Stories
 
@@ -260,46 +281,60 @@ Analyze and improve test coverage.
 
 ## Implementation Checklist
 
-### Phase 1: Setup (Week 1)
+### Phase 1: Setup (Week 1) ✅ COMPLETED
 
-- [ ] Create docker-compose.yml for SonarQube
-- [ ] Create sonar-project.properties
-- [ ] Run first analysis
-- [ ] Configure quality gates
-- [ ] Set up GitHub Actions integration
-- [ ] Create npm scripts
+- [x] Create sonar-project.properties
+- [x] Run first analysis
+- [x] Configure quality gates
+- [x] Set up GitHub Actions integration
+- [x] Create npm scripts (`npm run sonar`)
 
-### Phase 2: Initial Analysis (Week 1)
+### Phase 2: Initial Analysis (Week 1) ✅ COMPLETED
 
-- [ ] Run full analysis
-- [ ] Export duplication report
-- [ ] Export complexity report
-- [ ] Export security report
-- [ ] Export code smells report
-- [ ] Document findings
+- [x] Run full analysis (21k lines analyzed)
+- [x] Identify duplication (39.55%)
+- [x] Identify issues (2.5k)
+- [x] Identify quality gate failures (3)
+- [x] Document findings in this epic
 
-### Phase 3: Prioritization (Week 2)
+### Phase 3: Prioritization (Week 2) 🔲 IN PROGRESS
 
-- [ ] Create issue tracking for findings
-- [ ] Prioritize by severity
-- [ ] Estimate effort
-- [ ] Create sprint backlog
+- [ ] Review 2.5k issues in SonarCloud
+- [ ] Review security hotspots
+- [ ] Categorize issues by severity
+- [ ] Create sprint backlog for top issues
 - [ ] Assign owners
 
-### Phase 4: Remediation Planning (Week 2)
+### Phase 4: Remediation - Duplication (Weeks 2-4) 🔲 TODO
 
-- [ ] Group related issues
-- [ ] Create refactoring tasks
-- [ ] Define acceptance criteria
-- [ ] Schedule implementation
-- [ ] Create tracking dashboard
+- [ ] Create API handler factory to reduce route duplication
+- [ ] Create base components (CardBase, TableBase, ModalBase)
+- [ ] Consolidate auth middleware
+- [ ] Extract common form patterns
+- [ ] Target: Reduce from 39.55% to <10%
 
-### Phase 5: Ongoing (Continuous)
+### Phase 5: Remediation - Reliability (Week 3) 🔲 TODO
 
-- [ ] Run analysis on every PR
+- [ ] Fix bugs causing Reliability Rating B
+- [ ] Target: Achieve Rating A
+
+### Phase 6: Security Review (Week 3) 🔲 TODO
+
+- [ ] Review all security hotspots
+- [ ] Mark as safe or fix issues
+- [ ] Target: 100% reviewed
+
+### Phase 7: Coverage Integration (Week 2) 🔲 TODO
+
+- [ ] Ensure coverage reports upload correctly
+- [ ] Target: >80% coverage displayed
+
+### Phase 8: Ongoing (Continuous)
+
+- [ ] Run analysis on every PR (via GitHub Actions)
 - [ ] Track metrics over time
 - [ ] Regular quality reviews
-- [ ] Update quality gates as needed
+- [ ] Block PRs that fail quality gate
 
 ---
 
@@ -432,31 +467,51 @@ jobs:
 
 ## Acceptance Criteria
 
-- [ ] SonarQube runs locally via Docker
-- [ ] Analysis runs on every PR
-- [ ] Quality gate blocks failing PRs
-- [ ] Duplication < 5%
+- [x] SonarCloud configured and running
+- [x] Analysis runs on every PR (GitHub Actions)
+- [ ] Quality gate passes (currently failing)
+- [ ] Duplication < 5% (currently 39.55%)
 - [ ] No blocker or critical issues
-- [ ] Test coverage > 80%
-- [ ] All security vulnerabilities addressed
+- [ ] Test coverage > 80% (need to configure upload)
+- [ ] All security hotspots reviewed (currently 0%)
+- [ ] Reliability Rating A (currently B)
 - [ ] Metrics tracked over time
+
+---
+
+## Quick Commands
+
+```bash
+# Run tests with coverage
+npm test -- --ci --coverage --coverageReporters=lcov --forceExit
+
+# Run SonarCloud analysis locally
+$env:SONAR_TOKEN = 'your-token'
+npm run sonar
+
+# Or combined
+npm test -- --ci --coverage --coverageReporters=lcov --forceExit; npm run sonar
+```
 
 ---
 
 ## Dependencies
 
-- Docker for local SonarQube
-- GitHub Actions for CI
-- Test coverage setup (Jest)
+- ✅ sonarqube-scanner npm package
+- ✅ GitHub Actions for CI
+- ✅ Jest coverage setup
 
 ## Related Epics
 
-- E019: Common Code Architecture
+- E019: Common Code Architecture (for reducing duplication)
 - E025: Mobile Component Integration
 - E026: Sieve Pagination
 
 ---
 
-## Test Documentation
+## SonarCloud Links
 
-**Analysis Results**: `TDD/resources/quality/SONAR-REPORT.md`
+- **Dashboard**: https://sonarcloud.io/dashboard?id=mohasinac_letitrip.in
+- **Issues**: https://sonarcloud.io/project/issues?id=mohasinac_letitrip.in
+- **Security Hotspots**: https://sonarcloud.io/project/security_hotspots?id=mohasinac_letitrip.in
+- **Duplications**: https://sonarcloud.io/component_measures?id=mohasinac_letitrip.in&metric=duplicated_lines_density
