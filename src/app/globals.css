@@ -1,9 +1,9 @@
+/* Design System Tokens */
+@import '../styles/tokens/index.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Design System Tokens */
-@import '../styles/tokens/index.css';
 
 :root {
   --background: var(--color-bg-primary);

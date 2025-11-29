@@ -123,9 +123,8 @@ function LoginForm() {
                 />
                 <span className="ml-2 text-sm text-gray-600">Remember me</span>
               </label>
-              {/* NOTE: Password reset handled via support ticket */}
               <Link
-                href="/support/ticket"
+                href="/forgot-password"
                 className="text-sm text-yellow-600 hover:text-yellow-700 font-medium"
               >
                 Forgot password?

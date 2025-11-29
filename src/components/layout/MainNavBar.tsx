@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import {
   ShoppingCart,
@@ -13,6 +14,8 @@ import {
   LayoutDashboard,
   ShoppingBag,
   Database,
+  Bell,
+  Wallet,
 } from "lucide-react";
 import {
   COMPANY_NAME,
@@ -22,6 +25,8 @@ import {
 } from "@/constants/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
+import { useHeaderStats } from "@/hooks/useHeaderStats";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
 
 export default function MainNavBar({
   onMobileMenuToggle,
@@ -32,6 +37,14 @@ export default function MainNavBar({
 }) {
   const { user, isAuthenticated, isAdmin, isAdminOrSeller } = useAuth();
   const { cart } = useCart();
+  const {
+    cartCount: apiCartCount,
+    notificationCount,
+    messagesCount,
+    ripLimitBalance,
+    hasUnpaidAuctions,
+    totalNotifications,
+  } = useHeaderStats();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
   const [isSellerMenuOpen, setIsSellerMenuOpen] = useState(false);
@@ -39,7 +52,8 @@ export default function MainNavBar({
   const adminMenuRef = useRef<HTMLDivElement>(null);
   const sellerMenuRef = useRef<HTMLDivElement>(null);
 
-  const cartCount = cart?.itemCount || 0;
+  // Use cart count from hook (local state) or API as fallback
+  const cartCount = cart?.itemCount ?? apiCartCount;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -180,7 +194,7 @@ export default function MainNavBar({
                           </Link>
                         ))}
                       </div>
-                    ),
+                    )
                   )}
                 </div>
               )}
@@ -241,7 +255,7 @@ export default function MainNavBar({
                           </Link>
                         ))}
                       </div>
-                    ),
+                    )
                   )}
                 </div>
               )}
@@ -268,6 +282,49 @@ export default function MainNavBar({
           >
             <Search className="w-6 h-6" aria-hidden="true" />
           </button>
+
+          {/* Theme Toggle */}
+          <div className="hidden lg:block">
+            <ThemeToggle size="sm" />
+          </div>
+
+          {/* RipLimit Balance - For authenticated users */}
+          {isAuthenticated && ripLimitBalance !== null && (
+            <Link
+              href="/user/riplimit"
+              className={`hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                hasUnpaidAuctions
+                  ? "bg-red-600 hover:bg-red-700 text-white"
+                  : "bg-green-600 hover:bg-green-700 text-white"
+              }`}
+              title={
+                hasUnpaidAuctions
+                  ? "You have unpaid auctions"
+                  : "RipLimit Balance"
+              }
+            >
+              <Wallet className="w-4 h-4" />
+              <span>{ripLimitBalance.toLocaleString("en-IN")} RL</span>
+            </Link>
+          )}
+
+          {/* Notifications - For authenticated users */}
+          {isAuthenticated && (
+            <Link
+              href="/user/notifications"
+              className="hidden lg:flex relative hover:bg-gray-700 p-2 rounded"
+              aria-label={`Notifications${
+                totalNotifications > 0 ? ` (${totalNotifications} unread)` : ""
+              }`}
+            >
+              <Bell className="w-6 h-6" />
+              {totalNotifications > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-extrabold">
+                  {totalNotifications > 99 ? "99+" : totalNotifications}
+                </span>
+              )}
+            </Link>
+          )}
 
           {/* Cart - Hidden on mobile/tablet when bottom nav is visible */}
           <div className="hidden lg:block relative group">
@@ -329,9 +386,11 @@ export default function MainNavBar({
                 >
                   <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center overflow-hidden">
                     {getProfilePicture() ? (
-                      <img
+                      <Image
                         src={getProfilePicture()!}
                         alt={getDisplayName()}
+                        width={32}
+                        height={32}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -398,7 +457,7 @@ export default function MainNavBar({
                               </Link>
                             ))}
                         </div>
-                      ),
+                      )
                     )}
                   </div>
                 )}

@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import BottomNav from "@/components/layout/BottomNav";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider, ThemeScript } from "@/contexts/ThemeContext";
 import { defaultMetadata } from "@/lib/seo/metadata";
 import {
   generateOrganizationSchema,
@@ -31,8 +32,11 @@ export default function RootLayout({
   const websiteSchema = generateWebSiteSchema();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Theme Script - Prevent flash of wrong theme */}
+        <ThemeScript />
+
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
 
@@ -70,19 +74,21 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <AuthProvider>
-          <ErrorInitializer />
-          <ToastContainer />
-          <MobileOfflineIndicator />
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <Breadcrumb />
-            <main className="flex-1 pb-16 lg:pb-0">{children}</main>
-            <Footer />
-            <BottomNav />
-            <MobileInstallPrompt />
-          </div>
-        </AuthProvider>
+        <ThemeProvider defaultTheme="system" enableSystem enableStorage>
+          <AuthProvider>
+            <ErrorInitializer />
+            <ToastContainer />
+            <MobileOfflineIndicator />
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <Breadcrumb />
+              <main className="flex-1 pb-16 lg:pb-0">{children}</main>
+              <Footer />
+              <BottomNav />
+              <MobileInstallPrompt />
+            </div>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

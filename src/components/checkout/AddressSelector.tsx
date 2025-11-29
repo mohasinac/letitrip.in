@@ -5,7 +5,7 @@ import { Plus, MapPin, Edit2, Trash2, Check } from "lucide-react";
 import { addressService } from "@/services/address.service";
 import type { AddressFE } from "@/types/frontend/address.types";
 import { ConfirmDialog } from "../common/ConfirmDialog";
-import { AddressForm } from "./AddressForm";
+import { SmartAddressForm } from "../common/SmartAddressForm";
 
 interface AddressSelectorProps {
   selectedId: string | null;
@@ -175,7 +175,11 @@ export function AddressSelector({
       )}
 
       {showForm && (
-        <AddressForm addressId={editingId} onClose={handleFormClose} />
+        <SmartAddressForm
+          addressId={editingId}
+          onClose={handleFormClose}
+          onSuccess={() => loadAddresses()}
+        />
       )}
 
       <ConfirmDialog

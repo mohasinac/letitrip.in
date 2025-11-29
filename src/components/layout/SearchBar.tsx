@@ -11,6 +11,11 @@ import { Search } from "lucide-react";
 import CategorySelector from "@/components/common/CategorySelector";
 import type { Category } from "@/components/common/CategorySelector";
 import { categoriesService } from "@/services/categories.service";
+import {
+  ContentTypeFilter,
+  type ContentType,
+  getContentTypePlaceholder,
+} from "@/components/common/ContentTypeFilter";
 
 export interface SearchBarRef {
   focusSearch: () => void;
@@ -26,13 +31,14 @@ interface SearchBarProps {
 const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
   ({ isVisible = true, onClose }, ref) => {
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-      null,
+      null
     );
     const [selectedCategoryName, setSelectedCategoryName] =
       useState<string>("All Categories");
     const [searchQuery, setSearchQuery] = useState("");
     const [categories, setCategories] = useState<Category[]>([]);
     const [loadingCategories, setLoadingCategories] = useState(true);
+    const [contentType, setContentType] = useState<ContentType>("all");
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchBarRef = useRef<HTMLDivElement>(null);
 
@@ -82,13 +88,21 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
 
     const handleSearch = (e: React.FormEvent) => {
       e.preventDefault();
-      // Handle search logic here
-      console.log(
-        "Search:",
-        searchQuery,
-        "Category:",
-        selectedCategoryId || "all",
-      );
+      // Build search URL with query params
+      const params = new URLSearchParams();
+      if (searchQuery.trim()) {
+        params.set("q", searchQuery.trim());
+      }
+      if (selectedCategoryId) {
+        params.set("category", selectedCategoryId);
+      }
+      if (contentType !== "all") {
+        params.set("type", contentType);
+      }
+
+      // Navigate to search results
+      const searchUrl = `/search?${params.toString()}`;
+      window.location.href = searchUrl;
     };
 
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -99,10 +113,14 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
 
     const handleCategoryChange = (
       categoryId: string | null,
-      category: Category | null,
+      category: Category | null
     ) => {
       setSelectedCategoryId(categoryId);
       setSelectedCategoryName(category?.name || "All Categories");
+    };
+
+    const handleContentTypeChange = (type: ContentType) => {
+      setContentType(type);
     };
 
     // Don't render if not visible
@@ -110,17 +128,17 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
       return null;
     }
 
+    // Get dynamic placeholder based on content type
+    const placeholder = getContentTypePlaceholder(contentType);
+
     return (
       <div
         id="search-bar"
         ref={searchBarRef}
-        className="bg-yellow-50 py-6 px-4 border-b border-yellow-200"
+        className="bg-yellow-50 py-4 sm:py-6 px-4 border-b border-yellow-200"
       >
-        <div className="container mx-auto">
-          <form
-            onSubmit={handleSearch}
-            className="flex gap-0 max-w-full lg:max-w-6xl mx-auto"
-          >
+        <div className="container mx-auto max-w-full lg:max-w-6xl">
+          <form onSubmit={handleSearch} className="flex gap-0">
             {/* Merged Category Selector and Search Input */}
             <div className="flex-1 flex h-[50px] bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-yellow-500">
               {/* Category Selector */}
@@ -142,23 +160,34 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
               </div>
 
               {/* Search Input with Button */}
-              <div className="flex-1 relative">
+              <div className="flex-1 relative flex items-center">
                 <input
                   ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Enter a brand name, item name or item URL for search..."
-                  className="w-full h-full px-4 pr-32 border-0 focus:outline-none text-gray-900 font-medium placeholder:text-gray-500 placeholder:text-sm bg-transparent"
+                  placeholder={placeholder}
+                  className="w-full h-full px-4 pr-24 md:pr-40 lg:pr-44 border-0 focus:outline-none text-gray-900 font-medium placeholder:text-gray-500 placeholder:text-sm bg-transparent"
                 />
+
+                {/* Content Type Filter (Desktop - Dropdown) */}
+                <div className="hidden md:block absolute right-[100px] lg:right-[120px]">
+                  <ContentTypeFilter
+                    value={contentType}
+                    onChange={handleContentTypeChange}
+                    variant="dropdown"
+                    size="sm"
+                  />
+                </div>
+
                 {/* Search Button Inside Input */}
                 <button
                   type="submit"
-                  className="absolute right-0 top-0 h-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-6 flex items-center gap-2 font-bold"
+                  className="absolute right-0 top-0 h-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-4 lg:px-6 flex items-center gap-2 font-bold"
                 >
                   <Search className="w-5 h-5" />
-                  <span className="hidden sm:inline">Search</span>
+                  <span className="hidden lg:inline">Search</span>
                 </button>
               </div>
             </div>
@@ -187,10 +216,20 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
               </button>
             )}
           </form>
+
+          {/* Mobile Content Type Filter (Chips) */}
+          <div className="md:hidden mt-3 overflow-x-auto -mx-4 px-4">
+            <ContentTypeFilter
+              value={contentType}
+              onChange={handleContentTypeChange}
+              variant="chips"
+              size="sm"
+            />
+          </div>
         </div>
       </div>
     );
-  },
+  }
 );
 
 SearchBar.displayName = "SearchBar";
