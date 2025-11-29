@@ -34,7 +34,7 @@ export function UnifiedFilterSidebar({
   mobile = false,
 }: UnifiedFilterSidebarProps) {
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
@@ -100,7 +100,7 @@ export function UnifiedFilterSidebar({
             // For fields with options, filter options
             if (field.options) {
               const filteredOptions = field.options.filter((option) =>
-                option.label.toLowerCase().includes(query),
+                option.label.toLowerCase().includes(query)
               );
 
               if (filteredOptions.length > 0) {
@@ -140,7 +140,7 @@ export function UnifiedFilterSidebar({
       const newCollapsed = new Set<string>();
       sections.forEach((section) => {
         const hasMatch = filteredSections.some(
-          (fs) => fs.title === section.title,
+          (fs) => fs.title === section.title
         );
         if (!hasMatch) {
           newCollapsed.add(section.title);
@@ -153,7 +153,7 @@ export function UnifiedFilterSidebar({
   const handleCheckboxChange = (
     key: string,
     optionValue: string | number,
-    checked: boolean,
+    checked: boolean
   ) => {
     const currentValues = values[key] || [];
     const newValues = checked
@@ -170,13 +170,13 @@ export function UnifiedFilterSidebar({
       part.toLowerCase() === searchQuery.toLowerCase() ? (
         <mark
           key={index}
-          className="bg-yellow-200 text-gray-900 font-medium px-0.5"
+          className="bg-yellow-200 dark:bg-yellow-600 text-gray-900 dark:text-white font-medium px-0.5"
         >
           {part}
         </mark>
       ) : (
         part
-      ),
+      )
     );
   };
 
@@ -191,7 +191,7 @@ export function UnifiedFilterSidebar({
             value={value || ""}
             onChange={(e) => onChange(field.key, e.target.value)}
             placeholder={field.placeholder}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
           />
         );
 
@@ -205,7 +205,7 @@ export function UnifiedFilterSidebar({
             min={field.min}
             max={field.max}
             step={field.step}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
           />
         );
 
@@ -214,7 +214,7 @@ export function UnifiedFilterSidebar({
           <select
             value={value || ""}
             onChange={(e) => onChange(field.key, e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="">All</option>
             {field.options?.map((option) => (
@@ -233,7 +233,7 @@ export function UnifiedFilterSidebar({
             {field.options?.map((option) => (
               <label
                 key={option.value}
-                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-1 rounded"
               >
                 <input
                   type="checkbox"
@@ -242,16 +242,18 @@ export function UnifiedFilterSidebar({
                     handleCheckboxChange(
                       field.key,
                       option.value,
-                      e.target.checked,
+                      e.target.checked
                     )
                   }
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                 />
-                <span className="text-sm text-gray-700 flex-1">
+                <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">
                   {highlightText(option.label)}
                 </span>
                 {option.count !== undefined && (
-                  <span className="text-xs text-gray-500">{option.count}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {option.count}
+                  </span>
                 )}
               </label>
             ))}
@@ -264,7 +266,7 @@ export function UnifiedFilterSidebar({
             {field.options?.map((option) => (
               <label
                 key={option.value}
-                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-1 rounded"
               >
                 <input
                   type="radio"
@@ -272,13 +274,15 @@ export function UnifiedFilterSidebar({
                   value={option.value}
                   checked={value === option.value}
                   onChange={(e) => onChange(field.key, e.target.value)}
-                  className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                  className="w-4 h-4 text-blue-600 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                 />
-                <span className="text-sm text-gray-700 flex-1">
+                <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">
                   {highlightText(option.label)}
                 </span>
                 {option.count !== undefined && (
-                  <span className="text-xs text-gray-500">{option.count}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {option.count}
+                  </span>
                 )}
               </label>
             ))}
@@ -291,7 +295,7 @@ export function UnifiedFilterSidebar({
             type="date"
             value={value || ""}
             onChange={(e) => onChange(field.key, e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           />
         );
 
@@ -305,7 +309,7 @@ export function UnifiedFilterSidebar({
                 onChange(field.key, { ...value, from: e.target.value })
               }
               placeholder="From"
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
             <input
               type="date"
@@ -314,7 +318,7 @@ export function UnifiedFilterSidebar({
                 onChange(field.key, { ...value, to: e.target.value })
               }
               placeholder="To"
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
         );
@@ -333,9 +337,9 @@ export function UnifiedFilterSidebar({
                 min={field.min}
                 max={field.max}
                 step={field.step}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               />
-              <span className="text-gray-500">-</span>
+              <span className="text-gray-500 dark:text-gray-400">-</span>
               <input
                 type="number"
                 value={value?.max || ""}
@@ -346,7 +350,7 @@ export function UnifiedFilterSidebar({
                 min={field.min}
                 max={field.max}
                 step={field.step}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               />
             </div>
           </div>
@@ -376,14 +380,16 @@ export function UnifiedFilterSidebar({
             : "sticky top-20 h-[calc(100vh-5rem)]"
         } ${
           mobile && !isOpen ? "-translate-x-full" : "translate-x-0"
-        } bg-white border-r border-gray-200 flex flex-col ${className}`}
+        } bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col ${className}`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Filters
+            </h2>
             {resultCount !== undefined && (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {resultCount} result{resultCount !== 1 ? "s" : ""}
               </p>
             )}
@@ -391,19 +397,19 @@ export function UnifiedFilterSidebar({
           {mobile && onClose && (
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
               aria-label="Close filters"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </button>
           )}
         </div>
 
         {/* Search Box */}
         {searchable && (
-          <div className="p-4 border-b border-gray-200">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 value={searchQuery}
@@ -411,15 +417,15 @@ export function UnifiedFilterSidebar({
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
                 placeholder="Search filters..."
-                className="w-full pl-9 pr-9 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full pl-9 pr-9 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
                   aria-label="Clear search"
                 >
-                  <X className="w-4 h-4 text-gray-400" />
+                  <X className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                 </button>
               )}
             </div>
@@ -430,7 +436,7 @@ export function UnifiedFilterSidebar({
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           {filteredSections.length === 0 && searchQuery ? (
             <div className="text-center py-8">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 No filters match "{searchQuery}"
               </p>
             </div>
@@ -450,15 +456,17 @@ export function UnifiedFilterSidebar({
                     }`}
                   >
                     <h3
-                      className={`text-sm font-semibold text-gray-900 ${
-                        section._highlighted ? "text-blue-600" : ""
+                      className={`text-sm font-semibold text-gray-900 dark:text-white ${
+                        section._highlighted
+                          ? "text-blue-600 dark:text-blue-400"
+                          : ""
                       }`}
                     >
                       {highlightText(section.title)}
                     </h3>
                     {section.collapsible && (
                       <svg
-                        className={`w-4 h-4 text-gray-500 transition-transform ${
+                        className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${
                           isCollapsed ? "" : "rotate-180"
                         }`}
                         fill="none"
@@ -481,12 +489,14 @@ export function UnifiedFilterSidebar({
                       {section.fields.map((field: any) => (
                         <div key={field.key} className="space-y-1">
                           <label
-                            className={`flex items-center gap-2 text-sm font-medium text-gray-700 ${
-                              field._highlighted ? "text-blue-600" : ""
+                            className={`flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 ${
+                              field._highlighted
+                                ? "text-blue-600 dark:text-blue-400"
+                                : ""
                             }`}
                           >
                             {field.icon && (
-                              <span className="text-gray-400">
+                              <span className="text-gray-400 dark:text-gray-500">
                                 {field.icon}
                               </span>
                             )}
@@ -504,7 +514,7 @@ export function UnifiedFilterSidebar({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-gray-200 space-y-2">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
           <button
             onClick={() => {
               onApply();
@@ -519,7 +529,7 @@ export function UnifiedFilterSidebar({
             <button
               onClick={onReset}
               disabled={isLoading}
-              className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Reset All
             </button>

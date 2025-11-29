@@ -27,7 +27,7 @@ export default function AdminLayout({
           {/* Main Content Area */}
           <div className="flex flex-1 flex-col lg:ml-64">
             {/* Main Content */}
-            <main className="flex-1 bg-gray-50 dark:bg-gray-900">
+            <main className="flex-1 bg-gray-50 dark:bg-gray-900 pb-32 lg:pb-0">
               <div className="container mx-auto px-4 py-6 lg:px-8">
                 {children}
               </div>

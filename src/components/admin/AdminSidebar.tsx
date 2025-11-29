@@ -212,7 +212,7 @@ export function AdminSidebar() {
     setExpandedItems((prev) =>
       prev.includes(title)
         ? prev.filter((item) => item !== title)
-        : [...prev, title],
+        : [...prev, title]
     );
   };
 
@@ -238,7 +238,7 @@ export function AdminSidebar() {
           ? item.children.filter(
               (child) =>
                 child.title.toLowerCase().includes(query) ||
-                (child.href && child.href.toLowerCase().includes(query)),
+                (child.href && child.href.toLowerCase().includes(query))
             )
           : [];
 
@@ -287,34 +287,34 @@ export function AdminSidebar() {
   };
 
   return (
-    <aside className="hidden w-64 border-r border-gray-200 bg-white lg:block lg:fixed lg:top-[7rem] lg:bottom-0 lg:left-0 lg:z-20">
+    <aside className="hidden w-64 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 lg:block lg:fixed lg:top-[7rem] lg:bottom-0 lg:left-0 lg:z-20">
       <div className="flex h-full flex-col">
         {/* Logo */}
-        <div className="flex h-16 items-center border-b border-gray-200 px-6">
+        <div className="flex h-16 items-center border-b border-gray-200 dark:border-gray-700 px-6">
           <Link href="/admin" className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-purple-600" />
-            <span className="text-lg font-semibold text-gray-900">
+            <Shield className="h-6 w-6 text-purple-600 dark:text-purple-500" />
+            <span className="text-lg font-semibold text-gray-900 dark:text-white">
               Admin Panel
             </span>
           </Link>
         </div>
 
         {/* Search */}
-        <div className="border-b border-gray-200 p-4">
+        <div className="border-b border-gray-200 dark:border-gray-700 p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search admin..."
-              className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 pl-10 pr-4 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 aria-label="Clear search"
               >
                 <svg
@@ -338,7 +338,7 @@ export function AdminSidebar() {
         {/* Navigation */}
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
           {filterNavigation.length === 0 ? (
-            <div className="px-3 py-8 text-center text-sm text-gray-500">
+            <div className="px-3 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
               <p>No results found</p>
               <p className="mt-1 text-xs">Try a different search term</p>
             </div>
@@ -356,21 +356,23 @@ export function AdminSidebar() {
                       className={cn(
                         "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                         active
-                          ? "bg-yellow-50 text-yellow-700"
-                          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900",
+                          ? "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white"
                       )}
                     >
                       <Icon
                         className={cn(
                           "h-5 w-5",
-                          active ? "text-yellow-600" : "text-gray-400",
+                          active
+                            ? "text-yellow-600 dark:text-yellow-500"
+                            : "text-gray-400 dark:text-gray-500"
                         )}
                       />
                       <span className="flex-1">
                         {highlightText(item.title)}
                       </span>
                       {item.badge && (
-                        <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
+                        <span className="rounded-full bg-red-100 dark:bg-red-900/50 px-2 py-0.5 text-xs font-semibold text-red-700 dark:text-red-400">
                           {item.badge}
                         </span>
                       )}
@@ -378,16 +380,16 @@ export function AdminSidebar() {
                   ) : (
                     <button
                       onClick={() => toggleItem(item.title)}
-                      className="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                      className="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white transition-colors"
                     >
-                      <Icon className="h-5 w-5 text-gray-400" />
+                      <Icon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                       <span className="flex-1 text-left">
                         {highlightText(item.title)}
                       </span>
                       {expanded ? (
-                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                        <ChevronDown className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                       ) : (
-                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                        <ChevronRight className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                       )}
                     </button>
                   )}
@@ -408,16 +410,16 @@ export function AdminSidebar() {
                             className={cn(
                               "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
                               childActive
-                                ? "bg-yellow-50 text-yellow-700"
-                                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                                ? "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+                                : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white"
                             )}
                           >
                             <ChildIcon
                               className={cn(
                                 "h-4 w-4",
                                 childActive
-                                  ? "text-yellow-600"
-                                  : "text-gray-400",
+                                  ? "text-yellow-600 dark:text-yellow-500"
+                                  : "text-gray-400 dark:text-gray-500"
                               )}
                             />
                             <span>{highlightText(child.title)}</span>
@@ -433,13 +435,13 @@ export function AdminSidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 p-4">
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4">
           <Link
             href="/"
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white"
           >
             <svg
-              className="h-5 w-5 text-gray-400"
+              className="h-5 w-5 text-gray-400 dark:text-gray-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

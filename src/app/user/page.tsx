@@ -49,13 +49,13 @@ export default function UserDashboardPage() {
       // Calculate stats
       const totalOrders = orders.length;
       const pendingOrders = orders.filter(
-        (o) => o.status === "pending" || o.status === "confirmed",
+        (o) => o.status === "pending" || o.status === "confirmed"
       ).length;
       const completedOrders = orders.filter(
-        (o) => o.status === "delivered",
+        (o) => o.status === "delivered"
       ).length;
       const cancelledOrders = orders.filter(
-        (o) => o.status === "cancelled",
+        (o) => o.status === "cancelled"
       ).length;
 
       setStats({
@@ -83,12 +83,14 @@ export default function UserDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Account</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            My Account
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
             Welcome back, {user?.fullName || "Guest"}!
           </p>
         </div>
@@ -121,14 +123,14 @@ export default function UserDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Link
             href="/user/orders"
-            className="bg-white p-6 rounded-lg border border-gray-200 hover:border-primary hover:shadow-md transition-all"
+            className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary dark:hover:border-yellow-500 hover:shadow-md transition-all"
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                   My Orders
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Track and manage your orders
                 </p>
               </div>
@@ -138,14 +140,14 @@ export default function UserDashboardPage() {
 
           <Link
             href="/user/addresses"
-            className="bg-white p-6 rounded-lg border border-gray-200 hover:border-primary hover:shadow-md transition-all"
+            className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary dark:hover:border-yellow-500 hover:shadow-md transition-all"
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                   My Addresses
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Manage shipping addresses
                 </p>
               </div>
@@ -155,14 +157,14 @@ export default function UserDashboardPage() {
 
           <Link
             href="/user/settings"
-            className="bg-white p-6 rounded-lg border border-gray-200 hover:border-primary hover:shadow-md transition-all"
+            className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary dark:hover:border-yellow-500 hover:shadow-md transition-all"
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                   Account Settings
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Update your profile and preferences
                 </p>
               </div>
@@ -172,15 +174,15 @@ export default function UserDashboardPage() {
         </div>
 
         {/* Recent Orders */}
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 Recent Orders
               </h2>
               <Link
                 href="/user/orders"
-                className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1"
+                className="text-primary hover:text-primary/80 dark:text-yellow-500 dark:hover:text-yellow-400 text-sm font-medium flex items-center gap-1"
               >
                 View All
                 <ChevronRight className="w-4 h-4" />
@@ -205,41 +207,41 @@ export default function UserDashboardPage() {
                     key={order.id}
                     href={`/user/orders/${order.id}`}
                     data-testid={`recent-order-${order.id}`}
-                    className="block p-4 border border-gray-200 rounded-lg hover:border-primary hover:shadow-sm transition-all"
+                    className="block p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary dark:hover:border-yellow-500 hover:shadow-sm transition-all bg-white dark:bg-gray-800/50"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <p
-                          className="font-semibold text-gray-900"
+                          className="font-semibold text-gray-900 dark:text-white"
                           data-order-number={order.orderNumber}
                         >
                           Order #
                           {order.orderNumber ||
                             order.id.slice(0, 8).toUpperCase()}
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           {new Date(order.createdAt || 0).toLocaleDateString(
                             "en-IN",
                             {
                               year: "numeric",
                               month: "short",
                               day: "numeric",
-                            },
+                            }
                           )}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-gray-900">
+                        <p className="font-semibold text-gray-900 dark:text-white">
                           ₹{order.total.toLocaleString("en-IN")}
                         </p>
                         <span
                           data-testid={`order-status-${order.id}`}
                           className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
                             order.status === "delivered"
-                              ? "bg-green-100 text-green-700"
+                              ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                               : order.status === "cancelled"
-                                ? "bg-red-100 text-red-700"
-                                : "bg-yellow-100 text-yellow-700"
+                              ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                              : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
                           }`}
                         >
                           {order.status.charAt(0).toUpperCase() +
@@ -247,7 +249,7 @@ export default function UserDashboardPage() {
                         </span>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       {order.items?.length || 0} item
                       {(order.items?.length || 0) !== 1 ? "s" : ""}
                     </p>

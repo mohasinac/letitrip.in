@@ -225,7 +225,9 @@ function AuctionsContent() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Live Auctions</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Live Auctions
+        </h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
           Bid on unique items and win great deals
         </p>
@@ -319,7 +321,9 @@ function AuctionsContent() {
                   <Gavel className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Live Auctions</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Live Auctions
+                  </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {
                       auctions.filter((a) => a.status === AuctionStatus.ACTIVE)
@@ -335,7 +339,9 @@ function AuctionsContent() {
                   <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Ending Soon</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Ending Soon
+                  </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {
                       auctions.filter((a) => {
@@ -357,7 +363,9 @@ function AuctionsContent() {
                   <TrendingUp className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Bids</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Total Bids
+                  </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {auctions.reduce((sum, a) => sum + (a.bidCount || 0), 0)}
                   </p>

@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { Menu, Store } from "lucide-react";
 import { MobileSellerSidebar } from "@/components/mobile/MobileSellerSidebar";
+import {
+  MobileNavRow,
+  sellerMobileNavItems,
+} from "@/components/layout/MobileNavRow";
 
 interface SellerLayoutClientProps {
   children: React.ReactNode;
@@ -34,6 +38,9 @@ export function SellerLayoutClient({ children }: SellerLayoutClientProps) {
 
       {/* Page Content */}
       {children}
+
+      {/* Mobile Navigation Row - above bottom nav, hidden on desktop */}
+      <MobileNavRow items={sellerMobileNavItems} variant="seller" />
     </>
   );
 }
