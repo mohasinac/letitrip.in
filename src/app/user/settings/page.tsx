@@ -167,12 +167,8 @@ export default function SettingsPage() {
             onClick={() => router.push("/logout")}
             className="w-full text-left px-4 py-4 min-h-[64px] border border-red-200 rounded-lg hover:bg-red-50 active:bg-red-100 transition-colors text-red-600 touch-manipulation"
           >
-            <div className="font-medium">
-              Log Out
-            </div>
-            <div className="text-sm">
-              Sign out of your account
-            </div>
+            <div className="font-medium">Log Out</div>
+            <div className="text-sm">Sign out of your account</div>
           </button>
         </div>
       </div>
