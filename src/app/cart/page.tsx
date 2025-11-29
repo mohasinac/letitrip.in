@@ -79,12 +79,12 @@ export default function CartPage() {
   if (!cart || !cart.items || cart.items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
-        {/* Header */}
+        {/* Header - Mobile Optimized */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+              className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 active:text-gray-700 min-h-[44px] touch-manipulation"
             >
               <ArrowLeft className="h-4 w-4" />
               Continue Shopping
@@ -119,25 +119,26 @@ export default function CartPage() {
       />
 
       <div className="min-h-screen bg-gray-50">
-        {/* Header */}
+        {/* Header - Mobile Optimized */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+                className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 active:text-gray-700 min-h-[44px] touch-manipulation"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Continue Shopping
+                <span className="hidden sm:inline">Continue Shopping</span>
+                <span className="sm:hidden">Back</span>
               </Link>
 
               {cart.items.length > 0 && (
                 <button
                   onClick={() => setShowClearDialog(true)}
-                  className="inline-flex items-center gap-2 text-sm text-red-600 hover:text-red-700"
+                  className="inline-flex items-center gap-2 text-sm text-red-600 hover:text-red-700 active:text-red-800 min-h-[44px] px-2 touch-manipulation"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Clear Cart
+                  <span className="hidden sm:inline">Clear Cart</span>
                 </button>
               )}
             </div>

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { COMPANY_NAME } from "@/constants/navigation";
+import { MobileFormInput } from "@/components/mobile/MobileFormInput";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -16,6 +18,7 @@ function LoginForm() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Prevent redirect loop: if already authenticated, redirect to home or specified page
   useEffect(() => {
@@ -38,8 +41,10 @@ function LoginForm() {
       setTimeout(() => {
         router.replace(redirect);
       }, 100);
-    } catch (err: any) {
-      setError(err.message || "Login failed. Please try again.");
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Login failed. Please try again.";
+      setError(errorMessage);
       setLoading(false);
     }
   };
@@ -74,68 +79,70 @@ function LoginForm() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
-                placeholder="you@example.com"
-              />
-            </div>
+            {/* Email - Mobile Optimized */}
+            <MobileFormInput
+              label="Email Address"
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="you@example.com"
+              leftIcon={<Mail className="w-5 h-5" />}
+              autoComplete="email"
+            />
 
-            {/* Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
-                placeholder="••••••••"
-              />
-            </div>
+            {/* Password - Mobile Optimized with show/hide */}
+            <MobileFormInput
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              placeholder="••••••••"
+              leftIcon={<Lock className="w-5 h-5" />}
+              rightIcon={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors touch-target"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              }
+              autoComplete="current-password"
+            />
 
             {/* Remember & Forgot */}
             <div className="flex items-center justify-between">
-              <label className="flex items-center">
+              <label className="flex items-center touch-target">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 text-yellow-500 border-gray-300 rounded focus:ring-yellow-500"
+                  className="w-5 h-5 text-yellow-500 border-gray-300 rounded focus:ring-yellow-500"
                 />
                 <span className="ml-2 text-sm text-gray-600">Remember me</span>
               </label>
               <Link
                 href="/forgot-password"
-                className="text-sm text-yellow-600 hover:text-yellow-700 font-medium"
+                className="text-sm text-yellow-600 hover:text-yellow-700 font-medium py-2 touch-target"
               >
                 Forgot password?
               </Link>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit Button - Mobile Optimized (48px min height) */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full min-h-[48px] py-3 px-4 bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-gray-900 font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -181,11 +188,11 @@ function LoginForm() {
             </div>
           </div>
 
-          {/* Register Link */}
+          {/* Register Link - Mobile Optimized */}
           <div className="mt-6">
             <Link
               href="/register"
-              className="block w-full py-3 px-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:border-yellow-500 hover:text-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all text-center"
+              className="block w-full min-h-[48px] py-3 px-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:border-yellow-500 hover:text-yellow-600 active:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all text-center"
             >
               Create Account
             </Link>

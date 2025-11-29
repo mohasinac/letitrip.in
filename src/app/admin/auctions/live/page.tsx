@@ -215,13 +215,13 @@ function LiveAuctionRow({
       <td className="px-4 py-3">
         <div className="flex items-center gap-1.5">
           <Users className="h-4 w-4 text-gray-400" />
-          <span>{auction.watchCount || 0}</span>
+          <span>{(auction as any).watchCount || 0}</span>
         </div>
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-1">
           <button
-            onClick={() => onView(auction.slug)}
+            onClick={() => onView(auction.slug || auction.productSlug)}
             className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"
             title="View"
           >
@@ -389,7 +389,9 @@ export default function LiveAuctionsPage() {
       <ConfirmDialog
         isOpen={!!endAuctionId}
         onClose={() => setEndAuctionId(null)}
-        onConfirm={() => endAuctionId && handleEndAuction(endAuctionId)}
+        onConfirm={async () => {
+          if (endAuctionId) await handleEndAuction(endAuctionId);
+        }}
         title="End Auction"
         description="Are you sure you want to end this auction immediately? The current highest bidder will win."
         variant="danger"
@@ -399,7 +401,9 @@ export default function LiveAuctionsPage() {
       <ConfirmDialog
         isOpen={!!pauseAuctionId}
         onClose={() => setPauseAuctionId(null)}
-        onConfirm={() => pauseAuctionId && handlePauseAuction(pauseAuctionId)}
+        onConfirm={async () => {
+          if (pauseAuctionId) await handlePauseAuction(pauseAuctionId);
+        }}
         title="Pause Auction"
         description="Are you sure you want to pause this auction? It will be moved to scheduled status and can be resumed later."
         variant="warning"

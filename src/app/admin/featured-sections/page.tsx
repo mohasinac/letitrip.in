@@ -673,7 +673,9 @@ export default function FeaturedSectionsPage() {
       <ConfirmDialog
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}
-        onConfirm={() => deleteId && handleRemoveItem(deleteId)}
+        onConfirm={() => {
+          if (deleteId) handleRemoveItem(deleteId);
+        }}
         title="Remove Featured Item"
         description="Are you sure you want to remove this item from featured sections?"
         variant="danger"

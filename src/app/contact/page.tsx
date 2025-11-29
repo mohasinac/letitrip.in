@@ -2,8 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Mail, Phone, MapPin, Send, Loader2, CheckCircle } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Send,
+  Loader2,
+  CheckCircle,
+  User,
+  MessageSquare,
+  FileText,
+} from "lucide-react";
 import { supportService } from "@/services/support.service";
+import { MobileFormInput } from "@/components/mobile/MobileFormInput";
+import { MobileTextarea } from "@/components/mobile/MobileTextarea";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -48,7 +60,7 @@ export default function ContactPage() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setFormData({
       ...formData,

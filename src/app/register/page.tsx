@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { COMPANY_NAME } from "@/constants/navigation";
+import { MobileFormInput } from "@/components/mobile/MobileFormInput";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,6 +20,8 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,8 +57,12 @@ export default function RegisterPage() {
       setTimeout(() => {
         router.push("/");
       }, 100);
-    } catch (err: any) {
-      setError(err.message || "Registration failed. Please try again.");
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Registration failed. Please try again.";
+      setError(errorMessage);
       setLoading(false);
     }
   };
@@ -89,88 +97,92 @@ export default function RegisterPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Name */}
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                placeholder="John Doe"
-              />
-            </div>
+            {/* Name - Mobile Optimized */}
+            <MobileFormInput
+              label="Full Name"
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              placeholder="John Doe"
+              leftIcon={<User className="w-5 h-5" />}
+              autoComplete="name"
+            />
 
-            {/* Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                placeholder="you@example.com"
-              />
-            </div>
+            {/* Email - Mobile Optimized */}
+            <MobileFormInput
+              label="Email Address"
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="you@example.com"
+              leftIcon={<Mail className="w-5 h-5" />}
+              autoComplete="email"
+            />
 
-            {/* Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
-                placeholder="••••••••"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Must be at least 8 characters
-              </p>
-            </div>
+            {/* Password - Mobile Optimized with show/hide */}
+            <MobileFormInput
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              placeholder="••••••••"
+              helperText="Must be at least 8 characters"
+              leftIcon={<Lock className="w-5 h-5" />}
+              rightIcon={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors touch-target"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              }
+              autoComplete="new-password"
+            />
 
-            {/* Confirm Password */}
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
-                placeholder="••••••••"
-              />
-            </div>
+            {/* Confirm Password - Mobile Optimized with show/hide */}
+            <MobileFormInput
+              label="Confirm Password"
+              type={showConfirmPassword ? "text" : "password"}
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              placeholder="••••••••"
+              leftIcon={<Lock className="w-5 h-5" />}
+              rightIcon={
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors touch-target"
+                  aria-label={
+                    showConfirmPassword ? "Hide password" : "Show password"
+                  }
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              }
+              autoComplete="new-password"
+            />
 
             {/* Terms Checkbox */}
             <div className="flex items-start">
@@ -202,11 +214,11 @@ export default function RegisterPage() {
               </label>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit Button - Mobile Optimized */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 px-4 min-h-[48px] bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-gray-900 font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -252,11 +264,11 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Login Link */}
+          {/* Login Link - Mobile Optimized */}
           <div className="mt-6">
             <Link
               href="/login"
-              className="block w-full py-3 px-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:border-yellow-500 hover:text-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all text-center"
+              className="block w-full py-3 px-4 min-h-[48px] border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:border-yellow-500 hover:text-yellow-600 active:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all text-center touch-manipulation flex items-center justify-center"
             >
               Sign In Instead
             </Link>

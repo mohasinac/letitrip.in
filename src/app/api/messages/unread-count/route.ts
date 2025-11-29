@@ -12,7 +12,7 @@ import { COLLECTIONS } from "@/constants/database";
 
 /**
  * GET /api/messages/unread-count
- * Returns the count of unread messages
+ * Returns the total unread message count across all conversations
  */
 export async function GET(request: NextRequest) {
   try {
@@ -26,18 +26,25 @@ export async function GET(request: NextRequest) {
     }
 
     const db = getFirestoreAdmin();
-    const countSnapshot = await db
-      .collection(COLLECTIONS.MESSAGES)
-      .where("recipient_id", "==", auth.user.uid)
-      .where("read", "==", false)
-      .count()
+    const userId = auth.user.uid;
+
+    // Get all conversations where user is a participant
+    const conversationsSnapshot = await db
+      .collection(COLLECTIONS.CONVERSATIONS)
+      .where("participantIds", "array-contains", userId)
+      .where("status", "==", "active")
       .get();
 
-    const count = countSnapshot.data().count || 0;
+    // Sum up unread counts for this user across all conversations
+    let totalUnread = 0;
+    conversationsSnapshot.docs.forEach((doc) => {
+      const data = doc.data();
+      totalUnread += data.unreadCount?.[userId] || 0;
+    });
 
     return NextResponse.json({
       success: true,
-      data: { count },
+      data: { count: totalUnread },
     });
   } catch (error) {
     console.error("Error getting message count:", error);
