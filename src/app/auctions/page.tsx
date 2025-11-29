@@ -162,14 +162,13 @@ function AuctionsContent() {
             }
           }}
           disabled={currentPage === 1}
-          className="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-6 py-3 min-h-[48px] rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
         >
           Previous
         </button>
 
-        <span className="text-sm text-gray-600 dark:text-gray-400">
-          Page {currentPage}{" "}
-          {auctions.length > 0 && `(${auctions.length} items)`}
+        <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+          Page {currentPage}
         </span>
 
         <button
@@ -180,7 +179,7 @@ function AuctionsContent() {
             }
           }}
           disabled={!hasNextPage}
-          className="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-6 py-3 min-h-[48px] rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
         >
           Next
         </button>
@@ -255,7 +254,7 @@ function AuctionsContent() {
 
         {/* Auctions Section */}
         <div className="flex-1">
-          {/* Search & Controls */}
+          {/* Search & Controls - Mobile Optimized */}
           <div className="mb-6 flex flex-col sm:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
@@ -265,24 +264,24 @@ function AuctionsContent() {
                 placeholder="Search auctions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full pl-10 pr-4 py-3 min-h-[48px] text-base rounded-lg border border-gray-300 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary touch-manipulation"
               />
             </div>
 
             {/* Filter Toggle Button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-3 min-h-[48px] rounded-lg bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
             >
               <FilterIcon className="h-5 w-5" />
-              {showFilters ? "Hide" : "Show"} Filters
+              <span>{showFilters ? "Hide" : "Show"} Filters</span>
             </button>
 
-            {/* View Toggle */}
+            {/* View Toggle - Hidden on mobile */}
             <div className="hidden md:flex border border-gray-300 rounded-lg overflow-hidden">
               <button
                 onClick={() => setView("grid")}
-                className={`px-3 py-2 ${
+                className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                   view === "grid"
                     ? "bg-primary text-white"
                     : "bg-white text-gray-700 hover:bg-gray-50"
@@ -292,7 +291,7 @@ function AuctionsContent() {
               </button>
               <button
                 onClick={() => setView("list")}
-                className={`px-3 py-2 ${
+                className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                   view === "list"
                     ? "bg-primary text-white"
                     : "bg-white text-gray-700 hover:bg-gray-50"
@@ -457,8 +456,8 @@ function AuctionsContent() {
                       )}
                     </div>
 
-                    {/* CTA */}
-                    <button className="mt-4 w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
+                    {/* CTA - Mobile Optimized */}
+                    <button className="mt-4 w-full rounded-lg bg-primary px-4 py-3 min-h-[48px] text-sm font-medium text-white hover:bg-primary/90 active:bg-primary/80 transition-colors touch-manipulation">
                       {auction.status === AuctionStatus.ACTIVE
                         ? "Place Bid"
                         : "View Details"}
@@ -553,7 +552,7 @@ function AuctionsContent() {
                       </div>
                     </div>
 
-                    <button className="mt-4 sm:mt-0 sm:self-end rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
+                    <button className="mt-4 sm:mt-0 sm:self-end rounded-lg bg-primary px-6 py-3 min-h-[48px] text-sm font-medium text-white hover:bg-primary/90 active:bg-primary/80 transition-colors touch-manipulation">
                       {auction.status === AuctionStatus.ACTIVE
                         ? "Place Bid"
                         : "View Details"}

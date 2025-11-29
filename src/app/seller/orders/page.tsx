@@ -163,8 +163,8 @@ export default function SellerOrdersPage() {
               isLoading={loading}
             />
 
-            <div className="flex-1 p-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-6">
+            <div className="flex-1 p-4 sm:p-6">
+              <h1 className="text-xl sm:text-3xl font-bold text-gray-900 mb-6">
                 My Orders
               </h1>
 
@@ -322,28 +322,29 @@ export default function SellerOrdersPage() {
                 )}
               </div>
 
+              {/* Pagination - Mobile Optimized */}
               {orders.length > 0 && (
                 <div className="mt-6 border-t border-gray-200 pt-4">
                   <div className="flex items-center justify-between">
                     <button
                       onClick={handlePrevPage}
                       disabled={currentPage === 1 || loading}
-                      className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="flex items-center gap-2 px-4 py-3 min-h-[48px] bg-white border border-gray-300 rounded-lg hover:bg-gray-50 active:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
                     >
                       <ChevronLeft className="w-4 h-4" />
-                      Previous
+                      <span className="hidden sm:inline">Previous</span>
                     </button>
 
-                    <span className="text-sm text-gray-600">
-                      Page {currentPage} • {orders.length} orders
+                    <span className="text-sm text-gray-600 font-medium">
+                      Page {currentPage}
                     </span>
 
                     <button
                       onClick={handleNextPage}
                       disabled={!hasNextPage || loading}
-                      className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="flex items-center gap-2 px-4 py-3 min-h-[48px] bg-white border border-gray-300 rounded-lg hover:bg-gray-50 active:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
                     >
-                      Next
+                      <span className="hidden sm:inline">Next</span>
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
