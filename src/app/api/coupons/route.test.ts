@@ -4,7 +4,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GET, POST } from "./route";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getUserFromRequest, requireAuth } from "@/app/api/middleware/rbac-auth";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { getUserShops } from "../lib/auth-helpers";
 
@@ -19,10 +22,16 @@ jest.mock("../lib/firebase/config", () => ({
   getFirestoreAdmin: jest.fn(),
 }));
 
-const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<typeof getUserFromRequest>;
+const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<
+  typeof getUserFromRequest
+>;
 const mockRequireAuth = requireAuth as jest.MockedFunction<typeof requireAuth>;
-const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<typeof userOwnsShop>;
-const mockGetUserShops = getUserShops as jest.MockedFunction<typeof getUserShops>;
+const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<
+  typeof userOwnsShop
+>;
+const mockGetUserShops = getUserShops as jest.MockedFunction<
+  typeof getUserShops
+>;
 
 describe("GET /api/coupons", () => {
   let mockQuery: any;
@@ -96,7 +105,9 @@ describe("GET /api/coupons", () => {
       email: "seller@test.com",
     } as any);
 
-    const request = new NextRequest("http://localhost:3000/api/coupons?shop_id=shop1");
+    const request = new NextRequest(
+      "http://localhost:3000/api/coupons?shop_id=shop1",
+    );
     const response = await GET(request);
 
     expect(mockQuery.where).toHaveBeenCalledWith("shop_id", "==", "shop1");
@@ -140,7 +151,9 @@ describe("GET /api/coupons", () => {
       email: "admin@test.com",
     } as any);
 
-    const request = new NextRequest("http://localhost:3000/api/coupons?shop_id=shop1");
+    const request = new NextRequest(
+      "http://localhost:3000/api/coupons?shop_id=shop1",
+    );
     const response = await GET(request);
 
     expect(mockQuery.where).toHaveBeenCalledWith("shop_id", "==", "shop1");
@@ -358,7 +371,7 @@ describe("POST /api/coupons", () => {
         discount_value: 0,
         is_active: true,
         usage_limit: null,
-      })
+      }),
     );
   });
 
@@ -389,7 +402,7 @@ describe("POST /api/coupons", () => {
         usage_limit: 100,
         start_date: "2025-01-01",
         end_date: "2025-12-31",
-      })
+      }),
     );
   });
 

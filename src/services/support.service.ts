@@ -40,7 +40,7 @@ import {
 class SupportService {
   // List tickets (role-filtered: user sees own, seller sees shop, admin sees all)
   async listTickets(
-    filters?: Partial<SupportTicketFiltersBE>
+    filters?: Partial<SupportTicketFiltersBE>,
   ): Promise<PaginatedResponseFE<SupportTicketFE>> {
     const params = new URLSearchParams();
 
@@ -57,9 +57,8 @@ class SupportService {
       ? `${TICKET_ROUTES.LIST}?${queryString}`
       : TICKET_ROUTES.LIST;
 
-    const response = await apiService.get<PaginatedResponseBE<SupportTicketBE>>(
-      endpoint
-    );
+    const response =
+      await apiService.get<PaginatedResponseBE<SupportTicketBE>>(endpoint);
 
     return {
       data: toFESupportTickets(response.data),
@@ -84,12 +83,12 @@ class SupportService {
   // Update ticket (owner with limited fields, admin with all fields)
   async updateTicket(
     id: string,
-    data: UpdateTicketFormFE
+    data: UpdateTicketFormFE,
   ): Promise<SupportTicketFE> {
     const request = toBEUpdateSupportTicketRequest(data);
     const response: any = await apiService.patch(
       TICKET_ROUTES.BY_ID(id),
-      request
+      request,
     );
     return toFESupportTicket(response.data);
   }
@@ -106,7 +105,7 @@ class SupportService {
   async getMessages(
     ticketId: string,
     page?: number,
-    limit?: number
+    limit?: number,
   ): Promise<PaginatedResponseFE<SupportTicketMessageFE>> {
     const params = new URLSearchParams();
     if (page) params.append("page", page.toString());
@@ -117,9 +116,10 @@ class SupportService {
       ? `/support/tickets/${ticketId}/messages?${queryString}`
       : `/support/tickets/${ticketId}/messages`;
 
-    const response = await apiService.get<
-      PaginatedResponseBE<SupportTicketMessageBE>
-    >(endpoint);
+    const response =
+      await apiService.get<PaginatedResponseBE<SupportTicketMessageBE>>(
+        endpoint,
+      );
 
     return {
       data: toFESupportTicketMessages(response.data),
@@ -131,12 +131,12 @@ class SupportService {
   // Reply to ticket (owner, seller, or admin)
   async replyToTicket(
     ticketId: string,
-    data: ReplyToTicketFormFE
+    data: ReplyToTicketFormFE,
   ): Promise<SupportTicketMessageFE> {
     const request = toBEReplyToTicketRequest(data);
     const response: any = await apiService.post(
       TICKET_ROUTES.REPLY(ticketId),
-      request
+      request,
     );
     return toFESupportTicketMessage(response.data);
   }
@@ -144,7 +144,7 @@ class SupportService {
   // Assign ticket (admin only - now uses bulk endpoint)
   async assignTicket(
     id: string,
-    data: AssignTicketFormFE
+    data: AssignTicketFormFE,
   ): Promise<SupportTicketFE> {
     const request = toBEAssignTicketRequest(data);
     await apiService.post(TICKET_ROUTES.BULK, {
@@ -174,7 +174,7 @@ class SupportService {
 
   async bulkUpdate(
     ids: string[],
-    updates: Partial<UpdateTicketFormFE>
+    updates: Partial<UpdateTicketFormFE>,
   ): Promise<void> {
     await apiService.post(TICKET_ROUTES.BULK, {
       action: "update",
@@ -249,14 +249,14 @@ class SupportService {
 
   // Get my tickets
   async getMyTickets(
-    filters?: Omit<Partial<SupportTicketFiltersBE>, "assignedTo">
+    filters?: Omit<Partial<SupportTicketFiltersBE>, "assignedTo">,
   ): Promise<PaginatedResponseFE<SupportTicketFE>> {
     return this.listTickets(filters);
   }
 
   // Get ticket count
   async getTicketCount(
-    filters?: Pick<Partial<SupportTicketFiltersBE>, "status" | "category">
+    filters?: Pick<Partial<SupportTicketFiltersBE>, "status" | "category">,
   ): Promise<{ count: number }> {
     const params = new URLSearchParams();
 

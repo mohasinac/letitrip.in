@@ -176,7 +176,7 @@ describe("OrdersPage", () => {
       // Should not redirect to login, but may update URL for filters
       expect(mockPush).toHaveBeenCalledWith(
         "/user/orders?sortBy=created_at&sortOrder=desc",
-        { scroll: false }
+        { scroll: false },
       );
     });
   });
@@ -230,13 +230,13 @@ describe("OrdersPage", () => {
 
       expect(screen.getByText("No orders found")).toBeInTheDocument();
       expect(
-        screen.getByText("You haven't placed any orders yet")
+        screen.getByText("You haven't placed any orders yet"),
       ).toBeInTheDocument();
     });
 
     it("shows loading spinner while loading", () => {
       mockOrdersService.list.mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {}), // Never resolves
       );
 
       render(<OrdersPage />);
@@ -372,7 +372,7 @@ describe("OrdersPage", () => {
         expect(mockOrdersService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             startAfter: "cursor-123",
-          })
+          }),
         );
       });
     });

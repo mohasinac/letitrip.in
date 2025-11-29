@@ -121,13 +121,13 @@ export function searchTest() {
 
   // Auction search
   const auctionRes = http.get(
-    `${BASE_URL}/api/search?type=auctions&q=${query}`
+    `${BASE_URL}/api/search?type=auctions&q=${query}`,
   );
   check(auctionRes, { "auction search 200": (r) => r.status === 200 });
 
   // Filtered search
   const filteredRes = http.get(
-    `${BASE_URL}/api/search?type=products&q=${query}&min_price=1000&max_price=50000`
+    `${BASE_URL}/api/search?type=products&q=${query}&min_price=1000&max_price=50000`,
   );
   check(filteredRes, { "filtered search 200": (r) => r.status === 200 });
 
@@ -173,7 +173,7 @@ export function biddingTest() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${TEST_TOKEN}`,
       },
-    }
+    },
   );
 
   check(bidRes, {
@@ -213,7 +213,7 @@ export function checkoutTest() {
   const addRes = http.post(
     `${BASE_URL}/api/cart`,
     JSON.stringify({ productId: "prod_001", quantity: 1 }),
-    { headers }
+    { headers },
   );
   check(addRes, { "add to cart 200": (r) => r.status === 200 });
 
@@ -234,7 +234,7 @@ export function checkoutTest() {
       addressId: "addr_001",
       paymentMethod: "cod",
     }),
-    { headers }
+    { headers },
   );
   check(orderRes, {
     "create order success": (r) => r.status === 200 || r.status === 201,

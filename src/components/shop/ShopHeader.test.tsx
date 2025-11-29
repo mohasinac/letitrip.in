@@ -187,7 +187,7 @@ describe("ShopHeader Component", () => {
 
       const mapPinIcons = document.querySelectorAll("svg");
       const hasMapPin = Array.from(mapPinIcons).some((svg) =>
-        svg.getAttribute("class")?.includes("MapPin")
+        svg.getAttribute("class")?.includes("MapPin"),
       );
       expect(hasMapPin).toBe(false);
     });
@@ -199,7 +199,7 @@ describe("ShopHeader Component", () => {
       render(<ShopHeader shop={shopWithoutBanner} />);
 
       expect(
-        screen.queryByAltText("Amazing Electronics banner")
+        screen.queryByAltText("Amazing Electronics banner"),
       ).not.toBeInTheDocument();
     });
 
@@ -214,7 +214,7 @@ describe("ShopHeader Component", () => {
       const { container } = render(<ShopHeader shop={mockShop} />);
 
       const banner = container.querySelector(
-        'img[alt="Amazing Electronics banner"]'
+        'img[alt="Amazing Electronics banner"]',
       );
       expect(banner).toHaveClass("w-full", "h-full", "object-cover");
     });
@@ -230,7 +230,7 @@ describe("ShopHeader Component", () => {
         "object-cover",
         "border-4",
         "border-white",
-        "shadow-lg"
+        "shadow-lg",
       );
     });
   });
@@ -241,7 +241,7 @@ describe("ShopHeader Component", () => {
 
       await waitFor(() => {
         expect(shopsService.checkFollowing).toHaveBeenCalledWith(
-          "amazing-electronics"
+          "amazing-electronics",
         );
       });
     });
@@ -333,7 +333,7 @@ describe("ShopHeader Component", () => {
 
       await waitFor(() => {
         expect(shopsService.unfollow).toHaveBeenCalledWith(
-          "amazing-electronics"
+          "amazing-electronics",
         );
       });
     });
@@ -360,7 +360,7 @@ describe("ShopHeader Component", () => {
 
     it("should disable follow button while loading", async () => {
       (shopsService.follow as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(<ShopHeader shop={mockShop} />);
@@ -377,7 +377,7 @@ describe("ShopHeader Component", () => {
 
     it("should show alert on follow error", async () => {
       (shopsService.follow as jest.Mock).mockRejectedValue(
-        new Error("Please login to follow shops")
+        new Error("Please login to follow shops"),
       );
 
       render(<ShopHeader shop={mockShop} />);
@@ -391,14 +391,14 @@ describe("ShopHeader Component", () => {
 
       await waitFor(() => {
         expect(global.alert).toHaveBeenCalledWith(
-          "Please login to follow shops"
+          "Please login to follow shops",
         );
       });
     });
 
     it("should default to not following on check error", async () => {
       (shopsService.checkFollowing as jest.Mock).mockRejectedValue(
-        new Error("Not authenticated")
+        new Error("Not authenticated"),
       );
 
       render(<ShopHeader shop={mockShop} />);
@@ -527,7 +527,7 @@ describe("ShopHeader Component", () => {
 
       expect(screen.getByAltText("Amazing Electronics")).toBeInTheDocument();
       expect(
-        screen.getByAltText("Amazing Electronics banner")
+        screen.getByAltText("Amazing Electronics banner"),
       ).toBeInTheDocument();
     });
 
@@ -553,7 +553,7 @@ describe("ShopHeader Component", () => {
       const { container } = render(<ShopHeader shop={mockShop} />);
 
       const flexContainer = container.querySelector(
-        ".flex.flex-col.md\\:flex-row"
+        ".flex.flex-col.md\\:flex-row",
       );
       expect(flexContainer).toBeInTheDocument();
     });

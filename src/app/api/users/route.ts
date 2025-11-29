@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
         ...doc.data(),
       }),
       50, // defaultLimit
-      200 // maxLimit
+      200, // maxLimit
     );
 
     // Client-side search filter (Firestore doesn't support full-text search)
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
         (user: any) =>
           user.email?.toLowerCase().includes(searchLower) ||
           user.name?.toLowerCase().includes(searchLower) ||
-          user.phone?.includes(search)
+          user.phone?.includes(search),
       );
       response.count = response.data.length;
     }
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       { success: false, error: "Failed to fetch users" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     if (!email || !name) {
       return NextResponse.json(
         { success: false, error: "Email and name are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     if (!existingUser.empty) {
       return NextResponse.json(
         { success: false, error: "Email already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -137,14 +137,14 @@ export async function POST(request: NextRequest) {
         message: "User created successfully",
         data: { id: docRef.id, ...userDoc.data() },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Failed to create user:", error);
 
     return NextResponse.json(
       { success: false, error: "Failed to create user" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

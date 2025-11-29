@@ -299,7 +299,7 @@ function SupportTicketsContent() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
-                                  ticket.priority
+                                  ticket.priority,
                                 )}`}
                               >
                                 {formatStatus(ticket.priority)}
@@ -308,7 +308,7 @@ function SupportTicketsContent() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 text-xs font-medium rounded-md border ${getStatusColor(
-                                  ticket.status
+                                  ticket.status,
                                 )}`}
                               >
                                 {formatStatus(ticket.status)}

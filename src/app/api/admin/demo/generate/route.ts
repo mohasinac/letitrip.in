@@ -414,7 +414,7 @@ export async function POST() {
     async function createCategories(
       tree: any,
       parentId: string | null = null,
-      parentIds: string[] = []
+      parentIds: string[] = [],
     ): Promise<void> {
       for (const [name, data] of Object.entries(tree)) {
         const catData = data as any;
@@ -509,7 +509,7 @@ export async function POST() {
         name: `${DEMO_PREFIX}CollectorsHub - TCG & Collectibles`,
         slug: `${DEMO_PREFIX.toLowerCase().replace(
           /_/g,
-          "-"
+          "-",
         )}collectorshub-tcg`,
         description:
           "Your one-stop shop for Trading Card Games, Beyblades, and Premium Figurines",
@@ -521,7 +521,7 @@ export async function POST() {
         name: `${DEMO_PREFIX}Anime Legends - Figure Paradise`,
         slug: `${DEMO_PREFIX.toLowerCase().replace(
           /_/g,
-          "-"
+          "-",
         )}anime-legends-figures`,
         description:
           "Premium Anime Figures, Gaming Collectibles, and Limited Edition Statues",
@@ -606,7 +606,7 @@ export async function POST() {
           name.includes("Edition") ||
           name.includes("Series")
         );
-      }
+      },
     );
 
     for (let i = 0; i < 100; i++) {
@@ -793,12 +793,12 @@ export async function POST() {
       const title = `${DEMO_PREFIX}Auction #${i + 1} - Premium Collectible`;
       const auctionSlug = `${DEMO_PREFIX.toLowerCase().replace(
         /_/g,
-        "-"
+        "-",
       )}${title
         .toLowerCase()
         .replace(
           new RegExp(DEMO_PREFIX.toLowerCase().replace(/_/g, "-"), "g"),
-          ""
+          "",
         )
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "")}-${i}`;
@@ -811,7 +811,7 @@ export async function POST() {
         (_, idx) => {
           const imageIndex = (i * 5 + idx) % PRODUCT_IMAGES.length;
           return `${PRODUCT_IMAGES[imageIndex]}?w=800&h=800&fit=crop&q=80`;
-        }
+        },
       );
 
       // Add video to 60% of auctions (use different videos)
@@ -941,7 +941,7 @@ export async function POST() {
         await orderRef.set({
           orderNumber: `${DEMO_PREFIX}ORD-${String(orderCount + 1).padStart(
             4,
-            "0"
+            "0",
           )}`,
           buyerId: buyer.id,
           buyerName: buyer.name,
@@ -1013,7 +1013,7 @@ export async function POST() {
       const productCount = productsByShop[shop.id].length;
       const shopAuctionCount = auctionIds.filter(
         (_, idx) =>
-          Math.floor(idx / 5) === shopData.findIndex((s) => s.id === shop.id)
+          Math.floor(idx / 5) === shopData.findIndex((s) => s.id === shop.id),
       ).length;
 
       await db
@@ -1101,7 +1101,7 @@ export async function POST() {
         });
       } else {
         console.warn(
-          `Product ${productId} not found, skipping review stats update`
+          `Product ${productId} not found, skipping review stats update`,
         );
       }
     }
@@ -1136,7 +1136,7 @@ export async function POST() {
     console.error("Demo generation error:", error);
     return NextResponse.json(
       { error: error.message || "Failed to generate demo data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

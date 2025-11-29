@@ -21,10 +21,11 @@ describe("POST /api/tickets/[id]/reply", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Re-setup getFirestoreAdmin mock after clearAll
     (getFirestoreAdmin as jest.Mock).mockReturnValue({
-      collection: (name: string) => Collections[name as keyof typeof Collections]?.() || jest.fn(),
+      collection: (name: string) =>
+        Collections[name as keyof typeof Collections]?.() || jest.fn(),
       batch: jest.fn(),
     });
   });
@@ -34,11 +35,16 @@ describe("POST /api/tickets/[id]/reply", () => {
       error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     });
 
-    const request = new NextRequest("http://localhost/api/tickets/ticket123/reply", {
-      method: "POST",
-      body: JSON.stringify({}),
+    const request = new NextRequest(
+      "http://localhost/api/tickets/ticket123/reply",
+      {
+        method: "POST",
+        body: JSON.stringify({}),
+      },
+    );
+    const response = await POST(request, {
+      params: Promise.resolve({ id: "ticket123" }),
     });
-    const response = await POST(request, { params: Promise.resolve({ id: "ticket123" }) });
 
     expect(response.status).toBe(401);
   });
@@ -47,11 +53,16 @@ describe("POST /api/tickets/[id]/reply", () => {
     const mockUser = { uid: "user123", role: "user" };
     mockRequireAuth.mockResolvedValue({ user: mockUser });
 
-    const request = new NextRequest("http://localhost/api/tickets/ticket123/reply", {
-      method: "POST",
-      body: JSON.stringify({ message: "" }),
+    const request = new NextRequest(
+      "http://localhost/api/tickets/ticket123/reply",
+      {
+        method: "POST",
+        body: JSON.stringify({ message: "" }),
+      },
+    );
+    const response = await POST(request, {
+      params: Promise.resolve({ id: "ticket123" }),
     });
-    const response = await POST(request, { params: Promise.resolve({ id: "ticket123" }) });
     const data = await response.json();
 
     expect(response.status).toBe(400);
@@ -68,11 +79,16 @@ describe("POST /api/tickets/[id]/reply", () => {
       }),
     });
 
-    const request = new NextRequest("http://localhost/api/tickets/ticket123/reply", {
-      method: "POST",
-      body: JSON.stringify({ message: "Test reply" }),
+    const request = new NextRequest(
+      "http://localhost/api/tickets/ticket123/reply",
+      {
+        method: "POST",
+        body: JSON.stringify({ message: "Test reply" }),
+      },
+    );
+    const response = await POST(request, {
+      params: Promise.resolve({ id: "ticket123" }),
     });
-    const response = await POST(request, { params: Promise.resolve({ id: "ticket123" }) });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -109,14 +125,19 @@ describe("POST /api/tickets/[id]/reply", () => {
       }),
     });
 
-    const request = new NextRequest("http://localhost/api/tickets/ticket123/reply", {
-      method: "POST",
-      body: JSON.stringify({
-        message: "This is my reply",
-        attachments: ["file1.pdf"],
-      }),
+    const request = new NextRequest(
+      "http://localhost/api/tickets/ticket123/reply",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          message: "This is my reply",
+          attachments: ["file1.pdf"],
+        }),
+      },
+    );
+    const response = await POST(request, {
+      params: Promise.resolve({ id: "ticket123" }),
     });
-    const response = await POST(request, { params: Promise.resolve({ id: "ticket123" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -128,7 +149,7 @@ describe("POST /api/tickets/[id]/reply", () => {
         message: "This is my reply",
         attachments: ["file1.pdf"],
         isInternal: false,
-      })
+      }),
     );
   });
 
@@ -156,20 +177,23 @@ describe("POST /api/tickets/[id]/reply", () => {
       doc: jest.fn().mockReturnValue(mockTicketRef),
     });
 
-    const request = new NextRequest("http://localhost/api/tickets/ticket123/reply", {
-      method: "POST",
-      body: JSON.stringify({
-        message: "Internal note",
-        isInternal: true,
-      }),
-    });
+    const request = new NextRequest(
+      "http://localhost/api/tickets/ticket123/reply",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          message: "Internal note",
+          isInternal: true,
+        }),
+      },
+    );
     await POST(request, { params: Promise.resolve({ id: "ticket123" }) });
 
     expect(mockAdd).toHaveBeenCalledWith(
       expect.objectContaining({
         isInternal: true,
         senderRole: "admin",
-      })
+      }),
     );
   });
 
@@ -197,19 +221,22 @@ describe("POST /api/tickets/[id]/reply", () => {
       doc: jest.fn().mockReturnValue(mockTicketRef),
     });
 
-    const request = new NextRequest("http://localhost/api/tickets/ticket123/reply", {
-      method: "POST",
-      body: JSON.stringify({
-        message: "Test message",
-        isInternal: true,
-      }),
-    });
+    const request = new NextRequest(
+      "http://localhost/api/tickets/ticket123/reply",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          message: "Test message",
+          isInternal: true,
+        }),
+      },
+    );
     await POST(request, { params: Promise.resolve({ id: "ticket123" }) });
 
     expect(mockAdd).toHaveBeenCalledWith(
       expect.objectContaining({
         isInternal: false, // Should be forced to false
-      })
+      }),
     );
   });
 
@@ -237,16 +264,19 @@ describe("POST /api/tickets/[id]/reply", () => {
       doc: jest.fn().mockReturnValue(mockTicketRef),
     });
 
-    const request = new NextRequest("http://localhost/api/tickets/ticket123/reply", {
-      method: "POST",
-      body: JSON.stringify({ message: "We're looking into this" }),
-    });
+    const request = new NextRequest(
+      "http://localhost/api/tickets/ticket123/reply",
+      {
+        method: "POST",
+        body: JSON.stringify({ message: "We're looking into this" }),
+      },
+    );
     await POST(request, { params: Promise.resolve({ id: "ticket123" }) });
 
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         status: "in-progress",
-      })
+      }),
     );
   });
 
@@ -274,17 +304,20 @@ describe("POST /api/tickets/[id]/reply", () => {
       doc: jest.fn().mockReturnValue(mockTicketRef),
     });
 
-    const request = new NextRequest("http://localhost/api/tickets/ticket123/reply", {
-      method: "POST",
-      body: JSON.stringify({ message: "Issue is still happening" }),
-    });
+    const request = new NextRequest(
+      "http://localhost/api/tickets/ticket123/reply",
+      {
+        method: "POST",
+        body: JSON.stringify({ message: "Issue is still happening" }),
+      },
+    );
     await POST(request, { params: Promise.resolve({ id: "ticket123" }) });
 
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         status: "open",
         resolvedAt: null,
-      })
+      }),
     );
   });
 
@@ -304,11 +337,16 @@ describe("POST /api/tickets/[id]/reply", () => {
       }),
     });
 
-    const request = new NextRequest("http://localhost/api/tickets/ticket123/reply", {
-      method: "POST",
-      body: JSON.stringify({ message: "Test reply" }),
+    const request = new NextRequest(
+      "http://localhost/api/tickets/ticket123/reply",
+      {
+        method: "POST",
+        body: JSON.stringify({ message: "Test reply" }),
+      },
+    );
+    const response = await POST(request, {
+      params: Promise.resolve({ id: "ticket123" }),
     });
-    const response = await POST(request, { params: Promise.resolve({ id: "ticket123" }) });
     const data = await response.json();
 
     expect(response.status).toBe(403);

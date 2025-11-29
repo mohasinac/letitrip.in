@@ -32,7 +32,7 @@ describe("MobileActionSheet", () => {
         isOpen={false}
         onClose={mockOnClose}
         actions={mockActions}
-      />
+      />,
     );
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -44,7 +44,7 @@ describe("MobileActionSheet", () => {
         isOpen={true}
         onClose={mockOnClose}
         actions={mockActions}
-      />
+      />,
     );
 
     expect(screen.getByText("Edit")).toBeInTheDocument();
@@ -58,7 +58,7 @@ describe("MobileActionSheet", () => {
         onClose={mockOnClose}
         actions={mockActions}
         title="Choose Action"
-      />
+      />,
     );
 
     expect(screen.getByText("Choose Action")).toBeInTheDocument();
@@ -70,7 +70,7 @@ describe("MobileActionSheet", () => {
         isOpen={true}
         onClose={mockOnClose}
         actions={mockActions}
-      />
+      />,
     );
 
     await userEvent.click(screen.getByText("Edit"));
@@ -85,7 +85,7 @@ describe("MobileActionSheet", () => {
         isOpen={true}
         onClose={mockOnClose}
         actions={mockActions}
-      />
+      />,
     );
 
     expect(screen.getByText("Cancel")).toBeInTheDocument();
@@ -98,7 +98,7 @@ describe("MobileActionSheet", () => {
         onClose={mockOnClose}
         actions={mockActions}
         showCancel={false}
-      />
+      />,
     );
 
     expect(screen.queryByText("Cancel")).not.toBeInTheDocument();
@@ -111,7 +111,7 @@ describe("MobileActionSheet", () => {
         onClose={mockOnClose}
         actions={mockActions}
         cancelLabel="Close"
-      />
+      />,
     );
 
     expect(screen.getByText("Close")).toBeInTheDocument();
@@ -124,7 +124,7 @@ describe("MobileActionSheet", () => {
         isOpen={true}
         onClose={mockOnClose}
         actions={mockActions}
-      />
+      />,
     );
 
     await userEvent.click(screen.getByText("Cancel"));
@@ -137,7 +137,7 @@ describe("MobileActionSheet", () => {
         isOpen={true}
         onClose={mockOnClose}
         actions={mockActions}
-      />
+      />,
     );
 
     const deleteButton = screen.getByText("Delete").closest("button");
@@ -157,7 +157,7 @@ describe("MobileActionSheet", () => {
         isOpen={true}
         onClose={mockOnClose}
         actions={[disabledAction]}
-      />
+      />,
     );
 
     const button = screen.getByText("Disabled Action").closest("button");

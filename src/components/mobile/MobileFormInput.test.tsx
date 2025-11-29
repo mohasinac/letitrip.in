@@ -20,7 +20,7 @@ describe("MobileFormInput", () => {
 
   it("shows helper text when provided", () => {
     render(
-      <MobileFormInput label="Email" helperText="Enter your work email" />
+      <MobileFormInput label="Email" helperText="Enter your work email" />,
     );
     expect(screen.getByText("Enter your work email")).toBeInTheDocument();
   });
@@ -31,7 +31,7 @@ describe("MobileFormInput", () => {
         label="Email"
         error="Invalid"
         helperText="Enter your email"
-      />
+      />,
     );
     expect(screen.getByText("Invalid")).toBeInTheDocument();
     expect(screen.queryByText("Enter your email")).not.toBeInTheDocument();
@@ -42,7 +42,7 @@ describe("MobileFormInput", () => {
       <MobileFormInput
         label="Search"
         leftIcon={<span data-testid="left-icon">🔍</span>}
-      />
+      />,
     );
     expect(screen.getByTestId("left-icon")).toBeInTheDocument();
   });
@@ -52,7 +52,7 @@ describe("MobileFormInput", () => {
       <MobileFormInput
         label="Password"
         rightIcon={<span data-testid="right-icon">👁</span>}
-      />
+      />,
     );
     expect(screen.getByTestId("right-icon")).toBeInTheDocument();
   });
@@ -77,7 +77,7 @@ describe("MobileFormInput", () => {
     render(<MobileFormInput label="Age" type="number" />);
     expect(screen.getByRole("spinbutton")).toHaveAttribute(
       "inputMode",
-      "numeric"
+      "numeric",
     );
   });
 

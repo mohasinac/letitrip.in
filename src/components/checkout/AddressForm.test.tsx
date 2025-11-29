@@ -37,7 +37,7 @@ global.alert = mockAlert;
 // Helper to get desktop container to avoid duplicate elements
 const getDesktopContainer = (container: HTMLElement) => {
   const desktopModal = container.querySelector(
-    "div.hidden.sm\\:block"
+    "div.hidden.sm\\:block",
   ) as HTMLElement;
   return desktopModal || container;
 };
@@ -48,7 +48,7 @@ const renderAddressForm = (props: {
   onClose: jest.Mock;
 }) => {
   const result = render(
-    <AddressForm addressId={props.addressId} onClose={props.onClose} />
+    <AddressForm addressId={props.addressId} onClose={props.onClose} />,
   );
   const desktop = getDesktopContainer(result.container);
   return {
@@ -100,8 +100,8 @@ describe("AddressForm", () => {
       expect(screen.getByPlaceholderText("9876543210")).toBeInTheDocument();
       expect(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
-        )
+          "Flat, House no., Building, Company, Apartment",
+        ),
       ).toBeInTheDocument();
       expect(screen.getByPlaceholderText("Mumbai")).toBeInTheDocument();
       expect(screen.getByPlaceholderText("Maharashtra")).toBeInTheDocument();
@@ -113,7 +113,7 @@ describe("AddressForm", () => {
       render(<AddressForm onClose={mockOnClose} />);
 
       expect(
-        screen.getByPlaceholderText("Area, Street, Sector, Village")
+        screen.getByPlaceholderText("Area, Street, Sector, Village"),
       ).toBeInTheDocument();
       expect(screen.getByText("Address Line 2 (Optional)")).toBeInTheDocument();
     });
@@ -130,7 +130,7 @@ describe("AddressForm", () => {
       render(<AddressForm onClose={mockOnClose} />);
 
       expect(
-        screen.getByRole("button", { name: "Add Address" })
+        screen.getByRole("button", { name: "Add Address" }),
       ).toBeInTheDocument();
     });
 
@@ -138,7 +138,7 @@ describe("AddressForm", () => {
       render(<AddressForm onClose={mockOnClose} />);
 
       expect(
-        screen.getByRole("button", { name: "Cancel" })
+        screen.getByRole("button", { name: "Cancel" }),
       ).toBeInTheDocument();
     });
 
@@ -152,7 +152,7 @@ describe("AddressForm", () => {
   describe("Basic Rendering - Edit Mode", () => {
     beforeEach(() => {
       (addressService.getById as jest.Mock).mockResolvedValue(
-        mockExistingAddress
+        mockExistingAddress,
       );
     });
 
@@ -187,19 +187,19 @@ describe("AddressForm", () => {
       });
 
       expect(screen.getByPlaceholderText("9876543210")).toHaveValue(
-        "9876543210"
+        "9876543210",
       );
       expect(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
-        )
+          "Flat, House no., Building, Company, Apartment",
+        ),
       ).toHaveValue("123 Main St");
       expect(
-        screen.getByPlaceholderText("Area, Street, Sector, Village")
+        screen.getByPlaceholderText("Area, Street, Sector, Village"),
       ).toHaveValue("Apt 4B");
       expect(screen.getByPlaceholderText("Mumbai")).toHaveValue("Mumbai");
       expect(screen.getByPlaceholderText("Maharashtra")).toHaveValue(
-        "Maharashtra"
+        "Maharashtra",
       );
       expect(screen.getByPlaceholderText("400001")).toHaveValue("400001");
       expect(screen.getByPlaceholderText("India")).toHaveValue("India");
@@ -219,7 +219,7 @@ describe("AddressForm", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: "Update Address" })
+          screen.getByRole("button", { name: "Update Address" }),
         ).toBeInTheDocument();
       });
     });
@@ -234,7 +234,7 @@ describe("AddressForm", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Name must be at least 2 characters")
+          screen.getByText("Name must be at least 2 characters"),
         ).toBeInTheDocument();
       });
     });
@@ -250,7 +250,7 @@ describe("AddressForm", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Name must be at least 2 characters")
+          screen.getByText("Name must be at least 2 characters"),
         ).toBeInTheDocument();
       });
     });
@@ -263,7 +263,7 @@ describe("AddressForm", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Phone must be at least 10 digits")
+          screen.getByText("Phone must be at least 10 digits"),
         ).toBeInTheDocument();
       });
     });
@@ -279,7 +279,7 @@ describe("AddressForm", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Phone must be at least 10 digits")
+          screen.getByText("Phone must be at least 10 digits"),
         ).toBeInTheDocument();
       });
     });
@@ -292,7 +292,7 @@ describe("AddressForm", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Address line 1 is required")
+          screen.getByText("Address line 1 is required"),
         ).toBeInTheDocument();
       });
     });
@@ -301,7 +301,7 @@ describe("AddressForm", () => {
       render(<AddressForm onClose={mockOnClose} />);
 
       const addressInput = screen.getByPlaceholderText(
-        "Flat, House no., Building, Company, Apartment"
+        "Flat, House no., Building, Company, Apartment",
       );
       fireEvent.change(addressInput, { target: { value: "123" } });
 
@@ -310,7 +310,7 @@ describe("AddressForm", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Address line 1 is required")
+          screen.getByText("Address line 1 is required"),
         ).toBeInTheDocument();
       });
     });
@@ -348,7 +348,7 @@ describe("AddressForm", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Pincode must be 6 digits")
+          screen.getByText("Pincode must be 6 digits"),
         ).toBeInTheDocument();
       });
     });
@@ -364,7 +364,7 @@ describe("AddressForm", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Pincode must be 6 digits")
+          screen.getByText("Pincode must be 6 digits"),
         ).toBeInTheDocument();
       });
     });
@@ -383,9 +383,9 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St" } }
+        { target: { value: "123 Main St" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -433,9 +433,9 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St" } }
+        { target: { value: "123 Main St" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -471,13 +471,13 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St" } }
+        { target: { value: "123 Main St" } },
       );
       fireEvent.change(
         screen.getByPlaceholderText("Area, Street, Sector, Village"),
-        { target: { value: "Apt 4B" } }
+        { target: { value: "Apt 4B" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -522,9 +522,9 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St" } }
+        { target: { value: "123 Main St" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -558,9 +558,9 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St" } }
+        { target: { value: "123 Main St" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -582,14 +582,14 @@ describe("AddressForm", () => {
         expect(addressService.create).toHaveBeenCalledWith(
           expect.objectContaining({
             isDefault: true,
-          })
+          }),
         );
       });
     });
 
     it("shows loading state during submission", async () => {
       (addressService.create as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(<AddressForm onClose={mockOnClose} />);
@@ -603,9 +603,9 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St" } }
+        { target: { value: "123 Main St" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -628,7 +628,7 @@ describe("AddressForm", () => {
 
     it("disables buttons during submission", async () => {
       (addressService.create as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(<AddressForm onClose={mockOnClose} />);
@@ -642,9 +642,9 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St" } }
+        { target: { value: "123 Main St" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -672,7 +672,7 @@ describe("AddressForm", () => {
   describe("Form Submission - Edit Mode", () => {
     beforeEach(() => {
       (addressService.getById as jest.Mock).mockResolvedValue(
-        mockExistingAddress
+        mockExistingAddress,
       );
     });
 
@@ -700,14 +700,14 @@ describe("AddressForm", () => {
           "addr-1",
           expect.objectContaining({
             city: "Delhi",
-          })
+          }),
         );
       });
     });
 
     it("shows updating text during submission", async () => {
       (addressService.update as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(<AddressForm addressId="addr-1" onClose={mockOnClose} />);
@@ -749,7 +749,7 @@ describe("AddressForm", () => {
   describe("Error Handling", () => {
     it("shows alert on create error", async () => {
       (addressService.create as jest.Mock).mockRejectedValue(
-        new Error("Network error")
+        new Error("Network error"),
       );
 
       render(<AddressForm onClose={mockOnClose} />);
@@ -763,9 +763,9 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St" } }
+        { target: { value: "123 Main St" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -787,10 +787,10 @@ describe("AddressForm", () => {
 
     it("shows alert on update error", async () => {
       (addressService.getById as jest.Mock).mockResolvedValue(
-        mockExistingAddress
+        mockExistingAddress,
       );
       (addressService.update as jest.Mock).mockRejectedValue(
-        new Error("Update failed")
+        new Error("Update failed"),
       );
 
       render(<AddressForm addressId="addr-1" onClose={mockOnClose} />);
@@ -823,9 +823,9 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St" } }
+        { target: { value: "123 Main St" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -850,7 +850,7 @@ describe("AddressForm", () => {
         .spyOn(console, "error")
         .mockImplementation(() => {});
       (addressService.getById as jest.Mock).mockRejectedValue(
-        new Error("Fetch failed")
+        new Error("Fetch failed"),
       );
 
       render(<AddressForm addressId="addr-1" onClose={mockOnClose} />);
@@ -858,7 +858,7 @@ describe("AddressForm", () => {
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalledWith(
           "Failed to load address:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -867,7 +867,7 @@ describe("AddressForm", () => {
 
     it("does not close form on submission error", async () => {
       (addressService.create as jest.Mock).mockRejectedValue(
-        new Error("Network error")
+        new Error("Network error"),
       );
 
       render(<AddressForm onClose={mockOnClose} />);
@@ -881,9 +881,9 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St" } }
+        { target: { value: "123 Main St" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -973,9 +973,9 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St" } }
+        { target: { value: "123 Main St" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -994,7 +994,7 @@ describe("AddressForm", () => {
         expect(addressService.create).toHaveBeenCalledWith(
           expect.objectContaining({
             fullName: longName,
-          })
+          }),
         );
       });
     });
@@ -1012,9 +1012,9 @@ describe("AddressForm", () => {
       });
       fireEvent.change(
         screen.getByPlaceholderText(
-          "Flat, House no., Building, Company, Apartment"
+          "Flat, House no., Building, Company, Apartment",
         ),
-        { target: { value: "123 Main St, Apt #4B" } }
+        { target: { value: "123 Main St, Apt #4B" } },
       );
       fireEvent.change(screen.getByPlaceholderText("Mumbai"), {
         target: { value: "Mumbai" },
@@ -1034,7 +1034,7 @@ describe("AddressForm", () => {
           expect.objectContaining({
             fullName: "O'Connor & Associates",
             addressLine1: "123 Main St, Apt #4B",
-          })
+          }),
         );
       });
     });

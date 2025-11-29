@@ -17,7 +17,8 @@ const Collections = {
 };
 
 (getFirestoreAdmin as jest.Mock).mockReturnValue({
-  collection: (name: string) => Collections[name as keyof typeof Collections]?.() || jest.fn(),
+  collection: (name: string) =>
+    Collections[name as keyof typeof Collections]?.() || jest.fn(),
   batch: jest.fn(),
 });
 
@@ -35,7 +36,9 @@ describe("GET /api/tickets/[id]", () => {
     });
 
     const request = new NextRequest("http://localhost/api/tickets/ticket123");
-    const response = await GET(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await GET(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
 
     expect(response.status).toBe(401);
   });
@@ -50,7 +53,9 @@ describe("GET /api/tickets/[id]", () => {
     });
 
     const request = new NextRequest("http://localhost/api/tickets/ticket123");
-    const response = await GET(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await GET(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -99,7 +104,9 @@ describe("GET /api/tickets/[id]", () => {
     });
 
     const request = new NextRequest("http://localhost/api/tickets/ticket123");
-    const response = await GET(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await GET(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -127,7 +134,9 @@ describe("GET /api/tickets/[id]", () => {
     });
 
     const request = new NextRequest("http://localhost/api/tickets/ticket123");
-    const response = await GET(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await GET(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(403);
@@ -180,7 +189,9 @@ describe("GET /api/tickets/[id]", () => {
     });
 
     const request = new NextRequest("http://localhost/api/tickets/ticket123");
-    const response = await GET(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await GET(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -249,7 +260,9 @@ describe("GET /api/tickets/[id]", () => {
     });
 
     const request = new NextRequest("http://localhost/api/tickets/ticket123");
-    const response = await GET(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await GET(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -276,7 +289,9 @@ describe("PATCH /api/tickets/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({}),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
 
     expect(response.status).toBe(401);
   });
@@ -295,7 +310,9 @@ describe("PATCH /api/tickets/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({ subject: "Updated" }),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -330,7 +347,9 @@ describe("PATCH /api/tickets/[id]", () => {
       method: "PATCH",
       body: JSON.stringify(updates),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
 
     expect(response.status).toBe(200);
     expect(mockUpdate).toHaveBeenCalledWith(
@@ -338,7 +357,7 @@ describe("PATCH /api/tickets/[id]", () => {
         status: "in-progress",
         assignedTo: "admin123",
         priority: "urgent",
-      })
+      }),
     );
   });
 
@@ -370,7 +389,7 @@ describe("PATCH /api/tickets/[id]", () => {
       expect.objectContaining({
         status: "resolved",
         resolvedAt: expect.any(Date),
-      })
+      }),
     );
   });
 
@@ -399,14 +418,16 @@ describe("PATCH /api/tickets/[id]", () => {
         description: "Updated description",
       }),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
 
     expect(response.status).toBe(200);
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         subject: "Updated subject",
         description: "Updated description",
-      })
+      }),
     );
   });
 
@@ -430,7 +451,9 @@ describe("PATCH /api/tickets/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({ subject: "Updated" }),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(403);
@@ -457,7 +480,9 @@ describe("PATCH /api/tickets/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({ subject: "Updated" }),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(403);
@@ -480,7 +505,9 @@ describe("DELETE /api/tickets/[id]", () => {
     const request = new NextRequest("http://localhost/api/tickets/ticket123", {
       method: "DELETE",
     });
-    const response = await DELETE(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await DELETE(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
 
     expect(response.status).toBe(403);
   });
@@ -497,7 +524,9 @@ describe("DELETE /api/tickets/[id]", () => {
     const request = new NextRequest("http://localhost/api/tickets/ticket123", {
       method: "DELETE",
     });
-    const response = await DELETE(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await DELETE(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -515,10 +544,7 @@ describe("DELETE /api/tickets/[id]", () => {
     };
 
     const mockMessagesSnapshot = {
-      docs: [
-        { ref: "msgRef1" },
-        { ref: "msgRef2" },
-      ],
+      docs: [{ ref: "msgRef1" }, { ref: "msgRef2" }],
     };
 
     const mockTicketRef = {
@@ -533,14 +559,17 @@ describe("DELETE /api/tickets/[id]", () => {
     });
 
     (getFirestoreAdmin as jest.Mock).mockReturnValue({
-      collection: (name: string) => Collections[name as keyof typeof Collections]?.() || jest.fn(),
+      collection: (name: string) =>
+        Collections[name as keyof typeof Collections]?.() || jest.fn(),
       batch: jest.fn().mockReturnValue(mockBatch),
     });
 
     const request = new NextRequest("http://localhost/api/tickets/ticket123", {
       method: "DELETE",
     });
-    const response = await DELETE(request, { params: Promise.resolve({ id: "ticket123" }) });
+    const response = await DELETE(request, {
+      params: Promise.resolve({ id: "ticket123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(200);

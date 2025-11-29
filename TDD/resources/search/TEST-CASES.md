@@ -16,8 +16,8 @@ describe("SearchService - Products", () => {
         result.data.every(
           (p) =>
             p.name.toLowerCase().includes("iphone") ||
-            p.description.toLowerCase().includes("iphone")
-        )
+            p.description.toLowerCase().includes("iphone"),
+        ),
       ).toBe(true);
     });
 
@@ -25,7 +25,7 @@ describe("SearchService - Products", () => {
       const result = await searchProducts({ category_slug: "mobiles" });
       expect(result.success).toBe(true);
       expect(result.data.every((p) => p.category_id === "cat_mobiles")).toBe(
-        true
+        true,
       );
     });
 
@@ -42,7 +42,7 @@ describe("SearchService - Products", () => {
       });
       expect(result.success).toBe(true);
       expect(
-        result.data.every((p) => p.price >= 10000 && p.price <= 50000)
+        result.data.every((p) => p.price >= 10000 && p.price <= 50000),
       ).toBe(true);
     });
 
@@ -69,7 +69,7 @@ describe("SearchService - Products", () => {
       expect(result.success).toBe(true);
       for (let i = 1; i < result.data.length; i++) {
         expect(
-          new Date(result.data[i - 1].created_at).getTime()
+          new Date(result.data[i - 1].created_at).getTime(),
         ).toBeGreaterThanOrEqual(new Date(result.data[i].created_at).getTime());
       }
     });
@@ -79,7 +79,7 @@ describe("SearchService - Products", () => {
       expect(result.success).toBe(true);
       for (let i = 1; i < result.data.length; i++) {
         expect(result.data[i - 1].price).toBeLessThanOrEqual(
-          result.data[i].price
+          result.data[i].price,
         );
       }
     });
@@ -89,7 +89,7 @@ describe("SearchService - Products", () => {
       expect(result.success).toBe(true);
       for (let i = 1; i < result.data.length; i++) {
         expect(result.data[i - 1].price).toBeGreaterThanOrEqual(
-          result.data[i].price
+          result.data[i].price,
         );
       }
     });
@@ -137,8 +137,8 @@ describe("SearchService - Auctions", () => {
         result.data.every(
           (a) =>
             a.title.toLowerCase().includes("vintage") ||
-            a.description.toLowerCase().includes("vintage")
-        )
+            a.description.toLowerCase().includes("vintage"),
+        ),
       ).toBe(true);
     });
 
@@ -146,7 +146,7 @@ describe("SearchService - Auctions", () => {
       const result = await searchAuctions({ category_slug: "watches" });
       expect(result.success).toBe(true);
       expect(result.data.every((a) => a.category_id === "cat_watches")).toBe(
-        true
+        true,
       );
     });
 
@@ -164,8 +164,8 @@ describe("SearchService - Auctions", () => {
       expect(result.success).toBe(true);
       expect(
         result.data.every(
-          (a) => a.current_bid >= 10000 && a.current_bid <= 100000
-        )
+          (a) => a.current_bid >= 10000 && a.current_bid <= 100000,
+        ),
       ).toBe(true);
     });
 
@@ -173,7 +173,7 @@ describe("SearchService - Auctions", () => {
       const result = await searchAuctions({});
       expect(result.success).toBe(true);
       expect(
-        result.data.every((a) => a.status === "active" || a.status === "live")
+        result.data.every((a) => a.status === "active" || a.status === "live"),
       ).toBe(true);
     });
 
@@ -182,7 +182,7 @@ describe("SearchService - Auctions", () => {
       expect(result.success).toBe(true);
       for (let i = 1; i < result.data.length; i++) {
         expect(
-          new Date(result.data[i - 1].end_time).getTime()
+          new Date(result.data[i - 1].end_time).getTime(),
         ).toBeLessThanOrEqual(new Date(result.data[i].end_time).getTime());
       }
     });
@@ -192,7 +192,7 @@ describe("SearchService - Auctions", () => {
       expect(result.success).toBe(true);
       for (let i = 1; i < result.data.length; i++) {
         expect(result.data[i - 1].current_bid).toBeLessThanOrEqual(
-          result.data[i].current_bid
+          result.data[i].current_bid,
         );
       }
     });
@@ -202,7 +202,7 @@ describe("SearchService - Auctions", () => {
       expect(result.success).toBe(true);
       for (let i = 1; i < result.data.length; i++) {
         expect(result.data[i - 1].current_bid).toBeGreaterThanOrEqual(
-          result.data[i].current_bid
+          result.data[i].current_bid,
         );
       }
     });
@@ -219,7 +219,7 @@ describe("SearchService - Shops", () => {
       const result = await searchShops({ q: "tech" });
       expect(result.success).toBe(true);
       expect(
-        result.data.every((s) => s.name.toLowerCase().includes("tech"))
+        result.data.every((s) => s.name.toLowerCase().includes("tech")),
       ).toBe(true);
     });
 
@@ -233,7 +233,7 @@ describe("SearchService - Shops", () => {
       const result = await searchShops({ state: "Maharashtra" });
       expect(result.success).toBe(true);
       expect(result.data.every((s) => s.address.state === "Maharashtra")).toBe(
-        true
+        true,
       );
     });
 
@@ -248,7 +248,7 @@ describe("SearchService - Shops", () => {
       expect(result.success).toBe(true);
       for (let i = 1; i < result.data.length; i++) {
         expect(result.data[i - 1].rating).toBeGreaterThanOrEqual(
-          result.data[i].rating
+          result.data[i].rating,
         );
       }
     });
@@ -258,7 +258,7 @@ describe("SearchService - Shops", () => {
       expect(result.success).toBe(true);
       for (let i = 1; i < result.data.length; i++) {
         expect(
-          result.data[i - 1].name.localeCompare(result.data[i].name)
+          result.data[i - 1].name.localeCompare(result.data[i].name),
         ).toBeLessThanOrEqual(0);
       }
     });
@@ -298,7 +298,7 @@ describe("GET /api/search", () => {
 
     it("should filter by category_slug", async () => {
       const res = await fetch(
-        "/api/search?type=products&category_slug=mobiles"
+        "/api/search?type=products&category_slug=mobiles",
       );
       expect(res.status).toBe(200);
       const json = await res.json();
@@ -307,7 +307,7 @@ describe("GET /api/search", () => {
 
     it("should return 404 for invalid category", async () => {
       const res = await fetch(
-        "/api/search?type=products&category_slug=nonexistent"
+        "/api/search?type=products&category_slug=nonexistent",
       );
       expect(res.status).toBe(404);
       const json = await res.json();
@@ -323,7 +323,7 @@ describe("GET /api/search", () => {
 
     it("should return 404 for invalid shop", async () => {
       const res = await fetch(
-        "/api/search?type=products&shop_slug=nonexistent"
+        "/api/search?type=products&shop_slug=nonexistent",
       );
       expect(res.status).toBe(404);
       const json = await res.json();
@@ -332,7 +332,7 @@ describe("GET /api/search", () => {
 
     it("should filter by price range", async () => {
       const res = await fetch(
-        "/api/search?type=products&min_price=10000&max_price=50000"
+        "/api/search?type=products&min_price=10000&max_price=50000",
       );
       expect(res.status).toBe(200);
       const json = await res.json();
@@ -392,7 +392,7 @@ describe("GET /api/search", () => {
 
     it("should filter by price range (current_bid)", async () => {
       const res = await fetch(
-        "/api/search?type=auctions&min_price=10000&max_price=100000"
+        "/api/search?type=auctions&min_price=10000&max_price=100000",
       );
       expect(res.status).toBe(200);
       const json = await res.json();
@@ -408,7 +408,7 @@ describe("GET /api/search", () => {
       const json = await res.json();
       for (let i = 1; i < json.data.length; i++) {
         expect(
-          new Date(json.data[i - 1].end_time).getTime()
+          new Date(json.data[i - 1].end_time).getTime(),
         ).toBeLessThanOrEqual(new Date(json.data[i].end_time).getTime());
       }
     });
@@ -468,21 +468,21 @@ describe("E2E: Product Discovery", () => {
 
     // 2. User filters by category
     const filteredRes = await fetch(
-      "/api/search?type=products&q=iphone&category_slug=mobiles"
+      "/api/search?type=products&q=iphone&category_slug=mobiles",
     );
     const filteredJson = await filteredRes.json();
     expect(filteredJson.data.length).toBeLessThanOrEqual(
-      searchJson.data.length
+      searchJson.data.length,
     );
 
     // 3. User sorts by price
     const sortedRes = await fetch(
-      "/api/search?type=products&q=iphone&category_slug=mobiles&sort=price-asc"
+      "/api/search?type=products&q=iphone&category_slug=mobiles&sort=price-asc",
     );
     const sortedJson = await sortedRes.json();
     if (sortedJson.data.length >= 2) {
       expect(sortedJson.data[0].price).toBeLessThanOrEqual(
-        sortedJson.data[1].price
+        sortedJson.data[1].price,
       );
     }
 
@@ -508,7 +508,7 @@ describe("E2E: Auction Discovery", () => {
 
     // 2. User filters by price range
     const filteredRes = await fetch(
-      "/api/search?type=auctions&sort=endingSoon&min_price=5000&max_price=50000"
+      "/api/search?type=auctions&sort=endingSoon&min_price=5000&max_price=50000",
     );
     const filteredJson = await filteredRes.json();
 

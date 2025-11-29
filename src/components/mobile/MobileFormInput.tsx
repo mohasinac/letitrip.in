@@ -3,8 +3,10 @@
 import { forwardRef, InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-interface MobileFormInputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
+interface MobileFormInputProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "size"
+> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -30,7 +32,7 @@ export const MobileFormInput = forwardRef<
       type = "text",
       ...props
     },
-    ref
+    ref,
   ) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
@@ -93,15 +95,15 @@ export const MobileFormInput = forwardRef<
               // Icon padding
               leftIcon && "pl-10",
               rightIcon && "pr-10",
-              className
+              className,
             )}
             aria-invalid={!!error}
             aria-describedby={
               error
                 ? `${inputId}-error`
                 : helperText
-                ? `${inputId}-helper`
-                : undefined
+                  ? `${inputId}-helper`
+                  : undefined
             }
             {...props}
           />
@@ -143,7 +145,7 @@ export const MobileFormInput = forwardRef<
         )}
       </div>
     );
-  }
+  },
 );
 
 MobileFormInput.displayName = "MobileFormInput";

@@ -60,7 +60,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.getByText("LET IT RIP")).toBeInTheDocument();
@@ -71,7 +71,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       // Sign In text is hidden on mobile (sm:inline), but the link exists
@@ -85,7 +85,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       // Find the caret button by aria-label
@@ -103,7 +103,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.queryByText("Admin")).not.toBeInTheDocument();
@@ -114,7 +114,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.queryByText("Seller")).not.toBeInTheDocument();
@@ -141,7 +141,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.getByText("Test User")).toBeInTheDocument();
@@ -152,7 +152,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.getByText("TU")).toBeInTheDocument();
@@ -163,7 +163,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       const userButton = screen.getByLabelText("User menu");
@@ -179,7 +179,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.queryByText("Admin")).not.toBeInTheDocument();
@@ -206,7 +206,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.getByText("Seller")).toBeInTheDocument();
@@ -217,7 +217,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       const sellerButton = screen.getByLabelText("Seller menu");
@@ -233,7 +233,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.queryByText("Admin")).not.toBeInTheDocument();
@@ -260,7 +260,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.getByText("Admin")).toBeInTheDocument();
@@ -271,7 +271,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.getByText("Seller")).toBeInTheDocument();
@@ -282,7 +282,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.getByText("DEMO")).toBeInTheDocument();
@@ -293,7 +293,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       const adminButton = screen.getByLabelText("Admin menu");
@@ -320,13 +320,13 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       // Find the cart link by href
       const allLinks = screen.getAllByRole("link");
       const cartLink = allLinks.find(
-        (link) => link.getAttribute("href") === "/cart"
+        (link) => link.getAttribute("href") === "/cart",
       );
       expect(cartLink).toBeTruthy();
     });
@@ -340,7 +340,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.getByText("3")).toBeInTheDocument();
@@ -355,7 +355,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.queryByText("0")).not.toBeInTheDocument();
@@ -377,7 +377,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       const menuButton = screen.getByLabelText("Toggle navigation menu");
@@ -402,7 +402,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       const searchButton = screen.getByLabelText("Search products");
@@ -427,7 +427,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       expect(screen.getByRole("navigation")).toBeInTheDocument();
@@ -450,7 +450,7 @@ describe("MainNavBar", () => {
         <MainNavBar
           onMobileMenuToggle={mockOnMobileMenuToggle}
           onSearchClick={mockOnSearchClick}
-        />
+        />,
       );
 
       const menuButton = screen.getByLabelText("User menu");

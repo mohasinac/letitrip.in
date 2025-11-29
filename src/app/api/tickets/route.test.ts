@@ -16,13 +16,15 @@ const Collections = {
 };
 
 (getFirestoreAdmin as jest.Mock).mockReturnValue({
-  collection: (name: string) => Collections[name as keyof typeof Collections]?.() || jest.fn(),
+  collection: (name: string) =>
+    Collections[name as keyof typeof Collections]?.() || jest.fn(),
 });
 
 describe("GET /api/tickets", () => {
   const mockGetUserFromRequest = rbacAuth.getUserFromRequest as jest.Mock;
   const mockRequireAuth = rbacAuth.requireAuth as jest.Mock;
-  const mockExecutePagination = pagination.executeCursorPaginatedQuery as jest.Mock;
+  const mockExecutePagination =
+    pagination.executeCursorPaginatedQuery as jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -50,9 +52,7 @@ describe("GET /api/tickets", () => {
     Collections.support_tickets.mockReturnValue(mockQuery);
 
     mockExecutePagination.mockResolvedValue({
-      items: [
-        { id: "ticket1", subject: "Test", userId: "user123" },
-      ],
+      items: [{ id: "ticket1", subject: "Test", userId: "user123" }],
       hasNextPage: false,
     });
 
@@ -92,7 +92,9 @@ describe("GET /api/tickets", () => {
       hasNextPage: false,
     });
 
-    const request = new NextRequest("http://localhost/api/tickets?shopId=shop123");
+    const request = new NextRequest(
+      "http://localhost/api/tickets?shopId=shop123",
+    );
     const response = await GET(request);
 
     expect(response.status).toBe(200);
@@ -120,10 +122,7 @@ describe("GET /api/tickets", () => {
     Collections.support_tickets.mockReturnValue({ ...mockQuery, get: mockGet });
 
     mockExecutePagination.mockResolvedValue({
-      items: [
-        { id: "ticket1" },
-        { id: "ticket2" },
-      ],
+      items: [{ id: "ticket1" }, { id: "ticket2" }],
       hasNextPage: false,
     });
 
@@ -177,10 +176,16 @@ describe("GET /api/tickets", () => {
       hasNextPage: false,
     });
 
-    const request = new NextRequest("http://localhost/api/tickets?category=order-issue");
+    const request = new NextRequest(
+      "http://localhost/api/tickets?category=order-issue",
+    );
     await GET(request);
 
-    expect(mockQuery.where).toHaveBeenCalledWith("category", "==", "order-issue");
+    expect(mockQuery.where).toHaveBeenCalledWith(
+      "category",
+      "==",
+      "order-issue",
+    );
   });
 
   it("should filter by priority", async () => {
@@ -199,7 +204,9 @@ describe("GET /api/tickets", () => {
       hasNextPage: false,
     });
 
-    const request = new NextRequest("http://localhost/api/tickets?priority=urgent");
+    const request = new NextRequest(
+      "http://localhost/api/tickets?priority=urgent",
+    );
     await GET(request);
 
     expect(mockQuery.where).toHaveBeenCalledWith("priority", "==", "urgent");
@@ -221,10 +228,16 @@ describe("GET /api/tickets", () => {
       hasNextPage: false,
     });
 
-    const request = new NextRequest("http://localhost/api/tickets?assignedTo=admin456");
+    const request = new NextRequest(
+      "http://localhost/api/tickets?assignedTo=admin456",
+    );
     await GET(request);
 
-    expect(mockQuery.where).toHaveBeenCalledWith("assignedTo", "==", "admin456");
+    expect(mockQuery.where).toHaveBeenCalledWith(
+      "assignedTo",
+      "==",
+      "admin456",
+    );
   });
 
   it("should sort by valid fields", async () => {
@@ -243,7 +256,9 @@ describe("GET /api/tickets", () => {
       hasNextPage: false,
     });
 
-    const request = new NextRequest("http://localhost/api/tickets?sortBy=priority&sortOrder=asc");
+    const request = new NextRequest(
+      "http://localhost/api/tickets?sortBy=priority&sortOrder=asc",
+    );
     await GET(request);
 
     expect(mockQuery.orderBy).toHaveBeenCalledWith("priority", "asc");
@@ -344,7 +359,7 @@ describe("POST /api/tickets", () => {
         priority: "high",
         status: "open",
         userId: "user123",
-      })
+      }),
     );
   });
 
@@ -423,7 +438,7 @@ describe("POST /api/tickets", () => {
     expect(mockAdd).toHaveBeenCalledWith(
       expect.objectContaining({
         priority: "medium",
-      })
+      }),
     );
   });
 

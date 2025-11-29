@@ -102,7 +102,7 @@ export function MobileBottomSheet({
           "max-h-[90vh] flex flex-col",
           "animate-slide-up",
           "pb-safe",
-          className
+          className,
         )}
         style={{
           transform: `translateY(${currentY}px)`,

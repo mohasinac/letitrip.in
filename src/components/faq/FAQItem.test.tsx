@@ -30,7 +30,7 @@ describe("FAQItem", () => {
 
     it("renders chevron down icon", () => {
       const { container } = render(
-        <FAQItem question={mockQuestion} answer={mockAnswer} />
+        <FAQItem question={mockQuestion} answer={mockAnswer} />,
       );
 
       const icon = container.querySelector("svg");
@@ -100,7 +100,7 @@ describe("FAQItem", () => {
           question={mockQuestion}
           answer={mockAnswer}
           defaultOpen={true}
-        />
+        />,
       );
 
       expect(screen.getByText(/trusted seller/)).toBeInTheDocument();
@@ -112,7 +112,7 @@ describe("FAQItem", () => {
           question={mockQuestion}
           answer={mockAnswer}
           defaultOpen={true}
-        />
+        />,
       );
 
       const button = screen.getByRole("button");
@@ -125,7 +125,7 @@ describe("FAQItem", () => {
           question={mockQuestion}
           answer={mockAnswer}
           defaultOpen={true}
-        />
+        />,
       );
 
       const button = screen.getByRole("button");
@@ -146,7 +146,7 @@ describe("FAQItem", () => {
           question={mockQuestion}
           answer={mockAnswer}
           defaultOpen={false}
-        />
+        />,
       );
 
       expect(screen.queryByText(/trusted seller/)).not.toBeInTheDocument();
@@ -156,7 +156,7 @@ describe("FAQItem", () => {
   describe("Chevron Icon Animation", () => {
     it("rotates chevron when opened", () => {
       const { container } = render(
-        <FAQItem question={mockQuestion} answer={mockAnswer} />
+        <FAQItem question={mockQuestion} answer={mockAnswer} />,
       );
 
       const button = screen.getByRole("button");
@@ -168,7 +168,7 @@ describe("FAQItem", () => {
 
     it("removes rotation when closed", () => {
       const { container } = render(
-        <FAQItem question={mockQuestion} answer={mockAnswer} />
+        <FAQItem question={mockQuestion} answer={mockAnswer} />,
       );
 
       const button = screen.getByRole("button");
@@ -179,7 +179,7 @@ describe("FAQItem", () => {
 
     it("has transition class on chevron", () => {
       const { container } = render(
-        <FAQItem question={mockQuestion} answer={mockAnswer} />
+        <FAQItem question={mockQuestion} answer={mockAnswer} />,
       );
 
       const icon = container.querySelector("svg");
@@ -262,7 +262,7 @@ describe("FAQItem", () => {
           question={mockQuestion}
           answer={mockAnswer}
           defaultOpen={true}
-        />
+        />,
       );
 
       const answerDiv = container.querySelector(".px-6.pb-5");
@@ -271,7 +271,7 @@ describe("FAQItem", () => {
 
     it("has border on container", () => {
       const { container } = render(
-        <FAQItem question={mockQuestion} answer={mockAnswer} />
+        <FAQItem question={mockQuestion} answer={mockAnswer} />,
       );
 
       const itemDiv = container.firstChild;

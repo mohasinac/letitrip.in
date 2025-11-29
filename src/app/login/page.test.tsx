@@ -55,12 +55,12 @@ describe("LoginPage", () => {
 
       expect(screen.getByText("Welcome Back")).toBeInTheDocument();
       expect(
-        screen.getByText("Sign in to your account to continue")
+        screen.getByText("Sign in to your account to continue"),
       ).toBeInTheDocument();
       expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /sign in/i })
+        screen.getByRole("button", { name: /sign in/i }),
       ).toBeInTheDocument();
     });
 
@@ -111,7 +111,7 @@ describe("LoginPage", () => {
     it("allows email input", () => {
       render(<LoginPage />);
       const emailInput = screen.getByLabelText(
-        /email address/i
+        /email address/i,
       ) as HTMLInputElement;
 
       fireEvent.change(emailInput, { target: { value: "test@example.com" } });
@@ -122,7 +122,7 @@ describe("LoginPage", () => {
     it("allows password input", () => {
       render(<LoginPage />);
       const passwordInput = screen.getByLabelText(
-        /password/i
+        /password/i,
       ) as HTMLInputElement;
 
       fireEvent.change(passwordInput, { target: { value: "password123" } });
@@ -154,7 +154,7 @@ describe("LoginPage", () => {
       render(<LoginPage />);
 
       expect(
-        screen.getByPlaceholderText("you@example.com")
+        screen.getByPlaceholderText("you@example.com"),
       ).toBeInTheDocument();
       expect(screen.getByPlaceholderText("••••••••")).toBeInTheDocument();
     });
@@ -178,14 +178,14 @@ describe("LoginPage", () => {
       await waitFor(() => {
         expect(mockLogin).toHaveBeenCalledWith(
           "test@example.com",
-          "password123"
+          "password123",
         );
       });
     });
 
     it("shows loading state during submission", async () => {
       mockLogin.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 1000))
+        () => new Promise((resolve) => setTimeout(resolve, 1000)),
       );
 
       render(<LoginPage />);
@@ -206,7 +206,7 @@ describe("LoginPage", () => {
 
     it("disables submit button during loading", async () => {
       mockLogin.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 1000))
+        () => new Promise((resolve) => setTimeout(resolve, 1000)),
       );
 
       render(<LoginPage />);
@@ -317,7 +317,7 @@ describe("LoginPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Login failed. Please try again.")
+          screen.getByText("Login failed. Please try again."),
         ).toBeInTheDocument();
       });
     });
@@ -351,7 +351,7 @@ describe("LoginPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByText("Invalid credentials")
+          screen.queryByText("Invalid credentials"),
         ).not.toBeInTheDocument();
       });
     });

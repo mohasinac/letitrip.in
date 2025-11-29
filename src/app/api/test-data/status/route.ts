@@ -87,7 +87,7 @@ export async function GET() {
           .where("name", "<", PREFIX + "\uf8ff")
           .get();
         stats.featuredShops = shopsSnapshot.docs.filter(
-          (doc) => doc.data().is_featured === true
+          (doc) => doc.data().is_featured === true,
         ).length;
       } else {
         throw error;
@@ -156,7 +156,7 @@ export async function GET() {
           .where("name", "<", PREFIX + "\uf8ff")
           .get();
         stats.featuredProducts = productsSnapshot.docs.filter(
-          (doc) => doc.data().is_featured === true
+          (doc) => doc.data().is_featured === true,
         ).length;
       } else {
         throw error;
@@ -203,7 +203,7 @@ export async function GET() {
           .where("name", "<", PREFIX + "\uf8ff")
           .get();
         stats.featuredAuctions = auctionsSnapshot.docs.filter(
-          (doc) => doc.data().is_featured === true
+          (doc) => doc.data().is_featured === true,
         ).length;
       } else {
         throw error;
@@ -228,7 +228,7 @@ export async function GET() {
           .where("name", "<", PREFIX + "\uf8ff")
           .get();
         stats.homepageItems = auctionsSnapshot.docs.filter(
-          (doc) => doc.data().show_on_homepage === true
+          (doc) => doc.data().show_on_homepage === true,
         ).length;
       } else {
         throw error;
@@ -350,7 +350,7 @@ export async function GET() {
     console.error("Error fetching test data status:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to fetch status" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

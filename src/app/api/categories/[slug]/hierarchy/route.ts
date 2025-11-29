@@ -7,7 +7,7 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  */
 export async function GET(
   _: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const { slug } = await params;
@@ -39,7 +39,7 @@ export async function GET(
       if (categoriesSnapshot.empty) {
         return NextResponse.json(
           { success: false, error: "Category not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -74,7 +74,7 @@ export async function GET(
         success: false,
         error: error.message || "Failed to fetch category hierarchy",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

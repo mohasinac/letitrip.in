@@ -178,7 +178,7 @@ export default function EditCouponPage() {
                     style={{
                       width: `${Math.min(
                         (coupon.usageCount / coupon.usageLimit) * 100,
-                        100
+                        100,
                       )}%`,
                     }}
                   />

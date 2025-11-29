@@ -211,7 +211,7 @@ describe("GET /api/shops", () => {
     mockCollections.shops.mockReturnValue(mockQuery as any);
 
     const req = new NextRequest(
-      "http://localhost/api/shops?sortBy=rating&sortOrder=desc"
+      "http://localhost/api/shops?sortBy=rating&sortOrder=desc",
     );
     await GET(req);
 
@@ -334,7 +334,7 @@ describe("POST /api/shops", () => {
     mockRequireAuth.mockResolvedValue({
       error: NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       ),
     } as any);
 

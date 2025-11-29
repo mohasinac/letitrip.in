@@ -47,7 +47,7 @@ export default function AdminOrdersPage() {
 
   // Filters - unified state
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || ""
+    searchParams.get("search") || "",
   );
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [filterValues, setFilterValues] = useState<Partial<OrderFiltersBE>>({
@@ -149,7 +149,7 @@ export default function AdminOrdersPage() {
     } catch (error) {
       console.error("Failed to load orders:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load orders"
+        error instanceof Error ? error.message : "Failed to load orders",
       );
     } finally {
       setLoading(false);
@@ -187,7 +187,7 @@ export default function AdminOrdersPage() {
     ]);
 
     const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
-      "\n"
+      "\n",
     );
 
     const blob = new Blob([csv], { type: "text/csv" });
@@ -475,7 +475,7 @@ export default function AdminOrdersPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(
-                            order.status
+                            order.status,
                           )}`}
                         >
                           {order.status}
@@ -484,7 +484,7 @@ export default function AdminOrdersPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getPaymentStatusColor(
-                            order.paymentStatus
+                            order.paymentStatus,
                           )}`}
                         >
                           {order.paymentStatus}

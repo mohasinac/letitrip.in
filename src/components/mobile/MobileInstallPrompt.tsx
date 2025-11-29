@@ -60,7 +60,7 @@ export function MobileInstallPrompt() {
     return () => {
       window.removeEventListener(
         "beforeinstallprompt",
-        handleBeforeInstallPrompt
+        handleBeforeInstallPrompt,
       );
     };
   }, []);
@@ -92,7 +92,7 @@ export function MobileInstallPrompt() {
         "fixed bottom-20 left-4 right-4 z-50 lg:hidden",
         "bg-white rounded-xl shadow-xl border border-gray-200",
         "animate-slide-up",
-        "safe-area-inset-bottom"
+        "safe-area-inset-bottom",
       )}
       role="dialog"
       aria-labelledby="install-prompt-title"

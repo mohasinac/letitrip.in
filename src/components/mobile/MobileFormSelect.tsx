@@ -10,8 +10,10 @@ interface Option {
   disabled?: boolean;
 }
 
-interface MobileFormSelectProps
-  extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "size"> {
+interface MobileFormSelectProps extends Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  "size"
+> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -36,7 +38,7 @@ export const MobileFormSelect = forwardRef<
       id,
       ...props
     },
-    ref
+    ref,
   ) => {
     const selectId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
@@ -71,15 +73,15 @@ export const MobileFormSelect = forwardRef<
                 : "border-gray-300",
               // Disabled styles
               props.disabled && "bg-gray-100 text-gray-500 cursor-not-allowed",
-              className
+              className,
             )}
             aria-invalid={!!error}
             aria-describedby={
               error
                 ? `${selectId}-error`
                 : helperText
-                ? `${selectId}-helper`
-                : undefined
+                  ? `${selectId}-helper`
+                  : undefined
             }
             {...props}
           >
@@ -135,7 +137,7 @@ export const MobileFormSelect = forwardRef<
         )}
       </div>
     );
-  }
+  },
 );
 
 MobileFormSelect.displayName = "MobileFormSelect";

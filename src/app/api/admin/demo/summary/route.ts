@@ -26,7 +26,7 @@ export async function GET() {
       if (data.demoSession && !sessionsMap.has(data.demoSession)) {
         sessionsMap.set(
           data.demoSession,
-          data.createdAt?.toDate() || new Date()
+          data.createdAt?.toDate() || new Date(),
         );
       }
     });
@@ -107,13 +107,13 @@ export async function GET() {
           reviews: 0,
           createdAt: sessionsMap.get(sessionId)!.toISOString(),
         };
-      })
+      }),
     );
 
     // Sort by newest first
     summaries.sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
     return NextResponse.json({
@@ -128,7 +128,7 @@ export async function GET() {
         total: 0,
         error: error.message,
       },
-      { status: 200 }
+      { status: 200 },
     );
   }
 }

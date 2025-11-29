@@ -32,13 +32,13 @@ describe("Error Page", () => {
       render(<Error error={mockError} reset={mockReset} />);
 
       expect(
-        screen.getByText("Oops! Something went wrong")
+        screen.getByText("Oops! Something went wrong"),
       ).toBeInTheDocument();
     });
 
     it("should display error icon/svg", () => {
       const { container } = render(
-        <Error error={mockError} reset={mockReset} />
+        <Error error={mockError} reset={mockReset} />,
       );
 
       const svg = container.querySelector("svg");
@@ -49,7 +49,7 @@ describe("Error Page", () => {
       render(<Error error={mockError} reset={mockReset} />);
 
       expect(
-        screen.getByText(/We encountered an unexpected error/i)
+        screen.getByText(/We encountered an unexpected error/i),
       ).toBeInTheDocument();
     });
 
@@ -72,13 +72,13 @@ describe("Error Page", () => {
 
       expect(console.error).toHaveBeenCalledWith(
         "Application error:",
-        mockError
+        mockError,
       );
     });
 
     it("should log error only once", () => {
       const { rerender } = render(
-        <Error error={mockError} reset={mockReset} />
+        <Error error={mockError} reset={mockReset} />,
       );
 
       expect(console.error).toHaveBeenCalledTimes(1);
@@ -89,7 +89,7 @@ describe("Error Page", () => {
 
     it("should log new error on error change", () => {
       const { rerender } = render(
-        <Error error={mockError} reset={mockReset} />
+        <Error error={mockError} reset={mockReset} />,
       );
 
       const newError: Error = {
@@ -100,7 +100,7 @@ describe("Error Page", () => {
 
       expect(console.error).toHaveBeenCalledWith(
         "Application error:",
-        newError
+        newError,
       );
     });
   });
@@ -135,7 +135,7 @@ describe("Error Page", () => {
       render(<Error error={errorWithoutMessage} reset={mockReset} />);
 
       expect(
-        screen.getByText("Oops! Something went wrong")
+        screen.getByText("Oops! Something went wrong"),
       ).toBeInTheDocument();
     });
   });
@@ -179,7 +179,7 @@ describe("Error Page", () => {
   describe("Styling & Layout", () => {
     it("should use gradient background", () => {
       const { container } = render(
-        <Error error={mockError} reset={mockReset} />
+        <Error error={mockError} reset={mockReset} />,
       );
 
       const gradientDiv = container.querySelector(".bg-gradient-to-br");
@@ -188,7 +188,7 @@ describe("Error Page", () => {
 
     it("should center content on screen", () => {
       const { container } = render(
-        <Error error={mockError} reset={mockReset} />
+        <Error error={mockError} reset={mockReset} />,
       );
 
       const centerDiv = container.querySelector(".min-h-screen");
@@ -199,7 +199,7 @@ describe("Error Page", () => {
 
     it("should use card layout for content", () => {
       const { container } = render(
-        <Error error={mockError} reset={mockReset} />
+        <Error error={mockError} reset={mockReset} />,
       );
 
       const card = container.querySelector(".bg-white");
@@ -216,7 +216,7 @@ describe("Error Page", () => {
 
     it("should use proper color scheme (red theme)", () => {
       const { container } = render(
-        <Error error={mockError} reset={mockReset} />
+        <Error error={mockError} reset={mockReset} />,
       );
 
       const redElements = container.querySelectorAll('[class*="red"]');
@@ -256,7 +256,7 @@ describe("Error Page", () => {
       render(<Error error={nullError} reset={mockReset} />);
 
       expect(
-        screen.getByText("Oops! Something went wrong")
+        screen.getByText("Oops! Something went wrong"),
       ).toBeInTheDocument();
     });
 
@@ -279,7 +279,7 @@ describe("Error Page", () => {
 
       // Component should render without crashing
       expect(
-        screen.getByText("Oops! Something went wrong")
+        screen.getByText("Oops! Something went wrong"),
       ).toBeInTheDocument();
     });
 
@@ -294,7 +294,7 @@ describe("Error Page", () => {
 
       // Component should render without crashing and not show raw script tags
       expect(
-        screen.getByText("Oops! Something went wrong")
+        screen.getByText("Oops! Something went wrong"),
       ).toBeInTheDocument();
     });
   });
@@ -302,7 +302,7 @@ describe("Error Page", () => {
   describe("Responsive Design", () => {
     it("should use responsive flex layout", () => {
       const { container } = render(
-        <Error error={mockError} reset={mockReset} />
+        <Error error={mockError} reset={mockReset} />,
       );
 
       const buttonsContainer = container.querySelector(".flex-col");
@@ -311,7 +311,7 @@ describe("Error Page", () => {
 
     it("should be mobile-friendly", () => {
       const { container } = render(
-        <Error error={mockError} reset={mockReset} />
+        <Error error={mockError} reset={mockReset} />,
       );
 
       const card = container.querySelector(".max-w-md");

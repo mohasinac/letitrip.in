@@ -26,7 +26,7 @@ describe("SupportTicketPage", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /Submit Ticket/i }));
     expect(
-      screen.getByText(/Subject must be at least 3 characters/i)
+      screen.getByText(/Subject must be at least 3 characters/i),
     ).toBeInTheDocument();
   });
 
@@ -40,7 +40,7 @@ describe("SupportTicketPage", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /Submit Ticket/i }));
     expect(
-      screen.getByText(/Description must be at least 10 characters/i)
+      screen.getByText(/Description must be at least 10 characters/i),
     ).toBeInTheDocument();
   });
 });

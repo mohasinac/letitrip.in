@@ -13,7 +13,7 @@ describe("MessagesPage", () => {
       render(<MessagesPage />);
       expect(screen.getByRole("main")).toHaveAttribute(
         "id",
-        "user-messages-page"
+        "user-messages-page",
       );
     });
 
@@ -57,7 +57,7 @@ describe("MessagesPage", () => {
         "text-3xl",
         "font-bold",
         "text-gray-800",
-        "mb-6"
+        "mb-6",
       );
     });
 
@@ -103,7 +103,7 @@ describe("MessagesPage", () => {
     it("should be navigable by screen readers", () => {
       const { container } = render(<MessagesPage />);
       expect(
-        container.querySelector("main#user-messages-page")
+        container.querySelector("main#user-messages-page"),
       ).toBeInTheDocument();
     });
   });

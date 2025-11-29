@@ -34,7 +34,7 @@ describe("ShippingPolicyPage", () => {
     it("should render last updated date", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/Last Updated: November 7, 2025/i)
+        screen.getByText(/Last Updated: November 7, 2025/i),
       ).toBeInTheDocument();
     });
 
@@ -46,7 +46,7 @@ describe("ShippingPolicyPage", () => {
     it("should render effective date", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/Effective Date: November 1, 2025/i)
+        screen.getByText(/Effective Date: November 1, 2025/i),
       ).toBeInTheDocument();
     });
   });
@@ -56,17 +56,17 @@ describe("ShippingPolicyPage", () => {
     it("should describe business model (India-based importing from international)", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/India-based seller\/reseller/i)
+        screen.getByText(/India-based seller\/reseller/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Japan, China, Hong Kong, USA, UK/i)
+        screen.getByText(/Japan, China, Hong Kong, USA, UK/i),
       ).toBeInTheDocument();
     });
 
     it("should emphasize no customs charges for buyers", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/You only pay for shipping within India/i)
+        screen.getByText(/You only pay for shipping within India/i),
       ).toBeInTheDocument();
     });
   });
@@ -76,14 +76,14 @@ describe("ShippingPolicyPage", () => {
     it("should describe in-stock item process", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/2\.1.*For IN-STOCK Items.*Already Imported/i)
+        screen.getByText(/2\.1.*For IN-STOCK Items.*Already Imported/i),
       ).toBeInTheDocument();
     });
 
     it("should describe pre-order item process", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/2\.2.*For PRE-ORDER Items.*To Be Imported/i)
+        screen.getByText(/2\.2.*For PRE-ORDER Items.*To Be Imported/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/International Purchase/i)).toBeInTheDocument();
       expect(screen.getAllByText(/Customs Clearance/i)[0]).toBeInTheDocument();
@@ -126,14 +126,14 @@ describe("ShippingPolicyPage", () => {
       render(<ShippingPolicyPage />);
       expect(screen.getByText(/Small package \(0-500g\)/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/Medium package \(500g-2kg\)/i)
+        screen.getByText(/Medium package \(500g-2kg\)/i),
       ).toBeInTheDocument();
     });
 
     it("should explain free shipping eligibility", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/4\.3.*Free Shipping by Sellers/i)
+        screen.getByText(/4\.3.*Free Shipping by Sellers/i),
       ).toBeInTheDocument();
     });
   });
@@ -143,7 +143,7 @@ describe("ShippingPolicyPage", () => {
     it("should list serviceable areas", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/5\.1.*Serviceable Areas.*India/i)
+        screen.getByText(/5\.1.*Serviceable Areas.*India/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/Delhi, Mumbai, Bangalore/i)).toBeInTheDocument();
     });
@@ -151,7 +151,7 @@ describe("ShippingPolicyPage", () => {
     it("should list non-serviceable areas", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/5\.2.*Non-Serviceable Areas/i)
+        screen.getByText(/5\.2.*Non-Serviceable Areas/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/PO Box addresses/i)).toBeInTheDocument();
     });
@@ -159,7 +159,7 @@ describe("ShippingPolicyPage", () => {
     it("should specify address requirements", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/5\.3.*Address Requirements/i)
+        screen.getByText(/5\.3.*Address Requirements/i),
       ).toBeInTheDocument();
     });
   });
@@ -169,7 +169,7 @@ describe("ShippingPolicyPage", () => {
     it("should list all tracking stages", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/6\.1.*Tracking Your Order/i)
+        screen.getByText(/6\.1.*Tracking Your Order/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/Order Placed/i)).toBeInTheDocument();
       expect(screen.getAllByText(/Customs Clearance/i)[0]).toBeInTheDocument();
@@ -187,24 +187,24 @@ describe("ShippingPolicyPage", () => {
     it("should emphasize no customs charges for buyers", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/7\.1.*No Customs Charges for You/i)
+        screen.getByText(/7\.1.*No Customs Charges for You/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/you don't have to pay ANY customs duties/i)
+        screen.getByText(/you don't have to pay ANY customs duties/i),
       ).toBeInTheDocument();
     });
 
     it("should explain how imports are handled", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/7\.2.*How We Handle Imports/i)
+        screen.getByText(/7\.2.*How We Handle Imports/i),
       ).toBeInTheDocument();
     });
 
     it("should list benefits of buying from them", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/7\.3.*What This Means for You/i)
+        screen.getByText(/7\.3.*What This Means for You/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/No surprise charges/i)).toBeInTheDocument();
     });
@@ -221,7 +221,7 @@ describe("ShippingPolicyPage", () => {
     it("should describe signature requirements", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/8\.2.*Signature Requirement/i)
+        screen.getByText(/8\.2.*Signature Requirement/i),
       ).toBeInTheDocument();
     });
 
@@ -236,7 +236,7 @@ describe("ShippingPolicyPage", () => {
     it("should describe packaging standards", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText("9.1 Our Packaging Standards")
+        screen.getByText("9.1 Our Packaging Standards"),
       ).toBeInTheDocument();
     });
 
@@ -249,7 +249,7 @@ describe("ShippingPolicyPage", () => {
     it("should describe high-value item handling", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/High-Value Items \(₹50,000\+\)/i)
+        screen.getByText(/High-Value Items \(₹50,000\+\)/i),
       ).toBeInTheDocument();
     });
   });
@@ -260,21 +260,21 @@ describe("ShippingPolicyPage", () => {
       render(<ShippingPolicyPage />);
       expect(screen.getByText("10.1 Cannot Ship to India")).toBeInTheDocument();
       expect(
-        screen.getByText(/Weapons, firearms, ammunition/i)
+        screen.getByText(/Weapons, firearms, ammunition/i),
       ).toBeInTheDocument();
     });
 
     it("should list restricted items", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText("10.2 Restricted Items (Special Permits Required)")
+        screen.getByText("10.2 Restricted Items (Special Permits Required)"),
       ).toBeInTheDocument();
     });
 
     it("should list shipping restrictions", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText("10.3 Shipping Restrictions")
+        screen.getByText("10.3 Shipping Restrictions"),
       ).toBeInTheDocument();
       expect(screen.getByText(/Lithium batteries/i)).toBeInTheDocument();
     });
@@ -304,7 +304,7 @@ describe("ShippingPolicyPage", () => {
     it("should confirm COD availability", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/Cash on Delivery is AVAILABLE/i)
+        screen.getByText(/Cash on Delivery is AVAILABLE/i),
       ).toBeInTheDocument();
     });
 
@@ -325,14 +325,14 @@ describe("ShippingPolicyPage", () => {
     it("should describe cancellation before shipping", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText("13.1 Cancellation Before Shipping")
+        screen.getByText("13.1 Cancellation Before Shipping"),
       ).toBeInTheDocument();
     });
 
     it("should describe cancellation after shipping", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText("13.2 Cancellation After Shipping")
+        screen.getByText("13.2 Cancellation After Shipping"),
       ).toBeInTheDocument();
     });
   });
@@ -342,10 +342,10 @@ describe("ShippingPolicyPage", () => {
     it("should describe bulk order benefits", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText("14. Bulk Orders & Corporate Shipping")
+        screen.getByText("14. Bulk Orders & Corporate Shipping"),
       ).toBeInTheDocument();
       expect(
-        screen.getAllByText(/Consolidated shipping/i)[0]
+        screen.getAllByText(/Consolidated shipping/i)[0],
       ).toBeInTheDocument();
     });
   });
@@ -355,7 +355,7 @@ describe("ShippingPolicyPage", () => {
     it("should describe sustainability efforts", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText("15. Environmental Responsibility")
+        screen.getByText("15. Environmental Responsibility"),
       ).toBeInTheDocument();
       expect(screen.getByText(/Minimal packaging/i)).toBeInTheDocument();
     });
@@ -391,17 +391,17 @@ describe("ShippingPolicyPage", () => {
     it("should show Version 2.0 changes", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/Version 2.0 \(November 1, 2025\)/i)
+        screen.getByText(/Version 2.0 \(November 1, 2025\)/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/India-specific information/i)
+        screen.getByText(/India-specific information/i),
       ).toBeInTheDocument();
     });
 
     it("should show Version 1.0 initial release", () => {
       render(<ShippingPolicyPage />);
       expect(
-        screen.getByText(/Version 1.0 \(January 1, 2024\)/i)
+        screen.getByText(/Version 1.0 \(January 1, 2024\)/i),
       ).toBeInTheDocument();
     });
   });
@@ -417,11 +417,11 @@ describe("ShippingPolicyPage", () => {
       render(<ShippingPolicyPage />);
       expect(screen.getByText("Shipping Policy")).toBeInTheDocument();
       expect(
-        screen.getByText(/Last Updated: November 7, 2025/i)
+        screen.getByText(/Last Updated: November 7, 2025/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/Version: 2.0/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/Effective Date: November 1, 2025/i)
+        screen.getByText(/Effective Date: November 1, 2025/i),
       ).toBeInTheDocument();
     });
   });

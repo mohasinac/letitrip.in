@@ -84,7 +84,7 @@ class PerformanceMonitor {
   async recordMetric(
     name: string,
     value: number,
-    metadata?: any
+    metadata?: any,
   ): Promise<void> {
     try {
       const metric = {
@@ -156,7 +156,7 @@ class PerformanceMonitor {
   }
 
   async getMetricsSummary(
-    timeRange: number = 24 * 60 * 60 * 1000
+    timeRange: number = 24 * 60 * 60 * 1000,
   ): Promise<any> {
     // Mock implementation for testing
     return {

@@ -69,7 +69,7 @@ describe("AdminDashboardPage", () => {
       () => {
         expect(screen.getByText("Total Users")).toBeInTheDocument();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
   });
 });

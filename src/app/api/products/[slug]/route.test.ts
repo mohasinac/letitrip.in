@@ -19,16 +19,26 @@ jest.mock("@/lib/category-hierarchy");
 
 import { NextRequest } from "next/server";
 import { PATCH } from "./route";
-import { getUserFromRequest, requireAuth } from "@/app/api/middleware/rbac-auth";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
 
-const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<typeof getUserFromRequest>;
+const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<
+  typeof getUserFromRequest
+>;
 const mockRequireAuth = requireAuth as jest.MockedFunction<typeof requireAuth>;
 const mockCollections = Collections as jest.Mocked<typeof Collections>;
-const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<typeof userOwnsShop>;
-const mockUpdateCategoryProductCounts = updateCategoryProductCounts as jest.MockedFunction<typeof updateCategoryProductCounts>;
+const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<
+  typeof userOwnsShop
+>;
+const mockUpdateCategoryProductCounts =
+  updateCategoryProductCounts as jest.MockedFunction<
+    typeof updateCategoryProductCounts
+  >;
 
 describe("PATCH /api/products/[slug] - Update Product", () => {
   let mockProductsCollection: any;
@@ -117,7 +127,7 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
       {
         method: "PATCH",
         body: JSON.stringify(updateData),
-      }
+      },
     );
 
     const response = await PATCH(request, {
@@ -177,7 +187,7 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
       {
         method: "PATCH",
         body: JSON.stringify({ status: "published" }),
-      }
+      },
     );
 
     const response = await PATCH(request, {
@@ -225,7 +235,7 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
       {
         method: "PATCH",
         body: JSON.stringify({ name: "Hacked Product" }),
-      }
+      },
     );
 
     const response = await PATCH(request, {
@@ -235,7 +245,9 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
 
     expect(response.status).toBe(403);
     expect(data.success).toBe(false);
-    expect(data.error).toBe("You do not have permission to update this product");
+    expect(data.error).toBe(
+      "You do not have permission to update this product",
+    );
   });
 
   it("should return 404 for non-existent product", async () => {
@@ -262,7 +274,7 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
       {
         method: "PATCH",
         body: JSON.stringify({ name: "New Name" }),
-      }
+      },
     );
 
     const response = await PATCH(request, {
@@ -327,7 +339,7 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
       {
         method: "PATCH",
         body: JSON.stringify({ slug: "existing-slug" }),
-      }
+      },
     );
 
     const response = await PATCH(request, {
@@ -387,7 +399,7 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
       {
         method: "PATCH",
         body: JSON.stringify({ category_id: "cat456" }),
-      }
+      },
     );
 
     await PATCH(request, {
@@ -446,7 +458,7 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
       {
         method: "PATCH",
         body: JSON.stringify({ status: "published" }),
-      }
+      },
     );
 
     await PATCH(request, {
@@ -507,7 +519,7 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
           id: "hacked-id",
           name: "Updated Name",
         }),
-      }
+      },
     );
 
     await PATCH(request, {
@@ -565,7 +577,7 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
     mockProductsCollection.doc.mockReturnValue(mockDocRef);
 
     mockUpdateCategoryProductCounts.mockRejectedValue(
-      new Error("Count update failed")
+      new Error("Count update failed"),
     );
 
     const request = new NextRequest(
@@ -573,7 +585,7 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
       {
         method: "PATCH",
         body: JSON.stringify({ status: "published" }),
-      }
+      },
     );
 
     const response = await PATCH(request, {
@@ -625,7 +637,7 @@ describe("PATCH /api/products/[slug] - Update Product", () => {
       {
         method: "PATCH",
         body: JSON.stringify({ name: "Updated Name" }),
-      }
+      },
     );
 
     const response = await PATCH(request, {

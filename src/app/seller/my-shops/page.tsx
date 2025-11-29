@@ -60,7 +60,7 @@ export default function MyShopsPage() {
   const filteredShops = shops.filter(
     (shop) =>
       shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      shop.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      shop.description?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (loading) {

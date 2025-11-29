@@ -94,7 +94,7 @@ describe("FieldError", () => {
       render(<FieldError error="Error: Invalid <input> & 'quotes'" />);
 
       expect(
-        screen.getByText("Error: Invalid <input> & 'quotes'")
+        screen.getByText("Error: Invalid <input> & 'quotes'"),
       ).toBeInTheDocument();
     });
 
@@ -103,7 +103,7 @@ describe("FieldError", () => {
 
       // The component renders the text as-is (with literal \n)
       expect(
-        screen.getByText((content) => content.includes("Line 1"))
+        screen.getByText((content) => content.includes("Line 1")),
       ).toBeInTheDocument();
     });
   });
@@ -115,7 +115,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Email">
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.getByText("Email")).toBeInTheDocument();
@@ -125,7 +125,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Email" required={true}>
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       const asterisk = screen.getByText("*");
@@ -137,7 +137,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Email" required={false}>
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.queryByText("*")).not.toBeInTheDocument();
@@ -147,7 +147,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Email">
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       const label = screen.getByText("Email").closest("label");
@@ -156,7 +156,7 @@ describe("InputWrapper", () => {
         "text-sm",
         "font-medium",
         "text-gray-700",
-        "mb-1"
+        "mb-1",
       );
     });
   });
@@ -166,7 +166,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Email">
           <input type="text" placeholder="Enter email" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.getByPlaceholderText("Enter email")).toBeInTheDocument();
@@ -177,7 +177,7 @@ describe("InputWrapper", () => {
         <InputWrapper label="Name">
           <input type="text" placeholder="First name" />
           <input type="text" placeholder="Last name" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.getByPlaceholderText("First name")).toBeInTheDocument();
@@ -188,7 +188,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Custom">
           <div data-testid="custom-component">Complex input</div>
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.getByTestId("custom-component")).toBeInTheDocument();
@@ -200,7 +200,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Email" error="Invalid email">
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.getByText("Invalid email")).toBeInTheDocument();
@@ -210,7 +210,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Email">
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.queryByTestId("alert-icon")).not.toBeInTheDocument();
@@ -220,7 +220,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Email" error="Required field">
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.getByTestId("alert-icon")).toBeInTheDocument();
@@ -232,11 +232,11 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Email" hint="We'll never share your email">
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(
-        screen.getByText("We'll never share your email")
+        screen.getByText("We'll never share your email"),
       ).toBeInTheDocument();
     });
 
@@ -248,11 +248,11 @@ describe("InputWrapper", () => {
           hint="We'll never share your email"
         >
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(
-        screen.queryByText("We'll never share your email")
+        screen.queryByText("We'll never share your email"),
       ).not.toBeInTheDocument();
       expect(screen.getByText("Invalid")).toBeInTheDocument();
     });
@@ -261,7 +261,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Email" hint="Helper text">
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       const hint = screen.getByText("Helper text");
@@ -272,7 +272,7 @@ describe("InputWrapper", () => {
       const { container } = render(
         <InputWrapper label="Email">
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       const hints = container.querySelectorAll("p");
@@ -289,7 +289,7 @@ describe("InputWrapper", () => {
           hint="Must be 8 characters"
         >
           <input type="password" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.getByText("Password")).toBeInTheDocument();
@@ -305,7 +305,7 @@ describe("InputWrapper", () => {
           hint="Enter your email"
         >
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.getByText("Invalid email")).toBeInTheDocument();
@@ -318,7 +318,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="">
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       const label = screen
@@ -333,7 +333,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label={longLabel}>
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.getByText(longLabel)).toBeInTheDocument();
@@ -343,7 +343,7 @@ describe("InputWrapper", () => {
       render(
         <InputWrapper label="Email & Password">
           <input type="text" />
-        </InputWrapper>
+        </InputWrapper>,
       );
 
       expect(screen.getByText("Email & Password")).toBeInTheDocument();

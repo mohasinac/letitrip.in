@@ -60,7 +60,7 @@ describe("SubNavbar", () => {
       // Desktop version - find the active link
       const homeLinks = screen.getAllByRole("link", { name: /Home/i });
       const desktopHomeLink = homeLinks.find((link) =>
-        link.className.includes("text-yellow-600")
+        link.className.includes("text-yellow-600"),
       );
       expect(desktopHomeLink).toBeDefined();
     });
@@ -73,7 +73,7 @@ describe("SubNavbar", () => {
       const activeLink = productLinks.find(
         (link) =>
           link.className.includes("text-yellow-600") ||
-          link.className.includes("border-yellow-600")
+          link.className.includes("border-yellow-600"),
       );
       expect(activeLink).toBeDefined();
     });
@@ -86,7 +86,7 @@ describe("SubNavbar", () => {
       const activeLink = productLinks.find(
         (link) =>
           link.className.includes("text-yellow-600") ||
-          link.className.includes("border-yellow-600")
+          link.className.includes("border-yellow-600"),
       );
       expect(activeLink).toBeDefined();
     });
@@ -99,7 +99,7 @@ describe("SubNavbar", () => {
       const activeLink = auctionLinks.find(
         (link) =>
           link.className.includes("text-yellow-600") ||
-          link.className.includes("border-yellow-600")
+          link.className.includes("border-yellow-600"),
       );
       expect(activeLink).toBeDefined();
     });
@@ -112,7 +112,7 @@ describe("SubNavbar", () => {
       const activeLink = shopLinks.find(
         (link) =>
           link.className.includes("text-yellow-600") ||
-          link.className.includes("border-yellow-600")
+          link.className.includes("border-yellow-600"),
       );
       expect(activeLink).toBeDefined();
     });
@@ -127,7 +127,7 @@ describe("SubNavbar", () => {
       const activeLink = categoryLinks.find(
         (link) =>
           link.className.includes("text-yellow-600") ||
-          link.className.includes("border-yellow-600")
+          link.className.includes("border-yellow-600"),
       );
       expect(activeLink).toBeDefined();
     });
@@ -140,7 +140,7 @@ describe("SubNavbar", () => {
       const activeLink = reviewLinks.find(
         (link) =>
           link.className.includes("text-yellow-600") ||
-          link.className.includes("border-yellow-600")
+          link.className.includes("border-yellow-600"),
       );
       expect(activeLink).toBeDefined();
     });
@@ -153,7 +153,7 @@ describe("SubNavbar", () => {
       const activeLink = blogLinks.find(
         (link) =>
           link.className.includes("text-yellow-600") ||
-          link.className.includes("border-yellow-600")
+          link.className.includes("border-yellow-600"),
       );
       expect(activeLink).toBeDefined();
     });

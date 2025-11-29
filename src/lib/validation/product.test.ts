@@ -74,8 +74,8 @@ describe("createProductSchema", () => {
     expect(result.success).toBe(false);
     expect(
       result.error?.issues.some((issue) =>
-        issue.message.includes("at least 10 characters")
-      )
+        issue.message.includes("at least 10 characters"),
+      ),
     ).toBe(true);
   });
 
@@ -94,8 +94,8 @@ describe("createProductSchema", () => {
     expect(result.success).toBe(false);
     expect(
       result.error?.issues.some((issue) =>
-        issue.message.includes("only lowercase letters")
-      )
+        issue.message.includes("only lowercase letters"),
+      ),
     ).toBe(true);
   });
 
@@ -113,7 +113,7 @@ describe("createProductSchema", () => {
     const result = createProductSchema.safeParse(invalidProduct);
     expect(result.success).toBe(false);
     expect(
-      result.error?.issues.some((issue) => issue.message.includes("positive"))
+      result.error?.issues.some((issue) => issue.message.includes("positive")),
     ).toBe(true);
   });
 
@@ -134,8 +134,8 @@ describe("createProductSchema", () => {
       result.error?.issues.some(
         (issue) =>
           issue.message.includes("at least one image") ||
-          issue.path.includes("images")
-      )
+          issue.path.includes("images"),
+      ),
     ).toBe(true);
   });
 

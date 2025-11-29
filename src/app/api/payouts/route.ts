@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: error.message || "Failed to fetch payouts",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Only sellers can create payout requests",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Missing required fields: amount, paymentMethod",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: error.message || "Failed to create payout",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

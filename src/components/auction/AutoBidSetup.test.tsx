@@ -67,7 +67,7 @@ describe("AutoBidSetup", () => {
     it("calls onCancel when cancel button clicked", () => {
       const onCancel = jest.fn();
       render(
-        <AutoBidSetup {...mockProps} isActive={true} onCancel={onCancel} />
+        <AutoBidSetup {...mockProps} isActive={true} onCancel={onCancel} />,
       );
 
       const cancelButton = screen.getByText("Cancel Auto-Bid");
@@ -79,7 +79,7 @@ describe("AutoBidSetup", () => {
     it("calls onCancel when X icon clicked", () => {
       const onCancel = jest.fn();
       render(
-        <AutoBidSetup {...mockProps} isActive={true} onCancel={onCancel} />
+        <AutoBidSetup {...mockProps} isActive={true} onCancel={onCancel} />,
       );
 
       const xButtons = screen.getAllByTestId("x-icon");
@@ -115,7 +115,7 @@ describe("AutoBidSetup", () => {
     it("shows how auto-bid works info", () => {
       expect(screen.getByText("How Auto-Bid Works:")).toBeInTheDocument();
       expect(
-        screen.getByText(/System bids on your behalf/)
+        screen.getByText(/System bids on your behalf/),
       ).toBeInTheDocument();
     });
 
@@ -153,7 +153,7 @@ describe("AutoBidSetup", () => {
       fireEvent.change(input, { target: { value: "5000" } });
 
       expect(
-        screen.getByText(/Maximum bid must be higher than current bid/)
+        screen.getByText(/Maximum bid must be higher than current bid/),
       ).toBeInTheDocument();
     });
 
@@ -273,7 +273,7 @@ describe("AutoBidSetup", () => {
 
     it("applies custom className", () => {
       const { container } = render(
-        <AutoBidSetup {...mockProps} className="custom-class" />
+        <AutoBidSetup {...mockProps} className="custom-class" />,
       );
       expect(container.querySelector(".custom-class")).toBeInTheDocument();
     });

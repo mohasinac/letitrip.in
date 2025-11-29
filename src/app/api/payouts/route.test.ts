@@ -124,7 +124,7 @@ describe("GET /api/payouts", () => {
     expect(mockQuery.where).not.toHaveBeenCalledWith(
       "seller_id",
       expect.anything(),
-      expect.anything()
+      expect.anything(),
     );
   });
 
@@ -181,19 +181,19 @@ describe("GET /api/payouts", () => {
     const startDate = "2024-01-01";
     const endDate = "2024-12-31";
     const req = new NextRequest(
-      `http://localhost/api/payouts?startDate=${startDate}&endDate=${endDate}`
+      `http://localhost/api/payouts?startDate=${startDate}&endDate=${endDate}`,
     );
     await GET(req);
 
     expect(mockQuery.where).toHaveBeenCalledWith(
       "created_at",
       ">=",
-      new Date(startDate)
+      new Date(startDate),
     );
     expect(mockQuery.where).toHaveBeenCalledWith(
       "created_at",
       "<=",
-      new Date(endDate)
+      new Date(endDate),
     );
   });
 
@@ -263,7 +263,7 @@ describe("POST /api/payouts", () => {
     mockRequireAuth.mockResolvedValue({
       error: NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       ),
     } as any);
 

@@ -125,7 +125,7 @@ describe("CartItem - Comprehensive Tests", () => {
         onUpdateQuantity={mockOnUpdateQuantity}
         onRemove={mockOnRemove}
         disabled={disabled}
-      />
+      />,
     );
     const desktop = getDesktopContainer(result.container);
     return {
@@ -300,7 +300,7 @@ describe("CartItem - Comprehensive Tests", () => {
 
     it("should show loading spinner when updating quantity", async () => {
       mockOnUpdateQuantity.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       const { withinDesktop } = renderWithDesktop();
@@ -314,14 +314,14 @@ describe("CartItem - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(
-          withinDesktop.queryByTestId("loader-icon")
+          withinDesktop.queryByTestId("loader-icon"),
         ).not.toBeInTheDocument();
       });
     });
 
     it("should disable controls while updating", async () => {
       mockOnUpdateQuantity.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       const { withinDesktop } = renderWithDesktop();
@@ -437,7 +437,7 @@ describe("CartItem - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(global.alert).toHaveBeenCalledWith(
-          "Failed to update quantity. Please try again."
+          "Failed to update quantity. Please try again.",
         );
       });
 
@@ -461,7 +461,7 @@ describe("CartItem - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(global.alert).toHaveBeenCalledWith(
-          "Failed to remove item. Please try again."
+          "Failed to remove item. Please try again.",
         );
       });
     });
@@ -478,7 +478,7 @@ describe("CartItem - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(
-          withinDesktop.queryByTestId("loader-icon")
+          withinDesktop.queryByTestId("loader-icon"),
         ).not.toBeInTheDocument();
       });
     });
@@ -502,7 +502,7 @@ describe("CartItem - Comprehensive Tests", () => {
       fireEvent.click(removeButton);
 
       expect(
-        screen.getByText(/Are you sure you want to remove "Test Product"/)
+        screen.getByText(/Are you sure you want to remove "Test Product"/),
       ).toBeInTheDocument();
     });
 
@@ -575,7 +575,7 @@ describe("CartItem - Comprehensive Tests", () => {
       const { withinDesktop } = renderWithDesktop(lowStockItem);
 
       expect(
-        withinDesktop.getByText("Only 3 left in stock")
+        withinDesktop.getByText("Only 3 left in stock"),
       ).toBeInTheDocument();
     });
 
@@ -589,7 +589,7 @@ describe("CartItem - Comprehensive Tests", () => {
       const { withinDesktop } = renderWithDesktop(sufficientStockItem);
 
       expect(
-        withinDesktop.queryByText(/left in stock/)
+        withinDesktop.queryByText(/left in stock/),
       ).not.toBeInTheDocument();
     });
 
@@ -597,7 +597,7 @@ describe("CartItem - Comprehensive Tests", () => {
       const { withinDesktop } = renderWithDesktop();
 
       expect(
-        withinDesktop.queryByText(/left in stock/)
+        withinDesktop.queryByText(/left in stock/),
       ).not.toBeInTheDocument();
     });
   });

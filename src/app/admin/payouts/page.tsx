@@ -18,7 +18,7 @@ export default function AdminPayoutsPage() {
   const [loading, setLoading] = useState(true);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [selectedPayouts, setSelectedPayouts] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -124,10 +124,10 @@ export default function AdminPayoutsPage() {
 
     try {
       const result = await payoutsService.bulkProcess(
-        Array.from(selectedPayouts)
+        Array.from(selectedPayouts),
       );
       toast.success(
-        `${result.success} payouts processed, ${result.failed} failed`
+        `${result.success} payouts processed, ${result.failed} failed`,
       );
       setSelectedPayouts(new Set());
       loadPayouts();
@@ -258,7 +258,7 @@ export default function AdminPayoutsPage() {
                               setSelectedPayouts(new Set());
                             } else {
                               setSelectedPayouts(
-                                new Set(payouts.map((p) => p.id))
+                                new Set(payouts.map((p) => p.id)),
                               );
                             }
                           }}
@@ -323,8 +323,8 @@ export default function AdminPayoutsPage() {
                               payout.status === "processed"
                                 ? "bg-green-100 text-green-800"
                                 : payout.status === "rejected"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-yellow-100 text-yellow-800"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-yellow-100 text-yellow-800"
                             }`}
                           >
                             {payout.status}

@@ -242,10 +242,10 @@ describe("CheckoutPage - Comprehensive Tests", () => {
       render(<CheckoutPage />);
 
       expect(
-        screen.getByText("✓ Safe and secure payments")
+        screen.getByText("✓ Safe and secure payments"),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("✓ Easy returns and refunds")
+        screen.getByText("✓ Easy returns and refunds"),
       ).toBeInTheDocument();
       expect(screen.getByText("✓ 100% authentic products")).toBeInTheDocument();
     });
@@ -254,10 +254,10 @@ describe("CheckoutPage - Comprehensive Tests", () => {
       render(<CheckoutPage />);
 
       expect(
-        screen.getByTestId("address-selector-shipping")
+        screen.getByTestId("address-selector-shipping"),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("Billing address same as shipping")
+        screen.getByText("Billing address same as shipping"),
       ).toBeInTheDocument();
     });
   });
@@ -385,7 +385,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
       const steps = screen.getAllByRole("button");
       // First step (address) should be current, others not
       expect(screen.getByTestId("map-pin").parentElement).toHaveClass(
-        "bg-primary"
+        "bg-primary",
       );
     });
 
@@ -425,12 +425,12 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Please complete all required fields to continue.")
+          screen.getByText("Please complete all required fields to continue."),
         ).toBeInTheDocument();
       });
 
       expect(
-        screen.getByText("Please select a shipping address")
+        screen.getByText("Please select a shipping address"),
       ).toBeInTheDocument();
     });
 
@@ -443,7 +443,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       // Uncheck same address
       const sameAddressCheckbox = screen.getByLabelText(
-        "Billing address same as shipping"
+        "Billing address same as shipping",
       );
       fireEvent.click(sameAddressCheckbox);
 
@@ -452,7 +452,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Please select a billing address")
+          screen.getByText("Please select a billing address"),
         ).toBeInTheDocument();
       });
     });
@@ -480,7 +480,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       // Uncheck same address
       const sameAddressCheckbox = screen.getByLabelText(
-        "Billing address same as shipping"
+        "Billing address same as shipping",
       );
       fireEvent.click(sameAddressCheckbox);
 
@@ -489,7 +489,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Please fix the following errors:")
+          screen.getByText("Please fix the following errors:"),
         ).toBeInTheDocument();
       });
     });
@@ -519,7 +519,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       // Uncheck same address and select billing
       const sameAddressCheckbox = screen.getByLabelText(
-        "Billing address same as shipping"
+        "Billing address same as shipping",
       );
       fireEvent.click(sameAddressCheckbox);
 
@@ -539,18 +539,18 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       // Initially billing selector should not be visible
       expect(
-        screen.queryByTestId("address-selector-billing")
+        screen.queryByTestId("address-selector-billing"),
       ).not.toBeInTheDocument();
 
       // Uncheck same address
       const sameAddressCheckbox = screen.getByLabelText(
-        "Billing address same as shipping"
+        "Billing address same as shipping",
       );
       fireEvent.click(sameAddressCheckbox);
 
       // Billing selector should now be visible
       expect(
-        screen.getByTestId("address-selector-billing")
+        screen.getByTestId("address-selector-billing"),
       ).toBeInTheDocument();
 
       // Check same address again
@@ -558,7 +558,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       // Billing selector should be hidden again
       expect(
-        screen.queryByTestId("address-selector-billing")
+        screen.queryByTestId("address-selector-billing"),
       ).not.toBeInTheDocument();
     });
   });
@@ -602,7 +602,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByTestId("address-selector-shipping")
+          screen.getByTestId("address-selector-shipping"),
         ).toBeInTheDocument();
       });
     });
@@ -613,7 +613,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Delivery Notes (Optional)")
+          screen.getByText("Delivery Notes (Optional)"),
         ).toBeInTheDocument();
       });
     });
@@ -647,7 +647,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Delivery Notes (Optional)")
+          screen.getByText("Delivery Notes (Optional)"),
         ).toBeInTheDocument();
       });
     });
@@ -665,14 +665,14 @@ describe("CheckoutPage - Comprehensive Tests", () => {
     it("should render delivery notes textarea", () => {
       expect(
         screen.getByPlaceholderText(
-          "Add any special instructions for delivery..."
-        )
+          "Add any special instructions for delivery...",
+        ),
       ).toBeInTheDocument();
     });
 
     it("should allow adding delivery notes", () => {
       const notesTextarea = screen.getByPlaceholderText(
-        "Add any special instructions for delivery..."
+        "Add any special instructions for delivery...",
       );
 
       fireEvent.change(notesTextarea, {
@@ -822,7 +822,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
       // Find the grand total value in the same section
       const grandTotalSection = grandTotalLabel.closest("div");
       expect(
-        within(grandTotalSection!).getByText("₹2,460")
+        within(grandTotalSection!).getByText("₹2,460"),
       ).toBeInTheDocument(); // 2000 + 100 + 360
     });
 
@@ -925,14 +925,14 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(mockPush).toHaveBeenCalledWith(
-          "/user/orders/order-1?success=true&multi=true"
+          "/user/orders/order-1?success=true&multi=true",
         );
       });
     });
 
     it("should include delivery notes in order", async () => {
       const notesTextarea = screen.getByPlaceholderText(
-        "Add any special instructions for delivery..."
+        "Add any special instructions for delivery...",
       );
       fireEvent.change(notesTextarea, {
         target: { value: "Ring doorbell" },
@@ -945,7 +945,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
         expect(mockCheckoutService.createOrder).toHaveBeenCalledWith(
           expect.objectContaining({
             notes: "Ring doorbell",
-          })
+          }),
         );
       });
     });
@@ -962,9 +962,9 @@ describe("CheckoutPage - Comprehensive Tests", () => {
                   currency: "INR",
                   total: 2360,
                 }),
-              100
-            )
-          )
+              100,
+            ),
+          ),
       );
       mockCheckoutService.createOrder = mockCreateOrder;
 
@@ -987,9 +987,9 @@ describe("CheckoutPage - Comprehensive Tests", () => {
                   currency: "INR",
                   total: 2360,
                 }),
-              100
-            )
-          )
+              100,
+            ),
+          ),
       );
       mockCheckoutService.createOrder = mockCreateOrder;
 
@@ -1064,7 +1064,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       // Simulate Razorpay success callback
       const razorpayHandler = mockRazorpay.on.mock.calls.find(
-        ([event]) => event === "payment.success"
+        ([event]) => event === "payment.success",
       )?.[1];
 
       if (razorpayHandler) {
@@ -1084,7 +1084,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
         });
 
         expect(mockPush).toHaveBeenCalledWith(
-          "/user/orders/order-1?success=true&multi=true"
+          "/user/orders/order-1?success=true&multi=true",
         );
       }
     });
@@ -1099,7 +1099,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       // Simulate Razorpay failure
       const razorpayFailureHandler = mockRazorpay.on.mock.calls.find(
-        ([event]) => event === "payment.failed"
+        ([event]) => event === "payment.failed",
       )?.[1];
 
       if (razorpayFailureHandler) {
@@ -1110,7 +1110,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
         });
 
         expect(
-          screen.getByText("Payment failed due to insufficient funds")
+          screen.getByText("Payment failed due to insufficient funds"),
         ).toBeInTheDocument();
       }
     });
@@ -1125,8 +1125,8 @@ describe("CheckoutPage - Comprehensive Tests", () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            /Payment gateway not available. Please try Cash on Delivery/
-          )
+            /Payment gateway not available. Please try Cash on Delivery/,
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -1142,7 +1142,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
               name: "Test User",
               email: "test@example.com",
             },
-          })
+          }),
         );
       });
     });
@@ -1232,7 +1232,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       // Simulate Razorpay success but verification failure
       const razorpayHandler = mockRazorpay.on.mock.calls.find(
-        ([event]) => event === "payment.success"
+        ([event]) => event === "payment.success",
       )?.[1];
 
       if (razorpayHandler) {
@@ -1246,7 +1246,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
         await waitFor(() => {
           expect(
-            screen.getByText(/Payment verification failed/)
+            screen.getByText(/Payment verification failed/),
           ).toBeInTheDocument();
         });
       }
@@ -1338,9 +1338,9 @@ describe("CheckoutPage - Comprehensive Tests", () => {
                   currency: "INR",
                   total: 2360,
                 }),
-              100
-            )
-          )
+              100,
+            ),
+          ),
       );
       mockCheckoutService.createOrder = mockCreateOrder;
 
@@ -1416,7 +1416,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
         expect(mockCreateOrder).toHaveBeenCalledWith(
           expect.objectContaining({
             notes: undefined,
-          })
+          }),
         );
       });
     });
@@ -1466,7 +1466,7 @@ describe("CheckoutPage - Comprehensive Tests", () => {
               name: "test@example.com", // Falls back to email
               email: "test@example.com",
             },
-          })
+          }),
         );
       });
     });
@@ -1521,13 +1521,13 @@ describe("CheckoutPage - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByTestId("address-selector-shipping")
+          screen.getByTestId("address-selector-shipping"),
         ).toBeInTheDocument();
       });
 
       // Address should still be selected
       expect(screen.getByTestId("address-select-shipping")).toHaveValue(
-        "addr-1"
+        "addr-1",
       );
     });
   });

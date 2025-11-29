@@ -61,10 +61,10 @@ describe("POST /api/media/upload - Media Upload", () => {
     // Mock STORAGE_PATHS
     mockSTORAGE_PATHS.productImage = jest.fn(
       (shopId, productId, filename) =>
-        `shops/${shopId}/products/${productId}/${filename}`
+        `shops/${shopId}/products/${productId}/${filename}`,
     );
     mockSTORAGE_PATHS.shopLogo = jest.fn(
-      (shopId, filename) => `shops/${shopId}/logo/${filename}`
+      (shopId, filename) => `shops/${shopId}/logo/${filename}`,
     );
   });
 
@@ -106,7 +106,7 @@ describe("POST /api/media/upload - Media Upload", () => {
     expect(mockSTORAGE_PATHS.productImage).toHaveBeenCalledWith(
       "shop123",
       "product123",
-      expect.stringContaining("test-image.jpg")
+      expect.stringContaining("test-image.jpg"),
     );
     expect(mockFileRef.save).toHaveBeenCalled();
     expect(mockFileRef.makePublic).toHaveBeenCalled();
@@ -135,7 +135,7 @@ describe("POST /api/media/upload - Media Upload", () => {
     expect(data.url).toBeTruthy();
     expect(mockSTORAGE_PATHS.shopLogo).toHaveBeenCalledWith(
       "shop456",
-      expect.stringContaining("logo.png")
+      expect.stringContaining("logo.png"),
     );
     expect(mockFileRef.save).toHaveBeenCalled();
     expect(mockFileRef.makePublic).toHaveBeenCalled();
@@ -162,7 +162,7 @@ describe("POST /api/media/upload - Media Upload", () => {
     expect(data.success).toBe(true);
     expect(data.url).toBeTruthy();
     expect(mockBucket.file).toHaveBeenCalledWith(
-      expect.stringContaining("uploads/user/general/")
+      expect.stringContaining("uploads/user/general/"),
     );
   });
 
@@ -254,9 +254,7 @@ describe("POST /api/media/upload - Media Upload", () => {
       }),
     });
 
-    mockFileRef.makePublic.mockRejectedValue(
-      new Error("Permission denied")
-    );
+    mockFileRef.makePublic.mockRejectedValue(new Error("Permission denied"));
 
     const fileContent = "test content";
     const blob = new Blob([fileContent], { type: "image/jpeg" });
@@ -304,7 +302,7 @@ describe("POST /api/media/upload - Media Upload", () => {
     expect(data.success).toBe(true);
     // Filename should be sanitized (special chars replaced with _)
     expect(mockBucket.file).toHaveBeenCalledWith(
-      expect.stringMatching(/test_file.*\.jpg/)
+      expect.stringMatching(/test_file.*\.jpg/),
     );
   });
 
@@ -327,7 +325,7 @@ describe("POST /api/media/upload - Media Upload", () => {
     expect(response.status).toBe(200);
     expect(data.success).toBe(true);
     expect(mockBucket.file).toHaveBeenCalledWith(
-      expect.stringContaining("uploads/product/general/")
+      expect.stringContaining("uploads/product/general/"),
     );
   });
 
@@ -354,7 +352,7 @@ describe("POST /api/media/upload - Media Upload", () => {
       expect.any(Buffer),
       expect.objectContaining({
         contentType: "application/octet-stream",
-      })
+      }),
     );
   });
 
@@ -391,7 +389,7 @@ describe("POST /api/media/upload - Media Upload", () => {
       expect.objectContaining({
         resumable: false,
         public: true,
-      })
+      }),
     );
   });
 
@@ -412,7 +410,7 @@ describe("POST /api/media/upload - Media Upload", () => {
     await POST(request);
 
     expect(mockGetStorageAdmin().bucket).toHaveBeenCalledWith(
-      "test-project.appspot.com"
+      "test-project.appspot.com",
     );
   });
 
@@ -474,7 +472,7 @@ describe("POST /api/media/upload - Media Upload", () => {
       expect.any(Buffer),
       expect.objectContaining({
         metadata: { cacheControl: "public, max-age=31536000" },
-      })
+      }),
     );
   });
 
@@ -509,7 +507,7 @@ describe("POST /api/media/upload - Media Upload", () => {
       expect.any(Buffer),
       expect.objectContaining({
         contentType: "video/mp4",
-      })
+      }),
     );
   });
 

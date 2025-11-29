@@ -135,7 +135,7 @@ describe("MediaUploader", () => {
 
       const uploadArea = screen.getByText("Upload media files").closest("div");
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
       const clickSpy = jest.spyOn(fileInput, "click");
 
@@ -193,7 +193,7 @@ describe("MediaUploader", () => {
 
       const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -206,7 +206,7 @@ describe("MediaUploader", () => {
               type: "image",
               source: "file",
             }),
-          ])
+          ]),
         );
       });
     });
@@ -216,7 +216,7 @@ describe("MediaUploader", () => {
 
       const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -228,12 +228,15 @@ describe("MediaUploader", () => {
 
     it("validates file before adding", async () => {
       render(
-        <MediaUploader onFilesAdded={mockOnFilesAdded} resourceType="product" />
+        <MediaUploader
+          onFilesAdded={mockOnFilesAdded}
+          resourceType="product"
+        />,
       );
 
       const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -242,7 +245,7 @@ describe("MediaUploader", () => {
         expect(validateMedia).toHaveBeenCalledWith(
           file,
           "PRODUCT_IMAGE",
-          "image"
+          "image",
         );
       });
     });
@@ -257,14 +260,14 @@ describe("MediaUploader", () => {
 
       const file = new File(["content"], "large.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
 
       await waitFor(() => {
         expect(
-          screen.getByText(/large.jpg.*file too large/i)
+          screen.getByText(/large.jpg.*file too large/i),
         ).toBeInTheDocument();
       });
 
@@ -277,7 +280,7 @@ describe("MediaUploader", () => {
       const file1 = new File(["content1"], "test1.jpg", { type: "image/jpeg" });
       const file2 = new File(["content2"], "test2.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file1, file2] } });
@@ -287,7 +290,7 @@ describe("MediaUploader", () => {
           expect.arrayContaining([
             expect.objectContaining({ file: file1 }),
             expect.objectContaining({ file: file2 }),
-          ])
+          ]),
         );
       });
     });
@@ -298,7 +301,7 @@ describe("MediaUploader", () => {
           onFilesAdded={mockOnFilesAdded}
           maxFiles={2}
           files={[]}
-        />
+        />,
       );
 
       const files = [
@@ -307,7 +310,7 @@ describe("MediaUploader", () => {
         new File(["3"], "3.jpg", { type: "image/jpeg" }),
       ];
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files } });
@@ -403,7 +406,7 @@ describe("MediaUploader", () => {
 
       await waitFor(() => {
         expect(mockOnFilesAdded).toHaveBeenCalledWith(
-          expect.arrayContaining([expect.objectContaining({ file })])
+          expect.arrayContaining([expect.objectContaining({ file })]),
         );
       });
     });
@@ -458,7 +461,7 @@ describe("MediaUploader", () => {
           files={existingFiles}
           maxFiles={1}
           onFilesAdded={mockOnFilesAdded}
-        />
+        />,
       );
 
       const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
@@ -488,7 +491,7 @@ describe("MediaUploader", () => {
 
     it("handles captured photo", async () => {
       render(
-        <MediaUploader enableCamera={true} onFilesAdded={mockOnFilesAdded} />
+        <MediaUploader enableCamera={true} onFilesAdded={mockOnFilesAdded} />,
       );
 
       const cameraButton = screen.getByTestId("camera-icon").closest("button")!;
@@ -506,7 +509,7 @@ describe("MediaUploader", () => {
 
     it("closes camera modal after capture", async () => {
       render(
-        <MediaUploader enableCamera={true} onFilesAdded={mockOnFilesAdded} />
+        <MediaUploader enableCamera={true} onFilesAdded={mockOnFilesAdded} />,
       );
 
       const cameraButton = screen.getByTestId("camera-icon").closest("button")!;
@@ -548,7 +551,7 @@ describe("MediaUploader", () => {
         <MediaUploader
           enableVideoRecording={true}
           onFilesAdded={mockOnFilesAdded}
-        />
+        />,
       );
 
       const videoButton = screen.getByTestId("video-icon").closest("button")!;
@@ -569,7 +572,7 @@ describe("MediaUploader", () => {
         <MediaUploader
           enableVideoRecording={true}
           onFilesAdded={mockOnFilesAdded}
-        />
+        />,
       );
 
       const videoButton = screen.getByTestId("video-icon").closest("button")!;
@@ -590,14 +593,14 @@ describe("MediaUploader", () => {
 
       const file = new File(["content"], "image.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
 
       await waitFor(() => {
         expect(mockOnFilesAdded).toHaveBeenCalledWith(
-          expect.arrayContaining([expect.objectContaining({ type: "image" })])
+          expect.arrayContaining([expect.objectContaining({ type: "image" })]),
         );
       });
     });
@@ -607,14 +610,14 @@ describe("MediaUploader", () => {
 
       const file = new File(["content"], "video.mp4", { type: "video/mp4" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
 
       await waitFor(() => {
         expect(mockOnFilesAdded).toHaveBeenCalledWith(
-          expect.arrayContaining([expect.objectContaining({ type: "video" })])
+          expect.arrayContaining([expect.objectContaining({ type: "video" })]),
         );
       });
     });
@@ -624,7 +627,7 @@ describe("MediaUploader", () => {
 
       const file = new File(["content"], "video.mp4", { type: "video/mp4" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -639,7 +642,7 @@ describe("MediaUploader", () => {
 
       const file = new File(["content"], "image.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -653,12 +656,15 @@ describe("MediaUploader", () => {
   describe("Resource Type Validation", () => {
     it("validates with product resource type", async () => {
       render(
-        <MediaUploader onFilesAdded={mockOnFilesAdded} resourceType="product" />
+        <MediaUploader
+          onFilesAdded={mockOnFilesAdded}
+          resourceType="product"
+        />,
       );
 
       const file = new File(["content"], "product.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -667,19 +673,19 @@ describe("MediaUploader", () => {
         expect(validateMedia).toHaveBeenCalledWith(
           file,
           "PRODUCT_IMAGE",
-          "image"
+          "image",
         );
       });
     });
 
     it("validates with shop resource type", async () => {
       render(
-        <MediaUploader onFilesAdded={mockOnFilesAdded} resourceType="shop" />
+        <MediaUploader onFilesAdded={mockOnFilesAdded} resourceType="shop" />,
       );
 
       const file = new File(["content"], "shop.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -694,14 +700,14 @@ describe("MediaUploader", () => {
         <MediaUploader
           onFilesAdded={mockOnFilesAdded}
           resourceType="category"
-        />
+        />,
       );
 
       const file = new File(["content"], "category.jpg", {
         type: "image/jpeg",
       });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -710,19 +716,19 @@ describe("MediaUploader", () => {
         expect(validateMedia).toHaveBeenCalledWith(
           file,
           "CATEGORY_IMAGE",
-          "image"
+          "image",
         );
       });
     });
 
     it("validates with user resource type", async () => {
       render(
-        <MediaUploader onFilesAdded={mockOnFilesAdded} resourceType="user" />
+        <MediaUploader onFilesAdded={mockOnFilesAdded} resourceType="user" />,
       );
 
       const file = new File(["content"], "avatar.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -731,7 +737,7 @@ describe("MediaUploader", () => {
         expect(validateMedia).toHaveBeenCalledWith(
           file,
           "USER_AVATAR",
-          "image"
+          "image",
         );
       });
     });
@@ -748,14 +754,14 @@ describe("MediaUploader", () => {
 
       const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
 
       await waitFor(() => {
         expect(
-          screen.getByText(/test.jpg.*file too large.*invalid format/i)
+          screen.getByText(/test.jpg.*file too large.*invalid format/i),
         ).toBeInTheDocument();
       });
     });
@@ -770,7 +776,7 @@ describe("MediaUploader", () => {
 
       const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -788,7 +794,7 @@ describe("MediaUploader", () => {
       render(<MediaUploader onFilesAdded={mockOnFilesAdded} />);
 
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       // First upload with error
@@ -832,7 +838,7 @@ describe("MediaUploader", () => {
       render(<MediaUploader onFilesAdded={mockOnFilesAdded} />);
 
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
       fireEvent.change(fileInput, { target: { files: [] } });
 
@@ -847,7 +853,7 @@ describe("MediaUploader", () => {
       const file1 = new File(["content"], "test1.jpg", { type: "image/jpeg" });
       const file2 = new File(["content"], "test2.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file1, file2] } });
@@ -863,7 +869,7 @@ describe("MediaUploader", () => {
 
       const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -877,7 +883,7 @@ describe("MediaUploader", () => {
                 mimeType: file.type,
               }),
             }),
-          ])
+          ]),
         );
       });
     });
@@ -887,7 +893,7 @@ describe("MediaUploader", () => {
 
       const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
       const fileInput = document.querySelector(
-        'input[type="file"]'
+        'input[type="file"]',
       ) as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -899,7 +905,7 @@ describe("MediaUploader", () => {
               uploadStatus: "pending",
               uploadProgress: 0,
             }),
-          ])
+          ]),
         );
       });
     });

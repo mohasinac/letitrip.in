@@ -53,7 +53,7 @@ describe("ProductsService - List", () => {
 
       for (let i = 1; i < result.data.length; i++) {
         expect(result.data[i].price).toBeGreaterThanOrEqual(
-          result.data[i - 1].price
+          result.data[i - 1].price,
         );
       }
     });
@@ -107,7 +107,7 @@ describe("ProductsService - Detail", () => {
 
     it("should return 404 for non-existent product", async () => {
       await expect(productsService.getById("non_existent")).rejects.toThrow(
-        "Product not found"
+        "Product not found",
       );
     });
 
@@ -129,7 +129,7 @@ describe("ProductsService - Detail", () => {
 
     it("should return 404 for non-existent slug", async () => {
       await expect(
-        productsService.getBySlug("non-existent-slug")
+        productsService.getBySlug("non-existent-slug"),
       ).rejects.toThrow("Product not found");
     });
   });
@@ -227,7 +227,7 @@ describe("ProductsService - Seller", () => {
       };
 
       await expect(productsService.create(productData)).rejects.toThrow(
-        "Invalid category"
+        "Invalid category",
       );
     });
 
@@ -241,7 +241,7 @@ describe("ProductsService - Seller", () => {
       };
 
       await expect(productsService.create(productData)).rejects.toThrow(
-        "Slug already exists"
+        "Slug already exists",
       );
     });
 
@@ -252,7 +252,7 @@ describe("ProductsService - Seller", () => {
       };
 
       await expect(productsService.create(productData)).rejects.toThrow(
-        "Validation error"
+        "Validation error",
       );
     });
 
@@ -266,7 +266,7 @@ describe("ProductsService - Seller", () => {
       };
 
       await expect(productsService.create(productData)).rejects.toThrow(
-        "Invalid price"
+        "Invalid price",
       );
     });
 
@@ -281,7 +281,7 @@ describe("ProductsService - Seller", () => {
       };
 
       await expect(productsService.create(productData)).rejects.toThrow(
-        "Shop must be verified"
+        "Shop must be verified",
       );
     });
   });
@@ -299,7 +299,7 @@ describe("ProductsService - Seller", () => {
 
     it("should reject update of another seller's product", async () => {
       await expect(
-        productsService.update("other_seller_product", { price: 100000 })
+        productsService.update("other_seller_product", { price: 100000 }),
       ).rejects.toThrow("Access denied");
     });
 
@@ -308,7 +308,7 @@ describe("ProductsService - Seller", () => {
         productsService.update("test_product_001", {
           price: 150000,
           comparePrice: 100000, // Lower than price
-        })
+        }),
       ).rejects.toThrow("Compare price must be >= price");
     });
   });
@@ -321,7 +321,7 @@ describe("ProductsService - Seller", () => {
 
     it("should reject deletion of another seller's product", async () => {
       await expect(
-        productsService.delete("other_seller_product")
+        productsService.delete("other_seller_product"),
       ).rejects.toThrow("Access denied");
     });
 
@@ -498,7 +498,7 @@ describe("Product Search & Filter", () => {
     // Verify sorting
     for (let i = 1; i < result.data.length; i++) {
       expect(result.data[i].price).toBeGreaterThanOrEqual(
-        result.data[i - 1].price
+        result.data[i - 1].price,
       );
     }
   });

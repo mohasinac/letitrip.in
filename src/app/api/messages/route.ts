@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       error: "Messages API not yet implemented",
       message: "This feature is coming soon",
     },
-    { status: 501 }
+    { status: 501 },
   );
 }
 
@@ -31,6 +31,6 @@ export async function POST(request: NextRequest) {
       error: "Messages API not yet implemented",
       message: "This feature is coming soon",
     },
-    { status: 501 }
+    { status: 501 },
   );
 }

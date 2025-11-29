@@ -22,7 +22,7 @@ async function loginHandler(req: NextRequest) {
     if (!email || !password) {
       return NextResponse.json(
         { error: "Missing required fields", fields: ["email", "password"] },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -36,7 +36,7 @@ async function loginHandler(req: NextRequest) {
     if (userSnapshot.empty) {
       const response = NextResponse.json(
         { error: "Invalid credentials" },
-        { status: 401 }
+        { status: 401 },
       );
       // Clear any existing invalid session cookie
       clearSessionCookie(response);
@@ -49,13 +49,13 @@ async function loginHandler(req: NextRequest) {
     // Verify password
     const isPasswordValid = await bcrypt.compare(
       password,
-      userData.hashedPassword
+      userData.hashedPassword,
     );
 
     if (!isPasswordValid) {
       const response = NextResponse.json(
         { error: "Invalid credentials" },
-        { status: 401 }
+        { status: 401 },
       );
       // Clear any existing invalid session cookie
       clearSessionCookie(response);
@@ -68,7 +68,7 @@ async function loginHandler(req: NextRequest) {
       if (userRecord.disabled) {
         const response = NextResponse.json(
           { error: "Account has been disabled" },
-          { status: 403 }
+          { status: 403 },
         );
         // Clear any existing invalid session cookie
         clearSessionCookie(response);
@@ -78,7 +78,7 @@ async function loginHandler(req: NextRequest) {
       console.error("Error checking user status:", error);
       const response = NextResponse.json(
         { error: "Authentication failed" },
-        { status: 500 }
+        { status: 500 },
       );
       // Clear any existing invalid session cookie
       clearSessionCookie(response);
@@ -90,7 +90,7 @@ async function loginHandler(req: NextRequest) {
       userData.uid,
       userData.email,
       userData.role,
-      req
+      req,
     );
 
     // Update last login
@@ -113,7 +113,7 @@ async function loginHandler(req: NextRequest) {
         },
         sessionId,
       },
-      { status: 200 }
+      { status: 200 },
     );
 
     // Set session cookie
@@ -131,7 +131,7 @@ async function loginHandler(req: NextRequest) {
             ? "An unexpected error occurred"
             : error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
 
     // Clear any existing invalid session cookie
@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
   if (!authRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many login attempts. Please try again later." },
-      { status: 429 }
+      { status: 429 },
     );
   }
 

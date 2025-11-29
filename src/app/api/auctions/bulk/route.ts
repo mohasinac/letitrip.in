@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Only sellers and admins can perform bulk operations",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     ];
     if (!validActions.includes(action)) {
       throw new ValidationError(
-        `Invalid action. Must be one of: ${validActions.join(", ")}`
+        `Invalid action. Must be one of: ${validActions.join(", ")}`,
       );
     }
 
@@ -227,12 +227,12 @@ export async function POST(request: NextRequest) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { success: false, error: error.message },
-        { status: 400 }
+        { status: 400 },
       );
     }
     return NextResponse.json(
       { success: false, error: "Failed to perform bulk operation" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

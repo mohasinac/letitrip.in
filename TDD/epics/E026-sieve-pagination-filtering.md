@@ -391,7 +391,7 @@ export function parseSieveQuery(searchParams: URLSearchParams): SieveQuery {
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = Math.min(
     parseInt(searchParams.get("pageSize") || "20", 10),
-    100
+    100,
   );
 
   const sorts = parseSorts(searchParams.get("sorts") || "-createdAt");
@@ -438,7 +438,7 @@ function parseFilters(filtersParam: string): FilterCondition[] {
 export function applyToFirestore(
   baseQuery: Query,
   sieve: SieveQuery,
-  config: SieveConfig
+  config: SieveConfig,
 ): { query: Query; needsClientFilter: FilterCondition[] } {
   let query = baseQuery;
   const needsClientFilter: FilterCondition[] = [];

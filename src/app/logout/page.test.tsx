@@ -63,8 +63,8 @@ describe("LogoutPage", () => {
     expect(screen.getByText("You've been logged out")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Thanks for visiting! Redirecting you to the homepage..."
-      )
+        "Thanks for visiting! Redirecting you to the homepage...",
+      ),
     ).toBeInTheDocument();
 
     // Advance timer for redirect

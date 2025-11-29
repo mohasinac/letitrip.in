@@ -37,7 +37,7 @@ export function MobilePullToRefresh({
         isPulling.current = true;
       }
     },
-    [disabled, isRefreshing]
+    [disabled, isRefreshing],
   );
 
   const handleTouchMove = useCallback(
@@ -61,7 +61,7 @@ export function MobilePullToRefresh({
         setPullDistance(resistance);
       }
     },
-    [disabled, isRefreshing, maxPull]
+    [disabled, isRefreshing, maxPull],
   );
 
   const handleTouchEnd = useCallback(async () => {
@@ -106,7 +106,7 @@ export function MobilePullToRefresh({
         <div
           className={cn(
             "w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center",
-            shouldTrigger && !isRefreshing && "bg-yellow-50"
+            shouldTrigger && !isRefreshing && "bg-yellow-50",
           )}
         >
           {isRefreshing ? (
@@ -115,7 +115,7 @@ export function MobilePullToRefresh({
             <svg
               className={cn(
                 "w-5 h-5 text-gray-600 transition-transform duration-200",
-                shouldTrigger && "text-yellow-600"
+                shouldTrigger && "text-yellow-600",
               )}
               style={{
                 transform: `rotate(${progress * 180}deg)`,

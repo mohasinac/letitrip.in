@@ -82,7 +82,7 @@ describe("useCart", () => {
     it("adds item to guest cart", async () => {
       (cartService.getGuestCart as jest.Mock).mockReturnValue([]);
       (cartService.addToGuestCartWithDetails as jest.Mock).mockImplementation(
-        () => {}
+        () => {},
       );
 
       const { result } = renderHook(() => useCart());
@@ -132,7 +132,7 @@ describe("useCart", () => {
       ];
       (cartService.getGuestCart as jest.Mock).mockReturnValue(mockGuestItems);
       (cartService.updateGuestCartItem as jest.Mock).mockImplementation(
-        () => {}
+        () => {},
       );
 
       const { result } = renderHook(() => useCart());
@@ -167,7 +167,7 @@ describe("useCart", () => {
       ];
       (cartService.getGuestCart as jest.Mock).mockReturnValue(mockGuestItems);
       (cartService.removeFromGuestCart as jest.Mock).mockImplementation(
-        () => {}
+        () => {},
       );
 
       const { result } = renderHook(() => useCart());

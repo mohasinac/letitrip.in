@@ -93,7 +93,7 @@ describe("OrderDetailPage", () => {
     render(<OrderDetailPage params={Promise.resolve({ id: "order-123" })} />);
 
     expect(mockRouter.push).toHaveBeenCalledWith(
-      "/login?redirect=/user/orders"
+      "/login?redirect=/user/orders",
     );
   });
 
@@ -114,7 +114,7 @@ describe("OrderDetailPage", () => {
 
   it("shows loading state initially", () => {
     (ordersService.getById as jest.Mock).mockImplementation(
-      () => new Promise(() => {}) // Never resolves
+      () => new Promise(() => {}), // Never resolves
     );
 
     render(<OrderDetailPage params={Promise.resolve({ id: "order-123" })} />);
@@ -216,7 +216,7 @@ describe("OrderDetailPage", () => {
     await waitFor(() => {
       expect(ordersService.cancel).toHaveBeenCalledWith(
         "order-123",
-        "Customer requested cancellation"
+        "Customer requested cancellation",
       );
     });
 
@@ -311,7 +311,7 @@ describe("OrderDetailPage", () => {
     });
 
     expect(
-      screen.getByText("This order has been cancelled")
+      screen.getByText("This order has been cancelled"),
     ).toBeInTheDocument();
   });
 
@@ -328,7 +328,7 @@ describe("OrderDetailPage", () => {
     });
 
     expect(
-      screen.getByText("This order has been returned")
+      screen.getByText("This order has been returned"),
     ).toBeInTheDocument();
   });
 
@@ -437,7 +437,7 @@ describe("OrderDetailPage", () => {
     // Check for multi-order success message
     expect(screen.getByText("Orders placed successfully!")).toBeInTheDocument();
     expect(
-      screen.getByText("You can view all your orders below.")
+      screen.getByText("You can view all your orders below."),
     ).toBeInTheDocument();
   });
 });

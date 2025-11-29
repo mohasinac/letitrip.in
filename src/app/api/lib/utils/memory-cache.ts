@@ -84,7 +84,8 @@ class MemoryCache {
       maxSize: this.maxSize,
       hits: this.hits,
       misses: this.misses,
-      hitRate: this.hits + this.misses > 0 ? this.hits / (this.hits + this.misses) : 0,
+      hitRate:
+        this.hits + this.misses > 0 ? this.hits / (this.hits + this.misses) : 0,
     };
   }
 
@@ -111,12 +112,15 @@ export const memoryCache = new MemoryCache(500);
 
 // Periodic cleanup every 5 minutes
 if (typeof setInterval !== "undefined") {
-  setInterval(() => {
-    const cleaned = memoryCache.cleanup();
-    if (cleaned > 0) {
-      console.log(`[MemoryCache] Cleaned ${cleaned} expired entries`);
-    }
-  }, 5 * 60 * 1000);
+  setInterval(
+    () => {
+      const cleaned = memoryCache.cleanup();
+      if (cleaned > 0) {
+        console.log(`[MemoryCache] Cleaned ${cleaned} expired entries`);
+      }
+    },
+    5 * 60 * 1000,
+  );
 }
 
 // Export class for testing

@@ -53,7 +53,7 @@ function formatPrice(price: number | undefined | null): string {
  */
 function calculateDiscount(
   price: number,
-  compareAtPrice?: number
+  compareAtPrice?: number,
 ): {
   discount: number | null;
   discountPercentage: number | null;
@@ -73,7 +73,7 @@ function calculateDiscount(
  */
 function getStockStatus(
   stockCount: number,
-  lowStockThreshold: number = 5
+  lowStockThreshold: number = 5,
 ): {
   isInStock: boolean;
   isLowStock: boolean;
@@ -104,7 +104,7 @@ function generateBadges(product: {
 
   // New product (within 30 days)
   const daysSinceCreation = Math.floor(
-    (Date.now() - product.createdAt.getTime()) / (1000 * 60 * 60 * 24)
+    (Date.now() - product.createdAt.getTime()) / (1000 * 60 * 60 * 24),
   );
   if (daysSinceCreation <= 30) {
     badges.push({ type: "new", label: "New", color: "blue" });
@@ -157,18 +157,18 @@ export function toFEProduct(productBE: ProductBE): ProductFE {
 
   const { discount, discountPercentage } = calculateDiscount(
     productBE.price,
-    productBE.compareAtPrice
+    productBE.compareAtPrice,
   );
 
   const { isInStock, isLowStock, stockStatus } = getStockStatus(
     productBE.stockCount,
-    productBE.lowStockThreshold
+    productBE.lowStockThreshold,
   );
 
   const ratingStars = roundRating(productBE.averageRating);
 
   const daysSinceCreation = Math.floor(
-    (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+    (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24),
   );
 
   const productFE: ProductFE = {
@@ -284,14 +284,14 @@ export function toFEProduct(productBE: ProductBE): ProductFE {
 export function toFEProductCard(productBE: ProductListItemBE): ProductCardFE {
   const { discount, discountPercentage } = calculateDiscount(
     productBE.price,
-    productBE.compareAtPrice
+    productBE.compareAtPrice,
   );
 
   const { stockStatus } = getStockStatus(productBE.stockCount);
   const ratingStars = roundRating(productBE.averageRating);
   const createdAt = parseDate(productBE.createdAt);
   const daysSinceCreation = Math.floor(
-    (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+    (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24),
   );
 
   const badges = generateBadges({
@@ -424,7 +424,7 @@ export function toFEProducts(productsBE: ProductBE[]): ProductFE[] {
  * Transform array of BE product list items to array of FE product cards
  */
 export function toFEProductCards(
-  productsBE: ProductListItemBE[]
+  productsBE: ProductListItemBE[],
 ): ProductCardFE[] {
   return productsBE.map(toFEProductCard);
 }

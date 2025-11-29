@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Invalid request. Provide action and ids array.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: error.message || "Bulk operation failed",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

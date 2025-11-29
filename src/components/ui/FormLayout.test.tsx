@@ -18,7 +18,7 @@ describe("FormField", () => {
         <FormField>
           <label>Test Label</label>
           <input type="text" />
-        </FormField>
+        </FormField>,
       );
 
       expect(screen.getByText("Test Label")).toBeInTheDocument();
@@ -29,7 +29,7 @@ describe("FormField", () => {
       const { container } = render(
         <FormField>
           <div>Content</div>
-        </FormField>
+        </FormField>,
       );
 
       const wrapper = container.firstChild;
@@ -40,7 +40,7 @@ describe("FormField", () => {
       const { container } = render(
         <FormField className="custom-class">
           <div>Content</div>
-        </FormField>
+        </FormField>,
       );
 
       const wrapper = container.firstChild;
@@ -53,7 +53,7 @@ describe("FormField", () => {
           <label>Label</label>
           <input type="text" />
           <span>Helper text</span>
-        </FormField>
+        </FormField>,
       );
 
       expect(screen.getByText("Label")).toBeInTheDocument();
@@ -73,7 +73,7 @@ describe("FormField", () => {
       render(
         <FormField>
           <input type="text" placeholder="Single input" />
-        </FormField>
+        </FormField>,
       );
 
       expect(screen.getByPlaceholderText("Single input")).toBeInTheDocument();
@@ -92,7 +92,7 @@ describe("FormSection", () => {
           <FormField>
             <label>Field 2</label>
           </FormField>
-        </FormSection>
+        </FormSection>,
       );
 
       expect(screen.getByText("Field 1")).toBeInTheDocument();
@@ -103,7 +103,7 @@ describe("FormSection", () => {
       const { container } = render(
         <FormSection>
           <div>Content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       const wrapper = container.firstChild;
@@ -114,7 +114,7 @@ describe("FormSection", () => {
       const { container } = render(
         <FormSection className="custom-section">
           <div>Content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       const wrapper = container.firstChild;
@@ -127,7 +127,7 @@ describe("FormSection", () => {
           <input type="text" placeholder="Field 1" />
           <input type="text" placeholder="Field 2" />
           <input type="text" placeholder="Field 3" />
-        </FormSection>
+        </FormSection>,
       );
 
       expect(screen.getByPlaceholderText("Field 1")).toBeInTheDocument();
@@ -148,7 +148,7 @@ describe("FormSection", () => {
             <label>Email</label>
             <input type="email" />
           </FormField>
-        </FormSection>
+        </FormSection>,
       );
 
       expect(screen.getByText("Name")).toBeInTheDocument();
@@ -164,7 +164,7 @@ describe("FormGrid", () => {
         <FormGrid>
           <div>Column 1</div>
           <div>Column 2</div>
-        </FormGrid>
+        </FormGrid>,
       );
 
       expect(screen.getByText("Column 1")).toBeInTheDocument();
@@ -175,7 +175,7 @@ describe("FormGrid", () => {
       const { container } = render(
         <FormGrid>
           <div>Content</div>
-        </FormGrid>
+        </FormGrid>,
       );
 
       const grid = container.firstChild;
@@ -188,7 +188,7 @@ describe("FormGrid", () => {
       const { container } = render(
         <FormGrid>
           <div>Content</div>
-        </FormGrid>
+        </FormGrid>,
       );
 
       const grid = container.firstChild;
@@ -199,7 +199,7 @@ describe("FormGrid", () => {
       const { container } = render(
         <FormGrid columns={1}>
           <div>Content</div>
-        </FormGrid>
+        </FormGrid>,
       );
 
       const grid = container.firstChild;
@@ -211,7 +211,7 @@ describe("FormGrid", () => {
       const { container } = render(
         <FormGrid columns={2}>
           <div>Content</div>
-        </FormGrid>
+        </FormGrid>,
       );
 
       const grid = container.firstChild;
@@ -222,14 +222,14 @@ describe("FormGrid", () => {
       const { container } = render(
         <FormGrid columns={3}>
           <div>Content</div>
-        </FormGrid>
+        </FormGrid>,
       );
 
       const grid = container.firstChild;
       expect(grid).toHaveClass(
         "grid-cols-1",
         "md:grid-cols-2",
-        "lg:grid-cols-3"
+        "lg:grid-cols-3",
       );
     });
 
@@ -237,14 +237,14 @@ describe("FormGrid", () => {
       const { container } = render(
         <FormGrid columns={4}>
           <div>Content</div>
-        </FormGrid>
+        </FormGrid>,
       );
 
       const grid = container.firstChild;
       expect(grid).toHaveClass(
         "grid-cols-1",
         "md:grid-cols-2",
-        "lg:grid-cols-4"
+        "lg:grid-cols-4",
       );
     });
   });
@@ -254,7 +254,7 @@ describe("FormGrid", () => {
       const { container } = render(
         <FormGrid className="custom-grid">
           <div>Content</div>
-        </FormGrid>
+        </FormGrid>,
       );
 
       const grid = container.firstChild;
@@ -265,7 +265,7 @@ describe("FormGrid", () => {
       const { container } = render(
         <FormGrid className="custom-grid" columns={3}>
           <div>Content</div>
-        </FormGrid>
+        </FormGrid>,
       );
 
       const grid = container.firstChild;
@@ -285,7 +285,7 @@ describe("FormGrid", () => {
             <label>Last Name</label>
             <input type="text" />
           </FormField>
-        </FormGrid>
+        </FormGrid>,
       );
 
       expect(screen.getByText("First Name")).toBeInTheDocument();
@@ -298,7 +298,7 @@ describe("FormGrid", () => {
       render(
         <FormGrid columns={3}>
           <div>Single Item</div>
-        </FormGrid>
+        </FormGrid>,
       );
 
       expect(screen.getByText("Single Item")).toBeInTheDocument();
@@ -310,7 +310,7 @@ describe("FormGrid", () => {
           {[...Array(10)].map((_, i) => (
             <div key={i}>Item {i + 1}</div>
           ))}
-        </FormGrid>
+        </FormGrid>,
       );
 
       expect(screen.getByText("Item 1")).toBeInTheDocument();
@@ -326,7 +326,7 @@ describe("FormRow", () => {
         <FormRow>
           <div>Left</div>
           <div>Right</div>
-        </FormRow>
+        </FormRow>,
       );
 
       expect(screen.getByText("Left")).toBeInTheDocument();
@@ -337,7 +337,7 @@ describe("FormRow", () => {
       const { container } = render(
         <FormRow>
           <div>Content</div>
-        </FormRow>
+        </FormRow>,
       );
 
       const row = container.firstChild;
@@ -348,7 +348,7 @@ describe("FormRow", () => {
       const { container } = render(
         <FormRow className="custom-row">
           <div>Content</div>
-        </FormRow>
+        </FormRow>,
       );
 
       const row = container.firstChild;
@@ -362,7 +362,7 @@ describe("FormRow", () => {
         <FormRow>
           <input type="text" placeholder="Field 1" />
           <input type="text" placeholder="Field 2" />
-        </FormRow>
+        </FormRow>,
       );
 
       expect(screen.getByPlaceholderText("Field 1")).toBeInTheDocument();
@@ -374,7 +374,7 @@ describe("FormRow", () => {
         <FormRow>
           <button>Cancel</button>
           <button>Submit</button>
-        </FormRow>
+        </FormRow>,
       );
 
       expect(screen.getByText("Cancel")).toBeInTheDocument();
@@ -394,7 +394,7 @@ describe("FormRow", () => {
             <label>End Date</label>
             <input type="date" />
           </FormField>
-        </FormRow>
+        </FormRow>,
       );
 
       expect(screen.getByText("Start Date")).toBeInTheDocument();
@@ -407,7 +407,7 @@ describe("FormRow", () => {
       render(
         <FormRow>
           <div>Single Item</div>
-        </FormRow>
+        </FormRow>,
       );
 
       expect(screen.getByText("Single Item")).toBeInTheDocument();
@@ -420,7 +420,7 @@ describe("FormRow", () => {
           <div>Item 2</div>
           <div>Item 3</div>
           <div>Item 4</div>
-        </FormRow>
+        </FormRow>,
       );
 
       expect(screen.getByText("Item 1")).toBeInTheDocument();
@@ -451,7 +451,7 @@ describe("Form Layout Components Integration", () => {
           <button>Cancel</button>
           <button>Save</button>
         </FormRow>
-      </FormSection>
+      </FormSection>,
     );
 
     expect(screen.getByText("First Name")).toBeInTheDocument();
@@ -478,7 +478,7 @@ describe("Form Layout Components Integration", () => {
             <input type="email" />
           </FormField>
         </FormSection>
-      </div>
+      </div>,
     );
 
     expect(screen.getByText("Personal Information")).toBeInTheDocument();

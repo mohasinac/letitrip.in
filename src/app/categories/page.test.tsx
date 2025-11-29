@@ -119,9 +119,9 @@ describe("CategoriesContent", () => {
                   count: 0,
                 },
               }),
-            100
-          )
-        )
+            100,
+          ),
+        ),
     );
 
     render(<CategoriesContent />);
@@ -174,7 +174,7 @@ describe("CategoriesContent", () => {
     if (form) fireEvent.submit(form);
     await waitFor(() => {
       expect(mockCategoriesService.list).toHaveBeenCalledWith(
-        expect.objectContaining({ search: "cat" })
+        expect.objectContaining({ search: "cat" }),
       );
     });
   });

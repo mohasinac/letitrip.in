@@ -11,7 +11,7 @@ describe("CartSummary", () => {
         discount={100}
         total={1050}
         itemCount={2}
-      />
+      />,
     );
     expect(screen.getByText(/Order Summary/i)).toBeInTheDocument();
     expect(screen.getByText(/Subtotal/i)).toBeInTheDocument();
@@ -29,7 +29,7 @@ describe("CartSummary", () => {
         total={1050}
         itemCount={2}
         onApplyCoupon={mockApply}
-      />
+      />,
     );
     fireEvent.change(screen.getByPlaceholderText(/Enter code/i), {
       target: { value: "SAVE10" },
@@ -49,7 +49,7 @@ describe("CartSummary", () => {
         total={1050}
         itemCount={2}
         onCheckout={mockCheckout}
-      />
+      />,
     );
     fireEvent.click(screen.getByRole("button", { name: /Checkout/i }));
     expect(mockCheckout).toHaveBeenCalled();

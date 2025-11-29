@@ -55,7 +55,7 @@ describe("MobileSidebar", () => {
   describe("Visibility", () => {
     it("returns null when not open", () => {
       const { container } = render(
-        <MobileSidebar isOpen={false} onClose={mockOnClose} />
+        <MobileSidebar isOpen={false} onClose={mockOnClose} />,
       );
       expect(container.firstChild).toBeNull();
     });
@@ -96,7 +96,7 @@ describe("MobileSidebar", () => {
       render(<MobileSidebar isOpen={true} onClose={mockOnClose} />);
 
       expect(
-        screen.queryByRole("button", { name: /admin/i })
+        screen.queryByRole("button", { name: /admin/i }),
       ).not.toBeInTheDocument();
     });
 
@@ -104,7 +104,7 @@ describe("MobileSidebar", () => {
       render(<MobileSidebar isOpen={true} onClose={mockOnClose} />);
 
       expect(
-        screen.queryByRole("button", { name: /seller/i })
+        screen.queryByRole("button", { name: /seller/i }),
       ).not.toBeInTheDocument();
     });
   });
@@ -159,7 +159,7 @@ describe("MobileSidebar", () => {
       render(<MobileSidebar isOpen={true} onClose={mockOnClose} />);
 
       expect(
-        screen.queryByRole("link", { name: /sign in/i })
+        screen.queryByRole("link", { name: /sign in/i }),
       ).not.toBeInTheDocument();
     });
   });
@@ -235,7 +235,7 @@ describe("MobileSidebar", () => {
       render(<MobileSidebar isOpen={true} onClose={mockOnClose} />);
 
       expect(
-        screen.queryByRole("button", { name: /admin/i })
+        screen.queryByRole("button", { name: /admin/i }),
       ).not.toBeInTheDocument();
     });
 
@@ -441,8 +441,8 @@ describe("MobileSidebar", () => {
       const currentYear = new Date().getFullYear();
       expect(
         screen.getByText(
-          `© ${currentYear} ${COMPANY_NAME}. All rights reserved.`
-        )
+          `© ${currentYear} ${COMPANY_NAME}. All rights reserved.`,
+        ),
       ).toBeInTheDocument();
     });
   });

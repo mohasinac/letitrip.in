@@ -67,7 +67,7 @@ class ErrorLogger {
 
   async logWarning(
     message: string,
-    context?: Record<string, any>
+    context?: Record<string, any>,
   ): Promise<void> {
     const warningData = {
       message,
