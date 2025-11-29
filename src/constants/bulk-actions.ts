@@ -492,7 +492,7 @@ export function getGenericBulkActions(
     hasFeature?: boolean;
     hasVerify?: boolean;
     hasArchive?: boolean;
-  }
+  },
 ): BulkAction[] {
   const actions: BulkAction[] = [];
 
@@ -509,7 +509,7 @@ export function getGenericBulkActions(
         label: "Deactivate",
         variant: "default",
         confirm: false,
-      }
+      },
     );
   }
 
@@ -526,7 +526,7 @@ export function getGenericBulkActions(
         label: "Remove Featured",
         variant: "default",
         confirm: false,
-      }
+      },
     );
   }
 
@@ -543,7 +543,7 @@ export function getGenericBulkActions(
         label: "Remove Verification",
         variant: "default",
         confirm: false,
-      }
+      },
     );
   }
 

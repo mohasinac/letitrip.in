@@ -80,7 +80,7 @@ class StaticAssetsService {
    */
   async getAsset(id: string): Promise<StaticAsset> {
     const response = await apiService.get<{ asset: StaticAsset }>(
-      `${this.BASE_PATH}/${id}`
+      `${this.BASE_PATH}/${id}`,
     );
     return response.asset;
   }
@@ -107,7 +107,7 @@ class StaticAssetsService {
   async uploadAsset(
     file: File,
     type: StaticAsset["type"],
-    category?: string
+    category?: string,
   ): Promise<AssetUploadResult> {
     try {
       // Step 1: Request upload URL from server
@@ -142,7 +142,7 @@ class StaticAssetsService {
           category,
           size: file.size,
           contentType: file.type,
-        }
+        },
       );
 
       return {
@@ -163,11 +163,11 @@ class StaticAssetsService {
    */
   async updateAsset(
     id: string,
-    updates: Partial<StaticAsset>
+    updates: Partial<StaticAsset>,
   ): Promise<StaticAsset> {
     const response = await apiService.patch<{ asset: StaticAsset }>(
       `${this.BASE_PATH}/${id}`,
-      updates
+      updates,
     );
     return response.asset;
   }
@@ -191,7 +191,7 @@ class StaticAssetsService {
       logServiceError(
         "StaticAssetsService",
         "getPaymentLogoUrl",
-        error as Error
+        error as Error,
       );
       return null;
     }

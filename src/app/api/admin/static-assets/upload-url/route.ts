@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     if (!fileName || !contentType || !type) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       fileName,
       contentType,
       type,
-      category
+      category,
     );
 
     return NextResponse.json({
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     console.error("Error generating upload URL:", error);
     return NextResponse.json(
       { success: false, error: "Failed to generate upload URL" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

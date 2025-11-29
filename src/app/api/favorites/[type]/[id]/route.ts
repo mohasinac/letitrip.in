@@ -7,7 +7,7 @@ const VALID_TYPES = ["product", "shop", "category", "auction"];
 // POST /api/favorites/[type]/[id] - Add to favorites
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ type: string; id: string }> }
+  { params }: { params: Promise<{ type: string; id: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -27,7 +27,7 @@ export async function POST(
     if (doc.exists) {
       return NextResponse.json(
         { error: "Already in favorites" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -46,7 +46,7 @@ export async function POST(
     console.error("Add to favorites error:", error);
     return NextResponse.json(
       { error: "Failed to add to favorites" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -54,7 +54,7 @@ export async function POST(
 // DELETE /api/favorites/[type]/[id] - Remove from favorites
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ type: string; id: string }> }
+  { params }: { params: Promise<{ type: string; id: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -85,7 +85,7 @@ export async function DELETE(
     console.error("Remove from favorites error:", error);
     return NextResponse.json(
       { error: "Failed to remove from favorites" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -93,7 +93,7 @@ export async function DELETE(
 // GET /api/favorites/[type]/[id] - Check if in favorites
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ type: string; id: string }> }
+  { params }: { params: Promise<{ type: string; id: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);

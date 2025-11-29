@@ -307,7 +307,7 @@ describe("formatTimeRemaining", () => {
 
   it("should format remaining time", () => {
     const futureDate = new Date(
-      Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 60 * 3
+      Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 60 * 3,
     ); // 2d 3h
     const result = formatTimeRemaining(futureDate);
     expect(result).toMatch(/d|h/);

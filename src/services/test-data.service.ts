@@ -94,7 +94,7 @@ class TestDataService {
         featured: Math.random() > 0.7,
         images: [
           `https://via.placeholder.com/400x400?text=${encodeURIComponent(
-            name
+            name,
           )}`,
         ],
         brand: `${this.PREFIX}Brand`,
@@ -106,7 +106,7 @@ class TestDataService {
       "/admin/test-workflow/products",
       {
         products,
-      }
+      },
     );
     return response.data;
   }
@@ -141,10 +141,10 @@ class TestDataService {
         bidIncrement: this.randomInt(100, 500),
         buyNowPrice: startingBid + this.randomInt(3000, 5000),
         startTime: new Date(
-          Date.now() + this.randomInt(1, 24) * 60 * 60 * 1000
+          Date.now() + this.randomInt(1, 24) * 60 * 60 * 1000,
         ).toISOString(),
         endTime: new Date(
-          Date.now() + this.randomInt(48, 168) * 60 * 60 * 1000
+          Date.now() + this.randomInt(48, 168) * 60 * 60 * 1000,
         ).toISOString(),
         categoryId: "test-category",
         shopId,
@@ -153,7 +153,7 @@ class TestDataService {
         featured: Math.random() > 0.8,
         images: [
           `https://via.placeholder.com/400x400?text=${encodeURIComponent(
-            name
+            name,
           )}`,
         ],
         auctionType: this.randomFromArray(["regular", "reverse", "silent"]),
@@ -165,7 +165,7 @@ class TestDataService {
       "/admin/test-workflow/auctions",
       {
         auctions,
-      }
+      },
     );
     return response.data;
   }
@@ -238,7 +238,7 @@ class TestDataService {
       "/admin/test-workflow/reviews",
       {
         reviews,
-      }
+      },
     );
     return response.data;
   }
@@ -279,7 +279,7 @@ class TestDataService {
       "/admin/test-workflow/tickets",
       {
         tickets,
-      }
+      },
     );
     return response.data;
   }
@@ -306,7 +306,7 @@ class TestDataService {
 
     const response: any = await apiService.post(
       "/admin/test-workflow/shop",
-      shop
+      shop,
     );
     return response.data;
   }
@@ -344,7 +344,7 @@ class TestDataService {
       "/admin/test-workflow/categories",
       {
         categories,
-      }
+      },
     );
     return response.data;
   }
@@ -364,7 +364,7 @@ class TestDataService {
         usageCount: 0,
         validFrom: new Date().toISOString(),
         validUntil: new Date(
-          Date.now() + 30 * 24 * 60 * 60 * 1000
+          Date.now() + 30 * 24 * 60 * 60 * 1000,
         ).toISOString(),
         shopId,
         isActive: true,
@@ -376,7 +376,7 @@ class TestDataService {
       "/admin/test-workflow/coupons",
       {
         coupons,
-      }
+      },
     );
     return response.data;
   }
@@ -385,7 +385,7 @@ class TestDataService {
   async cleanupTestData(): Promise<TestDataCounts> {
     const response: any = await apiService.post(
       "/admin/test-workflow/cleanup",
-      {}
+      {},
     );
     return response.data;
   }
@@ -403,7 +403,7 @@ class TestDataService {
       {
         workflowType,
         params,
-      }
+      },
     );
     return response.data;
   }

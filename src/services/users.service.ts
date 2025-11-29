@@ -22,7 +22,7 @@ import type {
 class UsersService {
   // List users (admin only)
   async list(
-    filters?: Partial<UserFiltersBE>
+    filters?: Partial<UserFiltersBE>,
   ): Promise<PaginatedResponseFE<UserFE>> {
     const params = new URLSearchParams();
 
@@ -39,9 +39,8 @@ class UsersService {
       ? `${USER_ROUTES.LIST}?${queryString}`
       : USER_ROUTES.LIST;
 
-    const response = await apiService.get<PaginatedResponseBE<UserBE>>(
-      endpoint
-    );
+    const response =
+      await apiService.get<PaginatedResponseBE<UserBE>>(endpoint);
 
     return {
       data: toFEUsers(response.data),
@@ -69,7 +68,7 @@ class UsersService {
   async ban(
     id: string,
     isBanned: boolean,
-    banReason?: string
+    banReason?: string,
   ): Promise<UserFE> {
     const request = toBEBanUserRequest(isBanned, banReason);
     const response: any = await apiService.patch(USER_ROUTES.BAN(id), request);
@@ -86,7 +85,7 @@ class UsersService {
   // Get current user profile
   async getMe(): Promise<UserFE> {
     const response = await apiService.get<{ user: UserBE }>(
-      USER_ROUTES.PROFILE
+      USER_ROUTES.PROFILE,
     );
     return toFEUser(response.user);
   }
@@ -96,14 +95,14 @@ class UsersService {
     const request = toBEUpdateUserRequest(formData);
     const response = await apiService.patch<{ user: UserBE; message: string }>(
       USER_ROUTES.UPDATE_PROFILE,
-      request
+      request,
     );
     return toFEUser(response.user);
   }
 
   // Change password
   async changePassword(
-    formData: ChangePasswordFormFE
+    formData: ChangePasswordFormFE,
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>(USER_ROUTES.CHANGE_PASSWORD, {
       currentPassword: formData.currentPassword,
@@ -118,7 +117,7 @@ class UsersService {
 
   // Verify email with OTP
   async verifyEmail(
-    formData: OTPVerificationFormFE
+    formData: OTPVerificationFormFE,
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/user/verify-email/confirm", {
       otp: formData.otp,
@@ -132,7 +131,7 @@ class UsersService {
 
   // Verify mobile with OTP
   async verifyMobile(
-    formData: OTPVerificationFormFE
+    formData: OTPVerificationFormFE,
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/user/verify-mobile/confirm", {
       otp: formData.otp,

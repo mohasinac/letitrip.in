@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiRateLimiter, authRateLimiter, strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
+import {
+  apiRateLimiter,
+  authRateLimiter,
+  strictRateLimiter,
+} from "@/app/api/lib/utils/rate-limiter";
 
 interface RateLimitConfig {
   maxRequests?: number;
   windowMs?: number;
   message?: string;
-  limiterType?: 'api' | 'auth' | 'search';
+  limiterType?: "api" | "auth" | "search";
 }
 
 export function rateLimit(config: RateLimitConfig = {}) {
   const {
     message = "Too many requests, please try again later.",
-    limiterType = 'api',
+    limiterType = "api",
   } = config;
 
   return async (req: NextRequest) => {
@@ -22,11 +26,12 @@ export function rateLimit(config: RateLimitConfig = {}) {
       : req.headers.get("x-real-ip") || "unknown";
 
     // Select appropriate rate limiter
-    const limiter = limiterType === 'auth' 
-      ? authRateLimiter 
-      : limiterType === 'search'
-      ? strictRateLimiter
-      : apiRateLimiter;
+    const limiter =
+      limiterType === "auth"
+        ? authRateLimiter
+        : limiterType === "search"
+          ? strictRateLimiter
+          : apiRateLimiter;
 
     const allowed = limiter.check(ip);
 

@@ -28,7 +28,7 @@ describe("TermsOfServicePage", () => {
     it("should render last updated date", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/Last Updated: November 7, 2025/i)
+        screen.getByText(/Last Updated: November 7, 2025/i),
       ).toBeInTheDocument();
     });
 
@@ -40,7 +40,7 @@ describe("TermsOfServicePage", () => {
     it("should render effective date", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/Effective Date: November 1, 2025/i)
+        screen.getByText(/Effective Date: November 1, 2025/i),
       ).toBeInTheDocument();
     });
   });
@@ -51,7 +51,7 @@ describe("TermsOfServicePage", () => {
       render(<TermsOfServicePage />);
       expect(screen.getByText(/1\..*Acceptance of Terms/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/By accessing or using our platform/i)
+        screen.getByText(/By accessing or using our platform/i),
       ).toBeInTheDocument();
     });
 
@@ -66,11 +66,11 @@ describe("TermsOfServicePage", () => {
     it("should render Account Registration section", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/3\..*Account Registration/i)
+        screen.getByText(/3\..*Account Registration/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/3\.1.*Eligibility/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/Be at least 18 years of age/i)
+        screen.getByText(/Be at least 18 years of age/i),
       ).toBeInTheDocument();
     });
 
@@ -78,17 +78,17 @@ describe("TermsOfServicePage", () => {
       render(<TermsOfServicePage />);
       expect(screen.getByText(/4\..*User Conduct/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/4\.1.*Prohibited Activities/i)
+        screen.getByText(/4\.1.*Prohibited Activities/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Post false, misleading, or fraudulent listings/i)
+        screen.getByText(/Post false, misleading, or fraudulent listings/i),
       ).toBeInTheDocument();
     });
 
     it("should render Buying on Let It Rip section", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/5\..*Buying on Let It Rip/i)
+        screen.getByText(/5\..*Buying on Let It Rip/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/5\.1.*Product Listings/i)).toBeInTheDocument();
       expect(screen.getByText(/5\.2.*Placing Orders/i)).toBeInTheDocument();
@@ -99,14 +99,14 @@ describe("TermsOfServicePage", () => {
       expect(screen.getByText(/6\..*Auctions/i)).toBeInTheDocument();
       expect(screen.getByText(/6\.1.*Bidding/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/Your bid is a binding commitment/i)
+        screen.getByText(/Your bid is a binding commitment/i),
       ).toBeInTheDocument();
     });
 
     it("should render Selling on Let It Rip section", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/7\..*Selling on Let It Rip/i)
+        screen.getByText(/7\..*Selling on Let It Rip/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/7\.1.*Shop Creation/i)).toBeInTheDocument();
       expect(screen.getByText(/Regular Users can create/i)).toBeInTheDocument();
@@ -116,7 +116,7 @@ describe("TermsOfServicePage", () => {
       render(<TermsOfServicePage />);
       expect(screen.getByText(/8\..*Returns and Refunds/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/Most items can be returned within 30 days/i)
+        screen.getByText(/Most items can be returned within 30 days/i),
       ).toBeInTheDocument();
     });
 
@@ -129,7 +129,7 @@ describe("TermsOfServicePage", () => {
     it("should render Intellectual Property section", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/10\..*Intellectual Property/i)
+        screen.getByText(/10\..*Intellectual Property/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/10\.1.*Platform Content/i)).toBeInTheDocument();
     });
@@ -137,10 +137,10 @@ describe("TermsOfServicePage", () => {
     it("should render Limitation of Liability section", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/11\..*Limitation of Liability/i)
+        screen.getByText(/11\..*Limitation of Liability/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/TO THE MAXIMUM EXTENT PERMITTED BY LAW/i)
+        screen.getByText(/TO THE MAXIMUM EXTENT PERMITTED BY LAW/i),
       ).toBeInTheDocument();
     });
 
@@ -148,7 +148,7 @@ describe("TermsOfServicePage", () => {
       render(<TermsOfServicePage />);
       expect(screen.getByText(/13\..*Dispute Resolution/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/13\.1.*Buyer-Seller Disputes/i)
+        screen.getByText(/13\.1.*Buyer-Seller Disputes/i),
       ).toBeInTheDocument();
     });
 
@@ -170,7 +170,7 @@ describe("TermsOfServicePage", () => {
     it("should specify auction limit (5 active auctions per shop)", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/5 active auctions per shop/i)
+        screen.getByText(/5 active auctions per shop/i),
       ).toBeInTheDocument();
     });
 
@@ -192,14 +192,14 @@ describe("TermsOfServicePage", () => {
     it("should state bids are binding commitments", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/Your bid is a binding commitment/i)
+        screen.getByText(/Your bid is a binding commitment/i),
       ).toBeInTheDocument();
     });
 
     it("should prohibit bid retraction", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/You cannot retract a bid once placed/i)
+        screen.getByText(/You cannot retract a bid once placed/i),
       ).toBeInTheDocument();
     });
 
@@ -207,19 +207,19 @@ describe("TermsOfServicePage", () => {
       render(<TermsOfServicePage />);
       expect(screen.getByText("6.3 Reserve Prices")).toBeInTheDocument();
       expect(
-        screen.getByText(/Some auctions have reserve prices/i)
+        screen.getByText(/Some auctions have reserve prices/i),
       ).toBeInTheDocument();
     });
 
     it("should prohibit shill bidding", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText("6.4 Shill Bidding Prohibited")
+        screen.getByText("6.4 Shill Bidding Prohibited"),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          /Sellers and their associates cannot bid on their own auctions/i
-        )
+          /Sellers and their associates cannot bid on their own auctions/i,
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -229,7 +229,7 @@ describe("TermsOfServicePage", () => {
     it("should include liability limitation in all caps", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/TO THE MAXIMUM EXTENT PERMITTED BY LAW/i)
+        screen.getByText(/TO THE MAXIMUM EXTENT PERMITTED BY LAW/i),
       ).toBeInTheDocument();
     });
 
@@ -237,7 +237,7 @@ describe("TermsOfServicePage", () => {
       render(<TermsOfServicePage />);
       expect(screen.getByText("12. Indemnification")).toBeInTheDocument();
       expect(
-        screen.getByText(/You agree to indemnify and hold us harmless/i)
+        screen.getByText(/You agree to indemnify and hold us harmless/i),
       ).toBeInTheDocument();
     });
 
@@ -245,7 +245,7 @@ describe("TermsOfServicePage", () => {
       render(<TermsOfServicePage />);
       expect(screen.getByText("13.3 Class Action Waiver")).toBeInTheDocument();
       expect(
-        screen.getByText(/waive the right to participate in class actions/i)
+        screen.getByText(/waive the right to participate in class actions/i),
       ).toBeInTheDocument();
     });
 
@@ -253,7 +253,7 @@ describe("TermsOfServicePage", () => {
       render(<TermsOfServicePage />);
       expect(screen.getByText("13.2 Arbitration")).toBeInTheDocument();
       expect(
-        screen.getByText(/resolved through binding arbitration/i)
+        screen.getByText(/resolved through binding arbitration/i),
       ).toBeInTheDocument();
     });
   });
@@ -290,17 +290,17 @@ describe("TermsOfServicePage", () => {
     it("should show Version 2.0 release date and changes", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/Version 2.0 \(November 1, 2025\)/i)
+        screen.getByText(/Version 2.0 \(November 1, 2025\)/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Added auction terms, shop limits, review policies/i)
+        screen.getByText(/Added auction terms, shop limits, review policies/i),
       ).toBeInTheDocument();
     });
 
     it("should show Version 1.0 initial release", () => {
       render(<TermsOfServicePage />);
       expect(
-        screen.getByText(/Version 1.0 \(January 1, 2024\)/i)
+        screen.getByText(/Version 1.0 \(January 1, 2024\)/i),
       ).toBeInTheDocument();
     });
   });
@@ -316,11 +316,11 @@ describe("TermsOfServicePage", () => {
       render(<TermsOfServicePage />);
       expect(screen.getByText("Terms of Service")).toBeInTheDocument();
       expect(
-        screen.getByText(/Last Updated: November 7, 2025/i)
+        screen.getByText(/Last Updated: November 7, 2025/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/Version: 2.0/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/Effective Date: November 1, 2025/i)
+        screen.getByText(/Effective Date: November 1, 2025/i),
       ).toBeInTheDocument();
     });
   });

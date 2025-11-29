@@ -12,7 +12,7 @@ export const shopSchema = z.object({
     .max(100, "Slug must be less than 100 characters")
     .regex(
       /^[a-z0-9-]+$/,
-      "Slug can only contain lowercase letters, numbers, and hyphens"
+      "Slug can only contain lowercase letters, numbers, and hyphens",
     ),
   description: z
     .string()

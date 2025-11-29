@@ -98,7 +98,7 @@ describe("ShopSelector", () => {
 
     it("updates when value prop changes", async () => {
       const { rerender } = render(
-        <ShopSelector value="shop1" onChange={mockOnChange} />
+        <ShopSelector value="shop1" onChange={mockOnChange} />,
       );
 
       await waitFor(() => {
@@ -255,7 +255,7 @@ describe("ShopSelector", () => {
   describe("Custom Styling", () => {
     it("applies custom className to container", async () => {
       const { container } = render(
-        <ShopSelector onChange={mockOnChange} className="custom-class" />
+        <ShopSelector onChange={mockOnChange} className="custom-class" />,
       );
 
       await waitFor(() => {
@@ -331,7 +331,7 @@ describe("ShopSelector", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/This is a very long shop name/)
+          screen.getByText(/This is a very long shop name/),
         ).toBeInTheDocument();
       });
     });

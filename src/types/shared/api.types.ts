@@ -109,7 +109,7 @@ export class APIError extends Error {
     message: string,
     public statusCode: number,
     public code?: string,
-    public validation?: ValidationError[]
+    public validation?: ValidationError[],
   ) {
     super(message);
     this.name = "APIError";
@@ -130,7 +130,10 @@ export class NetworkError extends Error {
  * Validation Error
  */
 export class ValidationErrorClass extends Error {
-  constructor(message: string, public errors: ValidationError[]) {
+  constructor(
+    message: string,
+    public errors: ValidationError[],
+  ) {
     super(message);
     this.name = "ValidationError";
   }
@@ -142,7 +145,7 @@ export class ValidationErrorClass extends Error {
  * Check if response is successful
  */
 export function isSuccessResponse<T>(
-  response: APIResult<T>
+  response: APIResult<T>,
 ): response is APIResponse<T> {
   return response.success === true;
 }
@@ -151,7 +154,7 @@ export function isSuccessResponse<T>(
  * Check if response is an error
  */
 export function isErrorResponse(
-  response: APIResult<any>
+  response: APIResult<any>,
 ): response is APIErrorResponse {
   return response.success === false;
 }
@@ -160,7 +163,7 @@ export function isErrorResponse(
  * Check if response is paginated
  */
 export function isPaginatedResponse<T>(
-  data: any
+  data: any,
 ): data is PaginatedResponse<T> {
   return (
     data &&

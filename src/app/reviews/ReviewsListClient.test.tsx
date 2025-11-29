@@ -111,7 +111,7 @@ describe("ReviewsListClient", () => {
     });
     await waitFor(() => {
       expect(
-        screen.getByText("Failed to load reviews. Please try again later.")
+        screen.getByText("Failed to load reviews. Please try again later."),
       ).toBeInTheDocument();
     });
   });

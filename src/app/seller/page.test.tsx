@@ -89,7 +89,7 @@ describe("SellerDashboardPage", () => {
         user: mockUser,
       });
       mockAnalyticsService.getOverview.mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {}), // Never resolves
       );
 
       render(<SellerDashboardPage />);
@@ -125,10 +125,10 @@ describe("SellerDashboardPage", () => {
       expect(screen.getByTestId("stats-card-Active Shops")).toBeInTheDocument();
       expect(screen.getByTestId("stats-card-Products")).toBeInTheDocument();
       expect(
-        screen.getByTestId("stats-card-Pending Orders")
+        screen.getByTestId("stats-card-Pending Orders"),
       ).toBeInTheDocument();
       expect(
-        screen.getByTestId("stats-card-Revenue (This Month)")
+        screen.getByTestId("stats-card-Revenue (This Month)"),
       ).toBeInTheDocument();
     });
 
@@ -137,7 +137,7 @@ describe("SellerDashboardPage", () => {
         user: mockUser,
       });
       mockAnalyticsService.getOverview.mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
 
       render(<SellerDashboardPage />);
@@ -166,16 +166,16 @@ describe("SellerDashboardPage", () => {
       });
 
       expect(
-        screen.getByRole("link", { name: /create shop/i })
+        screen.getByRole("link", { name: /create shop/i }),
       ).toHaveAttribute("href", "/seller/my-shops/create");
       expect(
-        screen.getByRole("link", { name: /add product/i })
+        screen.getByRole("link", { name: /add product/i }),
       ).toHaveAttribute("href", "/seller/my-shops");
       expect(
-        screen.getByRole("link", { name: /view orders/i })
+        screen.getByRole("link", { name: /view orders/i }),
       ).toHaveAttribute("href", "/seller/orders");
       expect(
-        screen.getByRole("link", { name: /view analytics/i })
+        screen.getByRole("link", { name: /view analytics/i }),
       ).toHaveAttribute("href", "/seller/revenue");
     });
   });
@@ -274,7 +274,7 @@ describe("SellerDashboardPage", () => {
         user: mockUser,
       });
       mockAnalyticsService.getOverview.mockRejectedValueOnce(
-        new Error("API Error")
+        new Error("API Error"),
       );
       mockAnalyticsService.getOverview.mockResolvedValueOnce(mockAnalyticsData);
 

@@ -80,7 +80,7 @@ describe("GET /api/auctions/[id]/bid - List Bids", () => {
     mockQuery.get.mockResolvedValue({ docs: mockBids });
 
     const request = new NextRequest(
-      "http://localhost:3000/api/auctions/auction1/bid"
+      "http://localhost:3000/api/auctions/auction1/bid",
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -94,7 +94,7 @@ describe("GET /api/auctions/[id]/bid - List Bids", () => {
     expect(mockBidsCollection.where).toHaveBeenCalledWith(
       "auction_id",
       "==",
-      "auction1"
+      "auction1",
     );
     expect(mockQuery.orderBy).toHaveBeenCalledWith("created_at", "desc");
     expect(mockQuery.limit).toHaveBeenCalledWith(21); // limit + 1
@@ -113,7 +113,7 @@ describe("GET /api/auctions/[id]/bid - List Bids", () => {
     mockQuery.get.mockResolvedValue({ docs: [] });
 
     const request = new NextRequest(
-      "http://localhost:3000/api/auctions/auction1/bid?startAfter=bid5&limit=10"
+      "http://localhost:3000/api/auctions/auction1/bid?startAfter=bid5&limit=10",
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -138,7 +138,7 @@ describe("GET /api/auctions/[id]/bid - List Bids", () => {
     mockQuery.get.mockResolvedValue({ docs: mockBids });
 
     const request = new NextRequest(
-      "http://localhost:3000/api/auctions/auction1/bid?limit=20"
+      "http://localhost:3000/api/auctions/auction1/bid?limit=20",
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -165,7 +165,7 @@ describe("GET /api/auctions/[id]/bid - List Bids", () => {
     mockQuery.get.mockResolvedValue({ docs: mockBids });
 
     const request = new NextRequest(
-      "http://localhost:3000/api/auctions/auction1/bid?limit=20"
+      "http://localhost:3000/api/auctions/auction1/bid?limit=20",
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -182,7 +182,7 @@ describe("GET /api/auctions/[id]/bid - List Bids", () => {
     mockQuery.get.mockResolvedValue({ docs: [] });
 
     const request = new NextRequest(
-      "http://localhost:3000/api/auctions/auction1/bid?sortOrder=asc"
+      "http://localhost:3000/api/auctions/auction1/bid?sortOrder=asc",
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -195,7 +195,7 @@ describe("GET /api/auctions/[id]/bid - List Bids", () => {
     mockQuery.get.mockResolvedValue({ docs: [] });
 
     const request = new NextRequest(
-      "http://localhost:3000/api/auctions/auction1/bid"
+      "http://localhost:3000/api/auctions/auction1/bid",
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -212,7 +212,7 @@ describe("GET /api/auctions/[id]/bid - List Bids", () => {
     mockQuery.get.mockRejectedValue(new Error("Database connection failed"));
 
     const request = new NextRequest(
-      "http://localhost:3000/api/auctions/auction1/bid"
+      "http://localhost:3000/api/auctions/auction1/bid",
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -232,7 +232,7 @@ describe("GET /api/auctions/[id]/bid - List Bids", () => {
     mockQuery.get.mockResolvedValue({ docs: [] });
 
     const request = new NextRequest(
-      "http://localhost:3000/api/auctions/auction1/bid?startAfter=invalid"
+      "http://localhost:3000/api/auctions/auction1/bid?startAfter=invalid",
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -249,7 +249,12 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should place a bid successfully", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     const mockBidId = "bid123";
     const mockBidData = {
       auction_id: "auction1",
@@ -277,7 +282,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: 1500 }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -299,7 +304,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: 1500 }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -313,7 +318,12 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should reject invalid bid amount (not a number)", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
     const request = new NextRequest(
@@ -321,7 +331,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: "invalid" }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -335,11 +345,16 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should reject NaN bid amount (passed as null through JSON)", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     mockGetCurrentUser.mockResolvedValue(mockUser);
     // Number(null) = 0, which will fail at transaction level
     mockPlaceBid.mockRejectedValue(
-      new Error("Bid amount must be higher than current bid")
+      new Error("Bid amount must be higher than current bid"),
     );
 
     const mockBidId = "bid123";
@@ -359,7 +374,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: null }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -373,11 +388,16 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should reject Infinity bid amount (passed as null through JSON)", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     mockGetCurrentUser.mockResolvedValue(mockUser);
     // Number(null) = 0, which will fail at transaction level
     mockPlaceBid.mockRejectedValue(
-      new Error("Bid amount must be higher than current bid")
+      new Error("Bid amount must be higher than current bid"),
     );
 
     const mockBidId = "bid123";
@@ -397,7 +417,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: null }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -411,7 +431,12 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should handle auction not found error", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     mockGetCurrentUser.mockResolvedValue(mockUser);
     mockPlaceBid.mockRejectedValue(new Error("Auction not found"));
 
@@ -420,7 +445,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: 1500 }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "invalid" });
 
@@ -433,10 +458,15 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should handle bid amount too low error", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     mockGetCurrentUser.mockResolvedValue(mockUser);
     mockPlaceBid.mockRejectedValue(
-      new Error("Bid amount must be higher than current bid")
+      new Error("Bid amount must be higher than current bid"),
     );
 
     const request = new NextRequest(
@@ -444,7 +474,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: 1000 }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -457,7 +487,12 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should handle missing bidAmount in request body", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
     const request = new NextRequest(
@@ -465,7 +500,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({}),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -478,10 +513,15 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should handle zero bid amount", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     mockGetCurrentUser.mockResolvedValue(mockUser);
     mockPlaceBid.mockRejectedValue(
-      new Error("Bid amount must be higher than current bid")
+      new Error("Bid amount must be higher than current bid"),
     );
 
     const request = new NextRequest(
@@ -489,7 +529,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: 0 }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -501,10 +541,15 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should handle negative bid amount", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     mockGetCurrentUser.mockResolvedValue(mockUser);
     mockPlaceBid.mockRejectedValue(
-      new Error("Bid amount must be higher than current bid")
+      new Error("Bid amount must be higher than current bid"),
     );
 
     const request = new NextRequest(
@@ -512,7 +557,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: -100 }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -524,7 +569,12 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should handle database transaction errors", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     mockGetCurrentUser.mockResolvedValue(mockUser);
     mockPlaceBid.mockRejectedValue(new Error("Transaction failed"));
 
@@ -533,7 +583,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: 1500 }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -546,14 +596,19 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should handle user without id", async () => {
-    mockGetCurrentUser.mockResolvedValue({ id: undefined, email: "user@test.com", name: "Test User", role: "user" } as any);
+    mockGetCurrentUser.mockResolvedValue({
+      id: undefined,
+      email: "user@test.com",
+      name: "Test User",
+      role: "user",
+    } as any);
 
     const request = new NextRequest(
       "http://localhost:3000/api/auctions/auction1/bid",
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: 1500 }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -566,7 +621,12 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should handle large bid amounts", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     const largeBidAmount = 999999999;
     const mockBidId = "bid123";
 
@@ -593,7 +653,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: largeBidAmount }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -606,8 +666,13 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should handle decimal bid amounts", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
-    const decimalBidAmount = 1500.50;
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
+    const decimalBidAmount = 1500.5;
     const mockBidId = "bid123";
 
     mockGetCurrentUser.mockResolvedValue(mockUser);
@@ -633,7 +698,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: decimalBidAmount }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 
@@ -646,7 +711,12 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
   });
 
   it("should handle errors without message property", async () => {
-    const mockUser = { id: "user123", email: "user@test.com", name: "Test User", role: "user" as const };
+    const mockUser = {
+      id: "user123",
+      email: "user@test.com",
+      name: "Test User",
+      role: "user" as const,
+    };
     mockGetCurrentUser.mockResolvedValue(mockUser);
     mockPlaceBid.mockRejectedValue("Unknown error");
 
@@ -655,7 +725,7 @@ describe("POST /api/auctions/[id]/bid - Place Bid", () => {
       {
         method: "POST",
         body: JSON.stringify({ bidAmount: 1500 }),
-      }
+      },
     );
     const params = Promise.resolve({ id: "auction1" });
 

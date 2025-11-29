@@ -33,9 +33,9 @@ describe("AuctionsService - List", () => {
 
       for (let i = 1; i < result.data.length; i++) {
         expect(
-          new Date(result.data[i].endTime).getTime()
+          new Date(result.data[i].endTime).getTime(),
         ).toBeGreaterThanOrEqual(
-          new Date(result.data[i - 1].endTime).getTime()
+          new Date(result.data[i - 1].endTime).getTime(),
         );
       }
     });
@@ -91,7 +91,7 @@ describe("AuctionsService - Detail", () => {
 
     it("should return 404 for non-existent auction", async () => {
       await expect(auctionsService.getById("non_existent")).rejects.toThrow(
-        "Auction not found"
+        "Auction not found",
       );
     });
 
@@ -164,20 +164,20 @@ describe("AuctionsService - Bidding", () => {
     it("should reject bid below minimum", async () => {
       // Current price is 12500, min increment 500
       await expect(
-        auctionsService.placeBid("test_auction_001", { amount: 12600 })
+        auctionsService.placeBid("test_auction_001", { amount: 12600 }),
       ).rejects.toThrow("Bid must be at least");
     });
 
     it("should reject bid on ended auction", async () => {
       await expect(
-        auctionsService.placeBid("test_auction_002", { amount: 50000 })
+        auctionsService.placeBid("test_auction_002", { amount: 50000 }),
       ).rejects.toThrow("Auction is not active");
     });
 
     it("should reject bid on own auction", async () => {
       // As seller owner
       await expect(
-        auctionsService.placeBid("test_auction_001", { amount: 20000 })
+        auctionsService.placeBid("test_auction_001", { amount: 20000 }),
       ).rejects.toThrow("Cannot bid on your own auction");
     });
 
@@ -186,7 +186,7 @@ describe("AuctionsService - Bidding", () => {
       await expect(
         auctionsService.placeBid("test_auction_001", {
           amount: 13000, // Was valid but another bid came in
-        })
+        }),
       ).rejects.toThrow("You were outbid");
     });
   });
@@ -213,7 +213,7 @@ describe("AuctionsService - Bidding", () => {
 
     it("should reject max bid lower than current price", async () => {
       await expect(
-        auctionsService.setAutoBid("test_auction_001", { maxBid: 10000 })
+        auctionsService.setAutoBid("test_auction_001", { maxBid: 10000 }),
       ).rejects.toThrow("Max bid must be higher than current price");
     });
 
@@ -235,7 +235,7 @@ describe("AuctionsService - Bidding", () => {
 
     it("should return 404 if no auto-bid exists", async () => {
       await expect(
-        auctionsService.cancelAutoBid("test_auction_003")
+        auctionsService.cancelAutoBid("test_auction_003"),
       ).rejects.toThrow("No auto-bid found");
     });
   });
@@ -387,7 +387,7 @@ describe("AuctionsService - Seller", () => {
       };
 
       await expect(auctionsService.create(auctionData)).rejects.toThrow(
-        "Start time must be in the future"
+        "Start time must be in the future",
       );
     });
 
@@ -402,7 +402,7 @@ describe("AuctionsService - Seller", () => {
       };
 
       await expect(auctionsService.create(auctionData)).rejects.toThrow(
-        "Product already in active auction"
+        "Product already in active auction",
       );
     });
 
@@ -418,7 +418,7 @@ describe("AuctionsService - Seller", () => {
       };
 
       await expect(auctionsService.create(auctionData)).rejects.toThrow(
-        "Reserve price must be >= starting price"
+        "Reserve price must be >= starting price",
       );
     });
   });
@@ -436,7 +436,7 @@ describe("AuctionsService - Seller", () => {
       await expect(
         auctionsService.update("test_auction_001", {
           startingPrice: 10000, // Cannot change once active
-        })
+        }),
       ).rejects.toThrow("Cannot update starting price");
     });
 
@@ -457,7 +457,7 @@ describe("AuctionsService - Seller", () => {
 
     it("should reject cancel of auction with bids", async () => {
       await expect(auctionsService.cancel("test_auction_001")).rejects.toThrow(
-        "Cannot cancel auction with bids"
+        "Cannot cancel auction with bids",
       );
     });
   });

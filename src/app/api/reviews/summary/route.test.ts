@@ -36,7 +36,9 @@ describe("GET /api/reviews/summary", () => {
 
     mockWhere.mockReturnThis();
 
-    const req = new NextRequest("http://localhost/api/reviews/summary?productId=prod1");
+    const req = new NextRequest(
+      "http://localhost/api/reviews/summary?productId=prod1",
+    );
     const response = await GET(req);
     const data = await response.json();
 
@@ -56,13 +58,15 @@ describe("GET /api/reviews/summary", () => {
   it("should handle products with no reviews", async () => {
     const mockGet = jest.fn().mockResolvedValue({ docs: [] });
     const mockWhere = jest.fn().mockReturnThis();
-    
+
     mockCollections.reviews.mockReturnValue({
       where: mockWhere,
       get: mockGet,
     } as any);
 
-    const req = new NextRequest("http://localhost/api/reviews/summary?productId=prod1");
+    const req = new NextRequest(
+      "http://localhost/api/reviews/summary?productId=prod1",
+    );
     const response = await GET(req);
     const data = await response.json();
 
@@ -90,10 +94,7 @@ describe("GET /api/reviews/summary", () => {
 
   it("should only count approved reviews", async () => {
     const mockGet = jest.fn().mockResolvedValue({
-      docs: [
-        { data: () => ({ rating: 5 }) },
-        { data: () => ({ rating: 4 }) },
-      ],
+      docs: [{ data: () => ({ rating: 5 }) }, { data: () => ({ rating: 4 }) }],
     });
 
     const mockWhere = jest.fn().mockReturnThis();
@@ -102,7 +103,9 @@ describe("GET /api/reviews/summary", () => {
       get: mockGet,
     } as any);
 
-    const req = new NextRequest("http://localhost/api/reviews/summary?productId=prod1");
+    const req = new NextRequest(
+      "http://localhost/api/reviews/summary?productId=prod1",
+    );
     await GET(req);
 
     expect(mockWhere).toHaveBeenCalledWith("product_id", "==", "prod1");
@@ -124,7 +127,9 @@ describe("GET /api/reviews/summary", () => {
       get: mockGet,
     } as any);
 
-    const req = new NextRequest("http://localhost/api/reviews/summary?productId=prod1");
+    const req = new NextRequest(
+      "http://localhost/api/reviews/summary?productId=prod1",
+    );
     const response = await GET(req);
     const data = await response.json();
 
@@ -141,13 +146,15 @@ describe("GET /api/reviews/summary", () => {
   it("should handle database errors", async () => {
     const mockWhere = jest.fn().mockReturnThis();
     const mockGet = jest.fn().mockRejectedValue(new Error("DB error"));
-    
+
     mockCollections.reviews.mockReturnValue({
       where: mockWhere,
       get: mockGet,
     } as any);
 
-    const req = new NextRequest("http://localhost/api/reviews/summary?productId=prod1");
+    const req = new NextRequest(
+      "http://localhost/api/reviews/summary?productId=prod1",
+    );
     const response = await GET(req);
     const data = await response.json();
 

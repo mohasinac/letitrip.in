@@ -292,7 +292,7 @@ describe("/api/orders/[id]", () => {
       (requireAuth as jest.Mock).mockResolvedValue({
         error: NextResponse.json(
           { success: false, error: "Unauthorized" },
-          { status: 401 }
+          { status: 401 },
         ),
       });
 
@@ -424,7 +424,7 @@ describe("/api/orders/[id]", () => {
         expect.objectContaining({
           status: "completed",
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -509,7 +509,7 @@ describe("/api/orders/[id]", () => {
         expect.objectContaining({
           notes: "Customer requested express delivery",
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -558,7 +558,7 @@ describe("/api/orders/[id]", () => {
           status: "shipped",
           notes: "Package sent via FedEx",
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -597,7 +597,7 @@ describe("/api/orders/[id]", () => {
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -751,7 +751,7 @@ describe("/api/orders/[id]", () => {
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -804,7 +804,7 @@ describe("/api/orders/[id]", () => {
         expect.objectContaining({
           user_id: "hacker123",
           amount: 99999,
-        })
+        }),
       );
     });
 

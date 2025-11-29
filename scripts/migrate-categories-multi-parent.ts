@@ -104,7 +104,7 @@ async function migrateCategories() {
           }
         } else {
           console.log(
-            `  ⚠️  Warning: Parent ${parentId} not found for ${category.name}`
+            `  ⚠️  Warning: Parent ${parentId} not found for ${category.name}`,
           );
         }
       });
@@ -173,7 +173,7 @@ async function migrateCategories() {
       console.log("\n✅ Migration completed successfully!");
     } else {
       console.log(
-        "\n⚠️  Migration completed with errors. Please review invalid categories."
+        "\n⚠️  Migration completed with errors. Please review invalid categories.",
       );
     }
   } catch (error) {

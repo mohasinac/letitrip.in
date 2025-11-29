@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { AdminLayoutClient } from "./AdminLayoutClient";
 
 export const metadata: Metadata = {
   title: {
@@ -18,20 +19,22 @@ export default function AdminLayout({
 }) {
   return (
     <AuthGuard allowedRoles={["admin"]}>
-      <div className="flex min-h-screen bg-gray-50">
-        {/* Sidebar */}
-        <AdminSidebar />
+      <AdminLayoutClient>
+        <div className="flex min-h-screen bg-gray-50">
+          {/* Desktop Sidebar */}
+          <AdminSidebar />
 
-        {/* Main Content Area */}
-        <div className="flex flex-1 flex-col lg:ml-64">
-          {/* Main Content */}
-          <main className="flex-1">
-            <div className="container mx-auto px-4 py-6 lg:px-8">
-              {children}
-            </div>
-          </main>
+          {/* Main Content Area */}
+          <div className="flex flex-1 flex-col lg:ml-64">
+            {/* Main Content */}
+            <main className="flex-1">
+              <div className="container mx-auto px-4 py-6 lg:px-8">
+                {children}
+              </div>
+            </main>
+          </div>
         </div>
-      </div>
+      </AdminLayoutClient>
     </AuthGuard>
   );
 }

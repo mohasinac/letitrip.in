@@ -50,7 +50,7 @@ export class NotificationService {
 
     if (!this.apiKey) {
       console.warn(
-        "⚠️ Resend API key not configured. Email notifications will be logged only."
+        "⚠️ Resend API key not configured. Email notifications will be logged only.",
       );
     }
   }
@@ -62,7 +62,7 @@ export class NotificationService {
     to: string,
     subject: string,
     html: string,
-    text: string
+    text: string,
   ): Promise<boolean> {
     // If no API key, log and return success (dev mode)
     if (!this.apiKey) {
@@ -193,12 +193,12 @@ The JustForView Team
     <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="margin-top: 0; color: #667eea;">Auction Details</h3>
       <p style="margin: 10px 0;"><strong>Starting Bid:</strong> ${this.formatCurrency(
-        data.startingBid
+        data.startingBid,
       )}</p>
       ${
         data.reservePrice
           ? `<p style="margin: 10px 0;"><strong>Reserve Price:</strong> ${this.formatCurrency(
-              data.reservePrice
+              data.reservePrice,
             )}</p>`
           : ""
       }
@@ -304,10 +304,10 @@ The JustForView Team
     <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="margin-top: 0; color: #667eea;">Auction Results</h3>
       <p style="margin: 10px 0;"><strong>Highest Bid:</strong> <span style="color: #ef4444; font-size: 20px; font-weight: bold;">${this.formatCurrency(
-        data.finalBid
+        data.finalBid,
       )}</span></p>
       <p style="margin: 10px 0;"><strong>Reserve Price:</strong> ${this.formatCurrency(
-        data.reservePrice || 0
+        data.reservePrice || 0,
       )}</p>
       <p style="margin: 10px 0;"><strong>Highest Bidder:</strong> ${
         data.bidder.name
@@ -396,10 +396,10 @@ The JustForView Team
     <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="margin-top: 0; color: #667eea;">Auction Results</h3>
       <p style="margin: 10px 0;"><strong>Your Bid:</strong> <span style="font-size: 20px; font-weight: bold;">${this.formatCurrency(
-        data.finalBid
+        data.finalBid,
       )}</span></p>
       <p style="margin: 10px 0;"><strong>Reserve Price:</strong> ${this.formatCurrency(
-        data.reservePrice || 0
+        data.reservePrice || 0,
       )}</p>
     </div>
     
@@ -507,7 +507,7 @@ The JustForView Team
     <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
       <p style="color: white; margin: 0; font-size: 14px;">Your Winning Bid</p>
       <p style="color: white; margin: 10px 0; font-size: 36px; font-weight: bold;">${this.formatCurrency(
-        data.finalBid
+        data.finalBid,
       )}</p>
     </div>
     
@@ -599,7 +599,7 @@ The JustForView Team
         data.winner.name
       }</p>
       <p style="margin: 10px 0;"><strong>Final Bid:</strong> <span style="color: #10b981; font-size: 24px; font-weight: bold;">${this.formatCurrency(
-        data.finalBid
+        data.finalBid,
       )}</span></p>
     </div>
     

@@ -67,7 +67,7 @@ describe("Textarea", () => {
       render(<Textarea error="Error" />);
       expect(screen.getByRole("textbox")).toHaveAttribute(
         "aria-invalid",
-        "true"
+        "true",
       );
     });
 
@@ -105,7 +105,7 @@ describe("Textarea", () => {
           maxLength={100}
           value="Hello"
           onChange={() => {}}
-        />
+        />,
       );
       expect(screen.getByText("5 / 100")).toBeInTheDocument();
     });
@@ -127,7 +127,7 @@ describe("Textarea", () => {
           maxLength={100}
           value="Test"
           onChange={() => {}}
-        />
+        />,
       );
       expect(screen.getByText("4 / 100")).toBeInTheDocument();
 
@@ -137,14 +137,14 @@ describe("Textarea", () => {
           maxLength={100}
           value="Test123"
           onChange={() => {}}
-        />
+        />,
       );
       expect(screen.getByText("7 / 100")).toBeInTheDocument();
     });
 
     it("shows 0 count for empty value", () => {
       render(
-        <Textarea showCharCount maxLength={100} value="" onChange={() => {}} />
+        <Textarea showCharCount maxLength={100} value="" onChange={() => {}} />,
       );
       expect(screen.getByText("0 / 100")).toBeInTheDocument();
     });
@@ -175,7 +175,7 @@ describe("Textarea", () => {
       const textarea = screen.getByRole("textbox");
       expect(textarea).toHaveClass(
         "disabled:bg-gray-100",
-        "disabled:cursor-not-allowed"
+        "disabled:cursor-not-allowed",
       );
     });
   });
@@ -206,7 +206,7 @@ describe("Textarea", () => {
 
     it("updates value on change", () => {
       const { rerender } = render(
-        <Textarea value="Initial" onChange={() => {}} />
+        <Textarea value="Initial" onChange={() => {}} />,
       );
       expect(screen.getByDisplayValue("Initial")).toBeInTheDocument();
 
@@ -268,7 +268,7 @@ describe("Textarea", () => {
       render(<Textarea aria-label="Custom label" />);
       expect(screen.getByRole("textbox")).toHaveAttribute(
         "aria-label",
-        "Custom label"
+        "Custom label",
       );
     });
   });
@@ -296,16 +296,16 @@ describe("Textarea", () => {
       const longError = "This is a very long error message ".repeat(10);
       render(<Textarea error={longError} />);
       expect(
-        screen.getByText(/This is a very long error message/)
+        screen.getByText(/This is a very long error message/),
       ).toBeInTheDocument();
     });
 
     it("handles special characters in value", () => {
       render(
-        <Textarea value="<script>alert('test')</script>" onChange={() => {}} />
+        <Textarea value="<script>alert('test')</script>" onChange={() => {}} />,
       );
       expect(
-        screen.getByDisplayValue("<script>alert('test')</script>")
+        screen.getByDisplayValue("<script>alert('test')</script>"),
       ).toBeInTheDocument();
     });
 

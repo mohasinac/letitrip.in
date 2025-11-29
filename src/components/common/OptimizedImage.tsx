@@ -106,7 +106,7 @@ export default function OptimizedImage({
   // For fixed size images
   if (!width || !height) {
     console.warn(
-      `OptimizedImage: width and height are required when fill is false. Image: ${src}`
+      `OptimizedImage: width and height are required when fill is false. Image: ${src}`,
     );
     return (
       <img

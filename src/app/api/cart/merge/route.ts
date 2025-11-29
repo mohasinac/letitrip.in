@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
           const currentQuantity = existingDoc.data().quantity;
           const newQuantity = Math.min(
             currentQuantity + quantity,
-            product.stock_count
+            product.stock_count,
           );
 
           await existingDoc.ref.update({
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
           isAvailable: product.is_active && product.stock_count > 0,
           addedAt: data.added_at,
         };
-      })
+      }),
     );
 
     const validItems = items.filter((item: any) => item !== null);
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
     // Calculate totals
     const subtotal = validItems.reduce(
       (sum: number, item: any) => sum + item.price * item.quantity,
-      0
+      0,
     );
     const shipping = subtotal > 5000 ? 0 : 100;
     const tax = subtotal * 0.18;
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
         items: validItems,
         itemCount: validItems.reduce(
           (sum: number, item: any) => sum + item.quantity,
-          0
+          0,
         ),
         subtotal,
         discount,
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
     console.error("Error merging cart:", error);
     return NextResponse.json(
       { success: false, error: "Failed to merge cart" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

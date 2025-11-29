@@ -38,12 +38,24 @@ import bcrypt from "bcryptjs";
 
 const mockAdminAuth = adminAuth as jest.Mocked<typeof adminAuth>;
 const mockAdminDb = adminDb as jest.Mocked<typeof adminDb>;
-const mockCreateSession = createSession as jest.MockedFunction<typeof createSession>;
-const mockSetSessionCookie = setSessionCookie as jest.MockedFunction<typeof setSessionCookie>;
-const mockClearSessionCookie = clearSessionCookie as jest.MockedFunction<typeof clearSessionCookie>;
-const mockGetSessionToken = getSessionToken as jest.MockedFunction<typeof getSessionToken>;
-const mockVerifySession = verifySession as jest.MockedFunction<typeof verifySession>;
-const mockDeleteSession = deleteSession as jest.MockedFunction<typeof deleteSession>;
+const mockCreateSession = createSession as jest.MockedFunction<
+  typeof createSession
+>;
+const mockSetSessionCookie = setSessionCookie as jest.MockedFunction<
+  typeof setSessionCookie
+>;
+const mockClearSessionCookie = clearSessionCookie as jest.MockedFunction<
+  typeof clearSessionCookie
+>;
+const mockGetSessionToken = getSessionToken as jest.MockedFunction<
+  typeof getSessionToken
+>;
+const mockVerifySession = verifySession as jest.MockedFunction<
+  typeof verifySession
+>;
+const mockDeleteSession = deleteSession as jest.MockedFunction<
+  typeof deleteSession
+>;
 const mockBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
 
 describe("POST /api/auth/login", () => {
@@ -103,7 +115,10 @@ describe("POST /api/auth/login", () => {
 
     const request = new NextRequest("http://localhost:3000/api/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email: "nonexistent@example.com", password: "password" }),
+      body: JSON.stringify({
+        email: "nonexistent@example.com",
+        password: "password",
+      }),
     });
 
     const response = await loginPOST(request);
@@ -119,7 +134,10 @@ describe("POST /api/auth/login", () => {
 
     const request = new NextRequest("http://localhost:3000/api/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email: "test@example.com", password: "wrongpassword" }),
+      body: JSON.stringify({
+        email: "test@example.com",
+        password: "wrongpassword",
+      }),
     });
 
     const response = await loginPOST(request);
@@ -159,7 +177,7 @@ describe("POST /api/auth/login", () => {
       "user1",
       "test@example.com",
       "user",
-      expect.any(Object)
+      expect.any(Object),
     );
     expect(mockCollection.doc).toHaveBeenCalledWith("user1");
   });
@@ -179,7 +197,7 @@ describe("POST /api/auth/login", () => {
       expect.objectContaining({
         lastLogin: expect.any(String),
         updatedAt: expect.any(String),
-      })
+      }),
     );
   });
 
@@ -191,7 +209,11 @@ describe("POST /api/auth/login", () => {
 
     await loginPOST(request);
 
-    expect(mockCollection.where).toHaveBeenCalledWith("email", "==", "test@example.com");
+    expect(mockCollection.where).toHaveBeenCalledWith(
+      "email",
+      "==",
+      "test@example.com",
+    );
   });
 });
 
@@ -306,7 +328,7 @@ describe("POST /api/auth/register", () => {
       expect.objectContaining({
         email: "newuser@example.com",
         displayName: "New User",
-      })
+      }),
     );
   });
 
@@ -328,7 +350,7 @@ describe("POST /api/auth/register", () => {
     expect(mockSet).toHaveBeenCalledWith(
       expect.objectContaining({
         role: "user",
-      })
+      }),
     );
   });
 
@@ -351,7 +373,7 @@ describe("POST /api/auth/register", () => {
     expect(mockSet).toHaveBeenCalledWith(
       expect.objectContaining({
         role: "user", // defaults to user
-      })
+      }),
     );
   });
 
@@ -374,7 +396,7 @@ describe("POST /api/auth/register", () => {
     expect(mockSet).toHaveBeenCalledWith(
       expect.objectContaining({
         hashedPassword: "hashed_password",
-      })
+      }),
     );
   });
 });

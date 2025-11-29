@@ -31,7 +31,7 @@ describe("Hero Slides Service", () => {
       const slides = await homepageService.getHeroSlides();
       for (let i = 1; i < slides.length; i++) {
         expect(slides[i - 1].sortOrder).toBeLessThanOrEqual(
-          slides[i].sortOrder
+          slides[i].sortOrder,
         );
       }
     });
@@ -72,7 +72,7 @@ describe("Admin Hero Slides", () => {
 
     it("should validate required fields", async () => {
       await expect(
-        homepageService.createHeroSlide({ title: "No Image" })
+        homepageService.createHeroSlide({ title: "No Image" }),
       ).rejects.toThrow("Image is required");
     });
 

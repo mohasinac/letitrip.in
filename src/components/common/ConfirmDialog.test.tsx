@@ -22,7 +22,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
       expect(screen.queryByText("Test")).not.toBeInTheDocument();
     });
@@ -34,7 +34,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test Dialog"
-        />
+        />,
       );
       expect(screen.getByText("Test Dialog")).toBeInTheDocument();
     });
@@ -48,7 +48,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Are you sure?"
-        />
+        />,
       );
       expect(screen.getByText("Are you sure?")).toBeInTheDocument();
     });
@@ -61,10 +61,10 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Delete item"
           description="This action cannot be undone"
-        />
+        />,
       );
       expect(
-        screen.getByText("This action cannot be undone")
+        screen.getByText("This action cannot be undone"),
       ).toBeInTheDocument();
     });
 
@@ -75,7 +75,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Delete item"
-        />
+        />,
       );
       expect(container.querySelector("p")).not.toBeInTheDocument();
     });
@@ -89,7 +89,7 @@ describe("ConfirmDialog", () => {
           title="Custom"
         >
           <div>Custom content</div>
-        </ConfirmDialog>
+        </ConfirmDialog>,
       );
       expect(screen.getByText("Custom content")).toBeInTheDocument();
     });
@@ -103,7 +103,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Delete"
-        />
+        />,
       );
       const confirmButton = screen.getByText("Confirm");
       expect(confirmButton).toHaveClass("bg-red-600");
@@ -117,7 +117,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Warning"
           variant="warning"
-        />
+        />,
       );
       const confirmButton = screen.getByText("Confirm");
       expect(confirmButton).toHaveClass("bg-yellow-600");
@@ -131,7 +131,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Info"
           variant="info"
-        />
+        />,
       );
       const confirmButton = screen.getByText("Confirm");
       expect(confirmButton).toHaveClass("bg-blue-600");
@@ -146,7 +146,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
       expect(screen.getByText("Confirm")).toBeInTheDocument();
     });
@@ -159,7 +159,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Test"
           confirmLabel="Delete"
-        />
+        />,
       );
       expect(screen.getByText("Delete")).toBeInTheDocument();
     });
@@ -171,7 +171,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
       expect(screen.getByText("Cancel")).toBeInTheDocument();
     });
@@ -184,7 +184,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Test"
           cancelLabel="Go Back"
-        />
+        />,
       );
       expect(screen.getByText("Go Back")).toBeInTheDocument();
     });
@@ -198,7 +198,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
       fireEvent.click(screen.getByText("Cancel"));
       expect(mockOnClose).toHaveBeenCalled();
@@ -211,7 +211,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
       const backdrop = container.querySelector(".bg-black");
       fireEvent.click(backdrop!);
@@ -225,7 +225,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
       fireEvent.keyDown(document, { key: "Escape" });
       expect(mockOnClose).toHaveBeenCalled();
@@ -233,7 +233,7 @@ describe("ConfirmDialog", () => {
 
     it("does not close on Escape when processing", async () => {
       mockOnConfirm.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(
@@ -242,7 +242,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Confirm"));
@@ -260,7 +260,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Confirm"));
@@ -277,7 +277,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Confirm"));
@@ -296,7 +296,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={asyncConfirm}
           title="Test"
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Confirm"));
@@ -317,7 +317,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Confirm"));
@@ -325,7 +325,7 @@ describe("ConfirmDialog", () => {
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalledWith(
           "Confirm action failed:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -336,7 +336,7 @@ describe("ConfirmDialog", () => {
   describe("Loading State", () => {
     it("shows processing text when confirming", async () => {
       mockOnConfirm.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(
@@ -345,7 +345,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Confirm"));
@@ -361,7 +361,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Test"
           isLoading={true}
-        />
+        />,
       );
 
       expect(screen.getByText("Processing...")).toBeInTheDocument();
@@ -375,7 +375,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Test"
           isLoading={true}
-        />
+        />,
       );
 
       const cancelButton = screen.getByText("Cancel");
@@ -393,7 +393,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Test"
           isLoading={true}
-        />
+        />,
       );
 
       const backdrop = container.querySelector(".bg-black");
@@ -410,7 +410,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       expect(document.body.style.overflow).toBe("hidden");
@@ -423,7 +423,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       rerender(
@@ -432,7 +432,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       expect(document.body.style.overflow).toBe("unset");
@@ -447,7 +447,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       const confirmButton = screen.getByText("Confirm");
@@ -467,7 +467,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       expect(screen.getByText("Test")).toBeInTheDocument();
@@ -482,7 +482,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title={longTitle}
-        />
+        />,
       );
       expect(screen.getByText(longTitle)).toBeInTheDocument();
     });
@@ -496,7 +496,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Test"
           description={longDesc}
-        />
+        />,
       );
       expect(screen.getByText(longDesc)).toBeInTheDocument();
     });
@@ -509,7 +509,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Delete <>&"
           description="Are you sure? @#$%"
-        />
+        />,
       );
       expect(screen.getByText("Delete <>&")).toBeInTheDocument();
       expect(screen.getByText("Are you sure? @#$%")).toBeInTheDocument();
@@ -524,7 +524,7 @@ describe("ConfirmDialog", () => {
           title="Test"
           confirmLabel=""
           cancelLabel=""
-        />
+        />,
       );
       const buttons = screen.getAllByRole("button");
       expect(buttons).toHaveLength(2);
@@ -539,7 +539,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       // Confirm button should be in the document
@@ -553,7 +553,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       const cancelButton = screen.getByText("Cancel");
@@ -570,7 +570,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       const confirmButton = screen.getByText("Confirm");
@@ -588,7 +588,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       fireEvent.keyDown(document, { key: "a", code: "KeyA" });
@@ -607,7 +607,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       // Dialog should have proper ARIA structure
@@ -622,14 +622,14 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       expect(
-        screen.getByRole("button", { name: "Cancel" })
+        screen.getByRole("button", { name: "Cancel" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Confirm" })
+        screen.getByRole("button", { name: "Confirm" }),
       ).toBeInTheDocument();
     });
 
@@ -640,7 +640,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test Title"
-        />
+        />,
       );
 
       const heading = screen.getByRole("heading");
@@ -656,7 +656,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       const overlay = container.querySelector(".fixed");
@@ -670,7 +670,7 @@ describe("ConfirmDialog", () => {
           onClose={mockOnClose}
           onConfirm={mockOnConfirm}
           title="Test"
-        />
+        />,
       );
 
       // Check for centering classes or fixed positioning
@@ -688,7 +688,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Test"
           variant="danger"
-        />
+        />,
       );
 
       const confirmButton = screen.getByText("Confirm");
@@ -703,7 +703,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Test"
           variant="warning"
-        />
+        />,
       );
 
       const confirmButton = screen.getByText("Confirm");
@@ -718,7 +718,7 @@ describe("ConfirmDialog", () => {
           onConfirm={mockOnConfirm}
           title="Test"
           variant="info"
-        />
+        />,
       );
 
       const confirmButton = screen.getByText("Confirm");

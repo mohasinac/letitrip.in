@@ -37,7 +37,7 @@ describe("FavoriteButton", () => {
 
     it("shows remove from favorites title when favorited", () => {
       render(
-        <FavoriteButton itemId="item1" itemType="product" initialIsFavorite />
+        <FavoriteButton itemId="item1" itemType="product" initialIsFavorite />,
       );
       expect(screen.getByTitle("Remove from favorites")).toBeInTheDocument();
     });
@@ -51,7 +51,7 @@ describe("FavoriteButton", () => {
   describe("Icon States", () => {
     it("shows unfilled heart when not favorited", () => {
       const { container } = render(
-        <FavoriteButton itemId="item1" itemType="product" />
+        <FavoriteButton itemId="item1" itemType="product" />,
       );
       const heart = container.querySelector("svg");
       expect(heart).not.toHaveClass("fill-red-500");
@@ -60,7 +60,7 @@ describe("FavoriteButton", () => {
 
     it("shows filled heart when favorited", () => {
       const { container } = render(
-        <FavoriteButton itemId="item1" itemType="product" initialIsFavorite />
+        <FavoriteButton itemId="item1" itemType="product" initialIsFavorite />,
       );
       const heart = container.querySelector("svg");
       expect(heart).toHaveClass("fill-red-500", "text-red-500");
@@ -70,7 +70,7 @@ describe("FavoriteButton", () => {
   describe("Sizes", () => {
     it("applies small size classes", () => {
       const { container } = render(
-        <FavoriteButton itemId="item1" itemType="product" size="sm" />
+        <FavoriteButton itemId="item1" itemType="product" size="sm" />,
       );
       const heart = container.querySelector("svg");
       expect(heart).toHaveClass("w-4", "h-4");
@@ -78,7 +78,7 @@ describe("FavoriteButton", () => {
 
     it("applies medium size classes by default", () => {
       const { container } = render(
-        <FavoriteButton itemId="item1" itemType="product" />
+        <FavoriteButton itemId="item1" itemType="product" />,
       );
       const heart = container.querySelector("svg");
       expect(heart).toHaveClass("w-5", "h-5");
@@ -86,7 +86,7 @@ describe("FavoriteButton", () => {
 
     it("applies large size classes", () => {
       const { container } = render(
-        <FavoriteButton itemId="item1" itemType="product" size="lg" />
+        <FavoriteButton itemId="item1" itemType="product" size="lg" />,
       );
       const heart = container.querySelector("svg");
       expect(heart).toHaveClass("w-6", "h-6");
@@ -104,7 +104,7 @@ describe("FavoriteButton", () => {
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
           "/api/favorites/product/item1",
-          expect.objectContaining({ method: "POST" })
+          expect.objectContaining({ method: "POST" }),
         );
       });
     });
@@ -113,7 +113,7 @@ describe("FavoriteButton", () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true });
 
       render(
-        <FavoriteButton itemId="item1" itemType="product" initialIsFavorite />
+        <FavoriteButton itemId="item1" itemType="product" initialIsFavorite />,
       );
 
       fireEvent.click(screen.getByRole("button"));
@@ -121,7 +121,7 @@ describe("FavoriteButton", () => {
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
           "/api/favorites/product/item1",
-          expect.objectContaining({ method: "DELETE" })
+          expect.objectContaining({ method: "DELETE" }),
         );
       });
     });
@@ -130,7 +130,7 @@ describe("FavoriteButton", () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true });
 
       const { container } = render(
-        <FavoriteButton itemId="item1" itemType="product" />
+        <FavoriteButton itemId="item1" itemType="product" />,
       );
 
       const heart = container.querySelector("svg");
@@ -148,7 +148,11 @@ describe("FavoriteButton", () => {
       const onToggle = jest.fn();
 
       render(
-        <FavoriteButton itemId="item1" itemType="product" onToggle={onToggle} />
+        <FavoriteButton
+          itemId="item1"
+          itemType="product"
+          onToggle={onToggle}
+        />,
       );
 
       fireEvent.click(screen.getByRole("button"));
@@ -169,7 +173,7 @@ describe("FavoriteButton", () => {
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
           "/api/favorites/product/prod1",
-          expect.anything()
+          expect.anything(),
         );
       });
     });
@@ -183,7 +187,7 @@ describe("FavoriteButton", () => {
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
           "/api/favorites/shop/shop1",
-          expect.anything()
+          expect.anything(),
         );
       });
     });
@@ -197,7 +201,7 @@ describe("FavoriteButton", () => {
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
           "/api/favorites/auction/auc1",
-          expect.anything()
+          expect.anything(),
         );
       });
     });
@@ -211,7 +215,7 @@ describe("FavoriteButton", () => {
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
           "/api/favorites/category/cat1",
-          expect.anything()
+          expect.anything(),
         );
       });
     });
@@ -250,7 +254,7 @@ describe("FavoriteButton", () => {
   describe("Loading State", () => {
     it("disables button while loading", async () => {
       (global.fetch as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
 
       render(<FavoriteButton itemId="item1" itemType="product" />);
@@ -264,11 +268,11 @@ describe("FavoriteButton", () => {
 
     it("shows pulse animation while loading", async () => {
       (global.fetch as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
 
       const { container } = render(
-        <FavoriteButton itemId="item1" itemType="product" />
+        <FavoriteButton itemId="item1" itemType="product" />,
       );
 
       fireEvent.click(screen.getByRole("button"));
@@ -281,7 +285,7 @@ describe("FavoriteButton", () => {
 
     it("prevents multiple simultaneous requests", async () => {
       (global.fetch as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
 
       render(<FavoriteButton itemId="item1" itemType="product" />);
@@ -303,7 +307,7 @@ describe("FavoriteButton", () => {
       const consoleError = jest.spyOn(console, "error").mockImplementation();
 
       const { container } = render(
-        <FavoriteButton itemId="item1" itemType="product" />
+        <FavoriteButton itemId="item1" itemType="product" />,
       );
       const heart = container.querySelector("svg");
 
@@ -321,7 +325,7 @@ describe("FavoriteButton", () => {
 
     it("handles network error gracefully", async () => {
       (global.fetch as jest.Mock).mockRejectedValueOnce(
-        new Error("Network error")
+        new Error("Network error"),
       );
       const consoleError = jest.spyOn(console, "error").mockImplementation();
 
@@ -360,7 +364,7 @@ describe("FavoriteButton", () => {
       render(
         <div onClick={parentClick}>
           <FavoriteButton itemId="item1" itemType="product" />
-        </div>
+        </div>,
       );
 
       fireEvent.click(screen.getByRole("button"));
@@ -392,14 +396,14 @@ describe("FavoriteButton", () => {
           itemId="item1"
           itemType="product"
           className="custom-class"
-        />
+        />,
       );
       expect(screen.getByRole("button")).toHaveClass("custom-class");
     });
 
     it("preserves base classes with custom className", () => {
       render(
-        <FavoriteButton itemId="item1" itemType="product" className="mt-2" />
+        <FavoriteButton itemId="item1" itemType="product" className="mt-2" />,
       );
       const button = screen.getByRole("button");
       expect(button).toHaveClass("group", "relative", "inline-flex", "mt-2");
@@ -430,7 +434,7 @@ describe("FavoriteButton", () => {
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
           "/api/favorites/product/",
-          expect.anything()
+          expect.anything(),
         );
       });
     });

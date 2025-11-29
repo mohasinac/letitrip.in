@@ -3,7 +3,7 @@ import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ sessionId: string }> }
+  { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -24,7 +24,7 @@ export async function GET(
     const totalOrders = orders.length;
     const totalRevenue = orders.reduce(
       (sum: number, order: any) => sum + (order.total || 0),
-      0
+      0,
     );
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
@@ -55,11 +55,11 @@ export async function GET(
 
     const totalAuctions = auctions.length;
     const activeAuctions = auctions.filter(
-      (a: any) => a.status === "active"
+      (a: any) => a.status === "active",
     ).length;
     const totalBidsAcrossAuctions = auctions.reduce(
       (sum: number, auction: any) => sum + (auction.totalBids || 0),
-      0
+      0,
     );
 
     // User activity (buyers)
@@ -78,7 +78,7 @@ export async function GET(
       const buyerOrders = orders.filter((o: any) => o.buyerId === buyer.id);
       const buyerSpent = buyerOrders.reduce(
         (sum: number, o: any) => sum + (o.total || 0),
-        0
+        0,
       );
 
       return {

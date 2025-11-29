@@ -29,7 +29,7 @@ export default function BlogListClient() {
 
   // Filters from URL
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || ""
+    searchParams.get("search") || "",
   );
   const [filters, setFilters] = useState<BlogFilters>({
     status: "published",

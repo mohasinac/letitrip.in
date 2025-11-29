@@ -22,14 +22,12 @@ export async function POST(
       await Collections.favorites().doc(key).delete();
       return NextResponse.json({ success: true, watching: false });
     } else {
-      await Collections.favorites()
-        .doc(key)
-        .set({
-          user_id: user.id,
-          auction_id: id,
-          created_at: new Date().toISOString(),
-          type: "auction_watch",
-        });
+      await Collections.favorites().doc(key).set({
+        user_id: user.id,
+        auction_id: id,
+        created_at: new Date().toISOString(),
+        type: "auction_watch",
+      });
       return NextResponse.json({ success: true, watching: true });
     }
   } catch (error) {

@@ -41,7 +41,7 @@ describe("useDebounce", () => {
       ({ value, delay }) => useDebounce(value, delay),
       {
         initialProps: { value: "initial", delay: 500 },
-      }
+      },
     );
 
     // Initial value
@@ -66,7 +66,7 @@ describe("useDebounce", () => {
       ({ value }) => useDebounce(value, 500),
       {
         initialProps: { value: "initial" },
-      }
+      },
     );
 
     // Change value
@@ -101,7 +101,7 @@ describe("useDebounce", () => {
       ({ value, delay }) => useDebounce(value, delay),
       {
         initialProps: { value: "initial", delay: 1000 },
-      }
+      },
     );
 
     rerender({ value: "changed", delay: 1000 });
@@ -127,7 +127,7 @@ describe("useDebouncedCallback", () => {
   it("should debounce callback execution", async () => {
     const mockCallback = jest.fn();
     const { result } = renderHook(() =>
-      useDebouncedCallback(mockCallback, 500)
+      useDebouncedCallback(mockCallback, 500),
     );
 
     // Call debounced function multiple times quickly
@@ -153,7 +153,7 @@ describe("useDebouncedCallback", () => {
   it("should pass arguments to callback", async () => {
     const mockCallback = jest.fn();
     const { result } = renderHook(() =>
-      useDebouncedCallback(mockCallback, 500)
+      useDebouncedCallback(mockCallback, 500),
     );
 
     act(() => {
@@ -172,7 +172,7 @@ describe("useDebouncedCallback", () => {
   it("should reset timer on multiple calls", () => {
     const mockCallback = jest.fn();
     const { result } = renderHook(() =>
-      useDebouncedCallback(mockCallback, 500)
+      useDebouncedCallback(mockCallback, 500),
     );
 
     act(() => {
@@ -207,7 +207,7 @@ describe("useDebouncedCallback", () => {
   it("should cleanup timeout on unmount", () => {
     const mockCallback = jest.fn();
     const { result, unmount } = renderHook(() =>
-      useDebouncedCallback(mockCallback, 500)
+      useDebouncedCallback(mockCallback, 500),
     );
 
     act(() => {
@@ -237,7 +237,7 @@ describe("useThrottle", () => {
       ({ value }) => useThrottle(value, 500),
       {
         initialProps: { value: "initial" },
-      }
+      },
     );
 
     // Initial value
@@ -271,7 +271,7 @@ describe("useThrottle", () => {
       ({ value }) => useThrottle(value, 500),
       {
         initialProps: { value: "initial" },
-      }
+      },
     );
 
     // Multiple rapid changes - should only update after each interval
@@ -304,7 +304,7 @@ describe("useThrottle", () => {
       ({ value, interval }) => useThrottle(value, interval),
       {
         initialProps: { value: "initial", interval: 1000 },
-      }
+      },
     );
 
     rerender({ value: "changed", interval: 1000 });
@@ -351,7 +351,7 @@ describe("useApi", () => {
       .fn<() => Promise<string>>()
       .mockResolvedValue("success");
     const { result } = renderHook(() =>
-      useApi(mockApiCall, [], { enabled: true })
+      useApi(mockApiCall, [], { enabled: true }),
     );
 
     expect(result.current.loading).toBe(true);
@@ -373,7 +373,7 @@ describe("useApi", () => {
       .fn<() => Promise<string>>()
       .mockRejectedValue(mockError);
     const { result } = renderHook(() =>
-      useApi(mockApiCall, [], { enabled: true })
+      useApi(mockApiCall, [], { enabled: true }),
     );
 
     expect(result.current.loading).toBe(true);
@@ -393,7 +393,7 @@ describe("useApi", () => {
       .mockResolvedValue("success");
 
     const { result } = renderHook(() =>
-      useApi(mockApiCall, [], { enabled: true, retry: 2, retryDelay: 100 })
+      useApi(mockApiCall, [], { enabled: true, retry: 2, retryDelay: 100 }),
     );
 
     expect(result.current.loading).toBe(true);
@@ -405,20 +405,22 @@ describe("useApi", () => {
         expect(result.current.data).toBe("success");
         expect(result.current.error).toBe(null);
       },
-      { timeout: 1000 }
+      { timeout: 1000 },
     );
 
     expect(mockApiCall).toHaveBeenCalledTimes(3);
   });
 
   it("should debounce API calls", async () => {
-    const mockApiCall = jest.fn<() => Promise<string>>().mockResolvedValue("success");
+    const mockApiCall = jest
+      .fn<() => Promise<string>>()
+      .mockResolvedValue("success");
 
     const { result, rerender } = renderHook(
       ({ deps }) => useApi(mockApiCall, deps, { enabled: true, debounce: 100 }),
       {
         initialProps: { deps: [1] },
-      }
+      },
     );
 
     // With debounce enabled, loading should be false initially since API call is debounced
@@ -436,7 +438,7 @@ describe("useApi", () => {
       () => {
         expect(mockApiCall).toHaveBeenCalledTimes(1);
       },
-      { timeout: 500 }
+      { timeout: 500 },
     );
 
     await waitFor(
@@ -444,7 +446,7 @@ describe("useApi", () => {
         expect(result.current.loading).toBe(false);
         expect(result.current.data).toBe("success");
       },
-      { timeout: 500 }
+      { timeout: 500 },
     );
   });
 
@@ -453,7 +455,7 @@ describe("useApi", () => {
       .fn<() => Promise<string>>()
       .mockResolvedValue("success");
     const { result } = renderHook(() =>
-      useApi(mockApiCall, [], { enabled: false })
+      useApi(mockApiCall, [], { enabled: false }),
     );
 
     expect(result.current.loading).toBe(false);
@@ -466,12 +468,12 @@ describe("useApi", () => {
     const mockApiCall = jest
       .fn<() => Promise<string>>()
       .mockResolvedValue("success");
-      
+
     const { result, rerender } = renderHook(
       ({ deps }) => useApi(mockApiCall, deps, { enabled: true }),
       {
         initialProps: { deps: [1] },
-      }
+      },
     );
 
     // Wait for first API call to complete
@@ -479,7 +481,7 @@ describe("useApi", () => {
       expect(result.current.data).toBe("success");
       expect(result.current.loading).toBe(false);
     });
-    
+
     expect(mockApiCall).toHaveBeenCalledTimes(1);
 
     // Change dependencies - should trigger new API call
@@ -498,7 +500,7 @@ describe("useApi", () => {
   it("should abort previous request on new call", async () => {
     let resolveFirst: (value: string) => void;
     let resolveSecond: (value: string) => void;
-    
+
     const firstPromise = new Promise<string>((resolve) => {
       resolveFirst = resolve;
     });
@@ -515,7 +517,7 @@ describe("useApi", () => {
       ({ deps }) => useApi(mockApiCall, deps, { enabled: true }),
       {
         initialProps: { deps: [1] },
-      }
+      },
     );
 
     // First call should be made
@@ -542,7 +544,7 @@ describe("useApi", () => {
       expect(result.current.loading).toBe(false);
       expect(result.current.data).toBe("second");
     });
-    
+
     expect(mockApiCall).toHaveBeenCalledTimes(2);
   });
 
@@ -551,7 +553,7 @@ describe("useApi", () => {
       .fn<() => Promise<string>>()
       .mockResolvedValue("success");
     const { result } = renderHook(() =>
-      useApi(mockApiCall, [], { enabled: true })
+      useApi(mockApiCall, [], { enabled: true }),
     );
 
     await waitFor(() => {

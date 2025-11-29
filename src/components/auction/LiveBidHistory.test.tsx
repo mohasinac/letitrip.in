@@ -49,7 +49,7 @@ describe("LiveBidHistory", () => {
 
     it("shows trending up icon in empty state", () => {
       const { container } = render(
-        <LiveBidHistory {...defaultProps} bids={[]} />
+        <LiveBidHistory {...defaultProps} bids={[]} />,
       );
 
       const icon = container.querySelector("svg");
@@ -154,7 +154,7 @@ describe("LiveBidHistory", () => {
   describe("Styling and Layout", () => {
     it("applies custom className", () => {
       const { container } = render(
-        <LiveBidHistory {...defaultProps} className="custom-class" />
+        <LiveBidHistory {...defaultProps} className="custom-class" />,
       );
 
       expect(container.firstChild).toHaveClass("custom-class");
@@ -226,7 +226,7 @@ describe("LiveBidHistory", () => {
           {...defaultProps}
           bids={[largeBid]}
           currentBid={9999999}
-        />
+        />,
       );
 
       // Indian numbering system: 99,99,999
@@ -235,7 +235,7 @@ describe("LiveBidHistory", () => {
 
     it("renders without className", () => {
       const { container } = render(
-        <LiveBidHistory auctionId="test" bids={mockBids} currentBid={15000} />
+        <LiveBidHistory auctionId="test" bids={mockBids} currentBid={15000} />,
       );
 
       expect(container.firstChild).toBeInTheDocument();

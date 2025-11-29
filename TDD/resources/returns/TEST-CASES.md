@@ -25,7 +25,7 @@ describe("Returns Service", () => {
           orderId: "order_old",
           orderItemId: "item_001",
           reason: "changed_mind",
-        })
+        }),
       ).rejects.toThrow("Return window has expired");
     });
 
@@ -35,7 +35,7 @@ describe("Returns Service", () => {
           orderId: "order_with_return",
           orderItemId: "item_returned",
           reason: "defective",
-        })
+        }),
       ).rejects.toThrow("Item already has return request");
     });
 
@@ -45,7 +45,7 @@ describe("Returns Service", () => {
           orderId: "order_001",
           orderItemId: "item_non_returnable",
           reason: "changed_mind",
-        })
+        }),
       ).rejects.toThrow("Item not eligible for return");
     });
 
@@ -76,7 +76,7 @@ describe("Returns Service", () => {
 
     it("should fail for other user's return", async () => {
       await expect(returnsService.getById("other_return")).rejects.toThrow(
-        "Forbidden"
+        "Forbidden",
       );
     });
   });
@@ -133,7 +133,7 @@ describe("Seller Returns", () => {
 
     it("should fail for other seller's return", async () => {
       await expect(
-        returnsService.approve("other_shop_return", { refundAmount: 100 })
+        returnsService.approve("other_shop_return", { refundAmount: 100 }),
       ).rejects.toThrow("Forbidden");
     });
   });

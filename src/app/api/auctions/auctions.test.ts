@@ -4,7 +4,10 @@
 import { GET, POST } from "./route";
 import { GET as GET_BY_ID, PATCH, DELETE } from "./[id]/route";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getUserFromRequest, requireAuth } from "@/app/api/middleware/rbac-auth";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
 
@@ -14,10 +17,17 @@ jest.mock("@/app/api/middleware/rbac-auth");
 jest.mock("@/app/api/lib/firebase/queries");
 jest.mock("@/app/api/lib/utils/pagination");
 
-const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<typeof getUserFromRequest>;
+const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<
+  typeof getUserFromRequest
+>;
 const mockRequireAuth = requireAuth as jest.MockedFunction<typeof requireAuth>;
-const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<typeof userOwnsShop>;
-const mockExecuteCursorPaginatedQuery = executeCursorPaginatedQuery as jest.MockedFunction<typeof executeCursorPaginatedQuery>;
+const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<
+  typeof userOwnsShop
+>;
+const mockExecuteCursorPaginatedQuery =
+  executeCursorPaginatedQuery as jest.MockedFunction<
+    typeof executeCursorPaginatedQuery
+  >;
 
 describe("Auctions API - GET /api/auctions", () => {
   const mockWhere = jest.fn().mockReturnThis();
@@ -65,7 +75,10 @@ describe("Auctions API - GET /api/auctions", () => {
   });
 
   it("should list active auctions for regular users", async () => {
-    mockGetUserFromRequest.mockResolvedValue({ uid: "u1", role: "user" } as any);
+    mockGetUserFromRequest.mockResolvedValue({
+      uid: "u1",
+      role: "user",
+    } as any);
 
     const request = new Request("http://localhost/api/auctions");
     const response = await GET(request);
@@ -74,7 +87,10 @@ describe("Auctions API - GET /api/auctions", () => {
   });
 
   it("should require shop_id for seller without returning auctions", async () => {
-    mockGetUserFromRequest.mockResolvedValue({ uid: "s1", role: "seller" } as any);
+    mockGetUserFromRequest.mockResolvedValue({
+      uid: "s1",
+      role: "seller",
+    } as any);
 
     const request = new Request("http://localhost/api/auctions");
     const response = await GET(request);
@@ -86,7 +102,10 @@ describe("Auctions API - GET /api/auctions", () => {
   });
 
   it("should list seller's auctions with shop_id", async () => {
-    mockGetUserFromRequest.mockResolvedValue({ uid: "s1", role: "seller" } as any);
+    mockGetUserFromRequest.mockResolvedValue({
+      uid: "s1",
+      role: "seller",
+    } as any);
     mockExecuteCursorPaginatedQuery.mockResolvedValue({
       success: true,
       data: [{ id: "a1", shop_id: "shop1", status: "draft" }],
@@ -103,7 +122,10 @@ describe("Auctions API - GET /api/auctions", () => {
   });
 
   it("should list all auctions for admin", async () => {
-    mockGetUserFromRequest.mockResolvedValue({ uid: "a1", role: "admin" } as any);
+    mockGetUserFromRequest.mockResolvedValue({
+      uid: "a1",
+      role: "admin",
+    } as any);
 
     const request = new Request("http://localhost/api/auctions");
     await GET(request);
@@ -115,7 +137,9 @@ describe("Auctions API - GET /api/auctions", () => {
   it("should filter by category_id", async () => {
     mockGetUserFromRequest.mockResolvedValue(null);
 
-    const request = new Request("http://localhost/api/auctions?categoryId=cat1");
+    const request = new Request(
+      "http://localhost/api/auctions?categoryId=cat1",
+    );
     await GET(request);
 
     expect(mockWhere).toHaveBeenCalledWith("category_id", "==", "cat1");
@@ -133,7 +157,9 @@ describe("Auctions API - GET /api/auctions", () => {
   it("should sort by end_time", async () => {
     mockGetUserFromRequest.mockResolvedValue(null);
 
-    const request = new Request("http://localhost/api/auctions?sortBy=end_time&sortOrder=asc");
+    const request = new Request(
+      "http://localhost/api/auctions?sortBy=end_time&sortOrder=asc",
+    );
     await GET(request);
 
     expect(mockOrderBy).toHaveBeenCalledWith("end_time", "asc");
@@ -193,12 +219,20 @@ describe("Auctions API - POST /api/auctions", () => {
   it("should require authentication", async () => {
     mockRequireAuth.mockResolvedValue({
       user: null,
-      error: new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }),
+      error: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+      }),
     } as any);
 
     const request = new Request("http://localhost/api/auctions", {
       method: "POST",
-      body: JSON.stringify({ shop_id: "shop1", name: "Test", slug: "test", starting_bid: 100, end_time: "2025-12-31" }),
+      body: JSON.stringify({
+        shop_id: "shop1",
+        name: "Test",
+        slug: "test",
+        starting_bid: 100,
+        end_time: "2025-12-31",
+      }),
     });
     const response = await POST(request);
 
@@ -213,7 +247,13 @@ describe("Auctions API - POST /api/auctions", () => {
 
     const request = new Request("http://localhost/api/auctions", {
       method: "POST",
-      body: JSON.stringify({ shop_id: "shop1", name: "Test", slug: "test", starting_bid: 100, end_time: "2025-12-31" }),
+      body: JSON.stringify({
+        shop_id: "shop1",
+        name: "Test",
+        slug: "test",
+        starting_bid: 100,
+        end_time: "2025-12-31",
+      }),
     });
     const response = await POST(request);
     const data = await response.json();
@@ -362,13 +402,19 @@ describe("Auctions API - GET /api/auctions/[id]", () => {
       docs: [
         {
           id: "a1",
-          data: () => ({ name: "Auction 1", status: "active", shop_id: "shop1" }),
+          data: () => ({
+            name: "Auction 1",
+            status: "active",
+            shop_id: "shop1",
+          }),
         },
       ],
     });
 
     const request = new Request("http://localhost/api/auctions/test-slug");
-    const response = await GET_BY_ID(request, { params: Promise.resolve({ id: "test-slug" }) });
+    const response = await GET_BY_ID(request, {
+      params: Promise.resolve({ id: "test-slug" }),
+    });
     const data = await response.json();
 
     expect(data.success).toBe(true);
@@ -387,7 +433,9 @@ describe("Auctions API - GET /api/auctions/[id]", () => {
     });
 
     const request = new Request("http://localhost/api/auctions/a1");
-    const response = await GET_BY_ID(request, { params: Promise.resolve({ id: "a1" }) });
+    const response = await GET_BY_ID(request, {
+      params: Promise.resolve({ id: "a1" }),
+    });
     const data = await response.json();
 
     expect(data.success).toBe(true);
@@ -401,7 +449,9 @@ describe("Auctions API - GET /api/auctions/[id]", () => {
     });
 
     const request = new Request("http://localhost/api/auctions/nonexistent");
-    const response = await GET_BY_ID(request, { params: Promise.resolve({ id: "nonexistent" }) });
+    const response = await GET_BY_ID(request, {
+      params: Promise.resolve({ id: "nonexistent" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -414,13 +464,19 @@ describe("Auctions API - GET /api/auctions/[id]", () => {
       docs: [
         {
           id: "a1",
-          data: () => ({ name: "Draft Auction", status: "draft", shop_id: "shop1" }),
+          data: () => ({
+            name: "Draft Auction",
+            status: "draft",
+            shop_id: "shop1",
+          }),
         },
       ],
     });
 
     const request = new Request("http://localhost/api/auctions/draft-auction");
-    const response = await GET_BY_ID(request, { params: Promise.resolve({ id: "draft-auction" }) });
+    const response = await GET_BY_ID(request, {
+      params: Promise.resolve({ id: "draft-auction" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -428,20 +484,29 @@ describe("Auctions API - GET /api/auctions/[id]", () => {
   });
 
   it("should allow owner to view own draft auction", async () => {
-    mockGetUserFromRequest.mockResolvedValue({ uid: "s1", role: "seller" } as any);
+    mockGetUserFromRequest.mockResolvedValue({
+      uid: "s1",
+      role: "seller",
+    } as any);
     mockUserOwnsShop.mockResolvedValue(true);
     mockGet.mockResolvedValue({
       empty: false,
       docs: [
         {
           id: "a1",
-          data: () => ({ name: "Draft Auction", status: "draft", shop_id: "shop1" }),
+          data: () => ({
+            name: "Draft Auction",
+            status: "draft",
+            shop_id: "shop1",
+          }),
         },
       ],
     });
 
     const request = new Request("http://localhost/api/auctions/draft-auction");
-    const response = await GET_BY_ID(request, { params: Promise.resolve({ id: "draft-auction" }) });
+    const response = await GET_BY_ID(request, {
+      params: Promise.resolve({ id: "draft-auction" }),
+    });
     const data = await response.json();
 
     expect(data.success).toBe(true);
@@ -467,7 +532,9 @@ describe("Auctions API - GET /api/auctions/[id]", () => {
     });
 
     const request = new Request("http://localhost/api/auctions/test");
-    const response = await GET_BY_ID(request, { params: Promise.resolve({ id: "test" }) });
+    const response = await GET_BY_ID(request, {
+      params: Promise.resolve({ id: "test" }),
+    });
     const data = await response.json();
 
     expect(data.data.shopId).toBe("shop1");
@@ -480,7 +547,9 @@ describe("Auctions API - GET /api/auctions/[id]", () => {
     mockGet.mockRejectedValue(new Error("DB error"));
 
     const request = new Request("http://localhost/api/auctions/test");
-    const response = await GET_BY_ID(request, { params: Promise.resolve({ id: "test" }) });
+    const response = await GET_BY_ID(request, {
+      params: Promise.resolve({ id: "test" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(500);
@@ -519,14 +588,18 @@ describe("Auctions API - PATCH /api/auctions/[id]", () => {
   it("should require authentication", async () => {
     mockRequireAuth.mockResolvedValue({
       user: null,
-      error: new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }),
+      error: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+      }),
     } as any);
 
     const request = new Request("http://localhost/api/auctions/a1", {
       method: "PATCH",
       body: JSON.stringify({ name: "Updated" }),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "a1" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "a1" }),
+    });
 
     expect(response.status).toBe(401);
   });
@@ -534,9 +607,14 @@ describe("Auctions API - PATCH /api/auctions/[id]", () => {
   it("should update auction with valid data", async () => {
     const request = new Request("http://localhost/api/auctions/a1", {
       method: "PATCH",
-      body: JSON.stringify({ name: "Updated Name", description: "Updated desc" }),
+      body: JSON.stringify({
+        name: "Updated Name",
+        description: "Updated desc",
+      }),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "a1" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "a1" }),
+    });
     const data = await response.json();
 
     expect(data.success).toBe(true);
@@ -550,7 +628,9 @@ describe("Auctions API - PATCH /api/auctions/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({ name: "Updated" }),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "a1" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "a1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(403);
@@ -567,7 +647,9 @@ describe("Auctions API - PATCH /api/auctions/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({ name: "Admin Update" }),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "a1" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "a1" }),
+    });
     const data = await response.json();
 
     expect(data.success).toBe(true);
@@ -580,7 +662,9 @@ describe("Auctions API - PATCH /api/auctions/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({ name: "Updated" }),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "nonexistent" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "nonexistent" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -594,7 +678,9 @@ describe("Auctions API - PATCH /api/auctions/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({ name: "Updated" }),
     });
-    const response = await PATCH(request, { params: Promise.resolve({ id: "a1" }) });
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: "a1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(500);
@@ -633,18 +719,28 @@ describe("Auctions API - DELETE /api/auctions/[id]", () => {
   it("should require authentication", async () => {
     mockRequireAuth.mockResolvedValue({
       user: null,
-      error: new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }),
+      error: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+      }),
     } as any);
 
-    const request = new Request("http://localhost/api/auctions/a1", { method: "DELETE" });
-    const response = await DELETE(request, { params: Promise.resolve({ id: "a1" }) });
+    const request = new Request("http://localhost/api/auctions/a1", {
+      method: "DELETE",
+    });
+    const response = await DELETE(request, {
+      params: Promise.resolve({ id: "a1" }),
+    });
 
     expect(response.status).toBe(401);
   });
 
   it("should delete auction successfully", async () => {
-    const request = new Request("http://localhost/api/auctions/a1", { method: "DELETE" });
-    const response = await DELETE(request, { params: Promise.resolve({ id: "a1" }) });
+    const request = new Request("http://localhost/api/auctions/a1", {
+      method: "DELETE",
+    });
+    const response = await DELETE(request, {
+      params: Promise.resolve({ id: "a1" }),
+    });
     const data = await response.json();
 
     expect(data.success).toBe(true);
@@ -655,8 +751,12 @@ describe("Auctions API - DELETE /api/auctions/[id]", () => {
   it("should prevent non-owner from deleting", async () => {
     mockUserOwnsShop.mockResolvedValue(false);
 
-    const request = new Request("http://localhost/api/auctions/a1", { method: "DELETE" });
-    const response = await DELETE(request, { params: Promise.resolve({ id: "a1" }) });
+    const request = new Request("http://localhost/api/auctions/a1", {
+      method: "DELETE",
+    });
+    const response = await DELETE(request, {
+      params: Promise.resolve({ id: "a1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(403);
@@ -669,8 +769,12 @@ describe("Auctions API - DELETE /api/auctions/[id]", () => {
       error: null,
     } as any);
 
-    const request = new Request("http://localhost/api/auctions/a1", { method: "DELETE" });
-    const response = await DELETE(request, { params: Promise.resolve({ id: "a1" }) });
+    const request = new Request("http://localhost/api/auctions/a1", {
+      method: "DELETE",
+    });
+    const response = await DELETE(request, {
+      params: Promise.resolve({ id: "a1" }),
+    });
     const data = await response.json();
 
     expect(data.success).toBe(true);
@@ -679,8 +783,12 @@ describe("Auctions API - DELETE /api/auctions/[id]", () => {
   it("should return 404 for non-existent auction", async () => {
     mockGet.mockResolvedValue({ exists: false });
 
-    const request = new Request("http://localhost/api/auctions/nonexistent", { method: "DELETE" });
-    const response = await DELETE(request, { params: Promise.resolve({ id: "nonexistent" }) });
+    const request = new Request("http://localhost/api/auctions/nonexistent", {
+      method: "DELETE",
+    });
+    const response = await DELETE(request, {
+      params: Promise.resolve({ id: "nonexistent" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -690,8 +798,12 @@ describe("Auctions API - DELETE /api/auctions/[id]", () => {
   it("should handle database errors", async () => {
     mockDelete.mockRejectedValue(new Error("DB error"));
 
-    const request = new Request("http://localhost/api/auctions/a1", { method: "DELETE" });
-    const response = await DELETE(request, { params: Promise.resolve({ id: "a1" }) });
+    const request = new Request("http://localhost/api/auctions/a1", {
+      method: "DELETE",
+    });
+    const response = await DELETE(request, {
+      params: Promise.resolve({ id: "a1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(500);

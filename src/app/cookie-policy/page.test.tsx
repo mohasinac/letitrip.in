@@ -28,7 +28,7 @@ describe("CookiePolicyPage", () => {
     it("should render last updated date", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/Last Updated: November 7, 2025/i)
+        screen.getByText(/Last Updated: November 7, 2025/i),
       ).toBeInTheDocument();
     });
 
@@ -40,7 +40,7 @@ describe("CookiePolicyPage", () => {
     it("should render effective date", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/Effective Date: November 1, 2025/i)
+        screen.getByText(/Effective Date: November 1, 2025/i),
       ).toBeInTheDocument();
     });
   });
@@ -50,10 +50,10 @@ describe("CookiePolicyPage", () => {
     it("should describe essential cookies", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/2\.1.*Essential Cookies.*Strictly Necessary/i)
+        screen.getByText(/2\.1.*Essential Cookies.*Strictly Necessary/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/necessary for the website to function/i)
+        screen.getByText(/necessary for the website to function/i),
       ).toBeInTheDocument();
     });
 
@@ -67,7 +67,7 @@ describe("CookiePolicyPage", () => {
     it("should describe performance/analytics cookies", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/2\.2.*Performance Cookies.*Analytics/i)
+        screen.getByText(/2\.2.*Performance Cookies.*Analytics/i),
       ).toBeInTheDocument();
       expect(screen.getAllByText(/Google Analytics/i)[0]).toBeInTheDocument();
     });
@@ -76,14 +76,14 @@ describe("CookiePolicyPage", () => {
       render(<CookiePolicyPage />);
       expect(screen.getByText(/2\.3.*Functional Cookies/i)).toBeInTheDocument();
       expect(
-        screen.getAllByText(/Recently viewed items/i)[0]
+        screen.getAllByText(/Recently viewed items/i)[0],
       ).toBeInTheDocument();
     });
 
     it("should describe advertising cookies", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/2\.4.*Targeting.*Advertising Cookies/i)
+        screen.getByText(/2\.4.*Targeting.*Advertising Cookies/i),
       ).toBeInTheDocument();
       expect(screen.getAllByText(/Google Ads/i)[0]).toBeInTheDocument();
     });
@@ -91,7 +91,7 @@ describe("CookiePolicyPage", () => {
     it("should describe social media cookies", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/2\.5.*Social Media Cookies/i)
+        screen.getByText(/2\.5.*Social Media Cookies/i),
       ).toBeInTheDocument();
       expect(screen.getAllByText(/Facebook/i)[0]).toBeInTheDocument();
     });
@@ -102,10 +102,10 @@ describe("CookiePolicyPage", () => {
     it("should describe web beacons/pixels", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/3\.1.*Web Beacons.*Pixels/i)
+        screen.getByText(/3\.1.*Web Beacons.*Pixels/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Small invisible images embedded/i)
+        screen.getByText(/Small invisible images embedded/i),
       ).toBeInTheDocument();
     });
 
@@ -113,7 +113,7 @@ describe("CookiePolicyPage", () => {
       render(<CookiePolicyPage />);
       expect(screen.getByText(/3\.2.*Local Storage/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/Browser storage that persists/i)
+        screen.getByText(/Browser storage that persists/i),
       ).toBeInTheDocument();
     });
 
@@ -121,14 +121,14 @@ describe("CookiePolicyPage", () => {
       render(<CookiePolicyPage />);
       expect(screen.getByText(/3\.3.*Session Storage/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/Temporary storage that clears/i)
+        screen.getByText(/Temporary storage that clears/i),
       ).toBeInTheDocument();
     });
 
     it("should describe device fingerprinting", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/3\.4.*Device Fingerprinting/i)
+        screen.getByText(/3\.4.*Device Fingerprinting/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/device configuration/i)).toBeInTheDocument();
     });
@@ -144,7 +144,7 @@ describe("CookiePolicyPage", () => {
       });
       expect(razorpayLink).toHaveAttribute(
         "href",
-        "https://razorpay.com/privacy/"
+        "https://razorpay.com/privacy/",
       );
     });
 
@@ -156,7 +156,7 @@ describe("CookiePolicyPage", () => {
       expect(googleLinks.length).toBeGreaterThan(0);
       expect(googleLinks[0]).toHaveAttribute(
         "href",
-        "https://policies.google.com/privacy"
+        "https://policies.google.com/privacy",
       );
     });
 
@@ -167,7 +167,7 @@ describe("CookiePolicyPage", () => {
       });
       expect(firebaseLink).toHaveAttribute(
         "href",
-        "https://firebase.google.com/support/privacy"
+        "https://firebase.google.com/support/privacy",
       );
     });
 
@@ -178,7 +178,7 @@ describe("CookiePolicyPage", () => {
       });
       expect(metaLink).toHaveAttribute(
         "href",
-        "https://www.facebook.com/privacy/policy"
+        "https://www.facebook.com/privacy/policy",
       );
     });
   });
@@ -188,11 +188,11 @@ describe("CookiePolicyPage", () => {
     it("should describe cookie consent banner options", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/5\.1.*Cookie Consent Banner/i)
+        screen.getByText(/5\.1.*Cookie Consent Banner/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/Accept All/i)).toBeInTheDocument();
       expect(
-        screen.getAllByText(/Reject Non-Essential/i)[0]
+        screen.getAllByText(/Reject Non-Essential/i)[0],
       ).toBeInTheDocument();
     });
 
@@ -212,14 +212,14 @@ describe("CookiePolicyPage", () => {
       });
       expect(googleOptOutLink).toHaveAttribute(
         "href",
-        "https://tools.google.com/dlpage/gaoptout"
+        "https://tools.google.com/dlpage/gaoptout",
       );
     });
 
     it("should describe mobile device settings", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/5\.4.*Mobile Device Settings/i)
+        screen.getByText(/5\.4.*Mobile Device Settings/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/iOS/i)).toBeInTheDocument();
       expect(screen.getByText(/Android/i)).toBeInTheDocument();
@@ -232,7 +232,7 @@ describe("CookiePolicyPage", () => {
       render(<CookiePolicyPage />);
       expect(screen.getByText(/7\.1.*Session Cookies/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/Deleted when you close your browser/i)
+        screen.getByText(/Deleted when you close your browser/i),
       ).toBeInTheDocument();
     });
 
@@ -250,20 +250,20 @@ describe("CookiePolicyPage", () => {
     it("should describe user rights under privacy laws", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/8\..*Cookies and Your Rights/i)
+        screen.getByText(/8\..*Cookies and Your Rights/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Know what cookies are being used/i)
+        screen.getByText(/Know what cookies are being used/i),
       ).toBeInTheDocument();
     });
 
     it("should describe impact of disabling cookies", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText("9. Impact of Disabling Cookies")
+        screen.getByText("9. Impact of Disabling Cookies"),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Essential cookies cannot be disabled/i)
+        screen.getByText(/Essential cookies cannot be disabled/i),
       ).toBeInTheDocument();
     });
 
@@ -280,7 +280,7 @@ describe("CookiePolicyPage", () => {
       render(<CookiePolicyPage />);
       expect(screen.getByText("6. Do Not Track (DNT)")).toBeInTheDocument();
       expect(
-        screen.getByText(/our site does not respond to DNT signals/i)
+        screen.getByText(/our site does not respond to DNT signals/i),
       ).toBeInTheDocument();
     });
   });
@@ -292,7 +292,7 @@ describe("CookiePolicyPage", () => {
       expect(screen.getByText("15. Glossary")).toBeInTheDocument();
       expect(screen.getByText(/First-party cookies/i)).toBeInTheDocument();
       expect(
-        screen.getAllByText(/Third-party cookies/i)[0]
+        screen.getAllByText(/Third-party cookies/i)[0],
       ).toBeInTheDocument();
       expect(screen.getAllByText(/Session cookies/i)[0]).toBeInTheDocument();
     });
@@ -303,7 +303,7 @@ describe("CookiePolicyPage", () => {
     it("should provide contact information for cookie inquiries", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText("14. Contact Us About Cookies")
+        screen.getByText("14. Contact Us About Cookies"),
       ).toBeInTheDocument();
       expect(screen.getByText(/privacy@letitrip.com/i)).toBeInTheDocument();
     });
@@ -327,17 +327,17 @@ describe("CookiePolicyPage", () => {
     it("should show Version 2.0 changes", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/Version 2.0 \(November 1, 2025\)/i)
+        screen.getByText(/Version 2.0 \(November 1, 2025\)/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/India-specific information/i)
+        screen.getByText(/India-specific information/i),
       ).toBeInTheDocument();
     });
 
     it("should show Version 1.0 initial release", () => {
       render(<CookiePolicyPage />);
       expect(
-        screen.getByText(/Version 1.0 \(January 1, 2024\)/i)
+        screen.getByText(/Version 1.0 \(January 1, 2024\)/i),
       ).toBeInTheDocument();
     });
   });
@@ -353,11 +353,11 @@ describe("CookiePolicyPage", () => {
       render(<CookiePolicyPage />);
       expect(screen.getByText("Cookie Policy")).toBeInTheDocument();
       expect(
-        screen.getByText(/Last Updated: November 7, 2025/i)
+        screen.getByText(/Last Updated: November 7, 2025/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/Version: 2.0/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/Effective Date: November 1, 2025/i)
+        screen.getByText(/Effective Date: November 1, 2025/i),
       ).toBeInTheDocument();
     });
   });

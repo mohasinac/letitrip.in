@@ -133,7 +133,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching homepage settings:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch homepage settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -154,7 +154,7 @@ export async function PATCH(req: NextRequest) {
     if (!body.settings && !body.data) {
       return NextResponse.json(
         { success: false, error: "Settings object is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -180,7 +180,7 @@ export async function PATCH(req: NextRequest) {
     console.error("Error updating homepage settings:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update homepage settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -217,7 +217,7 @@ export async function POST(req: NextRequest) {
     console.error("Error resetting homepage settings:", error);
     return NextResponse.json(
       { success: false, error: "Failed to reset homepage settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

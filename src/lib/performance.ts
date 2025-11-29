@@ -130,7 +130,7 @@ class PerformanceMonitorClass {
   async track<T>(
     name: string,
     operation: () => Promise<T>,
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
   ): Promise<T> {
     const timer = this.startTimer(name);
     try {
@@ -149,7 +149,7 @@ class PerformanceMonitorClass {
   trackSync<T>(
     name: string,
     operation: () => T,
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
   ): T {
     const timer = this.startTimer(name);
     try {
@@ -168,7 +168,7 @@ class PerformanceMonitorClass {
   record(
     name: string,
     duration: number,
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
   ): void {
     const entry: PerformanceEntry = {
       name,
@@ -199,7 +199,7 @@ class PerformanceMonitorClass {
         `Slow operation detected: ${name} took ${duration.toFixed(2)}ms`,
         {
           metadata: { name, duration, ...context },
-        }
+        },
       );
     }
   }
@@ -239,7 +239,7 @@ class PerformanceMonitorClass {
         } took ${entry.duration.toFixed(2)}ms (budget: ${budget.threshold}ms)`,
         {
           metadata: violation,
-        }
+        },
       );
     }
   }
@@ -250,7 +250,7 @@ class PerformanceMonitorClass {
   setBudget(
     name: string,
     threshold: number,
-    onExceed?: (entry: PerformanceEntry) => void
+    onExceed?: (entry: PerformanceEntry) => void,
   ): void {
     this.budgets.set(name, {
       name,
@@ -357,7 +357,7 @@ class PerformanceMonitorClass {
       summary: {
         totalMeasurements: Object.values(metrics).reduce(
           (sum, m) => sum + m.count,
-          0
+          0,
         ),
         slowestOperations,
         budgetViolations: violations.length,
@@ -382,10 +382,10 @@ class PerformanceMonitorClass {
     for (const m of Object.values(metrics)) {
       rows.push(
         `${m.name},${m.count},${m.min.toFixed(2)},${m.max.toFixed(
-          2
+          2,
         )},${m.mean.toFixed(2)},${m.median.toFixed(2)},${m.p90.toFixed(
-          2
-        )},${m.p95.toFixed(2)},${m.p99.toFixed(2)}`
+          2,
+        )},${m.p95.toFixed(2)},${m.p99.toFixed(2)}`,
       );
     }
 
@@ -434,7 +434,7 @@ class PerformanceMonitorClass {
     const metrics = this.getAllMetrics();
     const totalMeasurements = Object.values(metrics).reduce(
       (sum, m) => sum + m.count,
-      0
+      0,
     );
 
     return {
@@ -492,7 +492,7 @@ export function setDefaultBudgets(): void {
 export async function measureAsync<T>(
   name: string,
   fn: () => Promise<T>,
-  context?: Record<string, unknown>
+  context?: Record<string, unknown>,
 ): Promise<T> {
   return PerformanceMonitor.track(name, fn, context);
 }
@@ -503,7 +503,7 @@ export async function measureAsync<T>(
 export function measureSync<T>(
   name: string,
   fn: () => T,
-  context?: Record<string, unknown>
+  context?: Record<string, unknown>,
 ): T {
   return PerformanceMonitor.trackSync(name, fn, context);
 }
@@ -515,7 +515,7 @@ export function Measure(name?: string) {
   return function (
     _target: unknown,
     propertyKey: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
   ) {
     const originalMethod = descriptor.value;
     const metricName = name || `method.${propertyKey}`;
@@ -537,11 +537,14 @@ export function Measure(name?: string) {
 // Clear old entries every hour (older than 24 hours)
 if (typeof window === "undefined") {
   // Server-side only
-  setInterval(() => {
-    const twentyFourHours = 24 * 60 * 60 * 1000;
-    PerformanceMonitor.clearOld(twentyFourHours);
-    ErrorLogger.info("Cleared old performance entries");
-  }, 60 * 60 * 1000);
+  setInterval(
+    () => {
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      PerformanceMonitor.clearOld(twentyFourHours);
+      ErrorLogger.info("Cleared old performance entries");
+    },
+    60 * 60 * 1000,
+  );
 }
 
 // ============================================================================

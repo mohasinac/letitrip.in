@@ -907,7 +907,7 @@ export const HERO_SLIDE_FIELDS: FormField[] = [
  */
 export function getFieldsForContext(
   fields: FormField[],
-  context: "table" | "quickCreate" | "wizard"
+  context: "table" | "quickCreate" | "wizard",
 ): FormField[] {
   const key = `showIn${
     context.charAt(0).toUpperCase() + context.slice(1)
@@ -920,10 +920,10 @@ export function getFieldsForContext(
  */
 export function getFieldsForWizardStep(
   fields: FormField[],
-  step: number
+  step: number,
 ): FormField[] {
   return fields.filter(
-    (field) => field.wizardStep === step && field.showInWizard
+    (field) => field.wizardStep === step && field.showInWizard,
   );
 }
 
@@ -931,16 +931,19 @@ export function getFieldsForWizardStep(
  * Get fields grouped by group name
  */
 export function getFieldsByGroup(
-  fields: FormField[]
+  fields: FormField[],
 ): Record<string, FormField[]> {
-  return fields.reduce((groups, field) => {
-    const group = field.group || "default";
-    if (!groups[group]) {
-      groups[group] = [];
-    }
-    groups[group].push(field);
-    return groups;
-  }, {} as Record<string, FormField[]>);
+  return fields.reduce(
+    (groups, field) => {
+      const group = field.group || "default";
+      if (!groups[group]) {
+        groups[group] = [];
+      }
+      groups[group].push(field);
+      return groups;
+    },
+    {} as Record<string, FormField[]>,
+  );
 }
 
 /**

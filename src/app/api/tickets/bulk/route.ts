@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { error: error.message, errors: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
     console.error("Error in bulk ticket operation:", error);

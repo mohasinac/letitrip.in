@@ -5,7 +5,7 @@
  * Tests for Products API Routes
  * GET /api/products - List products with filtering
  * POST /api/products - Create new product
- * 
+ *
  * Note: PATCH and DELETE tests are in [slug]/route.test.ts
  */
 
@@ -22,16 +22,26 @@ jest.mock("@/app/api/lib/utils/pagination");
 
 import { NextRequest, NextResponse } from "next/server";
 import { POST } from "./route";
-import { getUserFromRequest, requireAuth } from "@/app/api/middleware/rbac-auth";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
 
-const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<typeof getUserFromRequest>;
+const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<
+  typeof getUserFromRequest
+>;
 const mockRequireAuth = requireAuth as jest.MockedFunction<typeof requireAuth>;
 const mockCollections = Collections as jest.Mocked<typeof Collections>;
-const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<typeof userOwnsShop>;
-const mockUpdateCategoryProductCounts = updateCategoryProductCounts as jest.MockedFunction<typeof updateCategoryProductCounts>;
+const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<
+  typeof userOwnsShop
+>;
+const mockUpdateCategoryProductCounts =
+  updateCategoryProductCounts as jest.MockedFunction<
+    typeof updateCategoryProductCounts
+  >;
 
 describe("POST /api/products - Create Product", () => {
   let mockProductsCollection: any;
@@ -334,7 +344,7 @@ describe("POST /api/products - Create Product", () => {
     expect(response.status).toBe(403);
     expect(data.success).toBe(false);
     expect(data.error).toBe(
-      "You do not have permission to add products to this shop"
+      "You do not have permission to add products to this shop",
     );
     expect(mockProductsCollection.add).not.toHaveBeenCalled();
   });
@@ -517,7 +527,7 @@ describe("POST /api/products - Create Product", () => {
     mockProductsCollection.add.mockResolvedValue({ id: "prod222" });
 
     mockUpdateCategoryProductCounts.mockRejectedValue(
-      new Error("Count update failed")
+      new Error("Count update failed"),
     );
 
     const publishedData = { ...validProductData, status: "published" };
@@ -659,7 +669,7 @@ describe("POST /api/products - Create Product", () => {
       user: null,
       error: NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       ),
     } as any);
 

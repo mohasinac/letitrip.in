@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
         if (!productId) {
           return NextResponse.json(
             { success: false, error: "Product ID is required" },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
@@ -66,15 +66,15 @@ export async function GET(request: NextRequest) {
         console.error("Error fetching review summary:", error);
         return NextResponse.json(
           { success: false, error: "Failed to fetch review summary" },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
     {
       ttl: 300, // 5 minutes
       key: `reviews:summary:${new URL(request.url).searchParams.get(
-        "productId"
+        "productId",
       )}`,
-    }
+    },
   );
 }

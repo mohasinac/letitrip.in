@@ -55,7 +55,7 @@ function roundRating(rating: number): number {
 function getInitials(
   displayName: string | null,
   firstName: string | null,
-  lastName: string | null
+  lastName: string | null,
 ): string {
   if (firstName && lastName) {
     return `${firstName[0]}${lastName[0]}`.toUpperCase();
@@ -77,7 +77,7 @@ function getFullName(
   displayName: string | null,
   firstName: string | null,
   lastName: string | null,
-  email: string
+  email: string,
 ): string {
   if (firstName && lastName) {
     return `${firstName} ${lastName}`;
@@ -172,7 +172,7 @@ function generateUserBadges(user: UserBE, createdAt: Date): string[] {
 
   // New user badge (within 30 days)
   const daysSinceCreation = Math.floor(
-    (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+    (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24),
   );
   if (daysSinceCreation <= 30) {
     badges.push("New");
@@ -198,12 +198,12 @@ export function toFEUser(userBE: UserBE): UserFE {
     userBE.displayName,
     userBE.firstName,
     userBE.lastName,
-    userBE.email
+    userBE.email,
   );
   const initials = getInitials(
     userBE.displayName,
     userBE.firstName,
-    userBE.lastName
+    userBE.lastName,
   );
 
   return {
@@ -303,7 +303,7 @@ export function toFEUserCard(userBE: UserListItemBE): UserCardFE {
  * Transform Frontend User Profile Form to Backend Update Request
  */
 export function toBEUserProfileUpdate(
-  formData: UserProfileFormFE
+  formData: UserProfileFormFE,
 ): UpdateUserProfileBE {
   return {
     displayName: formData.displayName || undefined,
@@ -320,7 +320,7 @@ export function toBEUserProfileUpdate(
  * Transform Frontend User Preferences Form to Backend Update Request
  */
 export function toBEUserPreferencesUpdate(
-  formData: UserPreferencesFormFE
+  formData: UserPreferencesFormFE,
 ): UpdateUserPreferencesBE {
   return {
     notifications: formData.notifications,

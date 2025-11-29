@@ -64,39 +64,39 @@ describe("Unauthorized Page", () => {
 
       expect(screen.getByText("Unauthorized Access")).toBeInTheDocument();
       expect(
-        screen.getByText("You need to be logged in to access this page.")
+        screen.getByText("You need to be logged in to access this page."),
       ).toBeInTheDocument();
     });
 
     it("should show not-logged-in message", () => {
       mockUseSearchParams.mockReturnValue(
-        new URLSearchParams("reason=not-logged-in") as any
+        new URLSearchParams("reason=not-logged-in") as any,
       );
 
       render(<Unauthorized />);
 
       expect(screen.getByText("Authentication Required")).toBeInTheDocument();
       expect(
-        screen.getByText("You need to sign in to access this page.")
+        screen.getByText("You need to sign in to access this page."),
       ).toBeInTheDocument();
     });
 
     it("should show session-expired message", () => {
       mockUseSearchParams.mockReturnValue(
-        new URLSearchParams("reason=session-expired") as any
+        new URLSearchParams("reason=session-expired") as any,
       );
 
       render(<Unauthorized />);
 
       expect(screen.getByText("Session Expired")).toBeInTheDocument();
       expect(
-        screen.getByText("Your session has expired for security reasons.")
+        screen.getByText("Your session has expired for security reasons."),
       ).toBeInTheDocument();
     });
 
     it("should show invalid-token message", () => {
       mockUseSearchParams.mockReturnValue(
-        new URLSearchParams("reason=invalid-token") as any
+        new URLSearchParams("reason=invalid-token") as any,
       );
 
       render(<Unauthorized />);
@@ -104,8 +104,8 @@ describe("Unauthorized Page", () => {
       expect(screen.getByText("Invalid Authentication")).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Your authentication token is invalid or has been revoked."
-        )
+          "Your authentication token is invalid or has been revoked.",
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -113,7 +113,7 @@ describe("Unauthorized Page", () => {
   describe("Required Role Display", () => {
     it("should display required role when provided", () => {
       mockUseSearchParams.mockReturnValue(
-        new URLSearchParams("role=admin") as any
+        new URLSearchParams("role=admin") as any,
       );
 
       render(<Unauthorized />);
@@ -132,7 +132,7 @@ describe("Unauthorized Page", () => {
 
     it("should highlight role in message", () => {
       mockUseSearchParams.mockReturnValue(
-        new URLSearchParams("role=seller") as any
+        new URLSearchParams("role=seller") as any,
       );
 
       render(<Unauthorized />);
@@ -145,7 +145,7 @@ describe("Unauthorized Page", () => {
   describe("Resource Information", () => {
     it("should display requested resource", () => {
       mockUseSearchParams.mockReturnValue(
-        new URLSearchParams("resource=/admin/dashboard") as any
+        new URLSearchParams("resource=/admin/dashboard") as any,
       );
 
       render(<Unauthorized />);
@@ -164,7 +164,7 @@ describe("Unauthorized Page", () => {
 
     it("should style resource with monospace font", () => {
       mockUseSearchParams.mockReturnValue(
-        new URLSearchParams("resource=/seller/products") as any
+        new URLSearchParams("resource=/seller/products") as any,
       );
 
       render(<Unauthorized />);
@@ -179,7 +179,7 @@ describe("Unauthorized Page", () => {
       // Note: In test environment, isDevelopment check behavior may vary
       // This test validates the details are decoded and would render if isDevelopment is true
       mockUseSearchParams.mockReturnValue(
-        new URLSearchParams("details=Access%20denied") as any
+        new URLSearchParams("details=Access%20denied") as any,
       );
 
       render(<Unauthorized />);
@@ -199,7 +199,7 @@ describe("Unauthorized Page", () => {
 
     it("should decode URL-encoded details", () => {
       mockUseSearchParams.mockReturnValue(
-        new URLSearchParams("details=Token%20expired%20at%2012%3A00") as any
+        new URLSearchParams("details=Token%20expired%20at%2012%3A00") as any,
       );
 
       render(<Unauthorized />);
@@ -220,7 +220,7 @@ describe("Unauthorized Page", () => {
       render(<Unauthorized />);
 
       expect(
-        screen.queryByText("Developer Information")
+        screen.queryByText("Developer Information"),
       ).not.toBeInTheDocument();
     });
   });
@@ -263,7 +263,7 @@ describe("Unauthorized Page", () => {
       expect(supportLink).toBeInTheDocument();
       expect(supportLink.closest("a")).toHaveAttribute(
         "href",
-        "/support/ticket"
+        "/support/ticket",
       );
     });
   });
@@ -281,7 +281,7 @@ describe("Unauthorized Page", () => {
         "justify-center",
         "bg-gradient-to-br",
         "from-red-50",
-        "to-orange-50"
+        "to-orange-50",
       );
     });
 
@@ -310,7 +310,7 @@ describe("Unauthorized Page", () => {
       render(<Unauthorized />);
 
       const iconContainer = document.querySelector(
-        ".bg-white\\/20.rounded-full"
+        ".bg-white\\/20.rounded-full",
       );
       expect(iconContainer).toBeInTheDocument();
     });
@@ -344,8 +344,8 @@ describe("Unauthorized Page", () => {
     it("should handle all parameters together", () => {
       mockUseSearchParams.mockReturnValue(
         new URLSearchParams(
-          "reason=session-expired&role=admin&resource=/admin/users&details=Token%20expired"
-        ) as any
+          "reason=session-expired&role=admin&resource=/admin/users&details=Token%20expired",
+        ) as any,
       );
 
       render(<Unauthorized />);
@@ -359,20 +359,20 @@ describe("Unauthorized Page", () => {
     it("should handle special characters in resource", () => {
       mockUseSearchParams.mockReturnValue(
         new URLSearchParams(
-          "resource=/api/v1/products?category=electronics"
-        ) as any
+          "resource=/api/v1/products?category=electronics",
+        ) as any,
       );
 
       render(<Unauthorized />);
 
       expect(
-        screen.getByText("/api/v1/products?category=electronics")
+        screen.getByText("/api/v1/products?category=electronics"),
       ).toBeInTheDocument();
     });
 
     it("should handle empty string parameters", () => {
       mockUseSearchParams.mockReturnValue(
-        new URLSearchParams("reason=&role=&resource=") as any
+        new URLSearchParams("reason=&role=&resource=") as any,
       );
 
       render(<Unauthorized />);

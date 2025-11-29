@@ -46,7 +46,7 @@ export function notFoundUrl(params: ErrorRedirectParams): string {
     detailsParts.push(`Error: ${params.error.message}`);
     if (params.error.stack) {
       detailsParts.push(
-        `Stack: ${params.error.stack.split("\n").slice(0, 3).join("\n")}`
+        `Stack: ${params.error.stack.split("\n").slice(0, 3).join("\n")}`,
       );
     }
   } else if (params.error) {

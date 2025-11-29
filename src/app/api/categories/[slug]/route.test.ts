@@ -220,7 +220,9 @@ describe("PATCH /api/categories/[slug]", () => {
   });
 
   it("should update category fields", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockDoc = {
       id: "cat1",
@@ -271,7 +273,9 @@ describe("PATCH /api/categories/[slug]", () => {
   });
 
   it("should reject duplicate slug", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockDoc = {
       id: "cat1",
@@ -307,7 +311,9 @@ describe("PATCH /api/categories/[slug]", () => {
   });
 
   it("should update parent_ids and cascade to parents", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockCategoryDoc = {
       id: "cat1",
@@ -397,7 +403,9 @@ describe("DELETE /api/categories/[slug]", () => {
   });
 
   it("should prevent deletion of category with children", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockDoc = {
       id: "cat1",
@@ -435,7 +443,9 @@ describe("DELETE /api/categories/[slug]", () => {
   });
 
   it("should delete category and cascade to parents", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockDoc = {
       id: "cat1",
@@ -491,7 +501,9 @@ describe("DELETE /api/categories/[slug]", () => {
   });
 
   it("should return 404 for non-existent category", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockWhere = jest.fn().mockReturnThis();
     const mockLimit = jest.fn().mockReturnThis();

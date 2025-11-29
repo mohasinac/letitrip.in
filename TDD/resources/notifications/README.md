@@ -33,3 +33,17 @@ In-app and email notification system for order updates, auction activity, and pl
 
 - `API-SPECS.md` - Detailed endpoint documentation
 - `TEST-CASES.md` - Unit and integration test cases
+
+## Test Files
+
+| Test File                                         | Coverage          | Status         |
+| ------------------------------------------------- | ----------------- | -------------- |
+| `src/app/api/notifications/(tests)/route.test.ts` | Notifications API | 📋 Placeholder |
+
+## Status: 📋 Placeholder Tests Only
+
+- [x] User stories (E016)
+- [x] API specifications
+- [x] Test cases documented
+- [ ] API implementation (pending)
+- [ ] API tests (placeholder only)

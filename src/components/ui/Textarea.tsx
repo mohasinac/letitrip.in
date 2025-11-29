@@ -2,8 +2,7 @@
 
 import React from "react";
 
-export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -27,7 +26,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       value,
       ...props
     },
-    ref
+    ref,
   ) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
     const charCount = value?.toString().length || 0;
@@ -61,8 +60,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             error
               ? `${inputId}-error`
               : helperText
-              ? `${inputId}-helper`
-              : undefined
+                ? `${inputId}-helper`
+                : undefined
           }
           {...props}
         />
@@ -87,7 +86,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 Textarea.displayName = "Textarea";

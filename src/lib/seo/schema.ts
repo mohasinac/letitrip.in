@@ -156,7 +156,7 @@ export function generateProductSchema({
  * FAQ schema for FAQ pages
  */
 export function generateFAQSchema(
-  faqs: Array<{ question: string; answer: string }>
+  faqs: Array<{ question: string; answer: string }>,
 ) {
   return {
     "@context": "https://schema.org",
@@ -176,7 +176,7 @@ export function generateFAQSchema(
  * Breadcrumb schema
  */
 export function generateBreadcrumbSchema(
-  items: Array<{ name: string; url: string }>
+  items: Array<{ name: string; url: string }>,
 ) {
   return {
     "@context": "https://schema.org",
@@ -247,7 +247,7 @@ export function generateItemListSchema(
     url: string;
     image: string;
     price: number;
-  }>
+  }>,
 ) {
   return {
     "@context": "https://schema.org",

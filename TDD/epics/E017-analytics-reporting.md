@@ -83,3 +83,17 @@ Metrics:
 - Integration tests for admin/seller dashboards
 - RBAC tests for analytics access
 - Performance tests for dashboard load times
+
+---
+
+## Pending Routes
+
+| Route                       | Priority  | Status     | Notes                                                             |
+| --------------------------- | --------- | ---------- | ----------------------------------------------------------------- |
+| `/admin/analytics`          | 🔴 HIGH   | ⬜ PENDING | Main analytics dashboard. Currently redirects to `/admin/orders`. |
+| `/admin/analytics/sales`    | 🟡 MEDIUM | ⬜ PENDING | Detailed sales analytics page.                                    |
+| `/admin/analytics/users`    | 🟡 MEDIUM | ⬜ PENDING | User analytics and growth metrics.                                |
+| `/admin/analytics/products` | 🟡 MEDIUM | ⬜ PENDING | Product performance analytics.                                    |
+| `/seller/analytics`         | 🟡 MEDIUM | ⬜ PENDING | Seller shop analytics. Currently uses `/seller` dashboard.        |
+
+**See**: `TDD/PENDING-ROUTES.md` for full details

@@ -13,17 +13,17 @@ const initializeFirebaseAdmin = () => {
     // Validate required environment variables
     if (!projectId) {
       throw new Error(
-        "FIREBASE_PROJECT_ID is not set in environment variables"
+        "FIREBASE_PROJECT_ID is not set in environment variables",
       );
     }
     if (!clientEmail) {
       throw new Error(
-        "FIREBASE_CLIENT_EMAIL is not set in environment variables"
+        "FIREBASE_CLIENT_EMAIL is not set in environment variables",
       );
     }
     if (!privateKey) {
       throw new Error(
-        "FIREBASE_PRIVATE_KEY is not set in environment variables"
+        "FIREBASE_PRIVATE_KEY is not set in environment variables",
       );
     }
 

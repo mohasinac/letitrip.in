@@ -36,7 +36,7 @@ export function safeToISOString(date: any): string | null {
  */
 export function toISOStringOrDefault(
   date: any,
-  fallback: Date = new Date()
+  fallback: Date = new Date(),
 ): string {
   return safeToISOString(date) ?? fallback.toISOString();
 }

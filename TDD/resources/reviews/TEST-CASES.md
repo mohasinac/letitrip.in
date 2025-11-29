@@ -36,7 +36,7 @@ describe("Review Service", () => {
       });
       for (let i = 1; i < reviews.data.length; i++) {
         expect(
-          new Date(reviews.data[i - 1].createdAt).getTime()
+          new Date(reviews.data[i - 1].createdAt).getTime(),
         ).toBeGreaterThanOrEqual(new Date(reviews.data[i].createdAt).getTime());
       }
     });
@@ -47,7 +47,7 @@ describe("Review Service", () => {
       });
       for (let i = 1; i < reviews.data.length; i++) {
         expect(reviews.data[i - 1].helpfulCount).toBeGreaterThanOrEqual(
-          reviews.data[i].helpfulCount
+          reviews.data[i].helpfulCount,
         );
       }
     });
@@ -72,7 +72,7 @@ describe("Review Service", () => {
         reviewsService.create({
           productId: "prod_not_purchased",
           rating: 5,
-        })
+        }),
       ).rejects.toThrow("You can only review purchased products");
     });
 
@@ -81,13 +81,13 @@ describe("Review Service", () => {
         reviewsService.create({
           productId: "prod_already_reviewed",
           rating: 4,
-        })
+        }),
       ).rejects.toThrow("You have already reviewed this product");
     });
 
     it("should validate rating range", async () => {
       await expect(
-        reviewsService.create({ productId: "prod_001", rating: 6 })
+        reviewsService.create({ productId: "prod_001", rating: 6 }),
       ).rejects.toThrow("Rating must be between 1 and 5");
     });
 
@@ -112,7 +112,7 @@ describe("Review Service", () => {
 
     it("should fail for other user's review", async () => {
       await expect(
-        reviewsService.update("other_review", { rating: 1 })
+        reviewsService.update("other_review", { rating: 1 }),
       ).rejects.toThrow("Forbidden");
     });
   });
@@ -139,13 +139,13 @@ describe("Review Helpful Votes", () => {
     it("should not allow duplicate votes", async () => {
       await reviewsService.markHelpful("review_001");
       await expect(reviewsService.markHelpful("review_001")).rejects.toThrow(
-        "Already marked as helpful"
+        "Already marked as helpful",
       );
     });
 
     it("should not allow voting on own review", async () => {
       await expect(reviewsService.markHelpful("own_review")).rejects.toThrow(
-        "Cannot vote on own review"
+        "Cannot vote on own review",
       );
     });
   });
@@ -180,7 +180,7 @@ describe("Seller Review Response", () => {
 
     it("should fail for review not on seller's product", async () => {
       await expect(
-        reviewsService.respond("other_shop_review", { response: "..." })
+        reviewsService.respond("other_shop_review", { response: "..." }),
       ).rejects.toThrow("Forbidden");
     });
 
@@ -364,7 +364,7 @@ describe("Admin Review API Integration", () => {
         {
           method: "POST",
           headers: { Authorization: `Bearer ${adminToken}` },
-        }
+        },
       );
       expect(response.status).toBe(200);
     });
@@ -381,7 +381,7 @@ describe("Admin Review API Integration", () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ reason: "Inappropriate content" }),
-        }
+        },
       );
       expect(response.status).toBe(200);
     });

@@ -39,7 +39,7 @@ export default function HeroSlidesPage() {
 
   // Field configuration for inline edit and quick create (using centralized config)
   const fields: InlineField[] = toInlineFields(
-    getFieldsForContext(HERO_SLIDE_FIELDS, "table")
+    getFieldsForContext(HERO_SLIDE_FIELDS, "table"),
   );
 
   // Bulk actions configuration
@@ -120,7 +120,7 @@ export default function HeroSlidesPage() {
         reorderedSlides.map((s) => ({
           id: s.id,
           order: s.order,
-        }))
+        })),
       );
     } catch (error) {
       console.error("Failed to reorder slides:", error);
@@ -274,11 +274,11 @@ export default function HeroSlidesPage() {
                         // Validate form fields
                         const fieldsToValidate = getFieldsForContext(
                           HERO_SLIDE_FIELDS,
-                          "table"
+                          "table",
                         );
                         const { isValid } = validateForm(
                           values,
-                          fieldsToValidate
+                          fieldsToValidate,
                         );
 
                         if (!isValid) {
@@ -316,11 +316,11 @@ export default function HeroSlidesPage() {
                           // Validate form fields
                           const fieldsToValidate = getFieldsForContext(
                             HERO_SLIDE_FIELDS,
-                            "table"
+                            "table",
                           );
                           const { isValid } = validateForm(
                             values,
-                            fieldsToValidate
+                            fieldsToValidate,
                           );
 
                           if (!isValid) {
@@ -329,7 +329,7 @@ export default function HeroSlidesPage() {
 
                           await heroSlidesService.updateHeroSlide(
                             slide.id,
-                            values as any
+                            values as any,
                           );
                           setEditingId(null);
                           await loadSlides();
@@ -363,7 +363,7 @@ export default function HeroSlidesPage() {
                             setSelectedIds(
                               checked
                                 ? [...selectedIds, slide.id]
-                                : selectedIds.filter((id) => id !== slide.id)
+                                : selectedIds.filter((id) => id !== slide.id),
                             );
                           }}
                           label={`Select ${slide.title}`}
@@ -437,7 +437,7 @@ export default function HeroSlidesPage() {
                             onClick={(e) => {
                               e.stopPropagation();
                               router.push(
-                                `/admin/hero-slides/${slide.id}/edit`
+                                `/admin/hero-slides/${slide.id}/edit`,
                               );
                             }}
                             className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
@@ -448,7 +448,7 @@ export default function HeroSlidesPage() {
                         </div>
                       </td>
                     </tr>
-                  )
+                  ),
                 )}
               </tbody>
             </table>

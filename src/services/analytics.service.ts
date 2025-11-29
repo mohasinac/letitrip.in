@@ -12,7 +12,7 @@ import type {
 class AnalyticsService {
   // Get analytics overview (seller: own, admin: all)
   async getOverview(
-    filters?: AnalyticsFiltersFE
+    filters?: AnalyticsFiltersFE,
   ): Promise<AnalyticsOverviewFE> {
     const params = new URLSearchParams();
 
@@ -32,7 +32,7 @@ class AnalyticsService {
 
   // Get sales data (time series)
   async getSalesData(
-    filters?: AnalyticsFiltersFE
+    filters?: AnalyticsFiltersFE,
   ): Promise<SalesDataPointFE[]> {
     const params = new URLSearchParams();
 
@@ -54,7 +54,7 @@ class AnalyticsService {
 
   // Get top products
   async getTopProducts(
-    filters?: AnalyticsFiltersFE & { limit?: number }
+    filters?: AnalyticsFiltersFE & { limit?: number },
   ): Promise<TopProductFE[]> {
     const params = new URLSearchParams();
 
@@ -76,7 +76,7 @@ class AnalyticsService {
 
   // Get category performance
   async getCategoryPerformance(
-    filters?: AnalyticsFiltersFE
+    filters?: AnalyticsFiltersFE,
   ): Promise<CategoryPerformanceFE[]> {
     const params = new URLSearchParams();
 
@@ -98,7 +98,7 @@ class AnalyticsService {
 
   // Get customer analytics
   async getCustomerAnalytics(
-    filters?: AnalyticsFiltersFE
+    filters?: AnalyticsFiltersFE,
   ): Promise<CustomerAnalyticsFE[]> {
     const params = new URLSearchParams();
 
@@ -120,7 +120,7 @@ class AnalyticsService {
 
   // Get traffic analytics
   async getTrafficAnalytics(
-    filters?: AnalyticsFiltersFE
+    filters?: AnalyticsFiltersFE,
   ): Promise<TrafficAnalyticsFE> {
     const params = new URLSearchParams();
 
@@ -143,7 +143,7 @@ class AnalyticsService {
   // Export analytics data
   async exportData(
     filters?: AnalyticsFiltersFE,
-    format: "csv" | "pdf" = "csv"
+    format: "csv" | "pdf" = "csv",
   ): Promise<Blob> {
     const params = new URLSearchParams();
 

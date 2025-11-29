@@ -79,7 +79,7 @@ describe("FeaturedCategories", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (categoriesService.getFeatured as jest.Mock).mockResolvedValue(
-      mockCategories
+      mockCategories,
     );
   });
 
@@ -96,7 +96,7 @@ describe("FeaturedCategories", () => {
       render(<FeaturedCategories />);
       await waitFor(() => {
         expect(
-          screen.getByRole("heading", { name: "Featured Categories" })
+          screen.getByRole("heading", { name: "Featured Categories" }),
         ).toBeInTheDocument();
       });
     });
@@ -122,7 +122,7 @@ describe("FeaturedCategories", () => {
       render(<FeaturedCategories />);
       await waitFor(() => {
         expect(
-          document.getElementById("featured-categories")
+          document.getElementById("featured-categories"),
         ).toBeInTheDocument();
       });
     });
@@ -139,7 +139,7 @@ describe("FeaturedCategories", () => {
 
     it("displays loading skeletons", () => {
       (categoriesService.getFeatured as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
       render(<FeaturedCategories />);
       // Each skeleton has 2 elements: circle + text = 9 skeletons * 2 = 18 elements
@@ -155,14 +155,14 @@ describe("FeaturedCategories", () => {
 
     it("handles API error gracefully", async () => {
       (categoriesService.getFeatured as jest.Mock).mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
       render(<FeaturedCategories />);
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to fetch featured categories:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
       consoleSpy.mockRestore();
@@ -209,7 +209,7 @@ describe("FeaturedCategories", () => {
         },
       ];
       (categoriesService.getFeatured as jest.Mock).mockResolvedValue(
-        manyCategories
+        manyCategories,
       );
       render(<FeaturedCategories />);
       await waitFor(() => {
@@ -235,7 +235,7 @@ describe("FeaturedCategories", () => {
     it("falls back to package icon for missing icon", async () => {
       const categoriesWithNoIcon = [{ ...mockCategories[0], icon: null }];
       (categoriesService.getFeatured as jest.Mock).mockResolvedValue(
-        categoriesWithNoIcon
+        categoriesWithNoIcon,
       );
       render(<FeaturedCategories />);
       await waitFor(() => {
@@ -248,7 +248,7 @@ describe("FeaturedCategories", () => {
         { ...mockCategories[0], icon: "invalid-icon" },
       ];
       (categoriesService.getFeatured as jest.Mock).mockResolvedValue(
-        categoriesWithInvalidIcon
+        categoriesWithInvalidIcon,
       );
       render(<FeaturedCategories />);
       await waitFor(() => {
@@ -276,7 +276,7 @@ describe("FeaturedCategories", () => {
 
     it("does not show when less than 9 categories", async () => {
       (categoriesService.getFeatured as jest.Mock).mockResolvedValue(
-        mockCategories.slice(0, 5)
+        mockCategories.slice(0, 5),
       );
       render(<FeaturedCategories />);
       await waitFor(() => {
@@ -286,7 +286,7 @@ describe("FeaturedCategories", () => {
 
     it("does not show during loading", () => {
       (categoriesService.getFeatured as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
       render(<FeaturedCategories />);
       expect(screen.queryByText("Show More")).not.toBeInTheDocument();
@@ -387,7 +387,7 @@ describe("FeaturedCategories", () => {
         const iconContainer = link?.querySelector(".bg-yellow-100");
         expect(iconContainer).toHaveClass(
           "group-hover:bg-yellow-200",
-          "transition-colors"
+          "transition-colors",
         );
       });
     });
@@ -458,7 +458,7 @@ describe("FeaturedCategories", () => {
   describe("Loading Skeleton", () => {
     it("shows 9 loading skeletons", () => {
       (categoriesService.getFeatured as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
       render(<FeaturedCategories />);
       const skeletons = document.querySelectorAll(".animate-pulse");
@@ -467,7 +467,7 @@ describe("FeaturedCategories", () => {
 
     it("skeleton has correct structure", () => {
       (categoriesService.getFeatured as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
       render(<FeaturedCategories />);
       const circle = document.querySelector(".rounded-full.animate-pulse");
@@ -487,7 +487,7 @@ describe("FeaturedCategories", () => {
 
     it("handles less than 9 categories", async () => {
       (categoriesService.getFeatured as jest.Mock).mockResolvedValue(
-        mockCategories.slice(0, 5)
+        mockCategories.slice(0, 5),
       );
       render(<FeaturedCategories />);
       await waitFor(() => {
@@ -499,7 +499,7 @@ describe("FeaturedCategories", () => {
     it("handles empty category name", async () => {
       const categoriesWithEmptyName = [{ ...mockCategories[0], name: "" }];
       (categoriesService.getFeatured as jest.Mock).mockResolvedValue(
-        categoriesWithEmptyName
+        categoriesWithEmptyName,
       );
       render(<FeaturedCategories />);
       await waitFor(() => {

@@ -47,13 +47,13 @@ export default function CategorySelector({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
 
   // Get selected category
   const selectedCategory = useMemo(
     () => categories.find((cat) => cat.id === value) || null,
-    [categories, value]
+    [categories, value],
   );
   // Build category breadcrumb (use first parent path for display)
   const breadcrumb = useMemo(() => {
@@ -105,7 +105,7 @@ export default function CategorySelector({
     return categories.filter(
       (cat) =>
         cat.name.toLowerCase().includes(query) ||
-        cat.slug.toLowerCase().includes(query)
+        cat.slug.toLowerCase().includes(query),
     );
   }, [categories, searchQuery]);
   // Get category path for search results (use first parent path)
@@ -124,7 +124,7 @@ export default function CategorySelector({
       }
       return path.join(" > ");
     },
-    [categories]
+    [categories],
   );
 
   // Toggle category expansion
@@ -154,7 +154,7 @@ export default function CategorySelector({
       setIsOpen(false);
       setSearchQuery("");
     },
-    [allowParentSelection, onChange, toggleExpand]
+    [allowParentSelection, onChange, toggleExpand],
   );
 
   // Handle clear
@@ -163,7 +163,7 @@ export default function CategorySelector({
       e.stopPropagation();
       onChange(null, null);
     },
-    [onChange]
+    [onChange],
   );
 
   // Render category tree recursively
@@ -265,7 +265,7 @@ export default function CategorySelector({
       showProductCount,
       handleSelect,
       toggleExpand,
-    ]
+    ],
   );
 
   return (

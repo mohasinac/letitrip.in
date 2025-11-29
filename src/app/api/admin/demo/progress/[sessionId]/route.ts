@@ -3,7 +3,7 @@ import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ sessionId: string }> }
+  { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
     const db = getFirestoreAdmin();

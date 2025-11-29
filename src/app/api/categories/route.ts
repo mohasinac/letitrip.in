@@ -50,14 +50,14 @@ export async function GET(request: NextRequest) {
           query = query.where(
             "show_on_homepage",
             "==",
-            showOnHomepage === "true"
+            showOnHomepage === "true",
           );
         }
         if (parentId !== null) {
           query = query.where(
             "parent_id",
             "==",
-            parentId === "null" ? null : parentId
+            parentId === "null" ? null : parentId,
           );
         }
 
@@ -135,13 +135,13 @@ export async function GET(request: NextRequest) {
         console.error("Error listing categories:", error);
         return NextResponse.json(
           { success: false, error: "Failed to list categories" },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
     {
       ttl: 300,
-    }
+    },
   );
 }
 
@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
     if (!existing.empty) {
       return NextResponse.json(
         { success: false, error: "Category slug already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -263,19 +263,19 @@ export async function POST(request: NextRequest) {
           updatedAt: createdData.updated_at,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { success: false, error: error.message, errors: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
     console.error("Error creating category:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create category" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

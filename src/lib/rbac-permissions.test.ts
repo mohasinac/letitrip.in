@@ -24,7 +24,7 @@ describe("RBAC Permissions", () => {
         role: "admin" as const,
       };
       expect(canReadResource(user, "products", { status: "active" })).toBe(
-        true
+        true,
       );
     });
 
@@ -36,7 +36,10 @@ describe("RBAC Permissions", () => {
         shopId: "shop1",
       };
       expect(
-        canReadResource(user, "products", { shopId: "shop1", status: "active" })
+        canReadResource(user, "products", {
+          shopId: "shop1",
+          status: "active",
+        }),
       ).toBe(true);
     });
 
@@ -48,7 +51,10 @@ describe("RBAC Permissions", () => {
         shopId: "shop1",
       };
       expect(
-        canReadResource(user, "products", { shopId: "shop2", status: "active" })
+        canReadResource(user, "products", {
+          shopId: "shop2",
+          status: "active",
+        }),
       ).toBe(true); // Public data
       expect(canReadResource(user, "orders", { shopId: "shop2" })).toBe(false); // Private data
     });
@@ -60,7 +66,7 @@ describe("RBAC Permissions", () => {
         role: "user" as const,
       };
       expect(canReadResource(user, "products", { status: "active" })).toBe(
-        true
+        true,
       );
     });
 
@@ -97,7 +103,7 @@ describe("RBAC Permissions", () => {
         shopId: "shop1",
       };
       expect(
-        canWriteResource(user, "products", "update", { shopId: "shop1" })
+        canWriteResource(user, "products", "update", { shopId: "shop1" }),
       ).toBe(true);
     });
 
@@ -109,7 +115,7 @@ describe("RBAC Permissions", () => {
         shopId: "shop1",
       };
       expect(
-        canWriteResource(user, "products", "update", { shopId: "shop2" })
+        canWriteResource(user, "products", "update", { shopId: "shop2" }),
       ).toBe(false);
     });
 
@@ -141,7 +147,7 @@ describe("RBAC Permissions", () => {
         shopId: "shop1",
       };
       expect(canDeleteResource(user, "products", { shopId: "shop1" })).toBe(
-        true
+        true,
       );
     });
 
@@ -153,7 +159,7 @@ describe("RBAC Permissions", () => {
         shopId: "shop1",
       };
       expect(canDeleteResource(user, "products", { shopId: "shop2" })).toBe(
-        false
+        false,
       );
     });
   });

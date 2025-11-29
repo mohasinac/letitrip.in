@@ -389,8 +389,9 @@ export default function AdminDashboardPage() {
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
+          {/* NOTE: /admin/analytics does not exist - link to orders for now */}
           <Link
-            href="/admin/analytics"
+            href="/admin/orders"
             className="text-sm text-yellow-600 hover:text-yellow-700 font-medium"
           >
             View All →

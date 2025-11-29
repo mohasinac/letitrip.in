@@ -14,7 +14,7 @@ describe("AuthGuard", () => {
         <AuthGuard>
           <div>Protected</div>
         </AuthGuard>
-      </TestAuthProvider>
+      </TestAuthProvider>,
     );
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
@@ -26,7 +26,7 @@ describe("AuthGuard", () => {
         <AuthGuard>
           <div>Protected</div>
         </AuthGuard>
-      </TestAuthProvider>
+      </TestAuthProvider>,
     );
     expect(screen.queryByText("Protected")).not.toBeInTheDocument();
   });
@@ -42,7 +42,7 @@ describe("AuthGuard", () => {
         <AuthGuard allowedRoles={["admin"]}>
           <div>Protected</div>
         </AuthGuard>
-      </TestAuthProvider>
+      </TestAuthProvider>,
     );
     expect(screen.getByText("Protected")).toBeInTheDocument();
   });

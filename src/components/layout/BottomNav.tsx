@@ -41,7 +41,7 @@ export default function BottomNav() {
   return (
     <nav
       id="bottom-navigation"
-      className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 shadow-lg"
+      className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 shadow-lg pb-safe"
     >
       <div className="flex items-center justify-around h-16">
         {navItems.map((item) => {
@@ -52,7 +52,7 @@ export default function BottomNav() {
             <Link
               key={item.id}
               href={item.href}
-              className={`flex flex-col items-center justify-center flex-1 h-full gap-1 relative ${
+              className={`flex flex-col items-center justify-center flex-1 h-full gap-1 relative touch-target ${
                 isActive
                   ? "text-yellow-600"
                   : "text-gray-600 hover:text-yellow-600"

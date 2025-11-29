@@ -39,7 +39,7 @@ describe("GET /api/categories/search", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/search?q=smart"
+      "http://localhost/api/categories/search?q=smart",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -77,7 +77,7 @@ describe("GET /api/categories/search", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/search?q=devices"
+      "http://localhost/api/categories/search?q=devices",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -99,7 +99,7 @@ describe("GET /api/categories/search", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/search?q=electronics"
+      "http://localhost/api/categories/search?q=electronics",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -131,7 +131,7 @@ describe("GET /api/categories/search", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/search?q=nonexistent"
+      "http://localhost/api/categories/search?q=nonexistent",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -154,7 +154,7 @@ describe("GET /api/categories/search", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/search?q=Category"
+      "http://localhost/api/categories/search?q=Category",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -172,7 +172,7 @@ describe("GET /api/categories/search", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/search?q=test"
+      "http://localhost/api/categories/search?q=test",
     );
     const response = await GET(req);
     const data = await response.json();

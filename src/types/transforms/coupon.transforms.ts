@@ -79,7 +79,7 @@ const toFEBogoConfig = (bogo: BogoConfigBE): BogoConfigFE => {
 const getStatusBadge = (
   status: CouponStatus,
   isExpired: boolean,
-  isUsedUp: boolean
+  isUsedUp: boolean,
 ): { text: string; variant: "success" | "warning" | "error" | "info" } => {
   if (isExpired) {
     return { text: "Expired", variant: "error" };
@@ -252,7 +252,7 @@ export const toFECouponCards = (couponsBE: CouponBE[]): CouponCardFE[] => {
  * Transform Coupon Form FE to Create Request BE
  */
 export const toBECreateCouponRequest = (
-  formData: CouponFormFE
+  formData: CouponFormFE,
 ): CreateCouponRequestBE => {
   return {
     shopId: formData.shopId,
@@ -294,7 +294,7 @@ export const toBECreateCouponRequest = (
  * Transform Coupon Form FE to Update Request BE
  */
 export const toBEUpdateCouponRequest = (
-  formData: Partial<CouponFormFE>
+  formData: Partial<CouponFormFE>,
 ): UpdateCouponRequestBE => {
   const request: UpdateCouponRequestBE = {};
 

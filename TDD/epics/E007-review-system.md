@@ -132,3 +132,17 @@ interface ReviewBE {
 - Integration tests for CRUD operations
 - E2E tests for verified purchase review flow
 - RBAC tests for moderation and seller response
+
+---
+
+## Pending Routes
+
+| Route             | Priority  | Status     | Notes                                                      |
+| ----------------- | --------- | ---------- | ---------------------------------------------------------- |
+| `/user/reviews`   | 🟢 LOW    | ⬜ PENDING | User's own reviews list. Alternative: `/reviews` (public). |
+| `/seller/reviews` | 🟢 LOW    | ⬜ PENDING | Shop reviews for seller. Alternative: `/reviews` (public). |
+| `/admin/reviews`  | 🟡 MEDIUM | ⬜ PENDING | Review moderation page. Part of admin panel.               |
+
+**Navigation Change**: Removed from USER_MENU_ITEMS and SELLER_MENU_ITEMS in `navigation.ts`.
+
+**See**: `TDD/PENDING-ROUTES.md` for full details

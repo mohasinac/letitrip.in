@@ -72,7 +72,7 @@ async function setVariable(key, value, index, total) {
       {
         stdio: ["pipe", "pipe", "pipe"],
         shell: true,
-      }
+      },
     );
 
     child.stdin.write(value);

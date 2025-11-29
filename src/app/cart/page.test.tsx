@@ -255,7 +255,7 @@ describe("CartPage", () => {
     expect(screen.getByTestId("empty-state")).toBeInTheDocument();
     expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
     expect(
-      screen.getByText("Start adding products to your cart to see them here.")
+      screen.getByText("Start adding products to your cart to see them here."),
     ).toBeInTheDocument();
     expect(screen.getByTestId("empty-action")).toBeInTheDocument();
     expect(screen.getByText("Start Shopping")).toBeInTheDocument();
@@ -334,12 +334,12 @@ describe("CartPage", () => {
 
     expect(screen.getByTestId("confirm-dialog")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Clear Cart" })
+      screen.getByRole("heading", { name: "Clear Cart" }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Are you sure you want to remove all items from your cart? This action cannot be undone."
-      )
+        "Are you sure you want to remove all items from your cart? This action cannot be undone.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -408,7 +408,7 @@ describe("CartPage", () => {
 
     await waitFor(() => {
       expect(mockAlert).toHaveBeenCalledWith(
-        "Failed to clear cart. Please try again."
+        "Failed to clear cart. Please try again.",
       );
     });
 
@@ -529,7 +529,7 @@ describe("CartPage", () => {
 
     expect(screen.getByTestId("toast")).toBeInTheDocument();
     expect(
-      screen.getByText("Your cart items have been successfully merged!")
+      screen.getByText("Your cart items have been successfully merged!"),
     ).toBeInTheDocument();
   });
 
@@ -595,7 +595,7 @@ describe("CartPage", () => {
 
     expect(screen.getByText("You might also like")).toBeInTheDocument();
     expect(
-      screen.getByText("Product recommendations will appear here")
+      screen.getByText("Product recommendations will appear here"),
     ).toBeInTheDocument();
   });
 });

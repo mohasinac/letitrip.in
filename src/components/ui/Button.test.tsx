@@ -90,7 +90,7 @@ describe("Button", () => {
       render(
         <Button isLoading leftIcon={<div data-testid="left" />}>
           Submit
-        </Button>
+        </Button>,
       );
       expect(screen.queryByTestId("left")).not.toBeInTheDocument();
     });
@@ -119,7 +119,7 @@ describe("Button", () => {
 
     it("renders right icon", () => {
       render(
-        <Button rightIcon={<div data-testid="right-icon" />}>Click</Button>
+        <Button rightIcon={<div data-testid="right-icon" />}>Click</Button>,
       );
       expect(screen.getByTestId("right-icon")).toBeInTheDocument();
     });
@@ -131,7 +131,7 @@ describe("Button", () => {
           rightIcon={<div data-testid="right-icon" />}
         >
           Click
-        </Button>
+        </Button>,
       );
       expect(screen.getByTestId("left-icon")).toBeInTheDocument();
       expect(screen.getByTestId("right-icon")).toBeInTheDocument();
@@ -145,7 +145,7 @@ describe("Button", () => {
           rightIcon={<div data-testid="right-icon" />}
         >
           Click
-        </Button>
+        </Button>,
       );
       expect(screen.queryByTestId("left-icon")).not.toBeInTheDocument();
       expect(screen.queryByTestId("right-icon")).not.toBeInTheDocument();
@@ -179,7 +179,7 @@ describe("Button", () => {
     it("applies disabled cursor style", () => {
       render(<Button disabled>Disabled</Button>);
       expect(screen.getByRole("button")).toHaveClass(
-        "disabled:cursor-not-allowed"
+        "disabled:cursor-not-allowed",
       );
     });
 
@@ -188,7 +188,7 @@ describe("Button", () => {
       render(
         <Button disabled onClick={onClick}>
           Disabled
-        </Button>
+        </Button>,
       );
       fireEvent.click(screen.getByRole("button"));
       expect(onClick).not.toHaveBeenCalled();
@@ -208,7 +208,7 @@ describe("Button", () => {
       render(
         <Button isLoading onClick={onClick}>
           Click me
-        </Button>
+        </Button>,
       );
       fireEvent.click(screen.getByRole("button"));
       expect(onClick).not.toHaveBeenCalled();
@@ -225,7 +225,7 @@ describe("Button", () => {
       render(
         <Button type="submit" name="submit-btn">
           Submit
-        </Button>
+        </Button>,
       );
       const button = screen.getByRole("button");
       expect(button).toHaveAttribute("type", "submit");
@@ -236,7 +236,7 @@ describe("Button", () => {
       render(<Button aria-label="Custom label">Click</Button>);
       expect(screen.getByRole("button")).toHaveAttribute(
         "aria-label",
-        "Custom label"
+        "Custom label",
       );
     });
   });
@@ -252,7 +252,7 @@ describe("Button", () => {
         <Button>
           <span>Part 1</span>
           <span>Part 2</span>
-        </Button>
+        </Button>,
       );
       expect(screen.getByText("Part 1")).toBeInTheDocument();
       expect(screen.getByText("Part 2")).toBeInTheDocument();
@@ -262,7 +262,7 @@ describe("Button", () => {
       render(
         <Button isLoading disabled>
           Both
-        </Button>
+        </Button>,
       );
       expect(screen.getByRole("button")).toBeDisabled();
       expect(screen.getByTestId("loader-icon")).toBeInTheDocument();
