@@ -316,6 +316,142 @@ Each feature must meet its acceptance criteria before being considered complete.
 **Status**: Components created in E024, integration pending  
 **Tests**: `TDD/resources/mobile/E025-TEST-CASES.md` (to be implemented)
 
+### E026: Sieve-Style Pagination & Filtering ⬜ PENDING
+
+- [ ] All list APIs support page, pageSize parameters
+- [ ] All list APIs support sorts parameter
+- [ ] All list APIs support filters parameter
+- [ ] Response includes complete pagination metadata
+- [ ] All filter operators work correctly
+- [ ] Invalid parameters return helpful error messages
+- [ ] Frontend Pagination component is reusable
+- [ ] URL state syncs with pagination/filter state
+- [ ] Performance is acceptable (< 500ms for filtered queries)
+- [ ] Mobile pagination is touch-friendly
+
+**Status**: API design complete, implementation pending  
+**Tests**: `TDD/resources/pagination/TEST-CASES.md`
+
+### E027: Design System & Theming ⬜ PENDING
+
+- [ ] All hardcoded colors replaced with design tokens
+- [ ] Light and dark themes work correctly
+- [ ] Theme preference persists across sessions
+- [ ] No flash of incorrect theme on page load
+- [ ] All semantic colors use tokens (success, error, warning)
+- [ ] All status colors use tokens
+- [ ] Color contrast meets WCAG AA standards
+- [ ] Design system is documented
+
+**Status**: Token definitions created, implementation pending  
+**Tests**: `TDD/resources/theming/TEST-CASES.md`
+
+### E028: RipLimit Bidding Currency ⬜ PENDING
+
+- [ ] Users can purchase RipLimit with all payment methods
+- [ ] RipLimit balance displays correctly everywhere
+- [ ] Bids correctly block RipLimit
+- [ ] Outbid correctly releases RipLimit
+- [ ] Winning auction uses RipLimit for payment
+- [ ] Users with unpaid auctions cannot bid
+- [ ] Refunds process correctly
+- [ ] Admin can manage RipLimit
+- [ ] All transactions are logged
+- [ ] Real-time balance updates work
+
+**Status**: System design complete, implementation pending  
+**Tests**: `TDD/resources/riplimit/TEST-CASES.md`
+
+### E029: Smart Address System ⬜ PENDING
+
+- [ ] GPS location detection works on mobile
+- [ ] Address autocomplete provides relevant suggestions
+- [ ] Pincode auto-fills area/city/state
+- [ ] Mobile number is required and validated
+- [ ] Address form is reusable across all contexts
+- [ ] Map pin location works
+- [ ] All address forms use the new components
+- [ ] Works offline with cached pincode data
+- [ ] Accessible with keyboard navigation
+- [ ] Address labels supported
+
+**Status**: Component design complete, implementation pending  
+**Tests**: `TDD/resources/addresses/TEST-CASES.md`
+
+### E030: Code Quality & SonarQube ⬜ PENDING
+
+- [ ] SonarQube runs locally via Docker
+- [ ] Analysis runs on every PR
+- [ ] Quality gate blocks failing PRs
+- [ ] Duplication < 5%
+- [ ] No blocker or critical issues
+- [ ] Test coverage > 80%
+- [ ] All security vulnerabilities addressed
+- [ ] Metrics tracked over time
+
+**Status**: Configuration planned, setup pending  
+**Tests**: `TDD/resources/quality/TEST-CASES.md`
+
+### E031: Searchable Dropdowns ⬜ PENDING
+
+- [ ] All select elements replaced with SearchableDropdown
+- [ ] Search functionality works in all instances
+- [ ] Multi-select shows chips with remove buttons
+- [ ] Clear All button works in multi-select mode
+- [ ] Keyboard navigation fully functional
+- [ ] Mobile bottom sheet mode works
+- [ ] No accessibility regressions
+- [ ] Performance acceptable (< 100ms filter time)
+- [ ] Consistent styling across all usages
+
+**Status**: Component design complete, implementation pending  
+**Tests**: `TDD/resources/dropdowns/TEST-CASES.md`
+
+### E032: Content Type Search Filter ⬜ PENDING
+
+- [ ] Content type filter visible in header search bar
+- [ ] Filter works on desktop and mobile
+- [ ] Search results filtered by selected type
+- [ ] Type tabs on results page with counts
+- [ ] URL reflects selected type
+- [ ] Autocomplete respects selected type
+- [ ] Empty states handle no results per type
+- [ ] Filter persists during session
+- [ ] Performance acceptable (no slowdown)
+
+**Status**: Design complete, implementation pending  
+**Tests**: `TDD/resources/search/CONTENT-FILTER-TEST-CASES.md`
+
+### E033: Live Header Data ⬜ PENDING
+
+- [ ] Cart count updates immediately on add/remove
+- [ ] Notification count updates in real-time
+- [ ] User menu reflects current auth state
+- [ ] RipLimit balance shown for users with balance
+- [ ] All badges animate on change
+- [ ] Cart preview shows on hover
+- [ ] Notification dropdown shows recent items
+- [ ] Mobile header is touch-optimized
+- [ ] Performance: Header load < 100ms
+
+**Status**: Design complete, implementation pending  
+**Tests**: `TDD/resources/header/TEST-CASES.md`
+
+### E034: Flexible Link Fields ⬜ PENDING
+
+- [ ] Relative paths accepted in all link fields
+- [ ] No "invalid URL" errors for paths like /products
+- [ ] External URLs still work correctly
+- [ ] SmartLink component handles all link types
+- [ ] LinkInput component available for forms
+- [ ] Resolved URL preview shown in forms
+- [ ] External links open in new tab
+- [ ] External links have proper rel attributes
+- [ ] All existing link fields updated
+
+**Status**: Design complete, implementation pending  
+**Tests**: `TDD/resources/links/TEST-CASES.md`
+
 ---
 
 ## Cross-Cutting Acceptance Criteria
