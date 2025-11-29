@@ -502,7 +502,7 @@ describe("AuctionCard Component", () => {
       // Check for any time-related text
       const timeTexts = ["left", "Ended", "2 days left"];
       const hasTimeText = timeTexts.some((text) =>
-        document.body.textContent?.includes(text)
+        document.body.textContent?.includes(text),
       );
       expect(hasTimeText).toBe(true);
     });

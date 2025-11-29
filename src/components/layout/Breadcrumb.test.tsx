@@ -252,7 +252,7 @@ describe("Breadcrumb", () => {
       const { container } = render(<Breadcrumb />);
 
       const script = container.querySelector(
-        'script[type="application/ld+json"]'
+        'script[type="application/ld+json"]',
       );
       expect(script).toBeInTheDocument();
     });

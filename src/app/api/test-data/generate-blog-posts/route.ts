@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
           heading: faker.lorem.sentence({ min: 2, max: 5 }).replace(/\.$/, ""),
           content: faker.lorem.paragraphs(2, "\n\n"),
         }),
-        { count: { min: 3, max: 5 } }
+        { count: { min: 3, max: 5 } },
       );
 
       const content = `
@@ -71,7 +71,7 @@ ${sections
 ## ${section.heading}
 
 ${section.content}
-`
+`,
   )
   .join("\n")}
 
@@ -90,7 +90,7 @@ ${faker.lorem.paragraph()}
       const category = faker.helpers.arrayElement(categories);
       const tags = faker.helpers.arrayElements(
         tagPool,
-        faker.number.int({ min: 2, max: 5 })
+        faker.number.int({ min: 2, max: 5 }),
       );
 
       // Random dates (published within last 90 days)
@@ -104,8 +104,8 @@ ${faker.lorem.paragraph()}
         statusRand < 0.7
           ? "published"
           : statusRand < 0.9
-          ? "draft"
-          : "archived";
+            ? "draft"
+            : "archived";
 
       const blogPostData = {
         id: `${PREFIX}blog_post_${timestamp}_${i + 1}`,
@@ -153,7 +153,7 @@ ${faker.lorem.paragraph()}
         success: false,
         error: error.message || "Failed to generate blog posts",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

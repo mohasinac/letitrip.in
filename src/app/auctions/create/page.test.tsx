@@ -178,7 +178,7 @@ describe("CreateAuctionPage", () => {
 
     expect(screen.getByText("Authentication Required")).toBeInTheDocument();
     expect(
-      screen.getByText("You must be logged in to create an auction.")
+      screen.getByText("You must be logged in to create an auction."),
     ).toBeInTheDocument();
     expect(screen.getByText("Sign In")).toBeInTheDocument();
   });
@@ -205,8 +205,8 @@ describe("CreateAuctionPage", () => {
 
     expect(
       screen.getByText(
-        "You need to create a shop before you can create auctions."
-      )
+        "You need to create a shop before you can create auctions.",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByText("Create Shop")).toBeInTheDocument();
   });
@@ -233,7 +233,7 @@ describe("CreateAuctionPage", () => {
 
   it("handles auction creation error", async () => {
     mockAuctionsService.create.mockRejectedValue(
-      new Error("Auction creation failed")
+      new Error("Auction creation failed"),
     );
 
     await act(async () => {
@@ -262,7 +262,7 @@ describe("CreateAuctionPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Failed to load your shops. Please try again.")
+        screen.getByText("Failed to load your shops. Please try again."),
       ).toBeInTheDocument();
     });
   });

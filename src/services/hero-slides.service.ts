@@ -83,7 +83,7 @@ class HeroSlidesService {
    */
   async getHeroSlideById(id: string): Promise<HeroSlide> {
     const response = await apiService.get<{ slide: HeroSlide }>(
-      HERO_SLIDE_ROUTES.BY_ID(id)
+      HERO_SLIDE_ROUTES.BY_ID(id),
     );
     return response.slide;
   }
@@ -94,7 +94,7 @@ class HeroSlidesService {
   async createHeroSlide(data: HeroSlideFormData): Promise<HeroSlide> {
     const response = await apiService.post<{ slide: HeroSlide }>(
       HERO_SLIDE_ROUTES.LIST,
-      data
+      data,
     );
     return response.slide;
   }
@@ -104,11 +104,11 @@ class HeroSlidesService {
    */
   async updateHeroSlide(
     id: string,
-    data: Partial<HeroSlideFormData>
+    data: Partial<HeroSlideFormData>,
   ): Promise<HeroSlide> {
     const response = await apiService.patch<{ slide: HeroSlide }>(
       HERO_SLIDE_ROUTES.BY_ID(id),
-      data
+      data,
     );
     return response.slide;
   }
@@ -135,7 +135,7 @@ class HeroSlidesService {
    */
   async bulkUpdate(
     ids: string[],
-    updates: Partial<HeroSlideFormData>
+    updates: Partial<HeroSlideFormData>,
   ): Promise<void> {
     await apiService.post(HERO_SLIDE_ROUTES.BULK, {
       action: "update",
@@ -148,7 +148,7 @@ class HeroSlidesService {
    * Reorder hero slides (Admin only)
    */
   async reorderSlides(
-    slideOrders: { id: string; order: number }[]
+    slideOrders: { id: string; order: number }[],
   ): Promise<void> {
     await apiService.post(HERO_SLIDE_ROUTES.BULK, {
       action: "reorder",

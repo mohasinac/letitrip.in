@@ -266,7 +266,7 @@ describe("ProductInfo", () => {
             image: "https://example.com/watch.jpg",
             shopId: "shop1",
             shopName: "Vintage Treasures",
-          })
+          }),
         );
       });
     });
@@ -290,7 +290,7 @@ describe("ProductInfo", () => {
           "prod1",
           3,
           undefined,
-          expect.any(Object)
+          expect.any(Object),
         );
       });
     });
@@ -437,7 +437,7 @@ describe("ProductInfo", () => {
     it("shows free shipping info", () => {
       render(<ProductInfo product={mockProduct} />);
       expect(
-        screen.getByText(/Free shipping on orders above/)
+        screen.getByText(/Free shipping on orders above/),
       ).toBeInTheDocument();
     });
 

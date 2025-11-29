@@ -484,7 +484,7 @@ describe("/api/cart", () => {
           user_id: "user1",
           product_id: "prod1",
           quantity: 2,
-        })
+        }),
       );
     });
 
@@ -528,7 +528,7 @@ describe("/api/cart", () => {
       expect(data.data.quantity).toBe(5);
       expect(data.message).toBe("Cart updated");
       expect(mockExistingDoc.ref.update).toHaveBeenCalledWith(
-        expect.objectContaining({ quantity: 5 })
+        expect.objectContaining({ quantity: 5 }),
       );
     });
 
@@ -605,7 +605,7 @@ describe("/api/cart", () => {
       expect(mockCartRef.add).toHaveBeenCalledWith(
         expect.objectContaining({
           variant: "size:L,color:red",
-        })
+        }),
       );
     });
 

@@ -62,9 +62,8 @@ export default function VideoThumbnailGenerator({
 
     setIsGenerating(true);
     try {
-      const { extractVideoThumbnail } = await import(
-        "@/lib/media/video-processor"
-      );
+      const { extractVideoThumbnail } =
+        await import("@/lib/media/video-processor");
       const thumbnailDataUrl = await extractVideoThumbnail(
         media.file,
         timestamp,

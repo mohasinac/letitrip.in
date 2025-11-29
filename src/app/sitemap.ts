@@ -8,7 +8,7 @@ async function fetchProducts() {
       "https://letitrip.in/api/products?status=active&limit=1000",
       {
         next: { revalidate: 3600 }, // Cache for 1 hour
-      }
+      },
     );
     if (!res.ok) return [];
     const data = await res.json();
@@ -39,7 +39,7 @@ async function fetchShops() {
       "https://letitrip.in/api/shops?status=active&limit=1000",
       {
         next: { revalidate: 3600 },
-      }
+      },
     );
     if (!res.ok) return [];
     const data = await res.json();
@@ -56,7 +56,7 @@ async function fetchAuctions() {
       "https://letitrip.in/api/auctions?status=active&limit=1000",
       {
         next: { revalidate: 3600 },
-      }
+      },
     );
     if (!res.ok) return [];
     const data = await res.json();
@@ -187,7 +187,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .filter((category: any) => category.slug)
     .map((category: any) => {
       const lastMod = safeToISOString(
-        category.updated_at || category.updatedAt
+        category.updated_at || category.updatedAt,
       );
       return {
         url: `${baseUrl}/categories/${category.slug}`,

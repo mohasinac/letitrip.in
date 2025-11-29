@@ -75,7 +75,7 @@ export default function CreateAuctionWizardPage() {
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingVideos, setUploadingVideos] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
-    {}
+    {},
   );
 
   // Form data
@@ -183,7 +183,7 @@ export default function CreateAuctionWizardPage() {
           parseFloat(formData.reservePrice) < parseFloat(formData.startingBid)
         ) {
           setError(
-            "Reserve price must be greater than or equal to starting bid"
+            "Reserve price must be greater than or equal to starting bid",
           );
           return false;
         }
@@ -273,7 +273,7 @@ export default function CreateAuctionWizardPage() {
       ? Math.round(
           ((formData.endTime.getTime() - formData.startTime.getTime()) /
             (1000 * 60 * 60 * 24)) *
-            10
+            10,
         ) / 10
       : 0;
 
@@ -307,8 +307,8 @@ export default function CreateAuctionWizardPage() {
                     currentStep > step.id
                       ? "border-green-500 bg-green-500 text-white"
                       : currentStep === step.id
-                      ? "border-primary bg-primary text-white"
-                      : "border-gray-300 bg-white text-gray-400"
+                        ? "border-primary bg-primary text-white"
+                        : "border-gray-300 bg-white text-gray-400"
                   }`}
                 >
                   {currentStep > step.id ? (

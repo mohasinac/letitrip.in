@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     console.error("Error listing coupons:", error);
     return NextResponse.json(
       { success: false, error: "Failed to list coupons" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Only sellers and admins can create coupons" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     if (!shop_id || !code) {
       return NextResponse.json(
         { success: false, error: "shop_id/shopId and code required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Cannot create coupon for this shop" },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     if (!existing.empty) {
       return NextResponse.json(
         { success: false, error: "Coupon code already exists for this shop" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -124,13 +124,13 @@ export async function POST(request: NextRequest) {
     const created = await docRef.get();
     return NextResponse.json(
       { success: true, data: { id: created.id, ...created.data() } },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error creating coupon:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create coupon" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

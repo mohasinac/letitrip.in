@@ -34,9 +34,12 @@ describe("POST /api/favorites/[type]/[id]", () => {
   it("should require authentication", async () => {
     mockGetCurrentUser.mockResolvedValue(null);
 
-    const request = new NextRequest("http://localhost/api/favorites/product/prod123", {
-      method: "POST",
-    });
+    const request = new NextRequest(
+      "http://localhost/api/favorites/product/prod123",
+      {
+        method: "POST",
+      },
+    );
     const response = await POST(request, {
       params: Promise.resolve({ type: "product", id: "prod123" }),
     });
@@ -49,9 +52,12 @@ describe("POST /api/favorites/[type]/[id]", () => {
   it("should require valid type", async () => {
     mockGetCurrentUser.mockResolvedValue({ id: "user123" });
 
-    const request = new NextRequest("http://localhost/api/favorites/invalid/item123", {
-      method: "POST",
-    });
+    const request = new NextRequest(
+      "http://localhost/api/favorites/invalid/item123",
+      {
+        method: "POST",
+      },
+    );
     const response = await POST(request, {
       params: Promise.resolve({ type: "invalid", id: "item123" }),
     });
@@ -72,9 +78,12 @@ describe("POST /api/favorites/[type]/[id]", () => {
       set: mockSet,
     });
 
-    const request = new NextRequest("http://localhost/api/favorites/product/prod123", {
-      method: "POST",
-    });
+    const request = new NextRequest(
+      "http://localhost/api/favorites/product/prod123",
+      {
+        method: "POST",
+      },
+    );
     const response = await POST(request, {
       params: Promise.resolve({ type: "product", id: "prod123" }),
     });
@@ -87,7 +96,7 @@ describe("POST /api/favorites/[type]/[id]", () => {
         user_id: "user123",
         item_id: "prod123",
         item_type: "product",
-      })
+      }),
     );
   });
 
@@ -100,9 +109,12 @@ describe("POST /api/favorites/[type]/[id]", () => {
       get: mockGet,
     });
 
-    const request = new NextRequest("http://localhost/api/favorites/product/prod123", {
-      method: "POST",
-    });
+    const request = new NextRequest(
+      "http://localhost/api/favorites/product/prod123",
+      {
+        method: "POST",
+      },
+    );
     const response = await POST(request, {
       params: Promise.resolve({ type: "product", id: "prod123" }),
     });
@@ -123,9 +135,12 @@ describe("POST /api/favorites/[type]/[id]", () => {
       set: mockSet,
     });
 
-    const request = new NextRequest("http://localhost/api/favorites/shop/shop123", {
-      method: "POST",
-    });
+    const request = new NextRequest(
+      "http://localhost/api/favorites/shop/shop123",
+      {
+        method: "POST",
+      },
+    );
     await POST(request, {
       params: Promise.resolve({ type: "shop", id: "shop123" }),
     });
@@ -134,7 +149,7 @@ describe("POST /api/favorites/[type]/[id]", () => {
       expect.objectContaining({
         item_type: "shop",
         item_id: "shop123",
-      })
+      }),
     );
   });
 
@@ -149,9 +164,12 @@ describe("POST /api/favorites/[type]/[id]", () => {
       set: mockSet,
     });
 
-    const request = new NextRequest("http://localhost/api/favorites/auction/auc123", {
-      method: "POST",
-    });
+    const request = new NextRequest(
+      "http://localhost/api/favorites/auction/auc123",
+      {
+        method: "POST",
+      },
+    );
     await POST(request, {
       params: Promise.resolve({ type: "auction", id: "auc123" }),
     });
@@ -159,7 +177,7 @@ describe("POST /api/favorites/[type]/[id]", () => {
     expect(mockSet).toHaveBeenCalledWith(
       expect.objectContaining({
         item_type: "auction",
-      })
+      }),
     );
   });
 
@@ -170,9 +188,12 @@ describe("POST /api/favorites/[type]/[id]", () => {
       throw new Error("Database error");
     });
 
-    const request = new NextRequest("http://localhost/api/favorites/product/prod123", {
-      method: "POST",
-    });
+    const request = new NextRequest(
+      "http://localhost/api/favorites/product/prod123",
+      {
+        method: "POST",
+      },
+    );
     const response = await POST(request, {
       params: Promise.resolve({ type: "product", id: "prod123" }),
     });
@@ -196,9 +217,12 @@ describe("DELETE /api/favorites/[type]/[id]", () => {
   it("should require authentication", async () => {
     mockGetCurrentUser.mockResolvedValue(null);
 
-    const request = new NextRequest("http://localhost/api/favorites/product/prod123", {
-      method: "DELETE",
-    });
+    const request = new NextRequest(
+      "http://localhost/api/favorites/product/prod123",
+      {
+        method: "DELETE",
+      },
+    );
     const response = await DELETE(request, {
       params: Promise.resolve({ type: "product", id: "prod123" }),
     });
@@ -211,9 +235,12 @@ describe("DELETE /api/favorites/[type]/[id]", () => {
   it("should require valid type", async () => {
     mockGetCurrentUser.mockResolvedValue({ id: "user123" });
 
-    const request = new NextRequest("http://localhost/api/favorites/invalid/item123", {
-      method: "DELETE",
-    });
+    const request = new NextRequest(
+      "http://localhost/api/favorites/invalid/item123",
+      {
+        method: "DELETE",
+      },
+    );
     const response = await DELETE(request, {
       params: Promise.resolve({ type: "invalid", id: "item123" }),
     });
@@ -234,9 +261,12 @@ describe("DELETE /api/favorites/[type]/[id]", () => {
       delete: mockDelete,
     });
 
-    const request = new NextRequest("http://localhost/api/favorites/product/prod123", {
-      method: "DELETE",
-    });
+    const request = new NextRequest(
+      "http://localhost/api/favorites/product/prod123",
+      {
+        method: "DELETE",
+      },
+    );
     const response = await DELETE(request, {
       params: Promise.resolve({ type: "product", id: "prod123" }),
     });
@@ -256,9 +286,12 @@ describe("DELETE /api/favorites/[type]/[id]", () => {
       get: mockGet,
     });
 
-    const request = new NextRequest("http://localhost/api/favorites/product/prod123", {
-      method: "DELETE",
-    });
+    const request = new NextRequest(
+      "http://localhost/api/favorites/product/prod123",
+      {
+        method: "DELETE",
+      },
+    );
     const response = await DELETE(request, {
       params: Promise.resolve({ type: "product", id: "prod123" }),
     });
@@ -282,7 +315,9 @@ describe("GET /api/favorites/[type]/[id]", () => {
   it("should return false when not authenticated", async () => {
     mockGetCurrentUser.mockResolvedValue(null);
 
-    const request = new NextRequest("http://localhost/api/favorites/product/prod123");
+    const request = new NextRequest(
+      "http://localhost/api/favorites/product/prod123",
+    );
     const response = await GET(request, {
       params: Promise.resolve({ type: "product", id: "prod123" }),
     });
@@ -294,7 +329,9 @@ describe("GET /api/favorites/[type]/[id]", () => {
   it("should return false for invalid type", async () => {
     mockGetCurrentUser.mockResolvedValue({ id: "user123" });
 
-    const request = new NextRequest("http://localhost/api/favorites/invalid/item123");
+    const request = new NextRequest(
+      "http://localhost/api/favorites/invalid/item123",
+    );
     const response = await GET(request, {
       params: Promise.resolve({ type: "invalid", id: "item123" }),
     });
@@ -312,7 +349,9 @@ describe("GET /api/favorites/[type]/[id]", () => {
       get: mockGet,
     });
 
-    const request = new NextRequest("http://localhost/api/favorites/product/prod123");
+    const request = new NextRequest(
+      "http://localhost/api/favorites/product/prod123",
+    );
     const response = await GET(request, {
       params: Promise.resolve({ type: "product", id: "prod123" }),
     });
@@ -330,7 +369,9 @@ describe("GET /api/favorites/[type]/[id]", () => {
       get: mockGet,
     });
 
-    const request = new NextRequest("http://localhost/api/favorites/product/prod123");
+    const request = new NextRequest(
+      "http://localhost/api/favorites/product/prod123",
+    );
     const response = await GET(request, {
       params: Promise.resolve({ type: "product", id: "prod123" }),
     });

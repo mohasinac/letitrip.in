@@ -65,8 +65,8 @@ describe("FAQ Page", () => {
       expect(screen.getByText("How can we help you?")).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Find answers to common questions about shopping from Japan"
-        )
+          "Find answers to common questions about shopping from Japan",
+        ),
       ).toBeInTheDocument();
 
       // Check for HelpCircle icon (rendered as SVG)
@@ -91,7 +91,7 @@ describe("FAQ Page", () => {
 
       expect(screen.getByText("Still have questions?")).toBeInTheDocument();
       expect(
-        screen.getByText("We're here to help! Contact our support team")
+        screen.getByText("We're here to help! Contact our support team"),
       ).toBeInTheDocument();
     });
 
@@ -118,7 +118,7 @@ describe("FAQ Page", () => {
 
       // Check that the support cards have the expected structure
       const supportCards = screen.getAllByText(
-        /Create Support Ticket|Email Us/
+        /Create Support Ticket|Email Us/,
       );
       expect(supportCards).toHaveLength(2);
     });
@@ -163,7 +163,7 @@ describe("FAQ Page", () => {
       render(<FAQPage />);
 
       const scriptElement = document.querySelector(
-        'script[type="application/ld+json"]'
+        'script[type="application/ld+json"]',
       );
       expect(scriptElement).toBeInTheDocument();
 
@@ -174,7 +174,7 @@ describe("FAQ Page", () => {
             question: expect.any(String),
             answer: expect.any(String),
           }),
-        ])
+        ]),
       );
       expect(generateJSONLD).toHaveBeenCalledTimes(1);
     });
@@ -212,7 +212,7 @@ describe("FAQ Page", () => {
       expect(heroSection).toHaveClass(
         "bg-gradient-to-br",
         "from-blue-600",
-        "to-blue-700"
+        "to-blue-700",
       );
 
       // Support section should have white background
@@ -222,7 +222,7 @@ describe("FAQ Page", () => {
       expect(supportSection).toHaveClass(
         "bg-white",
         "border-t",
-        "border-gray-200"
+        "border-gray-200",
       );
 
       // Quick links section should have gray background
@@ -237,7 +237,7 @@ describe("FAQ Page", () => {
 
       // Support cards should be in a grid
       const supportCards = screen.getAllByText(
-        /Create Support Ticket|Email Us/
+        /Create Support Ticket|Email Us/,
       );
       expect(supportCards.length).toBe(2);
 
@@ -269,7 +269,7 @@ describe("FAQ Page", () => {
 
       expect(metadata.title).toBe("Frequently Asked Questions - Let It Rip");
       expect(metadata.description).toContain(
-        "Find answers to common questions"
+        "Find answers to common questions",
       );
       expect(metadata.keywords).toContain("FAQ");
       expect(metadata.keywords).toContain("help");

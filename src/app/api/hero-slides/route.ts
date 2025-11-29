@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
           ...slideData,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error creating hero slide:", error);
@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json(
       { error: "Failed to create hero slide" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

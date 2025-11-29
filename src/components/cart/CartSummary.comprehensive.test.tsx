@@ -102,14 +102,14 @@ describe("CartSummary - Comprehensive Test Suite", () => {
     it("displays security note", () => {
       render(<CartSummary {...defaultProps} />);
       expect(
-        screen.getByText(/Secure checkout powered by Razorpay/i)
+        screen.getByText(/Secure checkout powered by Razorpay/i),
       ).toBeInTheDocument();
     });
 
     it("renders checkout button", () => {
       render(<CartSummary {...defaultProps} />);
       expect(
-        screen.getByRole("button", { name: /Proceed to Checkout/i })
+        screen.getByRole("button", { name: /Proceed to Checkout/i }),
       ).toBeInTheDocument();
     });
   });
@@ -132,7 +132,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
           tax={1800}
           discount={500}
           total={11500}
-        />
+        />,
       );
       expect(screen.getByText("₹11,500")).toBeInTheDocument();
     });
@@ -166,14 +166,14 @@ describe("CartSummary - Comprehensive Test Suite", () => {
     it("shows free shipping progress bar when subtotal is below ₹5000", () => {
       render(<CartSummary {...defaultProps} subtotal={3000} shipping={100} />);
       expect(
-        screen.getByText(/Add ₹2,000 more for FREE shipping/i)
+        screen.getByText(/Add ₹2,000 more for FREE shipping/i),
       ).toBeInTheDocument();
     });
 
     it("calculates correct amount to free shipping", () => {
       render(<CartSummary {...defaultProps} subtotal={4500} shipping={50} />);
       expect(
-        screen.getByText(/Add ₹500 more for FREE shipping/i)
+        screen.getByText(/Add ₹500 more for FREE shipping/i),
       ).toBeInTheDocument();
     });
 
@@ -184,10 +184,10 @@ describe("CartSummary - Comprehensive Test Suite", () => {
 
     it("shows progress bar with correct width", () => {
       const { container } = render(
-        <CartSummary {...defaultProps} subtotal={2500} shipping={100} />
+        <CartSummary {...defaultProps} subtotal={2500} shipping={100} />,
       );
       const progressBar = container.querySelector(
-        ".bg-blue-600.h-2.rounded-full"
+        ".bg-blue-600.h-2.rounded-full",
       );
       expect(progressBar).toHaveStyle({ width: "50%" });
     });
@@ -204,10 +204,10 @@ describe("CartSummary - Comprehensive Test Suite", () => {
 
     it("caps progress at 100%", () => {
       const { container } = render(
-        <CartSummary {...defaultProps} subtotal={10000} shipping={0} />
+        <CartSummary {...defaultProps} subtotal={10000} shipping={0} />,
       );
       const progressBar = container.querySelector(
-        ".bg-blue-600.h-2.rounded-full"
+        ".bg-blue-600.h-2.rounded-full",
       );
       if (progressBar) {
         const width = progressBar.getAttribute("style");
@@ -233,7 +233,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
 
     it("displays discount in green color", () => {
       const { container } = render(
-        <CartSummary {...defaultProps} discount={1000} />
+        <CartSummary {...defaultProps} discount={1000} />,
       );
       const discountElement = screen.getByText("-₹1,000");
       expect(discountElement).toHaveClass("text-green-600");
@@ -266,17 +266,17 @@ describe("CartSummary - Comprehensive Test Suite", () => {
           {...defaultProps}
           couponCode="SAVE10"
           onApplyCoupon={mockApplyCoupon}
-        />
+        />,
       );
       expect(
-        screen.queryByPlaceholderText("Enter code")
+        screen.queryByPlaceholderText("Enter code"),
       ).not.toBeInTheDocument();
     });
 
     it("converts coupon input to uppercase", () => {
       render(<CartSummary {...defaultProps} onApplyCoupon={mockApplyCoupon} />);
       const input = screen.getByPlaceholderText(
-        "Enter code"
+        "Enter code",
       ) as HTMLInputElement;
       fireEvent.change(input, { target: { value: "save10" } });
       expect(input.value).toBe("SAVE10");
@@ -330,7 +330,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
 
     it("shows loading state while applying coupon", async () => {
       mockApplyCoupon.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
       render(<CartSummary {...defaultProps} onApplyCoupon={mockApplyCoupon} />);
 
@@ -346,12 +346,12 @@ describe("CartSummary - Comprehensive Test Suite", () => {
 
     it("disables input while applying coupon", async () => {
       mockApplyCoupon.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
       render(<CartSummary {...defaultProps} onApplyCoupon={mockApplyCoupon} />);
 
       const input = screen.getByPlaceholderText(
-        "Enter code"
+        "Enter code",
       ) as HTMLInputElement;
       fireEvent.change(input, { target: { value: "TEST" } });
       fireEvent.click(screen.getByRole("button", { name: /Apply/i }));
@@ -364,7 +364,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
       render(<CartSummary {...defaultProps} onApplyCoupon={mockApplyCoupon} />);
 
       const input = screen.getByPlaceholderText(
-        "Enter code"
+        "Enter code",
       ) as HTMLInputElement;
       fireEvent.change(input, { target: { value: "TEST" } });
       fireEvent.click(screen.getByRole("button", { name: /Apply/i }));
@@ -423,7 +423,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
   describe("Applied Coupon Display", () => {
     it("shows applied coupon badge", () => {
       render(
-        <CartSummary {...defaultProps} couponCode="SAVE10" discount={500} />
+        <CartSummary {...defaultProps} couponCode="SAVE10" discount={500} />,
       );
       expect(screen.getByText("SAVE10")).toBeInTheDocument();
     });
@@ -434,7 +434,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
           {...defaultProps}
           couponCode="FIRSTORDER"
           discount={1000}
-        />
+        />,
       );
       expect(screen.getByText("You saved ₹1,000!")).toBeInTheDocument();
     });
@@ -450,7 +450,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
           {...defaultProps}
           couponCode="SAVE10"
           onRemoveCoupon={mockRemoveCoupon}
-        />
+        />,
       );
       const removeBtn = screen.getByTitle("Remove coupon");
       expect(removeBtn).toBeInTheDocument();
@@ -468,7 +468,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
           {...defaultProps}
           couponCode="SAVE10"
           onRemoveCoupon={mockRemoveCoupon}
-        />
+        />,
       );
 
       const removeBtn = screen.getByTitle("Remove coupon");
@@ -487,7 +487,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
           {...defaultProps}
           couponCode="SAVE10"
           onRemoveCoupon={mockRemoveCoupon}
-        />
+        />,
       );
 
       const removeBtn = screen.getByTitle("Remove coupon");
@@ -508,7 +508,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
     it("calls onCheckout when provided", () => {
       render(<CartSummary {...defaultProps} onCheckout={mockCheckout} />);
       fireEvent.click(
-        screen.getByRole("button", { name: /Proceed to Checkout/i })
+        screen.getByRole("button", { name: /Proceed to Checkout/i }),
       );
       expect(mockCheckout).toHaveBeenCalled();
     });
@@ -516,7 +516,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
     it("navigates to /checkout when onCheckout not provided", () => {
       render(<CartSummary {...defaultProps} />);
       fireEvent.click(
-        screen.getByRole("button", { name: /Proceed to Checkout/i })
+        screen.getByRole("button", { name: /Proceed to Checkout/i }),
       );
       expect(mockRouterPush).toHaveBeenCalledWith("/checkout");
     });
@@ -607,7 +607,7 @@ describe("CartSummary - Comprehensive Test Suite", () => {
 
     it("handles multiple coupons scenario (only last one shown)", () => {
       render(
-        <CartSummary {...defaultProps} couponCode="FINAL" discount={1000} />
+        <CartSummary {...defaultProps} couponCode="FINAL" discount={1000} />,
       );
       expect(screen.getByText("FINAL")).toBeInTheDocument();
       expect(screen.getByText("You saved ₹1,000!")).toBeInTheDocument();

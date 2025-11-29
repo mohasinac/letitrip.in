@@ -7,7 +7,7 @@ describe("AdminPageHeader Component", () => {
     it("renders the title", () => {
       render(<AdminPageHeader title="Dashboard" />);
       expect(
-        screen.getByRole("heading", { name: "Dashboard" })
+        screen.getByRole("heading", { name: "Dashboard" }),
       ).toBeInTheDocument();
     });
 
@@ -39,14 +39,14 @@ describe("AdminPageHeader Component", () => {
   describe("Description", () => {
     it("renders description when provided", () => {
       render(
-        <AdminPageHeader title="Dashboard" description="View your analytics" />
+        <AdminPageHeader title="Dashboard" description="View your analytics" />,
       );
       expect(screen.getByText("View your analytics")).toBeInTheDocument();
     });
 
     it("applies correct styling to description", () => {
       render(
-        <AdminPageHeader title="Dashboard" description="Test description" />
+        <AdminPageHeader title="Dashboard" description="Test description" />,
       );
       const description = screen.getByText("Test description");
       expect(description).toHaveClass("text-sm", "text-gray-500", "mt-1");
@@ -55,7 +55,7 @@ describe("AdminPageHeader Component", () => {
     it("renders long description correctly", () => {
       const longDescription = "A".repeat(200);
       render(
-        <AdminPageHeader title="Dashboard" description={longDescription} />
+        <AdminPageHeader title="Dashboard" description={longDescription} />,
       );
       expect(screen.getByText(longDescription)).toBeInTheDocument();
     });
@@ -65,10 +65,10 @@ describe("AdminPageHeader Component", () => {
         <AdminPageHeader
           title="Dashboard"
           description="View <analytics> & reports!"
-        />
+        />,
       );
       expect(
-        screen.getByText("View <analytics> & reports!")
+        screen.getByText("View <analytics> & reports!"),
       ).toBeInTheDocument();
     });
   });
@@ -76,10 +76,13 @@ describe("AdminPageHeader Component", () => {
   describe("Actions", () => {
     it("renders action button", () => {
       render(
-        <AdminPageHeader title="Dashboard" actions={<button>Add New</button>} />
+        <AdminPageHeader
+          title="Dashboard"
+          actions={<button>Add New</button>}
+        />,
       );
       expect(
-        screen.getByRole("button", { name: "Add New" })
+        screen.getByRole("button", { name: "Add New" }),
       ).toBeInTheDocument();
     });
 
@@ -93,19 +96,22 @@ describe("AdminPageHeader Component", () => {
               <button>Settings</button>
             </>
           }
-        />
+        />,
       );
       expect(
-        screen.getByRole("button", { name: "Export" })
+        screen.getByRole("button", { name: "Export" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Settings" })
+        screen.getByRole("button", { name: "Settings" }),
       ).toBeInTheDocument();
     });
 
     it("applies gap-3 class to actions container", () => {
       const { container } = render(
-        <AdminPageHeader title="Dashboard" actions={<button>Add New</button>} />
+        <AdminPageHeader
+          title="Dashboard"
+          actions={<button>Add New</button>}
+        />,
       );
       const actionsContainer = container.querySelector(".gap-3");
       expect(actionsContainer).toBeInTheDocument();
@@ -120,7 +126,7 @@ describe("AdminPageHeader Component", () => {
               <span>+</span> Add New
             </button>
           }
-        />
+        />,
       );
       expect(screen.getByText("Add New")).toBeInTheDocument();
       expect(screen.getByText("+")).toBeInTheDocument();
@@ -137,7 +143,7 @@ describe("AdminPageHeader Component", () => {
             { label: "Users", href: "/admin/users" },
             { label: "John Doe" },
           ]}
-        />
+        />,
       );
       expect(screen.getByRole("navigation")).toBeInTheDocument();
     });
@@ -147,7 +153,7 @@ describe("AdminPageHeader Component", () => {
         <AdminPageHeader
           title="Dashboard"
           breadcrumbs={[{ label: "Admin", href: "/admin" }]}
-        />
+        />,
       );
       const nav = screen.getByRole("navigation");
       expect(nav).toHaveAttribute("aria-label", "Breadcrumb");
@@ -162,7 +168,7 @@ describe("AdminPageHeader Component", () => {
             { label: "Users", href: "/admin/users" },
             { label: "John Doe" },
           ]}
-        />
+        />,
       );
       expect(screen.getByText("Admin")).toBeInTheDocument();
       expect(screen.getByText("Users")).toBeInTheDocument();
@@ -177,7 +183,7 @@ describe("AdminPageHeader Component", () => {
             { label: "Admin", href: "/admin" },
             { label: "Users", href: "/admin/users" },
           ]}
-        />
+        />,
       );
       const adminLink = screen.getByText("Admin").closest("a");
       const usersLink = screen.getByText("Users").closest("a");
@@ -194,7 +200,7 @@ describe("AdminPageHeader Component", () => {
             { label: "Admin", href: "/admin" },
             { label: "Current Page" },
           ]}
-        />
+        />,
       );
       const currentPage = screen.getByText("Current Page");
       expect(currentPage.closest("a")).not.toBeInTheDocument();
@@ -210,7 +216,7 @@ describe("AdminPageHeader Component", () => {
             { label: "Users", href: "/admin/users" },
             { label: "Current" },
           ]}
-        />
+        />,
       );
       // Should have 2 separators for 3 breadcrumbs
       const separators = screen.getAllByText("/");
@@ -227,7 +233,7 @@ describe("AdminPageHeader Component", () => {
         <AdminPageHeader
           title="Dashboard"
           breadcrumbs={[{ label: "Admin", href: "/admin" }]}
-        />
+        />,
       );
       const link = screen.getByText("Admin").closest("a");
       expect(link).toHaveClass("hover:text-gray-900");
@@ -237,11 +243,11 @@ describe("AdminPageHeader Component", () => {
   describe("Layout", () => {
     it("applies correct flex layout for header", () => {
       const { container } = render(
-        <AdminPageHeader title="Dashboard" actions={<button>Add</button>} />
+        <AdminPageHeader title="Dashboard" actions={<button>Add</button>} />,
       );
       // Header should use flex with space-between
       const header = container.querySelector(
-        ".flex.items-center.justify-between"
+        ".flex.items-center.justify-between",
       );
       expect(header).toBeInTheDocument();
     });
@@ -257,14 +263,14 @@ describe("AdminPageHeader Component", () => {
         <AdminPageHeader
           title="Dashboard"
           breadcrumbs={[{ label: "Admin", href: "/admin" }]}
-        />
+        />,
       );
       const nav = screen.getByRole("navigation");
       const heading = screen.getByRole("heading");
 
       // Nav should come before heading in DOM order
       expect(nav.compareDocumentPosition(heading)).toBe(
-        Node.DOCUMENT_POSITION_FOLLOWING
+        Node.DOCUMENT_POSITION_FOLLOWING,
       );
     });
 
@@ -273,7 +279,7 @@ describe("AdminPageHeader Component", () => {
         <AdminPageHeader
           title="Dashboard"
           breadcrumbs={[{ label: "Admin", href: "/admin" }]}
-        />
+        />,
       );
       const nav = screen.getByRole("navigation");
       expect(nav).toHaveClass("mb-3");
@@ -292,7 +298,7 @@ describe("AdminPageHeader Component", () => {
         <AdminPageHeader
           title="Dashboard"
           breadcrumbs={[{ label: "Admin", href: "/admin" }]}
-        />
+        />,
       );
       const link = screen.getByText("Admin").closest("a");
       expect(link).toHaveClass("text-gray-600", "hover:text-gray-900");
@@ -306,7 +312,7 @@ describe("AdminPageHeader Component", () => {
             { label: "Admin", href: "/admin" },
             { label: "Current" },
           ]}
-        />
+        />,
       );
       const current = screen.getByText("Current");
       expect(current).toHaveClass("text-gray-900", "font-medium");
@@ -317,7 +323,7 @@ describe("AdminPageHeader Component", () => {
         <AdminPageHeader
           title="Dashboard"
           breadcrumbs={[{ label: "Admin", href: "/admin" }]}
-        />
+        />,
       );
       const ol = screen.getByRole("list");
       expect(ol).toHaveClass("text-sm");
@@ -337,29 +343,29 @@ describe("AdminPageHeader Component", () => {
               <button>Add User</button>
             </>
           }
-        />
+        />,
       );
 
       expect(
-        screen.getByRole("heading", { name: "User Management" })
+        screen.getByRole("heading", { name: "User Management" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("Manage all users in the system")
+        screen.getByText("Manage all users in the system"),
       ).toBeInTheDocument();
       expect(screen.getByRole("navigation")).toBeInTheDocument();
       expect(screen.getByText("Admin")).toBeInTheDocument();
       expect(screen.getByText("Users")).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Export" })
+        screen.getByRole("button", { name: "Export" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Add User" })
+        screen.getByRole("button", { name: "Add User" }),
       ).toBeInTheDocument();
     });
 
     it("renders with only title and description", () => {
       render(
-        <AdminPageHeader title="Dashboard" description="View your analytics" />
+        <AdminPageHeader title="Dashboard" description="View your analytics" />,
       );
       expect(screen.getByText("Dashboard")).toBeInTheDocument();
       expect(screen.getByText("View your analytics")).toBeInTheDocument();
@@ -371,11 +377,11 @@ describe("AdminPageHeader Component", () => {
         <AdminPageHeader
           title="Dashboard"
           actions={<button>Settings</button>}
-        />
+        />,
       );
       expect(screen.getByText("Dashboard")).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Settings" })
+        screen.getByRole("button", { name: "Settings" }),
       ).toBeInTheDocument();
       expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
     });
@@ -385,7 +391,7 @@ describe("AdminPageHeader Component", () => {
         <AdminPageHeader
           title="Dashboard"
           breadcrumbs={[{ label: "Admin", href: "/admin" }]}
-        />
+        />,
       );
       expect(screen.getByText("Dashboard")).toBeInTheDocument();
       expect(screen.getByRole("navigation")).toBeInTheDocument();
@@ -402,7 +408,7 @@ describe("AdminPageHeader Component", () => {
     it("handles title with special characters", () => {
       render(<AdminPageHeader title="User's <Profile> & Settings" />);
       expect(
-        screen.getByText("User's <Profile> & Settings")
+        screen.getByText("User's <Profile> & Settings"),
       ).toBeInTheDocument();
     });
 
@@ -428,7 +434,7 @@ describe("AdminPageHeader Component", () => {
 
     it("handles empty string description", () => {
       const { container } = render(
-        <AdminPageHeader title="Dashboard" description="" />
+        <AdminPageHeader title="Dashboard" description="" />,
       );
       // Empty description should NOT render (falsy check in component)
       const description = container.querySelector("p");

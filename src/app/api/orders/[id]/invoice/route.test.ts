@@ -102,7 +102,9 @@ describe("/api/orders/[id]/invoice", () => {
     it("should return 401 if user is not authenticated", async () => {
       mockGetCurrentUser.mockResolvedValue(null);
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       const response = await GET(req, context);
@@ -122,7 +124,9 @@ describe("/api/orders/[id]/invoice", () => {
       });
       mockDoc.exists = false;
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       const response = await GET(req, context);
@@ -145,7 +149,9 @@ describe("/api/orders/[id]/invoice", () => {
         amount: 1000,
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       const response = await GET(req, context);
@@ -177,14 +183,18 @@ describe("/api/orders/[id]/invoice", () => {
         },
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       const response = await GET(req, context);
 
       expect(response.status).toBe(200);
       expect(response.headers.get("Content-Type")).toBe("application/pdf");
-      expect(response.headers.get("Content-Disposition")).toContain("invoice-order123.pdf");
+      expect(response.headers.get("Content-Disposition")).toContain(
+        "invoice-order123.pdf",
+      );
     });
 
     it("should allow seller to generate invoice for orders", async () => {
@@ -200,7 +210,9 @@ describe("/api/orders/[id]/invoice", () => {
         items: [],
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       const response = await GET(req, context);
@@ -230,7 +242,9 @@ describe("/api/orders/[id]/invoice", () => {
         },
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       const response = await GET(req, context);
@@ -253,14 +267,20 @@ describe("/api/orders/[id]/invoice", () => {
         items: [],
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       await GET(req, context);
 
       // Check that PDF text includes tax calculations
-      const textCalls = mockPdfInstance.text.mock.calls.map((call: any) => call[0]);
-      const taxText = textCalls.find((text: string) => text.includes("GST (18%)"));
+      const textCalls = mockPdfInstance.text.mock.calls.map(
+        (call: any) => call[0],
+      );
+      const taxText = textCalls.find((text: string) =>
+        text.includes("GST (18%)"),
+      );
       expect(taxText).toBeDefined();
     });
 
@@ -280,14 +300,22 @@ describe("/api/orders/[id]/invoice", () => {
         ],
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       await GET(req, context);
 
-      const textCalls = mockPdfInstance.text.mock.calls.map((call: any) => call[0]);
-      expect(textCalls.some((text: string) => text.includes("Product A"))).toBe(true);
-      expect(textCalls.some((text: string) => text.includes("Product B"))).toBe(true);
+      const textCalls = mockPdfInstance.text.mock.calls.map(
+        (call: any) => call[0],
+      );
+      expect(textCalls.some((text: string) => text.includes("Product A"))).toBe(
+        true,
+      );
+      expect(textCalls.some((text: string) => text.includes("Product B"))).toBe(
+        true,
+      );
     });
 
     it("should use billing address if available", async () => {
@@ -312,14 +340,22 @@ describe("/api/orders/[id]/invoice", () => {
         },
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       await GET(req, context);
 
-      const textCalls = mockPdfInstance.text.mock.calls.map((call: any) => call[0]);
-      expect(textCalls.some((text: string) => text.includes("Billing Name"))).toBe(true);
-      expect(textCalls.some((text: string) => text.includes("Billing Address"))).toBe(true);
+      const textCalls = mockPdfInstance.text.mock.calls.map(
+        (call: any) => call[0],
+      );
+      expect(
+        textCalls.some((text: string) => text.includes("Billing Name")),
+      ).toBe(true);
+      expect(
+        textCalls.some((text: string) => text.includes("Billing Address")),
+      ).toBe(true);
     });
 
     it("should fallback to shipping address if no billing address", async () => {
@@ -340,13 +376,19 @@ describe("/api/orders/[id]/invoice", () => {
         },
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       await GET(req, context);
 
-      const textCalls = mockPdfInstance.text.mock.calls.map((call: any) => call[0]);
-      expect(textCalls.some((text: string) => text.includes("Shipping Name"))).toBe(true);
+      const textCalls = mockPdfInstance.text.mock.calls.map(
+        (call: any) => call[0],
+      );
+      expect(
+        textCalls.some((text: string) => text.includes("Shipping Name")),
+      ).toBe(true);
     });
 
     it("should handle orders with no items", async () => {
@@ -362,13 +404,19 @@ describe("/api/orders/[id]/invoice", () => {
         items: [],
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       await GET(req, context);
 
-      const textCalls = mockPdfInstance.text.mock.calls.map((call: any) => call[0]);
-      expect(textCalls.some((text: string) => text.includes("No items recorded"))).toBe(true);
+      const textCalls = mockPdfInstance.text.mock.calls.map(
+        (call: any) => call[0],
+      );
+      expect(
+        textCalls.some((text: string) => text.includes("No items recorded")),
+      ).toBe(true);
     });
 
     it("should apply rate limiting", async () => {
@@ -379,7 +427,9 @@ describe("/api/orders/[id]/invoice", () => {
         role: "user",
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       await GET(req, context);
@@ -387,14 +437,16 @@ describe("/api/orders/[id]/invoice", () => {
       expect(mockWithRateLimit).toHaveBeenCalledWith(
         req,
         expect.any(Function),
-        { maxRequests: 20, windowMs: 60 * 1000 }
+        { maxRequests: 20, windowMs: 60 * 1000 },
       );
     });
 
     it("should return 500 on server error", async () => {
       mockGetCurrentUser.mockRejectedValue(new Error("Database error"));
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       const response = await GET(req, context);
@@ -418,14 +470,22 @@ describe("/api/orders/[id]/invoice", () => {
         items: [],
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       await GET(req, context);
 
-      const textCalls = mockPdfInstance.text.mock.calls.map((call: any) => call[0]);
-      expect(textCalls.some((text: string) => text.includes("INV-order123"))).toBe(true);
-      expect(textCalls.some((text: string) => text.includes("Order ID: order123"))).toBe(true);
+      const textCalls = mockPdfInstance.text.mock.calls.map(
+        (call: any) => call[0],
+      );
+      expect(
+        textCalls.some((text: string) => text.includes("INV-order123")),
+      ).toBe(true);
+      expect(
+        textCalls.some((text: string) => text.includes("Order ID: order123")),
+      ).toBe(true);
     });
 
     it("should set proper PDF headers", async () => {
@@ -441,14 +501,18 @@ describe("/api/orders/[id]/invoice", () => {
         items: [],
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/invoice");
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/invoice",
+      );
       const context = createContext("order123");
 
       const response = await GET(req, context);
 
       expect(response.headers.get("Content-Type")).toBe("application/pdf");
       expect(response.headers.get("Content-Disposition")).toContain("inline");
-      expect(response.headers.get("Content-Disposition")).toContain("invoice-order123.pdf");
+      expect(response.headers.get("Content-Disposition")).toContain(
+        "invoice-order123.pdf",
+      );
       expect(response.headers.get("Cache-Control")).toBe("no-store");
     });
   });

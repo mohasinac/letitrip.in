@@ -161,7 +161,7 @@ describe("POST /api/categories/reorder", () => {
       expect.objectContaining({
         sort_order: 5,
         updated_at: expect.any(String),
-      })
+      }),
     );
   });
 

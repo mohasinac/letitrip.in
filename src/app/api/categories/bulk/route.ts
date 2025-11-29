@@ -176,13 +176,13 @@ export async function POST(request: NextRequest) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { success: false, error: error.message, errors: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
     console.error("Error in bulk category operation:", error);
     return NextResponse.json(
       { success: false, error: "Failed to perform bulk operation" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

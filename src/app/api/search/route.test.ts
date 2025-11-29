@@ -94,7 +94,7 @@ describe("GET /api/search", () => {
       });
 
       const req = new NextRequest(
-        "http://localhost/api/search?q=auction&type=auctions"
+        "http://localhost/api/search?q=auction&type=auctions",
       );
       const response = await GET(req);
       const data = await response.json();
@@ -130,7 +130,7 @@ describe("GET /api/search", () => {
         .mockResolvedValueOnce({ docs: [] });
 
       const req = new NextRequest(
-        "http://localhost/api/search?shop_slug=test-shop"
+        "http://localhost/api/search?shop_slug=test-shop",
       );
       await GET(req);
 
@@ -141,7 +141,7 @@ describe("GET /api/search", () => {
       mockGet.mockResolvedValue({ docs: [], empty: true });
 
       const req = new NextRequest(
-        "http://localhost/api/search?shop_slug=invalid"
+        "http://localhost/api/search?shop_slug=invalid",
       );
       const response = await GET(req);
       const data = await response.json();
@@ -159,7 +159,7 @@ describe("GET /api/search", () => {
         .mockResolvedValueOnce({ docs: [] });
 
       const req = new NextRequest(
-        "http://localhost/api/search?category_slug=electronics"
+        "http://localhost/api/search?category_slug=electronics",
       );
       await GET(req);
 
@@ -170,7 +170,7 @@ describe("GET /api/search", () => {
       mockGet.mockResolvedValue({ docs: [], empty: true });
 
       const req = new NextRequest(
-        "http://localhost/api/search?category_slug=invalid"
+        "http://localhost/api/search?category_slug=invalid",
       );
       const response = await GET(req);
       const data = await response.json();
@@ -183,7 +183,7 @@ describe("GET /api/search", () => {
       mockGet.mockResolvedValue({ docs: [] });
 
       const req = new NextRequest(
-        "http://localhost/api/search?min_price=100&max_price=500"
+        "http://localhost/api/search?min_price=100&max_price=500",
       );
       await GET(req);
 
@@ -194,9 +194,7 @@ describe("GET /api/search", () => {
     it("should filter by in_stock", async () => {
       mockGet.mockResolvedValue({ docs: [] });
 
-      const req = new NextRequest(
-        "http://localhost/api/search?in_stock=true"
-      );
+      const req = new NextRequest("http://localhost/api/search?in_stock=true");
       await GET(req);
 
       expect(mockWhere).toHaveBeenCalledWith("stock", ">", 0);
@@ -216,9 +214,7 @@ describe("GET /api/search", () => {
     it("should sort products by price ascending", async () => {
       mockGet.mockResolvedValue({ docs: [] });
 
-      const req = new NextRequest(
-        "http://localhost/api/search?sort=price-asc"
-      );
+      const req = new NextRequest("http://localhost/api/search?sort=price-asc");
       await GET(req);
 
       expect(mockOrderBy).toHaveBeenCalledWith("price", "asc");
@@ -228,7 +224,7 @@ describe("GET /api/search", () => {
       mockGet.mockResolvedValue({ docs: [] });
 
       const req = new NextRequest(
-        "http://localhost/api/search?sort=price-desc"
+        "http://localhost/api/search?sort=price-desc",
       );
       await GET(req);
 
@@ -238,9 +234,7 @@ describe("GET /api/search", () => {
     it("should sort auctions by ending soon (default)", async () => {
       mockGet.mockResolvedValue({ docs: [] });
 
-      const req = new NextRequest(
-        "http://localhost/api/search?type=auctions"
-      );
+      const req = new NextRequest("http://localhost/api/search?type=auctions");
       await GET(req);
 
       expect(mockOrderBy).toHaveBeenCalledWith("end_time", "asc");
@@ -257,7 +251,7 @@ describe("GET /api/search", () => {
       mockGet.mockResolvedValue({ docs: mockItems });
 
       const req = new NextRequest(
-        "http://localhost/api/search?page=2&limit=10"
+        "http://localhost/api/search?page=2&limit=10",
       );
       const response = await GET(req);
       const data = await response.json();
@@ -272,9 +266,7 @@ describe("GET /api/search", () => {
     it("should limit results to max 100", async () => {
       mockGet.mockResolvedValue({ docs: [] });
 
-      const req = new NextRequest(
-        "http://localhost/api/search?limit=200"
-      );
+      const req = new NextRequest("http://localhost/api/search?limit=200");
       await GET(req);
 
       expect(mockLimit).toHaveBeenCalledWith(100); // Capped at 100
@@ -289,7 +281,7 @@ describe("GET /api/search", () => {
       mockGet.mockResolvedValue({ docs: mockItems });
 
       const req = new NextRequest(
-        "http://localhost/api/search?page=3&limit=10"
+        "http://localhost/api/search?page=3&limit=10",
       );
       const response = await GET(req);
       const data = await response.json();
@@ -325,7 +317,7 @@ describe("GET /api/search", () => {
       mockGet.mockResolvedValue({ docs: mockItems });
 
       const req = new NextRequest(
-        "http://localhost/api/search?q=laptop&sort=relevance"
+        "http://localhost/api/search?q=laptop&sort=relevance",
       );
       const response = await GET(req);
       const data = await response.json();
@@ -349,7 +341,7 @@ describe("GET /api/search", () => {
       mockGet.mockResolvedValue({ docs: mockItems });
 
       const req = new NextRequest(
-        "http://localhost/api/search?q=laptop&sort=relevance"
+        "http://localhost/api/search?q=laptop&sort=relevance",
       );
       const response = await GET(req);
       const data = await response.json();
@@ -376,7 +368,7 @@ describe("GET /api/search", () => {
       mockGet.mockResolvedValue({ docs: [] });
 
       const req = new NextRequest(
-        "http://localhost/api/search?page=invalid&limit=abc"
+        "http://localhost/api/search?page=invalid&limit=abc",
       );
       const response = await GET(req);
 

@@ -14,7 +14,7 @@ import { userOwnsShop } from "@/app/api/lib/firebase/queries";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getUserFromRequest(request);
@@ -37,7 +37,7 @@ export async function GET(
       if (!docById.exists) {
         return NextResponse.json(
           { success: false, error: "Auction not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
       data = { id: docById.id, ...docById.data() };
@@ -52,7 +52,7 @@ export async function GET(
     ) {
       return NextResponse.json(
         { success: false, error: "Auction not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -63,7 +63,7 @@ export async function GET(
       if (!ownsShop && publicBlockedStatuses.includes(data.status)) {
         return NextResponse.json(
           { success: false, error: "Auction not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
     }
@@ -99,7 +99,7 @@ export async function GET(
     console.error("Error fetching auction:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch auction" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -110,7 +110,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { user, error } = await requireAuth(request);
@@ -123,7 +123,7 @@ export async function PATCH(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Auction not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -133,7 +133,7 @@ export async function PATCH(
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -179,7 +179,7 @@ export async function PATCH(
     console.error("Error updating auction:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update auction" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -190,7 +190,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { user, error } = await requireAuth(request);
@@ -203,7 +203,7 @@ export async function DELETE(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Auction not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -213,7 +213,7 @@ export async function DELETE(
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -224,7 +224,7 @@ export async function DELETE(
     console.error("Error deleting auction:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete auction" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

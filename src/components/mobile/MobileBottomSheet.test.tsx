@@ -13,7 +13,7 @@ describe("MobileBottomSheet", () => {
     render(
       <MobileBottomSheet isOpen={false} onClose={mockOnClose}>
         <div>Content</div>
-      </MobileBottomSheet>
+      </MobileBottomSheet>,
     );
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -23,7 +23,7 @@ describe("MobileBottomSheet", () => {
     render(
       <MobileBottomSheet isOpen={true} onClose={mockOnClose} title="Test Sheet">
         <div>Sheet Content</div>
-      </MobileBottomSheet>
+      </MobileBottomSheet>,
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("MobileBottomSheet", () => {
         showCloseButton={true}
       >
         <div>Content</div>
-      </MobileBottomSheet>
+      </MobileBottomSheet>,
     );
 
     expect(screen.getByRole("button", { name: /close/i })).toBeInTheDocument();
@@ -53,7 +53,7 @@ describe("MobileBottomSheet", () => {
         showCloseButton={true}
       >
         <div>Content</div>
-      </MobileBottomSheet>
+      </MobileBottomSheet>,
     );
 
     await userEvent.click(screen.getByRole("button", { name: /close/i }));
@@ -64,7 +64,7 @@ describe("MobileBottomSheet", () => {
     render(
       <MobileBottomSheet isOpen={true} onClose={mockOnClose}>
         <div>Content</div>
-      </MobileBottomSheet>
+      </MobileBottomSheet>,
     );
 
     // Click the overlay (first element with aria-hidden)
@@ -79,7 +79,7 @@ describe("MobileBottomSheet", () => {
     render(
       <MobileBottomSheet isOpen={true} onClose={mockOnClose} showHandle={true}>
         <div>Content</div>
-      </MobileBottomSheet>
+      </MobileBottomSheet>,
     );
 
     // Handle is a div with specific styling
@@ -91,7 +91,7 @@ describe("MobileBottomSheet", () => {
     const { rerender } = render(
       <MobileBottomSheet isOpen={false} onClose={mockOnClose}>
         <div>Content</div>
-      </MobileBottomSheet>
+      </MobileBottomSheet>,
     );
 
     expect(document.body.style.overflow).not.toBe("hidden");
@@ -99,7 +99,7 @@ describe("MobileBottomSheet", () => {
     rerender(
       <MobileBottomSheet isOpen={true} onClose={mockOnClose}>
         <div>Content</div>
-      </MobileBottomSheet>
+      </MobileBottomSheet>,
     );
 
     expect(document.body.style.overflow).toBe("hidden");
@@ -109,7 +109,7 @@ describe("MobileBottomSheet", () => {
     const { unmount } = render(
       <MobileBottomSheet isOpen={true} onClose={mockOnClose}>
         <div>Content</div>
-      </MobileBottomSheet>
+      </MobileBottomSheet>,
     );
 
     expect(document.body.style.overflow).toBe("hidden");
@@ -127,7 +127,7 @@ describe("MobileBottomSheet", () => {
         title="Accessible Sheet"
       >
         <div>Content</div>
-      </MobileBottomSheet>
+      </MobileBottomSheet>,
     );
 
     const dialog = screen.getByRole("dialog");

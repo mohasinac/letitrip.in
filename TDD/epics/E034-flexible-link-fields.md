@@ -289,14 +289,14 @@ export function resolveUrl(href: string, baseUrl?: string): string;
  */
 export function validateLink(
   value: string,
-  options?: LinkValidationOptions
+  options?: LinkValidationOptions,
 ): ValidationResult;
 
 /**
  * Get link type
  */
 export function getLinkType(
-  href: string
+  href: string,
 ): "internal" | "external" | "email" | "phone" | "anchor";
 ```
 

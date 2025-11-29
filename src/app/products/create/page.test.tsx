@@ -163,7 +163,7 @@ describe("CreateProductPage", () => {
     });
 
     expect(
-      screen.getByText("You must be logged in to create a product.")
+      screen.getByText("You must be logged in to create a product."),
     ).toBeInTheDocument();
     expect(screen.getByText("Sign In")).toBeInTheDocument();
   });
@@ -185,8 +185,8 @@ describe("CreateProductPage", () => {
 
     expect(
       screen.getByText(
-        "You need to create a shop before you can create products."
-      )
+        "You need to create a shop before you can create products.",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByText("Create Shop")).toBeInTheDocument();
   });
@@ -203,7 +203,7 @@ describe("CreateProductPage", () => {
     // Check header
     expect(screen.getByText("Create New Product")).toBeInTheDocument();
     expect(
-      screen.getByText("Add your product details and start selling.")
+      screen.getByText("Add your product details and start selling."),
     ).toBeInTheDocument();
 
     // Check back link
@@ -220,7 +220,7 @@ describe("CreateProductPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Failed to load your shops. Please try again.")
+        screen.getByText("Failed to load your shops. Please try again."),
       ).toBeInTheDocument();
     });
   });

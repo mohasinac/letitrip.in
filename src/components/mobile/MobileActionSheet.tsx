@@ -63,7 +63,7 @@ export function MobileActionSheet({
                 action.variant === "default" &&
                   "text-gray-700 hover:bg-gray-100 active:bg-gray-200",
                 !action.variant &&
-                  "text-gray-700 hover:bg-gray-100 active:bg-gray-200"
+                  "text-gray-700 hover:bg-gray-100 active:bg-gray-200",
               )}
             >
               {action.icon && (

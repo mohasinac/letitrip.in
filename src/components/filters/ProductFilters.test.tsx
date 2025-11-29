@@ -21,7 +21,7 @@ describe("ProductFilters", () => {
         onChange={jest.fn()}
         onApply={jest.fn()}
         onReset={jest.fn()}
-      />
+      />,
     );
     await waitFor(() => {
       expect(screen.getByText("Filters")).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("ProductFilters", () => {
           onChange={onChange}
           onApply={jest.fn()}
           onReset={jest.fn()}
-        />
+        />,
       );
     });
     // Simulate changing min price

@@ -55,7 +55,7 @@ export interface PaginatedResponse<T> {
 export function parsePaginationParams(
   searchParams: URLSearchParams,
   defaultLimit: number = 20,
-  maxLimit: number = 100
+  maxLimit: number = 100,
 ): PaginationConfig {
   const limitParam = searchParams.get("limit");
   const startAfter =
@@ -94,7 +94,7 @@ export function parsePaginationParams(
 export async function applyCursorPagination<T = any>(
   query: Query,
   config: PaginationConfig,
-  getStartDoc?: (id: string) => Promise<DocumentSnapshot | null>
+  getStartDoc?: (id: string) => Promise<DocumentSnapshot | null>,
 ): Promise<{
   docs: DocumentSnapshot[];
   hasNextPage: boolean;
@@ -144,7 +144,7 @@ export async function applyCursorPagination<T = any>(
  */
 export async function applyOffsetPagination(
   query: Query,
-  config: PaginationConfig
+  config: PaginationConfig,
 ): Promise<{
   docs: DocumentSnapshot[];
   page: number;
@@ -178,7 +178,7 @@ export function createCursorPaginationMeta(
   count: number,
   limit: number,
   hasNextPage: boolean,
-  nextCursor: string | null
+  nextCursor: string | null,
 ): CursorPaginationMeta {
   return {
     limit,
@@ -197,7 +197,7 @@ export function createOffsetPaginationMeta(
   count: number,
   hasNextPage: boolean,
   hasPrevPage: boolean,
-  total?: number
+  total?: number,
 ): OffsetPaginationMeta {
   return {
     page,
@@ -216,7 +216,7 @@ export function createCursorPaginatedResponse<T>(
   data: T[],
   limit: number,
   hasNextPage: boolean,
-  nextCursor: string | null
+  nextCursor: string | null,
 ): PaginatedResponse<T> {
   return {
     success: true,
@@ -226,7 +226,7 @@ export function createCursorPaginatedResponse<T>(
       data.length,
       limit,
       hasNextPage,
-      nextCursor
+      nextCursor,
     ),
   };
 }
@@ -240,7 +240,7 @@ export function createOffsetPaginatedResponse<T>(
   limit: number,
   hasNextPage: boolean,
   hasPrevPage: boolean,
-  total?: number
+  total?: number,
 ): PaginatedResponse<T> {
   return {
     success: true,
@@ -252,7 +252,7 @@ export function createOffsetPaginatedResponse<T>(
       data.length,
       hasNextPage,
       hasPrevPage,
-      total
+      total,
     ),
   };
 }
@@ -266,14 +266,14 @@ export async function executeCursorPaginatedQuery<T>(
   getStartDoc: (id: string) => Promise<DocumentSnapshot | null>,
   transformDoc: (doc: DocumentSnapshot) => T,
   defaultLimit: number = 20,
-  maxLimit: number = 100
+  maxLimit: number = 100,
 ): Promise<PaginatedResponse<T>> {
   const config = parsePaginationParams(searchParams, defaultLimit, maxLimit);
 
   const { docs, hasNextPage, nextCursor } = await applyCursorPagination(
     query,
     config,
-    getStartDoc
+    getStartDoc,
   );
 
   const data = docs.map(transformDoc);
@@ -282,7 +282,7 @@ export async function executeCursorPaginatedQuery<T>(
     data,
     config.limit || defaultLimit,
     hasNextPage,
-    nextCursor
+    nextCursor,
   );
 }
 
@@ -295,13 +295,13 @@ export async function executeOffsetPaginatedQuery<T>(
   transformDoc: (doc: DocumentSnapshot) => T,
   defaultLimit: number = 20,
   maxLimit: number = 100,
-  total?: number
+  total?: number,
 ): Promise<PaginatedResponse<T>> {
   const config = parsePaginationParams(searchParams, defaultLimit, maxLimit);
 
   const { docs, page, hasNextPage, hasPrevPage } = await applyOffsetPagination(
     query,
-    config
+    config,
   );
 
   const data = docs.map(transformDoc);
@@ -312,6 +312,6 @@ export async function executeOffsetPaginatedQuery<T>(
     config.limit || defaultLimit,
     hasNextPage,
     hasPrevPage,
-    total
+    total,
   );
 }

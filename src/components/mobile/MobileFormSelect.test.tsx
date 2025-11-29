@@ -23,13 +23,13 @@ describe("MobileFormSelect", () => {
     render(<MobileFormSelect label="Country" options={mockOptions} />);
 
     expect(
-      screen.getByRole("option", { name: "Option 1" })
+      screen.getByRole("option", { name: "Option 1" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("option", { name: "Option 2" })
+      screen.getByRole("option", { name: "Option 2" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("option", { name: "Option 3" })
+      screen.getByRole("option", { name: "Option 3" }),
     ).toBeInTheDocument();
   });
 
@@ -39,10 +39,10 @@ describe("MobileFormSelect", () => {
         label="Country"
         options={mockOptions}
         placeholder="Select a country"
-      />
+      />,
     );
     expect(
-      screen.getByRole("option", { name: "Select a country" })
+      screen.getByRole("option", { name: "Select a country" }),
     ).toBeInTheDocument();
   });
 
@@ -52,7 +52,7 @@ describe("MobileFormSelect", () => {
         label="Country"
         options={mockOptions}
         error="Please select a country"
-      />
+      />,
     );
     expect(screen.getByText("Please select a country")).toBeInTheDocument();
     expect(screen.getByRole("alert")).toBeInTheDocument();
@@ -64,10 +64,10 @@ describe("MobileFormSelect", () => {
         label="Country"
         options={mockOptions}
         helperText="Select your country of residence"
-      />
+      />,
     );
     expect(
-      screen.getByText("Select your country of residence")
+      screen.getByText("Select your country of residence"),
     ).toBeInTheDocument();
   });
 
@@ -78,7 +78,7 @@ describe("MobileFormSelect", () => {
         options={mockOptions}
         error="Invalid selection"
         helperText="Select your country"
-      />
+      />,
     );
     expect(screen.getByText("Invalid selection")).toBeInTheDocument();
     expect(screen.queryByText("Select your country")).not.toBeInTheDocument();
@@ -97,11 +97,15 @@ describe("MobileFormSelect", () => {
 
   it("sets aria-invalid when error is present", () => {
     render(
-      <MobileFormSelect label="Country" options={mockOptions} error="Invalid" />
+      <MobileFormSelect
+        label="Country"
+        options={mockOptions}
+        error="Invalid"
+      />,
     );
     expect(screen.getByRole("combobox")).toHaveAttribute(
       "aria-invalid",
-      "true"
+      "true",
     );
   });
 
@@ -120,7 +124,7 @@ describe("MobileFormSelect", () => {
   it("forwards ref correctly", () => {
     const ref = { current: null };
     render(
-      <MobileFormSelect label="Country" options={mockOptions} ref={ref} />
+      <MobileFormSelect label="Country" options={mockOptions} ref={ref} />,
     );
     expect(ref.current).toBeInstanceOf(HTMLSelectElement);
   });
@@ -132,7 +136,7 @@ describe("MobileFormSelect", () => {
         label="Country"
         options={mockOptions}
         onChange={handleChange}
-      />
+      />,
     );
 
     await userEvent.selectOptions(screen.getByRole("combobox"), "opt2");

@@ -24,7 +24,7 @@ export function MobileSkeleton({
     variant === "circular" && "rounded-full",
     variant === "rounded" && "rounded-lg",
     variant === "text" && "rounded h-4",
-    className
+    className,
   );
 
   return (
@@ -138,7 +138,7 @@ export function TableRowSkeleton({ columns = 4 }: { columns?: number }) {
             i === 0 && "w-24",
             i === 1 && "w-32",
             i === 2 && "w-20",
-            i === 3 && "w-16"
+            i === 3 && "w-16",
           )}
         />
       ))}

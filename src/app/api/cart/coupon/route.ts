@@ -57,11 +57,12 @@ export async function POST(request: NextRequest) {
     const now = new Date();
     const validFrom = coupon.valid_from || coupon.start_date;
     const validUntil = coupon.valid_until || coupon.end_date;
-    const isActive = coupon.is_active ?? (coupon.status === "active");
+    const isActive = coupon.is_active ?? coupon.status === "active";
     const usageLimit = coupon.usage_limit;
     const timesUsed = coupon.times_used ?? coupon.usage_count ?? 0;
-    const minOrderValue = coupon.min_order_value ?? coupon.min_purchase_amount ?? 0;
-    
+    const minOrderValue =
+      coupon.min_order_value ?? coupon.min_purchase_amount ?? 0;
+
     // Check if active
     if (!isActive) {
       return NextResponse.json(
@@ -127,7 +128,11 @@ export async function POST(request: NextRequest) {
     // Check if cart is empty
     if (items.length === 0) {
       return NextResponse.json(
-        { success: false, error: "Cart must have items to apply coupon (minimum requirement not met)" },
+        {
+          success: false,
+          error:
+            "Cart must have items to apply coupon (minimum requirement not met)",
+        },
         { status: 400 },
       );
     }

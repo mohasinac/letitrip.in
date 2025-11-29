@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
         // Build base query based on role
         let query = getProductsQuery(
           role,
-          role === "seller" ? shopId || userId : undefined
+          role === "seller" ? shopId || userId : undefined,
         );
 
         // For non-authenticated users, force published status
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
             };
           },
           50, // defaultLimit
-          200 // maxLimit
+          200, // maxLimit
         );
 
         // Apply text search filter (if no other solution available)
@@ -140,8 +140,8 @@ export async function GET(request: NextRequest) {
               p.description?.toLowerCase().includes(searchLower) ||
               p.slug?.toLowerCase().includes(searchLower) ||
               p.tags?.some((tag: string) =>
-                tag.toLowerCase().includes(searchLower)
-              )
+                tag.toLowerCase().includes(searchLower),
+              ),
           );
           response.count = response.data.length;
         }
@@ -151,11 +151,11 @@ export async function GET(request: NextRequest) {
         console.error("Error fetching products:", error);
         return NextResponse.json(
           { success: false, error: "Failed to fetch products" },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
-    { ttl: 120 }
+    { ttl: 120 },
   );
 }
 
@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Only sellers and admins can create products",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -217,7 +217,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "You do not have permission to add products to this shop",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
     if (!existingSlug.empty) {
       return NextResponse.json(
         { success: false, error: "Product slug already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -263,19 +263,19 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { success: true, data: { id: docRef.id, ...productData } },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { success: false, error: error.message, errors: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
     console.error("Error creating product:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create product" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

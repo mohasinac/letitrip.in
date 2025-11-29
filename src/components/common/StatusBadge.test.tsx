@@ -155,7 +155,7 @@ describe("StatusBadge", () => {
   describe("Variant Prop", () => {
     it("renders default variant", () => {
       const { container } = render(
-        <StatusBadge status="active" variant="default" />
+        <StatusBadge status="active" variant="default" />,
       );
 
       const badge = container.firstChild as HTMLElement;
@@ -164,7 +164,7 @@ describe("StatusBadge", () => {
 
     it("renders outline variant", () => {
       const { container } = render(
-        <StatusBadge status="active" variant="outline" />
+        <StatusBadge status="active" variant="outline" />,
       );
 
       const badge = container.firstChild as HTMLElement;
@@ -175,7 +175,7 @@ describe("StatusBadge", () => {
 
     it("renders solid variant", () => {
       const { container } = render(
-        <StatusBadge status="active" variant="solid" />
+        <StatusBadge status="active" variant="solid" />,
       );
 
       const badge = container.firstChild as HTMLElement;
@@ -224,7 +224,7 @@ describe("StatusBadge", () => {
   describe("Custom Styling", () => {
     it("applies custom className", () => {
       const { container } = render(
-        <StatusBadge status="active" className="custom-class" />
+        <StatusBadge status="active" className="custom-class" />,
       );
 
       const badge = container.firstChild as HTMLElement;
@@ -233,7 +233,7 @@ describe("StatusBadge", () => {
 
     it("preserves base classes with custom className", () => {
       const { container } = render(
-        <StatusBadge status="active" className="extra-class" />
+        <StatusBadge status="active" className="extra-class" />,
       );
 
       const badge = container.firstChild as HTMLElement;
@@ -383,7 +383,7 @@ describe("StatusBadge", () => {
       const { container } = render(
         <div>
           Order status: <StatusBadge status="shipped" />
-        </div>
+        </div>,
       );
       expect(container.textContent).toContain("Order status:");
       expect(screen.getByText("Shipped")).toBeInTheDocument();
@@ -394,7 +394,7 @@ describe("StatusBadge", () => {
         <div style={{ display: "flex" }}>
           <StatusBadge status="active" />
           <StatusBadge status="pending" />
-        </div>
+        </div>,
       );
       expect(screen.getByText("Active")).toBeInTheDocument();
       expect(screen.getByText("Pending")).toBeInTheDocument();
@@ -409,7 +409,7 @@ describe("StatusBadge", () => {
           <StatusBadge status="active" />
           <StatusBadge status="pending" />
           <StatusBadge status="failed" />
-        </>
+        </>,
       );
       expect(screen.getByText("Active")).toBeInTheDocument();
       expect(screen.getByText("Pending")).toBeInTheDocument();
@@ -421,7 +421,7 @@ describe("StatusBadge", () => {
         <div>
           <StatusBadge status="active" />
           <StatusBadge status="pending" />
-        </div>
+        </div>,
       );
       const badges = container.querySelectorAll("span");
       expect(badges[0].className).toContain("bg-");

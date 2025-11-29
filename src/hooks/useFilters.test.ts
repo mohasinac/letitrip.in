@@ -33,7 +33,7 @@ describe("useFilters", () => {
   it("initializes with initial filters", () => {
     const mockSearchParams = new URLSearchParams();
     (require("next/navigation").useSearchParams as jest.Mock).mockReturnValue(
-      mockSearchParams
+      mockSearchParams,
     );
 
     const initialFilters = { category: "", price: 0 };
@@ -47,15 +47,15 @@ describe("useFilters", () => {
 
   it("loads filters from URL", () => {
     const mockSearchParams = new URLSearchParams(
-      'category="electronics"&price=200'
+      'category="electronics"&price=200',
     );
     (require("next/navigation").useSearchParams as jest.Mock).mockReturnValue(
-      mockSearchParams
+      mockSearchParams,
     );
 
     const initialFilters = { category: "", price: 0 };
     const { result } = renderHook(() =>
-      useFilters(initialFilters, { syncWithUrl: true })
+      useFilters(initialFilters, { syncWithUrl: true }),
     );
 
     expect(result.current.filters).toEqual({
@@ -71,18 +71,18 @@ describe("useFilters", () => {
   it("loads filters from localStorage when persist is enabled", () => {
     const mockSearchParams = new URLSearchParams();
     (require("next/navigation").useSearchParams as jest.Mock).mockReturnValue(
-      mockSearchParams
+      mockSearchParams,
     );
 
     // Set up localStorage mock BEFORE rendering hook
     const mockGetItem = global.localStorage.getItem as jest.Mock;
     mockGetItem.mockReturnValue(
-      JSON.stringify({ category: "books", price: 50 })
+      JSON.stringify({ category: "books", price: 50 }),
     );
 
     const initialFilters = { category: "", price: 0 };
     const { result } = renderHook(() =>
-      useFilters(initialFilters, { persist: true, storageKey: "test-filters" })
+      useFilters(initialFilters, { persist: true, storageKey: "test-filters" }),
     );
 
     expect(result.current.filters).toEqual({ category: "books", price: 50 });
@@ -95,7 +95,7 @@ describe("useFilters", () => {
   it("updates filters", () => {
     const mockSearchParams = new URLSearchParams();
     (require("next/navigation").useSearchParams as jest.Mock).mockReturnValue(
-      mockSearchParams
+      mockSearchParams,
     );
 
     const initialFilters = { category: "", price: 0 };
@@ -115,12 +115,12 @@ describe("useFilters", () => {
   it("applies filters and syncs to URL", () => {
     const mockSearchParams = new URLSearchParams();
     (require("next/navigation").useSearchParams as jest.Mock).mockReturnValue(
-      mockSearchParams
+      mockSearchParams,
     );
 
     const initialFilters = { category: "", price: 0 };
     const { result } = renderHook(() =>
-      useFilters(initialFilters, { syncWithUrl: true })
+      useFilters(initialFilters, { syncWithUrl: true }),
     );
 
     act(() => {
@@ -137,19 +137,19 @@ describe("useFilters", () => {
     });
     expect(mockPush).toHaveBeenCalledWith(
       "/test?category=%22electronics%22&price=200",
-      { scroll: false }
+      { scroll: false },
     );
   });
 
   it("persists filters to localStorage", () => {
     const mockSearchParams = new URLSearchParams();
     (require("next/navigation").useSearchParams as jest.Mock).mockReturnValue(
-      mockSearchParams
+      mockSearchParams,
     );
 
     const initialFilters = { category: "", price: 0 };
     const { result } = renderHook(() =>
-      useFilters(initialFilters, { persist: true, storageKey: "test-filters" })
+      useFilters(initialFilters, { persist: true, storageKey: "test-filters" }),
     );
 
     act(() => {
@@ -162,14 +162,14 @@ describe("useFilters", () => {
 
     expect(mockPush).toHaveBeenCalledWith(
       "/test?category=%22electronics%22&price=200",
-      { scroll: false }
+      { scroll: false },
     );
   });
 
   it("resets filters", () => {
     const mockSearchParams = new URLSearchParams();
     (require("next/navigation").useSearchParams as jest.Mock).mockReturnValue(
-      mockSearchParams
+      mockSearchParams,
     );
 
     const initialFilters = { category: "", price: 0 };
@@ -178,7 +178,7 @@ describe("useFilters", () => {
         syncWithUrl: true,
         persist: true,
         storageKey: "test-filters",
-      })
+      }),
     );
 
     act(() => {
@@ -200,14 +200,14 @@ describe("useFilters", () => {
     });
     expect(global.localStorage.setItem as jest.Mock).toHaveBeenCalledWith(
       "test-filters",
-      JSON.stringify({ category: "electronics", price: 200 })
+      JSON.stringify({ category: "electronics", price: 200 }),
     );
   });
 
   it("clears a specific filter", () => {
     const mockSearchParams = new URLSearchParams();
     (require("next/navigation").useSearchParams as jest.Mock).mockReturnValue(
-      mockSearchParams
+      mockSearchParams,
     );
 
     const initialFilters = { category: "", price: 0 };
@@ -227,7 +227,7 @@ describe("useFilters", () => {
   it("calculates active filter count", () => {
     const mockSearchParams = new URLSearchParams();
     (require("next/navigation").useSearchParams as jest.Mock).mockReturnValue(
-      mockSearchParams
+      mockSearchParams,
     );
 
     const initialFilters = { category: "", price: 0, tags: [] as string[] };
@@ -252,13 +252,13 @@ describe("useFilters", () => {
   it("calls onChange callback when filters are applied", () => {
     const mockSearchParams = new URLSearchParams();
     (require("next/navigation").useSearchParams as jest.Mock).mockReturnValue(
-      mockSearchParams
+      mockSearchParams,
     );
 
     const onChange = jest.fn();
     const initialFilters = { category: "", price: 0 };
     const { result } = renderHook(() =>
-      useFilters(initialFilters, { onChange })
+      useFilters(initialFilters, { onChange }),
     );
 
     act(() => {

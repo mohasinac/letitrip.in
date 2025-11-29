@@ -102,7 +102,7 @@ describe("Admin Blog Page", () => {
 
       render(<AdminBlogPage />);
       expect(
-        screen.getByText("You must be an admin to access this page.")
+        screen.getByText("You must be an admin to access this page."),
       ).toBeInTheDocument();
     });
 
@@ -117,7 +117,7 @@ describe("Admin Blog Page", () => {
   describe("Loading State", () => {
     it("should show loading spinner initially", () => {
       mockBlogService.list.mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {}), // Never resolves
       );
 
       render(<AdminBlogPage />);
@@ -195,7 +195,7 @@ describe("Admin Blog Page", () => {
       render(<AdminBlogPage />);
       await waitFor(() => {
         expect(
-          screen.getByPlaceholderText("Search blog posts...")
+          screen.getByPlaceholderText("Search blog posts..."),
         ).toBeInTheDocument();
       });
     });
@@ -233,7 +233,7 @@ describe("Admin Blog Page", () => {
         const createButton = screen.getByText("Create Post");
         expect(createButton.closest("a")).toHaveAttribute(
           "href",
-          "/admin/blog/create"
+          "/admin/blog/create",
         );
       });
     });

@@ -35,7 +35,7 @@ export function toFEAddress(addressBE: AddressBE): AddressFE {
 }
 
 export function toBECreateAddressRequest(
-  formData: AddressFormFE
+  formData: AddressFormFE,
 ): CreateAddressRequestBE {
   return {
     fullName: formData.fullName,

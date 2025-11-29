@@ -71,7 +71,7 @@ describe("MobileAdminSidebar", () => {
 
   it("restores body scroll when closed", () => {
     const { rerender } = render(
-      <MobileAdminSidebar isOpen={true} onClose={mockOnClose} />
+      <MobileAdminSidebar isOpen={true} onClose={mockOnClose} />,
     );
     expect(document.body.style.overflow).toBe("hidden");
 

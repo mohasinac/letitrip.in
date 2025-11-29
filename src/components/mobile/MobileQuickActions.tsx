@@ -35,7 +35,7 @@ export function MobileQuickActions({
       className={cn(
         "fixed z-40 lg:hidden",
         position === "bottom-right" && "bottom-24 right-4",
-        position === "bottom-left" && "bottom-24 left-4"
+        position === "bottom-left" && "bottom-24 left-4",
       )}
     >
       {/* Action buttons - shown when open */}
@@ -44,7 +44,7 @@ export function MobileQuickActions({
           "flex flex-col-reverse gap-3 mb-3 transition-all duration-300",
           isOpen
             ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4 pointer-events-none"
+            : "opacity-0 translate-y-4 pointer-events-none",
         )}
       >
         {actions.map((action, index) => (
@@ -59,7 +59,7 @@ export function MobileQuickActions({
             <span
               className={cn(
                 "px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap shadow-lg",
-                position === "bottom-right" ? "order-1" : "order-2"
+                position === "bottom-right" ? "order-1" : "order-2",
               )}
             >
               {action.label}
@@ -72,7 +72,7 @@ export function MobileQuickActions({
                 "w-12 h-12 rounded-full shadow-lg flex items-center justify-center touch-target",
                 "transform active:scale-95 transition-transform",
                 action.color || "bg-blue-500 text-white hover:bg-blue-600",
-                position === "bottom-right" ? "order-2" : "order-1"
+                position === "bottom-right" ? "order-2" : "order-1",
               )}
               aria-label={action.label}
             >
@@ -89,7 +89,7 @@ export function MobileQuickActions({
           "w-14 h-14 rounded-full shadow-lg flex items-center justify-center touch-target",
           "bg-yellow-500 text-gray-900 hover:bg-yellow-600",
           "transform active:scale-95 transition-all duration-300",
-          isOpen && "rotate-45 bg-gray-700 text-white hover:bg-gray-800"
+          isOpen && "rotate-45 bg-gray-700 text-white hover:bg-gray-800",
         )}
         aria-label={isOpen ? "Close quick actions" : "Open quick actions"}
         aria-expanded={isOpen}

@@ -342,13 +342,16 @@ console.log("==================================\n");
 console.log(`Total warnings: ${warnings.length}\n`);
 
 // Group by file
-const byFile = warnings.reduce((acc, warning) => {
-  if (!acc[warning.file]) {
-    acc[warning.file] = [];
-  }
-  acc[warning.file].push(warning);
-  return acc;
-}, {} as Record<string, Warning[]>);
+const byFile = warnings.reduce(
+  (acc, warning) => {
+    if (!acc[warning.file]) {
+      acc[warning.file] = [];
+    }
+    acc[warning.file].push(warning);
+    return acc;
+  },
+  {} as Record<string, Warning[]>,
+);
 
 console.log("Warnings by file:\n");
 Object.entries(byFile).forEach(([file, fileWarnings]) => {
@@ -363,8 +366,8 @@ console.log("\nRecommended Actions:");
 console.log("1. Remove unused imports from import statements");
 console.log("2. Remove unused variable declarations");
 console.log(
-  "3. Add // eslint-disable-next-line @typescript-eslint/no-unused-vars if variable is needed for future use"
+  "3. Add // eslint-disable-next-line @typescript-eslint/no-unused-vars if variable is needed for future use",
 );
 console.log(
-  "\nNote: These are all pre-existing warnings in admin pages, not related to Phase 3 or Quick Wins."
+  "\nNote: These are all pre-existing warnings in admin pages, not related to Phase 3 or Quick Wins.",
 );

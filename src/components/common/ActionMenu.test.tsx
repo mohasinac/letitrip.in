@@ -17,7 +17,7 @@ describe("ActionMenu", () => {
     it("renders action menu button", () => {
       render(<ActionMenu items={mockItems} />);
       expect(
-        screen.getByRole("button", { name: /Actions/i })
+        screen.getByRole("button", { name: /Actions/i }),
       ).toBeInTheDocument();
     });
 
@@ -36,7 +36,7 @@ describe("ActionMenu", () => {
         <ActionMenu
           items={mockItems}
           icon={<span data-testid="custom-icon">⚙</span>}
-        />
+        />,
       );
       expect(screen.getByTestId("custom-icon")).toBeInTheDocument();
     });
@@ -220,7 +220,7 @@ describe("ActionMenu", () => {
 
     it("aligns menu to left when specified", () => {
       const { container } = render(
-        <ActionMenu items={mockItems} align="left" />
+        <ActionMenu items={mockItems} align="left" />,
       );
       fireEvent.click(screen.getByRole("button", { name: /Actions/i }));
 
@@ -235,7 +235,7 @@ describe("ActionMenu", () => {
         <div>
           <div data-testid="outside">Outside</div>
           <ActionMenu items={mockItems} />
-        </div>
+        </div>,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /Actions/i }));
@@ -287,14 +287,14 @@ describe("ActionMenu", () => {
   describe("Custom Styling", () => {
     it("applies custom className", () => {
       const { container } = render(
-        <ActionMenu items={mockItems} className="custom-class" />
+        <ActionMenu items={mockItems} className="custom-class" />,
       );
       expect(container.querySelector(".custom-class")).toBeInTheDocument();
     });
 
     it("preserves base classes with custom className", () => {
       const { container } = render(
-        <ActionMenu items={mockItems} className="mt-4" />
+        <ActionMenu items={mockItems} className="mt-4" />,
       );
       const wrapper = container.querySelector(".relative.inline-block.mt-4");
       expect(wrapper).toBeInTheDocument();

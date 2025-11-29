@@ -1,7 +1,7 @@
 /**
  * Enhanced Authentication & Authorization Middleware
  * Role-based access control for unified API routes
- * 
+ *
  * This extends the existing auth.ts with additional RBAC functionality
  */
 
@@ -19,7 +19,7 @@ import { AuthUser, UserRole, hasAnyRole } from "@/lib/rbac-permissions";
  * Extract user from request token (using existing session or Firebase token)
  */
 export async function getUserFromRequest(
-  request: NextRequest
+  request: NextRequest,
 ): Promise<AuthUser | null> {
   try {
     // Try Authorization header first (for API calls)
@@ -32,7 +32,10 @@ export async function getUserFromRequest(
           const decodedToken = await auth.verifyIdToken(token);
 
           const db = getFirestoreAdmin();
-          const userDoc = await db.collection("users").doc(decodedToken.uid).get();
+          const userDoc = await db
+            .collection("users")
+            .doc(decodedToken.uid)
+            .get();
 
           if (userDoc.exists) {
             const userData = userDoc.data();
@@ -52,7 +55,7 @@ export async function getUserFromRequest(
     // Try session cookie (for server-side rendering)
     const { getSessionToken, verifySession } = await import("../lib/session");
     const sessionToken = getSessionToken(request);
-    
+
     if (sessionToken) {
       const session = await verifySession(sessionToken);
       if (session) {
@@ -76,15 +79,17 @@ export async function getUserFromRequest(
  * Require authentication - user must be logged in
  */
 export async function requireAuth(
-  request: NextRequest
-): Promise<{ user: AuthUser; error?: never } | { user?: never; error: NextResponse }> {
+  request: NextRequest,
+): Promise<
+  { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
+> {
   const user = await getUserFromRequest(request);
 
   if (!user) {
     return {
       error: NextResponse.json(
         errorToJson(new UnauthorizedError("Authentication required")),
-        { status: 401 }
+        { status: 401 },
       ),
     };
   }
@@ -97,8 +102,10 @@ export async function requireAuth(
  */
 export async function requireRole(
   request: NextRequest,
-  roles: UserRole[]
-): Promise<{ user: AuthUser; error?: never } | { user?: never; error: NextResponse }> {
+  roles: UserRole[],
+): Promise<
+  { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
+> {
   const authResult = await requireAuth(request);
 
   if (authResult.error) {
@@ -112,10 +119,10 @@ export async function requireRole(
       error: NextResponse.json(
         errorToJson(
           new ForbiddenError(
-            `This action requires one of the following roles: ${roles.join(", ")}`
-          )
+            `This action requires one of the following roles: ${roles.join(", ")}`,
+          ),
         ),
-        { status: 403 }
+        { status: 403 },
       ),
     };
   }
@@ -127,8 +134,10 @@ export async function requireRole(
  * Require admin role
  */
 export async function requireAdmin(
-  request: NextRequest
-): Promise<{ user: AuthUser; error?: never } | { user?: never; error: NextResponse }> {
+  request: NextRequest,
+): Promise<
+  { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
+> {
   return requireRole(request, ["admin"]);
 }
 
@@ -136,8 +145,10 @@ export async function requireAdmin(
  * Require seller role (or admin)
  */
 export async function requireSeller(
-  request: NextRequest
-): Promise<{ user: AuthUser; error?: never } | { user?: never; error: NextResponse }> {
+  request: NextRequest,
+): Promise<
+  { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
+> {
   return requireRole(request, ["admin", "seller"]);
 }
 
@@ -147,8 +158,10 @@ export async function requireSeller(
 export async function requireOwnership(
   request: NextRequest,
   resourceOwnerId: string,
-  allowAdmin = true
-): Promise<{ user: AuthUser; error?: never } | { user?: never; error: NextResponse }> {
+  allowAdmin = true,
+): Promise<
+  { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
+> {
   const authResult = await requireAuth(request);
 
   if (authResult.error) {
@@ -167,9 +180,11 @@ export async function requireOwnership(
     return {
       error: NextResponse.json(
         errorToJson(
-          new ForbiddenError("You don't have permission to access this resource")
+          new ForbiddenError(
+            "You don't have permission to access this resource",
+          ),
         ),
-        { status: 403 }
+        { status: 403 },
       ),
     };
   }
@@ -183,8 +198,10 @@ export async function requireOwnership(
 export async function requireShopOwnership(
   request: NextRequest,
   resourceShopId: string,
-  allowAdmin = true
-): Promise<{ user: AuthUser; error?: never } | { user?: never; error: NextResponse }> {
+  allowAdmin = true,
+): Promise<
+  { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
+> {
   const authResult = await requireAuth(request);
 
   if (authResult.error) {
@@ -206,9 +223,11 @@ export async function requireShopOwnership(
   return {
     error: NextResponse.json(
       errorToJson(
-        new ForbiddenError("You don't have permission to access this shop's resources")
+        new ForbiddenError(
+          "You don't have permission to access this shop's resources",
+        ),
       ),
-      { status: 403 }
+      { status: 403 },
     ),
   };
 }
@@ -216,7 +235,9 @@ export async function requireShopOwnership(
 /**
  * Optional authentication - get user if available
  */
-export async function optionalAuth(request: NextRequest): Promise<AuthUser | null> {
+export async function optionalAuth(
+  request: NextRequest,
+): Promise<AuthUser | null> {
   return getUserFromRequest(request);
 }
 
@@ -226,7 +247,7 @@ export async function optionalAuth(request: NextRequest): Promise<AuthUser | nul
 export async function checkPermission(
   request: NextRequest,
   action: "read" | "write" | "delete",
-  resource: { type: string; ownerId?: string; shopId?: string }
+  resource: { type: string; ownerId?: string; shopId?: string },
 ): Promise<{ allowed: boolean; user: AuthUser | null }> {
   const user = await getUserFromRequest(request);
 
@@ -281,7 +302,7 @@ export async function checkPermission(
  * Helper to wrap route handler with authentication
  */
 export function withAuth(
-  handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>
+  handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>,
 ) {
   return async (request: NextRequest) => {
     const authResult = await requireAuth(request);
@@ -299,7 +320,7 @@ export function withAuth(
  */
 export function withRole(
   roles: UserRole[],
-  handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>
+  handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>,
 ) {
   return async (request: NextRequest) => {
     const authResult = await requireRole(request, roles);

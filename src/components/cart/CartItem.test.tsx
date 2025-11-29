@@ -42,11 +42,11 @@ describe("CartItem", () => {
         item={mockItem}
         onUpdateQuantity={mockUpdate}
         onRemove={mockRemove}
-      />
+      />,
     );
     // Both mobile and desktop views render, so use getAllByText
     expect(screen.getAllByText(/Test Product/i).length).toBeGreaterThanOrEqual(
-      1
+      1,
     );
     expect(screen.getAllByDisplayValue("2").length).toBeGreaterThanOrEqual(1);
   });
@@ -57,7 +57,7 @@ describe("CartItem", () => {
         item={mockItem}
         onUpdateQuantity={mockUpdate}
         onRemove={mockRemove}
-      />
+      />,
     );
     // Get the first quantity input (mobile view)
     const quantityInputs = screen.getAllByDisplayValue("2");
@@ -71,7 +71,7 @@ describe("CartItem", () => {
         item={mockItem}
         onUpdateQuantity={mockUpdate}
         onRemove={mockRemove}
-      />
+      />,
     );
     // Get the desktop remove button (visible one)
     const removeButtons = screen.getAllByLabelText(/Remove/i);

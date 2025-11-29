@@ -54,7 +54,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       expect(screen.getByText("Test Shop")).toBeInTheDocument();
@@ -67,7 +67,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       expect(screen.getByText("Product 1")).toBeInTheDocument();
@@ -80,7 +80,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       expect(screen.getByText("Qty: 2")).toBeInTheDocument();
@@ -93,7 +93,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       const images = screen.getAllByRole("img");
@@ -107,7 +107,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       expect(screen.getByText("Size: M")).toBeInTheDocument();
@@ -121,7 +121,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       // Subtotal = (1000 * 2) + (500 * 1) = 2500
@@ -145,7 +145,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={largeOrderItems}
-        />
+        />,
       );
 
       expect(screen.getByText("FREE")).toBeInTheDocument();
@@ -157,7 +157,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       expect(screen.getByText("₹100")).toBeInTheDocument();
@@ -169,7 +169,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       // Tax = 2500 * 0.18 = 450
@@ -182,7 +182,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       // Total = 2500 + 100 + 450 = 3050
@@ -196,7 +196,7 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           appliedCoupon={{ code: "SAVE10", discountAmount: 250 }}
-        />
+        />,
       );
 
       // Discount
@@ -211,12 +211,12 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       // Add ₹2500 to reach ₹5000
       expect(
-        screen.getByText("💡 Add ₹2,500 more for FREE shipping")
+        screen.getByText("💡 Add ₹2,500 more for FREE shipping"),
       ).toBeInTheDocument();
     });
   });
@@ -229,14 +229,14 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           onApplyCoupon={mockOnApplyCoupon}
-        />
+        />,
       );
 
       expect(
-        screen.getByText("Have a coupon for this shop?")
+        screen.getByText("Have a coupon for this shop?"),
       ).toBeInTheDocument();
       expect(
-        screen.getByPlaceholderText("Enter coupon code")
+        screen.getByPlaceholderText("Enter coupon code"),
       ).toBeInTheDocument();
     });
 
@@ -247,11 +247,11 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           onApplyCoupon={mockOnApplyCoupon}
-        />
+        />,
       );
 
       const input = screen.getByPlaceholderText(
-        "Enter coupon code"
+        "Enter coupon code",
       ) as HTMLInputElement;
       fireEvent.change(input, { target: { value: "save10" } });
 
@@ -265,7 +265,7 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           onApplyCoupon={mockOnApplyCoupon}
-        />
+        />,
       );
 
       const applyButton = screen.getByText("Apply");
@@ -279,7 +279,7 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           onApplyCoupon={mockOnApplyCoupon}
-        />
+        />,
       );
 
       const input = screen.getByPlaceholderText("Enter coupon code");
@@ -296,7 +296,7 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           onApplyCoupon={mockOnApplyCoupon}
-        />
+        />,
       );
 
       const input = screen.getByPlaceholderText("Enter coupon code");
@@ -317,11 +317,11 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           onApplyCoupon={mockOnApplyCoupon}
-        />
+        />,
       );
 
       const input = screen.getByPlaceholderText(
-        "Enter coupon code"
+        "Enter coupon code",
       ) as HTMLInputElement;
       fireEvent.change(input, { target: { value: "SAVE10" } });
 
@@ -335,7 +335,7 @@ describe("ShopOrderSummary", () => {
 
     it("shows loader while applying coupon", async () => {
       mockOnApplyCoupon.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(
@@ -344,7 +344,7 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           onApplyCoupon={mockOnApplyCoupon}
-        />
+        />,
       );
 
       const input = screen.getByPlaceholderText("Enter coupon code");
@@ -367,7 +367,7 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           onApplyCoupon={mockOnApplyCoupon}
-        />
+        />,
       );
 
       const input = screen.getByPlaceholderText("Enter coupon code");
@@ -390,7 +390,7 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           onApplyCoupon={mockOnApplyCoupon}
-        />
+        />,
       );
 
       const input = screen.getByPlaceholderText("Enter coupon code");
@@ -417,7 +417,7 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           appliedCoupon={{ code: "SAVE10", discountAmount: 250 }}
-        />
+        />,
       );
 
       expect(screen.getByText("SAVE10")).toBeInTheDocument();
@@ -433,7 +433,7 @@ describe("ShopOrderSummary", () => {
           items={mockItems}
           appliedCoupon={{ code: "SAVE10", discountAmount: 250 }}
           onRemoveCoupon={mockOnRemoveCoupon}
-        />
+        />,
       );
 
       expect(screen.getByTestId("x-icon")).toBeInTheDocument();
@@ -447,7 +447,7 @@ describe("ShopOrderSummary", () => {
           items={mockItems}
           appliedCoupon={{ code: "SAVE10", discountAmount: 250 }}
           onRemoveCoupon={mockOnRemoveCoupon}
-        />
+        />,
       );
 
       const removeButton = screen.getByTestId("x-icon").closest("button");
@@ -465,17 +465,17 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           appliedCoupon={{ code: "SAVE10", discountAmount: 250 }}
-        />
+        />,
       );
 
       expect(
-        screen.queryByPlaceholderText("Enter coupon code")
+        screen.queryByPlaceholderText("Enter coupon code"),
       ).not.toBeInTheDocument();
     });
 
     it("disables remove button while loading", async () => {
       mockOnRemoveCoupon.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(
@@ -485,7 +485,7 @@ describe("ShopOrderSummary", () => {
           items={mockItems}
           appliedCoupon={{ code: "SAVE10", discountAmount: 250 }}
           onRemoveCoupon={mockOnRemoveCoupon}
-        />
+        />,
       );
 
       const removeButton = screen.getByTestId("x-icon").closest("button");
@@ -504,7 +504,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       expect(screen.getByText("Subtotal (2 items)")).toBeInTheDocument();
@@ -516,7 +516,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       expect(screen.queryByText("Discount")).not.toBeInTheDocument();
@@ -527,7 +527,7 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           appliedCoupon={{ code: "SAVE10", discountAmount: 250 }}
-        />
+        />,
       );
 
       expect(screen.getByText("Discount")).toBeInTheDocument();
@@ -539,7 +539,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       expect(screen.getByText("Shipping")).toBeInTheDocument();
@@ -551,7 +551,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       expect(screen.getByText("Tax (18% GST)")).toBeInTheDocument();
@@ -563,7 +563,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       expect(screen.getByText("Shop Total")).toBeInTheDocument();
@@ -578,7 +578,7 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           appliedCoupon={{ code: "SAVE10", discountAmount: 250 }}
-        />
+        />,
       );
 
       // The bg-green-50 class is on a container several levels up, not the immediate parent
@@ -594,7 +594,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       const totalAmount = screen.getByText("₹3,050");
@@ -611,7 +611,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={singleItem}
-        />
+        />,
       );
 
       expect(screen.getByText("Subtotal (1 items)")).toBeInTheDocument();
@@ -619,7 +619,7 @@ describe("ShopOrderSummary", () => {
 
     it("handles empty shop name", () => {
       render(
-        <ShopOrderSummary shopId="shop-1" shopName="" items={mockItems} />
+        <ShopOrderSummary shopId="shop-1" shopName="" items={mockItems} />,
       );
 
       // Should still render without crashing
@@ -643,7 +643,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={freeItem}
-        />
+        />,
       );
 
       expect(screen.getAllByText("₹0").length).toBeGreaterThan(0);
@@ -666,7 +666,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={expensiveItem}
-        />
+        />,
       );
 
       expect(screen.getAllByText("₹99,99,999").length).toBeGreaterThan(0);
@@ -689,7 +689,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={longNameItem}
-        />
+        />,
       );
 
       expect(screen.getByText("A".repeat(100))).toBeInTheDocument();
@@ -712,11 +712,11 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={specialItem}
-        />
+        />,
       );
 
       expect(
-        screen.getByText("Product & Special <> Chars")
+        screen.getByText("Product & Special <> Chars"),
       ).toBeInTheDocument();
     });
   });
@@ -728,7 +728,7 @@ describe("ShopOrderSummary", () => {
           shopId="shop-1"
           shopName="Test Shop"
           items={mockItems}
-        />
+        />,
       );
 
       // Component should conditionally render coupon input based on callback presence
@@ -744,7 +744,7 @@ describe("ShopOrderSummary", () => {
           shopName="Test Shop"
           items={mockItems}
           appliedCoupon={{ code: "SAVE10", discountAmount: 250 }}
-        />
+        />,
       );
 
       // Component should conditionally render remove button based on callback presence

@@ -19,7 +19,7 @@ import {
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -77,7 +77,7 @@ export async function GET(
     }
     return NextResponse.json(
       { error: "Failed to fetch hero slide" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -88,7 +88,7 @@ export async function GET(
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -154,7 +154,7 @@ export async function PATCH(
     }
     return NextResponse.json(
       { error: "Failed to update hero slide" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -165,7 +165,7 @@ export async function PATCH(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -197,7 +197,7 @@ export async function DELETE(
     }
     return NextResponse.json(
       { error: "Failed to delete hero slide" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

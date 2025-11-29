@@ -14,7 +14,7 @@ import {
  */
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await context.params;
@@ -23,7 +23,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -32,7 +32,7 @@ export async function GET(
     if (!paymentDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Payment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -42,14 +42,14 @@ export async function GET(
     if (user.role === "user" && (payment as any).user_id !== user.uid) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     if (user.role === "seller" && (payment as any).shop_id !== user.shopId) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -61,7 +61,7 @@ export async function GET(
     console.error("Failed to fetch payment:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch payment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -72,7 +72,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await context.params;
@@ -105,7 +105,7 @@ export async function PATCH(
     console.error("Failed to update payment:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update payment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

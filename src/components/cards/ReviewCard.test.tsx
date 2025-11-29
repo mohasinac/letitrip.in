@@ -66,7 +66,7 @@ describe("ReviewCard", () => {
 
       expect(screen.getByText("John Doe")).toBeInTheDocument();
       expect(
-        screen.getByText("Great product! Really satisfied with the quality.")
+        screen.getByText("Great product! Really satisfied with the quality."),
       ).toBeInTheDocument();
     });
 
@@ -219,7 +219,7 @@ describe("ReviewCard", () => {
 
     it("shows product info when showProduct is true", () => {
       render(
-        <ReviewCard {...baseProps} {...productProps} showProduct={true} />
+        <ReviewCard {...baseProps} {...productProps} showProduct={true} />,
       );
 
       expect(screen.getByText("Amazing Product")).toBeInTheDocument();
@@ -229,7 +229,7 @@ describe("ReviewCard", () => {
 
     it("does not show product info when showProduct is false", () => {
       render(
-        <ReviewCard {...baseProps} {...productProps} showProduct={false} />
+        <ReviewCard {...baseProps} {...productProps} showProduct={false} />,
       );
 
       expect(screen.queryByText("Amazing Product")).not.toBeInTheDocument();
@@ -244,7 +244,7 @@ describe("ReviewCard", () => {
 
     it("renders product image when provided", () => {
       render(
-        <ReviewCard {...baseProps} {...productProps} showProduct={true} />
+        <ReviewCard {...baseProps} {...productProps} showProduct={true} />,
       );
 
       const productImage = screen.getByAltText("Amazing Product");
@@ -254,7 +254,7 @@ describe("ReviewCard", () => {
 
     it("links to product page", () => {
       render(
-        <ReviewCard {...baseProps} {...productProps} showProduct={true} />
+        <ReviewCard {...baseProps} {...productProps} showProduct={true} />,
       );
 
       const link = screen.getByText("Amazing Product").closest("a");
@@ -314,7 +314,7 @@ describe("ReviewCard", () => {
       const { container } = render(
         <div onClick={mockClick}>
           <ReviewCard {...baseProps} />
-        </div>
+        </div>,
       );
 
       const helpfulButton = screen.getByText("Helpful").closest("button");
@@ -327,7 +327,7 @@ describe("ReviewCard", () => {
   describe("Compact Mode", () => {
     it("applies compact padding", () => {
       const { container } = render(
-        <ReviewCard {...baseProps} compact={true} />
+        <ReviewCard {...baseProps} compact={true} />,
       );
 
       const card = container.querySelector(".p-3");
@@ -357,7 +357,7 @@ describe("ReviewCard", () => {
           shopId="shop-1"
           shopName="Amazing Shop"
           showProduct={false}
-        />
+        />,
       );
 
       const shopLink = screen.getByText("Amazing Shop");
@@ -374,7 +374,7 @@ describe("ReviewCard", () => {
           productId="product-1"
           productName="Product"
           showProduct={true}
-        />
+        />,
       );
 
       // Shop name should be in product info, not as separate link

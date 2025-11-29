@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     if (!action || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
         { success: false, error: "Action and IDs are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     console.error("Bulk operation error:", error);
     return NextResponse.json(
       { success: false, error: "Bulk operation failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

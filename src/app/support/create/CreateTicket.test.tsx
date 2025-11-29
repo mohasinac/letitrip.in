@@ -12,17 +12,17 @@ describe("CreateTicket page", () => {
     render(<SupportTicketPage />);
     fireEvent.change(
       screen.getByPlaceholderText("Brief description of your issue"),
-      { target: { value: "Hi" } }
+      { target: { value: "Hi" } },
     );
     fireEvent.change(
       screen.getByPlaceholderText(
-        "Describe your issue in detail (minimum 10 characters)"
+        "Describe your issue in detail (minimum 10 characters)",
       ),
-      { target: { value: "Short desc" } }
+      { target: { value: "Short desc" } },
     );
     fireEvent.click(screen.getByText(/Submit Ticket/i));
     expect(
-      screen.getByText(/Subject must be at least 3 characters/i)
+      screen.getByText(/Subject must be at least 3 characters/i),
     ).toBeInTheDocument();
   });
 });

@@ -649,7 +649,7 @@ export const createTestOrder = (overrides?: Partial<Order>): Order => ({
 });
 
 export const createTestBlogPost = (
-  overrides?: Partial<BlogPost>
+  overrides?: Partial<BlogPost>,
 ): BlogPost => ({
   id: `test_blog_${Date.now()}`,
   title: "Test Blog Post",
@@ -669,7 +669,7 @@ export const createTestBlogPost = (
 });
 
 export const createTestFavorite = (
-  overrides?: Partial<Favorite>
+  overrides?: Partial<Favorite>,
 ): Favorite => ({
   id: `test_fav_${Date.now()}`,
   userId: "test_user_001",
@@ -692,7 +692,7 @@ export const createTestFavorite = (
 });
 
 export const createTestConversation = (
-  overrides?: Partial<Conversation>
+  overrides?: Partial<Conversation>,
 ): Conversation => ({
   id: `test_conv_${Date.now()}`,
   type: "buyer_seller",

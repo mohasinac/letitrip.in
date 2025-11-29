@@ -26,7 +26,9 @@ jest.mock("../api.service", () => ({
 // Mock the transforms
 jest.mock("@/types/transforms/product.transforms", () => ({
   toFEProduct: jest.fn((data) => ({ ...data, transformed: true })),
-  toFEProductCards: jest.fn((data) => data.map((d: any) => ({ ...d, card: true }))),
+  toFEProductCards: jest.fn((data) =>
+    data.map((d: any) => ({ ...d, card: true })),
+  ),
   toBEProductCreate: jest.fn((data) => ({ ...data, beCreate: true })),
   toBEProductUpdate: jest.fn((data) => ({ ...data, beUpdate: true })),
 }));
@@ -38,9 +40,15 @@ jest.mock("@/lib/error-logger", () => ({
 
 const mockApiService = apiService as jest.Mocked<typeof apiService>;
 const mockToFEProduct = toFEProduct as jest.MockedFunction<typeof toFEProduct>;
-const mockToFEProductCards = toFEProductCards as jest.MockedFunction<typeof toFEProductCards>;
-const mockToBEProductCreate = toBEProductCreate as jest.MockedFunction<typeof toBEProductCreate>;
-const mockToBEProductUpdate = toBEProductUpdate as jest.MockedFunction<typeof toBEProductUpdate>;
+const mockToFEProductCards = toFEProductCards as jest.MockedFunction<
+  typeof toFEProductCards
+>;
+const mockToBEProductCreate = toBEProductCreate as jest.MockedFunction<
+  typeof toBEProductCreate
+>;
+const mockToBEProductUpdate = toBEProductUpdate as jest.MockedFunction<
+  typeof toBEProductUpdate
+>;
 
 describe("ProductsService", () => {
   beforeEach(() => {
@@ -135,7 +143,7 @@ describe("ProductsService", () => {
       mockApiService.get.mockRejectedValue(new Error("Product not found"));
 
       await expect(productsService.getById("nonexistent")).rejects.toThrow(
-        "Product not found"
+        "Product not found",
       );
     });
   });
@@ -186,7 +194,7 @@ describe("ProductsService", () => {
       mockApiService.post.mockRejectedValue(new Error("Validation failed"));
 
       await expect(
-        productsService.create({ name: "" } as any)
+        productsService.create({ name: "" } as any),
       ).rejects.toThrow();
     });
   });
@@ -226,7 +234,9 @@ describe("ProductsService", () => {
     it("should throw on delete error", async () => {
       mockApiService.delete.mockRejectedValue(new Error("Cannot delete"));
 
-      await expect(productsService.delete("p1")).rejects.toThrow("Cannot delete");
+      await expect(productsService.delete("p1")).rejects.toThrow(
+        "Cannot delete",
+      );
     });
   });
 
@@ -245,7 +255,7 @@ describe("ProductsService", () => {
         expect.objectContaining({
           action: "delete",
           ids: ["p1", "p2", "p3"],
-        })
+        }),
       );
     });
   });
@@ -265,7 +275,7 @@ describe("ProductsService", () => {
         expect.objectContaining({
           action: "publish",
           ids: ["p1", "p2"],
-        })
+        }),
       );
     });
   });

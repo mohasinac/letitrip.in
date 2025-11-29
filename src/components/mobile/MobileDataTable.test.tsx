@@ -30,7 +30,7 @@ describe("MobileDataTable", () => {
         data={mockData}
         columns={mockColumns}
         keyExtractor={keyExtractor}
-      />
+      />,
     );
 
     // Both mobile and desktop views are rendered (CSS controls visibility)
@@ -46,7 +46,7 @@ describe("MobileDataTable", () => {
         data={[]}
         columns={mockColumns}
         keyExtractor={keyExtractor}
-      />
+      />,
     );
 
     expect(screen.getByText("No data to display")).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe("MobileDataTable", () => {
         columns={mockColumns}
         keyExtractor={keyExtractor}
         emptyState={<div>Custom empty message</div>}
-      />
+      />,
     );
 
     expect(screen.getByText("Custom empty message")).toBeInTheDocument();
@@ -73,7 +73,7 @@ describe("MobileDataTable", () => {
         keyExtractor={keyExtractor}
         isLoading={true}
         loadingRows={3}
-      />
+      />,
     );
 
     // Check for skeleton elements (animate-pulse class)
@@ -89,7 +89,7 @@ describe("MobileDataTable", () => {
         columns={mockColumns}
         keyExtractor={keyExtractor}
         onRowClick={handleRowClick}
-      />
+      />,
     );
 
     // Get the first occurrence (mobile card view)
@@ -104,7 +104,7 @@ describe("MobileDataTable", () => {
         columns={mockColumns}
         keyExtractor={keyExtractor}
         onRowClick={() => {}}
-      />
+      />,
     );
 
     // Get the mobile card container (first element with cursor-pointer in mobile view)
@@ -130,7 +130,7 @@ describe("MobileDataTable", () => {
         data={mockData}
         columns={columnsWithRender}
         keyExtractor={keyExtractor}
-      />
+      />,
     );
 
     expect(screen.getByTestId("action-1")).toBeInTheDocument();
@@ -148,7 +148,7 @@ describe("MobileDataTable", () => {
         data={mockData}
         columns={columnsWithHide}
         keyExtractor={keyExtractor}
-      />
+      />,
     );
 
     // Mobile cards are in .lg:hidden container
@@ -166,13 +166,13 @@ describe("MobileDataTable", () => {
         renderMobileCard={(item: TestUser) => (
           <div data-testid={`custom-card-${item.id}`}>Custom: {item.name}</div>
         )}
-      />
+      />,
     );
 
     expect(screen.getByTestId("custom-card-1")).toBeInTheDocument();
     // Custom card only shows in mobile view, so only one occurrence
     expect(
-      screen.getAllByText("Custom: John Doe").length
+      screen.getAllByText("Custom: John Doe").length,
     ).toBeGreaterThanOrEqual(1);
   });
 
@@ -194,7 +194,7 @@ describe("MobileDataTable", () => {
         data={nestedData}
         columns={nestedColumns}
         keyExtractor={(item: NestedData) => item.id}
-      />
+      />,
     );
 
     expect(screen.getAllByText("Nested User").length).toBeGreaterThanOrEqual(1);

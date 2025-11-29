@@ -86,7 +86,7 @@ describe("MobileSellerSidebar", () => {
 
   it("restores body scroll when closed", () => {
     const { rerender } = render(
-      <MobileSellerSidebar isOpen={true} onClose={mockOnClose} />
+      <MobileSellerSidebar isOpen={true} onClose={mockOnClose} />,
     );
     expect(document.body.style.overflow).toBe("hidden");
 

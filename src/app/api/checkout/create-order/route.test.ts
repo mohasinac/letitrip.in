@@ -88,7 +88,7 @@ describe("POST /api/checkout/create-order", () => {
       .fn()
       .mockResolvedValue(undefined);
     (batchGetProducts as jest.Mock).mockResolvedValue(
-      new Map([["prod123", mockProduct]])
+      new Map([["prod123", mockProduct]]),
     );
 
     const mockAddressDoc = {
@@ -147,7 +147,7 @@ describe("POST /api/checkout/create-order", () => {
             paymentMethod: "cod",
             shopOrders: [],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -168,7 +168,7 @@ describe("POST /api/checkout/create-order", () => {
             paymentMethod: "cod",
             shopOrders: [],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -188,7 +188,7 @@ describe("POST /api/checkout/create-order", () => {
             paymentMethod: "invalid_method",
             shopOrders: [],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -208,7 +208,7 @@ describe("POST /api/checkout/create-order", () => {
             paymentMethod: "cod",
             shopOrders: [],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -242,7 +242,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -279,7 +279,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -315,7 +315,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -355,7 +355,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -408,7 +408,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -444,7 +444,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -480,7 +480,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -512,7 +512,7 @@ describe("POST /api/checkout/create-order", () => {
           get: jest
             .fn()
             .mockResolvedValue(
-              id === "billing456" ? mockBillingDoc : mockAddressDoc
+              id === "billing456" ? mockBillingDoc : mockAddressDoc,
             ),
         })),
       });
@@ -541,7 +541,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -572,7 +572,7 @@ describe("POST /api/checkout/create-order", () => {
           get: jest
             .fn()
             .mockResolvedValue(
-              id === "billing456" ? mockBillingDoc : mockAddressDoc
+              id === "billing456" ? mockBillingDoc : mockAddressDoc,
             ),
         })),
       });
@@ -601,7 +601,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -637,7 +637,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -673,7 +673,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -712,7 +712,7 @@ describe("POST /api/checkout/create-order", () => {
               },
             ],
           }),
-        }
+        },
       );
 
       const response = await POST(request);

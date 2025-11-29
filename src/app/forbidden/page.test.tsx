@@ -87,10 +87,10 @@ describe("ForbiddenPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Insufficient Permissions")
+          screen.getByText("Insufficient Permissions"),
         ).toBeInTheDocument();
         expect(
-          screen.getByText(/don't have the necessary permissions/i)
+          screen.getByText(/don't have the necessary permissions/i),
         ).toBeInTheDocument();
       });
     });
@@ -108,10 +108,10 @@ describe("ForbiddenPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Access Denied - Wrong Role")
+          screen.getByText("Access Denied - Wrong Role"),
         ).toBeInTheDocument();
         expect(
-          screen.getByText(/This resource requires admin privileges/i)
+          screen.getByText(/This resource requires admin privileges/i),
         ).toBeInTheDocument();
       });
     });
@@ -129,7 +129,7 @@ describe("ForbiddenPage", () => {
       await waitFor(() => {
         expect(screen.getByText("Account Suspended")).toBeInTheDocument();
         expect(
-          screen.getByText(/account has been temporarily suspended/i)
+          screen.getByText(/account has been temporarily suspended/i),
         ).toBeInTheDocument();
       });
     });
@@ -146,10 +146,10 @@ describe("ForbiddenPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Email Verification Required")
+          screen.getByText("Email Verification Required"),
         ).toBeInTheDocument();
         expect(
-          screen.getByText(/verify your email address/i)
+          screen.getByText(/verify your email address/i),
         ).toBeInTheDocument();
       });
     });
@@ -210,7 +210,7 @@ describe("ForbiddenPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByText("Permission Details")
+          screen.queryByText("Permission Details"),
         ).not.toBeInTheDocument();
       });
     });
@@ -237,7 +237,7 @@ describe("ForbiddenPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByText("Requested Resource")
+          screen.queryByText("Requested Resource"),
         ).not.toBeInTheDocument();
       });
     });

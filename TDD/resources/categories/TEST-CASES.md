@@ -63,7 +63,7 @@ describe("Categories Service", () => {
 
     it("should throw for non-existent category", async () => {
       await expect(categoriesService.getBySlug("invalid")).rejects.toThrow(
-        "Category not found"
+        "Category not found",
       );
     });
   });
@@ -124,7 +124,7 @@ describe("Multi-Parent Categories", () => {
     const audio = await categoriesService.getAll({ parentId: "cat_audio" });
 
     expect(
-      electronics.find((c) => c.slug === "wireless-earbuds")
+      electronics.find((c) => c.slug === "wireless-earbuds"),
     ).toBeDefined();
     expect(audio.find((c) => c.slug === "wireless-earbuds")).toBeDefined();
   });
@@ -167,7 +167,7 @@ describe("Admin Category Operations", () => {
         categoriesService.create({
           name: "Electronics",
           slug: "electronics", // Already exists
-        })
+        }),
       ).rejects.toThrow("Category slug already exists");
     });
 
@@ -213,7 +213,7 @@ describe("Admin Category Operations", () => {
 
     it("should fail if has products and no reassign", async () => {
       await expect(
-        categoriesService.delete("cat_with_products")
+        categoriesService.delete("cat_with_products"),
       ).rejects.toThrow("Category has products");
     });
   });

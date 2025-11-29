@@ -4,7 +4,7 @@ import { safeToISOString } from "@/lib/date-utils";
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ sessionId: string }> }
+  { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -74,8 +74,8 @@ export async function GET(
 
     const createdAt = firstCategory.empty
       ? new Date().toISOString()
-      : safeToISOString(firstCategory.docs[0].data().createdAt?.toDate()) ??
-        new Date().toISOString();
+      : (safeToISOString(firstCategory.docs[0].data().createdAt?.toDate()) ??
+        new Date().toISOString());
 
     return NextResponse.json({
       categories: categoriesSnap.data().count,

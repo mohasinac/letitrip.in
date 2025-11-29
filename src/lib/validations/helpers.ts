@@ -19,7 +19,7 @@ import { z } from "zod";
 export function validateField<T extends z.ZodType>(
   schema: T,
   fieldName: string,
-  value: any
+  value: any,
 ): string | null {
   try {
     // Create a partial schema for this field
@@ -27,7 +27,7 @@ export function validateField<T extends z.ZodType>(
 
     if (!result.success) {
       const error = result.error.issues.find(
-        (err: z.ZodIssue) => err.path[0] === fieldName
+        (err: z.ZodIssue) => err.path[0] === fieldName,
       );
       return error?.message || null;
     }
@@ -44,7 +44,7 @@ export function validateField<T extends z.ZodType>(
  */
 export function validateStep<T extends z.ZodType>(
   schema: T,
-  data: any
+  data: any,
 ): Record<string, string> {
   try {
     const result = schema.safeParse(data);
@@ -79,7 +79,7 @@ export function hasErrors(errors: Record<string, string>): boolean {
  */
 export function getFieldError(
   errors: Record<string, string>,
-  fieldName: string
+  fieldName: string,
 ): string | undefined {
   return errors[fieldName];
 }
@@ -89,7 +89,7 @@ export function getFieldError(
  */
 export async function validateForm<T extends z.ZodType>(
   schema: T,
-  data: any
+  data: any,
 ): Promise<{ success: boolean; errors: Record<string, string> }> {
   try {
     await schema.parseAsync(data);
@@ -114,7 +114,7 @@ export async function validateForm<T extends z.ZodType>(
  */
 export function getInputClassName(
   baseClass: string,
-  hasError: boolean
+  hasError: boolean,
 ): string {
   const errorClass = hasError
     ? "border-red-500 focus:border-red-500 focus:ring-red-500"
@@ -127,7 +127,7 @@ export function getInputClassName(
  */
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout;
 

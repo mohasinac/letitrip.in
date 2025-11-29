@@ -123,7 +123,7 @@ describe("ListSkeleton", () => {
       <ListSkeleton
         count={5}
         renderItem={() => <div data-testid="skeleton-item" />}
-      />
+      />,
     );
 
     expect(screen.getAllByTestId("skeleton-item")).toHaveLength(5);
@@ -131,7 +131,7 @@ describe("ListSkeleton", () => {
 
   it("uses default count of 5", () => {
     const { container } = render(
-      <ListSkeleton renderItem={() => <div data-testid="skeleton-item" />} />
+      <ListSkeleton renderItem={() => <div data-testid="skeleton-item" />} />,
     );
 
     expect(screen.getAllByTestId("skeleton-item")).toHaveLength(5);

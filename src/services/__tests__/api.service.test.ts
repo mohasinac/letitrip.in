@@ -46,7 +46,7 @@ describe("apiService", () => {
         "/api/test",
         expect.objectContaining({
           method: "GET",
-        })
+        }),
       );
       expect(result).toEqual({ data: "test" });
     });
@@ -61,7 +61,7 @@ describe("apiService", () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         "/api/products?page=1&limit=20",
-        expect.anything()
+        expect.anything(),
       );
     });
 
@@ -96,7 +96,7 @@ describe("apiService", () => {
         expect.objectContaining({
           method: "POST",
           body: JSON.stringify({ name: "Test" }),
-        })
+        }),
       );
       expect(result).toEqual({ id: "1" });
     });
@@ -115,7 +115,7 @@ describe("apiService", () => {
           headers: expect.objectContaining({
             "Content-Type": "application/json",
           }),
-        })
+        }),
       );
     });
   });
@@ -134,7 +134,7 @@ describe("apiService", () => {
         expect.objectContaining({
           method: "PATCH",
           body: JSON.stringify({ name: "Updated" }),
-        })
+        }),
       );
     });
   });
@@ -152,7 +152,7 @@ describe("apiService", () => {
         "/api/items/1",
         expect.objectContaining({
           method: "DELETE",
-        })
+        }),
       );
     });
   });

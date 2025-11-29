@@ -6,7 +6,7 @@ const COLLECTION = "blog_posts";
 // GET /api/blog/[slug] - Get single blog post by slug
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -21,7 +21,7 @@ export async function GET(
     if (snapshot.empty) {
       return NextResponse.json(
         { error: "Blog post not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -41,7 +41,7 @@ export async function GET(
     console.error("Error fetching blog post:", error);
     return NextResponse.json(
       { error: "Failed to fetch blog post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -49,7 +49,7 @@ export async function GET(
 // PATCH /api/blog/[slug] - Update blog post (admin only)
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -65,7 +65,7 @@ export async function PATCH(
     if (snapshot.empty) {
       return NextResponse.json(
         { error: "Blog post not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -108,7 +108,7 @@ export async function PATCH(
     console.error("Error updating blog post:", error);
     return NextResponse.json(
       { error: "Failed to update blog post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -116,7 +116,7 @@ export async function PATCH(
 // DELETE /api/blog/[slug] - Delete blog post (admin only)
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -131,7 +131,7 @@ export async function DELETE(
     if (snapshot.empty) {
       return NextResponse.json(
         { error: "Blog post not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -145,7 +145,7 @@ export async function DELETE(
     console.error("Error deleting blog post:", error);
     return NextResponse.json(
       { error: "Failed to delete blog post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

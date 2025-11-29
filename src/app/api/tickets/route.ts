@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
       if (!user) {
         return NextResponse.json(
           { error: "Authentication required" },
-          { status: 401 }
+          { status: 401 },
         );
       }
       query = query.where("userId", "==", user.uid);
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       if (!shopId) {
         return NextResponse.json(
           { error: "Shop ID required for seller" },
-          { status: 400 }
+          { status: 400 },
         );
       }
       query = query.where("shopId", "==", shopId);
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
         };
       },
       20, // defaultLimit
-      100 // maxLimit
+      100, // maxLimit
     );
 
     // Get statistics (admin only)
@@ -228,7 +228,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { error: error.message, errors: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
     console.error("Error creating support ticket:", error);

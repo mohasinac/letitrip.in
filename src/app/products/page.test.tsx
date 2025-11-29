@@ -286,7 +286,7 @@ describe("ProductsPage", () => {
       expect(mockProductsService.list).toHaveBeenCalledWith(
         expect.objectContaining({
           search: "test search",
-        })
+        }),
       );
     });
   });
@@ -303,7 +303,7 @@ describe("ProductsPage", () => {
       expect(mockProductsService.list).toHaveBeenCalledWith(
         expect.objectContaining({
           sortBy: "price",
-        })
+        }),
       );
     });
   });
@@ -321,7 +321,7 @@ describe("ProductsPage", () => {
         expect.objectContaining({
           sortBy: "createdAt",
           // Note: The component uses sortOrder but service expects different format
-        })
+        }),
       );
     });
   });
@@ -436,7 +436,7 @@ describe("ProductsPage", () => {
         // The component makes two calls: first with defaults, then with URL params
         expect(mockProductsService.list).toHaveBeenCalledTimes(2);
       },
-      { timeout: 2000 }
+      { timeout: 2000 },
     );
 
     // Check that the second call (after URL params are processed) has the correct parameters
@@ -447,7 +447,7 @@ describe("ProductsPage", () => {
         categoryId: "cat-1",
         priceRange: { min: 500, max: 2000 },
         sortBy: "price",
-      })
+      }),
     );
 
     // Clean up
@@ -504,7 +504,7 @@ describe("ProductsPage", () => {
       expect(mockProductsService.list).toHaveBeenCalledWith(
         expect.objectContaining({
           startAfter: "next-page-cursor",
-        })
+        }),
       );
     });
   });
@@ -563,7 +563,7 @@ describe("ProductsPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Showing 2 products (Page 1)")
+        screen.getByText("Showing 2 products (Page 1)"),
       ).toBeInTheDocument();
     });
   });

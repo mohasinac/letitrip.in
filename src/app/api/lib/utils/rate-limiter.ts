@@ -132,16 +132,19 @@ export const strictRateLimiter = new InMemoryRateLimiter({
 
 // Periodic cleanup every 5 minutes
 if (typeof setInterval !== "undefined") {
-  setInterval(() => {
-    const cleaned =
-      apiRateLimiter.cleanup() +
-      authRateLimiter.cleanup() +
-      strictRateLimiter.cleanup();
+  setInterval(
+    () => {
+      const cleaned =
+        apiRateLimiter.cleanup() +
+        authRateLimiter.cleanup() +
+        strictRateLimiter.cleanup();
 
-    if (cleaned > 0) {
-      console.log(`[RateLimiter] Cleaned ${cleaned} expired entries`);
-    }
-  }, 5 * 60 * 1000);
+      if (cleaned > 0) {
+        console.log(`[RateLimiter] Cleaned ${cleaned} expired entries`);
+      }
+    },
+    5 * 60 * 1000,
+  );
 }
 
 // Export class for custom limiters
