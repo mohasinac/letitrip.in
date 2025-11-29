@@ -93,7 +93,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
       {/* Sidebar */}
       <div
         id="mobile-sidebar"
-        className="fixed top-0 left-0 h-full w-80 bg-white z-[60] overflow-y-auto lg:hidden pb-safe animate-slide-in-left"
+        className="fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-900 z-[60] overflow-y-auto lg:hidden pb-safe animate-slide-in-left"
       >
         {/* Header */}
         <div className="bg-gray-800 text-white p-4 flex items-center justify-between pt-safe">
@@ -109,7 +109,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
         {/* User Profile Section */}
         {isAuthenticated && user ? (
-          <div className="p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 border-b border-yellow-200">
+          <div className="p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 border-b border-yellow-200 dark:border-yellow-800">
             <Link
               href="/user/profile"
               onClick={onClose}
@@ -129,14 +129,14 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 truncate">
+                <p className="font-semibold text-gray-900 dark:text-white truncate">
                   {getDisplayName()}
                 </p>
-                <p className="text-xs text-gray-600 truncate">
+                <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
                   {user.email || "No email"}
                 </p>
                 {user.role && (
-                  <p className="text-xs text-yellow-700 font-medium mt-0.5 capitalize">
+                  <p className="text-xs text-yellow-700 dark:text-yellow-500 font-medium mt-0.5 capitalize">
                     {user.role}
                   </p>
                 )}
@@ -144,7 +144,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
             </Link>
           </div>
         ) : (
-          <div className="p-4 bg-gray-50 border-b border-gray-200">
+          <div className="p-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             <div className="space-y-2">
               <Link
                 href="/login"
@@ -156,7 +156,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
               <Link
                 href="/register"
                 onClick={onClose}
-                className="block w-full text-center bg-white hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-lg border border-gray-300 transition-colors"
+                className="block w-full text-center bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 transition-colors"
               >
                 Register
               </Link>
@@ -168,48 +168,48 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
         <div className="p-4 space-y-6">
           {/* Main Navigation */}
           <div>
-            <h3 className="font-semibold text-gray-700 mb-3 text-sm uppercase">
+            <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm uppercase">
               Navigation
             </h3>
             <div className="space-y-1">
               <Link
                 href="/"
-                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded text-gray-700 dark:text-gray-300"
                 onClick={onClose}
               >
-                <Package className="w-5 h-5 text-gray-600" />
+                <Package className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 <span>Home</span>
               </Link>
               <Link
                 href="/products"
-                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded text-gray-700 dark:text-gray-300"
                 onClick={onClose}
               >
-                <ShoppingBag className="w-5 h-5 text-gray-600" />
+                <ShoppingBag className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 <span>Products</span>
               </Link>
               <Link
                 href="/categories"
-                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded text-gray-700 dark:text-gray-300"
                 onClick={onClose}
               >
-                <Grid3x3 className="w-5 h-5 text-gray-600" />
+                <Grid3x3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 <span>Categories</span>
               </Link>
               <Link
                 href="/reviews"
-                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded text-gray-700 dark:text-gray-300"
                 onClick={onClose}
               >
-                <MessageSquare className="w-5 h-5 text-gray-600" />
+                <MessageSquare className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 <span>Reviews</span>
               </Link>
               <Link
                 href="/blog"
-                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded text-gray-700 dark:text-gray-300"
                 onClick={onClose}
               >
-                <Book className="w-5 h-5 text-gray-600" />
+                <Book className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 <span>Blog</span>
               </Link>
             </div>
@@ -217,7 +217,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
           {/* Authentication Section */}
           {!isAuthenticated && (
-            <div className="space-y-2 pt-4 border-t">
+            <div className="space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700">
               <Link
                 href="/login"
                 className="flex items-center justify-center gap-2 px-3 py-2 bg-yellow-500 hover:bg-yellow-600 rounded text-gray-900 font-semibold"
@@ -227,7 +227,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
               </Link>
               <Link
                 href="/register"
-                className="flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 hover:bg-gray-50 rounded text-gray-700 font-semibold"
+                className="flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 rounded text-gray-700 dark:text-gray-300 font-semibold"
                 onClick={onClose}
               >
                 Register
@@ -237,10 +237,10 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
           {/* Admin Menu (Collapsible) - Only show if user is admin */}
           {isAdmin && (
-            <div className="border-t pt-4">
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
               <button
                 onClick={() => setAdminOpen(!adminOpen)}
-                className="w-full flex items-center justify-between font-semibold text-gray-700 mb-3 text-sm uppercase hover:text-yellow-700"
+                className="w-full flex items-center justify-between font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm uppercase hover:text-yellow-700 dark:hover:text-yellow-500"
               >
                 <span>Admin</span>
                 {adminOpen ? (
@@ -261,7 +261,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                         <div key={item.id}>
                           <button
                             onClick={() => toggleAdminSection(item.id)}
-                            className="flex items-center justify-between w-full px-3 py-2 hover:bg-yellow-50 rounded text-gray-700 text-sm"
+                            className="flex items-center justify-between w-full px-3 py-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded text-gray-700 dark:text-gray-300 text-sm"
                           >
                             <span>{item.name}</span>
                             {isOpen ? (
@@ -276,7 +276,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                                 <Link
                                   key={child.id}
                                   href={child.link}
-                                  className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700 text-sm"
+                                  className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded text-gray-700 dark:text-gray-300 text-sm"
                                   onClick={onClose}
                                 >
                                   <span>{child.name}</span>
@@ -294,10 +294,10 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                         <Link
                           key={item.id}
                           href={item.link}
-                          className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                          className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded text-gray-700 dark:text-gray-300"
                           onClick={onClose}
                         >
-                          <Icon className="w-5 h-5 text-gray-600" />
+                          <Icon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                           <span>{item.name}</span>
                         </Link>
                       );
@@ -312,10 +312,10 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
           {/* Seller Menu (Collapsible) - Show if user is admin or seller */}
           {isAdminOrSeller && (
-            <div className="border-t pt-4">
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
               <button
                 onClick={() => setSellerOpen(!sellerOpen)}
-                className="w-full flex items-center justify-between font-semibold text-gray-700 mb-3 text-sm uppercase hover:text-yellow-700"
+                className="w-full flex items-center justify-between font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm uppercase hover:text-yellow-700 dark:hover:text-yellow-500"
               >
                 <span>Seller</span>
                 {sellerOpen ? (
@@ -336,7 +336,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                         <div key={item.id}>
                           <button
                             onClick={() => toggleSellerSection(item.id)}
-                            className="flex items-center justify-between w-full px-3 py-2 hover:bg-yellow-50 rounded text-gray-700 text-sm"
+                            className="flex items-center justify-between w-full px-3 py-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded text-gray-700 dark:text-gray-300 text-sm"
                           >
                             <span>{item.name}</span>
                             {isOpen ? (
@@ -351,7 +351,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                                 <Link
                                   key={child.id}
                                   href={child.link}
-                                  className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700 text-sm"
+                                  className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded text-gray-700 dark:text-gray-300 text-sm"
                                   onClick={onClose}
                                 >
                                   <span>{child.name}</span>
@@ -369,10 +369,10 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                         <Link
                           key={item.id}
                           href={item.link}
-                          className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 rounded text-gray-700"
+                          className="flex items-center gap-3 px-3 py-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded text-gray-700 dark:text-gray-300"
                           onClick={onClose}
                         >
-                          <Icon className="w-5 h-5 text-gray-600" />
+                          <Icon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                           <span>{item.name}</span>
                         </Link>
                       );
@@ -387,8 +387,8 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
         </div>
 
         {/* Copyright Footer */}
-        <div className="mt-auto p-4 border-t border-gray-200 bg-gray-50">
-          <p className="text-xs text-gray-500 text-center">
+        <div className="mt-auto p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
             © {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved.
           </p>
         </div>

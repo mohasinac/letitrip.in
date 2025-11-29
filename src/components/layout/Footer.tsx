@@ -20,13 +20,13 @@ export default function Footer() {
   };
 
   return (
-    <footer id="main-footer" className="bg-gray-100 border-t mt-auto">
+    <footer id="main-footer" className="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-8">
           {/* Column 1: About Links */}
           <div>
-            <h3 className="font-semibold text-gray-800 mb-4">
+            <h3 className="font-semibold text-gray-800 dark:text-white mb-4">
               About Let It Rip
             </h3>
             <ul className="space-y-2">
@@ -34,7 +34,7 @@ export default function Footer() {
                 <li key={link.id}>
                   <Link
                     href={link.link}
-                    className="text-gray-700 hover:text-yellow-700 text-sm font-medium"
+                    className="text-gray-700 dark:text-gray-300 hover:text-yellow-700 dark:hover:text-yellow-500 text-sm font-medium"
                   >
                     {link.name}
                   </Link>
@@ -45,13 +45,13 @@ export default function Footer() {
 
           {/* Column 2: Shopping Notes */}
           <div>
-            <h3 className="font-semibold text-gray-800 mb-4">Shopping Notes</h3>
+            <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Shopping Notes</h3>
             <ul className="space-y-2">
               {SHOPPING_NOTES.map((link) => (
                 <li key={link.id}>
                   <Link
                     href={link.link}
-                    className="text-gray-700 hover:text-yellow-700 text-sm font-medium"
+                    className="text-gray-700 dark:text-gray-300 hover:text-yellow-700 dark:hover:text-yellow-500 text-sm font-medium"
                   >
                     {link.name}
                   </Link>
@@ -62,7 +62,7 @@ export default function Footer() {
 
           {/* Column 3: Fee Description */}
           <div>
-            <h3 className="font-semibold text-gray-800 mb-4">
+            <h3 className="font-semibold text-gray-800 dark:text-white mb-4">
               Fee Description
             </h3>
             <ul className="space-y-2">
@@ -70,7 +70,7 @@ export default function Footer() {
                 <li key={link.id}>
                   <Link
                     href={link.link}
-                    className="text-gray-700 hover:text-yellow-700 text-sm font-medium"
+                    className="text-gray-700 dark:text-gray-300 hover:text-yellow-700 dark:hover:text-yellow-500 text-sm font-medium"
                   >
                     {link.name}
                   </Link>
@@ -81,7 +81,7 @@ export default function Footer() {
 
           {/* Column 4: Company Information */}
           <div>
-            <h3 className="font-semibold text-gray-800 mb-4">
+            <h3 className="font-semibold text-gray-800 dark:text-white mb-4">
               Company Information
             </h3>
             <ul className="space-y-2">
@@ -89,7 +89,7 @@ export default function Footer() {
                 <li key={link.id}>
                   <Link
                     href={link.link}
-                    className="text-gray-700 hover:text-yellow-700 text-sm font-medium"
+                    className="text-gray-700 dark:text-gray-300 hover:text-yellow-700 dark:hover:text-yellow-500 text-sm font-medium"
                   >
                     {link.name}
                   </Link>
@@ -100,10 +100,10 @@ export default function Footer() {
         </div>
 
         {/* Company Details, Social Media & Payment Methods - Merged */}
-        <div className="border-t border-gray-300 pt-6 space-y-6">
+        <div className="border-t border-gray-300 dark:border-gray-600 pt-6 space-y-6">
           {/* Company Name & Social Media */}
           <div className="flex items-center justify-center gap-4">
-            <span className="font-bold text-xl text-gray-800">
+            <span className="font-bold text-xl text-gray-800 dark:text-white">
               {COMPANY_NAME}
             </span>
             <div className="flex gap-3">
@@ -116,16 +116,16 @@ export default function Footer() {
                 };
                 const Icon = iconMap[social.icon];
                 const colorMap: Record<string, string> = {
-                  facebook: "hover:text-blue-600",
-                  youtube: "hover:text-red-600",
-                  twitter: "hover:text-blue-400",
-                  instagram: "hover:text-pink-600",
+                  facebook: "hover:text-blue-600 dark:hover:text-blue-400",
+                  youtube: "hover:text-red-600 dark:hover:text-red-400",
+                  twitter: "hover:text-blue-400 dark:hover:text-blue-300",
+                  instagram: "hover:text-pink-600 dark:hover:text-pink-400",
                 };
                 return (
                   <Link
                     key={social.id}
                     href={social.link}
-                    className={`text-gray-600 ${colorMap[social.icon]}`}
+                    className={`text-gray-600 dark:text-gray-400 ${colorMap[social.icon]}`}
                     aria-label={social.name}
                   >
                     <Icon className="w-5 h-5" />
@@ -167,7 +167,7 @@ export default function Footer() {
           </div> */}
 
           {/* Copyright */}
-          <div className="text-center text-sm text-gray-600 pt-4 border-t border-gray-300">
+          <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-300 dark:border-gray-600">
             {COPYRIGHT_TEXT}
           </div>
         </div>

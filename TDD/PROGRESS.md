@@ -27,6 +27,7 @@ Before implementing ANY feature, read **[AI Agent Development Guide](/docs/ai/AI
 **Completed - E030 Code Quality & SonarQube**:
 
 - ✅ Created `src/app/api/lib/handler-factory.ts` - API handler factory with:
+
   - `createHandler()` - Wraps routes with auth, error handling, body parsing
   - `successResponse()` / `errorResponse()` - Consistent response formatting
   - `paginatedResponse()` - Standardized pagination responses
@@ -35,6 +36,7 @@ Before implementing ANY feature, read **[AI Agent Development Guide](/docs/ai/AI
   - `getPaginationParams()` / `getFilterParams()` - Request param extraction
 
 - ✅ Created `src/hooks/useLoadingState.ts` - Loading state management hook with:
+
   - `useLoadingState()` - Single resource loading with retry, auto-reset errors
   - `useMultiLoadingState()` - Multiple parallel resource loading
   - Callbacks: `onLoadStart`, `onLoadSuccess`, `onLoadError`
@@ -44,16 +46,33 @@ Before implementing ANY feature, read **[AI Agent Development Guide](/docs/ai/AI
 - ✅ Created `src/hooks/useLoadingState.test.ts` - 20 tests for loading state hook
 - ✅ Created `docs/CODE-QUALITY-PATTERNS.md` - Documentation for code quality patterns
 
+**Completed - E035 Theme & Mobile Homepage Integration**:
+
+- ✅ Created `TDD/epics/E035-theme-mobile-homepage-integration.md` - New epic
+- ✅ Updated `src/components/layout/SubNavbar.tsx`:
+  - Hide on mobile with `hidden lg:block`
+  - Added dark mode support with `dark:bg-gray-900`, `dark:border-gray-700`, `dark:text-gray-400`
+  - Removed mobile scroll functionality (replaced by MobileSidebar)
+- ✅ Updated `src/app/page.tsx`:
+  - Mobile-responsive padding (`px-3 md:px-4`, `py-6 md:py-8`)
+  - Dark mode support for all loading skeletons (`dark:bg-gray-800`)
+  - Mobile-optimized grid layouts (`grid-cols-2 md:flex`)
+  - Touch-friendly targets (`min-h-[48px] touch-manipulation`)
+  - Responsive text sizing (`text-xs sm:text-sm md:text-base`)
+  - Dark mode for value proposition (`dark:from-green-900/20 dark:to-blue-900/20`)
+  - Integrated `useIsMobile` hook for FAQ conditional rendering
+
 **Code Quality Patterns Implemented**:
 
-| Pattern              | Location                            | Purpose                    |
-| -------------------- | ----------------------------------- | -------------------------- |
-| API Handler Factory  | `src/app/api/lib/handler-factory.ts` | Reduces route duplication  |
-| useLoadingState      | `src/hooks/useLoadingState.ts`       | Consolidates loading logic |
-| withErrorHandler     | `src/app/api/lib/handler-factory.ts` | Consistent error handling  |
-| Response Helpers     | `src/app/api/lib/handler-factory.ts` | Standardized responses     |
+| Pattern             | Location                             | Purpose                    |
+| ------------------- | ------------------------------------ | -------------------------- |
+| API Handler Factory | `src/app/api/lib/handler-factory.ts` | Reduces route duplication  |
+| useLoadingState     | `src/hooks/useLoadingState.ts`       | Consolidates loading logic |
+| withErrorHandler    | `src/app/api/lib/handler-factory.ts` | Consistent error handling  |
+| Response Helpers    | `src/app/api/lib/handler-factory.ts` | Standardized responses     |
 
 **Test Results**:
+
 - handler-factory.test.ts: 26 tests passed
 - useLoadingState.test.ts: 20 tests passed
 
@@ -709,7 +728,7 @@ Tests are already organized with `(tests)` route groups where needed:
 
 ## Documentation Completion Status
 
-### Epics (34 Total)
+### Epics (35 Total)
 
 | Epic | Name                         | Status     | Stories | API Tests | Implementation |
 | ---- | ---------------------------- | ---------- | ------- | --------- | -------------- |
@@ -747,6 +766,7 @@ Tests are already organized with `(tests)` route groups where needed:
 | E032 | Content Type Search Filter   | ✅ Created | ✅      | 📋 Todo   | ✅ Implemented |
 | E033 | Live Header Data             | ✅ Created | ✅      | 📋 Todo   | ✅ Implemented |
 | E034 | Flexible Link Fields         | ✅ Created | ✅      | 📋 Todo   | ✅ Implemented |
+| E035 | Theme & Mobile Homepage      | ✅ Created | ✅      | N/A       | ✅ Complete    |
 
 ### Resources (28 Total)
 

@@ -135,17 +135,17 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
       <div
         id="search-bar"
         ref={searchBarRef}
-        className="bg-yellow-50 py-4 sm:py-6 px-4 border-b border-yellow-200"
+        className="bg-yellow-50 dark:bg-gray-800 py-4 sm:py-6 px-4 border-b border-yellow-200 dark:border-gray-700"
       >
         <div className="container mx-auto max-w-full lg:max-w-6xl">
           <form onSubmit={handleSearch} className="flex gap-0">
             {/* Merged Category Selector and Search Input */}
-            <div className="flex-1 flex h-[50px] bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-yellow-500">
+            <div className="flex-1 flex h-[50px] bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-yellow-500">
               {/* Category Selector */}
-              <div className="flex-shrink-0 min-w-[70px] lg:min-w-[200px] border-r border-gray-300">
+              <div className="flex-shrink-0 min-w-[70px] lg:min-w-[200px] border-r border-gray-300 dark:border-gray-600">
                 {loadingCategories ? (
                   <div className="h-full px-3 lg:px-5 flex items-center justify-center">
-                    <span className="text-sm text-gray-500">Loading...</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Loading...</span>
                   </div>
                 ) : (
                   <CategorySelector
@@ -168,7 +168,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder={placeholder}
-                  className="w-full h-full px-4 pr-24 md:pr-40 lg:pr-44 border-0 focus:outline-none text-gray-900 font-medium placeholder:text-gray-500 placeholder:text-sm bg-transparent"
+                  className="w-full h-full px-4 pr-24 md:pr-40 lg:pr-44 border-0 focus:outline-none text-gray-900 dark:text-white font-medium placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:text-sm bg-transparent"
                 />
 
                 {/* Content Type Filter (Desktop - Dropdown) */}
@@ -197,7 +197,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
               <button
                 type="button"
                 onClick={onClose}
-                className="h-[50px] ml-2 text-gray-600 hover:text-gray-900 px-2 flex items-center justify-center transition-colors"
+                className="h-[50px] ml-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-2 flex items-center justify-center transition-colors"
                 aria-label="Close search"
               >
                 <svg
