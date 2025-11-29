@@ -234,7 +234,7 @@ function CategoryDetailContent({ params }: PageProps) {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen bg-white dark:bg-gray-900">
         <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
       </div>
     );
@@ -242,17 +242,17 @@ function CategoryDetailContent({ params }: PageProps) {
 
   if (!category) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Category not found
           </h2>
-          <p className="text-gray-600 mb-4">
-            The category you're looking for doesn't exist.
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            The category you&apos;re looking for doesn&apos;t exist.
           </p>
           <button
             onClick={() => router.push("/categories")}
-            className="text-blue-600 hover:underline"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
           >
             Browse all categories
           </button>
@@ -262,7 +262,7 @@ function CategoryDetailContent({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Banner Section */}
       {category.banner && (
         <div className="relative h-64 w-full bg-gradient-to-r from-blue-500 to-purple-600 overflow-hidden">
@@ -278,14 +278,14 @@ function CategoryDetailContent({ params }: PageProps) {
       <div className="max-w-7xl mx-auto px-4">
         {/* Category Header */}
         <div className={`relative ${category.banner ? "-mt-16" : "pt-8"} mb-8`}>
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-6">
               {/* Profile Image */}
               {category.image && (
                 <div
-                  className={`w-24 h-24 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 ${
+                  className={`w-24 h-24 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0 ${
                     category.banner
-                      ? "-mt-12 border-4 border-white shadow-lg"
+                      ? "-mt-12 border-4 border-white dark:border-gray-800 shadow-lg"
                       : ""
                   }`}
                 >
@@ -299,26 +299,26 @@ function CategoryDetailContent({ params }: PageProps) {
 
               <div className="flex-1">
                 {/* Breadcrumb */}
-                <nav className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                <nav className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
                   <Link
                     href="/"
-                    className="hover:text-blue-600 transition-colors"
+                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
                     <Home className="w-4 h-4" />
                   </Link>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   <Link
                     href="/categories"
-                    className="hover:text-blue-600 transition-colors"
+                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
                     Categories
                   </Link>
                   {breadcrumb.map((cat) => (
                     <div key={cat.id} className="flex items-center gap-2">
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                      <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <Link
                         href={`/categories/${cat.slug}`}
-                        className="hover:text-blue-600 transition-colors"
+                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                       >
                         {cat.name}
                       </Link>
@@ -326,21 +326,21 @@ function CategoryDetailContent({ params }: PageProps) {
                   ))}
                 </nav>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   {category.name}
                 </h1>
                 {category.description && (
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     {category.description.replace(/<[^>]*>/g, "")}
                   </p>
                 )}
               </div>
 
               <div className="text-right">
-                <div className="text-3xl font-bold text-blue-600">
+                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                   {category.productCount}
                 </div>
-                <div className="text-sm text-gray-500">Products</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Products</div>
               </div>
             </div>
           </div>
@@ -349,11 +349,11 @@ function CategoryDetailContent({ params }: PageProps) {
         {/* Products Section */}
         <div className="pb-12">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Products</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Products</h2>
           </div>
 
           {/* Search & Controls */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search */}
               <div className="flex-1">
@@ -363,7 +363,7 @@ function CategoryDetailContent({ params }: PageProps) {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && loadProducts()}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
               </div>
 
@@ -372,7 +372,7 @@ function CategoryDetailContent({ params }: PageProps) {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="createdAt">Newest</option>
                   <option value="price">Price</option>
@@ -385,20 +385,20 @@ function CategoryDetailContent({ params }: PageProps) {
                   onChange={(e) =>
                     setSortOrder(e.target.value as "asc" | "desc")
                   }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="desc">High to Low</option>
                   <option value="asc">Low to High</option>
                 </select>
 
                 {/* View Toggle */}
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+                <div className="flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
                   <button
                     onClick={() => setViewMode("grid")}
                     className={`px-3 py-2 ${
                       viewMode === "grid"
                         ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-600"
+                        : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                     }`}
                   >
                     <GridIcon className="w-5 h-5" />
@@ -408,7 +408,7 @@ function CategoryDetailContent({ params }: PageProps) {
                     className={`px-3 py-2 ${
                       viewMode === "list"
                         ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-600"
+                        : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                     }`}
                   >
                     <List className="w-5 h-5" />
@@ -487,8 +487,8 @@ function CategoryDetailContent({ params }: PageProps) {
                   <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
                 </div>
               ) : products.length === 0 ? (
-                <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                  <p className="text-gray-600 text-lg">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
+                  <p className="text-gray-600 dark:text-gray-400 text-lg">
                     {Object.keys(filterValues).length > 0
                       ? "No products found matching your filters"
                       : "No products found in this category"}
@@ -496,7 +496,7 @@ function CategoryDetailContent({ params }: PageProps) {
                   {Object.keys(filterValues).length > 0 && (
                     <button
                       onClick={handleResetFilters}
-                      className="mt-4 text-blue-600 hover:underline"
+                      className="mt-4 text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       Clear filters
                     </button>
@@ -531,30 +531,30 @@ function CategoryDetailContent({ params }: PageProps) {
                       ))}
                     </div>
                   ) : (
-                    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
                       <table className="w-full">
-                        <thead className="bg-gray-50 border-b">
+                        <thead className="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600">
                           <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                               Product
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                               Price
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                               Stock
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                               Rating
                             </th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                               Actions
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                           {products.map((product) => (
-                            <tr key={product.id} className="hover:bg-gray-50">
+                            <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                               <td className="px-6 py-4">
                                 <div className="flex items-center gap-3">
                                   <img
@@ -563,22 +563,22 @@ function CategoryDetailContent({ params }: PageProps) {
                                     className="w-12 h-12 rounded object-cover"
                                   />
                                   <div>
-                                    <div className="font-medium text-gray-900">
+                                    <div className="font-medium text-gray-900 dark:text-white">
                                       {product.name}
                                     </div>
-                                    <div className="text-sm text-gray-500">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">
                                       {product.condition}
                                     </div>
                                   </div>
                                 </div>
                               </td>
                               <td className="px-6 py-4">
-                                <div className="font-medium">
+                                <div className="font-medium text-gray-900 dark:text-white">
                                   ₹{product.price.toLocaleString()}
                                 </div>
                                 {product.originalPrice &&
                                   product.originalPrice > product.price && (
-                                    <div className="text-sm text-gray-500 line-through">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400 line-through">
                                       ₹{product.originalPrice.toLocaleString()}
                                     </div>
                                   )}
@@ -587,8 +587,8 @@ function CategoryDetailContent({ params }: PageProps) {
                                 <span
                                   className={`px-2 py-1 text-xs rounded ${
                                     product.stockCount > 0
-                                      ? "bg-green-100 text-green-700"
-                                      : "bg-red-100 text-red-700"
+                                      ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                      : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
                                   }`}
                                 >
                                   {product.stockCount > 0
@@ -600,10 +600,10 @@ function CategoryDetailContent({ params }: PageProps) {
                                 {product.rating > 0 && (
                                   <div className="flex items-center gap-1">
                                     <span className="text-yellow-500">★</span>
-                                    <span className="font-medium">
+                                    <span className="font-medium text-gray-900 dark:text-white">
                                       {product.rating.toFixed(1)}
                                     </span>
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-gray-500 dark:text-gray-400">
                                       ({product.reviewCount})
                                     </span>
                                   </div>
@@ -614,14 +614,14 @@ function CategoryDetailContent({ params }: PageProps) {
                                   onClick={() =>
                                     router.push(`/products/${product.slug}`)
                                   }
-                                  className="text-blue-600 hover:underline text-sm"
+                                  className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
                                 >
                                   View
                                 </button>
                                 {product.stockCount > 0 && (
                                   <button
                                     onClick={() => handleAddToCart(product.id)}
-                                    className="text-blue-600 hover:underline text-sm"
+                                    className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
                                   >
                                     Add to Cart
                                   </button>
@@ -642,27 +642,27 @@ function CategoryDetailContent({ params }: PageProps) {
         {/* Subcategories Section - Bottom Horizontal Scroll */}
         {subcategories.length > 0 && (
           <div className="mt-12 mb-8">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                 Explore Subcategories
               </h2>
 
               {/* Search and Sort Controls */}
               <div className="flex flex-col sm:flex-row gap-3 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                   <input
                     type="search"
                     placeholder="Search subcategories..."
                     value={subcategorySearch}
                     onChange={(e) => setSubcategorySearch(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                   />
                 </div>
                 <select
                   value={subcategorySort}
                   onChange={(e) => setSubcategorySort(e.target.value as any)}
-                  className="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="alphabetical">Alphabetical</option>
                   <option value="productCount">Product Count</option>
@@ -675,10 +675,10 @@ function CategoryDetailContent({ params }: PageProps) {
                 {showLeftArrow && (
                   <button
                     onClick={() => scrollSubcategories("left")}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-700 shadow-lg rounded-full p-2 hover:bg-gray-50 dark:hover:bg-gray-600"
                     aria-label="Scroll left"
                   >
-                    <ChevronLeft className="w-5 h-5 text-gray-700" />
+                    <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                   </button>
                 )}
 
@@ -696,7 +696,7 @@ function CategoryDetailContent({ params }: PageProps) {
                   }}
                 >
                   {filteredSubcategories.length === 0 ? (
-                    <div className="w-full text-center py-8 text-gray-500">
+                    <div className="w-full text-center py-8 text-gray-500 dark:text-gray-400">
                       No subcategories found
                     </div>
                   ) : (
@@ -706,10 +706,10 @@ function CategoryDetailContent({ params }: PageProps) {
                         href={`/categories/${
                           subcat.slug
                         }?path=${buildCategoryPath(subcat.slug)}`}
-                        className="flex-shrink-0 w-40 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all p-3 group"
+                        className="flex-shrink-0 w-40 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-md transition-all p-3 group"
                       >
                         {subcat.image && (
-                          <div className="w-full h-24 mb-2 rounded-lg overflow-hidden bg-white">
+                          <div className="w-full h-24 mb-2 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
                             <img
                               src={subcat.image}
                               alt={subcat.name}
@@ -717,15 +717,15 @@ function CategoryDetailContent({ params }: PageProps) {
                             />
                           </div>
                         )}
-                        <h3 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors mb-1 line-clamp-2">
+                        <h3 className="font-semibold text-sm text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1 line-clamp-2">
                           {subcat.name}
                         </h3>
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                           <Tag className="w-3 h-3" />
                           <span>{subcat.productCount} items</span>
                         </div>
                         <div className="mt-2 flex items-center justify-end">
-                          <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                          <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
                         </div>
                       </Link>
                     ))
@@ -736,10 +736,10 @@ function CategoryDetailContent({ params }: PageProps) {
                 {showRightArrow && (
                   <button
                     onClick={() => scrollSubcategories("right")}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-700 shadow-lg rounded-full p-2 hover:bg-gray-50 dark:hover:bg-gray-600"
                     aria-label="Scroll right"
                   >
-                    <ChevronRight className="w-5 h-5 text-gray-700" />
+                    <ChevronRight className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                   </button>
                 )}
               </div>
@@ -755,7 +755,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
           <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
       }

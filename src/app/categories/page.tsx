@@ -29,16 +29,16 @@ function CategoriesContent() {
 
   // Filters from URL
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || "",
+    searchParams.get("search") || ""
   );
   const [sortBy, setSortBy] = useState<string>(
-    searchParams.get("sortBy") || "sort_order",
+    searchParams.get("sortBy") || "sort_order"
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
-    (searchParams.get("sortOrder") as "asc" | "desc") || "asc",
+    (searchParams.get("sortOrder") as "asc" | "desc") || "asc"
   );
   const [featured, setFeatured] = useState(
-    searchParams.get("featured") === "true",
+    searchParams.get("featured") === "true"
   );
 
   useEffect(() => {
