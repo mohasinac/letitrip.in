@@ -161,13 +161,13 @@ export default function MainNavBar({
 
               {/* Admin Dropdown */}
               {isAdminMenuOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50 max-h-[80vh] overflow-y-auto">
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg shadow-lg py-2 border border-gray-200 dark:border-gray-700 z-50 max-h-[80vh] overflow-y-auto">
                   {ADMIN_MENU_ITEMS.map((item) =>
                     item.link ? (
                       <Link
                         key={item.id}
                         href={item.link}
-                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100"
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => setIsAdminMenuOpen(false)}
                       >
                         {item.id === "dashboard" && (
@@ -178,16 +178,16 @@ export default function MainNavBar({
                     ) : (
                       <div
                         key={item.id}
-                        className="border-t first:border-t-0 pt-2 mt-2 first:pt-0 first:mt-0"
+                        className="border-t border-gray-200 dark:border-gray-700 first:border-t-0 pt-2 mt-2 first:pt-0 first:mt-0"
                       >
-                        <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase">
+                        <div className="px-4 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
                           {item.name}
                         </div>
                         {item.children?.map((child) => (
                           <Link
                             key={child.id}
                             href={child.link}
-                            className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+                            className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm"
                             onClick={() => setIsAdminMenuOpen(false)}
                           >
                             <span className="ml-2">{child.name}</span>
@@ -222,13 +222,13 @@ export default function MainNavBar({
 
               {/* Seller Dropdown */}
               {isSellerMenuOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50 max-h-[80vh] overflow-y-auto">
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg shadow-lg py-2 border border-gray-200 dark:border-gray-700 z-50 max-h-[80vh] overflow-y-auto">
                   {SELLER_MENU_ITEMS.map((item) =>
                     item.link ? (
                       <Link
                         key={item.id}
                         href={item.link}
-                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100"
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => setIsSellerMenuOpen(false)}
                       >
                         {item.id === "overview" && (
@@ -239,16 +239,16 @@ export default function MainNavBar({
                     ) : (
                       <div
                         key={item.id}
-                        className="border-t first:border-t-0 pt-2 mt-2 first:pt-0 first:mt-0"
+                        className="border-t border-gray-200 dark:border-gray-700 first:border-t-0 pt-2 mt-2 first:pt-0 first:mt-0"
                       >
-                        <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase">
+                        <div className="px-4 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
                           {item.name}
                         </div>
                         {item.children?.map((child) => (
                           <Link
                             key={child.id}
                             href={child.link}
-                            className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+                            className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm"
                             onClick={() => setIsSellerMenuOpen(false)}
                           >
                             <span className="ml-2">{child.name}</span>
@@ -342,17 +342,17 @@ export default function MainNavBar({
 
             {/* Cart Hover Tooltip */}
             {cartCount > 0 && cart && (
-              <div className="absolute right-0 top-full mt-2 w-64 bg-white text-gray-900 rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-semibold">Cart Summary</span>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                       {cartCount} items
                     </span>
                   </div>
-                  <div className="border-t pt-2 mt-2">
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Subtotal:</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Subtotal:</span>
                       <span className="font-bold text-lg">
                         {cart.formattedSubtotal}
                       </span>
@@ -407,16 +407,16 @@ export default function MainNavBar({
 
                 {/* User Dropdown Menu */}
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50 max-h-[80vh] overflow-y-auto">
-                    <div className="px-4 py-3 border-b border-gray-200">
+                  <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg shadow-lg py-2 border border-gray-200 dark:border-gray-700 z-50 max-h-[80vh] overflow-y-auto">
+                    <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                       <p
-                        className="font-semibold text-sm truncate"
+                        className="font-semibold text-sm truncate text-gray-900 dark:text-white"
                         title={getDisplayName()}
                       >
                         {getDisplayName()}
                       </p>
                       <p
-                        className="text-xs text-gray-500 truncate"
+                        className="text-xs text-gray-500 dark:text-gray-400 truncate"
                         title={user.email || ""}
                       >
                         {user.email || "No email"}
@@ -432,7 +432,7 @@ export default function MainNavBar({
                         <Link
                           key={item.id}
                           href={item.link}
-                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => setIsUserMenuOpen(false)}
                         >
                           <span>{item.name}</span>
@@ -440,9 +440,9 @@ export default function MainNavBar({
                       ) : (
                         <div
                           key={item.id}
-                          className="border-t first:border-t-0 pt-2 mt-2 first:pt-0 first:mt-0"
+                          className="border-t border-gray-200 dark:border-gray-700 first:border-t-0 pt-2 mt-2 first:pt-0 first:mt-0"
                         >
-                          <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase">
+                          <div className="px-4 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
                             {item.name}
                           </div>
                           {"children" in item &&
@@ -450,7 +450,7 @@ export default function MainNavBar({
                               <Link
                                 key={child.id}
                                 href={child.link}
-                                className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+                                className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm"
                                 onClick={() => setIsUserMenuOpen(false)}
                               >
                                 <span className="ml-2">{child.name}</span>
@@ -493,10 +493,10 @@ export default function MainNavBar({
 
                 {/* Sign In/Register Dropdown */}
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg py-2 border z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg shadow-lg py-2 border border-gray-200 dark:border-gray-700 z-50">
                     <Link
                       href="/login"
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       <LogIn className="w-4 h-4" />
@@ -504,7 +504,7 @@ export default function MainNavBar({
                     </Link>
                     <Link
                       href="/register"
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       <UserPlus className="w-4 h-4" />

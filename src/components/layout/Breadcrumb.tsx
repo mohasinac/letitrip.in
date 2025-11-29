@@ -130,19 +130,19 @@ export default function Breadcrumb() {
 
       <nav
         aria-label="Breadcrumb"
-        className="bg-gray-50 border-b border-gray-200 py-3 px-4"
+        className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-3 px-4"
       >
         <div className="container mx-auto">
           <ol className="flex items-center space-x-2 text-sm">
             {breadcrumbs.map((item, index) => (
               <li key={item.href} className="flex items-center">
                 {index > 0 && (
-                  <ChevronRight className="w-4 h-4 text-gray-400 mx-2" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 mx-2" />
                 )}
 
                 {item.isCurrentPage ? (
                   // Current page - not clickable
-                  <span className="flex items-center gap-1.5 text-gray-900 font-medium">
+                  <span className="flex items-center gap-1.5 text-gray-900 dark:text-white font-medium">
                     {index === 0 && <Home className="w-4 h-4" />}
                     {item.label}
                   </span>
@@ -150,7 +150,7 @@ export default function Breadcrumb() {
                   // Clickable link
                   <Link
                     href={item.href}
-                    className="flex items-center gap-1.5 text-gray-600 hover:text-yellow-600 transition-colors"
+                    className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-500 transition-colors"
                   >
                     {index === 0 && <Home className="w-4 h-4" />}
                     {item.label}

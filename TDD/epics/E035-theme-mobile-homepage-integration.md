@@ -50,12 +50,12 @@ Replace desktop-heavy components with mobile-optimized versions.
 
 #### Tasks
 
-| Task                        | Description                                   | Status |
-| --------------------------- | --------------------------------------------- | ------ |
-| Add useIsMobile to homepage | Detect mobile viewport                        | ⬜     |
-| Mobile skeleton loaders     | Use MobileSkeleton for loading states         | ⬜     |
-| Touch-optimized sections    | Add proper touch targets to all sections      | ⬜     |
-| Mobile-friendly grid        | Adjust grid columns for mobile (2-col vs 4+)  | ⬜     |
+| Task                        | Description                                  | Status |
+| --------------------------- | -------------------------------------------- | ------ |
+| Add useIsMobile to homepage | Detect mobile viewport                       | ⬜     |
+| Mobile skeleton loaders     | Use MobileSkeleton for loading states        | ⬜     |
+| Touch-optimized sections    | Add proper touch targets to all sections     | ⬜     |
+| Mobile-friendly grid        | Adjust grid columns for mobile (2-col vs 4+) | ⬜     |
 
 ---
 
@@ -67,14 +67,14 @@ Ensure all homepage sections properly support dark mode.
 
 #### Theme Classes to Apply
 
-| Element            | Light Mode          | Dark Mode                |
-| ------------------ | ------------------- | ------------------------ |
-| Background         | `bg-white`          | `dark:bg-gray-900`       |
-| Text Primary       | `text-gray-900`     | `dark:text-white`        |
-| Text Secondary     | `text-gray-600`     | `dark:text-gray-400`     |
-| Cards              | `bg-white`          | `dark:bg-gray-800`       |
-| Borders            | `border-gray-200`   | `dark:border-gray-700`   |
-| Value Proposition  | Gradient backgrounds| Dark-friendly gradients  |
+| Element           | Light Mode           | Dark Mode               |
+| ----------------- | -------------------- | ----------------------- |
+| Background        | `bg-white`           | `dark:bg-gray-900`      |
+| Text Primary      | `text-gray-900`      | `dark:text-white`       |
+| Text Secondary    | `text-gray-600`      | `dark:text-gray-400`    |
+| Cards             | `bg-white`           | `dark:bg-gray-800`      |
+| Borders           | `border-gray-200`    | `dark:border-gray-700`  |
+| Value Proposition | Gradient backgrounds | Dark-friendly gradients |
 
 ---
 
@@ -103,11 +103,11 @@ Ensure all homepage sections properly support dark mode.
 
 ## Components Affected
 
-| Component                  | Changes                                    |
-| -------------------------- | ------------------------------------------ |
-| `SubNavbar.tsx`            | Hide on mobile screens, dark mode support  |
-| `page.tsx` (homepage)      | Mobile grids, dark mode, touch targets     |
-| Dynamic section components | Dark mode support in loading states        |
+| Component                  | Changes                                   |
+| -------------------------- | ----------------------------------------- |
+| `SubNavbar.tsx`            | Hide on mobile screens, dark mode support |
+| `page.tsx` (homepage)      | Mobile grids, dark mode, touch targets    |
+| Dynamic section components | Dark mode support in loading states       |
 
 ---
 
