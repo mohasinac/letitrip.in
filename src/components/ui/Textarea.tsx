@@ -2,7 +2,8 @@
 
 import React from "react";
 
-export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface TextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -26,7 +27,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       value,
       ...props
     },
-    ref,
+    ref
   ) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
     const charCount = value?.toString().length || 0;
@@ -36,7 +37,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >
             {label}
             {required && <span className="text-red-500 ml-1">*</span>}
@@ -49,10 +50,10 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           value={value}
           className={`
             w-full px-4 py-2 border rounded-lg resize-none
-            bg-white text-gray-900
+            bg-white dark:bg-gray-800 text-gray-900 dark:text-white
             focus:outline-none focus:ring-2 focus:ring-blue-500
-            disabled:bg-gray-100 disabled:cursor-not-allowed
-            ${error ? "border-red-500" : "border-gray-300"}
+            disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed
+            ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
             ${className}
           `}
           aria-invalid={!!error}
@@ -60,8 +61,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             error
               ? `${inputId}-error`
               : helperText
-                ? `${inputId}-helper`
-                : undefined
+              ? `${inputId}-helper`
+              : undefined
           }
           {...props}
         />
@@ -73,20 +74,23 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
               </p>
             )}
             {helperText && !error && (
-              <p id={`${inputId}-helper`} className="text-sm text-gray-500">
+              <p
+                id={`${inputId}-helper`}
+                className="text-sm text-gray-500 dark:text-gray-400"
+              >
                 {helperText}
               </p>
             )}
           </div>
           {showCharCount && maxLength && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               {charCount} / {maxLength}
             </p>
           )}
         </div>
       </div>
     );
-  },
+  }
 );
 
 Textarea.displayName = "Textarea";

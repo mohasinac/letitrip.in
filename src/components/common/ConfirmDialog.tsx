@@ -92,19 +92,19 @@ export function ConfirmDialog({
       <div className="flex min-h-full items-center justify-center p-4">
         <div
           ref={dialogRef}
-          className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+          className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6"
         >
           {/* Icon */}
           <div className="mb-4 text-4xl text-center">{style.icon}</div>
 
           {/* Title */}
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 text-center">
             {title}
           </h3>
 
           {/* Description */}
           {description && (
-            <p className="text-sm text-gray-500 mb-6 text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 text-center">
               {description}
             </p>
           )}
@@ -117,7 +117,7 @@ export function ConfirmDialog({
             <button
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {cancelLabel}
             </button>

@@ -79,7 +79,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
       href={href}
       onClick={handleClick}
       className={`
-        group block bg-white border border-gray-200 rounded-lg overflow-hidden
+        group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden
         hover:shadow-lg hover:border-blue-500 transition-all duration-200
         ${className}
       `}
@@ -87,7 +87,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
       {/* Image Container */}
       <div
         className={`
-          relative ${aspectRatioClasses[aspectRatio]} overflow-hidden bg-gray-100
+          relative ${aspectRatioClasses[aspectRatio]} overflow-hidden bg-gray-100 dark:bg-gray-700
           ${imageClassName}
         `}
       >
@@ -134,11 +134,11 @@ export const BaseCard: React.FC<BaseCardProps> = ({
                 key={index}
                 onClick={button.onClick}
                 className={`
-                  p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors
+                  p-2 rounded-full bg-white dark:bg-gray-700 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors
                   ${
                     button.active
                       ? button.activeColor || "text-blue-500"
-                      : "text-gray-600"
+                      : "text-gray-600 dark:text-gray-400"
                   }
                 `}
                 aria-label={button.label}
