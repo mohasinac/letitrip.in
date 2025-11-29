@@ -4,6 +4,59 @@
 
 This folder contains comprehensive TDD documentation including user stories, epics, features, and acceptance criteria organized by resources and RBAC roles.
 
+---
+
+## ⚠️ MANDATORY: Follow Project Standards
+
+**Before implementing ANY feature from this TDD documentation, you MUST read and follow:**
+
+📖 **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)** - Complete architecture standards
+
+### Critical Standards Summary
+
+| Standard                  | Description                                                                                                           |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Service Layer Pattern** | UI → Service → API → Database. Services call APIs via `apiService`, NEVER access database directly                    |
+| **Database Access**       | Only API routes (`src/app/api/**`) can use `getFirestoreAdmin()`. Services NEVER access DB                            |
+| **Backend Code Location** | Backend-only utilities go in `src/app/api/lib/`, NOT in `src/lib/`                                                    |
+| **Collection Constants**  | Always use `COLLECTIONS.X` from `src/constants/database.ts`, never hardcode collection names                          |
+| **FE/BE Type Separation** | Frontend types in `src/types/frontend/`, Backend types in `src/types/backend/`, transforms in `src/types/transforms/` |
+| **No `any` Types**        | Explicit TypeScript types everywhere, zero `any` allowed                                                              |
+
+### Architecture Flow
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ UI Component                                                     │
+│ (uses FE types, calls service)                                  │
+└─────────────────────┬───────────────────────────────────────────┘
+                      │ calls
+                      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ Service (src/services/*.service.ts)                              │
+│ - Uses apiService.get/post/put/delete                           │
+│ - Transforms BE → FE types                                       │
+│ - NEVER imports getFirestoreAdmin or accesses DB                │
+└─────────────────────┬───────────────────────────────────────────┘
+                      │ HTTP call
+                      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ API Route (src/app/api/**/route.ts)                             │
+│ - Can import from src/app/api/lib/                              │
+│ - Can use getFirestoreAdmin()                                   │
+│ - Uses COLLECTIONS constant                                      │
+└─────────────────────┬───────────────────────────────────────────┘
+                      │ direct access
+                      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ Database (Firestore)                                             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**⚠️ Violation of these standards will require complete rewrite!**
+
+---
+
 ## 📚 Documentation Structure
 
 ```
@@ -203,19 +256,35 @@ TDD/
 **See**: `TDD/epics/E025-mobile-component-integration.md` for detailed implementation plan  
 **See**: `TDD/resources/mobile/E025-TEST-CASES.md` for comprehensive test cases
 
-### Phase 8: Platform Enhancements (E026-E034) ⬜
+### Phase 8: Platform Enhancements (E026-E034) 🟡 In Progress
 
-- [ ] E026: Sieve Pagination & Filtering - Backend API standardization
+- [x] E026: Sieve Pagination & Filtering - **✅ IMPLEMENTED** (Session 11)
 - [ ] E027: Design System & Theming - CSS variables, light/dark mode
-- [ ] E028: RipLimit Bidding Currency - Virtual currency for auctions
+- [x] E028: RipLimit Bidding Currency - **✅ IMPLEMENTED** (Session 11)
 - [ ] E029: Smart Address System - GPS, autocomplete, pincode lookup
 - [ ] E030: Code Quality & SonarQube - Static analysis integration
 - [ ] E031: Searchable Dropdowns - Unified select components
 - [ ] E032: Content Type Search Filter - Filter by products/auctions/shops
-- [ ] E033: Live Header Data - Real-time cart, notifications, RipLimit
+- [x] E033: Live Header Data - **✅ IMPLEMENTED** (Session 11)
 - [ ] E034: Flexible Link Fields - Support relative URLs
 
 **See**: `TDD/epics/E026-*.md` through `E034-*.md` for detailed implementation plans
+
+### ⚠️ Cleanup Required (Post-Implementation)
+
+After implementing new features, review and potentially remove older components:
+
+| New Feature           | Check For Duplicates/Conflicts                           |
+| --------------------- | -------------------------------------------------------- |
+| E026 Sieve Pagination | Legacy pagination in hooks/services                      |
+| E028 RipLimit         | Existing bid blocking logic in auction hooks             |
+| E033 Header Stats API | Existing cart/notification hooks that fetch individually |
+
+**Files to Review**:
+
+- `src/hooks/useCart.ts` - May duplicate `/api/cart/count` functionality
+- `src/hooks/useNotifications.ts` - May duplicate `/api/notifications/unread-count`
+- Any existing pagination implementations - Should migrate to Sieve
 
 ## 🔄 How to Continue
 

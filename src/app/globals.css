@@ -2,9 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design System Tokens */
+@import '../styles/tokens/index.css';
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: var(--color-bg-primary);
+  --foreground: var(--color-text-primary);
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
   --safe-area-inset-left: env(safe-area-inset-left);

@@ -8,7 +8,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { parseSieveQuery } from "@/lib/sieve";
+import { parseSieveQuery } from "@/app/api/lib/sieve";
+import { COLLECTIONS } from "@/constants/database";
 import { RipLimitAccountBE } from "@/types/backend/riplimit.types";
 
 /**
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
 
     const db = getFirestoreAdmin();
     let accountsQuery = db
-      .collection("riplimit_accounts")
+      .collection(COLLECTIONS.RIPLIMIT_ACCOUNTS)
       .orderBy("availableBalance", "desc");
 
     // Apply filters if provided
@@ -71,7 +72,7 @@ export async function GET(request: NextRequest) {
     })) as RipLimitAccountBE[];
 
     // Fetch user details for each account
-    const usersCollection = db.collection("users");
+    const usersCollection = db.collection(COLLECTIONS.USERS);
     const usersWithDetails = await Promise.all(
       accounts.map(async (account) => {
         const userDoc = await usersCollection.doc(account.userId).get();

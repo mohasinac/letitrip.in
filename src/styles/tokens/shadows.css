@@ -1,0 +1,95 @@
+/**
+ * Design System - Shadow Tokens
+ * 
+ * Box shadows for elevation and depth.
+ */
+
+:root {
+  /* ============================================
+   * Box Shadows
+   * Light theme shadows
+   * ============================================ */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-3xl: 0 35px 60px -15px rgb(0 0 0 / 0.3);
+
+  /* Inner shadows */
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  --shadow-inner-lg: inset 0 4px 8px 0 rgb(0 0 0 / 0.1);
+
+  /* No shadow */
+  --shadow-none: 0 0 #0000;
+
+  /* ============================================
+   * Focus Ring Shadows
+   * For accessible focus states
+   * ============================================ */
+  --shadow-focus-ring: 0 0 0 2px var(--color-bg-primary), 0 0 0 4px var(--color-primary);
+  --shadow-focus-ring-error: 0 0 0 2px var(--color-bg-primary), 0 0 0 4px var(--color-error);
+  --shadow-focus-ring-success: 0 0 0 2px var(--color-bg-primary), 0 0 0 4px var(--color-success);
+
+  /* ============================================
+   * Colored Shadows
+   * Brand-colored subtle shadows
+   * ============================================ */
+  --shadow-primary-sm: 0 2px 8px -2px rgb(202 138 4 / 0.25);
+  --shadow-primary-md: 0 4px 12px -2px rgb(202 138 4 / 0.3);
+  --shadow-primary-lg: 0 8px 20px -4px rgb(202 138 4 / 0.35);
+
+  --shadow-success-sm: 0 2px 8px -2px rgb(22 163 74 / 0.25);
+  --shadow-error-sm: 0 2px 8px -2px rgb(220 38 38 / 0.25);
+  --shadow-info-sm: 0 2px 8px -2px rgb(37 99 235 / 0.25);
+
+  /* ============================================
+   * Elevation Levels
+   * Semantic elevation system
+   * ============================================ */
+  --elevation-0: var(--shadow-none);        /* Flat/recessed */
+  --elevation-1: var(--shadow-sm);          /* Cards, raised surfaces */
+  --elevation-2: var(--shadow-md);          /* Dropdowns, hover cards */
+  --elevation-3: var(--shadow-lg);          /* Modals, dialogs */
+  --elevation-4: var(--shadow-xl);          /* Tooltips, popovers */
+  --elevation-5: var(--shadow-2xl);         /* Navigation, app bars */
+
+  /* ============================================
+   * Component-Specific Shadows
+   * ============================================ */
+  --shadow-card: var(--shadow-sm);
+  --shadow-card-hover: var(--shadow-md);
+  --shadow-dropdown: var(--shadow-lg);
+  --shadow-modal: var(--shadow-xl);
+  --shadow-tooltip: var(--shadow-md);
+  --shadow-button: var(--shadow-sm);
+  --shadow-button-hover: var(--shadow-md);
+  --shadow-input-focus: var(--shadow-focus-ring);
+  --shadow-header: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  --shadow-footer: 0 -1px 3px 0 rgb(0 0 0 / 0.05);
+  --shadow-sidebar: 2px 0 8px -2px rgb(0 0 0 / 0.1);
+}
+
+/* ============================================
+ * Dark Theme Overrides
+ * Darker, more subtle shadows
+ * ============================================ */
+[data-theme="dark"] {
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.35), 0 4px 6px -4px rgb(0 0 0 / 0.35);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+  --shadow-3xl: 0 35px 60px -15px rgb(0 0 0 / 0.6);
+
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.2);
+  --shadow-inner-lg: inset 0 4px 8px 0 rgb(0 0 0 / 0.3);
+
+  --shadow-focus-ring: 0 0 0 2px var(--color-bg-primary), 0 0 0 4px var(--color-primary);
+  
+  --shadow-header: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+  --shadow-footer: 0 -1px 3px 0 rgb(0 0 0 / 0.2);
+  --shadow-sidebar: 2px 0 8px -2px rgb(0 0 0 / 0.3);
+}

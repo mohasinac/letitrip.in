@@ -10,7 +10,8 @@ import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import crypto from "crypto";
-import { creditBalance } from "@/services/riplimit.service";
+import { creditBalance } from "@/app/api/lib/riplimit";
+import { COLLECTIONS } from "@/constants/database";
 import {
   RipLimitPurchaseBE,
   RipLimitPurchaseStatus,
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
     // Find the purchase record
     const db = getFirestoreAdmin();
     const purchasesQuery = await db
-      .collection("riplimit_purchases")
+      .collection(COLLECTIONS.RIPLIMIT_PURCHASES)
       .where("razorpayOrderId", "==", razorpayOrderId)
       .where("userId", "==", auth.user.uid)
       .limit(1)

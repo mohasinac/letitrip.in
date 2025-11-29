@@ -1,5 +1,55 @@
 # Epic E033: Live Header Data
 
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Key Requirements:**
+
+- API routes access database via `getFirestoreAdmin()`
+- Services call APIs via `apiService`, NEVER access database directly
+- Use `COLLECTIONS` constant from `src/constants/database.ts`
+
+---
+
+## Status: ✅ IMPLEMENTED (Session 11 - November 29, 2025)
+
+## Implementation Details
+
+### API Routes Created
+
+| Endpoint                          | Method | Description                                                         |
+| --------------------------------- | ------ | ------------------------------------------------------------------- |
+| `/api/header/stats`               | GET    | Combined stats (cart, notifications, messages, favorites, RipLimit) |
+| `/api/cart/count`                 | GET    | Cart item count only                                                |
+| `/api/notifications/unread-count` | GET    | Unread notification count                                           |
+| `/api/messages/unread-count`      | GET    | Unread message count                                                |
+
+### Response Format
+
+```typescript
+// GET /api/header/stats
+interface HeaderStatsResponse {
+  cartCount: number;
+  notificationCount: number;
+  messagesCount: number;
+  favoritesCount: number;
+  ripLimitBalance: number | null;
+  hasUnpaidAuctions: boolean;
+}
+```
+
+### ⚠️ Cleanup Notes
+
+Review and potentially consolidate these existing implementations:
+
+- `src/hooks/useCart.ts` - May have duplicate cart count logic
+- `src/hooks/useNotifications.ts` - May have duplicate notification count logic
+- Header component - Should be updated to use new `/api/header/stats` endpoint
+- Consider removing individual count fetching in favor of the combined endpoint
+
+---
+
 ## Overview
 
 Make the header component dynamic with real-time data for cart count, notifications, user state, and other relevant information. The header should update automatically when data changes without requiring page refresh.

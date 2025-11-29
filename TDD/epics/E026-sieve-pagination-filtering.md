@@ -1,5 +1,42 @@
 # Epic E026: Sieve-Style Pagination & Filtering
 
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Key Requirements:**
+
+- Sieve code belongs in `src/app/api/lib/sieve/` (backend-only)
+- Services call APIs via `apiService`, NEVER access database directly
+- Use `COLLECTIONS` constant from `src/constants/database.ts`
+
+---
+
+## Status: ✅ IMPLEMENTED (Session 11 - November 29, 2025)
+
+## Implementation Details
+
+### Files Created
+
+| File                                 | Description                                                |
+| ------------------------------------ | ---------------------------------------------------------- |
+| `src/app/api/lib/sieve/types.ts`     | Core types (FilterOperator, SieveQuery, SieveConfig, etc.) |
+| `src/app/api/lib/sieve/parser.ts`    | URL query parameter parser with `parseSieveQuery()`        |
+| `src/app/api/lib/sieve/operators.ts` | Filter operator evaluation for post-processing             |
+| `src/app/api/lib/sieve/firestore.ts` | Firestore adapter using Admin SDK                          |
+| `src/app/api/lib/sieve/config.ts`    | Resource configs for 14 resources                          |
+| `src/app/api/lib/sieve/index.ts`     | Public exports                                             |
+
+### ⚠️ Cleanup Notes
+
+Review and potentially remove/migrate these older pagination implementations:
+
+- Any existing cursor-based pagination in services
+- Legacy pagination hooks that don't use Sieve format
+- Hardcoded pagination in API routes
+
+---
+
 ## Overview
 
 Implement a Sieve-inspired pagination and filtering system for all API endpoints, providing page-based navigation (instead of cursor-based), powerful filtering operators, and sorting capabilities. This is a backend-only implementation that the frontend will consume through standardized query parameters.
@@ -391,7 +428,7 @@ export function parseSieveQuery(searchParams: URLSearchParams): SieveQuery {
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = Math.min(
     parseInt(searchParams.get("pageSize") || "20", 10),
-    100,
+    100
   );
 
   const sorts = parseSorts(searchParams.get("sorts") || "-createdAt");
@@ -438,7 +475,7 @@ function parseFilters(filtersParam: string): FilterCondition[] {
 export function applyToFirestore(
   baseQuery: Query,
   sieve: SieveQuery,
-  config: SieveConfig,
+  config: SieveConfig
 ): { query: Query; needsClientFilter: FilterCondition[] } {
   let query = baseQuery;
   const needsClientFilter: FilterCondition[] = [];

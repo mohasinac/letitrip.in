@@ -5,77 +5,119 @@ module.exports = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: ["class", '[data-theme="dark"]'],
   theme: {
     extend: {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        // TAIL-1: Design system colors
+        
+        // Design System - Semantic Colors using CSS Variables
+        // These map to src/styles/tokens/colors.css
         primary: {
-          50: "#eff6ff",
-          100: "#dbeafe",
-          200: "#bfdbfe",
-          300: "#93c5fd",
-          400: "#60a5fa",
-          500: "#3b82f6", // Main primary
-          600: "#2563eb",
-          700: "#1d4ed8",
-          800: "#1e40af",
-          900: "#1e3a8a",
-          950: "#172554",
+          DEFAULT: "var(--color-primary)",
+          hover: "var(--color-primary-hover)",
+          light: "var(--color-primary-light)",
+          dark: "var(--color-primary-dark)",
+          50: "var(--color-primary-50)",
+          100: "var(--color-primary-100)",
+          200: "var(--color-primary-200)",
+          300: "var(--color-primary-300)",
+          400: "var(--color-primary-400)",
+          500: "var(--color-primary-500)",
+          600: "var(--color-primary-600)",
+          700: "var(--color-primary-700)",
+          800: "var(--color-primary-800)",
+          900: "var(--color-primary-900)",
         },
         secondary: {
-          50: "#fdf4ff",
-          100: "#fae8ff",
-          200: "#f5d0fe",
-          300: "#f0abfc",
-          400: "#e879f9",
-          500: "#d946ef",
-          600: "#c026d3",
-          700: "#a21caf",
-          800: "#86198f",
-          900: "#701a75",
-          950: "#4a044e",
+          DEFAULT: "var(--color-secondary)",
+          hover: "var(--color-secondary-hover)",
+          light: "var(--color-secondary-light)",
+          dark: "var(--color-secondary-dark)",
         },
         success: {
-          50: "#f0fdf4",
-          100: "#dcfce7",
-          200: "#bbf7d0",
-          300: "#86efac",
-          400: "#4ade80",
-          500: "#22c55e",
-          600: "#16a34a",
-          700: "#15803d",
-          800: "#166534",
-          900: "#14532d",
-          950: "#052e16",
+          DEFAULT: "var(--color-success)",
+          hover: "var(--color-success-hover)",
+          light: "var(--color-success-light)",
+          dark: "var(--color-success-dark)",
+          bg: "var(--color-success-bg)",
         },
         warning: {
-          50: "#fffbeb",
-          100: "#fef3c7",
-          200: "#fde68a",
-          300: "#fcd34d",
-          400: "#fbbf24",
-          500: "#f59e0b",
-          600: "#d97706",
-          700: "#b45309",
-          800: "#92400e",
-          900: "#78350f",
-          950: "#451a03",
+          DEFAULT: "var(--color-warning)",
+          hover: "var(--color-warning-hover)",
+          light: "var(--color-warning-light)",
+          dark: "var(--color-warning-dark)",
+          bg: "var(--color-warning-bg)",
         },
         danger: {
-          50: "#fef2f2",
-          100: "#fee2e2",
-          200: "#fecaca",
-          300: "#fca5a5",
-          400: "#f87171",
-          500: "#ef4444",
-          600: "#dc2626",
-          700: "#b91c1c",
-          800: "#991b1b",
-          900: "#7f1d1d",
-          950: "#450a0a",
+          DEFAULT: "var(--color-error)",
+          hover: "var(--color-error-hover)",
+          light: "var(--color-error-light)",
+          dark: "var(--color-error-dark)",
+          bg: "var(--color-error-bg)",
         },
+        error: {
+          DEFAULT: "var(--color-error)",
+          hover: "var(--color-error-hover)",
+          light: "var(--color-error-light)",
+          dark: "var(--color-error-dark)",
+          bg: "var(--color-error-bg)",
+        },
+        info: {
+          DEFAULT: "var(--color-info)",
+          hover: "var(--color-info-hover)",
+          light: "var(--color-info-light)",
+          dark: "var(--color-info-dark)",
+          bg: "var(--color-info-bg)",
+        },
+        
+        // Semantic background colors
+        "bg-primary": "var(--color-bg-primary)",
+        "bg-secondary": "var(--color-bg-secondary)",
+        "bg-tertiary": "var(--color-bg-tertiary)",
+        "bg-inverse": "var(--color-bg-inverse)",
+        "bg-elevated": "var(--color-bg-elevated)",
+        "bg-hover": "var(--color-bg-hover)",
+        "bg-active": "var(--color-bg-active)",
+        
+        // Semantic text colors
+        "text-primary": "var(--color-text-primary)",
+        "text-secondary": "var(--color-text-secondary)",
+        "text-tertiary": "var(--color-text-tertiary)",
+        "text-muted": "var(--color-text-muted)",
+        "text-inverse": "var(--color-text-inverse)",
+        "text-disabled": "var(--color-text-disabled)",
+        "text-link": "var(--color-text-link)",
+        
+        // Semantic border colors
+        "border-primary": "var(--color-border-primary)",
+        "border-secondary": "var(--color-border-secondary)",
+        "border-focus": "var(--color-border-focus)",
+        "border-error": "var(--color-border-error)",
+        
+        // Status colors
+        "status-pending": "var(--color-status-pending)",
+        "status-processing": "var(--color-status-processing)",
+        "status-shipped": "var(--color-status-shipped)",
+        "status-delivered": "var(--color-status-delivered)",
+        "status-cancelled": "var(--color-status-cancelled)",
+        "status-active": "var(--color-status-active)",
+        
+        // Auction colors
+        "auction-active": "var(--color-auction-active)",
+        "auction-ending": "var(--color-auction-ending)",
+        "auction-ended": "var(--color-auction-ended)",
+        
+        // RipLimit colors
+        riplimit: {
+          DEFAULT: "var(--color-riplimit)",
+          bg: "var(--color-riplimit-bg)",
+          blocked: "var(--color-riplimit-blocked)",
+          available: "var(--color-riplimit-available)",
+        },
+        
+        // Keep existing neutral scale for gray utilities
         neutral: {
           50: "#fafafa",
           100: "#f5f5f5",
@@ -90,7 +132,64 @@ module.exports = {
           950: "#0a0a0a",
         },
       },
-      // TAIL-2: Custom spacing scale
+      
+      // Use CSS variables for semantic backgrounds
+      backgroundColor: {
+        surface: {
+          primary: "var(--color-bg-primary)",
+          secondary: "var(--color-bg-secondary)",
+          tertiary: "var(--color-bg-tertiary)",
+          inverse: "var(--color-bg-inverse)",
+          elevated: "var(--color-bg-elevated)",
+        },
+      },
+      
+      // Use CSS variables for text colors
+      textColor: {
+        content: {
+          primary: "var(--color-text-primary)",
+          secondary: "var(--color-text-secondary)",
+          tertiary: "var(--color-text-tertiary)",
+          muted: "var(--color-text-muted)",
+          inverse: "var(--color-text-inverse)",
+        },
+      },
+      
+      // Use CSS variables for borders
+      borderColor: {
+        line: {
+          primary: "var(--color-border-primary)",
+          secondary: "var(--color-border-secondary)",
+          focus: "var(--color-border-focus)",
+        },
+      },
+      
+      // Use CSS variables for shadows
+      boxShadow: {
+        "token-xs": "var(--shadow-xs)",
+        "token-sm": "var(--shadow-sm)",
+        "token-md": "var(--shadow-md)",
+        "token-lg": "var(--shadow-lg)",
+        "token-xl": "var(--shadow-xl)",
+        "token-2xl": "var(--shadow-2xl)",
+        "token-inner": "var(--shadow-inner)",
+        "token-focus": "var(--shadow-focus-ring)",
+        "inner-lg": "inset 0 2px 4px 0 rgb(0 0 0 / 0.1)",
+        "3xl": "0 35px 60px -15px rgba(0, 0, 0, 0.3)",
+      },
+      
+      // Use CSS variables for border radius
+      borderRadius: {
+        "token-sm": "var(--radius-sm)",
+        "token-md": "var(--radius-md)",
+        "token-lg": "var(--radius-lg)",
+        "token-xl": "var(--radius-xl)",
+        "token-2xl": "var(--radius-2xl)",
+        "token-full": "var(--radius-full)",
+        "4xl": "2rem",
+        "5xl": "2.5rem",
+      },
+      // Custom spacing scale
       spacing: {
         13: "3.25rem",
         15: "3.75rem",
@@ -120,23 +219,18 @@ module.exports = {
         106: "26.5rem",
         110: "27.5rem",
       },
-      borderRadius: {
-        "4xl": "2rem",
-        "5xl": "2.5rem",
-      },
+      
       fontSize: {
         "2xs": ["0.625rem", { lineHeight: "0.75rem" }],
       },
-      boxShadow: {
-        "inner-lg": "inset 0 2px 4px 0 rgb(0 0 0 / 0.1)",
-        "3xl": "0 35px 60px -15px rgba(0, 0, 0, 0.3)",
-      },
+      
       animation: {
         "fade-in": "fadeIn 0.3s ease-in-out",
         "slide-in": "slideIn 0.3s ease-in-out",
         "bounce-slow": "bounce 3s infinite",
         "spin-slow": "spin 3s linear infinite",
       },
+      
       keyframes: {
         fadeIn: {
           "0%": { opacity: "0" },
@@ -147,8 +241,20 @@ module.exports = {
           "100%": { transform: "translateX(0)" },
         },
       },
+      
+      // Z-index scale from design tokens
+      zIndex: {
+        dropdown: "var(--z-index-dropdown)",
+        sticky: "var(--z-index-sticky)",
+        fixed: "var(--z-index-fixed)",
+        backdrop: "var(--z-index-backdrop)",
+        modal: "var(--z-index-modal)",
+        popover: "var(--z-index-popover)",
+        tooltip: "var(--z-index-tooltip)",
+        toast: "var(--z-index-toast)",
+      },
     },
   },
-  // TAIL-3: Tailwind plugins
+  // Tailwind plugins
   plugins: [require("@tailwindcss/forms"), require("@tailwindcss/typography")],
 };

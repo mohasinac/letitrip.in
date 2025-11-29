@@ -1,0 +1,225 @@
+/**
+ * Design System - Color Tokens
+ * 
+ * All color values defined as CSS custom properties for easy theming.
+ * Use these tokens throughout the application instead of hardcoded colors.
+ */
+
+:root {
+  /* ============================================
+   * Brand Colors
+   * ============================================ */
+  --color-primary: #ca8a04; /* yellow-600 - Main brand color */
+  --color-primary-hover: #a16207; /* yellow-700 */
+  --color-primary-light: #fef08a; /* yellow-200 */
+  --color-primary-dark: #854d0e; /* yellow-800 */
+  --color-primary-50: #fefce8;
+  --color-primary-100: #fef9c3;
+  --color-primary-200: #fef08a;
+  --color-primary-300: #fde047;
+  --color-primary-400: #facc15;
+  --color-primary-500: #eab308;
+  --color-primary-600: #ca8a04;
+  --color-primary-700: #a16207;
+  --color-primary-800: #854d0e;
+  --color-primary-900: #713f12;
+
+  /* Secondary */
+  --color-secondary: #4f46e5; /* indigo-600 */
+  --color-secondary-hover: #4338ca; /* indigo-700 */
+  --color-secondary-light: #c7d2fe; /* indigo-200 */
+  --color-secondary-dark: #3730a3; /* indigo-800 */
+
+  /* ============================================
+   * Semantic Colors
+   * ============================================ */
+  
+  /* Success */
+  --color-success: #16a34a; /* green-600 */
+  --color-success-hover: #15803d; /* green-700 */
+  --color-success-light: #bbf7d0; /* green-200 */
+  --color-success-dark: #166534; /* green-800 */
+  --color-success-bg: #f0fdf4; /* green-50 */
+
+  /* Warning */
+  --color-warning: #d97706; /* amber-600 */
+  --color-warning-hover: #b45309; /* amber-700 */
+  --color-warning-light: #fde68a; /* amber-200 */
+  --color-warning-dark: #92400e; /* amber-800 */
+  --color-warning-bg: #fffbeb; /* amber-50 */
+
+  /* Error/Danger */
+  --color-error: #dc2626; /* red-600 */
+  --color-error-hover: #b91c1c; /* red-700 */
+  --color-error-light: #fecaca; /* red-200 */
+  --color-error-dark: #991b1b; /* red-800 */
+  --color-error-bg: #fef2f2; /* red-50 */
+
+  /* Info */
+  --color-info: #2563eb; /* blue-600 */
+  --color-info-hover: #1d4ed8; /* blue-700 */
+  --color-info-light: #bfdbfe; /* blue-200 */
+  --color-info-dark: #1e40af; /* blue-800 */
+  --color-info-bg: #eff6ff; /* blue-50 */
+
+  /* ============================================
+   * Neutral/Gray Scale
+   * ============================================ */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-gray-950: #030712;
+
+  /* ============================================
+   * Background Colors
+   * ============================================ */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb; /* gray-50 */
+  --color-bg-tertiary: #f3f4f6; /* gray-100 */
+  --color-bg-inverse: #111827; /* gray-900 */
+  --color-bg-elevated: #ffffff;
+  --color-bg-hover: #f3f4f6; /* gray-100 */
+  --color-bg-active: #e5e7eb; /* gray-200 */
+  --color-bg-disabled: #f3f4f6; /* gray-100 */
+
+  /* ============================================
+   * Text Colors
+   * ============================================ */
+  --color-text-primary: #111827; /* gray-900 */
+  --color-text-secondary: #4b5563; /* gray-600 */
+  --color-text-tertiary: #6b7280; /* gray-500 */
+  --color-text-muted: #9ca3af; /* gray-400 */
+  --color-text-inverse: #ffffff;
+  --color-text-disabled: #9ca3af; /* gray-400 */
+  --color-text-link: #2563eb; /* blue-600 */
+  --color-text-link-hover: #1d4ed8; /* blue-700 */
+
+  /* ============================================
+   * Border Colors
+   * ============================================ */
+  --color-border-primary: #e5e7eb; /* gray-200 */
+  --color-border-secondary: #d1d5db; /* gray-300 */
+  --color-border-focus: #ca8a04; /* primary */
+  --color-border-error: #dc2626; /* error */
+  --color-border-success: #16a34a; /* success */
+  --color-border-disabled: #e5e7eb; /* gray-200 */
+
+  /* ============================================
+   * Status Colors (Orders, Auctions, etc.)
+   * ============================================ */
+  
+  /* Order Status */
+  --color-status-pending: #f59e0b; /* amber-500 */
+  --color-status-pending-bg: #fffbeb;
+  --color-status-processing: #3b82f6; /* blue-500 */
+  --color-status-processing-bg: #eff6ff;
+  --color-status-shipped: #8b5cf6; /* violet-500 */
+  --color-status-shipped-bg: #f5f3ff;
+  --color-status-delivered: #10b981; /* emerald-500 */
+  --color-status-delivered-bg: #ecfdf5;
+  --color-status-cancelled: #ef4444; /* red-500 */
+  --color-status-cancelled-bg: #fef2f2;
+  --color-status-refunded: #6b7280; /* gray-500 */
+  --color-status-refunded-bg: #f9fafb;
+
+  /* Auction Status */
+  --color-auction-active: #16a34a; /* green-600 */
+  --color-auction-active-bg: #f0fdf4;
+  --color-auction-ending: #dc2626; /* red-600 */
+  --color-auction-ending-bg: #fef2f2;
+  --color-auction-ended: #6b7280; /* gray-500 */
+  --color-auction-ended-bg: #f9fafb;
+  --color-auction-upcoming: #2563eb; /* blue-600 */
+  --color-auction-upcoming-bg: #eff6ff;
+
+  /* Bid Status */
+  --color-bid-winning: #16a34a; /* green-600 */
+  --color-bid-winning-bg: #f0fdf4;
+  --color-bid-outbid: #dc2626; /* red-600 */
+  --color-bid-outbid-bg: #fef2f2;
+  --color-bid-placed: #2563eb; /* blue-600 */
+  --color-bid-placed-bg: #eff6ff;
+
+  /* User/Shop Status */
+  --color-status-active: #16a34a;
+  --color-status-active-bg: #f0fdf4;
+  --color-status-inactive: #6b7280;
+  --color-status-inactive-bg: #f9fafb;
+  --color-status-suspended: #dc2626;
+  --color-status-suspended-bg: #fef2f2;
+  --color-status-verified: #16a34a;
+  --color-status-unverified: #f59e0b;
+
+  /* ============================================
+   * RipLimit Currency Colors
+   * ============================================ */
+  --color-riplimit: #ca8a04; /* matches primary */
+  --color-riplimit-bg: #fef9c3;
+  --color-riplimit-blocked: #dc2626;
+  --color-riplimit-blocked-bg: #fef2f2;
+  --color-riplimit-available: #16a34a;
+  --color-riplimit-available-bg: #f0fdf4;
+
+  /* ============================================
+   * Overlay Colors
+   * ============================================ */
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-overlay-light: rgba(0, 0, 0, 0.3);
+  --color-overlay-dark: rgba(0, 0, 0, 0.7);
+}
+
+/* ============================================
+ * Dark Theme Overrides
+ * ============================================ */
+[data-theme="dark"] {
+  /* Background */
+  --color-bg-primary: #111827; /* gray-900 */
+  --color-bg-secondary: #1f2937; /* gray-800 */
+  --color-bg-tertiary: #374151; /* gray-700 */
+  --color-bg-inverse: #ffffff;
+  --color-bg-elevated: #1f2937;
+  --color-bg-hover: #374151;
+  --color-bg-active: #4b5563;
+  --color-bg-disabled: #374151;
+
+  /* Text */
+  --color-text-primary: #f9fafb; /* gray-50 */
+  --color-text-secondary: #d1d5db; /* gray-300 */
+  --color-text-tertiary: #9ca3af; /* gray-400 */
+  --color-text-muted: #6b7280; /* gray-500 */
+  --color-text-inverse: #111827;
+  --color-text-disabled: #4b5563;
+  --color-text-link: #60a5fa; /* blue-400 */
+  --color-text-link-hover: #93c5fd; /* blue-300 */
+
+  /* Border */
+  --color-border-primary: #374151; /* gray-700 */
+  --color-border-secondary: #4b5563; /* gray-600 */
+  --color-border-disabled: #374151;
+
+  /* Status backgrounds (darker versions) */
+  --color-status-pending-bg: rgba(245, 158, 11, 0.15);
+  --color-status-processing-bg: rgba(59, 130, 246, 0.15);
+  --color-status-shipped-bg: rgba(139, 92, 246, 0.15);
+  --color-status-delivered-bg: rgba(16, 185, 129, 0.15);
+  --color-status-cancelled-bg: rgba(239, 68, 68, 0.15);
+  --color-status-refunded-bg: rgba(107, 114, 128, 0.15);
+
+  /* Semantic backgrounds (darker versions) */
+  --color-success-bg: rgba(22, 163, 74, 0.15);
+  --color-warning-bg: rgba(217, 119, 6, 0.15);
+  --color-error-bg: rgba(220, 38, 38, 0.15);
+  --color-info-bg: rgba(37, 99, 235, 0.15);
+
+  /* Overlay */
+  --color-overlay: rgba(0, 0, 0, 0.7);
+  --color-overlay-light: rgba(0, 0, 0, 0.5);
+  --color-overlay-dark: rgba(0, 0, 0, 0.85);
+}

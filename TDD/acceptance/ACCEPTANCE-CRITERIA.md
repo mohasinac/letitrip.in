@@ -1,5 +1,19 @@
 # Acceptance Criteria Overview
 
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing ANY feature, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Architecture Rules:**
+
+- Services call APIs via `apiService`, NEVER access database directly
+- Only API routes can use `getFirestoreAdmin()`
+- Backend utilities in `src/app/api/lib/`, NOT `src/lib/`
+- Use `COLLECTIONS` constant, never hardcode collection names
+- FE/BE type separation with transforms
+
+---
+
 ## How to Use This Document
 
 Each feature must meet its acceptance criteria before being considered complete. Use the checklist format for tracking.

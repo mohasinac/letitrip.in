@@ -7,9 +7,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
-import { getTransactionHistory } from "@/services/riplimit.service";
+import { getTransactionHistory } from "@/app/api/lib/riplimit";
 import { RipLimitTransactionType } from "@/types/backend/riplimit.types";
-import { parseSieveQuery } from "@/lib/sieve";
+import { parseSieveQuery } from "@/app/api/lib/sieve";
 
 /**
  * GET /api/riplimit/transactions
@@ -53,7 +53,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: transactions,
+      data: {
+        transactions,
+        total,
+      },
       pagination: {
         page: query.page,
         pageSize: query.pageSize,

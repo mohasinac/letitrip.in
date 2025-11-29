@@ -1,5 +1,17 @@
 # Epic E031: Searchable Dropdowns
 
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Key Requirements:**
+
+- Services call APIs via `apiService`, NEVER access database directly
+- Use `COLLECTIONS` constant from `src/constants/database.ts`
+- FE/BE type separation with transforms
+
+---
+
 ## Overview
 
 Implement a reusable searchable dropdown component that replaces all standard select elements throughout the application. This component provides search/filter functionality, multi-select support, selected item chips with remove capability, and a "Clear All" button. Must be integrated across the entire codebase for categories, filters, shops, addresses, and all other dropdown selections.

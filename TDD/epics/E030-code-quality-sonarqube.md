@@ -1,5 +1,17 @@
 # Epic E030: Code Quality & SonarCloud Integration
 
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Key Requirements:**
+
+- Services call APIs via `apiService`, NEVER access database directly
+- Use `COLLECTIONS` constant from `src/constants/database.ts`
+- No `any` types - explicit TypeScript everywhere
+
+---
+
 ## Overview
 
 Integrate SonarCloud for continuous code quality analysis to identify code duplication, complexity issues, security vulnerabilities, and code smells. Based on SonarCloud reports, create actionable tasks to improve code quality and reduce technical debt.

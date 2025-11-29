@@ -1,5 +1,17 @@
 # RBAC Overview - Role-Based Access Control
 
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Key Requirements:**
+
+- Services call APIs via `apiService`, NEVER access database directly
+- Only API routes can use `getFirestoreAdmin()`
+- Use `COLLECTIONS` constant from `src/constants/database.ts`
+
+---
+
 ## Role Hierarchy
 
 ```
