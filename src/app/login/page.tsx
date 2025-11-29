@@ -57,24 +57,28 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4 py-12">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-4">
-            <h1 className="text-3xl font-bold text-gray-800">{COMPANY_NAME}</h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+              {COMPANY_NAME}
+            </h1>
           </Link>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Welcome Back
           </h2>
-          <p className="text-gray-600">Sign in to your account to continue</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            Sign in to your account to continue
+          </p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
 
@@ -126,9 +130,11 @@ function LoginForm() {
               <label className="flex items-center touch-target">
                 <input
                   type="checkbox"
-                  className="w-5 h-5 text-yellow-500 border-gray-300 rounded focus:ring-yellow-500"
+                  className="w-5 h-5 text-yellow-500 border-gray-300 dark:border-gray-600 rounded focus:ring-yellow-500 dark:bg-gray-700"
                 />
-                <span className="ml-2 text-sm text-gray-600">Remember me</span>
+                <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                  Remember me
+                </span>
               </label>
               <Link
                 href="/forgot-password"
@@ -178,10 +184,10 @@ function LoginForm() {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
+                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
+                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                   Don't have an account?
                 </span>
               </div>
@@ -192,7 +198,7 @@ function LoginForm() {
           <div className="mt-6">
             <Link
               href="/register"
-              className="block w-full min-h-[48px] py-3 px-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:border-yellow-500 hover:text-yellow-600 active:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all text-center"
+              className="block w-full min-h-[48px] py-3 px-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:border-yellow-500 hover:text-yellow-600 active:bg-yellow-50 dark:active:bg-yellow-900/30 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all text-center"
             >
               Create Account
             </Link>
@@ -200,7 +206,7 @@ function LoginForm() {
         </div>
 
         {/* Footer */}
-        <p className="mt-8 text-center text-sm text-gray-600">
+        <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
           By signing in, you agree to our{" "}
           <Link href="/terms" className="text-yellow-600 hover:text-yellow-700">
             Terms of Service
@@ -222,7 +228,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
           Loading...
         </div>
       }

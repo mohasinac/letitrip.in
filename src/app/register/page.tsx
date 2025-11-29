@@ -75,24 +75,24 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4 py-12">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-4">
-            <h1 className="text-3xl font-bold text-gray-800">{COMPANY_NAME}</h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">{COMPANY_NAME}</h1>
           </Link>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Create Your Account
           </h2>
-          <p className="text-gray-600">Join us and start shopping today</p>
+          <p className="text-gray-600 dark:text-gray-400">Join us and start shopping today</p>
         </div>
 
         {/* Register Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
 
@@ -191,11 +191,11 @@ export default function RegisterPage() {
                 id="acceptTerms"
                 checked={acceptTerms}
                 onChange={(e) => setAcceptTerms(e.target.checked)}
-                className="mt-1 w-4 h-4 text-yellow-500 border-gray-300 rounded focus:ring-yellow-500"
+                className="mt-1 w-4 h-4 text-yellow-500 border-gray-300 dark:border-gray-600 rounded focus:ring-yellow-500 dark:bg-gray-700"
               />
               <label
                 htmlFor="acceptTerms"
-                className="ml-2 text-sm text-gray-600"
+                className="ml-2 text-sm text-gray-600 dark:text-gray-400"
               >
                 I agree to the{" "}
                 <Link
@@ -254,10 +254,10 @@ export default function RegisterPage() {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
+                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
+                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                   Already have an account?
                 </span>
               </div>
@@ -268,7 +268,7 @@ export default function RegisterPage() {
           <div className="mt-6">
             <Link
               href="/login"
-              className="block w-full py-3 px-4 min-h-[48px] border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:border-yellow-500 hover:text-yellow-600 active:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all text-center touch-manipulation flex items-center justify-center"
+              className="block w-full py-3 px-4 min-h-[48px] border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:border-yellow-500 hover:text-yellow-600 active:bg-gray-50 dark:active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all text-center touch-manipulation flex items-center justify-center"
             >
               Sign In Instead
             </Link>

@@ -58,9 +58,9 @@ export default function FAQSection({
     <section className="w-full">
       {/* Header */}
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-3">{title}</h2>
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">{title}</h2>
         {description && (
-          <p className="text-gray-600 max-w-2xl mx-auto">{description}</p>
+          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">{description}</p>
         )}
       </div>
 
@@ -72,7 +72,7 @@ export default function FAQSection({
             placeholder="Search FAQs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
           />
         </div>
       )}
@@ -85,7 +85,7 @@ export default function FAQSection({
             className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
               selectedCategory === null
                 ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
             }`}
           >
             All Categories
@@ -97,7 +97,7 @@ export default function FAQSection({
               className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${
                 selectedCategory === category.id
                   ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
               }`}
             >
               {getIcon(category.icon)}
@@ -108,9 +108,9 @@ export default function FAQSection({
       </div>
 
       {/* FAQ Items */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         {faqs.length === 0 ? (
-          <div className="py-12 text-center text-gray-500">
+          <div className="py-12 text-center text-gray-500 dark:text-gray-400">
             No FAQs found. Try a different search term or category.
           </div>
         ) : (

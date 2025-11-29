@@ -16,10 +16,10 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-900 dark:to-gray-800 px-4">
+      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center">
         <div className="mb-6">
-          <div className="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
+          <div className="mx-auto w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
             <svg
               className="w-12 h-12 text-red-600"
               fill="none"
@@ -36,21 +36,21 @@ export default function Error({
           </div>
         </div>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
           Oops! Something went wrong
         </h1>
 
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
           We encountered an unexpected error. Don't worry, we're on it!
         </p>
 
         {process.env.NODE_ENV === "development" && error.message && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-left">
-            <p className="text-sm font-mono text-red-800 break-words">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-left">
+            <p className="text-sm font-mono text-red-800 dark:text-red-400 break-words">
               {error.message}
             </p>
             {error.digest && (
-              <p className="text-xs text-red-600 mt-2">
+              <p className="text-xs text-red-600 dark:text-red-500 mt-2">
                 Error ID: {error.digest}
               </p>
             )}
@@ -67,14 +67,14 @@ export default function Error({
 
           <Link
             href="/"
-            className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+            className="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
             Go Home
           </Link>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-sm text-gray-500">
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Need help?{" "}
             <Link
               href="/support/ticket"

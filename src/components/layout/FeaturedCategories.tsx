@@ -81,10 +81,10 @@ export default function FeaturedCategories() {
   };
 
   return (
-    <div id="featured-categories" className="bg-white border-b py-4 lg:py-4">
+    <div id="featured-categories" className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 py-4 lg:py-4">
       <div className="container mx-auto px-4">
         {/* Heading */}
-        <h2 className="text-lg lg:text-xl font-bold text-gray-900 mb-3 lg:mb-4">
+        <h2 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4">
           Featured Categories
         </h2>
 
@@ -93,10 +93,10 @@ export default function FeaturedCategories() {
           {showLeftArrow && (
             <button
               onClick={() => scroll("left")}
-              className="lg:hidden absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 shadow-md rounded-full p-1.5 hover:bg-white"
+              className="lg:hidden absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 dark:bg-gray-800/90 shadow-md rounded-full p-1.5 hover:bg-white dark:hover:bg-gray-800"
               aria-label="Scroll left"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-700" />
+              <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
           )}
 
@@ -119,8 +119,8 @@ export default function FeaturedCategories() {
                     key={idx}
                     className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px]"
                   >
-                    <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gray-200 rounded-full animate-pulse" />
-                    <div className="w-12 h-3 bg-gray-200 rounded animate-pulse" />
+                    <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+                    <div className="w-12 h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                   </div>
                 ))
               : visibleCategories.map((CategoryFE) => {
@@ -131,10 +131,10 @@ export default function FeaturedCategories() {
                       href={`/categories/${CategoryFE.slug}`}
                       className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"
                     >
-                      <div className="w-12 h-12 lg:w-16 lg:h-16 bg-yellow-100 rounded-full flex items-center justify-center group-hover:bg-yellow-200 transition-colors">
-                        <Icon className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-700" />
+                      <div className="w-12 h-12 lg:w-16 lg:h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center group-hover:bg-yellow-200 dark:group-hover:bg-yellow-900/50 transition-colors">
+                        <Icon className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-700 dark:text-yellow-400" />
                       </div>
-                      <span className="text-[10px] lg:text-xs text-gray-800 text-center group-hover:text-yellow-700 font-medium leading-tight">
+                      <span className="text-[10px] lg:text-xs text-gray-800 dark:text-gray-300 text-center group-hover:text-yellow-700 dark:group-hover:text-yellow-400 font-medium leading-tight">
                         {CategoryFE.name}
                       </span>
                     </Link>
@@ -147,10 +147,10 @@ export default function FeaturedCategories() {
                 href="/categories"
                 className="flex flex-col items-center gap-1.5 lg:gap-2 min-w-[70px] lg:min-w-[80px] group"
               >
-                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-200 transition-colors border-2 border-dashed border-gray-300">
-                  <ChevronRight className="w-6 h-6 lg:w-8 lg:h-8 text-gray-600" />
+                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition-colors border-2 border-dashed border-gray-300 dark:border-gray-600">
+                  <ChevronRight className="w-6 h-6 lg:w-8 lg:h-8 text-gray-600 dark:text-gray-400" />
                 </div>
-                <span className="text-[10px] lg:text-xs text-gray-600 text-center group-hover:text-gray-800 font-medium leading-tight">
+                <span className="text-[10px] lg:text-xs text-gray-600 dark:text-gray-400 text-center group-hover:text-gray-800 dark:group-hover:text-gray-300 font-medium leading-tight">
                   Show More
                 </span>
               </Link>
@@ -161,10 +161,10 @@ export default function FeaturedCategories() {
           {showRightArrow && (
             <button
               onClick={() => scroll("right")}
-              className="lg:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 shadow-md rounded-full p-1.5 hover:bg-white"
+              className="lg:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 dark:bg-gray-800/90 shadow-md rounded-full p-1.5 hover:bg-white dark:hover:bg-gray-800"
               aria-label="Scroll right"
             >
-              <ChevronRight className="w-5 h-5 text-gray-700" />
+              <ChevronRight className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
           )}
         </div>
