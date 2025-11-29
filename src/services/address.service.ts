@@ -10,7 +10,7 @@ import {
 class AddressService {
   async getAll(): Promise<AddressFE[]> {
     const response = await apiService.get<{ addresses: AddressBE[] }>(
-      "/user/addresses"
+      "/user/addresses",
     );
     return toFEAddresses(response.addresses);
   }
@@ -24,18 +24,18 @@ class AddressService {
     const request = toBECreateAddressRequest(formData);
     const addressBE = await apiService.post<AddressBE>(
       "/user/addresses",
-      request
+      request,
     );
     return toFEAddress(addressBE);
   }
 
   async update(
     id: string,
-    formData: Partial<AddressFormFE>
+    formData: Partial<AddressFormFE>,
   ): Promise<AddressFE> {
     const addressBE = await apiService.patch<AddressBE>(
       `/user/addresses/${id}`,
-      formData
+      formData,
     );
     return toFEAddress(addressBE);
   }
@@ -49,7 +49,7 @@ class AddressService {
       `/user/addresses/${id}`,
       {
         isDefault: true,
-      }
+      },
     );
     return toFEAddress(addressBE);
   }

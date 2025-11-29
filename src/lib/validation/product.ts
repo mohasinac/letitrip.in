@@ -75,7 +75,7 @@ export const createProductSchema = z.object({
     .max(200, "Slug must not exceed 200 characters")
     .regex(
       slugRegex,
-      "Slug must contain only lowercase letters, numbers, and hyphens"
+      "Slug must contain only lowercase letters, numbers, and hyphens",
     )
     .trim(),
 

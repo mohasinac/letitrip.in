@@ -43,7 +43,7 @@ export function toFECategory(categoryBE: CategoryBE): CategoryFE {
 }
 
 export function toFECategoryTreeNode(
-  nodeBE: CategoryTreeNodeBE
+  nodeBE: CategoryTreeNodeBE,
 ): CategoryTreeNodeFE {
   return {
     category: toFECategory(nodeBE.category),
@@ -55,7 +55,7 @@ export function toFECategoryTreeNode(
 }
 
 export function toFECategoryBreadcrumb(
-  breadcrumbBE: CategoryBreadcrumbBE
+  breadcrumbBE: CategoryBreadcrumbBE,
 ): CategoryBreadcrumbFE {
   return {
     ...breadcrumbBE,
@@ -64,7 +64,7 @@ export function toFECategoryBreadcrumb(
 }
 
 export function toBECreateCategoryRequest(
-  formData: CategoryFormFE
+  formData: CategoryFormFE,
 ): CreateCategoryRequestBE {
   return {
     name: formData.name,

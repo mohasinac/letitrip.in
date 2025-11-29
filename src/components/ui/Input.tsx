@@ -2,8 +2,7 @@
 
 import React from "react";
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -26,7 +25,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       required,
       ...props
     },
-    ref
+    ref,
   ) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
@@ -74,8 +73,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               error
                 ? `${inputId}-error`
                 : helperText
-                ? `${inputId}-helper`
-                : undefined
+                  ? `${inputId}-helper`
+                  : undefined
             }
             {...props}
           />
@@ -107,7 +106,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = "Input";

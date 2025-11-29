@@ -454,7 +454,7 @@ describe("/api/cart/merge", () => {
 
       expect(response.status).toBe(200);
       expect(mockCartRef.add).toHaveBeenCalledWith(
-        expect.objectContaining({ variant: "variant1" })
+        expect.objectContaining({ variant: "variant1" }),
       );
     });
 

@@ -32,7 +32,7 @@ describe("RegisterPage", () => {
     expect(screen.getByLabelText(/^password/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /create account/i })
+      screen.getByRole("button", { name: /create account/i }),
     ).toBeInTheDocument();
   });
 
@@ -110,7 +110,7 @@ describe("RegisterPage", () => {
     fireEvent.click(screen.getByRole("button", { name: /create account/i }));
 
     expect(
-      screen.getByText("Password must be at least 8 characters long")
+      screen.getByText("Password must be at least 8 characters long"),
     ).toBeInTheDocument();
     expect(mockRegister).not.toHaveBeenCalled();
   });
@@ -134,7 +134,7 @@ describe("RegisterPage", () => {
     fireEvent.click(screen.getByRole("button", { name: /create account/i }));
 
     expect(
-      screen.getByText("Please accept the Terms of Service and Privacy Policy")
+      screen.getByText("Please accept the Terms of Service and Privacy Policy"),
     ).toBeInTheDocument();
     expect(mockRegister).not.toHaveBeenCalled();
   });

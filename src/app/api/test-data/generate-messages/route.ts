@@ -255,7 +255,7 @@ export async function POST(req: NextRequest) {
         success: false,
         error: error.message || "Failed to generate messages",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

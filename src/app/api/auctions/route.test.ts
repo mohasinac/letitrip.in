@@ -146,7 +146,7 @@ describe("GET /api/auctions", () => {
       });
 
       const req = new NextRequest(
-        "http://localhost/api/auctions?shop_id=shop123"
+        "http://localhost/api/auctions?shop_id=shop123",
       );
       const res = await GET(req);
       const json = await res.json();
@@ -172,7 +172,7 @@ describe("GET /api/auctions", () => {
       });
 
       const req = new NextRequest(
-        "http://localhost/api/auctions?categoryId=cat1"
+        "http://localhost/api/auctions?categoryId=cat1",
       );
       const res = await GET(req);
       const json = await res.json();
@@ -197,7 +197,7 @@ describe("GET /api/auctions", () => {
       });
 
       const req = new NextRequest(
-        "http://localhost/api/auctions?featured=true"
+        "http://localhost/api/auctions?featured=true",
       );
       const res = await GET(req);
       const json = await res.json();
@@ -222,7 +222,7 @@ describe("GET /api/auctions", () => {
       });
 
       const req = new NextRequest(
-        "http://localhost/api/auctions?sortBy=current_bid&minBid=1000&maxBid=2000"
+        "http://localhost/api/auctions?sortBy=current_bid&minBid=1000&maxBid=2000",
       );
       const res = await GET(req);
       const json = await res.json();
@@ -272,7 +272,7 @@ describe("GET /api/auctions", () => {
       });
 
       const req = new NextRequest(
-        "http://localhost/api/auctions?sortBy=end_time&sortOrder=asc"
+        "http://localhost/api/auctions?sortBy=end_time&sortOrder=asc",
       );
       const res = await GET(req);
 
@@ -296,7 +296,7 @@ describe("GET /api/auctions", () => {
       });
 
       const req = new NextRequest(
-        "http://localhost/api/auctions?sortBy=current_bid&sortOrder=desc"
+        "http://localhost/api/auctions?sortBy=current_bid&sortOrder=desc",
       );
       const res = await GET(req);
 
@@ -346,7 +346,7 @@ describe("POST /api/auctions", () => {
         user: null,
         error: new Response(
           JSON.stringify({ success: false, error: "Unauthorized" }),
-          { status: 401 }
+          { status: 401 },
         ),
       });
 

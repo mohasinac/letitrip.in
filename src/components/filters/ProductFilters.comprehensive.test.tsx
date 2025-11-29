@@ -129,7 +129,7 @@ describe("ProductFilters - Comprehensive Tests", () => {
         () =>
           new Promise((resolve) => {
             setTimeout(() => resolve({ data: mockCategories } as any), 1000);
-          })
+          }),
       );
       render(<ProductFilters {...defaultProps} />);
       expect(screen.getByText("Loading categories...")).toBeInTheDocument();
@@ -588,7 +588,7 @@ describe("ProductFilters - Comprehensive Tests", () => {
     it("should preserve filter state across rerenders", () => {
       const filters = { priceMin: 100 };
       const { rerender } = render(
-        <ProductFilters {...defaultProps} filters={filters} />
+        <ProductFilters {...defaultProps} filters={filters} />,
       );
       rerender(<ProductFilters {...defaultProps} filters={filters} />);
       expect(screen.getByDisplayValue("100")).toBeInTheDocument();
@@ -596,12 +596,12 @@ describe("ProductFilters - Comprehensive Tests", () => {
 
     it("should handle filter prop changes", () => {
       const { rerender } = render(
-        <ProductFilters {...defaultProps} filters={{ priceMin: 100 }} />
+        <ProductFilters {...defaultProps} filters={{ priceMin: 100 }} />,
       );
       expect(screen.getByDisplayValue("100")).toBeInTheDocument();
 
       rerender(
-        <ProductFilters {...defaultProps} filters={{ priceMin: 500 }} />
+        <ProductFilters {...defaultProps} filters={{ priceMin: 500 }} />,
       );
       expect(screen.getByDisplayValue("500")).toBeInTheDocument();
     });

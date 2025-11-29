@@ -381,7 +381,7 @@ describe("ProductsPage", () => {
 
       await waitFor(() => {
         expect(mockProductsService.list).toHaveBeenCalledWith(
-          expect.objectContaining({ search: "Product 1" })
+          expect.objectContaining({ search: "Product 1" }),
         );
       });
     });
@@ -485,7 +485,7 @@ describe("ProductsPage", () => {
       await waitFor(() => {
         expect(mockProductsService.quickUpdate).toHaveBeenCalledWith(
           "test-product-1",
-          expect.objectContaining({ name: "Updated Product" })
+          expect.objectContaining({ name: "Updated Product" }),
         );
       });
     });
@@ -533,7 +533,7 @@ describe("ProductsPage", () => {
             stockCount: 10,
             categoryId: "cat-1",
             status: "active",
-          })
+          }),
         );
       });
     });
@@ -577,7 +577,7 @@ describe("ProductsPage", () => {
 
       await waitFor(() => {
         expect(mockProductsService.delete).toHaveBeenCalledWith(
-          "test-product-1"
+          "test-product-1",
         );
       });
     });
@@ -661,7 +661,7 @@ describe("ProductsPage", () => {
       });
 
       expect(
-        screen.getByRole("button", { name: /filters/i })
+        screen.getByRole("button", { name: /filters/i }),
       ).toBeInTheDocument();
     });
 
@@ -709,7 +709,7 @@ describe("ProductsPage", () => {
       const editLink = editLinks.find((link) =>
         link
           .getAttribute("href")
-          ?.includes("/seller/products/test-product-1/edit")
+          ?.includes("/seller/products/test-product-1/edit"),
       );
       expect(editLink).toBeInTheDocument();
     });
@@ -723,7 +723,7 @@ describe("ProductsPage", () => {
 
       const viewLinks = screen.getAllByRole("link");
       const viewLink = viewLinks.find(
-        (link) => link.getAttribute("href") === "/products/test-product-1"
+        (link) => link.getAttribute("href") === "/products/test-product-1",
       );
       expect(viewLink).toBeInTheDocument();
     });
@@ -744,7 +744,7 @@ describe("ProductsPage", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to load products:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -767,7 +767,7 @@ describe("ProductsPage", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to load categories:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 

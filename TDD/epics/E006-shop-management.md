@@ -169,3 +169,16 @@ interface ShopBE {
 - Integration tests for CRUD operations
 - E2E tests for seller shop lifecycle
 - RBAC tests for owner and admin access
+
+---
+
+## Pending Routes
+
+| Route              | Priority  | Status     | Notes                                                                                |
+| ------------------ | --------- | ---------- | ------------------------------------------------------------------------------------ |
+| `/seller/settings` | 🟡 MEDIUM | ⬜ PENDING | Dedicated seller settings page. Alternative: `/seller/my-shops` for shop management. |
+| `/seller/help`     | 🟢 LOW    | ⬜ PENDING | Seller help center. Alternative: `/support/ticket` or `/faq`.                        |
+
+**Navigation Change**: Removed `/seller/settings` from SELLER_MENU_ITEMS in `navigation.ts`. Redirected to `/seller/my-shops`.
+
+**See**: `TDD/PENDING-ROUTES.md` for full details

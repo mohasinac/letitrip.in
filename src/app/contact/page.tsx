@@ -48,7 +48,7 @@ export default function ContactPage() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setFormData({
       ...formData,
@@ -309,7 +309,7 @@ export default function ContactPage() {
                 Questions about selling on our platform?
               </p>
               <a
-                href="/seller/dashboard"
+                href="/seller"
                 className="text-blue-600 font-semibold hover:underline text-sm"
               >
                 Seller Dashboard →

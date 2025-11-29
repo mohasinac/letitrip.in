@@ -14,7 +14,8 @@ const Collections = {
 };
 
 (getFirestoreAdmin as jest.Mock).mockReturnValue({
-  collection: (name: string) => Collections[name as keyof typeof Collections]?.() || jest.fn(),
+  collection: (name: string) =>
+    Collections[name as keyof typeof Collections]?.() || jest.fn(),
   batch: jest.fn(),
 });
 
@@ -95,10 +96,7 @@ describe("POST /api/tickets/bulk", () => {
     };
 
     const mockMessagesSnapshot = {
-      docs: [
-        { ref: "msgRef1" },
-        { ref: "msgRef2" },
-      ],
+      docs: [{ ref: "msgRef1" }, { ref: "msgRef2" }],
     };
 
     const mockTicketRef = {
@@ -208,7 +206,7 @@ describe("POST /api/tickets/bulk", () => {
       expect.objectContaining({
         assignedTo: "admin123",
         status: "in-progress",
-      })
+      }),
     );
   });
 
@@ -250,7 +248,7 @@ describe("POST /api/tickets/bulk", () => {
       expect.objectContaining({
         status: "resolved",
         resolvedAt: expect.any(Date),
-      })
+      }),
     );
   });
 
@@ -291,7 +289,7 @@ describe("POST /api/tickets/bulk", () => {
       expect.anything(),
       expect.objectContaining({
         status: "closed",
-      })
+      }),
     );
   });
 
@@ -333,7 +331,7 @@ describe("POST /api/tickets/bulk", () => {
       expect.objectContaining({
         status: "escalated",
         priority: "urgent",
-      })
+      }),
     );
   });
 

@@ -87,9 +87,7 @@ describe("Blog API", () => {
     it("should filter by status", async () => {
       mockGet.mockResolvedValue({ docs: [] });
 
-      const req = new NextRequest(
-        "http://localhost/api/blog?status=draft"
-      );
+      const req = new NextRequest("http://localhost/api/blog?status=draft");
       await GET(req);
 
       expect(mockWhere).toHaveBeenCalledWith("status", "==", "draft");
@@ -99,7 +97,7 @@ describe("Blog API", () => {
       mockGet.mockResolvedValue({ docs: [] });
 
       const req = new NextRequest(
-        "http://localhost/api/blog?category=technology"
+        "http://localhost/api/blog?category=technology",
       );
       await GET(req);
 
@@ -109,9 +107,7 @@ describe("Blog API", () => {
     it("should filter by featured", async () => {
       mockGet.mockResolvedValue({ docs: [] });
 
-      const req = new NextRequest(
-        "http://localhost/api/blog?featured=true"
-      );
+      const req = new NextRequest("http://localhost/api/blog?featured=true");
       await GET(req);
 
       expect(mockWhere).toHaveBeenCalledWith("is_featured", "==", true);
@@ -130,7 +126,7 @@ describe("Blog API", () => {
       mockGet.mockResolvedValue({ docs: [] });
 
       const req = new NextRequest(
-        "http://localhost/api/blog?sortBy=view_count&sortOrder=asc"
+        "http://localhost/api/blog?sortBy=view_count&sortOrder=asc",
       );
       await GET(req);
 
@@ -148,7 +144,7 @@ describe("Blog API", () => {
         .mockResolvedValueOnce({ docs: [] }); // actual query
 
       const req = new NextRequest(
-        "http://localhost/api/blog?startAfter=post1&limit=10"
+        "http://localhost/api/blog?startAfter=post1&limit=10",
       );
       await GET(req);
 
@@ -165,9 +161,7 @@ describe("Blog API", () => {
 
       mockGet.mockResolvedValue({ docs: mockPosts });
 
-      const req = new NextRequest(
-        "http://localhost/api/blog?limit=20"
-      );
+      const req = new NextRequest("http://localhost/api/blog?limit=20");
       const response = await GET(req);
       const data = await response.json();
 
@@ -213,7 +207,7 @@ describe("Blog API", () => {
           title: "New Post",
           slug: "new-post",
           content: "Post content",
-        })
+        }),
       );
     });
 
@@ -275,7 +269,7 @@ describe("Blog API", () => {
           excerpt: "",
           category: "Uncategorized",
           tags: [],
-        })
+        }),
       );
     });
   });
@@ -353,7 +347,7 @@ describe("Blog API", () => {
         expect.objectContaining({
           title: "New Title",
           updatedAt: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -379,7 +373,7 @@ describe("Blog API", () => {
         expect.objectContaining({
           status: "published",
           publishedAt: expect.any(String),
-        })
+        }),
       );
     });
 

@@ -114,7 +114,7 @@ export function getEnvironmentCacheConfig(): Record<string, CacheConfigEntry> {
   // CACHE_PRODUCTS_TTL=600000 would set products cache to 10 minutes
   if (typeof window === "undefined" && process.env) {
     const envKeys = Object.keys(process.env).filter((key) =>
-      key.startsWith("CACHE_")
+      key.startsWith("CACHE_"),
     );
 
     for (const key of envKeys) {
@@ -222,7 +222,7 @@ export const CACHE_STRATEGIES = {
  */
 export function createCacheConfig(
   ttlMinutes: number,
-  staleMinutes: number = ttlMinutes * 3
+  staleMinutes: number = ttlMinutes * 3,
 ): CacheConfigEntry {
   return {
     ttl: ttlMinutes * 60 * 1000,
@@ -240,7 +240,7 @@ export function getRecommendedStrategy(
     | "standard"
     | "extended"
     | "static"
-    | "no-cache"
+    | "no-cache",
 ): CacheConfigEntry {
   switch (contentType) {
     case "real-time":

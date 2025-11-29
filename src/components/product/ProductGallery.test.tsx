@@ -37,7 +37,7 @@ describe("ProductGallery Component", () => {
   describe("Basic Rendering", () => {
     it("renders main image display", () => {
       render(
-        <ProductGallery media={[mockMedia[0]]} productName="Test Product" />
+        <ProductGallery media={[mockMedia[0]]} productName="Test Product" />,
       );
       const image = screen.getByRole("img", { name: "Product 1" });
       expect(image).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe("ProductGallery Component", () => {
 
     it("renders empty state when media is undefined", () => {
       render(
-        <ProductGallery media={undefined as any} productName="Test Product" />
+        <ProductGallery media={undefined as any} productName="Test Product" />,
       );
       expect(screen.getByText("No images available")).toBeInTheDocument();
     });
@@ -59,10 +59,10 @@ describe("ProductGallery Component", () => {
     it("uses productName as alt text when alt is not provided", () => {
       const mediaWithoutAlt = [{ url: "/image1.jpg", type: "image" as const }];
       render(
-        <ProductGallery media={mediaWithoutAlt} productName="Custom Name" />
+        <ProductGallery media={mediaWithoutAlt} productName="Custom Name" />,
       );
       expect(
-        screen.getByRole("img", { name: "Custom Name" })
+        screen.getByRole("img", { name: "Custom Name" }),
       ).toBeInTheDocument();
     });
 
@@ -85,7 +85,7 @@ describe("ProductGallery Component", () => {
 
     it("does not show navigation arrows for single media", () => {
       render(
-        <ProductGallery media={[mockMedia[0]]} productName="Test Product" />
+        <ProductGallery media={[mockMedia[0]]} productName="Test Product" />,
       );
       expect(screen.queryByLabelText("Previous image")).not.toBeInTheDocument();
       expect(screen.queryByLabelText("Next image")).not.toBeInTheDocument();
@@ -125,7 +125,7 @@ describe("ProductGallery Component", () => {
       fireEvent.click(nextButton);
 
       expect(
-        screen.getByRole("img", { name: "Product 1" })
+        screen.getByRole("img", { name: "Product 1" }),
       ).toBeInTheDocument();
     });
   });
@@ -143,7 +143,7 @@ describe("ProductGallery Component", () => {
 
     it("does not render thumbnails for single media", () => {
       render(
-        <ProductGallery media={[mockMedia[0]]} productName="Test Product" />
+        <ProductGallery media={[mockMedia[0]]} productName="Test Product" />,
       );
       expect(screen.queryByText(/thumbnail/i)).not.toBeInTheDocument();
     });
@@ -200,7 +200,7 @@ describe("ProductGallery Component", () => {
 
     it("does not show counter for single media", () => {
       render(
-        <ProductGallery media={[mockMedia[0]]} productName="Test Product" />
+        <ProductGallery media={[mockMedia[0]]} productName="Test Product" />,
       );
       expect(screen.queryByText(/\/ 1/)).not.toBeInTheDocument();
     });
@@ -229,7 +229,7 @@ describe("ProductGallery Component", () => {
       // Should only have one badge (images), not video badge
       const svgs = document.querySelectorAll("svg");
       const videoBadge = Array.from(svgs).find(
-        (svg) => svg.querySelector("path[d*='2 6a2']") // Video icon path
+        (svg) => svg.querySelector("path[d*='2 6a2']"), // Video icon path
       );
       expect(videoBadge?.parentElement?.textContent).not.toBe("1");
     });
@@ -283,7 +283,7 @@ describe("ProductGallery Component", () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByLabelText("Close lightbox")
+          screen.queryByLabelText("Close lightbox"),
         ).not.toBeInTheDocument();
       });
     });
@@ -305,7 +305,7 @@ describe("ProductGallery Component", () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByLabelText("Close lightbox")
+          screen.queryByLabelText("Close lightbox"),
         ).not.toBeInTheDocument();
       });
     });
@@ -324,7 +324,7 @@ describe("ProductGallery Component", () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByLabelText("Close lightbox")
+          screen.queryByLabelText("Close lightbox"),
         ).not.toBeInTheDocument();
       });
     });
@@ -413,10 +413,10 @@ describe("ProductGallery Component", () => {
       render(<ProductGallery media={mockMedia} productName="Test Product" />);
 
       expect(
-        screen.getByRole("img", { name: "Test Product thumbnail 1" })
+        screen.getByRole("img", { name: "Test Product thumbnail 1" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("img", { name: "Test Product thumbnail 2" })
+        screen.getByRole("img", { name: "Test Product thumbnail 2" }),
       ).toBeInTheDocument();
     });
   });
@@ -463,7 +463,7 @@ describe("ProductGallery Component", () => {
 
     it("handles empty media array gracefully", () => {
       const { rerender } = render(
-        <ProductGallery media={mockMedia} productName="Test Product" />
+        <ProductGallery media={mockMedia} productName="Test Product" />,
       );
 
       rerender(<ProductGallery media={[]} productName="Test Product" />);
@@ -473,7 +473,7 @@ describe("ProductGallery Component", () => {
 
     it("cleans up event listeners on unmount", () => {
       const { unmount } = render(
-        <ProductGallery media={mockMedia} productName="Test Product" />
+        <ProductGallery media={mockMedia} productName="Test Product" />,
       );
 
       const zoomButton = screen.getByLabelText("Zoom image");
@@ -489,7 +489,7 @@ describe("ProductGallery Component", () => {
       const invalidMedia = [{ url: "", type: "image" as const, alt: "Empty" }];
 
       render(
-        <ProductGallery media={invalidMedia} productName="Test Product" />
+        <ProductGallery media={invalidMedia} productName="Test Product" />,
       );
 
       // Should render but with empty src
@@ -504,7 +504,7 @@ describe("ProductGallery Component", () => {
       render(<ProductGallery media={mockMedia} productName={longName} />);
 
       expect(
-        screen.getByRole("img", { name: `${longName} thumbnail 1` })
+        screen.getByRole("img", { name: `${longName} thumbnail 1` }),
       ).toBeInTheDocument();
     });
 

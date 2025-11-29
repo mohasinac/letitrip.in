@@ -51,7 +51,7 @@ export async function DELETE() {
             // Check if any field starts with DEMO_
             const isDemoData = Object.values(data).some(
               (value) =>
-                typeof value === "string" && value.startsWith(DEMO_PREFIX)
+                typeof value === "string" && value.startsWith(DEMO_PREFIX),
             );
             if (isDemoData) {
               demoDocRefs.push(doc.ref);
@@ -107,7 +107,7 @@ export async function DELETE() {
         success: false,
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

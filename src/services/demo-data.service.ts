@@ -147,7 +147,7 @@ class DemoDataService {
    * Generate complete demo data ecosystem
    */
   async generateDemoData(
-    config: DemoDataConfig = {}
+    config: DemoDataConfig = {},
   ): Promise<{ prefix: string; summary: DemoDataSummary }> {
     const response = await apiService.post<{
       prefix: string;
@@ -161,7 +161,7 @@ class DemoDataService {
    */
   async getProgress(sessionId: string): Promise<DemoProgress> {
     const response = await apiService.get<DemoProgress>(
-      `${this.BASE_PATH}/progress/${sessionId}`
+      `${this.BASE_PATH}/progress/${sessionId}`,
     );
     return response;
   }
@@ -182,7 +182,7 @@ class DemoDataService {
    */
   async getDemoSessions(): Promise<DemoDataSummary[]> {
     const response = await apiService.get<{ sessions: DemoDataSummary[] }>(
-      `${this.BASE_PATH}/summary`
+      `${this.BASE_PATH}/summary`,
     );
     return response.sessions || [];
   }
@@ -192,7 +192,7 @@ class DemoDataService {
    */
   async getAnalytics(sessionId: string): Promise<DemoAnalyticsFE> {
     const response = await apiService.get<DemoAnalyticsFE>(
-      `${this.BASE_PATH}/analytics/${sessionId}`
+      `${this.BASE_PATH}/analytics/${sessionId}`,
     );
     return response;
   }
@@ -202,7 +202,7 @@ class DemoDataService {
    */
   async getVisualization(sessionId: string): Promise<DemoVisualizationFE> {
     const response = await apiService.get<DemoVisualizationFE>(
-      `${this.BASE_PATH}/visualization/${sessionId}`
+      `${this.BASE_PATH}/visualization/${sessionId}`,
     );
     return response;
   }
@@ -277,11 +277,11 @@ class DemoDataService {
   async simulateUserActions(
     sessionId: string,
     userId: string,
-    actions: UserActionSimulation[]
+    actions: UserActionSimulation[],
   ): Promise<SimulationResultFE> {
     const response = await apiService.post<SimulationResultFE>(
       `${this.BASE_PATH}/simulate/${sessionId}/user/${userId}`,
-      { actions }
+      { actions },
     );
     return response;
   }
@@ -291,7 +291,7 @@ class DemoDataService {
    */
   async exportData(
     sessionId: string,
-    format: "json" | "csv" = "json"
+    format: "json" | "csv" = "json",
   ): Promise<Blob> {
     const response = await fetch(
       `${this.BASE_PATH}/export/${sessionId}?format=${format}`,
@@ -300,7 +300,7 @@ class DemoDataService {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      }
+      },
     );
     return await response.blob();
   }
@@ -317,10 +317,10 @@ class DemoDataService {
       | "products"
       | "auctions"
       | "orders"
-      | "bids"
+      | "bids",
   ): Promise<T[]> {
     const response = await apiService.get<{ data: T[] }>(
-      `${this.BASE_PATH}/${sessionId}/${entityType}`
+      `${this.BASE_PATH}/${sessionId}/${entityType}`,
     );
     return response.data || [];
   }

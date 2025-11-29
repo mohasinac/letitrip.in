@@ -61,7 +61,7 @@ export function toFEShop(shopBE: ShopBE): ShopFE {
 }
 
 export function toBECreateShopRequest(
-  formData: ShopFormFE
+  formData: ShopFormFE,
 ): CreateShopRequestBE {
   return {
     name: formData.name,

@@ -30,7 +30,7 @@ export async function POST() {
     const deleteCollection = async (
       collectionName: string,
       whereField: string,
-      statKey: keyof typeof stats
+      statKey: keyof typeof stats,
     ) => {
       let totalDeleted = 0;
       let hasMore = true;
@@ -183,7 +183,7 @@ export async function POST() {
 
     const totalDeleted = Object.values(stats).reduce(
       (sum, count) => sum + count,
-      0
+      0,
     );
     console.log(`Cleanup complete. Total items deleted: ${totalDeleted}`);
 
@@ -197,7 +197,7 @@ export async function POST() {
     console.error("Error cleaning up test data:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to cleanup data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

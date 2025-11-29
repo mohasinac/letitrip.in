@@ -9,7 +9,7 @@ import { describe, it, expect } from "@jest/globals";
 function wouldCreateCyclePure(
   categoryId: string,
   newParentId: string,
-  getDescendants: (id: string) => string[]
+  getDescendants: (id: string) => string[],
 ): boolean {
   // Can't be your own parent
   if (categoryId === newParentId) return true;
@@ -23,7 +23,7 @@ function wouldCreateCyclePure(
 function validateParentAssignmentsPure(
   categoryId: string,
   parentIds: string[],
-  getDescendants: (id: string) => string[]
+  getDescendants: (id: string) => string[],
 ): {
   valid: boolean;
   errors: string[];
@@ -40,11 +40,11 @@ function validateParentAssignmentsPure(
     const wouldCycle = wouldCreateCyclePure(
       categoryId,
       parentId,
-      getDescendants
+      getDescendants,
     );
     if (wouldCycle) {
       errors.push(
-        `Adding parent ${parentId} would create a circular reference`
+        `Adding parent ${parentId} would create a circular reference`,
       );
     }
   }
@@ -93,7 +93,7 @@ describe("Category Hierarchy - wouldCreateCycle", () => {
       const result = wouldCreateCyclePure(
         "electronics",
         "electronics",
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result).toBe(true);
     });
@@ -102,7 +102,7 @@ describe("Category Hierarchy - wouldCreateCycle", () => {
       const result = wouldCreateCyclePure(
         "iphones",
         "electronics",
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result).toBe(false);
     });
@@ -114,7 +114,7 @@ describe("Category Hierarchy - wouldCreateCycle", () => {
       const result = wouldCreateCyclePure(
         "electronics",
         "phones",
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result).toBe(true);
     });
@@ -124,7 +124,7 @@ describe("Category Hierarchy - wouldCreateCycle", () => {
       const result = wouldCreateCyclePure(
         "electronics",
         "iphones",
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result).toBe(true);
     });
@@ -133,7 +133,7 @@ describe("Category Hierarchy - wouldCreateCycle", () => {
       const result = wouldCreateCyclePure(
         "iphones",
         "phones",
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result).toBe(false);
     });
@@ -144,14 +144,14 @@ describe("Category Hierarchy - wouldCreateCycle", () => {
       const result1 = wouldCreateCyclePure(
         "",
         "electronics",
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result1).toBe(false);
 
       const result2 = wouldCreateCyclePure(
         "electronics",
         "",
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result2).toBe(false);
     });
@@ -160,7 +160,7 @@ describe("Category Hierarchy - wouldCreateCycle", () => {
       const result = wouldCreateCyclePure(
         "nonexistent",
         "electronics",
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result).toBe(false);
     });
@@ -189,7 +189,7 @@ describe("Category Hierarchy - validateParentAssignments", () => {
       const result = validateParentAssignmentsPure(
         "electronics",
         ["electronics"],
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result.valid).toBe(false);
       expect(result.errors).toContain("A category cannot be its own parent");
@@ -199,7 +199,7 @@ describe("Category Hierarchy - validateParentAssignments", () => {
       const result = validateParentAssignmentsPure(
         "phones",
         ["electronics", "phones"],
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result.valid).toBe(false);
       expect(result.errors).toContain("A category cannot be its own parent");
@@ -211,11 +211,11 @@ describe("Category Hierarchy - validateParentAssignments", () => {
       const result = validateParentAssignmentsPure(
         "electronics",
         ["phones"],
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result.valid).toBe(false);
       expect(
-        result.errors.some((error) => error.includes("circular reference"))
+        result.errors.some((error) => error.includes("circular reference")),
       ).toBe(true);
     });
 
@@ -223,11 +223,11 @@ describe("Category Hierarchy - validateParentAssignments", () => {
       const result = validateParentAssignmentsPure(
         "electronics",
         ["iphones"],
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result.valid).toBe(false);
       expect(
-        result.errors.some((error) => error.includes("circular reference"))
+        result.errors.some((error) => error.includes("circular reference")),
       ).toBe(true);
     });
 
@@ -235,7 +235,7 @@ describe("Category Hierarchy - validateParentAssignments", () => {
       const result = validateParentAssignmentsPure(
         "iphones",
         ["electronics"],
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result.valid).toBe(true);
       expect(result.errors.length).toBe(0);
@@ -249,11 +249,11 @@ describe("Category Hierarchy - validateParentAssignments", () => {
       const result = validateParentAssignmentsPure(
         "electronics",
         ["phones", "iphones"],
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result.valid).toBe(false);
       expect(
-        result.errors.some((error) => error.includes("circular reference"))
+        result.errors.some((error) => error.includes("circular reference")),
       ).toBe(true);
     });
 
@@ -262,7 +262,7 @@ describe("Category Hierarchy - validateParentAssignments", () => {
       const result = validateParentAssignmentsPure(
         "iphones",
         ["phones"],
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result.valid).toBe(true);
     });
@@ -273,7 +273,7 @@ describe("Category Hierarchy - validateParentAssignments", () => {
       const result = validateParentAssignmentsPure(
         "electronics",
         [],
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result.valid).toBe(true);
     });
@@ -282,7 +282,7 @@ describe("Category Hierarchy - validateParentAssignments", () => {
       const result = validateParentAssignmentsPure(
         "nonexistent",
         ["electronics"],
-        getMockDescendants
+        getMockDescendants,
       );
       expect(result.valid).toBe(true);
     });

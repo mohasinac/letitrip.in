@@ -20,7 +20,7 @@ describe("TableCheckbox", () => {
 
     it("renders with label wrapper", () => {
       const { container } = render(
-        <TableCheckbox checked={false} onChange={mockOnChange} />
+        <TableCheckbox checked={false} onChange={mockOnChange} />,
       );
 
       const label = container.querySelector("label");
@@ -29,7 +29,7 @@ describe("TableCheckbox", () => {
 
     it("has minimum touch target size", () => {
       const { container } = render(
-        <TableCheckbox checked={false} onChange={mockOnChange} />
+        <TableCheckbox checked={false} onChange={mockOnChange} />,
       );
 
       const label = container.querySelector("label");
@@ -55,7 +55,7 @@ describe("TableCheckbox", () => {
 
     it("updates visual state when checked prop changes", () => {
       const { rerender } = render(
-        <TableCheckbox checked={false} onChange={mockOnChange} />
+        <TableCheckbox checked={false} onChange={mockOnChange} />,
       );
 
       let checkbox = screen.getByRole("checkbox") as HTMLInputElement;
@@ -75,7 +75,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           indeterminate={true}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox") as HTMLInputElement;
@@ -88,7 +88,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           indeterminate={false}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox") as HTMLInputElement;
@@ -101,7 +101,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           indeterminate={false}
-        />
+        />,
       );
 
       let checkbox = screen.getByRole("checkbox") as HTMLInputElement;
@@ -112,7 +112,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           indeterminate={true}
-        />
+        />,
       );
       checkbox = screen.getByRole("checkbox") as HTMLInputElement;
       expect(checkbox.indeterminate).toBe(true);
@@ -171,7 +171,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           disabled={true}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox") as HTMLInputElement;
@@ -184,7 +184,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           disabled={false}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox") as HTMLInputElement;
@@ -197,7 +197,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           disabled={true}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox");
@@ -211,7 +211,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           disabled={true}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox") as HTMLInputElement;
@@ -231,7 +231,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           label="Custom Label"
-        />
+        />,
       );
 
       const checkbox = screen.getByLabelText("Custom Label");
@@ -244,7 +244,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           indeterminate={true}
-        />
+        />,
       );
 
       const checkbox = screen.getByLabelText("Select all");
@@ -271,7 +271,7 @@ describe("TableCheckbox", () => {
           checked={true}
           onChange={mockOnChange}
           label="Override Label"
-        />
+        />,
       );
 
       const checkbox = screen.getByLabelText("Override Label");
@@ -329,7 +329,7 @@ describe("TableCheckbox", () => {
   describe("Label Styling", () => {
     it("has cursor pointer on label", () => {
       const { container } = render(
-        <TableCheckbox checked={false} onChange={mockOnChange} />
+        <TableCheckbox checked={false} onChange={mockOnChange} />,
       );
 
       const label = container.querySelector("label");
@@ -338,7 +338,7 @@ describe("TableCheckbox", () => {
 
     it("centers content in label", () => {
       const { container } = render(
-        <TableCheckbox checked={false} onChange={mockOnChange} />
+        <TableCheckbox checked={false} onChange={mockOnChange} />,
       );
 
       const label = container.querySelector("label");
@@ -376,7 +376,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           indeterminate={undefined}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox") as HTMLInputElement;
@@ -389,7 +389,7 @@ describe("TableCheckbox", () => {
           checked={false}
           onChange={mockOnChange}
           label={undefined}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox");
@@ -398,7 +398,7 @@ describe("TableCheckbox", () => {
 
     it("handles empty string label", () => {
       render(
-        <TableCheckbox checked={false} onChange={mockOnChange} label="" />
+        <TableCheckbox checked={false} onChange={mockOnChange} label="" />,
       );
 
       const checkbox = screen.getByRole("checkbox");
@@ -413,7 +413,7 @@ describe("TableCheckbox", () => {
           onChange={mockOnChange}
           indeterminate={false}
           disabled={false}
-        />
+        />,
       );
 
       rerender(
@@ -422,7 +422,7 @@ describe("TableCheckbox", () => {
           onChange={mockOnChange}
           indeterminate={true}
           disabled={true}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox") as HTMLInputElement;
@@ -442,11 +442,11 @@ describe("TableCheckbox", () => {
           indeterminate={false}
           disabled={false}
           label="Complete checkbox"
-        />
+        />,
       );
 
       const checkbox = screen.getByLabelText(
-        "Complete checkbox"
+        "Complete checkbox",
       ) as HTMLInputElement;
       expect(checkbox).toBeInTheDocument();
       expect(checkbox.checked).toBe(true);

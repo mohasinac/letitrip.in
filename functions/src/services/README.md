@@ -293,7 +293,6 @@ async notifyBidPlaced(data: BidEmailData): Promise<boolean> {
    ```
 
 2. **Verify Domain:**
-
    - Log in to Resend dashboard
    - Ensure domain is verified
    - Or use `onboarding@resend.dev` for testing

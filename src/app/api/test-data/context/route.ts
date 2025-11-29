@@ -320,7 +320,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching test data context:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to fetch context" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -340,7 +340,7 @@ export async function DELETE(req: NextRequest) {
     console.error("Error clearing context:", error);
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

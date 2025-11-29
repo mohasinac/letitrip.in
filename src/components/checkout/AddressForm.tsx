@@ -6,6 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { X, Loader2 } from "lucide-react";
 import { addressService } from "@/services/address.service";
+import { MobileBottomSheet } from "@/components/mobile/MobileBottomSheet";
+import { MobileFormInput } from "@/components/mobile/MobileFormInput";
+import { MobileFormSelect } from "@/components/mobile/MobileFormSelect";
 import type { AddressFE } from "@/types/frontend/address.types";
 
 const AddressSchema = z.object({
@@ -96,202 +99,298 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">
-            {addressId ? "Edit Address" : "Add New Address"}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
+  // Form content shared between mobile and desktop
+  const formContent = fetchLoading ? (
+    <div className="p-12 flex items-center justify-center">
+      <Loader2 className="w-8 h-8 text-primary animate-spin" />
+    </div>
+  ) : (
+    <form onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-6 space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Full Name - Mobile optimized */}
+        <div className="sm:hidden">
+          <MobileFormInput
+            label="Full Name"
+            placeholder="John Doe"
+            required
+            error={errors.fullName?.message}
+            {...register("fullName")}
+          />
+        </div>
+        <div className="hidden sm:block">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Full Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            {...register("fullName")}
+            type="text"
+            className="input"
+            placeholder="John Doe"
+          />
+          {errors.fullName && (
+            <p className="text-sm text-red-600 mt-1">
+              {errors.fullName.message}
+            </p>
+          )}
         </div>
 
-        {fetchLoading ? (
-          <div className="p-12 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Full Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register("fullName")}
-                  type="text"
-                  className="input"
-                  placeholder="John Doe"
-                />
-                {errors.fullName && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {errors.fullName.message}
-                  </p>
-                )}
-              </div>
+        {/* Phone Number - Mobile optimized */}
+        <div className="sm:hidden">
+          <MobileFormInput
+            label="Phone Number"
+            type="tel"
+            placeholder="9876543210"
+            required
+            error={errors.phoneNumber?.message}
+            {...register("phoneNumber")}
+          />
+        </div>
+        <div className="hidden sm:block">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Phone Number <span className="text-red-500">*</span>
+          </label>
+          <input
+            {...register("phoneNumber")}
+            type="tel"
+            className="input"
+            placeholder="9876543210"
+          />
+          {errors.phoneNumber && (
+            <p className="text-sm text-red-600 mt-1">
+              {errors.phoneNumber.message}
+            </p>
+          )}
+        </div>
+      </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone Number <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register("phoneNumber")}
-                  type="tel"
-                  className="input"
-                  placeholder="9876543210"
-                />
-                {errors.phoneNumber && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {errors.phoneNumber.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Address Line 1 <span className="text-red-500">*</span>
-              </label>
-              <input
-                {...register("addressLine1")}
-                type="text"
-                className="input"
-                placeholder="Flat, House no., Building, Company, Apartment"
-              />
-              {errors.addressLine1 && (
-                <p className="text-sm text-red-600 mt-1">
-                  {errors.addressLine1.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Address Line 2 (Optional)
-              </label>
-              <input
-                {...register("addressLine2")}
-                type="text"
-                className="input"
-                placeholder="Area, Street, Sector, Village"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  City <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register("city")}
-                  type="text"
-                  className="input"
-                  placeholder="Mumbai"
-                />
-                {errors.city && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {errors.city.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  State <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register("state")}
-                  type="text"
-                  className="input"
-                  placeholder="Maharashtra"
-                />
-                {errors.state && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {errors.state.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pincode <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register("postalCode")}
-                  type="text"
-                  className="input"
-                  placeholder="400001"
-                  maxLength={6}
-                />
-                {errors.postalCode && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {errors.postalCode.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Country <span className="text-red-500">*</span>
-              </label>
-              <input
-                {...register("country")}
-                type="text"
-                className="input"
-                placeholder="India"
-              />
-              {errors.country && (
-                <p className="text-sm text-red-600 mt-1">
-                  {errors.country.message}
-                </p>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                {...register("isDefault")}
-                type="checkbox"
-                id="isDefault"
-                className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
-              />
-              <label htmlFor="isDefault" className="text-sm text-gray-700">
-                Set as default address
-              </label>
-            </div>
-
-            <div className="flex gap-3 pt-4 border-t">
-              <button
-                type="button"
-                onClick={onClose}
-                className="btn-secondary flex-1"
-                disabled={loading}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="btn-primary flex-1"
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    {addressId ? "Updating..." : "Adding..."}
-                  </>
-                ) : (
-                  <>{addressId ? "Update Address" : "Add Address"}</>
-                )}
-              </button>
-            </div>
-          </form>
+      {/* Address Line 1 - Mobile optimized */}
+      <div className="sm:hidden">
+        <MobileFormInput
+          label="Address Line 1"
+          placeholder="Flat, House no., Building, Company, Apartment"
+          required
+          error={errors.addressLine1?.message}
+          {...register("addressLine1")}
+        />
+      </div>
+      <div className="hidden sm:block">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Address Line 1 <span className="text-red-500">*</span>
+        </label>
+        <input
+          {...register("addressLine1")}
+          type="text"
+          className="input"
+          placeholder="Flat, House no., Building, Company, Apartment"
+        />
+        {errors.addressLine1 && (
+          <p className="text-sm text-red-600 mt-1">
+            {errors.addressLine1.message}
+          </p>
         )}
       </div>
-    </div>
+
+      {/* Address Line 2 - Mobile optimized */}
+      <div className="sm:hidden">
+        <MobileFormInput
+          label="Address Line 2"
+          placeholder="Area, Street, Sector, Village"
+          helperText="Optional"
+          {...register("addressLine2")}
+        />
+      </div>
+      <div className="hidden sm:block">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Address Line 2 (Optional)
+        </label>
+        <input
+          {...register("addressLine2")}
+          type="text"
+          className="input"
+          placeholder="Area, Street, Sector, Village"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* City - Mobile optimized */}
+        <div className="sm:hidden">
+          <MobileFormInput
+            label="City"
+            placeholder="Mumbai"
+            required
+            error={errors.city?.message}
+            {...register("city")}
+          />
+        </div>
+        <div className="hidden sm:block">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            City <span className="text-red-500">*</span>
+          </label>
+          <input
+            {...register("city")}
+            type="text"
+            className="input"
+            placeholder="Mumbai"
+          />
+          {errors.city && (
+            <p className="text-sm text-red-600 mt-1">{errors.city.message}</p>
+          )}
+        </div>
+
+        {/* State - Mobile optimized */}
+        <div className="sm:hidden">
+          <MobileFormInput
+            label="State"
+            placeholder="Maharashtra"
+            required
+            error={errors.state?.message}
+            {...register("state")}
+          />
+        </div>
+        <div className="hidden sm:block">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            State <span className="text-red-500">*</span>
+          </label>
+          <input
+            {...register("state")}
+            type="text"
+            className="input"
+            placeholder="Maharashtra"
+          />
+          {errors.state && (
+            <p className="text-sm text-red-600 mt-1">{errors.state.message}</p>
+          )}
+        </div>
+
+        {/* Pincode - Mobile optimized */}
+        <div className="sm:hidden">
+          <MobileFormInput
+            label="Pincode"
+            type="text"
+            placeholder="400001"
+            required
+            error={errors.postalCode?.message}
+            maxLength={6}
+            {...register("postalCode")}
+          />
+        </div>
+        <div className="hidden sm:block">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Pincode <span className="text-red-500">*</span>
+          </label>
+          <input
+            {...register("postalCode")}
+            type="text"
+            className="input"
+            placeholder="400001"
+            maxLength={6}
+          />
+          {errors.postalCode && (
+            <p className="text-sm text-red-600 mt-1">
+              {errors.postalCode.message}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Country - Mobile optimized */}
+      <div className="sm:hidden">
+        <MobileFormInput
+          label="Country"
+          placeholder="India"
+          required
+          error={errors.country?.message}
+          {...register("country")}
+        />
+      </div>
+      <div className="hidden sm:block">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Country <span className="text-red-500">*</span>
+        </label>
+        <input
+          {...register("country")}
+          type="text"
+          className="input"
+          placeholder="India"
+        />
+        {errors.country && (
+          <p className="text-sm text-red-600 mt-1">{errors.country.message}</p>
+        )}
+      </div>
+
+      <div className="flex items-center gap-3 py-2">
+        <input
+          {...register("isDefault")}
+          type="checkbox"
+          id="isDefault"
+          className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary"
+        />
+        <label htmlFor="isDefault" className="text-sm text-gray-700">
+          Set as default address
+        </label>
+      </div>
+
+      <div className="flex gap-3 pt-4 border-t">
+        <button
+          type="button"
+          onClick={onClose}
+          className="btn-secondary flex-1 touch-target"
+          disabled={loading}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="btn-primary flex-1 touch-target"
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              {addressId ? "Updating..." : "Adding..."}
+            </>
+          ) : (
+            <>{addressId ? "Update Address" : "Add Address"}</>
+          )}
+        </button>
+      </div>
+    </form>
+  );
+
+  return (
+    <>
+      {/* Mobile: Bottom Sheet */}
+      <div className="sm:hidden">
+        <MobileBottomSheet
+          isOpen={true}
+          onClose={onClose}
+          title={addressId ? "Edit Address" : "Add New Address"}
+          snapPoints={[0.9, 0.5]}
+          defaultSnapPoint={0}
+        >
+          {formContent}
+        </MobileBottomSheet>
+      </div>
+
+      {/* Desktop: Modal */}
+      <div className="hidden sm:block">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900">
+                {addressId ? "Edit Address" : "Add New Address"}
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            {formContent}
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

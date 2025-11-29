@@ -34,7 +34,7 @@ export async function GET() {
     console.error("Featured categories error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to load featured categories" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

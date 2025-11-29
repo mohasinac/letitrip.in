@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       if (!owns)
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 }
+          { status: 403 },
         );
       query = query.where("shop_id", "==", shopId);
     } else if (role === "user") {
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
       (id) => Collections.orders().doc(id).get(),
       (doc) => ({ id: doc.id, ...doc.data() }),
       50, // defaultLimit
-      200 // maxLimit
+      200, // maxLimit
     );
 
     return NextResponse.json(response);
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
     console.error("Orders list error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to list orders" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
     const { shop_id, items, amount } = body;
     if (!shop_id || !Array.isArray(items) || !Number.isFinite(Number(amount))) {
       throw new ValidationError(
-        "Invalid payload: shop_id, items array, and amount are required"
+        "Invalid payload: shop_id, items array, and amount are required",
       );
     }
     const now = new Date().toISOString();
@@ -135,13 +135,13 @@ export async function POST(request: NextRequest) {
     const created = await docRef.get();
     return NextResponse.json(
       { success: true, data: { id: created.id, ...created.data() } },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Create order error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create order" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

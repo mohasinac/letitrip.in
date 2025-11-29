@@ -471,6 +471,141 @@ This document defines the test data requirements for all resources in the JustFo
 
 ---
 
+## Test Blog Posts
+
+| Field         | Published Post          | Draft Post             | Scheduled Post         |
+| ------------- | ----------------------- | ---------------------- | ---------------------- |
+| id            | `test_blog_001`         | `test_blog_002`        | `test_blog_003`        |
+| title         | Getting Started Guide   | Draft Article          | Upcoming Feature       |
+| slug          | `getting-started`       | `draft-article`        | `upcoming-feature`     |
+| content       | Full article content... | Draft content...       | Feature preview...     |
+| excerpt       | Learn how to get...     | This is a draft...     | Coming soon...         |
+| featuredImage | `/blog/getting.jpg`     | `/blog/draft.jpg`      | `/blog/upcoming.jpg`   |
+| categoryId    | `blog_cat_guides`       | `blog_cat_news`        | `blog_cat_updates`     |
+| tags          | [`beginner`, `guide`]   | [`internal`]           | [`feature`, `preview`] |
+| authorId      | `test_admin_001`        | `test_admin_001`       | `test_admin_002`       |
+| authorName    | Test Admin              | Test Admin             | Test Admin 2           |
+| status        | `published`             | `draft`                | `scheduled`            |
+| publishedAt   | `2024-11-01T10:00:00Z`  | `null`                 | `null`                 |
+| scheduledAt   | `null`                  | `null`                 | `2024-12-01T10:00:00Z` |
+| viewCount     | `1250`                  | `0`                    | `0`                    |
+| createdAt     | `2024-10-25T00:00:00Z`  | `2024-11-20T00:00:00Z` | `2024-11-25T00:00:00Z` |
+
+---
+
+## Test Blog Categories
+
+| Field        | Guides              | News                | Updates             |
+| ------------ | ------------------- | ------------------- | ------------------- |
+| id           | `blog_cat_guides`   | `blog_cat_news`     | `blog_cat_updates`  |
+| name         | Guides              | News                | Updates             |
+| slug         | `guides`            | `news`              | `updates`           |
+| description  | How-to guides...    | Latest news...      | Platform updates... |
+| parentId     | `null`              | `null`              | `null`              |
+| displayOrder | `1`                 | `2`                 | `3`                 |
+| postCount    | `15`                | `8`                 | `5`                 |
+| createdAt    | `2024-01-01T00:00Z` | `2024-01-01T00:00Z` | `2024-01-01T00:00Z` |
+
+---
+
+## Test Blog Tags
+
+| Field     | Beginner Tag        | Feature Tag         | Guide Tag           |
+| --------- | ------------------- | ------------------- | ------------------- |
+| id        | `blog_tag_beginner` | `blog_tag_feature`  | `blog_tag_guide`    |
+| name      | Beginner            | Feature             | Guide               |
+| slug      | `beginner`          | `feature`           | `guide`             |
+| postCount | `5`                 | `3`                 | `10`                |
+| createdAt | `2024-01-01T00:00Z` | `2024-01-01T00:00Z` | `2024-01-01T00:00Z` |
+
+---
+
+## Test Favorites
+
+| Field         | Product Favorite       | Auction Favorite       | With Notifications                   |
+| ------------- | ---------------------- | ---------------------- | ------------------------------------ |
+| id            | `test_fav_001`         | `test_fav_002`         | `test_fav_003`                       |
+| userId        | `test_user_001`        | `test_user_001`        | `test_user_002`                      |
+| itemId        | `test_product_001`     | `test_auction_001`     | `test_product_002`                   |
+| itemType      | `product`              | `auction`              | `product`                            |
+| itemSnapshot  | {title, image, price}  | {title, image, price}  | {title, image, price}                |
+| notifications | {priceDrop: false}     | {reminder: true}       | {priceDrop: true, backInStock: true} |
+| createdAt     | `2024-11-20T00:00:00Z` | `2024-11-22T00:00:00Z` | `2024-11-25T00:00:00Z`               |
+
+---
+
+## Test Conversations
+
+| Field            | Buyer-Seller Conv      | Order Inquiry          | Support Chat           |
+| ---------------- | ---------------------- | ---------------------- | ---------------------- |
+| id               | `test_conv_001`        | `test_conv_002`        | `test_conv_003`        |
+| type             | `buyer_seller`         | `order`                | `support`              |
+| senderId         | `test_user_001`        | `test_user_001`        | `test_user_002`        |
+| senderName       | Test User              | Test User              | Test User 2            |
+| senderType       | `user`                 | `user`                 | `user`                 |
+| recipientId      | `test_seller_001`      | `test_seller_001`      | `test_admin_001`       |
+| recipientName    | Test Seller            | Test Seller            | Support                |
+| recipientType    | `seller`               | `seller`               | `admin`                |
+| subject          | Product Question       | Order Status           | Account Help           |
+| contextOrderId   | `null`                 | `test_order_001`       | `null`                 |
+| contextProductId | `test_product_001`     | `null`                 | `null`                 |
+| status           | `active`               | `active`               | `resolved`             |
+| createdAt        | `2024-11-25T00:00:00Z` | `2024-11-26T00:00:00Z` | `2024-11-20T00:00:00Z` |
+
+---
+
+## Test Messages
+
+| Field          | Message 1              | Message 2              | Message 3              |
+| -------------- | ---------------------- | ---------------------- | ---------------------- |
+| id             | `test_msg_001`         | `test_msg_002`         | `test_msg_003`         |
+| conversationId | `test_conv_001`        | `test_conv_001`        | `test_conv_002`        |
+| senderId       | `test_user_001`        | `test_seller_001`      | `test_user_001`        |
+| senderName     | Test User              | Test Seller            | Test User              |
+| senderType     | `user`                 | `seller`               | `user`                 |
+| content        | Is this available?     | Yes, it is!            | Where is my order?     |
+| attachments    | []                     | []                     | [{url: '/img.jpg'}]    |
+| readBy         | {seller: timestamp}    | {}                     | {}                     |
+| isDeleted      | `false`                | `false`                | `false`                |
+| createdAt      | `2024-11-25T10:00:00Z` | `2024-11-25T10:30:00Z` | `2024-11-26T09:00:00Z` |
+
+---
+
+## Test System Settings
+
+| Field                   | Value                                  |
+| ----------------------- | -------------------------------------- |
+| id                      | `site_settings`                        |
+| general.siteName        | LET IT RIP                             |
+| general.siteDescription | Your Gateway to Authentic Collectibles |
+| general.contactEmail    | contact@test.jfv.in                    |
+| general.contactPhone    | +919876543210                          |
+| general.currency        | INR                                    |
+| general.timezone        | Asia/Kolkata                           |
+| seo.defaultTitle        | LET IT RIP - Buy Collectibles in India |
+| seo.googleAnalyticsId   | GA-TEST-123                            |
+| maintenance.enabled     | false                                  |
+| maintenance.message     | Site under maintenance                 |
+| updatedAt               | `2024-11-28T00:00:00Z`                 |
+| updatedBy               | `test_admin_001`                       |
+
+---
+
+## Test Feature Flags
+
+| Feature            | Value   |
+| ------------------ | ------- |
+| auctions           | `true`  |
+| reviews            | `true`  |
+| cod                | `true`  |
+| guestCheckout      | `false` |
+| wishlist           | `true`  |
+| blog               | `true`  |
+| sellerRegistration | `true`  |
+| maintenanceMode    | `false` |
+
+---
+
 ## Test Data Generation Utilities
 
 ### TypeScript Test Data Factory
@@ -509,6 +644,83 @@ export const createTestOrder = (overrides?: Partial<Order>): Order => ({
   status: "pending",
   paymentStatus: "pending",
   total: 50000,
+  createdAt: new Date(),
+  ...overrides,
+});
+
+export const createTestBlogPost = (
+  overrides?: Partial<BlogPost>,
+): BlogPost => ({
+  id: `test_blog_${Date.now()}`,
+  title: "Test Blog Post",
+  slug: `test-blog-${Date.now()}`,
+  content: "Test blog content...",
+  excerpt: "Test excerpt...",
+  featuredImage: "/blog/test.jpg",
+  categoryId: "blog_cat_guides",
+  tags: ["test"],
+  authorId: "test_admin_001",
+  authorName: "Test Admin",
+  status: "draft",
+  publishedAt: null,
+  viewCount: 0,
+  createdAt: new Date(),
+  ...overrides,
+});
+
+export const createTestFavorite = (
+  overrides?: Partial<Favorite>,
+): Favorite => ({
+  id: `test_fav_${Date.now()}`,
+  userId: "test_user_001",
+  itemId: "test_product_001",
+  itemType: "product",
+  itemSnapshot: {
+    title: "Test Product",
+    image: "/products/test.jpg",
+    price: 10000,
+    shopId: "test_shop_001",
+    shopName: "Test Shop",
+    slug: "test-product",
+  },
+  notifications: {
+    priceDropEnabled: false,
+    backInStockEnabled: false,
+  },
+  createdAt: new Date(),
+  ...overrides,
+});
+
+export const createTestConversation = (
+  overrides?: Partial<Conversation>,
+): Conversation => ({
+  id: `test_conv_${Date.now()}`,
+  type: "buyer_seller",
+  participants: {
+    senderId: "test_user_001",
+    senderName: "Test User",
+    senderType: "user",
+    recipientId: "test_seller_001",
+    recipientName: "Test Seller",
+    recipientType: "seller",
+  },
+  subject: "Product Inquiry",
+  status: "active",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  ...overrides,
+});
+
+export const createTestMessage = (overrides?: Partial<Message>): Message => ({
+  id: `test_msg_${Date.now()}`,
+  conversationId: "test_conv_001",
+  senderId: "test_user_001",
+  senderName: "Test User",
+  senderType: "user",
+  content: "Test message content",
+  attachments: [],
+  readBy: {},
+  isDeleted: false,
   createdAt: new Date(),
   ...overrides,
 });

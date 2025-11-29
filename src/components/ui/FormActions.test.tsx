@@ -17,7 +17,7 @@ describe("FormActions", () => {
     it("renders cancel button when onCancel provided", () => {
       render(<FormActions onCancel={() => {}} />);
       expect(
-        screen.getByRole("button", { name: "Cancel" })
+        screen.getByRole("button", { name: "Cancel" }),
       ).toBeInTheDocument();
     });
 
@@ -25,7 +25,7 @@ describe("FormActions", () => {
       render(<FormActions onSubmit={() => {}} onCancel={() => {}} />);
       expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Cancel" })
+        screen.getByRole("button", { name: "Cancel" }),
       ).toBeInTheDocument();
     });
   });
@@ -39,14 +39,14 @@ describe("FormActions", () => {
     it("uses custom submit label", () => {
       render(<FormActions onSubmit={() => {}} submitLabel="Create" />);
       expect(
-        screen.getByRole("button", { name: "Create" })
+        screen.getByRole("button", { name: "Create" }),
       ).toBeInTheDocument();
     });
 
     it("uses default cancel label", () => {
       render(<FormActions onCancel={() => {}} />);
       expect(
-        screen.getByRole("button", { name: "Cancel" })
+        screen.getByRole("button", { name: "Cancel" }),
       ).toBeInTheDocument();
     });
 
@@ -79,7 +79,7 @@ describe("FormActions", () => {
       render(<FormActions onSubmit={() => {}} />);
       expect(screen.getByRole("button", { name: "Save" })).toHaveAttribute(
         "type",
-        "submit"
+        "submit",
       );
     });
 
@@ -117,7 +117,7 @@ describe("FormActions", () => {
       render(<FormActions onCancel={() => {}} />);
       expect(screen.getByRole("button", { name: "Cancel" })).toHaveAttribute(
         "type",
-        "button"
+        "button",
       );
     });
 
@@ -140,14 +140,14 @@ describe("FormActions", () => {
     it("can be hidden with showCancel false", () => {
       render(<FormActions onCancel={() => {}} showCancel={false} />);
       expect(
-        screen.queryByRole("button", { name: "Cancel" })
+        screen.queryByRole("button", { name: "Cancel" }),
       ).not.toBeInTheDocument();
     });
 
     it("is hidden when onCancel is not provided", () => {
       render(<FormActions onSubmit={() => {}} />);
       expect(
-        screen.queryByRole("button", { name: "Cancel" })
+        screen.queryByRole("button", { name: "Cancel" }),
       ).not.toBeInTheDocument();
     });
   });
@@ -160,14 +160,14 @@ describe("FormActions", () => {
 
     it("can align to left", () => {
       const { container } = render(
-        <FormActions onSubmit={() => {}} position="left" />
+        <FormActions onSubmit={() => {}} position="left" />,
       );
       expect(container.firstChild).toHaveClass("justify-start");
     });
 
     it("can use space-between", () => {
       const { container } = render(
-        <FormActions onSubmit={() => {}} position="space-between" />
+        <FormActions onSubmit={() => {}} position="space-between" />,
       );
       expect(container.firstChild).toHaveClass("justify-between");
     });
@@ -179,10 +179,10 @@ describe("FormActions", () => {
         <FormActions
           onSubmit={() => {}}
           additionalActions={<button>Delete</button>}
-        />
+        />,
       );
       expect(
-        screen.getByRole("button", { name: "Delete" })
+        screen.getByRole("button", { name: "Delete" }),
       ).toBeInTheDocument();
     });
 
@@ -192,12 +192,12 @@ describe("FormActions", () => {
           onSubmit={() => {}}
           position="space-between"
           additionalActions={<button>Extra</button>}
-        />
+        />,
       );
 
       expect(screen.getByRole("button", { name: "Extra" })).toBeInTheDocument();
       const wrapper = container.querySelector(
-        ".flex.items-center.gap-3:first-child"
+        ".flex.items-center.gap-3:first-child",
       );
       expect(wrapper).toBeInTheDocument();
     });
@@ -209,7 +209,7 @@ describe("FormActions", () => {
           onCancel={() => {}}
           position="right"
           additionalActions={<button>Help</button>}
-        />
+        />,
       );
 
       const buttons = screen.getAllByRole("button");
@@ -227,14 +227,14 @@ describe("FormActions", () => {
               <button>Action 2</button>
             </>
           }
-        />
+        />,
       );
 
       expect(
-        screen.getByRole("button", { name: "Action 1" })
+        screen.getByRole("button", { name: "Action 1" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Action 2" })
+        screen.getByRole("button", { name: "Action 2" }),
       ).toBeInTheDocument();
     });
   });
@@ -248,7 +248,7 @@ describe("FormActions", () => {
         "border",
         "border-gray-200",
         "bg-gray-50",
-        "p-4"
+        "p-4",
       );
     });
 
@@ -277,17 +277,17 @@ describe("FormActions", () => {
           cancelLabel="Discard"
           position="space-between"
           additionalActions={<button>Preview</button>}
-        />
+        />,
       );
 
       expect(
-        screen.getByRole("button", { name: "Update" })
+        screen.getByRole("button", { name: "Update" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Discard" })
+        screen.getByRole("button", { name: "Discard" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Preview" })
+        screen.getByRole("button", { name: "Preview" }),
       ).toBeInTheDocument();
     });
 
@@ -333,7 +333,7 @@ describe("FormActions", () => {
           onCancel={() => {}}
           submitDisabled
           cancelDisabled
-        />
+        />,
       );
 
       expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
@@ -342,7 +342,7 @@ describe("FormActions", () => {
 
     it("handles submitting state for both buttons", () => {
       render(
-        <FormActions onSubmit={() => {}} onCancel={() => {}} isSubmitting />
+        <FormActions onSubmit={() => {}} onCancel={() => {}} isSubmitting />,
       );
 
       expect(screen.getByRole("button", { name: /Save/ })).toBeDisabled();
@@ -354,7 +354,7 @@ describe("FormActions", () => {
       const onCancel = jest.fn();
 
       render(
-        <FormActions onSubmit={onSubmit} onCancel={onCancel} isSubmitting />
+        <FormActions onSubmit={onSubmit} onCancel={onCancel} isSubmitting />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /Save/ }));

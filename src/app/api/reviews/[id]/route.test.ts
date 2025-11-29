@@ -3,22 +3,29 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { GET, PATCH, DELETE } from "./route";
-import { getUserFromRequest, requireAuth } from "@/app/api/middleware/rbac-auth";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 jest.mock("@/app/api/middleware/rbac-auth");
 jest.mock("@/app/api/lib/firebase/admin");
 
-const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<typeof getUserFromRequest>;
+const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<
+  typeof getUserFromRequest
+>;
 const mockRequireAuth = requireAuth as jest.MockedFunction<typeof requireAuth>;
-const mockGetFirestoreAdmin = getFirestoreAdmin as jest.MockedFunction<typeof getFirestoreAdmin>;
+const mockGetFirestoreAdmin = getFirestoreAdmin as jest.MockedFunction<
+  typeof getFirestoreAdmin
+>;
 
 describe("GET /api/reviews/[id]", () => {
   let mockDb: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockDb = {
       collection: jest.fn().mockReturnThis(),
       doc: jest.fn().mockReturnThis(),
@@ -26,13 +33,13 @@ describe("GET /api/reviews/[id]", () => {
       update: jest.fn(),
       delete: jest.fn(),
     };
-    
+
     mockGetFirestoreAdmin.mockReturnValue(mockDb as any);
   });
 
   it("should get published review for public users", async () => {
     mockGetUserFromRequest.mockResolvedValue(null);
-    
+
     mockDb.get.mockResolvedValue({
       exists: true,
       id: "rev1",
@@ -40,7 +47,9 @@ describe("GET /api/reviews/[id]", () => {
     });
 
     const req = new NextRequest("http://localhost/api/reviews/rev1");
-    const response = await GET(req, { params: Promise.resolve({ id: "rev1" }) });
+    const response = await GET(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -51,7 +60,7 @@ describe("GET /api/reviews/[id]", () => {
 
   it("should hide unpublished reviews from public", async () => {
     mockGetUserFromRequest.mockResolvedValue(null);
-    
+
     mockDb.get.mockResolvedValue({
       exists: true,
       id: "rev1",
@@ -59,7 +68,9 @@ describe("GET /api/reviews/[id]", () => {
     });
 
     const req = new NextRequest("http://localhost/api/reviews/rev1");
-    const response = await GET(req, { params: Promise.resolve({ id: "rev1" }) });
+    const response = await GET(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -67,8 +78,12 @@ describe("GET /api/reviews/[id]", () => {
   });
 
   it("should allow owner to see their unpublished review", async () => {
-    mockGetUserFromRequest.mockResolvedValue({ uid: "user1", email: "user1@test.com", role: "user" });
-    
+    mockGetUserFromRequest.mockResolvedValue({
+      uid: "user1",
+      email: "user1@test.com",
+      role: "user",
+    });
+
     mockDb.get.mockResolvedValue({
       exists: true,
       id: "rev1",
@@ -76,7 +91,9 @@ describe("GET /api/reviews/[id]", () => {
     });
 
     const req = new NextRequest("http://localhost/api/reviews/rev1");
-    const response = await GET(req, { params: Promise.resolve({ id: "rev1" }) });
+    const response = await GET(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -84,8 +101,12 @@ describe("GET /api/reviews/[id]", () => {
   });
 
   it("should allow admin to see any review", async () => {
-    mockGetUserFromRequest.mockResolvedValue({ uid: "admin1", email: "admin@test.com", role: "admin" });
-    
+    mockGetUserFromRequest.mockResolvedValue({
+      uid: "admin1",
+      email: "admin@test.com",
+      role: "admin",
+    });
+
     mockDb.get.mockResolvedValue({
       exists: true,
       id: "rev1",
@@ -93,7 +114,9 @@ describe("GET /api/reviews/[id]", () => {
     });
 
     const req = new NextRequest("http://localhost/api/reviews/rev1");
-    const response = await GET(req, { params: Promise.resolve({ id: "rev1" }) });
+    const response = await GET(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -102,11 +125,13 @@ describe("GET /api/reviews/[id]", () => {
 
   it("should return 404 if review not found", async () => {
     mockGetUserFromRequest.mockResolvedValue(null);
-    
+
     mockDb.get.mockResolvedValue({ exists: false });
 
     const req = new NextRequest("http://localhost/api/reviews/rev1");
-    const response = await GET(req, { params: Promise.resolve({ id: "rev1" }) });
+    const response = await GET(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -118,7 +143,9 @@ describe("GET /api/reviews/[id]", () => {
     mockDb.get.mockRejectedValue(new Error("DB error"));
 
     const req = new NextRequest("http://localhost/api/reviews/rev1");
-    const response = await GET(req, { params: Promise.resolve({ id: "rev1" }) });
+    const response = await GET(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(500);
@@ -131,19 +158,22 @@ describe("PATCH /api/reviews/[id]", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockDb = {
       collection: jest.fn().mockReturnThis(),
       doc: jest.fn().mockReturnThis(),
       get: jest.fn(),
       update: jest.fn(),
     };
-    
+
     mockGetFirestoreAdmin.mockReturnValue(mockDb as any);
   });
 
   it("should require authentication", async () => {
-    const errorResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const errorResponse = NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 },
+    );
     mockRequireAuth.mockResolvedValue({
       user: null,
       error: errorResponse,
@@ -153,8 +183,10 @@ describe("PATCH /api/reviews/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({ rating: 4 }),
     });
-    
-    const response = await PATCH(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await PATCH(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -166,33 +198,46 @@ describe("PATCH /api/reviews/[id]", () => {
       user: { uid: "user1", email: "user1@test.com", role: "user" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValueOnce({
       exists: true,
       id: "rev1",
       data: () => ({ user_id: "user1", rating: 5 }),
     });
-    
+
     mockDb.get.mockResolvedValueOnce({
       id: "rev1",
-      data: () => ({ user_id: "user1", rating: 4, title: "Updated", comment: "Better feedback" }),
+      data: () => ({
+        user_id: "user1",
+        rating: 4,
+        title: "Updated",
+        comment: "Better feedback",
+      }),
     });
 
     const req = new NextRequest("http://localhost/api/reviews/rev1", {
       method: "PATCH",
-      body: JSON.stringify({ rating: 4, title: "Updated", comment: "Better feedback" }),
+      body: JSON.stringify({
+        rating: 4,
+        title: "Updated",
+        comment: "Better feedback",
+      }),
     });
-    
-    const response = await PATCH(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await PATCH(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(200);
     expect(data.success).toBe(true);
-    expect(mockDb.update).toHaveBeenCalledWith(expect.objectContaining({
-      rating: 4,
-      title: "Updated",
-      comment: "Better feedback",
-    }));
+    expect(mockDb.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        rating: 4,
+        title: "Updated",
+        comment: "Better feedback",
+      }),
+    );
   });
 
   it("should allow admin to update any review", async () => {
@@ -200,13 +245,13 @@ describe("PATCH /api/reviews/[id]", () => {
       user: { uid: "admin1", email: "admin@test.com", role: "admin" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValueOnce({
       exists: true,
       id: "rev1",
       data: () => ({ user_id: "user1", status: "published" }),
     });
-    
+
     mockDb.get.mockResolvedValueOnce({
       id: "rev1",
       data: () => ({ user_id: "user1", status: "rejected" }),
@@ -216,15 +261,19 @@ describe("PATCH /api/reviews/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({ status: "rejected", is_flagged: true }),
     });
-    
-    const response = await PATCH(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await PATCH(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(mockDb.update).toHaveBeenCalledWith(expect.objectContaining({
-      status: "rejected",
-      is_flagged: true,
-    }));
+    expect(mockDb.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "rejected",
+        is_flagged: true,
+      }),
+    );
   });
 
   it("should prevent non-owner from updating review", async () => {
@@ -232,7 +281,7 @@ describe("PATCH /api/reviews/[id]", () => {
       user: { uid: "user2", email: "user2@test.com", role: "user" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({
       exists: true,
       id: "rev1",
@@ -243,8 +292,10 @@ describe("PATCH /api/reviews/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({ rating: 1 }),
     });
-    
-    const response = await PATCH(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await PATCH(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(403);
@@ -256,7 +307,7 @@ describe("PATCH /api/reviews/[id]", () => {
       user: { uid: "user1", email: "user1@test.com", role: "user" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({
       exists: true,
       id: "rev1",
@@ -267,8 +318,10 @@ describe("PATCH /api/reviews/[id]", () => {
       method: "PATCH",
       body: JSON.stringify({ rating: 6 }),
     });
-    
-    const response = await PATCH(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await PATCH(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(400);
@@ -280,15 +333,17 @@ describe("PATCH /api/reviews/[id]", () => {
       user: { uid: "user1", email: "user1@test.com", role: "user" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({ exists: false });
 
     const req = new NextRequest("http://localhost/api/reviews/rev1", {
       method: "PATCH",
       body: JSON.stringify({ rating: 4 }),
     });
-    
-    const response = await PATCH(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await PATCH(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -300,15 +355,17 @@ describe("PATCH /api/reviews/[id]", () => {
       user: { uid: "user1", email: "user1@test.com", role: "user" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockRejectedValue(new Error("DB error"));
 
     const req = new NextRequest("http://localhost/api/reviews/rev1", {
       method: "PATCH",
       body: JSON.stringify({ rating: 4 }),
     });
-    
-    const response = await PATCH(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await PATCH(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(500);
@@ -321,19 +378,22 @@ describe("DELETE /api/reviews/[id]", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockDb = {
       collection: jest.fn().mockReturnThis(),
       doc: jest.fn().mockReturnThis(),
       get: jest.fn(),
       delete: jest.fn(),
     };
-    
+
     mockGetFirestoreAdmin.mockReturnValue(mockDb as any);
   });
 
   it("should require authentication", async () => {
-    const errorResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const errorResponse = NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 },
+    );
     mockRequireAuth.mockResolvedValue({
       user: null,
       error: errorResponse,
@@ -342,8 +402,10 @@ describe("DELETE /api/reviews/[id]", () => {
     const req = new NextRequest("http://localhost/api/reviews/rev1", {
       method: "DELETE",
     });
-    
-    const response = await DELETE(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await DELETE(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -355,7 +417,7 @@ describe("DELETE /api/reviews/[id]", () => {
       user: { uid: "user1", email: "user1@test.com", role: "user" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({
       exists: true,
       id: "rev1",
@@ -365,8 +427,10 @@ describe("DELETE /api/reviews/[id]", () => {
     const req = new NextRequest("http://localhost/api/reviews/rev1", {
       method: "DELETE",
     });
-    
-    const response = await DELETE(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await DELETE(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -379,7 +443,7 @@ describe("DELETE /api/reviews/[id]", () => {
       user: { uid: "admin1", email: "admin@test.com", role: "admin" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({
       exists: true,
       id: "rev1",
@@ -389,8 +453,10 @@ describe("DELETE /api/reviews/[id]", () => {
     const req = new NextRequest("http://localhost/api/reviews/rev1", {
       method: "DELETE",
     });
-    
-    const response = await DELETE(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await DELETE(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -403,7 +469,7 @@ describe("DELETE /api/reviews/[id]", () => {
       user: { uid: "user2", email: "user2@test.com", role: "user" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({
       exists: true,
       id: "rev1",
@@ -413,8 +479,10 @@ describe("DELETE /api/reviews/[id]", () => {
     const req = new NextRequest("http://localhost/api/reviews/rev1", {
       method: "DELETE",
     });
-    
-    const response = await DELETE(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await DELETE(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(403);
@@ -427,14 +495,16 @@ describe("DELETE /api/reviews/[id]", () => {
       user: { uid: "user1", email: "user1@test.com", role: "user" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({ exists: false });
 
     const req = new NextRequest("http://localhost/api/reviews/rev1", {
       method: "DELETE",
     });
-    
-    const response = await DELETE(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await DELETE(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -446,14 +516,16 @@ describe("DELETE /api/reviews/[id]", () => {
       user: { uid: "user1", email: "user1@test.com", role: "user" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockRejectedValue(new Error("DB error"));
 
     const req = new NextRequest("http://localhost/api/reviews/rev1", {
       method: "DELETE",
     });
-    
-    const response = await DELETE(req, { params: Promise.resolve({ id: "rev1" }) });
+
+    const response = await DELETE(req, {
+      params: Promise.resolve({ id: "rev1" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(500);

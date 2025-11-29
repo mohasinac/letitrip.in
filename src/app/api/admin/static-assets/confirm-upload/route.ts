@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     if (!assetId || !name || !type || !storagePath) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     console.error("Error confirming upload:", error);
     return NextResponse.json(
       { success: false, error: "Failed to confirm upload" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

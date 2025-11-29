@@ -139,7 +139,7 @@ export async function GET() {
     console.error("Error in debug endpoint:", error);
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

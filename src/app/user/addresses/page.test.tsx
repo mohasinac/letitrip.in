@@ -134,7 +134,9 @@ describe("AddressesPage", () => {
       render(<AddressesPage />);
       await waitFor(() => {
         expect(
-          screen.getByText("Manage your shipping addresses for faster checkout")
+          screen.getByText(
+            "Manage your shipping addresses for faster checkout",
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -159,7 +161,7 @@ describe("AddressesPage", () => {
   describe("Loading State", () => {
     it("should show loading spinner initially", () => {
       mockGetAll.mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve([]), 100))
+        () => new Promise((resolve) => setTimeout(() => resolve([]), 100)),
       );
       render(<AddressesPage />);
       expect(document.querySelector(".animate-spin")).toBeInTheDocument();
@@ -188,7 +190,7 @@ describe("AddressesPage", () => {
         expect(screen.getByText("123 Main Street")).toBeInTheDocument();
         expect(screen.getByText("Near Central Park")).toBeInTheDocument();
         expect(
-          screen.getByText("Mumbai, Maharashtra 400001")
+          screen.getByText("Mumbai, Maharashtra 400001"),
         ).toBeInTheDocument();
       });
     });
@@ -231,7 +233,7 @@ describe("AddressesPage", () => {
       render(<AddressesPage />);
       await waitFor(() => {
         expect(
-          screen.getByText("Add your first address to make checkout easier")
+          screen.getByText("Add your first address to make checkout easier"),
         ).toBeInTheDocument();
       });
     });
@@ -278,13 +280,13 @@ describe("AddressesPage", () => {
       await waitFor(() => {
         const modal = screen.getByTestId("form-modal");
         expect(
-          within(modal).getByPlaceholderText("John Doe")
+          within(modal).getByPlaceholderText("John Doe"),
         ).toBeInTheDocument();
         expect(
-          within(modal).getByPlaceholderText("+91 98765 43210")
+          within(modal).getByPlaceholderText("+91 98765 43210"),
         ).toBeInTheDocument();
         expect(
-          within(modal).getByPlaceholderText("House/Flat No., Street Name")
+          within(modal).getByPlaceholderText("House/Flat No., Street Name"),
         ).toBeInTheDocument();
       });
     });
@@ -309,26 +311,26 @@ describe("AddressesPage", () => {
       const nameInput = within(modal).getByPlaceholderText("John Doe");
       const phoneInput = within(modal).getByPlaceholderText("+91 98765 43210");
       const addressInput = within(modal).getByPlaceholderText(
-        "House/Flat No., Street Name"
+        "House/Flat No., Street Name",
       );
       const cityInputs = within(modal).getAllByRole("textbox");
       const cityInput = cityInputs.find((input) =>
         input
           .closest("div")
           ?.querySelector("label")
-          ?.textContent?.includes("City")
+          ?.textContent?.includes("City"),
       );
       const stateInput = cityInputs.find((input) =>
         input
           .closest("div")
           ?.querySelector("label")
-          ?.textContent?.includes("State")
+          ?.textContent?.includes("State"),
       );
       const postalInput = cityInputs.find((input) =>
         input
           .closest("div")
           ?.querySelector("label")
-          ?.textContent?.includes("Postal")
+          ?.textContent?.includes("Postal"),
       );
 
       await user.clear(nameInput);
@@ -384,7 +386,7 @@ describe("AddressesPage", () => {
       const editButtons = screen.getAllByRole("button");
       const editButton = editButtons.find(
         (btn) =>
-          btn.className.includes("border-gray-300") && btn.querySelector("svg")
+          btn.className.includes("border-gray-300") && btn.querySelector("svg"),
       );
 
       if (editButton) {
@@ -418,7 +420,7 @@ describe("AddressesPage", () => {
 
       const deleteButtons = screen.getAllByRole("button");
       const deleteButton = deleteButtons.find((btn) =>
-        btn.className.includes("border-red-300")
+        btn.className.includes("border-red-300"),
       );
 
       if (deleteButton) {
@@ -441,7 +443,7 @@ describe("AddressesPage", () => {
 
       const deleteButtons = screen.getAllByRole("button");
       const deleteButton = deleteButtons.find((btn) =>
-        btn.className.includes("border-red-300")
+        btn.className.includes("border-red-300"),
       );
 
       if (deleteButton) {
@@ -470,7 +472,7 @@ describe("AddressesPage", () => {
 
       const deleteButtons = screen.getAllByRole("button");
       const deleteButton = deleteButtons.find((btn) =>
-        btn.className.includes("border-red-300")
+        btn.className.includes("border-red-300"),
       );
 
       if (deleteButton) {
@@ -482,7 +484,7 @@ describe("AddressesPage", () => {
       });
 
       const cancelButton = within(
-        screen.getByTestId("confirm-dialog")
+        screen.getByTestId("confirm-dialog"),
       ).getByText("Cancel");
       await user.click(cancelButton);
 
@@ -554,7 +556,7 @@ describe("AddressesPage", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to load addresses:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -583,26 +585,26 @@ describe("AddressesPage", () => {
       const nameInput = within(modal).getByPlaceholderText("John Doe");
       const phoneInput = within(modal).getByPlaceholderText("+91 98765 43210");
       const addressInput = within(modal).getByPlaceholderText(
-        "House/Flat No., Street Name"
+        "House/Flat No., Street Name",
       );
       const cityInputs = within(modal).getAllByRole("textbox");
       const cityInput = cityInputs.find((input) =>
         input
           .closest("div")
           ?.querySelector("label")
-          ?.textContent?.includes("City")
+          ?.textContent?.includes("City"),
       );
       const stateInput = cityInputs.find((input) =>
         input
           .closest("div")
           ?.querySelector("label")
-          ?.textContent?.includes("State")
+          ?.textContent?.includes("State"),
       );
       const postalInput = cityInputs.find((input) =>
         input
           .closest("div")
           ?.querySelector("label")
-          ?.textContent?.includes("Postal")
+          ?.textContent?.includes("Postal"),
       );
 
       await user.type(nameInput, "Test User");
@@ -619,7 +621,7 @@ describe("AddressesPage", () => {
 
       await waitFor(() => {
         expect(alertSpy).toHaveBeenCalledWith(
-          "Failed to save address. Please try again."
+          "Failed to save address. Please try again.",
         );
       });
 
@@ -639,7 +641,7 @@ describe("AddressesPage", () => {
 
       const deleteButtons = screen.getAllByRole("button");
       const deleteButton = deleteButtons.find((btn) =>
-        btn.className.includes("border-red-300")
+        btn.className.includes("border-red-300"),
       );
 
       if (deleteButton) {
@@ -655,7 +657,7 @@ describe("AddressesPage", () => {
 
       await waitFor(() => {
         expect(alertSpy).toHaveBeenCalledWith(
-          "Failed to delete address. Please try again."
+          "Failed to delete address. Please try again.",
         );
       });
 
@@ -679,7 +681,7 @@ describe("AddressesPage", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to set default address:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -765,7 +767,7 @@ describe("AddressesPage", () => {
       render(<AddressesPage />);
       await waitFor(() => {
         expect(
-          document.querySelector(".container.mx-auto")
+          document.querySelector(".container.mx-auto"),
         ).toBeInTheDocument();
       });
     });
@@ -801,26 +803,26 @@ describe("AddressesPage", () => {
       const nameInput = within(modal).getByPlaceholderText("John Doe");
       const phoneInput = within(modal).getByPlaceholderText("+91 98765 43210");
       const addressInput = within(modal).getByPlaceholderText(
-        "House/Flat No., Street Name"
+        "House/Flat No., Street Name",
       );
       const cityInputs = within(modal).getAllByRole("textbox");
       const cityInput = cityInputs.find((input) =>
         input
           .closest("div")
           ?.querySelector("label")
-          ?.textContent?.includes("City")
+          ?.textContent?.includes("City"),
       );
       const stateInput = cityInputs.find((input) =>
         input
           .closest("div")
           ?.querySelector("label")
-          ?.textContent?.includes("State")
+          ?.textContent?.includes("State"),
       );
       const postalInput = cityInputs.find((input) =>
         input
           .closest("div")
           ?.querySelector("label")
-          ?.textContent?.includes("Postal")
+          ?.textContent?.includes("Postal"),
       );
 
       await user.type(nameInput, "Test User");
@@ -853,7 +855,7 @@ describe("AddressesPage", () => {
 
       const deleteButtons = screen.getAllByRole("button");
       const deleteButton = deleteButtons.find((btn) =>
-        btn.className.includes("border-red-300")
+        btn.className.includes("border-red-300"),
       );
 
       if (deleteButton) {

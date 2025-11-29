@@ -21,7 +21,7 @@ function parseDate(date: Timestamp | string | null): Date | null {
 
 function formatTimeAgo(date: Date | null): string {
   if (!date) return "Unknown";
-  
+
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / 86400000);
@@ -36,7 +36,7 @@ function formatTimeAgo(date: Date | null): string {
 
 export function toFEReview(
   reviewBE: ReviewBE,
-  currentUserId?: string
+  currentUserId?: string,
 ): ReviewFE {
   const createdAt = parseDate(reviewBE.createdAt) || new Date();
   const updatedAt = parseDate(reviewBE.updatedAt) || new Date();
@@ -61,7 +61,7 @@ export function toFEReview(
 }
 
 export function toBECreateReviewRequest(
-  formData: ReviewFormFE
+  formData: ReviewFormFE,
 ): CreateReviewRequestBE {
   return {
     productId: formData.productId,
@@ -113,7 +113,7 @@ export function toFEReviewStats(statsBE: ReviewStatsResponseBE): ReviewStatsFE {
 
 export function toFEReviews(
   reviewsBE: ReviewBE[] | undefined,
-  currentUserId?: string
+  currentUserId?: string,
 ): ReviewFE[] {
   if (!reviewsBE) return [];
   return reviewsBE.map((r) => toFEReview(r, currentUserId));

@@ -55,7 +55,7 @@ describe("FavoritesPage", () => {
       expect(screen.getByText("Sign in to view favorites")).toBeInTheDocument();
       expect(screen.getByRole("link", { name: "Sign In" })).toHaveAttribute(
         "href",
-        "/auth/login"
+        "/auth/login",
       );
     });
 
@@ -127,7 +127,7 @@ describe("FavoritesPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Failed to load favorites")
+          screen.getByText("Failed to load favorites"),
         ).toBeInTheDocument();
       });
     });
@@ -186,7 +186,7 @@ describe("FavoritesPage", () => {
           "/api/favorites/product/item-1",
           {
             method: "DELETE",
-          }
+          },
         );
       });
     });

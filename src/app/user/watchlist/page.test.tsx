@@ -90,8 +90,8 @@ describe("WatchlistPage", () => {
       });
       expect(
         screen.getByText(
-          "Track your favorite auctions and never miss a bidding opportunity"
-        )
+          "Track your favorite auctions and never miss a bidding opportunity",
+        ),
       ).toBeInTheDocument();
     });
 
@@ -123,7 +123,7 @@ describe("WatchlistPage", () => {
       render(<WatchlistPage />);
 
       expect(
-        screen.getByText("Please log in to view your watchlist")
+        screen.getByText("Please log in to view your watchlist"),
       ).toBeInTheDocument();
     });
 
@@ -248,7 +248,7 @@ describe("WatchlistPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("No auctions in your watchlist")
+          screen.getByText("No auctions in your watchlist"),
         ).toBeInTheDocument();
       });
     });
@@ -262,8 +262,8 @@ describe("WatchlistPage", () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            "Start watching auctions to keep track of items you're interested in"
-          )
+            "Start watching auctions to keep track of items you're interested in",
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -337,7 +337,7 @@ describe("WatchlistPage", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to remove from watchlist:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -400,7 +400,7 @@ describe("WatchlistPage", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to load watchlist:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 

@@ -25,7 +25,7 @@ async function logoutHandler(req: NextRequest) {
     // Create response
     const response = NextResponse.json(
       { message: "Logout successful" },
-      { status: 200 }
+      { status: 200 },
     );
 
     // Clear session cookie
@@ -42,7 +42,7 @@ async function logoutHandler(req: NextRequest) {
         error:
           process.env.NODE_ENV === "production" ? undefined : error.message,
       },
-      { status: 200 }
+      { status: 200 },
     );
 
     clearSessionCookie(response);
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
   if (!apiRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many requests. Please try again later." },
-      { status: 429 }
+      { status: 429 },
     );
   }
 

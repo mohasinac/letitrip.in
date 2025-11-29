@@ -58,7 +58,7 @@ describe("FAQSection", () => {
     it("renders FAQ section with default title", () => {
       render(<FAQSection />);
       expect(
-        screen.getByText("Frequently Asked Questions")
+        screen.getByText("Frequently Asked Questions"),
       ).toBeInTheDocument();
     });
 
@@ -93,7 +93,7 @@ describe("FAQSection", () => {
     it("does not show search bar by default", () => {
       render(<FAQSection />);
       expect(
-        screen.queryByPlaceholderText("Search FAQs...")
+        screen.queryByPlaceholderText("Search FAQs..."),
       ).not.toBeInTheDocument();
     });
 
@@ -149,7 +149,7 @@ describe("FAQSection", () => {
         "px-4",
         "py-3",
         "border",
-        "rounded-lg"
+        "rounded-lg",
       );
     });
   });
@@ -234,7 +234,7 @@ describe("FAQSection", () => {
     it("renders FAQs in a white bordered container", () => {
       const { container } = render(<FAQSection />);
       const faqContainer = container.querySelector(
-        ".bg-white.rounded-lg.shadow-sm.border"
+        ".bg-white.rounded-lg.shadow-sm.border",
       );
 
       expect(faqContainer).toBeInTheDocument();
@@ -251,7 +251,7 @@ describe("FAQSection", () => {
       mockGetFAQsByCategory.mockReturnValue([]);
       const { container } = render(<FAQSection />);
       const emptyState = container.querySelector(
-        ".py-12.text-center.text-gray-500"
+        ".py-12.text-center.text-gray-500",
       );
 
       expect(emptyState).toBeInTheDocument();

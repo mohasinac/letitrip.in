@@ -84,7 +84,7 @@ describe("BaseCard", () => {
           {...defaultProps}
           image="/test.jpg"
           imageClassName="custom-image"
-        />
+        />,
       );
 
       const imageContainer = screen
@@ -106,7 +106,7 @@ describe("BaseCard", () => {
 
     it("applies video aspect ratio", () => {
       render(
-        <BaseCard {...defaultProps} image="/test.jpg" aspectRatio="video" />
+        <BaseCard {...defaultProps} image="/test.jpg" aspectRatio="video" />,
       );
 
       const imageContainer = screen
@@ -117,7 +117,7 @@ describe("BaseCard", () => {
 
     it("applies wide aspect ratio", () => {
       render(
-        <BaseCard {...defaultProps} image="/test.jpg" aspectRatio="wide" />
+        <BaseCard {...defaultProps} image="/test.jpg" aspectRatio="wide" />,
       );
 
       const imageContainer = screen
@@ -191,7 +191,7 @@ describe("BaseCard", () => {
           {...defaultProps}
           image="/test.jpg"
           actionButtons={actionButtons}
-        />
+        />,
       );
 
       const button = screen.getByLabelText("Add to favorites");
@@ -213,7 +213,7 @@ describe("BaseCard", () => {
           {...defaultProps}
           image="/test.jpg"
           actionButtons={actionButtons}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByLabelText("Add to favorites"));
@@ -235,7 +235,7 @@ describe("BaseCard", () => {
           {...defaultProps}
           image="/test.jpg"
           actionButtons={actionButtons}
-        />
+        />,
       );
 
       const button = screen.getByLabelText("Add to favorites");
@@ -257,7 +257,7 @@ describe("BaseCard", () => {
           {...defaultProps}
           image="/test.jpg"
           actionButtons={actionButtons}
-        />
+        />,
       );
 
       const button = screen.getByLabelText("Add to favorites");
@@ -274,7 +274,7 @@ describe("BaseCard", () => {
           {...defaultProps}
           image="/test.jpg"
           actionButtons={actionButtons}
-        />
+        />,
       );
 
       expect(screen.getByLabelText("Favorite")).toBeInTheDocument();
@@ -283,11 +283,11 @@ describe("BaseCard", () => {
 
     it("does not render action buttons container when empty", () => {
       render(
-        <BaseCard {...defaultProps} image="/test.jpg" actionButtons={[]} />
+        <BaseCard {...defaultProps} image="/test.jpg" actionButtons={[]} />,
       );
 
       const buttonsContainer = document.querySelector(
-        ".absolute.top-2.right-2"
+        ".absolute.top-2.right-2",
       );
       expect(buttonsContainer).not.toBeInTheDocument();
     });
@@ -297,7 +297,7 @@ describe("BaseCard", () => {
     it("renders image overlay", () => {
       const overlay = <button data-testid="add-to-cart">Add to Cart</button>;
       render(
-        <BaseCard {...defaultProps} image="/test.jpg" imageOverlay={overlay} />
+        <BaseCard {...defaultProps} image="/test.jpg" imageOverlay={overlay} />,
       );
 
       expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
@@ -306,7 +306,7 @@ describe("BaseCard", () => {
     it("renders image overlay with correct positioning", () => {
       const overlay = <button>Add to Cart</button>;
       render(
-        <BaseCard {...defaultProps} image="/test.jpg" imageOverlay={overlay} />
+        <BaseCard {...defaultProps} image="/test.jpg" imageOverlay={overlay} />,
       );
 
       const overlayContainer = screen.getByText("Add to Cart").closest("div");
@@ -347,7 +347,7 @@ describe("BaseCard", () => {
         <BaseCard {...defaultProps}>
           <h3>Product Title</h3>
           <p>Product Description</p>
-        </BaseCard>
+        </BaseCard>,
       );
 
       expect(screen.getByText("Product Title")).toBeInTheDocument();
@@ -386,7 +386,7 @@ describe("BaseCard", () => {
     it("handles very long imageAlt", () => {
       const longAlt = "A".repeat(200);
       render(
-        <BaseCard {...defaultProps} image="/test.jpg" imageAlt={longAlt} />
+        <BaseCard {...defaultProps} image="/test.jpg" imageAlt={longAlt} />,
       );
 
       const image = screen.getByTestId("optimized-image");
@@ -412,7 +412,7 @@ describe("BaseCard", () => {
               <li>Item 2</li>
             </ul>
           </div>
-        </BaseCard>
+        </BaseCard>,
       );
 
       expect(screen.getByText("Title")).toBeInTheDocument();
@@ -436,7 +436,7 @@ describe("BaseCard", () => {
           {...defaultProps}
           image="/test.jpg"
           actionButtons={actionButtons}
-        />
+        />,
       );
 
       expect(screen.getByLabelText("Add to favorites")).toBeInTheDocument();
@@ -448,7 +448,7 @@ describe("BaseCard", () => {
           {...defaultProps}
           image="/test.jpg"
           imageAlt="Product image"
-        />
+        />,
       );
 
       const image = screen.getByTestId("optimized-image");

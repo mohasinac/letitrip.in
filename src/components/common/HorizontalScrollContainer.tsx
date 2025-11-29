@@ -117,7 +117,7 @@ export const HorizontalScrollContainer: React.FC<
                     ? "text-2xl font-bold text-gray-900"
                     : "text-xl font-bold text-gray-900",
               },
-              title
+              title,
             )}
           {viewAllLink && (
             <Link

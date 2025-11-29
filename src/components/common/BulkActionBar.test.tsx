@@ -63,7 +63,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       expect(container.firstChild).toBeNull();
     });
@@ -75,7 +75,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       expect(screen.getByText("3 items selected")).toBeInTheDocument();
     });
@@ -87,7 +87,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       expect(screen.getByText("5 selected")).toBeInTheDocument();
     });
@@ -99,7 +99,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       expect(screen.getAllByText("Delete")).toHaveLength(2); // Desktop + Mobile
       expect(screen.getAllByText("Publish")).toHaveLength(2);
@@ -116,7 +116,7 @@ describe("BulkActionBar", () => {
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
           resourceName="product"
-        />
+        />,
       );
       expect(screen.getByText("1 product selected")).toBeInTheDocument();
     });
@@ -129,7 +129,7 @@ describe("BulkActionBar", () => {
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
           resourceName="product"
-        />
+        />,
       );
       expect(screen.getByText("5 products selected")).toBeInTheDocument();
     });
@@ -142,7 +142,7 @@ describe("BulkActionBar", () => {
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
           totalCount={100}
-        />
+        />,
       );
       expect(screen.getByText("3 items selected (of 100)")).toBeInTheDocument();
     });
@@ -154,7 +154,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       expect(screen.getByText("2 items selected")).toBeInTheDocument();
     });
@@ -169,7 +169,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const clearButtons = screen.getAllByText("Clear selection");
       fireEvent.click(clearButtons[0]);
@@ -183,7 +183,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const xButtons = screen.getAllByLabelText("Clear selection");
       fireEvent.click(xButtons[0]);
@@ -198,7 +198,7 @@ describe("BulkActionBar", () => {
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
           loading={true}
-        />
+        />,
       );
       const clearButtons = screen.getAllByText("Clear selection");
       fireEvent.click(clearButtons[0]);
@@ -215,7 +215,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const publishButtons = screen.getAllByText("Publish");
       fireEvent.click(publishButtons[0]);
@@ -231,7 +231,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const publishButtons = screen.getAllByText("Publish");
       fireEvent.click(publishButtons[0]);
@@ -248,7 +248,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const deleteButtons = screen.getAllByText("Delete");
       fireEvent.click(deleteButtons[0]);
@@ -262,7 +262,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const deleteButtons = screen.getAllByText("Delete");
       fireEvent.click(deleteButtons[0]);
@@ -278,7 +278,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const deleteButtons = screen.getAllByText("Delete");
       fireEvent.click(deleteButtons[0]);
@@ -300,7 +300,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const deleteButtons = screen.getAllByText("Delete");
       fireEvent.click(deleteButtons[0]);
@@ -316,7 +316,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const deleteButtons = screen.getAllByText("Delete");
       fireEvent.click(deleteButtons[0]);
@@ -340,7 +340,7 @@ describe("BulkActionBar", () => {
           actions={actionsWithoutTitle}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const archiveButtons = screen.getAllByText("Archive");
       fireEvent.click(archiveButtons[0]);
@@ -363,12 +363,12 @@ describe("BulkActionBar", () => {
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
           resourceName="product"
-        />
+        />,
       );
       const archiveButtons = screen.getAllByText("Archive");
       fireEvent.click(archiveButtons[0]);
       expect(
-        screen.getByText("Are you sure you want to archive 2 products?")
+        screen.getByText("Are you sure you want to archive 2 products?"),
       ).toBeInTheDocument();
     });
   });
@@ -389,7 +389,7 @@ describe("BulkActionBar", () => {
           ]}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const button = screen.getAllByText("Delete")[0];
       expect(button).toHaveClass("bg-red-600");
@@ -409,7 +409,7 @@ describe("BulkActionBar", () => {
           ]}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const button = screen.getAllByText("Approve")[0];
       expect(button).toHaveClass("bg-green-600");
@@ -424,7 +424,7 @@ describe("BulkActionBar", () => {
           ]}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const button = screen.getAllByText("Warn")[0];
       expect(button).toHaveClass("bg-yellow-600");
@@ -444,7 +444,7 @@ describe("BulkActionBar", () => {
           ]}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const button = screen.getAllByText("Draft")[0];
       expect(button).toHaveClass("bg-blue-600");
@@ -461,7 +461,7 @@ describe("BulkActionBar", () => {
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
           loading={true}
-        />
+        />,
       );
       const allButtons = screen.getAllByRole("button");
       allButtons.forEach((btn) => {
@@ -485,7 +485,7 @@ describe("BulkActionBar", () => {
           actions={actionsWithDisabled}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const publishButtons = screen
         .getAllByText("Publish")
@@ -511,7 +511,7 @@ describe("BulkActionBar", () => {
           actions={actionsWithDisabled}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const publishButtons = screen.getAllByText("Publish");
       fireEvent.click(publishButtons[0]);
@@ -538,7 +538,7 @@ describe("BulkActionBar", () => {
           actions={actionsWithIcons}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       expect(screen.getAllByText("TrashIcon")).toHaveLength(2); // Desktop + Mobile
     });
@@ -558,7 +558,7 @@ describe("BulkActionBar", () => {
           actions={actionsWithoutIcons}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       // Should only show text
       expect(screen.getAllByText("Publish")).toHaveLength(2);
@@ -573,7 +573,7 @@ describe("BulkActionBar", () => {
         () =>
           new Promise((resolve) => {
             resolveAction = resolve;
-          })
+          }),
       );
       render(
         <BulkActionBar
@@ -588,7 +588,7 @@ describe("BulkActionBar", () => {
           ]}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const publishButtons = screen.getAllByText("Publish");
       fireEvent.click(publishButtons[1]); // Mobile button
@@ -610,7 +610,7 @@ describe("BulkActionBar", () => {
           actions={[]}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       expect(screen.getByText("2 items selected")).toBeInTheDocument();
     });
@@ -630,12 +630,12 @@ describe("BulkActionBar", () => {
           actions={actionsWithLongLabels}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       expect(
         screen.getAllByText(
-          "This is a very long action label that should be handled"
-        )[0]
+          "This is a very long action label that should be handled",
+        )[0],
       ).toBeInTheDocument();
     });
 
@@ -647,7 +647,7 @@ describe("BulkActionBar", () => {
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
           resourceName="user's item"
-        />
+        />,
       );
       expect(screen.getByText("2 user's items selected")).toBeInTheDocument();
     });
@@ -670,14 +670,14 @@ describe("BulkActionBar", () => {
           ]}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const publishButtons = screen.getAllByText("Publish");
       fireEvent.click(publishButtons[0]);
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalledWith(
           "Failed to execute bulk action:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
       consoleError.mockRestore();
@@ -697,7 +697,7 @@ describe("BulkActionBar", () => {
           ]}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const publishButtons = screen.getAllByText("Publish");
       fireEvent.click(publishButtons[0]);
@@ -719,7 +719,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const desktopView = container.querySelector(".hidden.md\\:flex");
       expect(desktopView).toBeInTheDocument();
@@ -732,7 +732,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const mobileView = container.querySelector(".md\\:hidden.fixed.bottom-0");
       expect(mobileView).toBeInTheDocument();
@@ -745,7 +745,7 @@ describe("BulkActionBar", () => {
           actions={defaultActions}
           onAction={mockOnAction}
           onClearSelection={mockOnClearSelection}
-        />
+        />,
       );
       const gridContainer = container.querySelector(".grid.grid-cols-2");
       expect(gridContainer).toBeInTheDocument();

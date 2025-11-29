@@ -36,7 +36,7 @@ describe("OrdersService - User Orders", () => {
 
       for (let i = 1; i < result.data.length; i++) {
         expect(
-          new Date(result.data[i].createdAt).getTime()
+          new Date(result.data[i].createdAt).getTime(),
         ).toBeLessThanOrEqual(new Date(result.data[i - 1].createdAt).getTime());
       }
     });
@@ -74,14 +74,14 @@ describe("OrdersService - User Orders", () => {
 
     it("should return 404 for non-existent order", async () => {
       await expect(ordersService.getById("non_existent")).rejects.toThrow(
-        "Order not found"
+        "Order not found",
       );
     });
 
     it("should reject access to another user's order", async () => {
       // As test_user_001 trying to access test_user_002's order
       await expect(ordersService.getById("other_user_order")).rejects.toThrow(
-        "Access denied"
+        "Access denied",
       );
     });
 
@@ -130,19 +130,19 @@ describe("OrdersService - Cancel", () => {
 
     it("should reject cancellation of shipped order", async () => {
       await expect(
-        ordersService.cancel("test_order_shipped", { reason: "Changed mind" })
+        ordersService.cancel("test_order_shipped", { reason: "Changed mind" }),
       ).rejects.toThrow("Order has already been shipped");
     });
 
     it("should reject cancellation of delivered order", async () => {
       await expect(
-        ordersService.cancel("test_order_001", { reason: "Changed mind" })
+        ordersService.cancel("test_order_001", { reason: "Changed mind" }),
       ).rejects.toThrow("Order cannot be cancelled");
     });
 
     it("should reject cancellation of already cancelled order", async () => {
       await expect(
-        ordersService.cancel("test_order_003", { reason: "Changed mind" })
+        ordersService.cancel("test_order_003", { reason: "Changed mind" }),
       ).rejects.toThrow("Order is already cancelled");
     });
   });
@@ -165,7 +165,7 @@ describe("OrdersService - Invoice", () => {
 
     it("should reject invoice for unpaid order", async () => {
       await expect(ordersService.getInvoice("test_order_002")).rejects.toThrow(
-        "Invoice not available"
+        "Invoice not available",
       );
     });
   });
@@ -211,7 +211,7 @@ describe("CheckoutService", () => {
         checkoutService.createOrder({
           shippingAddressId: "test_address_001",
           paymentMethod: "razorpay",
-        })
+        }),
       ).rejects.toThrow("Cart is empty");
     });
 
@@ -220,7 +220,7 @@ describe("CheckoutService", () => {
         checkoutService.createOrder({
           shippingAddressId: "invalid_address",
           paymentMethod: "razorpay",
-        })
+        }),
       ).rejects.toThrow("Invalid shipping address");
     });
 
@@ -230,7 +230,7 @@ describe("CheckoutService", () => {
         checkoutService.createOrder({
           shippingAddressId: "test_address_001",
           paymentMethod: "razorpay",
-        })
+        }),
       ).rejects.toThrow("out of stock");
     });
 
@@ -240,7 +240,7 @@ describe("CheckoutService", () => {
           shippingAddressId: "test_address_001",
           paymentMethod: "razorpay",
           couponCode: "INVALID_COUPON",
-        })
+        }),
       ).rejects.toThrow("invalid or expired");
     });
 
@@ -250,7 +250,7 @@ describe("CheckoutService", () => {
         checkoutService.createOrder({
           shippingAddressId: "test_address_001",
           paymentMethod: "razorpay",
-        })
+        }),
       ).rejects.toThrow("prices have changed");
     });
 
@@ -285,7 +285,7 @@ describe("CheckoutService", () => {
           razorpay_payment_id: "pay_test123456",
           razorpay_order_id: "order_test123456",
           razorpay_signature: "invalid_signature",
-        })
+        }),
       ).rejects.toThrow("Payment verification failed");
     });
 
@@ -296,7 +296,7 @@ describe("CheckoutService", () => {
           razorpay_payment_id: "pay_test123456",
           razorpay_order_id: "order_test123456",
           razorpay_signature: "valid_signature",
-        })
+        }),
       ).rejects.toThrow("Order already paid");
     });
   });
@@ -345,7 +345,7 @@ describe("OrdersService - Seller", () => {
         ordersService.updateStatus("seller_order_processing", {
           status: "shipped",
           // Missing tracking info
-        })
+        }),
       ).rejects.toThrow("Tracking number required");
     });
 
@@ -356,7 +356,7 @@ describe("OrdersService - Seller", () => {
           status: "shipped",
           trackingNumber: "DTDC123456789",
           trackingCarrier: "DTDC",
-        }
+        },
       );
 
       expect(result.status).toBe("shipped");
@@ -368,7 +368,7 @@ describe("OrdersService - Seller", () => {
       await expect(
         ordersService.updateStatus("seller_order_pending", {
           status: "delivered",
-        })
+        }),
       ).rejects.toThrow("Invalid status transition");
     });
 
@@ -376,7 +376,7 @@ describe("OrdersService - Seller", () => {
       await expect(
         ordersService.updateStatus("other_seller_order", {
           status: "processing",
-        })
+        }),
       ).rejects.toThrow("Access denied");
     });
 
@@ -523,7 +523,7 @@ describe("Checkout Flow Integration", () => {
     // 4. Verify order appears in user orders
     const userOrders = await ordersService.getUserOrders({});
     expect(userOrders.data.some((o) => o.id === orderResult.orderId)).toBe(
-      true
+      true,
     );
 
     // 5. Verify cart is cleared

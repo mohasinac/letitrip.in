@@ -89,10 +89,10 @@ describe("POST /api/checkout/verify-payment", () => {
     // Setup mocks
     (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (batchGetOrders as jest.Mock).mockResolvedValue(
-      new Map([["order123", mockOrder]])
+      new Map([["order123", mockOrder]]),
     );
     (batchGetProducts as jest.Mock).mockResolvedValue(
-      new Map([["prod123", mockProduct]])
+      new Map([["prod123", mockProduct]]),
     );
 
     const mockCartSnapshot = {
@@ -162,7 +162,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -184,7 +184,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -204,7 +204,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_order_id: "rzp_order123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -224,7 +224,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_order_id: "rzp_order123",
             razorpay_payment_id: "rzp_pay123",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -244,7 +244,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -265,7 +265,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -279,7 +279,7 @@ describe("POST /api/checkout/verify-payment", () => {
         new Map([
           ["order123", { ...mockOrder, id: "order123" }],
           ["order456", { ...mockOrder, id: "order456", user_id: "user123" }],
-        ])
+        ]),
       );
 
       const request = new NextRequest(
@@ -292,7 +292,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -316,7 +316,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -328,7 +328,7 @@ describe("POST /api/checkout/verify-payment", () => {
 
     it("should return 403 if order does not belong to user", async () => {
       (batchGetOrders as jest.Mock).mockResolvedValue(
-        new Map([["order123", { ...mockOrder, user_id: "otheruser" }]])
+        new Map([["order123", { ...mockOrder, user_id: "otheruser" }]]),
       );
 
       const request = new NextRequest(
@@ -341,7 +341,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -370,7 +370,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -398,7 +398,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "invalid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -425,7 +425,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "invalid_signature",
           }),
-        }
+        },
       );
 
       await POST(request);
@@ -435,7 +435,7 @@ describe("POST /api/checkout/verify-payment", () => {
         expect.objectContaining({
           payment_status: "failed",
           payment_error: "Signature verification failed",
-        })
+        }),
       );
       expect(mockBatch.commit).toHaveBeenCalled();
     });
@@ -453,7 +453,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -465,7 +465,7 @@ describe("POST /api/checkout/verify-payment", () => {
           payment_status: "paid",
           razorpay_payment_id: "rzp_pay123",
           paid_at: expect.any(Date),
-        })
+        }),
       );
     });
 
@@ -480,7 +480,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       await POST(request);
@@ -490,13 +490,13 @@ describe("POST /api/checkout/verify-payment", () => {
         mockProductDoc,
         expect.objectContaining({
           stock_count: 8, // 10 - 2
-        })
+        }),
       );
     });
 
     it("should not reduce stock below zero", async () => {
       (batchGetProducts as jest.Mock).mockResolvedValue(
-        new Map([["prod123", { ...mockProduct, stock_count: 1 }]])
+        new Map([["prod123", { ...mockProduct, stock_count: 1 }]]),
       );
 
       const request = new NextRequest(
@@ -509,7 +509,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       await POST(request);
@@ -518,7 +518,7 @@ describe("POST /api/checkout/verify-payment", () => {
         mockProductDoc,
         expect.objectContaining({
           stock_count: 0, // Math.max(0, 1 - 2)
-        })
+        }),
       );
     });
 
@@ -533,7 +533,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       await POST(request);
@@ -552,7 +552,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -586,14 +586,14 @@ describe("POST /api/checkout/verify-payment", () => {
               items: [{ product_id: "prod456", quantity: 1 }],
             },
           ],
-        ])
+        ]),
       );
 
       (batchGetProducts as jest.Mock).mockResolvedValue(
         new Map([
           ["prod123", { ...mockProduct, id: "prod123", stock_count: 10 }],
           ["prod456", { ...mockProduct, id: "prod456", stock_count: 5 }],
-        ])
+        ]),
       );
     });
 
@@ -608,7 +608,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -628,7 +628,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       await POST(request);
@@ -658,7 +658,7 @@ describe("POST /api/checkout/verify-payment", () => {
               items: [{ product_id: "prod123", quantity: 3 }],
             },
           ],
-        ])
+        ]),
       );
 
       const request = new NextRequest(
@@ -671,7 +671,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       await POST(request);
@@ -680,7 +680,7 @@ describe("POST /api/checkout/verify-payment", () => {
         mockProductDoc,
         expect.objectContaining({
           stock_count: 5, // 10 - (2 + 3)
-        })
+        }),
       );
     });
   });
@@ -699,7 +699,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -711,7 +711,7 @@ describe("POST /api/checkout/verify-payment", () => {
 
     it("should handle batchGetOrders errors", async () => {
       (batchGetOrders as jest.Mock).mockRejectedValue(
-        new Error("Database error")
+        new Error("Database error"),
       );
 
       const request = new NextRequest(
@@ -724,7 +724,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -736,7 +736,7 @@ describe("POST /api/checkout/verify-payment", () => {
 
     it("should handle batchGetProducts errors", async () => {
       (batchGetProducts as jest.Mock).mockRejectedValue(
-        new Error("Product fetch failed")
+        new Error("Product fetch failed"),
       );
 
       const request = new NextRequest(
@@ -749,7 +749,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -782,7 +782,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -811,7 +811,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -853,7 +853,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -869,7 +869,7 @@ describe("POST /api/checkout/verify-payment", () => {
       };
 
       (batchGetOrders as jest.Mock).mockResolvedValue(
-        new Map([["order123", orderWithoutCoupon]])
+        new Map([["order123", orderWithoutCoupon]]),
       );
 
       const request = new NextRequest(
@@ -882,7 +882,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -914,7 +914,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -937,7 +937,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -958,7 +958,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -978,7 +978,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
@@ -1008,15 +1008,12 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);
 
-      expect(crypto.createHmac).toHaveBeenCalledWith(
-        "sha256",
-        "custom_secret"
-      );
+      expect(crypto.createHmac).toHaveBeenCalledWith("sha256", "custom_secret");
       expect(response.status).toBe(200);
     });
 
@@ -1039,7 +1036,7 @@ describe("POST /api/checkout/verify-payment", () => {
             razorpay_payment_id: "rzp_pay123",
             razorpay_signature: "valid_signature",
           }),
-        }
+        },
       );
 
       const response = await POST(request);

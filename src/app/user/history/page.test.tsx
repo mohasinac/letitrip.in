@@ -13,7 +13,7 @@ describe("HistoryPage", () => {
       render(<HistoryPage />);
       expect(screen.getByRole("main")).toHaveAttribute(
         "id",
-        "user-history-page"
+        "user-history-page",
       );
     });
 
@@ -57,7 +57,7 @@ describe("HistoryPage", () => {
         "text-3xl",
         "font-bold",
         "text-gray-800",
-        "mb-6"
+        "mb-6",
       );
     });
 
@@ -103,7 +103,7 @@ describe("HistoryPage", () => {
     it("should be navigable by screen readers", () => {
       const { container } = render(<HistoryPage />);
       expect(
-        container.querySelector("main#user-history-page")
+        container.querySelector("main#user-history-page"),
       ).toBeInTheDocument();
     });
   });

@@ -262,7 +262,7 @@ describe("UserDashboardPage", () => {
         isAdminOrSeller: false,
       } as any);
       mockOrdersService.list.mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {}), // Never resolves
       );
 
       render(<UserDashboardPage />);
@@ -301,7 +301,7 @@ describe("UserDashboardPage", () => {
 
       // Check stats cards
       expect(screen.getByTestId("stats-card-total-orders")).toHaveTextContent(
-        "3"
+        "3",
       );
       expect(screen.getByTestId("stats-card-pending")).toHaveTextContent("1");
       expect(screen.getByTestId("stats-card-completed")).toHaveTextContent("1");
@@ -321,14 +321,14 @@ describe("UserDashboardPage", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to load dashboard data:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
       // Should still show the dashboard with zero stats
       expect(screen.getByText("Welcome back, John Doe!")).toBeInTheDocument();
       expect(screen.getByTestId("stats-card-total-orders")).toHaveTextContent(
-        "0"
+        "0",
       );
 
       consoleSpy.mockRestore();
@@ -358,7 +358,7 @@ describe("UserDashboardPage", () => {
 
       await waitFor(() => {
         expect(screen.getByTestId("stats-card-total-orders")).toHaveTextContent(
-          "3"
+          "3",
         );
       });
 
@@ -374,7 +374,7 @@ describe("UserDashboardPage", () => {
 
       await waitFor(() => {
         expect(screen.getByTestId("stats-card-total-orders")).toHaveTextContent(
-          "0"
+          "0",
         );
       });
 
@@ -476,7 +476,7 @@ describe("UserDashboardPage", () => {
 
       expect(screen.getByText("No orders yet")).toBeInTheDocument();
       expect(
-        screen.getByText("Start shopping to see your orders here!")
+        screen.getByText("Start shopping to see your orders here!"),
       ).toBeInTheDocument();
     });
 
@@ -540,10 +540,10 @@ describe("UserDashboardPage", () => {
 
       // Use testids for order badges to avoid ambiguous text matches
       expect(screen.getByTestId("order-status-order-2")).toHaveTextContent(
-        "Pending"
+        "Pending",
       );
       expect(screen.getByTestId("order-status-order-3")).toHaveTextContent(
-        "Cancelled"
+        "Cancelled",
       );
     });
 

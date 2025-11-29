@@ -14,7 +14,9 @@ import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 
 const mockRequireAuth = requireAuth as jest.MockedFunction<typeof requireAuth>;
 const mockCollections = Collections as jest.MockedObject<typeof Collections>;
-const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<typeof userOwnsShop>;
+const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<
+  typeof userOwnsShop
+>;
 
 describe("/api/orders/bulk", () => {
   let mockDoc: any;
@@ -48,7 +50,10 @@ describe("/api/orders/bulk", () => {
     it("should return error if user is not authenticated", async () => {
       mockRequireAuth.mockResolvedValue({
         user: null,
-        error: { json: async () => ({ error: "Unauthorized" }), status: 401 } as any,
+        error: {
+          json: async () => ({ error: "Unauthorized" }),
+          status: 401,
+        } as any,
       });
 
       const req = new NextRequest("http://localhost/api/orders/bulk", {
@@ -77,7 +82,9 @@ describe("/api/orders/bulk", () => {
       const data = await response.json();
 
       expect(response.status).toBe(403);
-      expect(data.error).toBe("Only sellers and admins can perform bulk operations");
+      expect(data.error).toBe(
+        "Only sellers and admins can perform bulk operations",
+      );
     });
 
     it("should return 400 if action is missing", async () => {
@@ -142,7 +149,10 @@ describe("/api/orders/bulk", () => {
 
       const req = new NextRequest("http://localhost/api/orders/bulk", {
         method: "POST",
-        body: JSON.stringify({ action: "invalid_action", orderIds: ["order1"] }),
+        body: JSON.stringify({
+          action: "invalid_action",
+          orderIds: ["order1"],
+        }),
       });
 
       const response = await POST(req);
@@ -174,7 +184,7 @@ describe("/api/orders/bulk", () => {
         expect.objectContaining({
           status: "confirmed",
           confirmed_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -194,7 +204,9 @@ describe("/api/orders/bulk", () => {
       const data = await response.json();
 
       expect(data.results[0].success).toBe(false);
-      expect(data.results[0].error).toContain("pending orders can be confirmed");
+      expect(data.results[0].error).toContain(
+        "pending orders can be confirmed",
+      );
     });
 
     it("should process confirmed orders", async () => {
@@ -218,7 +230,7 @@ describe("/api/orders/bulk", () => {
         expect.objectContaining({
           status: "processing",
           processing_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -246,7 +258,7 @@ describe("/api/orders/bulk", () => {
         expect.objectContaining({
           status: "shipped",
           tracking_number: "TRACK123",
-        })
+        }),
       );
     });
 
@@ -270,7 +282,7 @@ describe("/api/orders/bulk", () => {
         expect.objectContaining({
           status: "delivered",
           delivered_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -298,7 +310,7 @@ describe("/api/orders/bulk", () => {
         expect.objectContaining({
           status: "cancelled",
           cancellation_reason: "Out of stock",
-        })
+        }),
       );
     });
 
@@ -327,7 +339,7 @@ describe("/api/orders/bulk", () => {
           status: "refunded",
           refund_amount: 1000,
           refund_reason: "Customer request",
-        })
+        }),
       );
     });
 
@@ -375,7 +387,7 @@ describe("/api/orders/bulk", () => {
           notes: "Updated notes",
           priority: "high",
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -451,7 +463,10 @@ describe("/api/orders/bulk", () => {
 
       const req = new NextRequest("http://localhost/api/orders/bulk", {
         method: "POST",
-        body: JSON.stringify({ action: "confirm", orderIds: ["order1", "order2"] }),
+        body: JSON.stringify({
+          action: "confirm",
+          orderIds: ["order1", "order2"],
+        }),
       });
 
       const response = await POST(req);

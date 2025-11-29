@@ -16,7 +16,7 @@ import { ReturnStatus, ReturnReason } from "../shared/common.types";
  * Convert Firestore Timestamp to Date
  */
 function timestampToDate(
-  timestamp: Timestamp | null | undefined
+  timestamp: Timestamp | null | undefined,
 ): Date | undefined {
   if (!timestamp) return undefined;
   if ("_seconds" in timestamp) {
@@ -25,7 +25,7 @@ function timestampToDate(
   }
   if ("seconds" in timestamp) {
     return new Date(
-      timestamp.seconds * 1000 + (timestamp.nanoseconds || 0) / 1000000
+      timestamp.seconds * 1000 + (timestamp.nanoseconds || 0) / 1000000,
     );
   }
   return undefined;
@@ -35,7 +35,7 @@ function timestampToDate(
  * Convert Date to Firestore Timestamp structure
  */
 function dateToTimestamp(
-  date: Date | undefined
+  date: Date | undefined,
 ): { _seconds: number; _nanoseconds: number } | undefined {
   if (!date) return undefined;
   const ms = date.getTime();

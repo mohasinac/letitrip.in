@@ -52,13 +52,13 @@ export const SOCKET_URL =
 export const COUPON_PREFIX = process.env.COUPON_CODE_PREFIX || "LT";
 export const COUPON_LENGTH = parseInt(
   process.env.COUPON_CODE_LENGTH || "8",
-  10
+  10,
 );
 
 // File Upload Configuration
 export const MAX_FILE_SIZE = parseInt(
   process.env.MAX_FILE_SIZE || "10485760",
-  10
+  10,
 ); // 10MB
 export const ALLOWED_FILE_TYPES = (
   process.env.ALLOWED_FILE_TYPES || "image/jpeg,image/png,image/webp"
@@ -67,11 +67,11 @@ export const ALLOWED_FILE_TYPES = (
 // Rate Limiting
 export const RATE_LIMIT_WINDOW_MS = parseInt(
   process.env.RATE_LIMIT_WINDOW_MS || "900000",
-  10
+  10,
 ); // 15 minutes
 export const RATE_LIMIT_MAX_REQUESTS = parseInt(
   process.env.RATE_LIMIT_MAX_REQUESTS || "100",
-  10
+  10,
 );
 
 // Pagination

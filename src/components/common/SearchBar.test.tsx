@@ -64,7 +64,7 @@ describe("SearchBar", () => {
     it("renders search input with placeholder", () => {
       render(<SearchBar />);
       expect(
-        screen.getByPlaceholderText("Search products, shops, categories...")
+        screen.getByPlaceholderText("Search products, shops, categories..."),
       ).toBeInTheDocument();
     });
 
@@ -77,7 +77,7 @@ describe("SearchBar", () => {
     it("input has proper styling classes", () => {
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
       expect(input).toHaveClass("w-full", "pl-12", "pr-12", "py-3", "border");
     });
@@ -93,7 +93,7 @@ describe("SearchBar", () => {
     it("allows typing in search input", () => {
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       ) as HTMLInputElement;
 
       fireEvent.change(input, { target: { value: "phone" } });
@@ -104,7 +104,7 @@ describe("SearchBar", () => {
     it("shows clear button (X) when input has text", () => {
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.change(input, { target: { value: "test" } });
@@ -123,7 +123,7 @@ describe("SearchBar", () => {
     it("clears input when X button is clicked", () => {
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       ) as HTMLInputElement;
 
       fireEvent.change(input, { target: { value: "test" } });
@@ -140,7 +140,7 @@ describe("SearchBar", () => {
     it("does not trigger search for queries less than 2 characters", async () => {
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.change(input, { target: { value: "a" } });
@@ -151,12 +151,12 @@ describe("SearchBar", () => {
 
     it("triggers search after debounce delay (300ms) for queries 2+ chars", async () => {
       (searchService.quickSearch as jest.Mock).mockResolvedValue(
-        mockSearchResults
+        mockSearchResults,
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.change(input, { target: { value: "phone" } });
@@ -169,12 +169,12 @@ describe("SearchBar", () => {
 
     it("cancels previous search when typing continues", async () => {
       (searchService.quickSearch as jest.Mock).mockResolvedValue(
-        mockSearchResults
+        mockSearchResults,
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.change(input, { target: { value: "ph" } });
@@ -196,12 +196,12 @@ describe("SearchBar", () => {
   describe("Search Results Display", () => {
     it("shows loading spinner while searching", async () => {
       (searchService.quickSearch as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 1000))
+        () => new Promise((resolve) => setTimeout(resolve, 1000)),
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);
@@ -215,12 +215,12 @@ describe("SearchBar", () => {
 
     it("displays products in search results", async () => {
       (searchService.quickSearch as jest.Mock).mockResolvedValue(
-        mockSearchResults
+        mockSearchResults,
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);
@@ -235,12 +235,12 @@ describe("SearchBar", () => {
 
     it("displays shops in search results", async () => {
       (searchService.quickSearch as jest.Mock).mockResolvedValue(
-        mockSearchResults
+        mockSearchResults,
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);
@@ -255,12 +255,12 @@ describe("SearchBar", () => {
 
     it("displays categories in search results", async () => {
       (searchService.quickSearch as jest.Mock).mockResolvedValue(
-        mockSearchResults
+        mockSearchResults,
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);
@@ -274,12 +274,12 @@ describe("SearchBar", () => {
 
     it("shows 'View all results' link with total count", async () => {
       (searchService.quickSearch as jest.Mock).mockResolvedValue(
-        mockSearchResults
+        mockSearchResults,
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);
@@ -301,7 +301,7 @@ describe("SearchBar", () => {
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);
@@ -310,7 +310,7 @@ describe("SearchBar", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/No results found for "xyz123"/)
+          screen.getByText(/No results found for "xyz123"/),
         ).toBeInTheDocument();
         expect(screen.getByText("Try different keywords")).toBeInTheDocument();
       });
@@ -321,12 +321,12 @@ describe("SearchBar", () => {
     it("loads recent searches from localStorage on mount", () => {
       localStorage.setItem(
         "recentSearches",
-        JSON.stringify(["laptop", "shoes"])
+        JSON.stringify(["laptop", "shoes"]),
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
       fireEvent.focus(input);
 
@@ -339,7 +339,7 @@ describe("SearchBar", () => {
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
       fireEvent.focus(input);
 
@@ -351,7 +351,7 @@ describe("SearchBar", () => {
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
       fireEvent.focus(input);
 
@@ -361,12 +361,12 @@ describe("SearchBar", () => {
     it("clears recent searches when Clear button clicked", () => {
       localStorage.setItem(
         "recentSearches",
-        JSON.stringify(["laptop", "shoes"])
+        JSON.stringify(["laptop", "shoes"]),
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
       fireEvent.focus(input);
 
@@ -382,7 +382,7 @@ describe("SearchBar", () => {
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       ) as HTMLInputElement;
       fireEvent.focus(input);
 
@@ -395,12 +395,12 @@ describe("SearchBar", () => {
     it("does not show recent searches when query is entered", async () => {
       localStorage.setItem("recentSearches", JSON.stringify(["laptop"]));
       (searchService.quickSearch as jest.Mock).mockResolvedValue(
-        mockSearchResults
+        mockSearchResults,
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);
@@ -414,7 +414,7 @@ describe("SearchBar", () => {
     it("navigates to search page on form submit", () => {
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.change(input, { target: { value: "phone" } });
@@ -426,26 +426,26 @@ describe("SearchBar", () => {
     it("saves search to recent searches on submit", () => {
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.change(input, { target: { value: "laptop" } });
       fireEvent.submit(input.closest("form")!);
 
       const savedSearches = JSON.parse(
-        localStorage.getItem("recentSearches") || "[]"
+        localStorage.getItem("recentSearches") || "[]",
       );
       expect(savedSearches).toContain("laptop");
     });
 
     it("navigates to product page when product result clicked", async () => {
       (searchService.quickSearch as jest.Mock).mockResolvedValue(
-        mockSearchResults
+        mockSearchResults,
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);
@@ -464,12 +464,12 @@ describe("SearchBar", () => {
 
     it("navigates to shop page when shop result clicked", async () => {
       (searchService.quickSearch as jest.Mock).mockResolvedValue(
-        mockSearchResults
+        mockSearchResults,
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);
@@ -486,12 +486,12 @@ describe("SearchBar", () => {
 
     it("navigates to category page when category result clicked", async () => {
       (searchService.quickSearch as jest.Mock).mockResolvedValue(
-        mockSearchResults
+        mockSearchResults,
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);
@@ -524,7 +524,7 @@ describe("SearchBar", () => {
     it("handles whitespace-only query", () => {
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
       const form = input.closest("form")!;
 
@@ -536,7 +536,7 @@ describe("SearchBar", () => {
 
     it("handles search service error gracefully", async () => {
       (searchService.quickSearch as jest.Mock).mockRejectedValue(
-        new Error("Network error")
+        new Error("Network error"),
       );
       const consoleErrorSpy = jest
         .spyOn(console, "error")
@@ -544,7 +544,7 @@ describe("SearchBar", () => {
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);
@@ -554,7 +554,7 @@ describe("SearchBar", () => {
       await waitFor(() => {
         expect(consoleErrorSpy).toHaveBeenCalledWith(
           "Search failed:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -564,7 +564,7 @@ describe("SearchBar", () => {
     it("limits recent searches to 5 items", () => {
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       const searches = [
@@ -581,7 +581,7 @@ describe("SearchBar", () => {
       });
 
       const savedSearches = JSON.parse(
-        localStorage.getItem("recentSearches") || "[]"
+        localStorage.getItem("recentSearches") || "[]",
       );
       expect(savedSearches.length).toBe(5);
       expect(savedSearches[0]).toBe("search6");
@@ -590,19 +590,19 @@ describe("SearchBar", () => {
     it("removes duplicate from recent searches and adds to top", () => {
       localStorage.setItem(
         "recentSearches",
-        JSON.stringify(["laptop", "phone", "shoes"])
+        JSON.stringify(["laptop", "phone", "shoes"]),
       );
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.change(input, { target: { value: "phone" } });
       fireEvent.submit(input.closest("form")!);
 
       const savedSearches = JSON.parse(
-        localStorage.getItem("recentSearches") || "[]"
+        localStorage.getItem("recentSearches") || "[]",
       );
       expect(savedSearches).toEqual(["phone", "laptop", "shoes"]);
     });
@@ -612,7 +612,7 @@ describe("SearchBar", () => {
     it("search input has type text", () => {
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
       expect(input).toHaveAttribute("type", "text");
     });
@@ -622,7 +622,7 @@ describe("SearchBar", () => {
 
       render(<SearchBar />);
       const input = screen.getByPlaceholderText(
-        "Search products, shops, categories..."
+        "Search products, shops, categories...",
       );
 
       fireEvent.focus(input);

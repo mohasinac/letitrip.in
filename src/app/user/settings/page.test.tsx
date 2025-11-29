@@ -160,13 +160,13 @@ describe("SettingsPage", () => {
       });
 
       expect(
-        screen.getByText("Profile updated successfully!")
+        screen.getByText("Profile updated successfully!"),
       ).toBeInTheDocument();
     });
 
     it("handles form submission error", async () => {
       mockAuthService.updateProfile.mockRejectedValue(
-        new Error("Update failed")
+        new Error("Update failed"),
       );
 
       render(<SettingsPage />);
@@ -183,7 +183,7 @@ describe("SettingsPage", () => {
 
     it("shows loading state during submission", async () => {
       mockAuthService.updateProfile.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(<SettingsPage />);

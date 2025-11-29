@@ -20,7 +20,7 @@ describe("useSlugValidation", () => {
       const { result } = renderHook(() =>
         useSlugValidation({
           endpoint: "/api/validate-slug",
-        })
+        }),
       );
 
       expect(result.current.slug).toBe("");
@@ -34,7 +34,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           initialSlug: "test-slug",
-        })
+        }),
       );
 
       expect(result.current.slug).toBe("test-slug");
@@ -50,12 +50,12 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           initialSlug: "test-slug",
-        })
+        }),
       );
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("/api/validate-slug?slug=test-slug")
+          expect.stringContaining("/api/validate-slug?slug=test-slug"),
         );
       });
     });
@@ -72,7 +72,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -101,7 +101,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -127,16 +127,16 @@ describe("useSlugValidation", () => {
                   ok: true,
                   json: async () => ({ available: true }),
                 }),
-              50
-            )
-          )
+              50,
+            ),
+          ),
       );
 
       const { result } = renderHook(() =>
         useSlugValidation({
           endpoint: "/api/validate-slug",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -162,7 +162,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -182,7 +182,7 @@ describe("useSlugValidation", () => {
       const { result } = renderHook(() =>
         useSlugValidation({
           endpoint: "/api/validate-slug",
-        })
+        }),
       );
 
       act(() => {
@@ -203,7 +203,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           debounceMs: 300,
-        })
+        }),
       );
 
       // Type multiple slugs quickly
@@ -235,7 +235,7 @@ describe("useSlugValidation", () => {
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledTimes(1);
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("slug=slug3")
+          expect.stringContaining("slug=slug3"),
         );
       });
     });
@@ -253,7 +253,7 @@ describe("useSlugValidation", () => {
           endpoint: "/api/validate-slug",
           params: { shop_slug: "my-shop" },
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -266,7 +266,7 @@ describe("useSlugValidation", () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("shop_slug=my-shop")
+          expect.stringContaining("shop_slug=my-shop"),
         );
       });
     });
@@ -282,7 +282,7 @@ describe("useSlugValidation", () => {
           endpoint: "/api/validate-slug",
           excludeId: "existing-id-123",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -295,7 +295,7 @@ describe("useSlugValidation", () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("exclude_id=existing-id-123")
+          expect.stringContaining("exclude_id=existing-id-123"),
         );
       });
     });
@@ -310,7 +310,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/coupons/validate-code",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -342,7 +342,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -370,7 +370,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -402,7 +402,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -451,7 +451,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           debounceMs: 100,
-        })
+        }),
       );
 
       // First, set some state
@@ -491,7 +491,7 @@ describe("useSlugValidation", () => {
           endpoint: "/api/shops/validate-slug",
           excludeId: "shop-123",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -504,13 +504,13 @@ describe("useSlugValidation", () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("/api/shops/validate-slug")
+          expect.stringContaining("/api/shops/validate-slug"),
         );
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("slug=my-shop")
+          expect.stringContaining("slug=my-shop"),
         );
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("exclude_id=shop-123")
+          expect.stringContaining("exclude_id=shop-123"),
         );
       });
     });
@@ -527,7 +527,7 @@ describe("useSlugValidation", () => {
           params: { shop_slug: "my-shop" },
           excludeId: "product-456",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -559,7 +559,7 @@ describe("useSlugValidation", () => {
           params: { shop_slug: "my-shop" },
           excludeId: "coupon-789",
           debounceMs: 100,
-        })
+        }),
       );
 
       act(() => {
@@ -591,7 +591,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           debounceMs: 200,
-        })
+        }),
       );
 
       // Rapidly change slug
@@ -626,7 +626,7 @@ describe("useSlugValidation", () => {
         // Should only validate once with the final value
         expect(global.fetch).toHaveBeenCalledTimes(1);
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("slug=abcd")
+          expect.stringContaining("slug=abcd"),
         );
       });
     });
@@ -636,7 +636,7 @@ describe("useSlugValidation", () => {
         useSlugValidation({
           endpoint: "/api/validate-slug",
           initialSlug: "test-slug",
-        })
+        }),
       );
 
       act(() => {
@@ -663,7 +663,7 @@ describe("useSlugValidation", () => {
           }),
         {
           initialProps: { params: { shop_slug: "shop-1" } },
-        }
+        },
       );
 
       act(() => {
@@ -676,7 +676,7 @@ describe("useSlugValidation", () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("shop_slug=shop-1")
+          expect.stringContaining("shop_slug=shop-1"),
         );
       });
 
@@ -695,7 +695,7 @@ describe("useSlugValidation", () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("shop_slug=shop-2")
+          expect.stringContaining("shop_slug=shop-2"),
         );
       });
     });

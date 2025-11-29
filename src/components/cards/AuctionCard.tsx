@@ -78,13 +78,13 @@ const AuctionCardComponent = ({
 
     if (auction.videos && auction.videos.length > 0) {
       media.push(
-        ...auction.videos.map((url) => ({ type: "video" as const, url }))
+        ...auction.videos.map((url) => ({ type: "video" as const, url })),
       );
     }
 
     if (auction.images && auction.images.length > 0) {
       media.push(
-        ...auction.images.map((url) => ({ type: "image" as const, url }))
+        ...auction.images.map((url) => ({ type: "image" as const, url })),
       );
     }
 
@@ -337,8 +337,8 @@ const AuctionCardComponent = ({
             isEnded
               ? "text-gray-500"
               : isEndingSoon
-              ? "text-orange-600 font-medium"
-              : "text-gray-600"
+                ? "text-orange-600 font-medium"
+                : "text-gray-600"
           }`}
         >
           <Clock size={12} />

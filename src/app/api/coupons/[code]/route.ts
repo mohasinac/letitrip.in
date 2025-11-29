@@ -14,7 +14,7 @@ import { userOwnsShop } from "@/app/api/lib/firebase/queries";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ code: string }> }
+  { params }: { params: Promise<{ code: string }> },
 ) {
   try {
     const { code } = await params;
@@ -28,7 +28,7 @@ export async function GET(
     if (snapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Coupon not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
     const doc = snapshot.docs[0];
@@ -37,7 +37,7 @@ export async function GET(
     if ((role === "guest" || role === "user") && !data.is_active) {
       return NextResponse.json(
         { success: false, error: "Coupon not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -46,7 +46,7 @@ export async function GET(
     console.error("Error fetching coupon:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch coupon" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -57,7 +57,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ code: string }> }
+  { params }: { params: Promise<{ code: string }> },
 ) {
   try {
     const { user, error } = await requireAuth(request);
@@ -73,7 +73,7 @@ export async function PATCH(
     if (snapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Coupon not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -85,7 +85,7 @@ export async function PATCH(
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -107,7 +107,7 @@ export async function PATCH(
     console.error("Error updating coupon:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update coupon" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -118,7 +118,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ code: string }> }
+  { params }: { params: Promise<{ code: string }> },
 ) {
   try {
     const { user, error } = await requireAuth(request);
@@ -134,7 +134,7 @@ export async function DELETE(
     if (snapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Coupon not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -146,7 +146,7 @@ export async function DELETE(
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -157,7 +157,7 @@ export async function DELETE(
     console.error("Error deleting coupon:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete coupon" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

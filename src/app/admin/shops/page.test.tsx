@@ -90,7 +90,7 @@ describe("AdminShopsPage", () => {
       await waitFor(() => {
         expect(screen.getByText("Shops")).toBeInTheDocument();
         expect(
-          screen.getByText(/Manage all shops on the platform/)
+          screen.getByText(/Manage all shops on the platform/),
         ).toBeInTheDocument();
       });
     });
@@ -106,7 +106,7 @@ describe("AdminShopsPage", () => {
       render(<AdminShopsPage />);
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: /export/i })
+          screen.getByRole("button", { name: /export/i }),
         ).toBeInTheDocument();
       });
     });
@@ -122,7 +122,7 @@ describe("AdminShopsPage", () => {
       render(<AdminShopsPage />);
       await waitFor(() => {
         expect(
-          screen.getByPlaceholderText("Search shops...")
+          screen.getByPlaceholderText("Search shops..."),
         ).toBeInTheDocument();
       });
     });
@@ -141,7 +141,7 @@ describe("AdminShopsPage", () => {
   describe("Loading States", () => {
     it("should show loading spinner initially", () => {
       (shopsService.list as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
       const { container } = render(<AdminShopsPage />);
       const spinner = container.querySelector(".animate-spin");
@@ -152,7 +152,7 @@ describe("AdminShopsPage", () => {
       render(<AdminShopsPage />);
       await waitFor(() => {
         expect(
-          screen.queryByRole("status", { hidden: true })
+          screen.queryByRole("status", { hidden: true }),
         ).not.toBeInTheDocument();
       });
     });
@@ -161,12 +161,12 @@ describe("AdminShopsPage", () => {
   describe("Error States", () => {
     it("should show error message on API failure", async () => {
       (shopsService.list as jest.Mock).mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
       render(<AdminShopsPage />);
       await waitFor(() => {
         expect(
-          screen.getByRole("heading", { name: /error/i })
+          screen.getByRole("heading", { name: /error/i }),
         ).toBeInTheDocument();
         expect(screen.getByText(/api error/i)).toBeInTheDocument();
       });
@@ -177,7 +177,7 @@ describe("AdminShopsPage", () => {
       render(<AdminShopsPage />);
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: /try again/i })
+          screen.getByRole("button", { name: /try again/i }),
         ).toBeInTheDocument();
       });
     });
@@ -190,7 +190,7 @@ describe("AdminShopsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: /try again/i })
+          screen.getByRole("button", { name: /try again/i }),
         ).toBeInTheDocument();
       });
 
@@ -317,7 +317,7 @@ describe("AdminShopsPage", () => {
         expect(shopsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             search: "Test Shop 1",
-          })
+          }),
         );
       });
     });
@@ -337,7 +337,7 @@ describe("AdminShopsPage", () => {
         expect(shopsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             page: 1,
-          })
+          }),
         );
       });
     });
@@ -358,7 +358,7 @@ describe("AdminShopsPage", () => {
         expect(shopsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             search: undefined,
-          })
+          }),
         );
       });
     });
@@ -407,7 +407,7 @@ describe("AdminShopsPage", () => {
           expect(screen.getByLabelText(/Select Test Shop 1/i)).toBeChecked();
           expect(screen.getByLabelText(/Select Test Shop 2/i)).toBeChecked();
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
     });
 
@@ -427,7 +427,7 @@ describe("AdminShopsPage", () => {
           expect(screen.getByLabelText(/Select Test Shop 1/i)).toBeChecked();
           expect(screen.getByLabelText(/Select Test Shop 2/i)).toBeChecked();
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
 
       // Second click - deselect all
@@ -436,13 +436,13 @@ describe("AdminShopsPage", () => {
       await waitFor(
         () => {
           expect(
-            screen.getByLabelText(/Select Test Shop 1/i)
+            screen.getByLabelText(/Select Test Shop 1/i),
           ).not.toBeChecked();
           expect(
-            screen.getByLabelText(/Select Test Shop 2/i)
+            screen.getByLabelText(/Select Test Shop 2/i),
           ).not.toBeChecked();
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
     });
   });
@@ -466,14 +466,14 @@ describe("AdminShopsPage", () => {
         () => {
           expect(shopCheckbox).toBeChecked();
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
 
       await waitFor(
         () => {
           expect(screen.getByText("Clear selection")).toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
     });
 
@@ -502,19 +502,19 @@ describe("AdminShopsPage", () => {
         () => {
           expect(shopCheckbox).toBeChecked();
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
 
       await waitFor(
         () => {
           expect(screen.getByText("Clear selection")).toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
 
       const buttons = screen.getAllByRole("button", { name: /verify/i });
       const verifyButton = buttons.find((btn) =>
-        btn.textContent?.includes("Verify")
+        btn.textContent?.includes("Verify"),
       );
       expect(verifyButton).toBeDefined();
 
@@ -544,19 +544,19 @@ describe("AdminShopsPage", () => {
         () => {
           expect(shopCheckbox).toBeChecked();
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
 
       await waitFor(
         () => {
           expect(screen.getByText("Clear selection")).toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
 
       const buttons = screen.getAllByRole("button", { name: /delete/i });
       const bulkDeleteButton = buttons.find((btn) =>
-        btn.textContent?.includes("Delete")
+        btn.textContent?.includes("Delete"),
       );
       expect(bulkDeleteButton).toBeDefined();
 
@@ -571,11 +571,11 @@ describe("AdminShopsPage", () => {
         // The confirmation dialog has "Cancel" and "Delete" buttons
         // Find the Delete button that's part of the dialog (not the bulk action button)
         const dialogButtons = within(
-          screen.getByText(/are you sure/i).closest("div")!.parentElement!
+          screen.getByText(/are you sure/i).closest("div")!.parentElement!,
         ).getAllByRole("button");
         const confirmDeleteButton = dialogButtons.find(
           (btn) =>
-            btn.textContent === "Delete" && !btn.textContent?.includes("Shops")
+            btn.textContent === "Delete" && !btn.textContent?.includes("Shops"),
         );
         if (confirmDeleteButton) {
           await user.click(confirmDeleteButton);
@@ -587,7 +587,7 @@ describe("AdminShopsPage", () => {
         () => {
           expect(shopsService.delete).toHaveBeenCalledWith("shop-1");
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
 
       // Wait for dialog to close after action completes
@@ -595,7 +595,7 @@ describe("AdminShopsPage", () => {
         () => {
           expect(screen.queryByText(/are you sure/i)).not.toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
     });
   });
@@ -658,13 +658,13 @@ describe("AdminShopsPage", () => {
 
       await waitFor(() => {
         expect(screen.getAllByRole("button", { name: /delete/i })).toHaveLength(
-          3
+          3,
         ); // 2 table buttons + 1 confirm button
       });
 
       const buttons = screen.getAllByRole("button", { name: /delete/i });
       const confirmButton = buttons.find((btn) =>
-        btn.className.includes("bg-red-600")
+        btn.className.includes("bg-red-600"),
       );
       await user.click(confirmButton);
 
@@ -710,10 +710,10 @@ describe("AdminShopsPage", () => {
       render(<AdminShopsPage />);
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: /previous/i })
+          screen.getByRole("button", { name: /previous/i }),
         ).toBeInTheDocument();
         expect(
-          screen.getByRole("button", { name: /next/i })
+          screen.getByRole("button", { name: /next/i }),
         ).toBeInTheDocument();
       });
     });
@@ -722,7 +722,7 @@ describe("AdminShopsPage", () => {
       render(<AdminShopsPage />);
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: /previous/i })
+          screen.getByRole("button", { name: /previous/i }),
         ).toBeDisabled();
       });
     });
@@ -731,7 +731,7 @@ describe("AdminShopsPage", () => {
       render(<AdminShopsPage />);
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: /next/i })
+          screen.getByRole("button", { name: /next/i }),
         ).not.toBeDisabled();
       });
     });
@@ -742,7 +742,7 @@ describe("AdminShopsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: /next/i })
+          screen.getByRole("button", { name: /next/i }),
         ).toBeInTheDocument();
       });
 
@@ -752,7 +752,7 @@ describe("AdminShopsPage", () => {
         expect(shopsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             page: 2,
-          })
+          }),
         );
       });
     });
@@ -795,18 +795,18 @@ describe("AdminShopsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByPlaceholderText("Search shops...")
+          screen.getByPlaceholderText("Search shops..."),
         ).toBeInTheDocument();
       });
 
       await user.type(
         screen.getByPlaceholderText("Search shops..."),
-        "nonexistent"
+        "nonexistent",
       );
 
       await waitFor(() => {
         expect(
-          screen.getByText(/try adjusting your filters/i)
+          screen.getByText(/try adjusting your filters/i),
         ).toBeInTheDocument();
       });
     });
@@ -907,7 +907,7 @@ describe("AdminShopsPage", () => {
         expect(shopsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             is_verified: ["true"],
-          })
+          }),
         );
       });
     });
@@ -927,7 +927,7 @@ describe("AdminShopsPage", () => {
       // Wait for reset button to appear
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: /reset all/i })
+          screen.getByRole("button", { name: /reset all/i }),
         ).toBeInTheDocument();
       });
 

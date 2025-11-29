@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
         ...doc.data(),
       }),
       20, // defaultLimit
-      100 // maxLimit
+      100, // maxLimit
     );
 
     return NextResponse.json(response);
@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
     console.error("Failed to fetch payments:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch payments" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Missing required fields: order_id, user_id, amount, gateway",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -161,13 +161,13 @@ export async function POST(request: NextRequest) {
         message: "Payment created successfully",
         data: { id: docRef.id, ...payment },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Failed to create payment:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create payment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

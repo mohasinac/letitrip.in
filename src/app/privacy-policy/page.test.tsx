@@ -40,7 +40,7 @@ describe("PrivacyPolicyPage", () => {
     render(<PrivacyPolicyPage />);
 
     expect(
-      screen.getByText(/Effective Date: November 1, 2025/i)
+      screen.getByText(/Effective Date: November 1, 2025/i),
     ).toBeInTheDocument();
   });
 
@@ -60,7 +60,7 @@ describe("PrivacyPolicyPage", () => {
     render(<PrivacyPolicyPage />);
 
     expect(
-      screen.getByText("3. How We Use Your Information")
+      screen.getByText("3. How We Use Your Information"),
     ).toBeInTheDocument();
   });
 
@@ -68,7 +68,7 @@ describe("PrivacyPolicyPage", () => {
     render(<PrivacyPolicyPage />);
 
     expect(
-      screen.getByText("4. How We Share Your Information")
+      screen.getByText("4. How We Share Your Information"),
     ).toBeInTheDocument();
   });
 
@@ -116,7 +116,7 @@ describe("PrivacyPolicyPage", () => {
     const { container } = render(<PrivacyPolicyPage />);
 
     expect(
-      container.querySelector('[data-testid="legal-layout"]')
+      container.querySelector('[data-testid="legal-layout"]'),
     ).toBeInTheDocument();
   });
 });

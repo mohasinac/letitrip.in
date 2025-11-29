@@ -41,7 +41,7 @@ describe("AuthService", () => {
       };
 
       await expect(authService.register(data)).rejects.toThrow(
-        "Password too weak"
+        "Password too weak",
       );
     });
 
@@ -53,7 +53,7 @@ describe("AuthService", () => {
       };
 
       await expect(authService.register(data)).rejects.toThrow(
-        "Email already registered"
+        "Email already registered",
       );
     });
   });
@@ -75,7 +75,7 @@ describe("AuthService", () => {
         authService.login({
           email: "user@test.jfv.in",
           password: "WrongPass",
-        })
+        }),
       ).rejects.toThrow("Invalid credentials");
     });
 
@@ -84,7 +84,7 @@ describe("AuthService", () => {
         authService.login({
           email: "banned@test.jfv.in",
           password: "TestPass123!",
-        })
+        }),
       ).rejects.toThrow("Account banned");
     });
   });
@@ -157,7 +157,7 @@ describe("UsersService - Profile", () => {
       await expect(
         usersService.updateProfile({
           phone: "invalid-phone",
-        })
+        }),
       ).rejects.toThrow("Invalid phone number");
     });
 
@@ -165,7 +165,7 @@ describe("UsersService - Profile", () => {
       await expect(
         usersService.updateProfile({
           displayName: "A",
-        })
+        }),
       ).rejects.toThrow("Display name too short");
     });
   });
@@ -236,7 +236,7 @@ describe("UsersService - Addresses", () => {
       };
 
       await expect(usersService.addAddress(address)).rejects.toThrow(
-        "Invalid pincode"
+        "Invalid pincode",
       );
     });
 
@@ -252,7 +252,7 @@ describe("UsersService - Addresses", () => {
       };
 
       await expect(usersService.addAddress(address)).rejects.toThrow(
-        "Invalid state"
+        "Invalid state",
       );
     });
   });
@@ -268,7 +268,7 @@ describe("UsersService - Addresses", () => {
 
     it("should reject update of non-existent address", async () => {
       await expect(
-        usersService.updateAddress("non_existent", { phone: "+919876543211" })
+        usersService.updateAddress("non_existent", { phone: "+919876543211" }),
       ).rejects.toThrow("Address not found");
     });
 
@@ -276,7 +276,7 @@ describe("UsersService - Addresses", () => {
       await expect(
         usersService.updateAddress("other_user_addr", {
           phone: "+919876543211",
-        })
+        }),
       ).rejects.toThrow("Access denied");
     });
   });
@@ -289,7 +289,7 @@ describe("UsersService - Addresses", () => {
 
     it("should reject deletion of non-existent address", async () => {
       await expect(usersService.deleteAddress("non_existent")).rejects.toThrow(
-        "Address not found"
+        "Address not found",
       );
     });
   });
@@ -346,7 +346,7 @@ describe("UsersService - Admin", () => {
 
     it("should return 404 for non-existent user", async () => {
       await expect(usersService.getById("non_existent")).rejects.toThrow(
-        "User not found"
+        "User not found",
       );
     });
   });
@@ -359,13 +359,13 @@ describe("UsersService - Admin", () => {
 
     it("should reject invalid role", async () => {
       await expect(
-        usersService.updateRole("test_user_001", "invalid_role")
+        usersService.updateRole("test_user_001", "invalid_role"),
       ).rejects.toThrow("Invalid role");
     });
 
     it("should reject self role change", async () => {
       await expect(
-        usersService.updateRole("current_admin_id", "user")
+        usersService.updateRole("current_admin_id", "user"),
       ).rejects.toThrow("Cannot change own role");
     });
   });
@@ -382,7 +382,7 @@ describe("UsersService - Admin", () => {
 
     it("should reject banning admin", async () => {
       await expect(
-        usersService.ban("test_admin_001", { reason: "Test" })
+        usersService.ban("test_admin_001", { reason: "Test" }),
       ).rejects.toThrow("Cannot ban admin");
     });
   });

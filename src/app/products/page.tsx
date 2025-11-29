@@ -36,7 +36,7 @@ function ProductsContent() {
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [filterOptions, setFilterOptions] = useState(PRODUCT_FILTERS);
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || ""
+    searchParams.get("search") || "",
   );
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -210,7 +210,7 @@ function ProductsContent() {
         image: string;
         shopId: string;
         shopName: string;
-      }
+      },
     ) => {
       try {
         if (!productDetails) {
@@ -234,7 +234,7 @@ function ProductsContent() {
         toast.error(error.message || "Failed to add to cart");
       }
     },
-    [products, addItem]
+    [products, addItem],
   );
 
   return (

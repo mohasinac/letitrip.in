@@ -14,7 +14,7 @@ describe("SupportTickets page", () => {
   it("renders support ticket creation form", async () => {
     render(<SupportTicketPage />);
     expect(
-      await screen.findByText(/Create Support Ticket/i)
+      await screen.findByText(/Create Support Ticket/i),
     ).toBeInTheDocument();
   });
 });

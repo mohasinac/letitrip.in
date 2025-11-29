@@ -38,7 +38,7 @@ export async function GET() {
     console.error("Homepage categories error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to load homepage categories" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

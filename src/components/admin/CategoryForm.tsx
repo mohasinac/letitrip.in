@@ -124,7 +124,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       } else {
         await categoriesService.update(
           initialData?.slug || "",
-          formData as any
+          formData as any,
         );
       }
 

@@ -61,7 +61,7 @@ describe("AnalyticsService", () => {
       expect(result.data.orders.total).toBe(
         result.data.orders.pending +
           result.data.orders.completed +
-          result.data.orders.cancelled
+          result.data.orders.cancelled,
       );
     });
 
@@ -88,7 +88,7 @@ describe("AnalyticsService", () => {
       // Should be sorted by revenue descending
       for (let i = 1; i < result.data.topProducts.length; i++) {
         expect(result.data.topProducts[i - 1].revenue).toBeGreaterThanOrEqual(
-          result.data.topProducts[i].revenue
+          result.data.topProducts[i].revenue,
         );
       }
     });
@@ -130,17 +130,17 @@ describe("AdminDashboardService", () => {
     it("should return this week's metrics", async () => {
       const result = await adminDashboardService.getDashboard();
       expect(result.data.thisWeek.newUsers).toBeGreaterThanOrEqual(
-        result.data.today.newUsers
+        result.data.today.newUsers,
       );
       expect(result.data.thisWeek.newOrders).toBeGreaterThanOrEqual(
-        result.data.today.newOrders
+        result.data.today.newOrders,
       );
     });
 
     it("should return this month's metrics", async () => {
       const result = await adminDashboardService.getDashboard();
       expect(result.data.thisMonth.newUsers).toBeGreaterThanOrEqual(
-        result.data.thisWeek.newUsers
+        result.data.thisWeek.newUsers,
       );
     });
 
@@ -162,7 +162,7 @@ describe("AdminDashboardService", () => {
       // Sorted by revenue descending
       for (let i = 1; i < result.data.topSellers.length; i++) {
         expect(result.data.topSellers[i - 1].revenue).toBeGreaterThanOrEqual(
-          result.data.topSellers[i].revenue
+          result.data.topSellers[i].revenue,
         );
       }
     });
@@ -187,10 +187,10 @@ describe("SellerDashboardService", () => {
       const result = await sellerDashboardService.getDashboard("shop_001");
       expect(result.data.pendingActions.ordersToShip).toBeGreaterThanOrEqual(0);
       expect(
-        result.data.pendingActions.reviewsToRespond
+        result.data.pendingActions.reviewsToRespond,
       ).toBeGreaterThanOrEqual(0);
       expect(
-        result.data.pendingActions.lowStockProducts
+        result.data.pendingActions.lowStockProducts,
       ).toBeGreaterThanOrEqual(0);
     });
 
@@ -268,7 +268,7 @@ describe("GET /api/analytics", () => {
   it("should filter by date range", async () => {
     const res = await fetch(
       "/api/analytics?start_date=2025-01-01&end_date=2025-01-15",
-      { headers: { Authorization: `Bearer ${adminToken}` } }
+      { headers: { Authorization: `Bearer ${adminToken}` } },
     );
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -276,10 +276,10 @@ describe("GET /api/analytics", () => {
     json.data.salesOverTime.forEach((day: any) => {
       const date = new Date(day.date);
       expect(date.getTime()).toBeGreaterThanOrEqual(
-        new Date("2025-01-01").getTime()
+        new Date("2025-01-01").getTime(),
       );
       expect(date.getTime()).toBeLessThanOrEqual(
-        new Date("2025-01-15").getTime()
+        new Date("2025-01-15").getTime(),
       );
     });
   });
@@ -573,7 +573,7 @@ describe("E2E: Seller Analytics Flow", () => {
 
     // 5. Verify top products are from seller's shop
     expect(analytics.topProducts.every((p: any) => p.shopId === shopId)).toBe(
-      true
+      true,
     );
   });
 });

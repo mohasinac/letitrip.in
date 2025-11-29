@@ -16,27 +16,27 @@ describe("Payout Service", () => {
 
     it("should fail if insufficient balance", async () => {
       await expect(payoutsService.request({ amount: 1000000 })).rejects.toThrow(
-        "Insufficient available balance"
+        "Insufficient available balance",
       );
     });
 
     it("should fail below minimum amount", async () => {
       await expect(payoutsService.request({ amount: 10000 })).rejects.toThrow(
-        "Minimum payout is ₹500"
+        "Minimum payout is ₹500",
       );
     });
 
     it("should fail if pending payout exists", async () => {
       await payoutsService.request({ amount: 50000 });
       await expect(payoutsService.request({ amount: 50000 })).rejects.toThrow(
-        "You have a pending payout"
+        "You have a pending payout",
       );
     });
 
     it("should fail if bank not verified", async () => {
       // Switch to seller with unverified bank
       await expect(payoutsService.request({ amount: 50000 })).rejects.toThrow(
-        "Please verify bank account"
+        "Please verify bank account",
       );
     });
   });

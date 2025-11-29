@@ -96,7 +96,7 @@ describe("Coupon Service", () => {
         "PERCENT50_MAX100",
         {
           subtotal: 500000, // Would be 250000, but capped at 100000
-        }
+        },
       );
       expect(discount).toBe(100000);
     });
@@ -166,7 +166,7 @@ describe("Coupon Admin Operations", () => {
           code: "EXISTING",
           type: "percentage",
           value: 10,
-        })
+        }),
       ).rejects.toThrow("Coupon code already exists");
     });
 
@@ -176,7 +176,7 @@ describe("Coupon Admin Operations", () => {
           code: "INVALID",
           type: "percentage",
           value: 101,
-        })
+        }),
       ).rejects.toThrow("Percentage must be between 1 and 100");
     });
   });
@@ -191,7 +191,7 @@ describe("Coupon Admin Operations", () => {
 
     it("should not allow changing code", async () => {
       await expect(
-        couponsService.update("coupon_001", { code: "NEWCODE" })
+        couponsService.update("coupon_001", { code: "NEWCODE" }),
       ).rejects.toThrow("Cannot change coupon code");
     });
   });
@@ -211,7 +211,7 @@ describe("Coupon Admin Operations", () => {
 
     it("should fail for used coupon", async () => {
       await expect(couponsService.delete("coupon_used")).rejects.toThrow(
-        "Cannot delete coupon that has been used"
+        "Cannot delete coupon that has been used",
       );
     });
   });

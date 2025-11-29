@@ -29,7 +29,7 @@ export function Skeleton({
       className={cn(
         "bg-gray-200 rounded",
         animate && "animate-pulse",
-        className
+        className,
       )}
       {...props}
     />
@@ -53,7 +53,7 @@ export function SkeletonText({
           key={i}
           className={cn(
             "h-4",
-            i === lines - 1 ? "w-3/4" : "w-full" // Last line shorter
+            i === lines - 1 ? "w-3/4" : "w-full", // Last line shorter
           )}
         />
       ))}

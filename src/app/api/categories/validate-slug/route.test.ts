@@ -30,7 +30,7 @@ describe("GET /api/categories/validate-slug", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/validate-slug?slug=test"
+      "http://localhost/api/categories/validate-slug?slug=test",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -43,7 +43,7 @@ describe("GET /api/categories/validate-slug", () => {
     mockGetCurrentUser.mockResolvedValue(null);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/validate-slug?slug=test"
+      "http://localhost/api/categories/validate-slug?slug=test",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -58,7 +58,7 @@ describe("GET /api/categories/validate-slug", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/validate-slug"
+      "http://localhost/api/categories/validate-slug",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -82,7 +82,7 @@ describe("GET /api/categories/validate-slug", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/validate-slug?slug=new-category"
+      "http://localhost/api/categories/validate-slug?slug=new-category",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -109,7 +109,7 @@ describe("GET /api/categories/validate-slug", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/validate-slug?slug=electronics"
+      "http://localhost/api/categories/validate-slug?slug=electronics",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -134,7 +134,7 @@ describe("GET /api/categories/validate-slug", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/validate-slug?slug=electronics&exclude_id=cat1"
+      "http://localhost/api/categories/validate-slug?slug=electronics&exclude_id=cat1",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -151,9 +151,7 @@ describe("GET /api/categories/validate-slug", () => {
     const mockDoc1 = { id: "cat1" }; // Current category
     const mockDoc2 = { id: "cat2" }; // Another category with same slug
     const mockWhere = jest.fn().mockReturnThis();
-    const mockGet = jest
-      .fn()
-      .mockResolvedValue({ docs: [mockDoc1, mockDoc2] });
+    const mockGet = jest.fn().mockResolvedValue({ docs: [mockDoc1, mockDoc2] });
 
     mockCollections.categories.mockReturnValue({
       where: mockWhere,
@@ -161,7 +159,7 @@ describe("GET /api/categories/validate-slug", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/validate-slug?slug=electronics&exclude_id=cat1"
+      "http://localhost/api/categories/validate-slug?slug=electronics&exclude_id=cat1",
     );
     const response = await GET(req);
     const data = await response.json();
@@ -184,7 +182,7 @@ describe("GET /api/categories/validate-slug", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/categories/validate-slug?slug=test"
+      "http://localhost/api/categories/validate-slug?slug=test",
     );
     const response = await GET(req);
     const data = await response.json();

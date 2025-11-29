@@ -1,6 +1,6 @@
 /**
  * Form Validation Utilities
- * 
+ *
  * This module provides validation functions that work with the centralized
  * field configuration system from @/constants/form-fields.ts
  */
@@ -22,7 +22,10 @@ export interface ValidationResult {
  */
 export function validateField(value: any, field: FormField): string | null {
   // Required validation
-  if (field.required && (value === undefined || value === null || value === "")) {
+  if (
+    field.required &&
+    (value === undefined || value === null || value === "")
+  ) {
     return `${field.label} is required`;
   }
 
@@ -108,7 +111,7 @@ export function validateField(value: any, field: FormField): string | null {
 function validateWithValidator(
   value: any,
   validator: FieldValidator,
-  fieldLabel: string
+  fieldLabel: string,
 ): string | null {
   switch (validator.type) {
     case "required":
@@ -135,31 +138,45 @@ function validateWithValidator(
     case "phone":
       const phoneRegex = /^[\d\s\-\+\(\)]+$/;
       if (!phoneRegex.test(String(value))) {
-        return validator.message || `${fieldLabel} must be a valid phone number`;
+        return (
+          validator.message || `${fieldLabel} must be a valid phone number`
+        );
       }
       break;
 
     case "min":
       if (Number(value) < validator.value) {
-        return validator.message || `${fieldLabel} must be at least ${validator.value}`;
+        return (
+          validator.message ||
+          `${fieldLabel} must be at least ${validator.value}`
+        );
       }
       break;
 
     case "max":
       if (Number(value) > validator.value) {
-        return validator.message || `${fieldLabel} must be at most ${validator.value}`;
+        return (
+          validator.message ||
+          `${fieldLabel} must be at most ${validator.value}`
+        );
       }
       break;
 
     case "minLength":
       if (String(value).length < validator.value) {
-        return validator.message || `${fieldLabel} must be at least ${validator.value} characters`;
+        return (
+          validator.message ||
+          `${fieldLabel} must be at least ${validator.value} characters`
+        );
       }
       break;
 
     case "maxLength":
       if (String(value).length > validator.value) {
-        return validator.message || `${fieldLabel} must be at most ${validator.value} characters`;
+        return (
+          validator.message ||
+          `${fieldLabel} must be at most ${validator.value} characters`
+        );
       }
       break;
 
@@ -191,7 +208,7 @@ function validateWithValidator(
  */
 export function validateForm(
   values: Record<string, any>,
-  fields: FormField[]
+  fields: FormField[],
 ): ValidationResult {
   const errors: Record<string, string> = {};
 
@@ -215,7 +232,7 @@ export function validateForm(
 export function validateFields(
   values: Record<string, any>,
   fields: FormField[],
-  fieldKeys: string[]
+  fieldKeys: string[],
 ): ValidationResult {
   const fieldsToValidate = fields.filter((f) => fieldKeys.includes(f.key));
   return validateForm(values, fieldsToValidate);
@@ -232,7 +249,9 @@ export function getFirstError(errors: Record<string, string>): string | null {
 /**
  * Format validation errors for display
  */
-export function formatErrors(errors: Record<string, string>): ValidationError[] {
+export function formatErrors(
+  errors: Record<string, string>,
+): ValidationError[] {
   return Object.entries(errors).map(([field, message]) => ({
     field,
     message,
@@ -263,7 +282,7 @@ export function sanitizeInput(value: string): string {
  */
 export function validateAndSanitize(
   value: string,
-  field: FormField
+  field: FormField,
 ): { value: string; error: string | null } {
   const error = validateField(value, field);
   const sanitized = error ? value : sanitizeInput(value);

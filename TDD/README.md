@@ -10,6 +10,7 @@ This folder contains comprehensive TDD documentation including user stories, epi
 TDD/
 ├── README.md                    # This file - Overview & Checklist
 ├── PROGRESS.md                  # Session progress tracker
+├── PENDING-ROUTES.md            # Missing routes documentation
 │
 ├── epics/
 │   ├── E001-user-management.md
@@ -29,14 +30,30 @@ TDD/
 │   ├── E015-search-discovery.md
 │   ├── E016-notifications.md
 │   ├── E017-analytics-reporting.md
-│   └── E018-payout-system.md
+│   ├── E018-payout-system.md
+│   ├── E019-common-code-architecture.md
+│   ├── E020-blog-system.md
+│   ├── E021-system-configuration.md
+│   ├── E022-wishlist-favorites.md
+│   ├── E023-messaging-system.md
+│   ├── E024-mobile-pwa-experience.md
+│   ├── E025-mobile-component-integration.md
+│   ├── E026-sieve-pagination-filtering.md
+│   ├── E027-design-system-theming.md
+│   ├── E028-riplimit-bidding-currency.md
+│   ├── E029-smart-address-system.md
+│   ├── E030-code-quality-sonarqube.md
+│   ├── E031-searchable-dropdowns.md
+│   ├── E032-content-type-search-filter.md
+│   ├── E033-live-header-data.md
+│   └── E034-flexible-link-fields.md
 │
 ├── rbac/
 │   ├── RBAC-OVERVIEW.md         # Role hierarchy & permissions matrix
-│   ├── admin-features.md        # Admin-specific features
-│   ├── seller-features.md       # Seller-specific features
-│   ├── user-features.md         # User-specific features
-│   └── guest-features.md        # Guest/Public features
+│   ├── admin-features.md        # Admin-specific features (with mobile)
+│   ├── seller-features.md       # Seller-specific features (with mobile)
+│   ├── user-features.md         # User-specific features (with mobile)
+│   └── guest-features.md        # Guest/Public features (with mobile)
 │
 ├── resources/
 │   ├── users/
@@ -57,7 +74,21 @@ TDD/
 │   ├── categories/
 │   ├── media/
 │   ├── hero-slides/
-│   └── favorites/
+│   ├── favorites/
+│   ├── blog/
+│   ├── settings/
+│   ├── messages/
+│   ├── pagination/              # E026 Sieve pagination
+│   ├── theming/                 # E027 Design system
+│   ├── riplimit/                # E028 RipLimit currency
+│   ├── addresses/               # E029 Smart addresses
+│   ├── quality/                 # E030 Code quality
+│   ├── dropdowns/               # E031 Searchable dropdowns
+│   ├── header/                  # E033 Live header
+│   ├── links/                   # E034 Flexible links
+│   └── mobile/
+│       ├── TEST-CASES.md        # E024 Mobile PWA test cases
+│       └── E025-TEST-CASES.md   # E025 Mobile Integration test cases
 │
 └── acceptance/
     ├── ACCEPTANCE-CRITERIA.md
@@ -93,42 +124,98 @@ TDD/
 - [x] Create Acceptance Criteria
 - [x] Create E2E Test Scenarios
 
-### Phase 2: Resource Documentation
+### Phase 2: Resource Documentation (Complete ✅)
 
-- [ ] Users resource documentation
-- [ ] Products resource documentation
-- [ ] Auctions resource documentation
-- [ ] Carts resource documentation
-- [ ] Orders resource documentation
-- [ ] Shops resource documentation
-- [ ] Reviews resource documentation
-- [ ] Coupons resource documentation
-- [ ] Returns resource documentation
-- [ ] Tickets resource documentation
-- [ ] Payments resource documentation
-- [ ] Payouts resource documentation
-- [ ] Categories resource documentation
-- [ ] Media resource documentation
-- [ ] Hero Slides resource documentation
-- [ ] Favorites resource documentation
+- [x] Users resource documentation
+- [x] Products resource documentation
+- [x] Auctions resource documentation
+- [x] Carts resource documentation
+- [x] Orders resource documentation
+- [x] Shops resource documentation
+- [x] Reviews resource documentation
+- [x] Coupons resource documentation
+- [x] Returns resource documentation
+- [x] Tickets resource documentation
+- [x] Payments resource documentation
+- [x] Payouts resource documentation
+- [x] Categories resource documentation
+- [x] Media resource documentation
+- [x] Hero Slides resource documentation
+- [x] Favorites resource documentation
 
-### Phase 3: RBAC Feature Documentation
+### Phase 3: RBAC Feature Documentation (Complete ✅)
 
-- [ ] Admin features detailed
-- [ ] Seller features detailed
-- [ ] User features detailed
-- [ ] Guest features detailed
+- [x] Admin features detailed
+- [x] Seller features detailed
+- [x] User features detailed
+- [x] Guest features detailed
 
-### Phase 4: Acceptance Criteria
+### Phase 4: Test Implementation (Complete ✅)
 
-- [ ] Acceptance criteria for all features
-- [ ] E2E test scenarios
+- [x] 237 test files written
+- [x] 5,824+ tests passing
+- [x] API route tests complete
+- [x] Component tests complete
+- [x] Page tests complete
+- [x] Hook tests complete
+- [x] Utility tests complete
 
-### Phase 5: Test Cases
+### Phase 5: Documentation Sync (Complete ✅)
 
-- [ ] Unit test specifications
-- [ ] Integration test specifications
-- [ ] API test specifications
+- [x] Sync acceptance criteria with tests
+- [x] Update E2E scenarios status
+- [x] Add placeholder tests for pending features
+- [x] Tests organized in (tests) folders where needed
+- [x] Verified all placeholder APIs documented
+
+### Phase 6: Pending Implementations (Future)
+
+- [ ] E016 Notifications API implementation
+- [ ] E021 System Configuration API implementation
+- [ ] E023 Messaging System API implementation
+- [ ] `/forgot-password` route (password reset flow)
+- [ ] `/user/notifications` page
+- [ ] `/admin/analytics` pages
+- [ ] `/admin/settings/*` individual settings pages
+- [ ] Performance tests with k6
+- [ ] E2E tests with Playwright
+
+**See**: `TDD/PENDING-ROUTES.md` for full list of missing routes
+
+### Phase 7: Mobile Component Integration (E025) ⬜
+
+- [ ] Phase 1: Critical User Flows (Week 1-2)
+- [ ] Phase 2: Browsing Experience (Week 2-3)
+- [ ] Phase 3: User Dashboard (Week 3-4)
+- [ ] Phase 4: Seller Dashboard (Week 4-5)
+- [ ] Phase 5: Admin Dashboard (Week 5-6)
+- [ ] Phase 6: Polish & Edge Cases (Week 6)
+- [ ] Phase 7: Reusable Filter Sections (Week 6-7)
+- [ ] Phase 8: Homepage & Carousels (Week 7)
+- [ ] Phase 9: Search & Static Pages (Week 7-8)
+- [ ] Phase 10: Cards & Catalog (Week 8-9)
+- [ ] Phase 11: Horizontal Scrollers & Sliders (Week 9)
+- [ ] Phase 12: Pagination & Infinite Scroll (Week 9-10)
+- [ ] Phase 13: Catalog & List Views (Week 10)
+- [ ] Phase 14: Media Upload & Preview (Week 10-11)
+- [ ] Phase 15: Product Gallery & Zoom (Week 11)
+
+**See**: `TDD/epics/E025-mobile-component-integration.md` for detailed implementation plan  
+**See**: `TDD/resources/mobile/E025-TEST-CASES.md` for comprehensive test cases
+
+### Phase 8: Platform Enhancements (E026-E034) ⬜
+
+- [ ] E026: Sieve Pagination & Filtering - Backend API standardization
+- [ ] E027: Design System & Theming - CSS variables, light/dark mode
+- [ ] E028: RipLimit Bidding Currency - Virtual currency for auctions
+- [ ] E029: Smart Address System - GPS, autocomplete, pincode lookup
+- [ ] E030: Code Quality & SonarQube - Static analysis integration
+- [ ] E031: Searchable Dropdowns - Unified select components
+- [ ] E032: Content Type Search Filter - Filter by products/auctions/shops
+- [ ] E033: Live Header Data - Real-time cart, notifications, RipLimit
+- [ ] E034: Flexible Link Fields - Support relative URLs
+
+**See**: `TDD/epics/E026-*.md` through `E034-*.md` for detailed implementation plans
 
 ## 🔄 How to Continue
 
@@ -158,6 +245,19 @@ Acceptance Criteria:
 - E006-E010: Extended features
 - E011-E015: Infrastructure features
 - E016-E018: Analytics & operations
+- E019: Common code architecture
+- E020-E023: Additional features (Blog, Settings, Wishlist, Messaging)
+- E024: Mobile PWA Experience (component creation)
+- E025: Mobile Component Integration (integration across app)
+- E026: Sieve-Style Pagination & Filtering
+- E027: Design System & Theming
+- E028: RipLimit Bidding Currency
+- E029: Smart Address System
+- E030: Code Quality & SonarQube
+- E031: Searchable Dropdowns
+- E032: Content Type Search Filter
+- E033: Live Header Data
+- E034: Flexible Link Fields
 
 ### Status Indicators
 

@@ -58,7 +58,7 @@ export async function POST() {
         success: false,
         error: error.message || "Failed to generate categories",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

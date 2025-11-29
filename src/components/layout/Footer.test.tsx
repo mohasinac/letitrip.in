@@ -101,7 +101,7 @@ describe("Footer", () => {
     it("should render copyright text", () => {
       render(<Footer />);
       expect(
-        screen.getByText("© 2024 Let It Rip. All rights reserved.")
+        screen.getByText("© 2024 Let It Rip. All rights reserved."),
       ).toBeInTheDocument();
     });
 
@@ -199,7 +199,7 @@ describe("Footer", () => {
           link.getAttribute("href")?.includes("facebook.com") ||
           link.getAttribute("href")?.includes("youtube.com") ||
           link.getAttribute("href")?.includes("twitter.com") ||
-          link.getAttribute("href")?.includes("instagram.com")
+          link.getAttribute("href")?.includes("instagram.com"),
       );
       expect(socialLinks).toHaveLength(4);
     });
@@ -209,16 +209,16 @@ describe("Footer", () => {
       const allLinks = screen.getAllByRole("link");
 
       const fbLink = allLinks.find(
-        (l) => l.getAttribute("href") === "https://facebook.com"
+        (l) => l.getAttribute("href") === "https://facebook.com",
       );
       const ytLink = allLinks.find(
-        (l) => l.getAttribute("href") === "https://youtube.com"
+        (l) => l.getAttribute("href") === "https://youtube.com",
       );
       const twLink = allLinks.find(
-        (l) => l.getAttribute("href") === "https://twitter.com"
+        (l) => l.getAttribute("href") === "https://twitter.com",
       );
       const igLink = allLinks.find(
-        (l) => l.getAttribute("href") === "https://instagram.com"
+        (l) => l.getAttribute("href") === "https://instagram.com",
       );
 
       expect(fbLink).toBeInTheDocument();
@@ -240,7 +240,7 @@ describe("Footer", () => {
       render(<Footer />);
       const allLinks = screen.getAllByRole("link");
       const fbLink = allLinks.find(
-        (l) => l.getAttribute("href") === "https://facebook.com"
+        (l) => l.getAttribute("href") === "https://facebook.com",
       );
 
       expect(fbLink).toBeInTheDocument();
@@ -398,7 +398,7 @@ describe("Footer", () => {
           link.getAttribute("href")?.includes("facebook.com") ||
           link.getAttribute("href")?.includes("youtube.com") ||
           link.getAttribute("href")?.includes("twitter.com") ||
-          link.getAttribute("href")?.includes("instagram.com")
+          link.getAttribute("href")?.includes("instagram.com"),
       );
       expect(socialLinks).toHaveLength(4);
     });
@@ -444,7 +444,7 @@ describe("Footer", () => {
     it("should render correct number of Company Information links", () => {
       render(<Footer />);
       const companySection = screen.getByText(
-        "Company Information"
+        "Company Information",
       ).parentElement;
       const links = companySection?.querySelectorAll("a");
       expect(links?.length).toBe(2);

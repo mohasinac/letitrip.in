@@ -172,7 +172,7 @@ describe("SearchPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('Search Results for "laptop"')
+          screen.getByText('Search Results for "laptop"'),
         ).toBeInTheDocument();
       });
       expect(screen.getByText("1 results found")).toBeInTheDocument();
@@ -182,7 +182,7 @@ describe("SearchPage", () => {
 
     it("shows loading state during search", async () => {
       mockProductsService.list.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(<SearchPage />);
@@ -194,7 +194,7 @@ describe("SearchPage", () => {
       // After Suspense resolves, shows loading skeleton
       await waitFor(() => {
         expect(
-          screen.getByText('Search Results for "laptop"')
+          screen.getByText('Search Results for "laptop"'),
         ).toBeInTheDocument();
       });
     });
@@ -206,7 +206,7 @@ describe("SearchPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('Search Results for "laptop"')
+          screen.getByText('Search Results for "laptop"'),
         ).toBeInTheDocument();
         expect(screen.getByText("0 results found")).toBeInTheDocument();
         expect(screen.getByTestId("empty-state")).toBeInTheDocument();
@@ -229,15 +229,15 @@ describe("SearchPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('Search Results for "laptop"')
+          screen.getByText('Search Results for "laptop"'),
         ).toBeInTheDocument();
         expect(screen.getByText("0 results found")).toBeInTheDocument();
         expect(screen.getByTestId("empty-state")).toBeInTheDocument();
         expect(screen.getByText("No results found")).toBeInTheDocument();
         expect(
           screen.getByText(
-            'We couldn\'t find any results for "laptop". Try different keywords or browse our categories.'
-          )
+            'We couldn\'t find any results for "laptop". Try different keywords or browse our categories.',
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -520,7 +520,7 @@ describe("SearchPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('Search Results for "test"')
+          screen.getByText('Search Results for "test"'),
         ).toBeInTheDocument();
         expect(screen.getByText("0 results found")).toBeInTheDocument();
         expect(screen.getByTestId("empty-state")).toBeInTheDocument();

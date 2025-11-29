@@ -118,7 +118,7 @@ describe("WonAuctionsPage", () => {
       render(<WonAuctionsPage />);
 
       expect(
-        screen.getByText("Please log in to view your won auctions")
+        screen.getByText("Please log in to view your won auctions"),
       ).toBeInTheDocument();
     });
 
@@ -173,7 +173,7 @@ describe("WonAuctionsPage", () => {
       await waitFor(() => {
         // Should show stats section
         const statsSection = document.querySelector(
-          ".bg-white.rounded-lg.shadow-sm.p-6"
+          ".bg-white.rounded-lg.shadow-sm.p-6",
         );
         expect(statsSection).toBeInTheDocument();
       });
@@ -251,7 +251,7 @@ describe("WonAuctionsPage", () => {
       await waitFor(() => {
         // Component shows 'Order Placed' and 'Payment Pending' badges, not individual shipping status
         expect(
-          screen.getAllByText(/Order Placed|Payment Pending/).length
+          screen.getAllByText(/Order Placed|Payment Pending/).length,
         ).toBeGreaterThan(0);
       });
     });
@@ -306,7 +306,7 @@ describe("WonAuctionsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/Keep bidding on auctions to win amazing items/i)
+          screen.getByText(/Keep bidding on auctions to win amazing items/i),
         ).toBeInTheDocument();
       });
     });
@@ -390,7 +390,7 @@ describe("WonAuctionsPage", () => {
 
       await waitFor(() => {
         const cards = document.querySelectorAll(
-          ".bg-white.rounded-lg.shadow-sm"
+          ".bg-white.rounded-lg.shadow-sm",
         );
         expect(cards.length).toBeGreaterThan(0);
       });

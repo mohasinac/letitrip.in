@@ -37,7 +37,7 @@ class ProductsService {
    * List products with filters (returns UI-optimized types)
    */
   async list(
-    filters?: ProductFiltersFE
+    filters?: ProductFiltersFE,
   ): Promise<{ data: ProductCardFE[]; count: number; pagination: any }> {
     try {
       // Convert FE filters to BE filters - simplified mapping
@@ -101,7 +101,7 @@ class ProductsService {
       const createRequest = toBEProductCreate(formData);
       const response: any = await apiService.post(
         PRODUCT_ROUTES.LIST,
-        createRequest
+        createRequest,
       );
       return toFEProduct(response.data);
     } catch (error) {
@@ -114,13 +114,13 @@ class ProductsService {
    */
   async update(
     slug: string,
-    formData: Partial<ProductFormFE>
+    formData: Partial<ProductFormFE>,
   ): Promise<ProductFE> {
     try {
       const updateRequest = toBEProductUpdate(formData);
       const response: any = await apiService.patch(
         PRODUCT_ROUTES.BY_SLUG(slug),
-        updateRequest
+        updateRequest,
       );
       return toFEProduct(response.data);
     } catch (error) {
@@ -134,7 +134,7 @@ class ProductsService {
   async delete(slug: string): Promise<{ message: string }> {
     try {
       return apiService.delete<{ message: string }>(
-        PRODUCT_ROUTES.BY_SLUG(slug)
+        PRODUCT_ROUTES.BY_SLUG(slug),
       );
     } catch (error) {
       this.handleError(error, `delete(${slug})`);
@@ -159,7 +159,7 @@ class ProductsService {
   async getVariants(slug: string): Promise<ProductCardFE[]> {
     try {
       const response: any = await apiService.get(
-        `${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`
+        `${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`,
       );
       return toFEProductCards(response.data || []);
     } catch (error) {
@@ -187,7 +187,7 @@ class ProductsService {
    */
   async getSellerProducts(
     slug: string,
-    limit?: number
+    limit?: number,
   ): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/seller-items`, {
       limit,
@@ -232,9 +232,8 @@ class ProductsService {
       status: "published",
       limit: 100,
     });
-    const response = await apiService.get<PaginatedResponse<ProductListItemBE>>(
-      endpoint
-    );
+    const response =
+      await apiService.get<PaginatedResponse<ProductListItemBE>>(endpoint);
     return toFEProductCards(response.data || []);
   }
 
@@ -247,9 +246,8 @@ class ProductsService {
       status: "published",
       limit: 20,
     });
-    const response = await apiService.get<PaginatedResponse<ProductListItemBE>>(
-      endpoint
-    );
+    const response =
+      await apiService.get<PaginatedResponse<ProductListItemBE>>(endpoint);
     return toFEProductCards(response.data || []);
   }
 
@@ -259,7 +257,7 @@ class ProductsService {
   async bulkAction(
     action: string,
     productIds: string[],
-    data?: any
+    data?: any,
   ): Promise<BulkActionResponse> {
     try {
       const response = await apiService.post<BulkActionResponse>(
@@ -268,7 +266,7 @@ class ProductsService {
           action,
           ids: productIds,
           updates: data,
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -317,7 +315,7 @@ class ProductsService {
    */
   async bulkUpdateStock(
     productIds: string[],
-    stockCount: number
+    stockCount: number,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update-stock", productIds, { stockCount });
   }
@@ -334,7 +332,7 @@ class ProductsService {
    */
   async bulkUpdate(
     productIds: string[],
-    updates: Partial<ProductFormFE>
+    updates: Partial<ProductFormFE>,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update", productIds, toBEProductUpdate(updates));
   }
@@ -364,7 +362,7 @@ class ProductsService {
   async quickUpdate(slug: string, data: any): Promise<ProductFE> {
     const productBE = await apiService.patch<ProductBE>(
       PRODUCT_ROUTES.BY_SLUG(slug),
-      data
+      data,
     );
     return toFEProduct(productBE);
   }

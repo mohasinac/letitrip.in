@@ -36,7 +36,7 @@ export interface ProductCardProps {
       image: string;
       shopId: string;
       shopName: string;
-    }
+    },
   ) => void;
   onToggleFavorite?: (id: string) => void;
   onQuickView?: (id: string) => void;

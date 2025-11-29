@@ -100,26 +100,26 @@ describe("AdminSidebar Component", () => {
     it("renders parent navigation items", () => {
       render(<AdminSidebar />);
       expect(
-        screen.getByRole("button", { name: /Content Management/i })
+        screen.getByRole("button", { name: /Content Management/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /Marketplace/i })
+        screen.getByRole("button", { name: /Marketplace/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /User Management/i })
+        screen.getByRole("button", { name: /User Management/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /Transactions/i })
+        screen.getByRole("button", { name: /Transactions/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /^Support$/i })
+        screen.getByRole("button", { name: /^Support$/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /Analytics/i })
+        screen.getByRole("button", { name: /Analytics/i }),
       ).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /Blog/i })).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /Settings/i })
+        screen.getByRole("button", { name: /Settings/i }),
       ).toBeInTheDocument();
     });
   });
@@ -176,10 +176,10 @@ describe("AdminSidebar Component", () => {
 
       // Child items should be visible
       expect(
-        screen.getByRole("link", { name: /Homepage Settings/i })
+        screen.getByRole("link", { name: /Homepage Settings/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: /Hero Slides/i })
+        screen.getByRole("link", { name: /Hero Slides/i }),
       ).toBeInTheDocument();
     });
 
@@ -194,13 +194,13 @@ describe("AdminSidebar Component", () => {
       // Expand
       await user.click(contentMgmt);
       expect(
-        screen.getByRole("link", { name: /Homepage Settings/i })
+        screen.getByRole("link", { name: /Homepage Settings/i }),
       ).toBeInTheDocument();
 
       // Collapse
       await user.click(contentMgmt);
       expect(
-        screen.queryByRole("link", { name: /Homepage Settings/i })
+        screen.queryByRole("link", { name: /Homepage Settings/i }),
       ).not.toBeInTheDocument();
     });
 
@@ -232,15 +232,15 @@ describe("AdminSidebar Component", () => {
       render(<AdminSidebar />);
 
       await user.click(
-        screen.getByRole("button", { name: /Content Management/i })
+        screen.getByRole("button", { name: /Content Management/i }),
       );
       await user.click(screen.getByRole("button", { name: /Marketplace/i }));
 
       expect(
-        screen.getByRole("link", { name: /Homepage Settings/i })
+        screen.getByRole("link", { name: /Homepage Settings/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: /All Shops/i })
+        screen.getByRole("link", { name: /All Shops/i }),
       ).toBeInTheDocument();
     });
   });
@@ -255,12 +255,12 @@ describe("AdminSidebar Component", () => {
 
       // "Users" item should be visible
       expect(
-        screen.getByRole("button", { name: /User Management/i })
+        screen.getByRole("button", { name: /User Management/i }),
       ).toBeInTheDocument();
 
       // Unrelated items should not be visible
       expect(
-        screen.queryByRole("button", { name: /Content Management/i })
+        screen.queryByRole("button", { name: /Content Management/i }),
       ).not.toBeInTheDocument();
     });
 
@@ -297,7 +297,7 @@ describe("AdminSidebar Component", () => {
 
       // Content Management should auto-expand, showing Hero Slides
       expect(
-        screen.getByRole("link", { name: /Hero Slides/i })
+        screen.getByRole("link", { name: /Hero Slides/i }),
       ).toBeInTheDocument();
     });
 
@@ -310,7 +310,7 @@ describe("AdminSidebar Component", () => {
 
       expect(screen.getByText("No results found")).toBeInTheDocument();
       expect(
-        screen.getByText("Try a different search term")
+        screen.getByText("Try a different search term"),
       ).toBeInTheDocument();
     });
 
@@ -329,7 +329,7 @@ describe("AdminSidebar Component", () => {
       expect(highlightedSpan).toHaveClass(
         "bg-yellow-200",
         "text-yellow-900",
-        "font-semibold"
+        "font-semibold",
       );
     });
 
@@ -341,7 +341,7 @@ describe("AdminSidebar Component", () => {
       await user.type(searchInput, "USERS");
 
       expect(
-        screen.getByRole("button", { name: /User Management/i })
+        screen.getByRole("button", { name: /User Management/i }),
       ).toBeInTheDocument();
     });
 
@@ -354,10 +354,10 @@ describe("AdminSidebar Component", () => {
 
       // Should show Content Management parent with Homepage Settings child
       expect(
-        screen.getByRole("button", { name: /Content Management/i })
+        screen.getByRole("button", { name: /Content Management/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: /Homepage Settings/i })
+        screen.getByRole("link", { name: /Homepage Settings/i }),
       ).toBeInTheDocument();
     });
 
@@ -370,10 +370,10 @@ describe("AdminSidebar Component", () => {
 
       // Should show Marketplace parent with All Shops child
       expect(
-        screen.getByRole("button", { name: /Marketplace/i })
+        screen.getByRole("button", { name: /Marketplace/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: /All Shops/i })
+        screen.getByRole("link", { name: /All Shops/i }),
       ).toBeInTheDocument();
     });
   });
@@ -384,20 +384,20 @@ describe("AdminSidebar Component", () => {
       render(<AdminSidebar />);
 
       await user.click(
-        screen.getByRole("button", { name: /Content Management/i })
+        screen.getByRole("button", { name: /Content Management/i }),
       );
 
       expect(
-        screen.getByRole("link", { name: /Homepage Settings/i })
+        screen.getByRole("link", { name: /Homepage Settings/i }),
       ).toHaveAttribute("href", "/admin/homepage");
       expect(
-        screen.getByRole("link", { name: /Hero Slides/i })
+        screen.getByRole("link", { name: /Hero Slides/i }),
       ).toHaveAttribute("href", "/admin/hero-slides");
       expect(
-        screen.getByRole("link", { name: /Featured Sections/i })
+        screen.getByRole("link", { name: /Featured Sections/i }),
       ).toHaveAttribute("href", "/admin/featured-sections");
       expect(
-        screen.getByRole("link", { name: /^Categories$/i })
+        screen.getByRole("link", { name: /^Categories$/i }),
       ).toHaveAttribute("href", "/admin/categories");
     });
 
@@ -409,17 +409,17 @@ describe("AdminSidebar Component", () => {
 
       expect(screen.getByRole("link", { name: /All Shops/i })).toHaveAttribute(
         "href",
-        "/admin/shops"
+        "/admin/shops",
       );
       expect(screen.getByRole("link", { name: /^Products$/i })).toHaveAttribute(
         "href",
-        "/admin/products"
+        "/admin/products",
       );
       expect(
-        screen.getByRole("link", { name: /All Auctions/i })
+        screen.getByRole("link", { name: /All Auctions/i }),
       ).toHaveAttribute("href", "/admin/auctions");
       expect(
-        screen.getByRole("link", { name: /Live Auctions/i })
+        screen.getByRole("link", { name: /Live Auctions/i }),
       ).toHaveAttribute("href", "/admin/auctions/live");
     });
 
@@ -431,21 +431,21 @@ describe("AdminSidebar Component", () => {
 
       expect(screen.getByRole("link", { name: /^Orders$/i })).toHaveAttribute(
         "href",
-        "/admin/orders"
+        "/admin/orders",
       );
       expect(screen.getByRole("link", { name: /Payments/i })).toHaveAttribute(
         "href",
-        "/admin/payments"
+        "/admin/payments",
       );
       expect(
-        screen.getByRole("link", { name: /Seller Payouts/i })
+        screen.getByRole("link", { name: /Seller Payouts/i }),
       ).toHaveAttribute("href", "/admin/payouts");
       expect(screen.getByRole("link", { name: /Coupons/i })).toHaveAttribute(
         "href",
-        "/admin/coupons"
+        "/admin/coupons",
       );
       expect(
-        screen.getByRole("link", { name: /Returns & Refunds/i })
+        screen.getByRole("link", { name: /Returns & Refunds/i }),
       ).toHaveAttribute("href", "/admin/returns");
     });
   });
@@ -475,7 +475,7 @@ describe("AdminSidebar Component", () => {
         "lg:fixed",
         "lg:top-[7rem]",
         "lg:bottom-0",
-        "lg:left-0"
+        "lg:left-0",
       );
     });
 
@@ -522,7 +522,7 @@ describe("AdminSidebar Component", () => {
     it("renders logo section at top", () => {
       const { container } = render(<AdminSidebar />);
       const logoSection = container.querySelector(
-        ".flex.h-16.items-center.border-b"
+        ".flex.h-16.items-center.border-b",
       );
       expect(logoSection).toBeInTheDocument();
     });
@@ -530,7 +530,7 @@ describe("AdminSidebar Component", () => {
     it("renders search section below logo", () => {
       const { container } = render(<AdminSidebar />);
       const searchSection = container.querySelector(
-        ".border-b.border-gray-200.p-4"
+        ".border-b.border-gray-200.p-4",
       );
       expect(searchSection).toBeInTheDocument();
     });
@@ -601,10 +601,10 @@ describe("AdminSidebar Component", () => {
 
       // Should show all items (empty search)
       expect(
-        screen.getByRole("button", { name: /Content Management/i })
+        screen.getByRole("button", { name: /Content Management/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /Marketplace/i })
+        screen.getByRole("button", { name: /Marketplace/i }),
       ).toBeInTheDocument();
     });
 
@@ -616,7 +616,7 @@ describe("AdminSidebar Component", () => {
       await user.type(searchInput, "Returns & Refunds");
 
       expect(
-        screen.getByRole("button", { name: /Transactions/i })
+        screen.getByRole("button", { name: /Transactions/i }),
       ).toBeInTheDocument();
     });
 
@@ -634,7 +634,7 @@ describe("AdminSidebar Component", () => {
 
       // Should be expanded after odd number of clicks
       expect(
-        screen.getByRole("link", { name: /Homepage Settings/i })
+        screen.getByRole("link", { name: /Homepage Settings/i }),
       ).toBeInTheDocument();
     });
 
@@ -644,10 +644,10 @@ describe("AdminSidebar Component", () => {
 
       // Manually expand Content Management
       await user.click(
-        screen.getByRole("button", { name: /Content Management/i })
+        screen.getByRole("button", { name: /Content Management/i }),
       );
       expect(
-        screen.getByRole("link", { name: /Homepage Settings/i })
+        screen.getByRole("link", { name: /Homepage Settings/i }),
       ).toBeInTheDocument();
 
       // Search something
@@ -660,7 +660,7 @@ describe("AdminSidebar Component", () => {
 
       // Content Management should still be expanded
       expect(
-        screen.getByRole("link", { name: /Homepage Settings/i })
+        screen.getByRole("link", { name: /Homepage Settings/i }),
       ).toBeInTheDocument();
     });
   });

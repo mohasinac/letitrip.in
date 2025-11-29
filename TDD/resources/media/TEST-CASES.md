@@ -31,10 +31,10 @@ describe("Media Service", () => {
       const largeFile = new File(
         [new ArrayBuffer(6 * 1024 * 1024)],
         "large.jpg",
-        { type: "image/jpeg" }
+        { type: "image/jpeg" },
       );
       await expect(mediaService.upload(largeFile)).rejects.toThrow(
-        "File exceeds maximum size"
+        "File exceeds maximum size",
       );
     });
 
@@ -43,7 +43,7 @@ describe("Media Service", () => {
         type: "application/octet-stream",
       });
       await expect(mediaService.upload(file)).rejects.toThrow(
-        "File type not allowed"
+        "File type not allowed",
       );
     });
 
@@ -68,10 +68,10 @@ describe("Media Service", () => {
     it("should limit to 10 files", async () => {
       const files = Array.from(
         { length: 15 },
-        (_, i) => new File(["test"], `test${i}.jpg`, { type: "image/jpeg" })
+        (_, i) => new File(["test"], `test${i}.jpg`, { type: "image/jpeg" }),
       );
       await expect(mediaService.uploadMultiple(files)).rejects.toThrow(
-        "Maximum 10 files allowed"
+        "Maximum 10 files allowed",
       );
     });
 
@@ -89,20 +89,20 @@ describe("Media Service", () => {
     it("should upload from external URL", async () => {
       const result = await mediaService.uploadFromUrl(
         "https://example.com/image.jpg",
-        { folder: "products" }
+        { folder: "products" },
       );
       expect(result.id).toBeDefined();
     });
 
     it("should fail for invalid URLs", async () => {
       await expect(mediaService.uploadFromUrl("not-a-url")).rejects.toThrow(
-        "Invalid URL"
+        "Invalid URL",
       );
     });
 
     it("should fail for non-image URLs", async () => {
       await expect(
-        mediaService.uploadFromUrl("https://example.com/page.html")
+        mediaService.uploadFromUrl("https://example.com/page.html"),
       ).rejects.toThrow("URL does not point to an image");
     });
   });
@@ -134,7 +134,7 @@ describe("Media Service", () => {
 
     it("should fail for other user's media", async () => {
       await expect(mediaService.delete("other_media")).rejects.toThrow(
-        "Forbidden"
+        "Forbidden",
       );
     });
   });
@@ -192,7 +192,7 @@ describe("Media API Integration", () => {
       const formData = new FormData();
       formData.append(
         "file",
-        new File(["test"], "test.jpg", { type: "image/jpeg" })
+        new File(["test"], "test.jpg", { type: "image/jpeg" }),
       );
       formData.append("folder", "products");
 
@@ -208,7 +208,7 @@ describe("Media API Integration", () => {
       const formData = new FormData();
       formData.append(
         "file",
-        new File(["test"], "test.jpg", { type: "image/jpeg" })
+        new File(["test"], "test.jpg", { type: "image/jpeg" }),
       );
 
       const response = await fetch("/api/media/upload", {
@@ -224,11 +224,11 @@ describe("Media API Integration", () => {
       const formData = new FormData();
       formData.append(
         "files",
-        new File(["test1"], "test1.jpg", { type: "image/jpeg" })
+        new File(["test1"], "test1.jpg", { type: "image/jpeg" }),
       );
       formData.append(
         "files",
-        new File(["test2"], "test2.jpg", { type: "image/jpeg" })
+        new File(["test2"], "test2.jpg", { type: "image/jpeg" }),
       );
 
       const response = await fetch("/api/media/upload-multiple", {
@@ -278,7 +278,7 @@ describe("Seller Media API Integration", () => {
     for (let i = 0; i < 5; i++) {
       formData.append(
         "files",
-        new File(["test"], `test${i}.jpg`, { type: "image/jpeg" })
+        new File(["test"], `test${i}.jpg`, { type: "image/jpeg" }),
       );
     }
 

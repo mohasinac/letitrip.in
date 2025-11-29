@@ -151,8 +151,8 @@ describe("ShopsPage", () => {
         expect(screen.getByText("Browse Shops")).toBeInTheDocument();
         expect(
           screen.getByText(
-            "Discover trusted sellers and their unique collections"
-          )
+            "Discover trusted sellers and their unique collections",
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -200,7 +200,7 @@ describe("ShopsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByPlaceholderText("Search shops...")
+          screen.getByPlaceholderText("Search shops..."),
         ).toBeInTheDocument();
       });
     });
@@ -229,7 +229,7 @@ describe("ShopsPage", () => {
         expect(mockShopsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             search: "test search",
-          })
+          }),
         );
       });
     });
@@ -271,7 +271,7 @@ describe("ShopsPage", () => {
         expect(mockShopsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             sortBy: "products",
-          })
+          }),
         );
       });
     });
@@ -321,7 +321,7 @@ describe("ShopsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByTestId("unified-filter-sidebar")
+          screen.getByTestId("unified-filter-sidebar"),
         ).toBeInTheDocument();
       });
     });
@@ -345,7 +345,7 @@ describe("ShopsPage", () => {
         // This would normally be tested by mocking the UnifiedFilterSidebar's onChange
         // For now, we'll test that the component renders with filters
         expect(
-          screen.getByTestId("unified-filter-sidebar")
+          screen.getByTestId("unified-filter-sidebar"),
         ).toBeInTheDocument();
       });
     });
@@ -425,7 +425,7 @@ describe("ShopsPage", () => {
         expect(mockShopsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             startAfter: "cursor-123",
-          })
+          }),
         );
       });
     });
@@ -482,7 +482,7 @@ describe("ShopsPage", () => {
         expect(mockShopsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             search: undefined,
-          })
+          }),
         );
       });
     });
@@ -502,7 +502,7 @@ describe("ShopsPage", () => {
 
         // Filter sidebar should be rendered for mobile
         expect(
-          screen.getByTestId("unified-filter-sidebar")
+          screen.getByTestId("unified-filter-sidebar"),
         ).toBeInTheDocument();
       });
     });

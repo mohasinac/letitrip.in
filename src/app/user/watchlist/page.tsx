@@ -31,7 +31,7 @@ export default function WatchlistPage() {
     } catch (error) {
       console.error("Failed to load watchlist:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load watchlist"
+        error instanceof Error ? error.message : "Failed to load watchlist",
       );
     } finally {
       setLoading(false);

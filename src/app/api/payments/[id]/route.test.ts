@@ -47,7 +47,7 @@ describe("/api/payments/[id]", () => {
       (getUserFromRequest as jest.Mock).mockResolvedValue(null);
 
       const request = new NextRequest(
-        "http://localhost/api/payments/payment123"
+        "http://localhost/api/payments/payment123",
       );
       const response = await GET(request, createContext("payment123"));
 
@@ -73,7 +73,7 @@ describe("/api/payments/[id]", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments/nonexistent"
+        "http://localhost/api/payments/nonexistent",
       );
       const response = await GET(request, createContext("nonexistent"));
 
@@ -109,7 +109,7 @@ describe("/api/payments/[id]", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments/payment123"
+        "http://localhost/api/payments/payment123",
       );
       const response = await GET(request, createContext("payment123"));
 
@@ -141,7 +141,7 @@ describe("/api/payments/[id]", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments/payment123"
+        "http://localhost/api/payments/payment123",
       );
       const response = await GET(request, createContext("payment123"));
 
@@ -178,7 +178,7 @@ describe("/api/payments/[id]", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments/payment123"
+        "http://localhost/api/payments/payment123",
       );
       const response = await GET(request, createContext("payment123"));
 
@@ -213,7 +213,7 @@ describe("/api/payments/[id]", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments/payment123"
+        "http://localhost/api/payments/payment123",
       );
       const response = await GET(request, createContext("payment123"));
 
@@ -249,7 +249,7 @@ describe("/api/payments/[id]", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments/payment123"
+        "http://localhost/api/payments/payment123",
       );
       const response = await GET(request, createContext("payment123"));
 
@@ -268,7 +268,7 @@ describe("/api/payments/[id]", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments/payment123"
+        "http://localhost/api/payments/payment123",
       );
       const response = await GET(request, createContext("payment123"));
 
@@ -296,7 +296,7 @@ describe("/api/payments/[id]", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments/payment123"
+        "http://localhost/api/payments/payment123",
       );
       const response = await GET(request, createContext("payment123"));
 
@@ -324,7 +324,7 @@ describe("/api/payments/[id]", () => {
       (requireRole as jest.Mock).mockResolvedValue({
         error: NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 }
+          { status: 403 },
         ),
       });
 
@@ -333,7 +333,7 @@ describe("/api/payments/[id]", () => {
         {
           method: "PATCH",
           body: JSON.stringify({ status: "completed" }),
-        }
+        },
       );
       const response = await PATCH(request, createContext("payment123"));
 
@@ -366,7 +366,7 @@ describe("/api/payments/[id]", () => {
         {
           method: "PATCH",
           body: JSON.stringify({ status: "completed" }),
-        }
+        },
       );
       const response = await PATCH(request, createContext("payment123"));
 
@@ -379,7 +379,7 @@ describe("/api/payments/[id]", () => {
         expect.objectContaining({
           status: "completed",
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -408,7 +408,7 @@ describe("/api/payments/[id]", () => {
         {
           method: "PATCH",
           body: JSON.stringify({ gateway_payment_id: "pay_new123" }),
-        }
+        },
       );
       const response = await PATCH(request, createContext("payment123"));
 
@@ -416,7 +416,7 @@ describe("/api/payments/[id]", () => {
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({
           gateway_payment_id: "pay_new123",
-        })
+        }),
       );
     });
 
@@ -443,7 +443,7 @@ describe("/api/payments/[id]", () => {
         {
           method: "PATCH",
           body: JSON.stringify({ gateway_response: gatewayResponse }),
-        }
+        },
       );
       const response = await PATCH(request, createContext("payment123"));
 
@@ -451,7 +451,7 @@ describe("/api/payments/[id]", () => {
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({
           gateway_response: gatewayResponse,
-        })
+        }),
       );
     });
 
@@ -477,7 +477,7 @@ describe("/api/payments/[id]", () => {
         {
           method: "PATCH",
           body: JSON.stringify({ notes: "Refund processed" }),
-        }
+        },
       );
       const response = await PATCH(request, createContext("payment123"));
 
@@ -485,7 +485,7 @@ describe("/api/payments/[id]", () => {
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({
           notes: "Refund processed",
-        })
+        }),
       );
     });
 
@@ -515,7 +515,7 @@ describe("/api/payments/[id]", () => {
             notes: "Customer requested refund",
             gateway_payment_id: "pay_refund123",
           }),
-        }
+        },
       );
       const response = await PATCH(request, createContext("payment123"));
 
@@ -526,7 +526,7 @@ describe("/api/payments/[id]", () => {
           notes: "Customer requested refund",
           gateway_payment_id: "pay_refund123",
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -552,7 +552,7 @@ describe("/api/payments/[id]", () => {
         {
           method: "PATCH",
           body: JSON.stringify({ status: "completed" }),
-        }
+        },
       );
       const response = await PATCH(request, createContext("payment123"));
 
@@ -560,7 +560,7 @@ describe("/api/payments/[id]", () => {
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -591,7 +591,7 @@ describe("/api/payments/[id]", () => {
         {
           method: "PATCH",
           body: JSON.stringify({ status: "refunded" }),
-        }
+        },
       );
       const response = await PATCH(request, createContext("payment123"));
 
@@ -625,7 +625,7 @@ describe("/api/payments/[id]", () => {
         {
           method: "PATCH",
           body: JSON.stringify({ status: "completed" }),
-        }
+        },
       );
       const response = await PATCH(request, createContext("payment123"));
 
@@ -652,7 +652,7 @@ describe("/api/payments/[id]", () => {
         {
           method: "PATCH",
           body: JSON.stringify({ status: "completed" }),
-        }
+        },
       );
       const response = await PATCH(request, createContext("payment123"));
 

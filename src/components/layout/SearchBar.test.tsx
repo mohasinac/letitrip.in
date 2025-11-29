@@ -65,7 +65,7 @@ describe("SearchBar", () => {
       render(<SearchBar />);
       await waitFor(() => {
         expect(
-          screen.getByPlaceholderText(/Enter a brand name/)
+          screen.getByPlaceholderText(/Enter a brand name/),
         ).toBeInTheDocument();
       });
     });
@@ -128,7 +128,7 @@ describe("SearchBar", () => {
 
     it("displays loading state", () => {
       (categoriesService.list as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
       render(<SearchBar />);
       expect(screen.getByText("Loading...")).toBeInTheDocument();
@@ -144,14 +144,14 @@ describe("SearchBar", () => {
 
     it("handles API error gracefully", async () => {
       (categoriesService.list as jest.Mock).mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
       render(<SearchBar />);
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to fetch categories:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
       consoleSpy.mockRestore();
@@ -214,8 +214,8 @@ describe("SearchBar", () => {
       await waitFor(() => {
         expect(
           screen.getByPlaceholderText(
-            /Enter a brand name, item name or item URL for search/
-          )
+            /Enter a brand name, item name or item URL for search/,
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -269,7 +269,7 @@ describe("SearchBar", () => {
           "Search:",
           "test query",
           "Category:",
-          "all"
+          "all",
         );
       });
       consoleSpy.mockRestore();
@@ -289,7 +289,7 @@ describe("SearchBar", () => {
           "Search:",
           "",
           "Category:",
-          "cat1"
+          "cat1",
         );
       });
       consoleSpy.mockRestore();
@@ -509,7 +509,7 @@ describe("SearchBar", () => {
           "Search:",
           "",
           "Category:",
-          "all"
+          "all",
         );
       });
       consoleSpy.mockRestore();
@@ -537,7 +537,7 @@ describe("SearchBar", () => {
           "Search:",
           "",
           "Category:",
-          "all"
+          "all",
         );
       });
       consoleSpy.mockRestore();

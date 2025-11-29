@@ -42,12 +42,11 @@ interface ValidateCouponResponse {
 class CouponsService {
   // List coupons (public active/owner all)
   async list(
-    filters?: Partial<CouponFiltersBE>
+    filters?: Partial<CouponFiltersBE>,
   ): Promise<PaginatedResponseFE<CouponFE>> {
     const endpoint = buildUrl(COUPON_ROUTES.LIST, filters);
-    const response = await apiService.get<PaginatedResponseBE<CouponBE>>(
-      endpoint
-    );
+    const response =
+      await apiService.get<PaginatedResponseBE<CouponBE>>(endpoint);
 
     return {
       data: toFECoupons(response.data),
@@ -65,7 +64,7 @@ class CouponsService {
   // Get coupon by code
   async getByCode(code: string): Promise<CouponFE> {
     const couponBE = await apiService.get<CouponBE>(
-      COUPON_ROUTES.BY_CODE(code)
+      COUPON_ROUTES.BY_CODE(code),
     );
     return toFECoupon(couponBE);
   }
@@ -75,7 +74,7 @@ class CouponsService {
     const request = toBECreateCouponRequest(data);
     const couponBE = await apiService.post<CouponBE>(
       COUPON_ROUTES.LIST,
-      request
+      request,
     );
     return toFECoupon(couponBE);
   }
@@ -85,7 +84,7 @@ class CouponsService {
     const request = toBEUpdateCouponRequest(data);
     const couponBE = await apiService.patch<CouponBE>(
       COUPON_ROUTES.BY_CODE(code),
-      request
+      request,
     );
     return toFECoupon(couponBE);
   }
@@ -99,21 +98,21 @@ class CouponsService {
   async validate(data: ValidateCouponData): Promise<ValidateCouponResponse> {
     return apiService.post<ValidateCouponResponse>(
       COUPON_ROUTES.VALIDATE,
-      data
+      data,
     );
   }
 
   // Check if coupon code is available (for form validation)
   async validateCode(
     code: string,
-    shopId?: string
+    shopId?: string,
   ): Promise<{ available: boolean; message?: string }> {
     const params = new URLSearchParams();
     params.append("code", code);
     if (shopId) params.append("shop_id", shopId);
 
     return apiService.get<{ available: boolean; message?: string }>(
-      `/coupons/validate-code?${params.toString()}`
+      `/coupons/validate-code?${params.toString()}`,
     );
   }
 
@@ -137,7 +136,7 @@ class CouponsService {
   async bulkAction(
     action: string,
     couponIds: string[],
-    data?: any
+    data?: any,
   ): Promise<BulkActionResponse> {
     try {
       const response = await apiService.post<BulkActionResponse>(
@@ -146,7 +145,7 @@ class CouponsService {
           action,
           couponIds,
           data,
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -181,12 +180,12 @@ class CouponsService {
    */
   async bulkUpdate(
     couponIds: string[],
-    updates: Partial<CouponFormFE>
+    updates: Partial<CouponFormFE>,
   ): Promise<BulkActionResponse> {
     return this.bulkAction(
       "update",
       couponIds,
-      toBEUpdateCouponRequest(updates)
+      toBEUpdateCouponRequest(updates),
     );
   }
 }

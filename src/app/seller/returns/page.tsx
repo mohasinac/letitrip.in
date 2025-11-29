@@ -28,7 +28,7 @@ export default function SellerReturnsPage() {
   const [returns, setReturns] = useState<ReturnCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterValues, setFilterValues] = useState<Partial<ReturnFiltersFE>>(
-    {}
+    {},
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -225,7 +225,7 @@ export default function SellerReturnsPage() {
                             <button
                               onClick={() =>
                                 router.push(
-                                  `/seller/orders/${returnItem.orderId}`
+                                  `/seller/orders/${returnItem.orderId}`,
                                 )
                               }
                               className="text-sm text-indigo-600 hover:text-indigo-900 font-mono"
@@ -249,7 +249,7 @@ export default function SellerReturnsPage() {
                           <td className="px-6 py-4">
                             <span
                               className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                                returnItem.status
+                                returnItem.status,
                               )}`}
                             >
                               {returnItem.status}
@@ -257,7 +257,7 @@ export default function SellerReturnsPage() {
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-500">
                             {new Date(
-                              returnItem.createdAt
+                              returnItem.createdAt,
                             ).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 text-sm space-x-2">
@@ -274,7 +274,7 @@ export default function SellerReturnsPage() {
                                 <button
                                   onClick={() => {
                                     const notes = prompt(
-                                      "Reason for rejection (optional):"
+                                      "Reason for rejection (optional):",
                                     );
                                     if (notes !== null) {
                                       handleReject(returnItem.id, notes);

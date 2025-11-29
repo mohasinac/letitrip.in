@@ -7,7 +7,7 @@ const VALID_TYPES = ["product", "shop", "category", "auction"];
 // GET /api/favorites/list/[type] - Get user's favorites by type
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ type: string }> }
+  { params }: { params: Promise<{ type: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -97,7 +97,7 @@ export async function GET(
     console.error("List favorites error:", error);
     return NextResponse.json(
       { error: "Failed to list favorites" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

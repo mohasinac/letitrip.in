@@ -41,7 +41,7 @@ interface ShopPaymentData {
 class ShopsService {
   // List shops (filtered by role) with cursor-based pagination
   async list(
-    filters?: Record<string, any>
+    filters?: Record<string, any>,
   ): Promise<PaginatedResponseFE<ShopCardFE>> {
     const params = new URLSearchParams();
 
@@ -89,7 +89,7 @@ class ShopsService {
     const request = toBECreateShopRequest(formData as ShopFormFE);
     const response: any = await apiService.patch(
       SHOP_ROUTES.BY_SLUG(slug),
-      request
+      request,
     );
     return toFEShop(response.data);
   }
@@ -115,7 +115,7 @@ class ShopsService {
   async setFeatureFlags(slug: string, data: ShopFeatureData): Promise<ShopFE> {
     const response: any = await apiService.patch(
       `/shops/${slug}/feature`,
-      data
+      data,
     );
     return toFEShop(response.data);
   }
@@ -138,7 +138,7 @@ class ShopsService {
   // Get products for a shop (supports pagination & basic filters)
   async getShopProducts(
     slug: string,
-    options?: { page?: number; limit?: number; filters?: Record<string, any> }
+    options?: { page?: number; limit?: number; filters?: Record<string, any> },
   ): Promise<PaginatedResponseFE<ProductCardFE>> {
     const params = new URLSearchParams();
     if (options?.page) params.append("page", String(options.page));
@@ -153,9 +153,8 @@ class ShopsService {
     const endpoint = qs
       ? `/shops/${slug}/products?${qs}`
       : `/shops/${slug}/products`;
-    const response = await apiService.get<
-      PaginatedResponseBE<ProductListItemBE>
-    >(endpoint);
+    const response =
+      await apiService.get<PaginatedResponseBE<ProductListItemBE>>(endpoint);
 
     return {
       data: response.data.map(toFEProductCard),
@@ -168,7 +167,7 @@ class ShopsService {
   async getShopReviews(
     slug: string,
     page?: number,
-    limit?: number
+    limit?: number,
   ): Promise<any> {
     const params = new URLSearchParams();
     if (page) params.append("page", String(page));
@@ -198,7 +197,7 @@ class ShopsService {
   // Get following shops list
   async getFollowing(): Promise<{ shops: ShopCardFE[]; count: number }> {
     const response = await apiService.get<{ shops: ShopBE[]; count: number }>(
-      "/shops/following"
+      "/shops/following",
     );
     return {
       shops: response.shops.map(toFEShopCard),
@@ -209,7 +208,7 @@ class ShopsService {
   // Get featured shops
   async getFeatured(): Promise<ShopCardFE[]> {
     const response = await apiService.get<{ data: ShopBE[] }>(
-      "/shops?featured=true&verified=true&limit=100"
+      "/shops?featured=true&verified=true&limit=100",
     );
     return response.data.map(toFEShopCard);
   }
@@ -217,7 +216,7 @@ class ShopsService {
   // Get homepage shops
   async getHomepage(): Promise<ShopCardFE[]> {
     const response = await apiService.get<{ data: ShopBE[] }>(
-      "/shops?featured=true&verified=true&limit=20"
+      "/shops?featured=true&verified=true&limit=20",
     );
     return response.data.map(toFEShopCard);
   }
@@ -226,7 +225,7 @@ class ShopsService {
   private async bulkAction(
     action: string,
     ids: string[],
-    data?: Record<string, any>
+    data?: Record<string, any>,
   ): Promise<{
     success: boolean;
     results: {

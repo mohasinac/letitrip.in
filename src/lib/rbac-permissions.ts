@@ -33,7 +33,7 @@ export type Action = "read" | "create" | "update" | "delete" | "bulk";
 export function canReadResource(
   user: AuthUser | null,
   resourceType: ResourceType,
-  data?: any
+  data?: any,
 ): boolean {
   // Public resources - anyone can read active/published items
   if (
@@ -107,7 +107,7 @@ export function canWriteResource(
   user: AuthUser | null,
   resourceType: ResourceType,
   action: "create" | "update" = "create",
-  data?: any
+  data?: any,
 ): boolean {
   if (!user) {
     return false;
@@ -190,7 +190,7 @@ export function canWriteResource(
 export function canDeleteResource(
   user: AuthUser | null,
   resourceType: ResourceType,
-  data?: any
+  data?: any,
 ): boolean {
   if (!user) {
     return false;
@@ -232,7 +232,7 @@ export function canDeleteResource(
 export function filterDataByRole<T extends Record<string, any>>(
   user: AuthUser | null,
   resourceType: ResourceType,
-  data: T[]
+  data: T[],
 ): T[] {
   // Admin sees everything
   if (user?.role === "admin") {
@@ -245,7 +245,7 @@ export function filterDataByRole<T extends Record<string, any>>(
       (item) =>
         item.status === "active" ||
         item.status === "published" ||
-        item.isActive === true
+        item.isActive === true,
     );
   }
 
@@ -329,7 +329,7 @@ export function getRoleLevel(role: UserRole): number {
  */
 export function hasRole(
   user: AuthUser | null,
-  requiredRole: UserRole
+  requiredRole: UserRole,
 ): boolean {
   if (!user) {
     return requiredRole === "guest";

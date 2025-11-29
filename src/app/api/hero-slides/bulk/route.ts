@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json(
       { error: "Failed to perform bulk operation" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

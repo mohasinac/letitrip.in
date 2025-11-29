@@ -195,12 +195,12 @@ export default function ProductPage({ params }: ProductPageProps) {
                     <div className="flex items-baseline gap-2 mb-2">
                       {formatDiscount(
                         product.compareAtPrice,
-                        product.price
+                        product.price,
                       ) && (
                         <span className="text-sm font-medium text-red-600">
                           {formatDiscount(
                             product.compareAtPrice,
-                            product.price
+                            product.price,
                           )}
                         </span>
                       )}
@@ -295,7 +295,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                             <option key={i + 1} value={i + 1}>
                               {i + 1}
                             </option>
-                          )
+                          ),
                         )}
                       </select>
                     </div>
@@ -320,10 +320,10 @@ export default function ProductPage({ params }: ProductPageProps) {
                               image: product.images[0],
                               shopId: product.shopId,
                               shopName: shop?.name || product.shopId,
-                            }
+                            },
                           );
                           toast.success(
-                            `Added ${selectedQuantity} item(s) to cart`
+                            `Added ${selectedQuantity} item(s) to cart`,
                           );
                         } catch (error: any) {
                           toast.error(error.message || "Failed to add to cart");
@@ -351,7 +351,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                               image: product.images[0],
                               shopId: product.shopId,
                               shopName: shop?.name || product.shopId,
-                            }
+                            },
                           );
                           router.push("/checkout");
                         } catch (error: any) {
@@ -425,7 +425,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             <SimilarProducts
               productId={product.id}
               parentCategoryIds={product.categoryIds.filter(
-                (id: string) => id !== product.categoryId
+                (id: string) => id !== product.categoryId,
               )}
               currentShopId={product.shopId}
               parentCategoryName="related categories"

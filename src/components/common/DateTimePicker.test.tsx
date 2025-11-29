@@ -18,7 +18,7 @@ describe("DateTimePicker", () => {
           value={null}
           onChange={mockOnChange}
           placeholder="Select date"
-        />
+        />,
       );
       expect(screen.getByText("Select date")).toBeInTheDocument();
     });
@@ -30,7 +30,7 @@ describe("DateTimePicker", () => {
 
     it("should render calendar icon", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} />
+        <DateTimePicker value={null} onChange={mockOnChange} />,
       );
       const icon = container.querySelector("svg");
       expect(icon).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe("DateTimePicker", () => {
           value={null}
           onChange={mockOnChange}
           className="custom-class"
-        />
+        />,
       );
       const wrapper = container.querySelector(".custom-class");
       expect(wrapper).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe("DateTimePicker", () => {
 
     it("should not show picker dropdown initially", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} />
+        <DateTimePicker value={null} onChange={mockOnChange} />,
       );
       const dropdown = container.querySelector(".absolute.z-20.mt-2.bg-white");
       expect(dropdown).not.toBeInTheDocument();
@@ -62,7 +62,7 @@ describe("DateTimePicker", () => {
     it("should display date in datetime mode", () => {
       const date = new Date("2024-01-15T10:30:00");
       render(
-        <DateTimePicker value={date} onChange={mockOnChange} mode="datetime" />
+        <DateTimePicker value={date} onChange={mockOnChange} mode="datetime" />,
       );
       expect(screen.getByText(/15 Jan 2024/)).toBeInTheDocument();
       expect(screen.getByText(/10:30/)).toBeInTheDocument();
@@ -71,7 +71,7 @@ describe("DateTimePicker", () => {
     it("should display only date in date mode", () => {
       const date = new Date("2024-01-15");
       render(
-        <DateTimePicker value={date} onChange={mockOnChange} mode="date" />
+        <DateTimePicker value={date} onChange={mockOnChange} mode="date" />,
       );
       expect(screen.getByText(/15 Jan 2024/)).toBeInTheDocument();
     });
@@ -79,7 +79,7 @@ describe("DateTimePicker", () => {
     it("should display only time in time mode", () => {
       const date = new Date("2024-01-15T10:30:00");
       render(
-        <DateTimePicker value={date} onChange={mockOnChange} mode="time" />
+        <DateTimePicker value={date} onChange={mockOnChange} mode="time" />,
       );
       expect(screen.getByText(/10:30/)).toBeInTheDocument();
     });
@@ -94,7 +94,7 @@ describe("DateTimePicker", () => {
   describe("Opening/Closing Picker", () => {
     it("should open picker when input clicked", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} />
+        <DateTimePicker value={null} onChange={mockOnChange} />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -104,7 +104,7 @@ describe("DateTimePicker", () => {
 
     it("should not open picker when disabled", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} disabled />
+        <DateTimePicker value={null} onChange={mockOnChange} disabled />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -114,7 +114,7 @@ describe("DateTimePicker", () => {
 
     it("should close picker when backdrop clicked", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} />
+        <DateTimePicker value={null} onChange={mockOnChange} />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -126,7 +126,7 @@ describe("DateTimePicker", () => {
 
     it("should show ring when picker is open", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} />
+        <DateTimePicker value={null} onChange={mockOnChange} />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -138,7 +138,7 @@ describe("DateTimePicker", () => {
   describe("Mode Selection", () => {
     it("should show calendar in date mode", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />
+        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -148,7 +148,7 @@ describe("DateTimePicker", () => {
 
     it("should show time picker in time mode", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} mode="time" />
+        <DateTimePicker value={null} onChange={mockOnChange} mode="time" />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -158,7 +158,7 @@ describe("DateTimePicker", () => {
 
     it("should show both calendar and time in datetime mode", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} mode="datetime" />
+        <DateTimePicker value={null} onChange={mockOnChange} mode="datetime" />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -170,7 +170,7 @@ describe("DateTimePicker", () => {
 
     it("should default to datetime mode", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} />
+        <DateTimePicker value={null} onChange={mockOnChange} />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -185,7 +185,7 @@ describe("DateTimePicker", () => {
   describe("Calendar Navigation", () => {
     it("should display current month initially", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />
+        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -199,7 +199,7 @@ describe("DateTimePicker", () => {
           value={new Date("2024-02-15")}
           onChange={mockOnChange}
           mode="date"
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -216,7 +216,7 @@ describe("DateTimePicker", () => {
           value={new Date("2024-02-15")}
           onChange={mockOnChange}
           mode="date"
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -228,7 +228,7 @@ describe("DateTimePicker", () => {
 
     it("should display day labels", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />
+        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -242,14 +242,14 @@ describe("DateTimePicker", () => {
   describe("Date Selection", () => {
     it("should call onChange when date is selected", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />
+        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
       // Click on day 15
       const dayButtons = container.querySelectorAll(".grid button");
       const day15 = Array.from(dayButtons).find((btn) =>
-        btn.textContent?.includes("15")
+        btn.textContent?.includes("15"),
       );
       if (day15) {
         fireEvent.click(day15);
@@ -259,18 +259,18 @@ describe("DateTimePicker", () => {
 
     it("should close picker after date selection in date mode", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />
+        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
       const dayButtons = container.querySelectorAll(".grid button");
       const day15 = Array.from(dayButtons).find((btn) =>
-        btn.textContent?.includes("15")
+        btn.textContent?.includes("15"),
       );
       if (day15) {
         fireEvent.click(day15);
         const dropdown = container.querySelector(
-          ".absolute.z-20.mt-2.bg-white"
+          ".absolute.z-20.mt-2.bg-white",
         );
         expect(dropdown).not.toBeInTheDocument();
       }
@@ -278,18 +278,18 @@ describe("DateTimePicker", () => {
 
     it("should not close picker after date selection in datetime mode", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} mode="datetime" />
+        <DateTimePicker value={null} onChange={mockOnChange} mode="datetime" />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
       const dayButtons = container.querySelectorAll(".grid button");
       const day15 = Array.from(dayButtons).find((btn) =>
-        btn.textContent?.includes("15")
+        btn.textContent?.includes("15"),
       );
       if (day15) {
         fireEvent.click(day15);
         const dropdown = container.querySelector(
-          ".absolute.z-20.mt-2.bg-white"
+          ".absolute.z-20.mt-2.bg-white",
         );
         expect(dropdown).toBeInTheDocument();
       }
@@ -301,27 +301,27 @@ describe("DateTimePicker", () => {
           value={new Date("2024-01-15")}
           onChange={mockOnChange}
           mode="date"
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
       const dayButtons = container.querySelectorAll(".grid button");
       const day15 = Array.from(dayButtons).find(
-        (btn) => btn.textContent === "15"
+        (btn) => btn.textContent === "15",
       );
       expect(day15).toHaveClass("bg-blue-600");
     });
 
     it("should highlight today's date", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />
+        <DateTimePicker value={null} onChange={mockOnChange} mode="date" />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
       const today = new Date().getDate();
       const dayButtons = container.querySelectorAll(".grid button");
       const todayButton = Array.from(dayButtons).find(
-        (btn) => btn.textContent === String(today)
+        (btn) => btn.textContent === String(today),
       );
       // Should have today styling if it's in current month
       if (todayButton) {
@@ -338,7 +338,7 @@ describe("DateTimePicker", () => {
           value={new Date("2024-01-15T10:30:00")}
           onChange={mockOnChange}
           mode="time"
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -353,7 +353,7 @@ describe("DateTimePicker", () => {
           value={new Date("2024-01-15T10:30:00")}
           onChange={mockOnChange}
           mode="time"
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -369,7 +369,7 @@ describe("DateTimePicker", () => {
           onChange={mockOnChange}
           mode="time"
           use12Hour
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -385,7 +385,7 @@ describe("DateTimePicker", () => {
           onChange={mockOnChange}
           mode="time"
           use12Hour={false}
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -400,7 +400,7 @@ describe("DateTimePicker", () => {
           onChange={mockOnChange}
           mode="time"
           use12Hour
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -418,7 +418,7 @@ describe("DateTimePicker", () => {
           value={new Date("2024-01-15")}
           onChange={mockOnChange}
           showClear
-        />
+        />,
       );
       const clearButton = container.querySelector("button");
       expect(clearButton).toBeInTheDocument();
@@ -426,7 +426,7 @@ describe("DateTimePicker", () => {
 
     it("should not show clear button when value is null", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} showClear />
+        <DateTimePicker value={null} onChange={mockOnChange} showClear />,
       );
       const buttons = container.querySelectorAll("button");
       expect(buttons.length).toBe(0);
@@ -438,7 +438,7 @@ describe("DateTimePicker", () => {
           value={new Date("2024-01-15")}
           onChange={mockOnChange}
           showClear={false}
-        />
+        />,
       );
       const clearButton = container.querySelector("button svg");
       expect(clearButton).not.toBeInTheDocument();
@@ -451,7 +451,7 @@ describe("DateTimePicker", () => {
           onChange={mockOnChange}
           showClear
           disabled
-        />
+        />,
       );
       const buttons = container.querySelectorAll("button");
       expect(buttons.length).toBe(0);
@@ -463,7 +463,7 @@ describe("DateTimePicker", () => {
           value={new Date("2024-01-15")}
           onChange={mockOnChange}
           showClear
-        />
+        />,
       );
       const clearButton = container.querySelector("button");
       fireEvent.click(clearButton!);
@@ -476,7 +476,7 @@ describe("DateTimePicker", () => {
           value={new Date("2024-01-15")}
           onChange={mockOnChange}
           showClear
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -491,7 +491,7 @@ describe("DateTimePicker", () => {
   describe("Disabled State", () => {
     it("should have disabled styling when disabled", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} disabled />
+        <DateTimePicker value={null} onChange={mockOnChange} disabled />,
       );
       const input = container.querySelector(".flex.items-center");
       expect(input).toHaveClass("bg-gray-100");
@@ -500,7 +500,7 @@ describe("DateTimePicker", () => {
 
     it("should not open picker when disabled", () => {
       const { container } = render(
-        <DateTimePicker value={null} onChange={mockOnChange} disabled />
+        <DateTimePicker value={null} onChange={mockOnChange} disabled />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -517,7 +517,7 @@ describe("DateTimePicker", () => {
           value={null}
           onChange={mockOnChange}
           error="Invalid date"
-        />
+        />,
       );
       expect(screen.getByText("Invalid date")).toBeInTheDocument();
     });
@@ -528,7 +528,7 @@ describe("DateTimePicker", () => {
           value={null}
           onChange={mockOnChange}
           error="Invalid date"
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       expect(input).toHaveClass("border-red-500");
@@ -540,7 +540,7 @@ describe("DateTimePicker", () => {
           value={null}
           onChange={mockOnChange}
           error="Invalid date"
-        />
+        />,
       );
       const errorMsg = container.querySelector(".text-red-600");
       expect(errorMsg).toHaveTextContent("Invalid date");
@@ -562,7 +562,7 @@ describe("DateTimePicker", () => {
           onChange={mockOnChange}
           mode="date"
           minDate={minDate}
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
@@ -581,14 +581,14 @@ describe("DateTimePicker", () => {
           onChange={mockOnChange}
           mode="date"
           maxDate={maxDate}
-        />
+        />,
       );
       const input = container.querySelector(".flex.items-center");
       fireEvent.click(input!);
       // Days after maxDate should be disabled
       const dayButtons = container.querySelectorAll(".grid button");
       const day25 = Array.from(dayButtons).find((btn) =>
-        btn.textContent?.includes("25")
+        btn.textContent?.includes("25"),
       );
       if (day25) {
         expect(day25).toBeDisabled();
@@ -603,7 +603,7 @@ describe("DateTimePicker", () => {
           value={null}
           onChange={mockOnChange}
           error={longError}
-        />
+        />,
       );
       expect(screen.getByText(longError)).toBeInTheDocument();
     });

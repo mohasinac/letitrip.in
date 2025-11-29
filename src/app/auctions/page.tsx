@@ -451,7 +451,7 @@ function AuctionsContent() {
                             new Date(auction.startTime || 0),
                             {
                               addSuffix: true,
-                            }
+                            },
                           )}
                         </div>
                       )}
@@ -545,7 +545,7 @@ function AuctionsContent() {
                                 new Date(auction.startTime || 0),
                                 {
                                   addSuffix: true,
-                                }
+                                },
                               )}
                             </p>
                           </div>

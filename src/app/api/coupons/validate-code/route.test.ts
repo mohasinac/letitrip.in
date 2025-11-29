@@ -10,7 +10,9 @@ import { resolveShopSlug } from "@/app/api/lib/utils/shop-slug-resolver";
 jest.mock("@/app/api/lib/firebase/collections");
 jest.mock("@/app/api/lib/utils/shop-slug-resolver");
 
-const mockResolveShopSlug = resolveShopSlug as jest.MockedFunction<typeof resolveShopSlug>;
+const mockResolveShopSlug = resolveShopSlug as jest.MockedFunction<
+  typeof resolveShopSlug
+>;
 
 describe("GET /api/coupons/validate-code", () => {
   let mockQuery: any;
@@ -33,7 +35,9 @@ describe("GET /api/coupons/validate-code", () => {
   });
 
   it("should require code parameter", async () => {
-    const request = new NextRequest("http://localhost:3000/api/coupons/validate-code?shop_slug=test-shop");
+    const request = new NextRequest(
+      "http://localhost:3000/api/coupons/validate-code?shop_slug=test-shop",
+    );
     const response = await GET(request);
     const data = await response.json();
 
@@ -42,7 +46,9 @@ describe("GET /api/coupons/validate-code", () => {
   });
 
   it("should require shop_slug parameter", async () => {
-    const request = new NextRequest("http://localhost:3000/api/coupons/validate-code?code=SAVE10");
+    const request = new NextRequest(
+      "http://localhost:3000/api/coupons/validate-code?code=SAVE10",
+    );
     const response = await GET(request);
     const data = await response.json();
 
@@ -52,7 +58,7 @@ describe("GET /api/coupons/validate-code", () => {
 
   it("should normalize code (uppercase, trim)", async () => {
     const request = new NextRequest(
-      "http://localhost:3000/api/coupons/validate-code?code= save10 &shop_slug=test-shop"
+      "http://localhost:3000/api/coupons/validate-code?code= save10 &shop_slug=test-shop",
     );
     const response = await GET(request);
     const data = await response.json();
@@ -66,7 +72,7 @@ describe("GET /api/coupons/validate-code", () => {
     mockResolveShopSlug.mockResolvedValue(null);
 
     const request = new NextRequest(
-      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=invalid-shop"
+      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=invalid-shop",
     );
     const response = await GET(request);
     const data = await response.json();
@@ -79,7 +85,7 @@ describe("GET /api/coupons/validate-code", () => {
     mockSnapshot.docs = [];
 
     const request = new NextRequest(
-      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=test-shop"
+      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=test-shop",
     );
     const response = await GET(request);
     const data = await response.json();
@@ -94,7 +100,7 @@ describe("GET /api/coupons/validate-code", () => {
     mockSnapshot.docs = [{ id: "coupon1" }];
 
     const request = new NextRequest(
-      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=test-shop"
+      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=test-shop",
     );
     const response = await GET(request);
     const data = await response.json();
@@ -107,7 +113,7 @@ describe("GET /api/coupons/validate-code", () => {
     mockSnapshot.docs = [{ id: "coupon1" }];
 
     const request = new NextRequest(
-      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=test-shop&exclude_id=coupon1"
+      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=test-shop&exclude_id=coupon1",
     );
     const response = await GET(request);
     const data = await response.json();
@@ -120,7 +126,7 @@ describe("GET /api/coupons/validate-code", () => {
     mockSnapshot.docs = [{ id: "coupon1" }, { id: "coupon2" }];
 
     const request = new NextRequest(
-      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=test-shop&exclude_id=coupon1"
+      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=test-shop&exclude_id=coupon1",
     );
     const response = await GET(request);
     const data = await response.json();
@@ -133,7 +139,7 @@ describe("GET /api/coupons/validate-code", () => {
     mockQuery.get.mockRejectedValue(new Error("Database error"));
 
     const request = new NextRequest(
-      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=test-shop"
+      "http://localhost:3000/api/coupons/validate-code?code=SAVE10&shop_slug=test-shop",
     );
     const response = await GET(request);
     const data = await response.json();
@@ -146,12 +152,16 @@ describe("GET /api/coupons/validate-code", () => {
     mockResolveShopSlug.mockResolvedValue("resolved-shop-id");
 
     const request = new NextRequest(
-      "http://localhost:3000/api/coupons/validate-code?code=save20&shop_slug=my-shop"
+      "http://localhost:3000/api/coupons/validate-code?code=save20&shop_slug=my-shop",
     );
     await GET(request);
 
     expect(mockResolveShopSlug).toHaveBeenCalledWith("my-shop");
     expect(mockQuery.where).toHaveBeenCalledWith("code", "==", "SAVE20");
-    expect(mockQuery.where).toHaveBeenCalledWith("shop_id", "==", "resolved-shop-id");
+    expect(mockQuery.where).toHaveBeenCalledWith(
+      "shop_id",
+      "==",
+      "resolved-shop-id",
+    );
   });
 });

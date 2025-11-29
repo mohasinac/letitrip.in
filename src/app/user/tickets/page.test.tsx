@@ -113,8 +113,8 @@ describe("UserTicketsPage", () => {
       mockListTickets.mockImplementation(
         () =>
           new Promise((resolve) =>
-            setTimeout(() => resolve({ data: [], pagination: {} }), 100)
-          )
+            setTimeout(() => resolve({ data: [], pagination: {} }), 100),
+          ),
       );
       render(<UserTicketsPage />);
       expect(screen.getByText("Loading tickets...")).toBeInTheDocument();
@@ -124,8 +124,8 @@ describe("UserTicketsPage", () => {
       mockListTickets.mockImplementation(
         () =>
           new Promise((resolve) =>
-            setTimeout(() => resolve({ data: [], pagination: {} }), 100)
-          )
+            setTimeout(() => resolve({ data: [], pagination: {} }), 100),
+          ),
       );
       render(<UserTicketsPage />);
       expect(document.querySelector(".animate-spin")).toBeInTheDocument();
@@ -135,7 +135,7 @@ describe("UserTicketsPage", () => {
       render(<UserTicketsPage />);
       await waitFor(() => {
         expect(
-          screen.queryByText("Loading tickets...")
+          screen.queryByText("Loading tickets..."),
         ).not.toBeInTheDocument();
       });
     });
@@ -155,10 +155,10 @@ describe("UserTicketsPage", () => {
       render(<UserTicketsPage />);
       await waitFor(() => {
         expect(
-          screen.getByText("My order hasn't arrived yet")
+          screen.getByText("My order hasn't arrived yet"),
         ).toBeInTheDocument();
         expect(
-          screen.getByText("What is the warranty period?")
+          screen.getByText("What is the warranty period?"),
         ).toBeInTheDocument();
       });
     });
@@ -236,7 +236,7 @@ describe("UserTicketsPage", () => {
         const allOrderIssueText = screen.getAllByText("Order Issue");
         // Filter to get only span badges, not option elements
         const categoryBadge = allOrderIssueText.find(
-          (el) => el.tagName === "SPAN"
+          (el) => el.tagName === "SPAN",
         );
         expect(categoryBadge).toHaveClass("bg-gray-100");
       });
@@ -305,13 +305,13 @@ describe("UserTicketsPage", () => {
 
       mockListTickets.mockClear();
       const select = await waitFor(() =>
-        screen.getByLabelText("Filter by Status")
+        screen.getByLabelText("Filter by Status"),
       );
       await user.selectOptions(select, "open");
 
       await waitFor(() => {
         expect(mockListTickets).toHaveBeenCalledWith(
-          expect.objectContaining({ status: "open" })
+          expect.objectContaining({ status: "open" }),
         );
       });
     });
@@ -347,13 +347,13 @@ describe("UserTicketsPage", () => {
 
       mockListTickets.mockClear();
       const select = await waitFor(() =>
-        screen.getByLabelText("Filter by Category")
+        screen.getByLabelText("Filter by Category"),
       );
       await user.selectOptions(select, "order-issue");
 
       await waitFor(() => {
         expect(mockListTickets).toHaveBeenCalledWith(
-          expect.objectContaining({ category: "order-issue" })
+          expect.objectContaining({ category: "order-issue" }),
         );
       });
     });
@@ -381,7 +381,7 @@ describe("UserTicketsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("You haven't created any support tickets yet")
+          screen.getByText("You haven't created any support tickets yet"),
         ).toBeInTheDocument();
       });
     });
@@ -395,7 +395,7 @@ describe("UserTicketsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Create Your First Ticket")
+          screen.getByText("Create Your First Ticket"),
         ).toBeInTheDocument();
       });
     });
@@ -413,13 +413,13 @@ describe("UserTicketsPage", () => {
       });
 
       const select = await waitFor(() =>
-        screen.getByLabelText("Filter by Status")
+        screen.getByLabelText("Filter by Status"),
       );
       await user.selectOptions(select, "open");
 
       await waitFor(() => {
         expect(
-          screen.getByText("No tickets match your filters")
+          screen.getByText("No tickets match your filters"),
         ).toBeInTheDocument();
       });
     });
@@ -490,7 +490,7 @@ describe("UserTicketsPage", () => {
       });
 
       const nextButton = await waitFor(() =>
-        screen.getByText("Next").closest("button")
+        screen.getByText("Next").closest("button"),
       );
       mockListTickets.mockClear();
 
@@ -522,7 +522,7 @@ describe("UserTicketsPage", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Error fetching tickets:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -587,7 +587,7 @@ describe("UserTicketsPage", () => {
             category: "",
             startAfter: null,
             limit: 20,
-          })
+          }),
         );
       });
     });
@@ -602,7 +602,7 @@ describe("UserTicketsPage", () => {
 
       mockListTickets.mockClear();
       const select = await waitFor(() =>
-        screen.getByLabelText("Filter by Status")
+        screen.getByLabelText("Filter by Status"),
       );
       await user.selectOptions(select, "open");
 

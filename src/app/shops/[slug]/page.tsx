@@ -131,8 +131,8 @@ export default function ShopPage({ params }: ShopPageProps) {
           productFilters.stock === "in_stock"
             ? true
             : productFilters.stock === "out_of_stock"
-            ? false
-            : undefined,
+              ? false
+              : undefined,
         featured: productFilters.featured,
         rating: productFilters.rating,
       });
@@ -145,7 +145,7 @@ export default function ShopPage({ params }: ShopPageProps) {
         ...new Set(
           productsData
             .map((p) => p.brand)
-            .filter((brand): brand is string => Boolean(brand))
+            .filter((brand): brand is string => Boolean(brand)),
         ),
       ];
       setAvailableBrands(brands);
@@ -233,7 +233,7 @@ export default function ShopPage({ params }: ShopPageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    }
+    },
   ) => {
     try {
       if (!productDetails) {
@@ -672,10 +672,10 @@ export default function ShopPage({ params }: ShopPageProps) {
                                     auction.status === "active"
                                       ? "bg-green-500 text-white"
                                       : auction.status === "scheduled"
-                                      ? "bg-blue-500 text-white"
-                                      : auction.status === "completed"
-                                      ? "bg-gray-500 text-white"
-                                      : "bg-yellow-500 text-white"
+                                        ? "bg-blue-500 text-white"
+                                        : auction.status === "completed"
+                                          ? "bg-gray-500 text-white"
+                                          : "bg-yellow-500 text-white"
                                   }`}
                                 >
                                   {auction.status.toUpperCase()}
@@ -740,10 +740,10 @@ export default function ShopPage({ params }: ShopPageProps) {
                                       auction.status === "active"
                                         ? "bg-green-500 text-white"
                                         : auction.status === "scheduled"
-                                        ? "bg-blue-500 text-white"
-                                        : auction.status === "completed"
-                                        ? "bg-gray-500 text-white"
-                                        : "bg-yellow-500 text-white"
+                                          ? "bg-blue-500 text-white"
+                                          : auction.status === "completed"
+                                            ? "bg-gray-500 text-white"
+                                            : "bg-yellow-500 text-white"
                                     }`}
                                   >
                                     {auction.status.toUpperCase()}

@@ -17,10 +17,15 @@ jest.mock("@/app/api/lib/firebase/collections");
 
 import { NextRequest, NextResponse } from "next/server";
 import { GET, PATCH, DELETE } from "./route";
-import { getUserFromRequest, requireAuth } from "@/app/api/middleware/rbac-auth";
+import {
+  getUserFromRequest,
+  requireAuth,
+} from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
-const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<typeof getUserFromRequest>;
+const mockGetUserFromRequest = getUserFromRequest as jest.MockedFunction<
+  typeof getUserFromRequest
+>;
 const mockRequireAuth = requireAuth as jest.MockedFunction<typeof requireAuth>;
 const mockCollections = Collections as jest.Mocked<typeof Collections>;
 
@@ -70,7 +75,9 @@ describe("GET /api/shops/[slug] - Get Shop with RBAC", () => {
     };
     mockShopsCollection.where.mockReturnValue(mockQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop");
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+    );
 
     const response = await GET(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -102,7 +109,9 @@ describe("GET /api/shops/[slug] - Get Shop with RBAC", () => {
     };
     mockShopsCollection.where.mockReturnValue(mockQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop");
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+    );
 
     const response = await GET(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -133,7 +142,9 @@ describe("GET /api/shops/[slug] - Get Shop with RBAC", () => {
     };
     mockShopsCollection.where.mockReturnValue(mockQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop");
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+    );
 
     const response = await GET(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -170,7 +181,9 @@ describe("GET /api/shops/[slug] - Get Shop with RBAC", () => {
     };
     mockShopsCollection.where.mockReturnValue(mockQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop");
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+    );
 
     const response = await GET(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -208,7 +221,9 @@ describe("GET /api/shops/[slug] - Get Shop with RBAC", () => {
     };
     mockShopsCollection.where.mockReturnValue(mockQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop");
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+    );
 
     const response = await GET(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -249,7 +264,9 @@ describe("GET /api/shops/[slug] - Get Shop with RBAC", () => {
     };
     mockShopsCollection.where.mockReturnValue(mockQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop");
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+    );
 
     const response = await GET(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -271,7 +288,9 @@ describe("GET /api/shops/[slug] - Get Shop with RBAC", () => {
     };
     mockShopsCollection.where.mockReturnValue(mockQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/non-existent");
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/non-existent",
+    );
 
     const response = await GET(request, {
       params: Promise.resolve({ slug: "non-existent" }),
@@ -290,7 +309,9 @@ describe("GET /api/shops/[slug] - Get Shop with RBAC", () => {
       throw new Error("Database error");
     });
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop");
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+    );
 
     const response = await GET(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -366,10 +387,13 @@ describe("PATCH /api/shops/[slug] - Update Shop", () => {
     };
     mockShopsCollection.doc.mockReturnValue(mockDocRef);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop", {
-      method: "PATCH",
-      body: JSON.stringify({ name: "Updated Shop Name" }),
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+      {
+        method: "PATCH",
+        body: JSON.stringify({ name: "Updated Shop Name" }),
+      },
+    );
 
     const response = await PATCH(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -409,10 +433,13 @@ describe("PATCH /api/shops/[slug] - Update Shop", () => {
     };
     mockShopsCollection.where.mockReturnValue(mockQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop", {
-      method: "PATCH",
-      body: JSON.stringify({ name: "Hacked Name" }),
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+      {
+        method: "PATCH",
+        body: JSON.stringify({ name: "Hacked Name" }),
+      },
+    );
 
     const response = await PATCH(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -463,10 +490,13 @@ describe("PATCH /api/shops/[slug] - Update Shop", () => {
     };
     mockShopsCollection.doc.mockReturnValue(mockDocRef);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop", {
-      method: "PATCH",
-      body: JSON.stringify({ is_verified: true }),
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+      {
+        method: "PATCH",
+        body: JSON.stringify({ is_verified: true }),
+      },
+    );
 
     const response = await PATCH(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -516,14 +546,17 @@ describe("PATCH /api/shops/[slug] - Update Shop", () => {
     };
     mockShopsCollection.doc.mockReturnValue(mockDocRef);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop", {
-      method: "PATCH",
-      body: JSON.stringify({
-        name: "Updated Name",
-        is_verified: true,
-        is_featured: true,
-      }),
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+      {
+        method: "PATCH",
+        body: JSON.stringify({
+          name: "Updated Name",
+          is_verified: true,
+          is_featured: true,
+        }),
+      },
+    );
 
     await PATCH(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -576,10 +609,13 @@ describe("PATCH /api/shops/[slug] - Update Shop", () => {
       }
     });
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop", {
-      method: "PATCH",
-      body: JSON.stringify({ slug: "existing-slug" }),
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+      {
+        method: "PATCH",
+        body: JSON.stringify({ slug: "existing-slug" }),
+      },
+    );
 
     const response = await PATCH(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -610,10 +646,13 @@ describe("PATCH /api/shops/[slug] - Update Shop", () => {
     };
     mockShopsCollection.where.mockReturnValue(mockQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/non-existent", {
-      method: "PATCH",
-      body: JSON.stringify({ name: "New Name" }),
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/non-existent",
+      {
+        method: "PATCH",
+        body: JSON.stringify({ name: "New Name" }),
+      },
+    );
 
     const response = await PATCH(request, {
       params: Promise.resolve({ slug: "non-existent" }),
@@ -707,9 +746,12 @@ describe("DELETE /api/shops/[slug] - Delete Shop", () => {
     };
     mockShopsCollection.doc.mockReturnValue(mockDocRef);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop", {
-      method: "DELETE",
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+      {
+        method: "DELETE",
+      },
+    );
 
     const response = await DELETE(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -760,9 +802,12 @@ describe("DELETE /api/shops/[slug] - Delete Shop", () => {
     };
     mockProductsCollection.where.mockReturnValue(mockProductQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop", {
-      method: "DELETE",
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+      {
+        method: "DELETE",
+      },
+    );
 
     const response = await DELETE(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -820,9 +865,12 @@ describe("DELETE /api/shops/[slug] - Delete Shop", () => {
     };
     mockOrdersCollection.where.mockReturnValue(mockOrderQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop", {
-      method: "DELETE",
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+      {
+        method: "DELETE",
+      },
+    );
 
     const response = await DELETE(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -861,9 +909,12 @@ describe("DELETE /api/shops/[slug] - Delete Shop", () => {
     };
     mockShopsCollection.where.mockReturnValue(mockShopQuery);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop", {
-      method: "DELETE",
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+      {
+        method: "DELETE",
+      },
+    );
 
     const response = await DELETE(request, {
       params: Promise.resolve({ slug: "test-shop" }),
@@ -921,9 +972,12 @@ describe("DELETE /api/shops/[slug] - Delete Shop", () => {
     };
     mockShopsCollection.doc.mockReturnValue(mockDocRef);
 
-    const request = new NextRequest("http://localhost:3000/api/shops/test-shop", {
-      method: "DELETE",
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/shops/test-shop",
+      {
+        method: "DELETE",
+      },
+    );
 
     const response = await DELETE(request, {
       params: Promise.resolve({ slug: "test-shop" }),

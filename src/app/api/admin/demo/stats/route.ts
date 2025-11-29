@@ -122,7 +122,7 @@ export async function GET() {
         shipments,
         reviews,
         createdAt: latestCreatedAt
-          ? safeToISOString(latestCreatedAt) ?? new Date().toISOString()
+          ? (safeToISOString(latestCreatedAt) ?? new Date().toISOString())
           : new Date().toISOString(),
       },
     });
@@ -134,7 +134,7 @@ export async function GET() {
         summary: null,
         error: error.message,
       },
-      { status: 200 }
+      { status: 200 },
     );
   }
 }

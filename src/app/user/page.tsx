@@ -49,13 +49,13 @@ export default function UserDashboardPage() {
       // Calculate stats
       const totalOrders = orders.length;
       const pendingOrders = orders.filter(
-        (o) => o.status === "pending" || o.status === "confirmed"
+        (o) => o.status === "pending" || o.status === "confirmed",
       ).length;
       const completedOrders = orders.filter(
-        (o) => o.status === "delivered"
+        (o) => o.status === "delivered",
       ).length;
       const cancelledOrders = orders.filter(
-        (o) => o.status === "cancelled"
+        (o) => o.status === "cancelled",
       ).length;
 
       setStats({
@@ -224,7 +224,7 @@ export default function UserDashboardPage() {
                               year: "numeric",
                               month: "short",
                               day: "numeric",
-                            }
+                            },
                           )}
                         </p>
                       </div>
@@ -238,8 +238,8 @@ export default function UserDashboardPage() {
                             order.status === "delivered"
                               ? "bg-green-100 text-green-700"
                               : order.status === "cancelled"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-yellow-100 text-yellow-700"
+                                ? "bg-red-100 text-red-700"
+                                : "bg-yellow-100 text-yellow-700"
                           }`}
                         >
                           {order.status.charAt(0).toUpperCase() +

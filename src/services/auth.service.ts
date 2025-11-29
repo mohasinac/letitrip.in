@@ -208,7 +208,7 @@ class AuthService {
   async getCurrentUser(): Promise<UserFE | null> {
     try {
       const response = await apiService.get<{ user: AuthUserBE; session: any }>(
-        "/auth/me"
+        "/auth/me",
       );
 
       // Transform and store user
@@ -272,7 +272,7 @@ class AuthService {
   async getSessions(): Promise<any[]> {
     try {
       const response = await apiService.get<{ sessions: any[] }>(
-        "/auth/sessions"
+        "/auth/sessions",
       );
       return response.sessions;
     } catch (error) {
@@ -305,7 +305,7 @@ class AuthService {
   async updateProfile(data: Partial<UserFE>): Promise<UserFE> {
     const response = await apiService.patch<{ user: AuthUserBE }>(
       "/auth/profile",
-      data
+      data,
     );
 
     // Transform and store user
@@ -317,7 +317,7 @@ class AuthService {
   // Change password
   async changePassword(
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
   ): Promise<{ message: string }> {
     return apiService.post("/auth/change-password", {
       currentPassword,

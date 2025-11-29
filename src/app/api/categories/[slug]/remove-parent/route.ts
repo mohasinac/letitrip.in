@@ -8,14 +8,14 @@ import { getCurrentUser } from "../../../lib/session";
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);
     if (user?.role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Forbidden" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -26,7 +26,7 @@ export async function POST(
     if (!parentId) {
       return NextResponse.json(
         { success: false, error: "Parent ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -39,7 +39,7 @@ export async function POST(
     if (categoriesSnapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -53,7 +53,7 @@ export async function POST(
     if (!currentParentIds.includes(parentId)) {
       return NextResponse.json(
         { success: false, error: "Parent not found in category" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -61,7 +61,7 @@ export async function POST(
 
     // Remove parent from category
     const newParentIds = currentParentIds.filter(
-      (id: string) => id !== parentId
+      (id: string) => id !== parentId,
     );
     await Collections.categories()
       .doc(categoryDoc.id)
@@ -76,7 +76,7 @@ export async function POST(
     if (parentDoc.exists) {
       const parentData: any = parentDoc.data();
       const parentChildrenIds = (parentData.children_ids || []).filter(
-        (id: string) => id !== categoryDoc.id
+        (id: string) => id !== categoryDoc.id,
       );
       await Collections.categories()
         .doc(parentId)
@@ -99,7 +99,7 @@ export async function POST(
         success: false,
         error: error.message || "Failed to remove parent",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

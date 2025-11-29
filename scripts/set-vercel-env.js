@@ -63,7 +63,7 @@ async function setEnvVar(key, value) {
       // Create a temporary file with the value
       const tempFile = path.join(
         process.cwd(),
-        `.temp_${key}_${Date.now()}.txt`
+        `.temp_${key}_${Date.now()}.txt`,
       );
       fs.writeFileSync(tempFile, value, "utf8");
 
@@ -198,7 +198,7 @@ async function main() {
     log("  Please set them manually in Vercel Dashboard:", "white");
     log(
       "  https://vercel.com/dashboard -> Settings -> Environment Variables",
-      "white"
+      "white",
     );
     console.log();
   }

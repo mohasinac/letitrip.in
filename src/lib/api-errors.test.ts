@@ -51,7 +51,7 @@ describe("ForbiddenError", () => {
   it("should create forbidden error", () => {
     const error = new ForbiddenError();
     expect(error.message).toBe(
-      "You don't have permission to access this resource"
+      "You don't have permission to access this resource",
     );
     expect(error.statusCode).toBe(403);
     expect(error.isOperational).toBe(true);

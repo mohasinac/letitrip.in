@@ -78,7 +78,7 @@ describe("TopProducts", () => {
     it("should render empty state when data is empty", () => {
       render(<TopProducts data={[]} />);
       expect(
-        screen.getByText("No product sales data available")
+        screen.getByText("No product sales data available"),
       ).toBeInTheDocument();
     });
 
@@ -284,8 +284,8 @@ describe("TopProducts", () => {
       render(<TopProducts data={longNameData} />);
       expect(
         screen.getByText(
-          "This is a very long product name that should be displayed properly"
-        )
+          "This is a very long product name that should be displayed properly",
+        ),
       ).toBeInTheDocument();
     });
 

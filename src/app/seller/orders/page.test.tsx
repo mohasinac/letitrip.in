@@ -28,7 +28,7 @@ jest.mock("@/components/auth/AuthGuard", () => {
     return React.createElement(
       "div",
       { "data-testid": "auth-guard" },
-      children
+      children,
     );
   };
   return {
@@ -205,7 +205,7 @@ describe("SellerOrdersPage", () => {
         user: mockUser,
       });
       mockOrdersService.getSellerOrders.mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {}), // Never resolves
       );
 
       render(<SellerOrdersPage />);
@@ -254,7 +254,7 @@ describe("SellerOrdersPage", () => {
         user: mockUser,
       });
       mockOrdersService.getSellerOrders.mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
 
       render(<SellerOrdersPage />);
@@ -308,7 +308,7 @@ describe("SellerOrdersPage", () => {
         user: mockUser,
       });
       mockOrdersService.getSellerOrders.mockRejectedValueOnce(
-        new Error("API Error")
+        new Error("API Error"),
       );
       mockOrdersService.getSellerOrders.mockResolvedValueOnce({
         data: mockOrdersData,

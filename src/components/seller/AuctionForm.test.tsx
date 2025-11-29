@@ -108,10 +108,10 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} />);
 
       expect(
-        screen.getByLabelText(/Images \(URLs, comma-separated\)/i)
+        screen.getByLabelText(/Images \(URLs, comma-separated\)/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByLabelText(/Videos \(URLs, comma-separated\)/i)
+        screen.getByLabelText(/Videos \(URLs, comma-separated\)/i),
       ).toBeInTheDocument();
     });
 
@@ -134,7 +134,7 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} />);
 
       const nameInput = screen.getByLabelText(
-        /Auction Name/i
+        /Auction Name/i,
       ) as HTMLInputElement;
       fireEvent.change(nameInput, { target: { value: "Vintage Watch" } });
 
@@ -145,7 +145,7 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} />);
 
       const bidInput = screen.getByLabelText(
-        /Starting Bid/i
+        /Starting Bid/i,
       ) as HTMLInputElement;
       fireEvent.change(bidInput, { target: { value: "1000" } });
 
@@ -156,7 +156,7 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} />);
 
       const reserveInput = screen.getByLabelText(
-        /Reserve Price/i
+        /Reserve Price/i,
       ) as HTMLInputElement;
       fireEvent.change(reserveInput, { target: { value: "5000" } });
 
@@ -167,7 +167,7 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} />);
 
       const editor = screen.getByTestId(
-        "rich-text-editor"
+        "rich-text-editor",
       ) as HTMLTextAreaElement;
       fireEvent.change(editor, { target: { value: "Detailed description" } });
 
@@ -178,7 +178,7 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} />);
 
       const statusSelect = screen.getByLabelText(
-        /Auction Status/i
+        /Auction Status/i,
       ) as HTMLSelectElement;
       fireEvent.change(statusSelect, {
         target: { value: AuctionStatus.ACTIVE },
@@ -191,7 +191,7 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} />);
 
       const imagesInput = screen.getByLabelText(
-        /Images \(URLs, comma-separated\)/i
+        /Images \(URLs, comma-separated\)/i,
       ) as HTMLTextAreaElement;
       fireEvent.change(imagesInput, {
         target: {
@@ -206,7 +206,7 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} />);
 
       const videosInput = screen.getByLabelText(
-        /Videos \(URLs, comma-separated\)/i
+        /Videos \(URLs, comma-separated\)/i,
       ) as HTMLTextAreaElement;
       fireEvent.change(videosInput, {
         target: { value: "https://example.com/video1.mp4" },
@@ -227,7 +227,7 @@ describe("AuctionForm Component", () => {
       await waitFor(() => {
         expect(auctionsService.validateSlug).toHaveBeenCalledWith(
           "vintage-watch",
-          "shop-123"
+          "shop-123",
         );
       });
     });
@@ -244,7 +244,7 @@ describe("AuctionForm Component", () => {
 
       await waitFor(() => {
         expect(screen.getByTestId("slug-error")).toHaveTextContent(
-          "This URL is already taken"
+          "This URL is already taken",
         );
       });
     });
@@ -276,7 +276,7 @@ describe("AuctionForm Component", () => {
       };
 
       render(
-        <AuctionForm {...defaultProps} mode="edit" initialData={initialData} />
+        <AuctionForm {...defaultProps} mode="edit" initialData={initialData} />,
       );
 
       await waitFor(() => {
@@ -318,7 +318,7 @@ describe("AuctionForm Component", () => {
             slug: "test-auction",
             startingBid: 1000,
             shopId: "shop-123",
-          })
+          }),
         );
       });
     });
@@ -339,7 +339,7 @@ describe("AuctionForm Component", () => {
 
       // Alert should be shown for missing slug
       expect(window.alert).toHaveBeenCalledWith(
-        expect.stringContaining("required fields")
+        expect.stringContaining("required fields"),
       );
     });
 
@@ -382,7 +382,7 @@ describe("AuctionForm Component", () => {
 
       await waitFor(() => {
         expect(window.alert).toHaveBeenCalledWith(
-          "Starting bid must be greater than 0"
+          "Starting bid must be greater than 0",
         );
       });
     });
@@ -416,7 +416,9 @@ describe("AuctionForm Component", () => {
 
       await waitFor(() => {
         expect(window.alert).toHaveBeenCalledWith(
-          expect.stringContaining("Reserve price must be greater than or equal")
+          expect.stringContaining(
+            "Reserve price must be greater than or equal",
+          ),
         );
       });
     });
@@ -456,21 +458,21 @@ describe("AuctionForm Component", () => {
       };
 
       render(
-        <AuctionForm {...defaultProps} mode="edit" initialData={initialData} />
+        <AuctionForm {...defaultProps} mode="edit" initialData={initialData} />,
       );
 
       const nameInput = screen.getByLabelText(
-        /Auction Name/i
+        /Auction Name/i,
       ) as HTMLInputElement;
       expect(nameInput.value).toBe("Existing Auction");
 
       const bidInput = screen.getByLabelText(
-        /Starting Bid/i
+        /Starting Bid/i,
       ) as HTMLInputElement;
       expect(bidInput.value).toBe("500");
 
       const statusSelect = screen.getByLabelText(
-        /Auction Status/i
+        /Auction Status/i,
       ) as HTMLSelectElement;
       expect(statusSelect.value).toBe(AuctionStatus.ACTIVE);
     });
@@ -484,12 +486,12 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} initialData={partialData} />);
 
       const nameInput = screen.getByLabelText(
-        /Auction Name/i
+        /Auction Name/i,
       ) as HTMLInputElement;
       expect(nameInput.value).toBe("Partial Auction");
 
       const bidInput = screen.getByLabelText(
-        /Starting Bid/i
+        /Starting Bid/i,
       ) as HTMLInputElement;
       expect(bidInput.value).toBe("100");
     });
@@ -519,7 +521,7 @@ describe("AuctionForm Component", () => {
           initialData={initialData}
           onSubmit={mockOnSubmit}
           isSubmitting={false}
-        />
+        />,
       );
 
       // Wait for submit button to be enabled (no slug validation in edit mode for unchanged slug)
@@ -539,7 +541,7 @@ describe("AuctionForm Component", () => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
             shopId: "new-shop", // Should use prop, not initialData
-          })
+          }),
         );
       });
     });
@@ -551,7 +553,7 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} />);
 
       const imagesInput = screen.getByLabelText(
-        /Images \(URLs, comma-separated\)/i
+        /Images \(URLs, comma-separated\)/i,
       ) as HTMLTextAreaElement;
       fireEvent.change(imagesInput, { target: { value: "" } });
 
@@ -562,7 +564,7 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} />);
 
       const imagesInput = screen.getByLabelText(
-        /Images \(URLs, comma-separated\)/i
+        /Images \(URLs, comma-separated\)/i,
       ) as HTMLTextAreaElement;
       fireEvent.change(imagesInput, {
         target: {
@@ -600,7 +602,7 @@ describe("AuctionForm Component", () => {
               "https://example.com/img1.jpg",
               "https://example.com/img2.jpg",
             ],
-          })
+          }),
         );
       });
     });
@@ -609,7 +611,7 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} />);
 
       const imagesInput = screen.getByLabelText(
-        /Images \(URLs, comma-separated\)/i
+        /Images \(URLs, comma-separated\)/i,
       ) as HTMLTextAreaElement;
       fireEvent.change(imagesInput, {
         target: {
@@ -645,7 +647,7 @@ describe("AuctionForm Component", () => {
               "https://example.com/img1.jpg",
               "https://example.com/img2.jpg",
             ],
-          })
+          }),
         );
       });
     });
@@ -660,7 +662,7 @@ describe("AuctionForm Component", () => {
       render(<AuctionForm {...defaultProps} initialData={initialData} />);
 
       const videosInput = screen.getByLabelText(
-        /Videos \(URLs, comma-separated\)/i
+        /Videos \(URLs, comma-separated\)/i,
       ) as HTMLTextAreaElement;
       expect(videosInput.value).toBe("");
     });
@@ -677,7 +679,7 @@ describe("AuctionForm Component", () => {
       });
 
       expect(
-        screen.getByText(/Draft auctions are not visible to buyers/i)
+        screen.getByText(/Draft auctions are not visible to buyers/i),
       ).toBeInTheDocument();
     });
 
@@ -690,7 +692,7 @@ describe("AuctionForm Component", () => {
       });
 
       expect(
-        screen.getByText(/Auction will go live at the scheduled start time/i)
+        screen.getByText(/Auction will go live at the scheduled start time/i),
       ).toBeInTheDocument();
     });
 
@@ -703,7 +705,7 @@ describe("AuctionForm Component", () => {
       });
 
       expect(
-        screen.getByText(/Auction is currently accepting bids/i)
+        screen.getByText(/Auction is currently accepting bids/i),
       ).toBeInTheDocument();
     });
 
@@ -727,7 +729,7 @@ describe("AuctionForm Component", () => {
       });
 
       expect(
-        screen.getByText(/Auction has been cancelled/i)
+        screen.getByText(/Auction has been cancelled/i),
       ).toBeInTheDocument();
     });
   });

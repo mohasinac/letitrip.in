@@ -36,7 +36,7 @@ export async function POST() {
         error: "Failed to rebuild category counts",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -32,7 +32,9 @@ describe("POST /api/categories/bulk", () => {
   });
 
   it("should require action parameter", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const req = new NextRequest("http://localhost/api/categories/bulk", {
       method: "POST",
@@ -47,7 +49,9 @@ describe("POST /api/categories/bulk", () => {
   });
 
   it("should require ids array", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const req = new NextRequest("http://localhost/api/categories/bulk", {
       method: "POST",
@@ -62,7 +66,9 @@ describe("POST /api/categories/bulk", () => {
   });
 
   it("should reject invalid action", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const req = new NextRequest("http://localhost/api/categories/bulk", {
       method: "POST",
@@ -77,7 +83,9 @@ describe("POST /api/categories/bulk", () => {
   });
 
   it("should activate multiple categories", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockUpdate = jest.fn().mockResolvedValue(undefined);
     const mockGet = jest.fn().mockResolvedValue({ exists: true });
@@ -103,7 +111,9 @@ describe("POST /api/categories/bulk", () => {
   });
 
   it("should deactivate multiple categories", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockUpdate = jest.fn().mockResolvedValue(undefined);
     const mockGet = jest.fn().mockResolvedValue({ exists: true });
@@ -124,12 +134,14 @@ describe("POST /api/categories/bulk", () => {
 
     expect(data.data.success).toHaveLength(2);
     expect(mockUpdate).toHaveBeenCalledWith(
-      expect.objectContaining({ is_active: false })
+      expect.objectContaining({ is_active: false }),
     );
   });
 
   it("should feature multiple categories", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockUpdate = jest.fn().mockResolvedValue(undefined);
     const mockGet = jest.fn().mockResolvedValue({ exists: true });
@@ -149,12 +161,14 @@ describe("POST /api/categories/bulk", () => {
     const data = await response.json();
 
     expect(mockUpdate).toHaveBeenCalledWith(
-      expect.objectContaining({ is_featured: true })
+      expect.objectContaining({ is_featured: true }),
     );
   });
 
   it("should update multiple categories with custom data", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockUpdate = jest.fn().mockResolvedValue(undefined);
     const mockGet = jest.fn().mockResolvedValue({ exists: true });
@@ -178,12 +192,14 @@ describe("POST /api/categories/bulk", () => {
     const data = await response.json();
 
     expect(mockUpdate).toHaveBeenCalledWith(
-      expect.objectContaining({ commission_rate: 10 })
+      expect.objectContaining({ commission_rate: 10 }),
     );
   });
 
   it("should handle partial failures gracefully", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockDoc = jest.fn().mockImplementation((id) => {
       if (id === "cat1") {
@@ -215,7 +231,9 @@ describe("POST /api/categories/bulk", () => {
   });
 
   it("should prevent deletion of categories with children", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockDoc = jest.fn().mockReturnValue({
       get: jest.fn().mockResolvedValue({
@@ -240,7 +258,9 @@ describe("POST /api/categories/bulk", () => {
   });
 
   it("should prevent deletion of categories with products", async () => {
-    mockRequireRole.mockResolvedValue({ user: { uid: 'admin', email: 'admin@test.com', role: 'admin' } } as any);
+    mockRequireRole.mockResolvedValue({
+      user: { uid: "admin", email: "admin@test.com", role: "admin" },
+    } as any);
 
     const mockDoc = jest.fn().mockReturnValue({
       get: jest.fn().mockResolvedValue({

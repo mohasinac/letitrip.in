@@ -270,7 +270,7 @@ describe("CheckoutPage", () => {
 
     expect(screen.getByTestId("address-selector-shipping")).toBeInTheDocument();
     expect(
-      screen.getByText("Billing address same as shipping")
+      screen.getByText("Billing address same as shipping"),
     ).toBeInTheDocument();
   });
 
@@ -291,12 +291,12 @@ describe("CheckoutPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Please complete all required fields to continue.")
+        screen.getByText("Please complete all required fields to continue."),
       ).toBeInTheDocument();
     });
 
     expect(
-      screen.getByText("Please select a shipping address")
+      screen.getByText("Please select a shipping address"),
     ).toBeInTheDocument();
   });
 
@@ -324,7 +324,7 @@ describe("CheckoutPage", () => {
 
     // Uncheck same address
     const sameAddressCheckbox = screen.getByLabelText(
-      "Billing address same as shipping"
+      "Billing address same as shipping",
     );
     fireEvent.click(sameAddressCheckbox);
 
@@ -333,7 +333,7 @@ describe("CheckoutPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Please select a billing address")
+        screen.getByText("Please select a billing address"),
       ).toBeInTheDocument();
     });
   });
@@ -343,7 +343,7 @@ describe("CheckoutPage", () => {
 
     // Uncheck same address
     const sameAddressCheckbox = screen.getByLabelText(
-      "Billing address same as shipping"
+      "Billing address same as shipping",
     );
     fireEvent.click(sameAddressCheckbox);
 
@@ -359,7 +359,7 @@ describe("CheckoutPage", () => {
 
     // Uncheck same address and select billing
     const sameAddressCheckbox = screen.getByLabelText(
-      "Billing address same as shipping"
+      "Billing address same as shipping",
     );
     fireEvent.click(sameAddressCheckbox);
 
@@ -542,7 +542,7 @@ describe("CheckoutPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId("address-selector-shipping")
+        screen.getByTestId("address-selector-shipping"),
       ).toBeInTheDocument();
     });
   });
@@ -602,7 +602,7 @@ describe("CheckoutPage", () => {
     });
 
     expect(mockPush).toHaveBeenCalledWith(
-      "/user/orders/order-1?success=true&multi=true"
+      "/user/orders/order-1?success=true&multi=true",
     );
   });
 
@@ -649,7 +649,7 @@ describe("CheckoutPage", () => {
 
     // Simulate Razorpay success
     const razorpayHandler = mockRazorpay.on.mock.calls.find(
-      ([event]) => event === "payment.success"
+      ([event]) => event === "payment.success",
     )?.[1];
 
     if (razorpayHandler) {
@@ -669,7 +669,7 @@ describe("CheckoutPage", () => {
       });
 
       expect(mockPush).toHaveBeenCalledWith(
-        "/user/orders/order-1?success=true&multi=true"
+        "/user/orders/order-1?success=true&multi=true",
       );
     }
   });
@@ -713,7 +713,7 @@ describe("CheckoutPage", () => {
 
     // Simulate Razorpay failure
     const razorpayFailureHandler = mockRazorpay.on.mock.calls.find(
-      ([event]) => event === "payment.failed"
+      ([event]) => event === "payment.failed",
     )?.[1];
 
     if (razorpayFailureHandler) {
@@ -805,8 +805,8 @@ describe("CheckoutPage", () => {
 
     expect(
       screen.getByText(
-        "Payment gateway not available. Please try Cash on Delivery or refresh the page."
-      )
+        "Payment gateway not available. Please try Cash on Delivery or refresh the page.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -822,9 +822,9 @@ describe("CheckoutPage", () => {
                 currency: "INR",
                 total: 2360,
               }),
-            100
-          )
-        )
+            100,
+          ),
+        ),
     );
     mockCheckoutService.createOrder = mockCreateOrder;
 
@@ -883,7 +883,7 @@ describe("CheckoutPage", () => {
     });
 
     const notesTextarea = screen.getByPlaceholderText(
-      "Add any special instructions for delivery..."
+      "Add any special instructions for delivery...",
     );
     fireEvent.change(notesTextarea, {
       target: { value: "Please ring the doorbell twice" },

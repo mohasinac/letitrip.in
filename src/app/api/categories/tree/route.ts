@@ -49,10 +49,10 @@ export async function GET(request: NextRequest) {
         console.error("Error building category tree:", error);
         return NextResponse.json(
           { success: false, error: "Failed to load category tree" },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
-    { ttl: 600 }
+    { ttl: 600 },
   ); // 10 minutes - tree doesn't change often
 }

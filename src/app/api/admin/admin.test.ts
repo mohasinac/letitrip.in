@@ -21,8 +21,12 @@ import { COLLECTIONS } from "@/constants/database";
 jest.mock("@/app/api/lib/firebase/admin");
 jest.mock("@/app/api/lib/session");
 
-const mockGetFirestoreAdmin = getFirestoreAdmin as jest.MockedFunction<typeof getFirestoreAdmin>;
-const mockGetCurrentUser = getCurrentUser as jest.MockedFunction<typeof getCurrentUser>;
+const mockGetFirestoreAdmin = getFirestoreAdmin as jest.MockedFunction<
+  typeof getFirestoreAdmin
+>;
+const mockGetCurrentUser = getCurrentUser as jest.MockedFunction<
+  typeof getCurrentUser
+>;
 
 describe("Admin API - GET /api/admin/dashboard", () => {
   const mockCollection = jest.fn();
@@ -36,7 +40,10 @@ describe("Admin API - GET /api/admin/dashboard", () => {
     };
 
     mockGetFirestoreAdmin.mockReturnValue(mockDb as any);
-    mockGetCurrentUser.mockResolvedValue({ id: "admin1", role: "admin" } as any);
+    mockGetCurrentUser.mockResolvedValue({
+      id: "admin1",
+      role: "admin",
+    } as any);
 
     // Default empty collections
     mockCollection.mockImplementation((collectionName: string) => ({
@@ -68,17 +75,47 @@ describe("Admin API - GET /api/admin/dashboard", () => {
 
   it("should return dashboard stats for admin", async () => {
     const now = new Date().toISOString();
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const thirtyDaysAgo = new Date(
+      Date.now() - 30 * 24 * 60 * 60 * 1000,
+    ).toISOString();
 
     mockCollection.mockImplementation((collectionName: string) => {
       if (collectionName === COLLECTIONS.USERS) {
         return {
           get: jest.fn().mockResolvedValue({
             docs: [
-              { id: "u1", data: () => ({ role: "user", status: "active", created_at: now }) },
-              { id: "u2", data: () => ({ role: "seller", status: "active", created_at: thirtyDaysAgo }) },
-              { id: "u3", data: () => ({ role: "admin", status: "active", created_at: now }) },
-              { id: "u4", data: () => ({ role: "user", status: "banned", created_at: now }) },
+              {
+                id: "u1",
+                data: () => ({
+                  role: "user",
+                  status: "active",
+                  created_at: now,
+                }),
+              },
+              {
+                id: "u2",
+                data: () => ({
+                  role: "seller",
+                  status: "active",
+                  created_at: thirtyDaysAgo,
+                }),
+              },
+              {
+                id: "u3",
+                data: () => ({
+                  role: "admin",
+                  status: "active",
+                  created_at: now,
+                }),
+              },
+              {
+                id: "u4",
+                data: () => ({
+                  role: "user",
+                  status: "banned",
+                  created_at: now,
+                }),
+              },
             ],
           }),
         };
@@ -86,8 +123,22 @@ describe("Admin API - GET /api/admin/dashboard", () => {
         return {
           get: jest.fn().mockResolvedValue({
             docs: [
-              { id: "s1", data: () => ({ status: "active", is_verified: true, created_at: now }) },
-              { id: "s2", data: () => ({ status: "active", is_verified: false, created_at: now }) },
+              {
+                id: "s1",
+                data: () => ({
+                  status: "active",
+                  is_verified: true,
+                  created_at: now,
+                }),
+              },
+              {
+                id: "s2",
+                data: () => ({
+                  status: "active",
+                  is_verified: false,
+                  created_at: now,
+                }),
+              },
             ],
           }),
         };
@@ -99,9 +150,30 @@ describe("Admin API - GET /api/admin/dashboard", () => {
         return {
           get: jest.fn().mockResolvedValue({
             docs: [
-              { id: "p1", data: () => ({ status: "active", stock_quantity: 10, created_at: now }) },
-              { id: "p2", data: () => ({ status: "active", stock_quantity: 0, created_at: now }) },
-              { id: "p3", data: () => ({ status: "inactive", stock_quantity: 5, created_at: now }) },
+              {
+                id: "p1",
+                data: () => ({
+                  status: "active",
+                  stock_quantity: 10,
+                  created_at: now,
+                }),
+              },
+              {
+                id: "p2",
+                data: () => ({
+                  status: "active",
+                  stock_quantity: 0,
+                  created_at: now,
+                }),
+              },
+              {
+                id: "p3",
+                data: () => ({
+                  status: "inactive",
+                  stock_quantity: 5,
+                  created_at: now,
+                }),
+              },
             ],
           }),
         };
@@ -109,9 +181,30 @@ describe("Admin API - GET /api/admin/dashboard", () => {
         return {
           get: jest.fn().mockResolvedValue({
             docs: [
-              { id: "o1", data: () => ({ status: "pending", total_amount: 100, created_at: now }) },
-              { id: "o2", data: () => ({ status: "delivered", total_amount: 200, created_at: now }) },
-              { id: "o3", data: () => ({ status: "cancelled", total_amount: 50, created_at: thirtyDaysAgo }) },
+              {
+                id: "o1",
+                data: () => ({
+                  status: "pending",
+                  total_amount: 100,
+                  created_at: now,
+                }),
+              },
+              {
+                id: "o2",
+                data: () => ({
+                  status: "delivered",
+                  total_amount: 200,
+                  created_at: now,
+                }),
+              },
+              {
+                id: "o3",
+                data: () => ({
+                  status: "cancelled",
+                  total_amount: 50,
+                  created_at: thirtyDaysAgo,
+                }),
+              },
             ],
           }),
         };
@@ -146,17 +239,42 @@ describe("Admin API - GET /api/admin/dashboard", () => {
 
   it("should calculate 30-day trends", async () => {
     const now = new Date();
-    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
-    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString();
+    const thirtyDaysAgo = new Date(
+      now.getTime() - 30 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+    const sixtyDaysAgo = new Date(
+      now.getTime() - 60 * 24 * 60 * 60 * 1000,
+    ).toISOString();
 
     mockCollection.mockImplementation((collectionName: string) => {
       if (collectionName === COLLECTIONS.USERS) {
         return {
           get: jest.fn().mockResolvedValue({
             docs: [
-              { id: "u1", data: () => ({ role: "user", status: "active", created_at: now.toISOString() }) },
-              { id: "u2", data: () => ({ role: "user", status: "active", created_at: thirtyDaysAgo }) },
-              { id: "u3", data: () => ({ role: "user", status: "active", created_at: sixtyDaysAgo }) },
+              {
+                id: "u1",
+                data: () => ({
+                  role: "user",
+                  status: "active",
+                  created_at: now.toISOString(),
+                }),
+              },
+              {
+                id: "u2",
+                data: () => ({
+                  role: "user",
+                  status: "active",
+                  created_at: thirtyDaysAgo,
+                }),
+              },
+              {
+                id: "u3",
+                data: () => ({
+                  role: "user",
+                  status: "active",
+                  created_at: sixtyDaysAgo,
+                }),
+              },
             ],
           }),
         };
@@ -164,7 +282,13 @@ describe("Admin API - GET /api/admin/dashboard", () => {
         return {
           get: jest.fn().mockResolvedValue({
             docs: [
-              { id: "s1", data: () => ({ status: "active", created_at: now.toISOString() }) },
+              {
+                id: "s1",
+                data: () => ({
+                  status: "active",
+                  created_at: now.toISOString(),
+                }),
+              },
             ],
           }),
         };
@@ -172,7 +296,13 @@ describe("Admin API - GET /api/admin/dashboard", () => {
         return {
           get: jest.fn().mockResolvedValue({
             docs: [
-              { id: "p1", data: () => ({ status: "active", created_at: now.toISOString() }) },
+              {
+                id: "p1",
+                data: () => ({
+                  status: "active",
+                  created_at: now.toISOString(),
+                }),
+              },
             ],
           }),
         };
@@ -180,7 +310,14 @@ describe("Admin API - GET /api/admin/dashboard", () => {
         return {
           get: jest.fn().mockResolvedValue({
             docs: [
-              { id: "o1", data: () => ({ status: "pending", total_amount: 100, created_at: now.toISOString() }) },
+              {
+                id: "o1",
+                data: () => ({
+                  status: "pending",
+                  total_amount: 100,
+                  created_at: now.toISOString(),
+                }),
+              },
             ],
           }),
         };
@@ -235,7 +372,14 @@ describe("Admin API - GET /api/admin/dashboard", () => {
         return {
           get: jest.fn().mockResolvedValue({
             docs: [
-              { id: "u1", data: () => ({ role: "user", status: "active", created_at: now }) },
+              {
+                id: "u1",
+                data: () => ({
+                  role: "user",
+                  status: "active",
+                  created_at: now,
+                }),
+              },
             ],
           }),
         };
@@ -270,8 +414,21 @@ describe("Admin API - GET /api/admin/dashboard", () => {
         return {
           get: jest.fn().mockResolvedValue({
             docs: [
-              { id: "o1", data: () => ({ status: "pending", created_at: new Date().toISOString() }) },
-              { id: "o2", data: () => ({ status: "delivered", total_amount: 100, created_at: new Date().toISOString() }) },
+              {
+                id: "o1",
+                data: () => ({
+                  status: "pending",
+                  created_at: new Date().toISOString(),
+                }),
+              },
+              {
+                id: "o2",
+                data: () => ({
+                  status: "delivered",
+                  total_amount: 100,
+                  created_at: new Date().toISOString(),
+                }),
+              },
             ],
           }),
         };
@@ -293,9 +450,29 @@ describe("Admin API - GET /api/admin/dashboard", () => {
         return {
           get: jest.fn().mockResolvedValue({
             docs: [
-              { id: "p1", data: () => ({ status: "active", created_at: new Date().toISOString() }) },
-              { id: "p2", data: () => ({ status: "active", stock_quantity: 0, created_at: new Date().toISOString() }) },
-              { id: "p3", data: () => ({ status: "active", stock_quantity: 10, created_at: new Date().toISOString() }) },
+              {
+                id: "p1",
+                data: () => ({
+                  status: "active",
+                  created_at: new Date().toISOString(),
+                }),
+              },
+              {
+                id: "p2",
+                data: () => ({
+                  status: "active",
+                  stock_quantity: 0,
+                  created_at: new Date().toISOString(),
+                }),
+              },
+              {
+                id: "p3",
+                data: () => ({
+                  status: "active",
+                  stock_quantity: 10,
+                  created_at: new Date().toISOString(),
+                }),
+              },
             ],
           }),
         };
@@ -313,9 +490,15 @@ describe("Admin API - GET /api/admin/dashboard", () => {
 
   it("should handle negative trends", async () => {
     const now = new Date();
-    const twentyDaysAgo = new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000).toISOString();
-    const fortyfiveDaysAgo = new Date(now.getTime() - 45 * 24 * 60 * 60 * 1000).toISOString();
-    const fiftyDaysAgo = new Date(now.getTime() - 50 * 24 * 60 * 60 * 1000).toISOString();
+    const twentyDaysAgo = new Date(
+      now.getTime() - 20 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+    const fortyfiveDaysAgo = new Date(
+      now.getTime() - 45 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+    const fiftyDaysAgo = new Date(
+      now.getTime() - 50 * 24 * 60 * 60 * 1000,
+    ).toISOString();
 
     mockCollection.mockImplementation((collectionName: string) => {
       if (collectionName === COLLECTIONS.USERS) {
@@ -323,11 +506,39 @@ describe("Admin API - GET /api/admin/dashboard", () => {
           get: jest.fn().mockResolvedValue({
             docs: [
               // Last 30 days: 1 user
-              { id: "u1", data: () => ({ role: "user", status: "active", created_at: twentyDaysAgo }) },
+              {
+                id: "u1",
+                data: () => ({
+                  role: "user",
+                  status: "active",
+                  created_at: twentyDaysAgo,
+                }),
+              },
               // Previous 30 days (30-60 days ago): 3 users (more than current)
-              { id: "u2", data: () => ({ role: "user", status: "active", created_at: fortyfiveDaysAgo }) },
-              { id: "u3", data: () => ({ role: "user", status: "active", created_at: fiftyDaysAgo }) },
-              { id: "u4", data: () => ({ role: "user", status: "active", created_at: fortyfiveDaysAgo }) },
+              {
+                id: "u2",
+                data: () => ({
+                  role: "user",
+                  status: "active",
+                  created_at: fortyfiveDaysAgo,
+                }),
+              },
+              {
+                id: "u3",
+                data: () => ({
+                  role: "user",
+                  status: "active",
+                  created_at: fiftyDaysAgo,
+                }),
+              },
+              {
+                id: "u4",
+                data: () => ({
+                  role: "user",
+                  status: "active",
+                  created_at: fortyfiveDaysAgo,
+                }),
+              },
             ],
           }),
         };

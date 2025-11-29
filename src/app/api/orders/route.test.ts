@@ -107,7 +107,7 @@ describe("/api/orders", () => {
       (userOwnsShop as jest.Mock).mockResolvedValue(false);
 
       const request = new NextRequest(
-        "http://localhost/api/orders?shop_id=shop123"
+        "http://localhost/api/orders?shop_id=shop123",
       );
       const response = await GET(request);
 
@@ -145,7 +145,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?shop_id=shop123"
+        "http://localhost/api/orders?shop_id=shop123",
       );
       const response = await GET(request);
 
@@ -194,7 +194,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?shop_id=shop123"
+        "http://localhost/api/orders?shop_id=shop123",
       );
       const response = await GET(request);
 
@@ -234,7 +234,7 @@ describe("/api/orders", () => {
       expect(mockQuery.where).not.toHaveBeenCalledWith(
         "user_id",
         "==",
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -260,7 +260,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?status=completed"
+        "http://localhost/api/orders?status=completed",
       );
       const response = await GET(request);
 
@@ -290,7 +290,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?paymentStatus=paid"
+        "http://localhost/api/orders?paymentStatus=paid",
       );
       const response = await GET(request);
 
@@ -298,7 +298,7 @@ describe("/api/orders", () => {
       expect(mockQuery.where).toHaveBeenCalledWith(
         "payment_status",
         "==",
-        "paid"
+        "paid",
       );
     });
 
@@ -324,7 +324,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?sortBy=total_amount&sortOrder=asc"
+        "http://localhost/api/orders?sortBy=total_amount&sortOrder=asc",
       );
       const response = await GET(request);
 
@@ -382,7 +382,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?sortBy=invalid_field"
+        "http://localhost/api/orders?sortBy=invalid_field",
       );
       const response = await GET(request);
 
@@ -413,7 +413,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?status=completed&paymentStatus=paid"
+        "http://localhost/api/orders?status=completed&paymentStatus=paid",
       );
       const response = await GET(request);
 
@@ -422,7 +422,7 @@ describe("/api/orders", () => {
       expect(mockQuery.where).toHaveBeenCalledWith(
         "payment_status",
         "==",
-        "paid"
+        "paid",
       );
     });
 
@@ -436,7 +436,7 @@ describe("/api/orders", () => {
       (Collections.orders as jest.Mock).mockReturnValue(mockQuery);
 
       (executeCursorPaginatedQuery as jest.Mock).mockRejectedValue(
-        new Error("Database error")
+        new Error("Database error"),
       );
 
       const request = new NextRequest("http://localhost/api/orders");
@@ -515,11 +515,11 @@ describe("/api/orders", () => {
               count: 1,
             },
           };
-        }
+        },
       );
 
       const request = new NextRequest(
-        "http://localhost/api/orders?cursor=order1"
+        "http://localhost/api/orders?cursor=order1",
       );
       const response = await GET(request);
 
@@ -578,7 +578,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?status=nonexistent"
+        "http://localhost/api/orders?status=nonexistent",
       );
       const response = await GET(request);
 
@@ -610,7 +610,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?status=pending"
+        "http://localhost/api/orders?status=pending",
       );
       const response = await GET(request);
 
@@ -643,7 +643,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?shop_id=shop123&status=pending"
+        "http://localhost/api/orders?shop_id=shop123&status=pending",
       );
       const response = await GET(request);
 
@@ -674,7 +674,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?sortBy=total_amount&sortOrder=asc"
+        "http://localhost/api/orders?sortBy=total_amount&sortOrder=asc",
       );
       const response = await GET(request);
 
@@ -704,7 +704,7 @@ describe("/api/orders", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/orders?sortBy=invalid_field"
+        "http://localhost/api/orders?sortBy=invalid_field",
       );
       const response = await GET(request);
 
@@ -727,7 +727,7 @@ describe("/api/orders", () => {
       (requireAuth as jest.Mock).mockResolvedValue({
         error: NextResponse.json(
           { success: false, error: "Unauthorized" },
-          { status: 401 }
+          { status: 401 },
         ),
       });
 
@@ -782,7 +782,7 @@ describe("/api/orders", () => {
           status: "pending",
           created_at: expect.any(String),
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -850,7 +850,7 @@ describe("/api/orders", () => {
       expect(mockAdd).toHaveBeenCalledWith(
         expect.objectContaining({
           items: [],
-        })
+        }),
       );
     });
 
@@ -917,7 +917,7 @@ describe("/api/orders", () => {
       expect(mockAdd).toHaveBeenCalledWith(
         expect.objectContaining({
           status: "pending",
-        })
+        }),
       );
     });
 
@@ -955,7 +955,7 @@ describe("/api/orders", () => {
         expect.objectContaining({
           created_at: expect.any(String),
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -992,7 +992,7 @@ describe("/api/orders", () => {
       expect(mockAdd).toHaveBeenCalledWith(
         expect.objectContaining({
           amount: 5000,
-        })
+        }),
       );
       expect(typeof mockAdd.mock.calls[0][0].amount).toBe("number");
     });
@@ -1051,7 +1051,7 @@ describe("/api/orders", () => {
       expect(mockAdd).toHaveBeenCalledWith(
         expect.objectContaining({
           user_id: "user123",
-        })
+        }),
       );
     });
   });

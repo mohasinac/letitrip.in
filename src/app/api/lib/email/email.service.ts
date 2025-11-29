@@ -44,7 +44,7 @@ class EmailService {
 
     if (!this.isConfigured) {
       console.warn(
-        "⚠️ Email service not configured. Set RESEND_API_KEY in environment variables."
+        "⚠️ Email service not configured. Set RESEND_API_KEY in environment variables.",
       );
     }
   }
@@ -130,7 +130,7 @@ class EmailService {
   async sendVerificationEmail(
     email: string,
     name: string,
-    verificationLink: string
+    verificationLink: string,
   ): Promise<EmailResult> {
     const html = this.getVerificationEmailTemplate(name, verificationLink);
     const text = `Hi ${name},\n\nThank you for registering with JustForView!\n\nPlease verify your email address by clicking the link below:\n\n${verificationLink}\n\nThis link will expire in 24 hours.\n\nIf you didn't create an account, you can safely ignore this email.\n\nBest regards,\nThe JustForView Team`;
@@ -149,7 +149,7 @@ class EmailService {
   async sendPasswordResetEmail(
     email: string,
     name: string,
-    resetLink: string
+    resetLink: string,
   ): Promise<EmailResult> {
     const html = this.getPasswordResetEmailTemplate(name, resetLink);
     const text = `Hi ${name},\n\nWe received a request to reset your password for your JustForView account.\n\nClick the link below to reset your password:\n\n${resetLink}\n\nThis link will expire in 1 hour.\n\nIf you didn't request a password reset, you can safely ignore this email.\n\nBest regards,\nThe JustForView Team`;
@@ -182,7 +182,7 @@ class EmailService {
    */
   private getVerificationEmailTemplate(
     name: string,
-    verificationLink: string
+    verificationLink: string,
   ): string {
     return `
 <!DOCTYPE html>
@@ -247,7 +247,7 @@ class EmailService {
    */
   private getPasswordResetEmailTemplate(
     name: string,
-    resetLink: string
+    resetLink: string,
   ): string {
     return `
 <!DOCTYPE html>

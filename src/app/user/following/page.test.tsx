@@ -117,7 +117,7 @@ describe("FollowingPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("3 shops you're following")
+          screen.getByText("3 shops you're following"),
         ).toBeInTheDocument();
       });
     });
@@ -142,7 +142,7 @@ describe("FollowingPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Shops you follow will appear here")
+          screen.getByText("Shops you follow will appear here"),
         ).toBeInTheDocument();
       });
     });
@@ -205,7 +205,7 @@ describe("FollowingPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Not following any shops yet")
+          screen.getByText("Not following any shops yet"),
         ).toBeInTheDocument();
       });
     });
@@ -218,8 +218,8 @@ describe("FollowingPage", () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            "Start following your favorite shops to get updates on new products and special offers"
-          )
+            "Start following your favorite shops to get updates on new products and special offers",
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -261,7 +261,7 @@ describe("FollowingPage", () => {
       await waitFor(() => {
         expect(consoleErrorSpy).toHaveBeenCalledWith(
           "Failed to load following shops:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -320,7 +320,7 @@ describe("FollowingPage", () => {
       expect(loadingContainer).toHaveClass(
         "flex",
         "items-center",
-        "justify-center"
+        "justify-center",
       );
     });
   });

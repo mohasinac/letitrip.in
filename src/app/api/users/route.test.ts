@@ -201,7 +201,7 @@ describe("GET /api/users", () => {
     } as any);
 
     const req = new NextRequest(
-      "http://localhost/api/users?sortBy=name&sortOrder=asc"
+      "http://localhost/api/users?sortBy=name&sortOrder=asc",
     );
     await GET(req);
 

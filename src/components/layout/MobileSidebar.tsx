@@ -86,21 +86,21 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
       {/* Overlay */}
       <div
         id="mobile-sidebar-overlay"
-        className="fixed inset-0 bg-black/50 z-50 lg:hidden"
+        className="fixed inset-0 bg-black/50 z-50 lg:hidden animate-fade-in"
         onClick={onClose}
       />
 
       {/* Sidebar */}
       <div
         id="mobile-sidebar"
-        className="fixed top-0 left-0 h-full w-80 bg-white z-[60] overflow-y-auto lg:hidden pb-20"
+        className="fixed top-0 left-0 h-full w-80 bg-white z-[60] overflow-y-auto lg:hidden pb-safe animate-slide-in-left"
       >
         {/* Header */}
-        <div className="bg-gray-800 text-white p-4 flex items-center justify-between">
+        <div className="bg-gray-800 text-white p-4 flex items-center justify-between pt-safe">
           <span className="font-bold text-lg">{COMPANY_NAME}</span>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-700 rounded"
+            className="p-2 hover:bg-gray-700 rounded touch-target"
             aria-label="Close menu"
           >
             <X className="w-6 h-6" />
