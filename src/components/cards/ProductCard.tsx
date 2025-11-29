@@ -36,7 +36,7 @@ export interface ProductCardProps {
       image: string;
       shopId: string;
       shopName: string;
-    },
+    }
   ) => void;
   onToggleFavorite?: (id: string) => void;
   onQuickView?: (id: string) => void;
@@ -174,12 +174,12 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
   return (
     <Link
       href={`/products/${slug}`}
-      className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+      className="group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow duration-200"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image/Video Container */}
-      <div className="relative aspect-square overflow-hidden bg-gray-100">
+      <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
         {currentMedia.type === "video" && isHovered ? (
           <video
             ref={videoRef}
@@ -294,7 +294,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
           {onQuickView && (
             <button
               onClick={handleQuickView}
-              className="p-2 rounded-full bg-white shadow-md hover:bg-gray-100 text-gray-600 transition-colors"
+              className="p-2 rounded-full bg-white dark:bg-gray-700 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 transition-colors"
               aria-label="Quick view"
             >
               <Eye className="w-5 h-5" />
@@ -320,9 +320,9 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
       <div className={`p-${compact ? "3" : "4"}`}>
         {/* Product Name */}
         <h3
-          className={`font-semibold text-gray-900 ${
+          className={`font-semibold text-gray-900 dark:text-white ${
             compact ? "text-sm line-clamp-1" : "text-base line-clamp-2"
-          } mb-2 group-hover:text-blue-600 transition-colors`}
+          } mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors`}
         >
           {name}
         </h3>
@@ -335,7 +335,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
               e.stopPropagation();
               window.location.href = `/shops/${shopSlug}`;
             }}
-            className="text-xs text-gray-500 hover:text-blue-600 transition-colors mb-2 block cursor-pointer"
+            className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-2 block cursor-pointer"
           >
             {shopName}
           </span>
@@ -346,12 +346,14 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
           <div className="flex items-center gap-1 mb-2">
             <div className="flex items-center">
               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-medium text-gray-900 ml-1">
+              <span className="text-sm font-medium text-gray-900 dark:text-white ml-1">
                 {rating.toFixed(1)}
               </span>
             </div>
             {reviewCount > 0 && (
-              <span className="text-xs text-gray-500">({reviewCount})</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                ({reviewCount})
+              </span>
             )}
           </div>
         )}
@@ -359,14 +361,14 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
         {/* Price */}
         <div className="flex items-baseline gap-2">
           <span
-            className={`font-bold text-gray-900 ${
+            className={`font-bold text-gray-900 dark:text-white ${
               compact ? "text-lg" : "text-xl"
             }`}
           >
             {formatCurrency(price)}
           </span>
           {originalPrice && originalPrice > price && (
-            <span className="text-sm text-gray-500 line-through">
+            <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
               {formatCurrency(originalPrice)}
             </span>
           )}

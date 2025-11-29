@@ -109,7 +109,7 @@ export default function Breadcrumb() {
       breadcrumbs.map((item) => ({
         name: item.label,
         url: item.href,
-      })),
+      }))
     );
   }, [breadcrumbs]);
 

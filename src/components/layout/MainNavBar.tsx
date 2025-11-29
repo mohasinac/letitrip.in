@@ -352,7 +352,9 @@ export default function MainNavBar({
                   </div>
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Subtotal:</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Subtotal:
+                      </span>
                       <span className="font-bold text-lg">
                         {cart.formattedSubtotal}
                       </span>

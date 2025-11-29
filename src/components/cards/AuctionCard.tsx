@@ -78,13 +78,13 @@ const AuctionCardComponent = ({
 
     if (auction.videos && auction.videos.length > 0) {
       media.push(
-        ...auction.videos.map((url) => ({ type: "video" as const, url })),
+        ...auction.videos.map((url) => ({ type: "video" as const, url }))
       );
     }
 
     if (auction.images && auction.images.length > 0) {
       media.push(
-        ...auction.images.map((url) => ({ type: "image" as const, url })),
+        ...auction.images.map((url) => ({ type: "image" as const, url }))
       );
     }
 
@@ -140,7 +140,7 @@ const AuctionCardComponent = ({
   return (
     <Link
       href={`/auctions/${auction.slug}`}
-      className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+      className="group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow duration-200"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -292,7 +292,7 @@ const AuctionCardComponent = ({
                 className="rounded-full"
               />
             )}
-            <span className="text-xs text-gray-600 truncate">
+            <span className="text-xs text-gray-600 dark:text-gray-400 truncate">
               {auction.shop.name}
             </span>
             {auction.shop.isVerified && (
@@ -312,33 +312,35 @@ const AuctionCardComponent = ({
         )}
 
         {/* Auction Name */}
-        <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors min-h-[2.5rem]">
+        <h3 className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors min-h-[2.5rem]">
           {auction.name}
         </h3>
 
         {/* Current Bid */}
         <div className="mb-2">
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-gray-900">
+            <span className="text-lg font-bold text-gray-900 dark:text-white">
               {formatCurrency(currentBid)}
             </span>
             {auction.bidCount > 0 && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 {auction.bidCount} {auction.bidCount === 1 ? "bid" : "bids"}
               </span>
             )}
           </div>
-          <div className="text-xs text-gray-500">Current Bid</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Current Bid
+          </div>
         </div>
 
         {/* Time Remaining */}
         <div
           className={`flex items-center gap-1 text-xs mb-3 ${
             isEnded
-              ? "text-gray-500"
+              ? "text-gray-500 dark:text-gray-500"
               : isEndingSoon
-                ? "text-orange-600 font-medium"
-                : "text-gray-600"
+              ? "text-orange-600 dark:text-orange-400 font-medium"
+              : "text-gray-600 dark:text-gray-400"
           }`}
         >
           <Clock size={12} />
@@ -353,7 +355,7 @@ const AuctionCardComponent = ({
           }}
           className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2 ${
             isEnded
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
               : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
           }`}
           disabled={isEnded}

@@ -73,7 +73,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
             className={`w-4 h-4 ${
               star <= rating
                 ? "fill-yellow-400 text-yellow-400"
-                : "fill-gray-200 text-gray-200"
+                : "fill-gray-200 dark:fill-gray-600 text-gray-200 dark:text-gray-600"
             }`}
           />
         ))}
@@ -82,7 +82,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200">
       <div className={`p-${compact ? "3" : "4"}`}>
         {/* Header: User Info & Rating */}
         <div className="flex items-start justify-between mb-3">
@@ -105,15 +105,17 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
             {/* User Name & Verified Badge */}
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-medium text-gray-900">{userName}</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {userName}
+                </span>
                 {verifiedPurchase && (
-                  <div className="flex items-center gap-1 bg-green-50 text-green-700 text-xs px-2 py-0.5 rounded">
+                  <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2 py-0.5 rounded">
                     <ShieldCheck className="w-3 h-3" />
                     <span>Verified Purchase</span>
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
+              <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                 <Calendar className="w-3 h-3" />
                 <time dateTime={safeToISOString(reviewDate) ?? undefined}>
                   {reviewDate ? formatDate(reviewDate) : "N/A"}
@@ -127,11 +129,15 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         </div>
 
         {/* Review Title */}
-        {title && <h4 className="font-semibold text-gray-900 mb-2">{title}</h4>}
+        {title && (
+          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+            {title}
+          </h4>
+        )}
 
         {/* Review Comment */}
         <p
-          className={`text-sm text-gray-700 ${
+          className={`text-sm text-gray-700 dark:text-gray-300 ${
             compact ? "line-clamp-2" : "line-clamp-4"
           } mb-3`}
         >
@@ -144,7 +150,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
             {media.slice(0, 4).map((mediaUrl, index) => (
               <div
                 key={index}
-                className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100"
+                className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700"
               >
                 <Image
                   src={mediaUrl}
@@ -156,7 +162,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               </div>
             ))}
             {media.length > 4 && (
-              <div className="w-20 h-20 flex-shrink-0 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 text-sm font-medium">
+              <div className="w-20 h-20 flex-shrink-0 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm font-medium">
                 +{media.length - 4}
               </div>
             )}
@@ -168,10 +174,10 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
           <Link
             href={`/products/${productId}`}
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-3 p-2 mb-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-3 p-2 mb-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
           >
             {productImage && (
-              <div className="relative w-12 h-12 flex-shrink-0 rounded overflow-hidden bg-white">
+              <div className="relative w-12 h-12 flex-shrink-0 rounded overflow-hidden bg-white dark:bg-gray-600">
                 <Image
                   src={productImage}
                   alt={productName}
@@ -182,28 +188,30 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1 text-xs text-gray-500 mb-0.5">
+              <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mb-0.5">
                 <Package className="w-3 h-3" />
                 <span>Reviewed Product</span>
               </div>
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                 {productName}
               </p>
               {shopName && (
-                <p className="text-xs text-gray-500 truncate">{shopName}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  {shopName}
+                </p>
               )}
             </div>
           </Link>
         )}
 
         {/* Footer: Helpful Button */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
           <button
             onClick={handleMarkHelpful}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               isHelpful
-                ? "bg-blue-50 text-blue-600"
-                : "bg-gray-50 text-gray-700 hover:bg-gray-100"
+                ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
             }`}
             disabled={isHelpful}
           >
@@ -220,7 +228,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
             <Link
               href={`/shops/${shopId}`}
               onClick={(e) => e.stopPropagation()}
-              className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+              className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
             >
               {shopName}
             </Link>

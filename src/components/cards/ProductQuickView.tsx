@@ -79,19 +79,19 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
 
   const discountPercentage = product.originalPrice
     ? Math.round(
-        ((product.originalPrice - product.price) / product.originalPrice) * 100,
+        ((product.originalPrice - product.price) / product.originalPrice) * 100
       )
     : 0;
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === 0 ? product.images.length - 1 : prev - 1,
+      prev === 0 ? product.images.length - 1 : prev - 1
     );
   };
 
   const handleNextImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === product.images.length - 1 ? 0 : prev + 1,
+      prev === product.images.length - 1 ? 0 : prev + 1
     );
   };
 
@@ -123,14 +123,14 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="relative bg-white rounded-lg shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
+      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
+          className="absolute top-4 right-4 z-10 p-2 bg-white dark:bg-gray-700 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
           aria-label="Close quick view"
         >
-          <X className="w-5 h-5 text-gray-600" />
+          <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
         </button>
 
         <div className="overflow-y-auto max-h-[90vh]">
@@ -138,7 +138,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
             {/* Left Column - Images */}
             <div className="space-y-4">
               {/* Main Image */}
-              <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
+              <div className="relative aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                 <Image
                   src={product.images[currentImageIndex]}
                   alt={product.name}
@@ -154,24 +154,24 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   <>
                     <button
                       onClick={handlePrevImage}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 rounded-full shadow-md hover:bg-white transition-colors"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 dark:bg-gray-700/90 rounded-full shadow-md hover:bg-white dark:hover:bg-gray-600 transition-colors"
                       aria-label="Previous image"
                     >
-                      <ChevronLeft className="w-5 h-5 text-gray-600" />
+                      <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                     </button>
                     <button
                       onClick={handleNextImage}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 rounded-full shadow-md hover:bg-white transition-colors"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 dark:bg-gray-700/90 rounded-full shadow-md hover:bg-white dark:hover:bg-gray-600 transition-colors"
                       aria-label="Next image"
                     >
-                      <ChevronRight className="w-5 h-5 text-gray-600" />
+                      <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                     </button>
                   </>
                 )}
 
                 {/* Zoom Icon */}
-                <div className="absolute top-2 right-2 p-2 bg-white/90 rounded-full shadow-md">
-                  <ZoomIn className="w-4 h-4 text-gray-600" />
+                <div className="absolute top-2 right-2 p-2 bg-white/90 dark:bg-gray-700/90 rounded-full shadow-md">
+                  <ZoomIn className="w-4 h-4 text-gray-600 dark:text-gray-300" />
                 </div>
 
                 {/* Image Counter */}
@@ -191,8 +191,8 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       onClick={() => setCurrentImageIndex(index)}
                       className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all ${
                         index === currentImageIndex
-                          ? "border-blue-600 ring-2 ring-blue-200"
-                          : "border-gray-200 hover:border-gray-400"
+                          ? "border-blue-600 ring-2 ring-blue-200 dark:ring-blue-800"
+                          : "border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
                       }`}
                     >
                       <Image
@@ -212,7 +212,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
               {/* Shop Link */}
               <Link
                 href={`/shops/${product.shopSlug}`}
-                className="text-sm text-blue-600 hover:underline"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
                 onClick={onClose}
               >
                 {product.shopName}
@@ -220,7 +220,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
 
               {/* Product Name */}
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   {product.name}
                 </h2>
 
@@ -229,12 +229,12 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1">
                       <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">
+                      <span className="font-medium dark:text-white">
                         {product.rating.toFixed(1)}
                       </span>
                     </div>
                     {product.reviewCount && product.reviewCount > 0 && (
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         ({product.reviewCount}{" "}
                         {product.reviewCount === 1 ? "review" : "reviews"})
                       </span>
@@ -245,16 +245,16 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
 
               {/* Price */}
               <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-bold text-gray-900">
+                <span className="text-3xl font-bold text-gray-900 dark:text-white">
                   ₹{product.price.toLocaleString("en-IN")}
                 </span>
                 {product.originalPrice &&
                   product.originalPrice > product.price && (
                     <>
-                      <span className="text-lg text-gray-500 line-through">
+                      <span className="text-lg text-gray-500 dark:text-gray-400 line-through">
                         ₹{product.originalPrice.toLocaleString("en-IN")}
                       </span>
-                      <span className="px-2 py-1 bg-green-100 text-green-700 text-sm font-semibold rounded">
+                      <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-semibold rounded">
                         {discountPercentage}% OFF
                       </span>
                     </>
@@ -264,13 +264,15 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
               {/* Condition & Stock */}
               <div className="flex items-center gap-4 text-sm">
                 {product.condition && product.condition !== "new" && (
-                  <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium capitalize">
+                  <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full font-medium capitalize">
                     {product.condition}
                   </span>
                 )}
                 <span
                   className={`font-medium ${
-                    product.inStock ? "text-green-600" : "text-red-600"
+                    product.inStock
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
                   }`}
                 >
                   {product.inStock
@@ -283,10 +285,10 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
 
               {/* Description */}
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                   Description
                 </h3>
-                <p className="text-gray-600 text-sm line-clamp-4">
+                <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-4">
                   {product.description}
                 </p>
               </div>
@@ -294,14 +296,16 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
               {/* Specifications */}
               {product.specifications && product.specifications.length > 0 && (
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                     Specifications
                   </h3>
                   <dl className="grid grid-cols-2 gap-2 text-sm">
                     {product.specifications.slice(0, 4).map((spec, index) => (
                       <div key={index}>
-                        <dt className="text-gray-500">{spec.label}</dt>
-                        <dd className="text-gray-900 font-medium">
+                        <dt className="text-gray-500 dark:text-gray-400">
+                          {spec.label}
+                        </dt>
+                        <dd className="text-gray-900 dark:text-white font-medium">
                           {spec.value}
                         </dd>
                       </div>
@@ -311,7 +315,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
               )}
 
               {/* Trust Badges */}
-              <div className="flex items-center gap-6 text-sm text-gray-600 pt-4 border-t">
+              <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400 pt-4 border-t dark:border-gray-700">
                 <div className="flex items-center gap-2">
                   <Package className="w-5 h-5" />
                   <span>7-Day Returns</span>
@@ -329,18 +333,20 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
               {/* Quantity & Actions */}
               {product.inStock && (
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center border border-gray-300 rounded-md">
+                  <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="px-3 py-2 hover:bg-gray-100 transition-colors"
+                      className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors dark:text-white"
                       disabled={quantity <= 1}
                     >
                       −
                     </button>
-                    <span className="px-4 py-2 font-medium">{quantity}</span>
+                    <span className="px-4 py-2 font-medium dark:text-white">
+                      {quantity}
+                    </span>
                     <button
                       onClick={() => setQuantity(quantity + 1)}
-                      className="px-3 py-2 hover:bg-gray-100 transition-colors"
+                      className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors dark:text-white"
                       disabled={
                         product.stockCount
                           ? quantity >= product.stockCount
@@ -366,8 +372,8 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       onClick={handleToggleFavorite}
                       className={`p-3 border rounded-md transition-colors ${
                         isFavorite
-                          ? "border-red-500 bg-red-50 text-red-500"
-                          : "border-gray-300 hover:bg-gray-50 text-gray-600"
+                          ? "border-red-500 bg-red-50 dark:bg-red-900/30 text-red-500"
+                          : "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
                       }`}
                       aria-label={
                         isFavorite
@@ -385,7 +391,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
 
                   <button
                     onClick={handleShare}
-                    className="p-3 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-600 transition-colors"
+                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors"
                     aria-label="Share product"
                   >
                     <Share2 className="w-5 h-5" />
@@ -397,7 +403,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
               <Link
                 href={`/products/${product.slug}`}
                 onClick={onClose}
-                className="block text-center py-3 border-2 border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                className="block text-center py-3 border-2 border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 View Full Details
               </Link>

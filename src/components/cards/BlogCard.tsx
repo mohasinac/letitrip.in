@@ -66,10 +66,10 @@ export const BlogCard: React.FC<BlogCardProps> = ({
   return (
     <Link
       href={`/blog/${slug}`}
-      className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+      className="group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
     >
       {/* Image Container */}
-      <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
+      <div className="relative aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-700">
         {featuredImage ? (
           <Image
             src={featuredImage}
@@ -79,7 +79,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
-          <div className="flex items-center justify-center h-full bg-gradient-to-br from-blue-100 to-purple-100">
+          <div className="flex items-center justify-center h-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30">
             <Tag className="w-16 h-16 text-gray-400" />
           </div>
         )}
@@ -102,12 +102,14 @@ export const BlogCard: React.FC<BlogCardProps> = ({
         {onLike && (
           <button
             onClick={handleLike}
-            className="absolute top-2 right-2 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors"
+            className="absolute top-2 right-2 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             aria-label={isLiked ? "Unlike post" : "Like post"}
           >
             <Heart
               className={`w-5 h-5 ${
-                isLiked ? "fill-red-500 text-red-500" : "text-gray-600"
+                isLiked
+                  ? "fill-red-500 text-red-500"
+                  : "text-gray-600 dark:text-gray-400"
               }`}
             />
           </button>
@@ -146,15 +148,17 @@ export const BlogCard: React.FC<BlogCardProps> = ({
                 className="rounded-full"
               />
             ) : (
-              <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center">
-                <User className="w-4 h-4 text-gray-600" />
+              <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </div>
             )}
-            <span className="text-xs text-gray-600">{author.name}</span>
+            <span className="text-xs text-gray-600 dark:text-gray-400">
+              {author.name}
+            </span>
           </div>
 
           {publishDate && (
-            <div className="flex items-center gap-1 text-xs text-gray-500">
+            <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
               <Calendar className="w-3 h-3" />
               <time
                 dateTime={safeToISOString(publishDate) ?? String(publishDate)}
@@ -167,21 +171,23 @@ export const BlogCard: React.FC<BlogCardProps> = ({
 
         {/* Title */}
         <h3
-          className={`font-semibold text-gray-900 ${
+          className={`font-semibold text-gray-900 dark:text-white ${
             compact ? "text-sm line-clamp-2" : "text-lg line-clamp-2"
-          } mb-2 group-hover:text-blue-600 transition-colors`}
+          } mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors`}
         >
           {title}
         </h3>
 
         {/* Excerpt */}
         {!compact && (
-          <p className="text-sm text-gray-600 line-clamp-3 mb-3">{excerpt}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-3">
+            {excerpt}
+          </p>
         )}
 
         {/* Meta Info */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-          <div className="flex items-center gap-1 text-xs text-gray-500">
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
             <Clock className="w-3 h-3" />
             <span>{estimatedReadTime} min read</span>
           </div>
@@ -192,13 +198,13 @@ export const BlogCard: React.FC<BlogCardProps> = ({
               {tags.slice(0, 2).map((tag, index) => (
                 <span
                   key={index}
-                  className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded"
+                  className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded"
                 >
                   #{tag}
                 </span>
               ))}
               {tags.length > 2 && (
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
                   +{tags.length - 2}
                 </span>
               )}
