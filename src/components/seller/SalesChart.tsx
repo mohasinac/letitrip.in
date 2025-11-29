@@ -38,28 +38,29 @@ export default function SalesChart({ data }: Props) {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
         Sales Over Time
       </h3>
 
       {data.length === 0 ? (
-        <div className="h-80 flex items-center justify-center text-gray-500">
+        <div className="h-80 flex items-center justify-center text-gray-500 dark:text-gray-400">
           No sales data available for the selected period
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={320}>
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="date" tickFormatter={formatDate} stroke="#6b7280" />
-            <YAxis tickFormatter={formatCurrency} stroke="#6b7280" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis dataKey="date" tickFormatter={formatDate} stroke="#9ca3af" />
+            <YAxis tickFormatter={formatCurrency} stroke="#9ca3af" />
             <Tooltip
               formatter={(value: number) => formatCurrency(value)}
               labelFormatter={formatDate}
               contentStyle={{
-                backgroundColor: "white",
-                border: "1px solid #e5e7eb",
+                backgroundColor: "#1f2937",
+                border: "1px solid #374151",
                 borderRadius: "6px",
+                color: "#f9fafb",
               }}
             />
             <Line
