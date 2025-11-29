@@ -238,18 +238,18 @@ function ProductsContent() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             All Products
           </h1>
-          <p className="text-gray-600">Browse our complete collection</p>
+          <p className="text-gray-600 dark:text-gray-400">Browse our complete collection</p>
         </div>
 
         {/* Search & Controls - Mobile Optimized */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <div className="flex-1">
@@ -259,7 +259,7 @@ function ProductsContent() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && loadProducts()}
-                className="w-full px-4 py-3 min-h-[48px] text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent touch-manipulation"
+                className="w-full px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent touch-manipulation"
               />
             </div>
 
@@ -268,7 +268,7 @@ function ProductsContent() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 touch-manipulation"
+                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
               >
                 <option value="createdAt">Newest</option>
                 <option value="price">Price</option>
@@ -279,20 +279,20 @@ function ProductsContent() {
               <select
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
-                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 touch-manipulation"
+                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
               >
                 <option value="desc">High to Low</option>
                 <option value="asc">Low to High</option>
               </select>
 
               {/* View Toggle - Hidden on mobile */}
-              <div className="hidden sm:flex border border-gray-300 rounded-lg overflow-hidden">
+              <div className="hidden sm:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
                 <button
                   onClick={() => setView("grid")}
                   className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                     view === "grid"
                       ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-600"
+                      : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                   }`}
                 >
                   <Grid className="w-5 h-5" />
@@ -302,7 +302,7 @@ function ProductsContent() {
                   className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                     view === "table"
                       ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-600"
+                      : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                   }`}
                 >
                   <List className="w-5 h-5" />
@@ -348,7 +348,7 @@ function ProductsContent() {
           <div className="flex-1">
             {/* Results Count */}
             {!loading && products.length > 0 && (
-              <div className="mb-4 text-sm text-gray-600">
+              <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
                 Showing {products.length} products (Page {currentPage})
               </div>
             )}

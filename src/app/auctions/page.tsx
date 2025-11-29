@@ -225,8 +225,8 @@ function AuctionsContent() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Live Auctions</h1>
-        <p className="mt-2 text-gray-600">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Live Auctions</h1>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
           Bid on unique items and win great deals
         </p>
       </div>
@@ -258,13 +258,13 @@ function AuctionsContent() {
           <div className="mb-6 flex flex-col sm:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 placeholder="Search auctions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 min-h-[48px] text-base rounded-lg border border-gray-300 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary touch-manipulation"
+                className="w-full pl-10 pr-4 py-3 min-h-[48px] text-base rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary touch-manipulation"
               />
             </div>
 
@@ -304,7 +304,7 @@ function AuctionsContent() {
 
           {/* Results Count */}
           {!loading && (
-            <p className="mb-4 text-sm text-gray-600">
+            <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
               Showing {(currentPage - 1) * itemsPerPage + 1}-
               {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount}{" "}
               results
@@ -313,14 +313,14 @@ function AuctionsContent() {
 
           {/* Stats */}
           <div className="mb-6 grid gap-4 sm:grid-cols-3">
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
               <div className="flex items-center gap-3">
-                <div className="rounded-full bg-green-100 p-3">
-                  <Gavel className="h-6 w-6 text-green-600" />
+                <div className="rounded-full bg-green-100 dark:bg-green-900/30 p-3">
+                  <Gavel className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Live Auctions</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Live Auctions</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {
                       auctions.filter((a) => a.status === AuctionStatus.ACTIVE)
                         .length
@@ -329,14 +329,14 @@ function AuctionsContent() {
                 </div>
               </div>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
               <div className="flex items-center gap-3">
-                <div className="rounded-full bg-blue-100 p-3">
-                  <Clock className="h-6 w-6 text-blue-600" />
+                <div className="rounded-full bg-blue-100 dark:bg-blue-900/30 p-3">
+                  <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Ending Soon</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Ending Soon</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {
                       auctions.filter((a) => {
                         const diff =
@@ -351,14 +351,14 @@ function AuctionsContent() {
                 </div>
               </div>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
               <div className="flex items-center gap-3">
-                <div className="rounded-full bg-yellow-100 p-3">
-                  <TrendingUp className="h-6 w-6 text-yellow-600" />
+                <div className="rounded-full bg-yellow-100 dark:bg-yellow-900/30 p-3">
+                  <TrendingUp className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Total Bids</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Bids</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {auctions.reduce((sum, a) => sum + (a.bidCount || 0), 0)}
                   </p>
                 </div>
