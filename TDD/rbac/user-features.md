@@ -28,6 +28,7 @@ Regular users can browse, buy, and interact with permission level 10.
 - `/user/tickets` - Support tickets
 - `/user/settings` - Settings
 - `/user/notifications` - Notifications
+- `/user/riplimit` - RipLimit balance & purchase (E028)
 
 ## User Actions
 
@@ -180,3 +181,66 @@ if (user.role === "user") {
 - ✅ MobileSkeleton for loading states
 - ✅ Touch targets 44px+ minimum
 - ✅ PWA install prompt available
+
+## Platform Enhancement Features (E026-E034)
+
+### Sieve Pagination (E026)
+
+- ✅ Page-based navigation on product lists
+- ✅ Page-based navigation on auction lists
+- ✅ Page size selector available
+- ✅ URL sync for sharing filtered views
+
+### Design System (E027)
+
+- ✅ Toggle light/dark mode
+- ✅ Theme preference saved to localStorage
+- ✅ Consistent styling via CSS variables
+
+### RipLimit (E028)
+
+- `/user/riplimit` - Purchase and manage RipLimit
+- ✅ View current balance
+- ✅ Purchase RipLimit with any payment method
+- ✅ View transaction history
+- ✅ Bid on auctions using RipLimit
+- ✅ Request refund of unused RipLimit
+- ❌ Cannot bid if has unpaid auctions
+- ❌ Cannot refund if has blocked balance
+
+### Smart Address (E029)
+
+- ✅ Use GPS location to auto-fill address
+- ✅ Pincode lookup auto-populates area/city/state
+- ✅ Mobile number per address
+- ✅ Label addresses (Home/Work/Other)
+- ✅ Search-enabled area/city selection
+
+### Searchable Dropdowns (E031)
+
+- ✅ Category filter with search
+- ✅ Multi-select with chips
+- ✅ Clear all button
+- ✅ Keyboard navigation
+- ✅ Mobile bottom sheet mode
+
+### Content Type Search (E032)
+
+- ✅ Filter search by Products/Auctions/Shops
+- ✅ Type tabs on search results
+- ✅ Result counts per type
+- ✅ URL reflects type filter
+
+### Live Header (E033)
+
+- ✅ Real-time cart count
+- ✅ Real-time notification count
+- ✅ RipLimit balance in header (if has balance)
+- ✅ Cart preview on hover
+- ✅ Notification dropdown
+
+### Flexible Links (E034)
+
+- ✅ Relative paths work in all link fields
+- ✅ External links open in new tab
+- ✅ Internal links stay in same tab

@@ -1,5 +1,11 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { AddressForm } from "./AddressForm";
 import { addressService } from "@/services/address.service";
 
@@ -10,9 +16,47 @@ jest.mock("lucide-react", () => ({
   Loader2: () => <svg data-testid="loader-icon" />,
 }));
 
+// Mock mobile components to avoid duplicate elements (mobile + desktop views)
+// Return null to completely hide mobile versions
+jest.mock("@/components/mobile/MobileBottomSheet", () => ({
+  MobileBottomSheet: () => null, // Don't render mobile bottom sheet at all
+}));
+
+jest.mock("@/components/mobile/MobileFormInput", () => ({
+  MobileFormInput: () => null, // Don't render mobile inputs
+}));
+
+jest.mock("@/components/mobile/MobileFormSelect", () => ({
+  MobileFormSelect: () => null, // Don't render mobile selects
+}));
+
 // Mock window.alert
 const mockAlert = jest.fn();
 global.alert = mockAlert;
+
+// Helper to get desktop container to avoid duplicate elements
+const getDesktopContainer = (container: HTMLElement) => {
+  const desktopModal = container.querySelector(
+    "div.hidden.sm\\:block"
+  ) as HTMLElement;
+  return desktopModal || container;
+};
+
+// Helper to render with desktop-scoped queries
+const renderAddressForm = (props: {
+  addressId?: string | null;
+  onClose: jest.Mock;
+}) => {
+  const result = render(
+    <AddressForm addressId={props.addressId} onClose={props.onClose} />
+  );
+  const desktop = getDesktopContainer(result.container);
+  return {
+    ...result,
+    desktop,
+    withinDesktop: within(desktop),
+  };
+};
 
 describe("AddressForm", () => {
   const mockOnClose = jest.fn();

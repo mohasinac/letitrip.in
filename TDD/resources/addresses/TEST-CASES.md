@@ -12,12 +12,28 @@ describe("Address Validation", () => {
   it.todo("should validate mobile number format");
   it.todo("should validate pincode format (6 digits)");
   it.todo("should validate state is valid Indian state");
-  it.todo("should validate address type (home/work/other)");
+  it.todo("should validate address type (home/work/other/custom)");
+  it.todo("should require customLabel when type is custom");
+  it.todo("should validate customLabel max 50 characters");
   it.todo("should allow optional fields to be empty");
 });
 ```
 
-#### TC-ADDR-002: Pincode Lookup
+#### TC-ADDR-002: Custom Address Labels
+
+```typescript
+describe("Custom Address Labels", () => {
+  it.todo("should accept predefined types: home, work, other");
+  it.todo("should show text input when type is other/custom");
+  it.todo("should save custom label like 'Mom's House'");
+  it.todo("should display custom label on address card");
+  it.todo("should validate max 50 characters");
+  it.todo("should allow editing label later");
+  it.todo("should be searchable in address selector");
+});
+```
+
+#### TC-ADDR-003: Pincode Lookup
 
 ```typescript
 describe("Pincode Lookup", () => {

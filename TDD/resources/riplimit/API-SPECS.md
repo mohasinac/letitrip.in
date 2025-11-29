@@ -6,7 +6,8 @@
 
 - **1 INR = 20 RipLimit**
 - Minimum Purchase: 200 RipLimit (₹10)
-- Maximum Balance: 1,000,000 RipLimit (₹50,000)
+- Maximum Balance: **No limit** - users can purchase as much as they want
+- Multi-Auction: Users can bid on multiple auctions as long as available balance covers bids
 
 ---
 
@@ -23,13 +24,27 @@ Response:
   "success": true,
   "data": {
     "availableBalance": 15000,
-    "blockedBalance": 11000,
-    "totalBalance": 26000,
+    "blockedBalance": 27000,
+    "totalBalance": 42000,
     "inrEquivalent": {
       "available": 750,
-      "blocked": 550,
-      "total": 1300
+      "blocked": 1350,
+      "total": 2100
     },
+    "blockedByAuction": [
+      {
+        "auctionId": "auc_123",
+        "auctionTitle": "Vintage Watch",
+        "bidAmount": 550,
+        "blockedRipLimit": 11000
+      },
+      {
+        "auctionId": "auc_456",
+        "auctionTitle": "Rare Coin Collection",
+        "bidAmount": 800,
+        "blockedRipLimit": 16000
+      }
+    ],
     "hasUnpaidAuctions": false,
     "unpaidAuctionIds": []
   }

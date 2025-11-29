@@ -169,3 +169,56 @@ Guest sees prompts when attempting:
 - ❌ Push notifications (requires login)
 - ❌ Camera access for uploads (requires login)
 - ❌ Message seller (prompts login)
+
+## Platform Enhancement Features (E026-E034)
+
+### Sieve Pagination (E026)
+
+- ✅ Page-based navigation on product listing
+- ✅ Page-based navigation on auction listing
+- ✅ Page size selector
+- ✅ URL-based filter sharing
+
+### Design System (E027)
+
+- ✅ Toggle light/dark mode (saved to localStorage)
+- ✅ Theme respects system preference
+- ✅ Consistent styling
+
+### RipLimit (E028)
+
+- ❌ Cannot purchase RipLimit (requires login)
+- ❌ Cannot bid on auctions (requires login)
+- ✅ Can view auction RipLimit requirements
+
+### Smart Address (E029)
+
+- ❌ Cannot save addresses (requires login)
+- ✅ Pincode lookup works (public API)
+- ✅ GPS location works (for display)
+
+### Searchable Dropdowns (E031)
+
+- ✅ Category filter with search
+- ✅ Price range filter
+- ✅ Shop filter
+- ✅ Mobile bottom sheet mode
+
+### Content Type Search (E032)
+
+- ✅ Filter search by Products/Auctions/Shops
+- ✅ View type tabs with counts
+- ✅ No access to private types (users, orders)
+
+### Live Header (E033)
+
+- ✅ Cart count (local storage)
+- ❌ Notification badge (requires login)
+- ❌ RipLimit balance (requires login)
+- ✅ Search accessible
+
+### Flexible Links (E034)
+
+- ✅ All links work for guests
+- ✅ External links open in new tab
+- ✅ Internal navigation works

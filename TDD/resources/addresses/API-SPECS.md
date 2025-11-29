@@ -31,9 +31,9 @@ interface SmartAddress {
   latitude?: number;
   longitude?: number;
 
-  // Labels
-  label?: string; // Custom label (e.g., "Mom's House")
-  type: "home" | "work" | "other";
+  // Labels & Type
+  type: "home" | "work" | "other" | "custom";
+  customLabel?: string; // Required when type is "custom" (e.g., "Mom's House", "Office HQ")
   isDefault: boolean;
 
   // Metadata
@@ -71,11 +71,27 @@ Response:
       "pincode": "560034",
       "latitude": 12.9352,
       "longitude": 77.6245,
-      "label": null,
       "type": "home",
+      "customLabel": null,
       "isDefault": true,
       "createdAt": "2025-01-15T10:00:00Z",
       "updatedAt": "2025-01-15T10:00:00Z"
+    },
+    {
+      "id": "addr_456",
+      "fullName": "John Doe",
+      "mobileNumber": "+919876543211",
+      "addressLine1": "Plot 45, Tech Park",
+      "area": "Whitefield",
+      "city": "Bangalore",
+      "state": "Karnataka",
+      "country": "India",
+      "pincode": "560066",
+      "type": "custom",
+      "customLabel": "Mom's House",
+      "isDefault": false,
+      "createdAt": "2025-01-16T10:00:00Z",
+      "updatedAt": "2025-01-16T10:00:00Z"
     }
   ]
 }

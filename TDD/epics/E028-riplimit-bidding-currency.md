@@ -17,8 +17,9 @@ Implement RipLimit, a virtual bidding currency that users purchase with real mon
 
 - **Exchange Rate**: 20 RipLimit = ₹1
 - **Minimum Purchase**: 200 RipLimit (₹10)
-- **Maximum Balance**: 1,000,000 RipLimit (₹50,000)
+- **Maximum Balance**: No limit - users can purchase as much as they want
 - **Bid Requirement**: Bid amount in INR × 20 = Required RipLimit
+- **Multi-Auction Bidding**: Users can bid on multiple auctions simultaneously as long as their available RipLimit covers all active bids
 
 ### Example Scenarios
 
@@ -45,6 +46,15 @@ Scenario 3: Winning Auction
 - Partial: bid ₹1000, has 11,000 RipLimit
   - RipLimit covers ₹550
   - User pays remaining ₹450
+
+Scenario 4: Multi-Auction Bidding
+- User has 50,000 RipLimit available
+- Bids ₹500 on Auction A → Blocks 10,000 RipLimit (40,000 available)
+- Bids ₹800 on Auction B → Blocks 16,000 RipLimit (24,000 available)
+- Bids ₹1,000 on Auction C → Blocks 20,000 RipLimit (4,000 available)
+- Gets outbid on Auction B → Releases 16,000 RipLimit (20,000 available)
+- Can now bid on more auctions with 20,000 available RipLimit
+- Can purchase more RipLimit anytime to increase bidding capacity
 ```
 
 ---

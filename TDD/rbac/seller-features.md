@@ -192,3 +192,59 @@ if (user.role === "seller") {
 - ✅ Message list as cards
 - ✅ Reply via MobileBottomSheet
 - ✅ Attachment upload touch-friendly
+
+## Platform Enhancement Features (E026-E034)
+
+### Sieve Pagination (E026)
+
+- ✅ Page-based navigation on product list
+- ✅ Page-based navigation on order list
+- ✅ Page-based navigation on auction list
+- ✅ Sorting on all tables
+- ✅ Filtering with all operators
+
+### Design System (E027)
+
+- ✅ Toggle light/dark mode in dashboard
+- ✅ Theme preference persists
+- ✅ Consistent styling across seller pages
+
+### RipLimit (E028)
+
+- ❌ Sellers cannot bid on auctions
+- ❌ Sellers cannot purchase RipLimit
+- ✅ Can view winning bidders' RipLimit usage
+
+### Smart Address (E029)
+
+- ✅ Smart address for shop location
+- ✅ GPS-based location selection
+- ✅ Pincode auto-population
+- ✅ Mobile number for shop contact
+- ✅ Multiple shop locations (future)
+
+### Searchable Dropdowns (E031)
+
+- ✅ Category selector with search
+- ✅ Product status filter with search
+- ✅ Order status filter with search
+- ✅ Multi-select for bulk actions
+
+### Content Type Search (E032)
+
+- ✅ Search within own products
+- ✅ Search within own orders
+- ✅ Type filter in seller dashboard
+
+### Live Header (E033)
+
+- ✅ Order notification badge
+- ✅ Message notification badge
+- ✅ Return request badge
+- ✅ Quick actions in header
+
+### Flexible Links (E034)
+
+- ✅ Product links can be relative
+- ✅ External links in product descriptions
+- ✅ Shop social links support both formats
