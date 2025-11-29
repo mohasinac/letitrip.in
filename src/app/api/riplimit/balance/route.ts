@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
-import { getBalance } from "@/services/riplimit.service";
+import { getBalanceDetails } from "@/app/api/lib/riplimit";
 
 /**
  * GET /api/riplimit/balance
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const balance = await getBalance(auth.user.uid);
+    const balance = await getBalanceDetails(auth.user.uid);
 
     return NextResponse.json({
       success: true,

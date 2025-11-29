@@ -1,5 +1,67 @@
 # Epic E028: RipLimit Bidding Currency
 
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Key Requirements:**
+
+- Database logic in `src/app/api/lib/riplimit/` (backend-only)
+- Service (`src/services/riplimit.service.ts`) calls APIs via `apiService`, NEVER accesses database
+- FE types in `src/types/frontend/riplimit.types.ts`, transforms in `src/types/transforms/`
+- Use `COLLECTIONS` constant from `src/constants/database.ts`
+
+---
+
+## Status: ✅ IMPLEMENTED (Session 11 - November 29, 2025)
+
+## Implementation Details
+
+### Files Created
+
+| File                                                          | Description                                    |
+| ------------------------------------------------------------- | ---------------------------------------------- |
+| `src/types/backend/riplimit.types.ts`                         | Complete type definitions, enums, constants    |
+| `src/types/frontend/riplimit.types.ts`                        | UI-optimized types for frontend                |
+| `src/types/transforms/riplimit.transforms.ts`                 | BE → FE transformation functions               |
+| `src/app/api/lib/riplimit/index.ts`                           | Database operations index                      |
+| `src/app/api/lib/riplimit/account.ts`                         | Account CRUD operations                        |
+| `src/app/api/lib/riplimit/transactions.ts`                    | Credit/debit transaction operations            |
+| `src/app/api/lib/riplimit/bids.ts`                            | Bid blocking/releasing operations              |
+| `src/app/api/lib/riplimit/admin.ts`                           | Admin-only operations                          |
+| `src/services/riplimit.service.ts`                            | Frontend service (calls API, transforms types) |
+| `src/app/api/riplimit/balance/route.ts`                       | GET user balance                               |
+| `src/app/api/riplimit/transactions/route.ts`                  | GET transaction history with Sieve             |
+| `src/app/api/riplimit/purchase/route.ts`                      | POST initiate Razorpay purchase                |
+| `src/app/api/riplimit/purchase/verify/route.ts`               | POST verify and complete purchase              |
+| `src/app/api/riplimit/refund/route.ts`                        | POST request refund, GET history               |
+| `src/app/api/admin/riplimit/stats/route.ts`                   | GET admin statistics                           |
+| `src/app/api/admin/riplimit/users/route.ts`                   | GET admin user list                            |
+| `src/app/api/admin/riplimit/users/[id]/route.ts`              | GET user details                               |
+| `src/app/api/admin/riplimit/users/[id]/adjust/route.ts`       | POST balance adjustment                        |
+| `src/app/api/admin/riplimit/users/[id]/clear-unpaid/route.ts` | POST clear unpaid flag                         |
+
+### Database Collections Added
+
+- `riplimit_accounts` - User RipLimit accounts
+- `riplimit_transactions` - Transaction history
+- `riplimit_purchases` - Razorpay purchase records
+- `riplimit_refunds` - Refund requests
+
+### Dependencies Installed
+
+- `razorpay` - Razorpay payment gateway SDK
+
+### ⚠️ Cleanup Notes
+
+Review and potentially update these existing files:
+
+- Auction bidding logic - needs to integrate RipLimit blocking
+- Auction winning logic - needs to check RipLimit balance
+- User profile - may need to show RipLimit balance
+
+---
+
 ## Overview
 
 Implement RipLimit, a virtual bidding currency that users purchase with real money (₹1 = 20 RipLimit). RipLimit is used exclusively for auction bidding, providing a secure bidding system where:

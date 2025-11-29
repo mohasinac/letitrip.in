@@ -1,5 +1,17 @@
 # Epic E034: Flexible Link Fields
 
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Key Requirements:**
+
+- Services call APIs via `apiService`, NEVER access database directly
+- Use `COLLECTIONS` constant from `src/constants/database.ts`
+- FE/BE type separation with transforms
+
+---
+
 ## Overview
 
 Update all link input fields throughout the application to support both relative paths (e.g., `/products`, `/shops/my-shop`) and absolute URLs. When a relative path is provided without a domain, the current domain should be automatically prepended when the link is clicked. This eliminates validation errors for internal links.
@@ -289,14 +301,14 @@ export function resolveUrl(href: string, baseUrl?: string): string;
  */
 export function validateLink(
   value: string,
-  options?: LinkValidationOptions,
+  options?: LinkValidationOptions
 ): ValidationResult;
 
 /**
  * Get link type
  */
 export function getLinkType(
-  href: string,
+  href: string
 ): "internal" | "external" | "email" | "phone" | "anchor";
 ```
 

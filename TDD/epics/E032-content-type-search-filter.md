@@ -1,5 +1,17 @@
 # Epic E032: Content Type Search Filter
 
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Key Requirements:**
+
+- Services call APIs via `apiService`, NEVER access database directly
+- Use `COLLECTIONS` constant from `src/constants/database.ts`
+- FE/BE type separation with transforms
+
+---
+
 ## Overview
 
 Enhance the main header search bar to include content type filtering, allowing users to filter search results by type (Products, Auctions, Shops, Categories, Blog) before or during search. This prevents users from being overwhelmed with mixed content types and allows focused searches.

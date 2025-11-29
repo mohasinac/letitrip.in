@@ -9,7 +9,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { Timestamp } from "firebase-admin/firestore";
-import { getBalance } from "@/services/riplimit.service";
+import { getBalanceDetails } from "@/app/api/lib/riplimit";
+import { COLLECTIONS } from "@/constants/database";
 import {
   RIPLIMIT_MIN_REFUND,
   RipLimitRefundStatus,
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user balance
-    const balance = await getBalance(auth.user.uid);
+    const balance = await getBalanceDetails(auth.user.uid);
 
     // Check if user has unpaid auctions
     if (balance.hasUnpaidAuctions) {
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
     startOfMonth.setHours(0, 0, 0, 0);
 
     const existingRefundsQuery = await db
-      .collection("riplimit_refunds")
+      .collection(COLLECTIONS.RIPLIMIT_REFUNDS)
       .where("userId", "==", auth.user.uid)
       .where("createdAt", ">=", Timestamp.fromDate(startOfMonth))
       .where("status", "in", [RipLimitRefundStatus.REQUESTED, RipLimitRefundStatus.PROCESSING, RipLimitRefundStatus.COMPLETED])
@@ -104,7 +105,7 @@ export async function POST(request: NextRequest) {
     const netAmount = Math.max(0, inrAmount - feeAmount);
 
     // Create refund request
-    const refundRef = db.collection("riplimit_refunds").doc();
+    const refundRef = db.collection(COLLECTIONS.RIPLIMIT_REFUNDS).doc();
     await refundRef.set({
       userId: auth.user.uid,
       ripLimitAmount: amount,
@@ -119,7 +120,7 @@ export async function POST(request: NextRequest) {
 
     // Deduct from available balance immediately
     const userId = auth.user.uid;
-    const accountRef = db.collection("riplimit_accounts").doc(userId);
+    const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
     await db.runTransaction(async (t) => {
       const accountDoc = await t.get(accountRef);
       if (!accountDoc.exists) {
@@ -137,7 +138,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Create transaction record
-      const transactionRef = db.collection("riplimit_transactions").doc();
+      const transactionRef = db.collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS).doc();
       t.set(transactionRef, {
         userId,
         type: "refund",
@@ -189,7 +190,7 @@ export async function GET(request: NextRequest) {
 
     const db = getFirestoreAdmin();
     const refundsSnapshot = await db
-      .collection("riplimit_refunds")
+      .collection(COLLECTIONS.RIPLIMIT_REFUNDS)
       .where("userId", "==", auth.user.uid)
       .orderBy("createdAt", "desc")
       .limit(20)

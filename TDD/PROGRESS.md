@@ -1,6 +1,19 @@
 # TDD Documentation Progress Tracker
 
-## Current Session: 10
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing ANY feature, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Critical Rules:**
+
+- Services (`src/services/`) call APIs via `apiService`, NEVER access database
+- Only API routes (`src/app/api/`) can use `getFirestoreAdmin()`
+- Backend utilities go in `src/app/api/lib/`, NOT `src/lib/`
+- Use `COLLECTIONS` constant, never hardcode collection names
+
+---
+
+## Current Session: 11
 
 **Date**: November 29, 2025
 **Status**: ✅ Complete
@@ -8,6 +21,104 @@
 ---
 
 ## Session Log
+
+### Session 11 - November 29, 2025
+
+**Completed - Implementation Session**:
+
+- ✅ **E026 Sieve Pagination**: Full implementation
+
+  - Created `src/app/api/lib/sieve/types.ts` - Core types (FilterOperator, SieveQuery, SieveConfig, etc.)
+  - Created `src/app/api/lib/sieve/parser.ts` - Query parser for URL parameters
+  - Created `src/app/api/lib/sieve/operators.ts` - Filter operator evaluation
+  - Created `src/app/api/lib/sieve/firestore.ts` - Firestore query adapter (Admin SDK)
+  - Created `src/app/api/lib/sieve/config.ts` - Resource configs for 14 resources
+  - Created `src/app/api/lib/sieve/index.ts` - Public exports
+
+- ✅ **E028 RipLimit Currency**: Full implementation
+
+  - Created `src/types/backend/riplimit.types.ts` - Complete type definitions
+  - Created `src/types/frontend/riplimit.types.ts` - FE types for UI
+  - Created `src/types/transforms/riplimit.transforms.ts` - BE→FE transforms
+  - Created `src/app/api/lib/riplimit/` - Database operations (account, transactions, bids, admin)
+  - Created `src/services/riplimit.service.ts` - Frontend service (calls API, transforms types)
+  - Created `src/app/api/lib/auth.ts` - Auth helper with `getAuthFromRequest()`
+  - Created API Routes:
+    - `GET /api/riplimit/balance`
+    - `GET /api/riplimit/transactions`
+    - `POST /api/riplimit/purchase`
+    - `POST /api/riplimit/purchase/verify`
+    - `POST /api/riplimit/refund`
+    - `GET /api/riplimit/refund`
+    - `GET /api/admin/riplimit/stats`
+    - `GET /api/admin/riplimit/users`
+    - `GET /api/admin/riplimit/users/[id]`
+    - `POST /api/admin/riplimit/users/[id]/adjust`
+    - `POST /api/admin/riplimit/users/[id]/clear-unpaid`
+
+- ✅ **E033 Live Header Data**: Full implementation
+
+  - Created `src/app/api/header/stats/route.ts` - Combined stats endpoint
+  - Created `src/app/api/cart/count/route.ts` - Cart count endpoint
+  - Created `src/app/api/notifications/unread-count/route.ts` - Notification count
+  - Created `src/app/api/messages/unread-count/route.ts` - Message count
+
+- ✅ **Supporting Changes**:
+  - Updated `src/constants/database.ts` - Added MESSAGES, CONVERSATIONS, RIPLIMIT collections
+  - Installed `razorpay` package for payment integration
+  - Fixed pre-existing type errors in `AddressForm.tsx` and `orders/page.tsx`
+
+**Updated Epic Status**:
+
+| Epic | Name                         | Priority | Status         |
+| ---- | ---------------------------- | -------- | -------------- |
+| E026 | Sieve Pagination & Filtering | P0       | ✅ Implemented |
+| E027 | Design System & Theming      | P0       | ⬜ Pending     |
+| E028 | RipLimit Bidding Currency    | P0       | ✅ Implemented |
+| E029 | Smart Address System         | P1       | ⬜ Pending     |
+| E030 | Code Quality & SonarQube     | P1       | ⬜ Pending     |
+| E031 | Searchable Dropdowns         | P1       | ⬜ Pending     |
+| E032 | Content Type Search Filter   | P2       | ⬜ Pending     |
+| E033 | Live Header Data             | P1       | ✅ Implemented |
+| E034 | Flexible Link Fields         | P2       | ⬜ Pending     |
+
+**New Files Created**:
+
+| File                                                          | Description                            |
+| ------------------------------------------------------------- | -------------------------------------- |
+| `src/lib/sieve/types.ts`                                      | Sieve core types and interfaces        |
+| `src/lib/sieve/parser.ts`                                     | URL query parameter parser             |
+| `src/lib/sieve/operators.ts`                                  | Filter operator evaluation             |
+| `src/lib/sieve/firestore.ts`                                  | Firestore adapter with Admin SDK       |
+| `src/lib/sieve/config.ts`                                     | Resource-specific sieve configurations |
+| `src/lib/sieve/index.ts`                                      | Public exports                         |
+| `src/types/backend/riplimit.types.ts`                         | RipLimit type definitions              |
+| `src/services/riplimit.service.ts`                            | RipLimit business logic service        |
+| `src/app/api/lib/auth.ts`                                     | Auth helper for API routes             |
+| `src/app/api/riplimit/balance/route.ts`                       | Get user balance                       |
+| `src/app/api/riplimit/transactions/route.ts`                  | Transaction history                    |
+| `src/app/api/riplimit/purchase/route.ts`                      | Initiate Razorpay purchase             |
+| `src/app/api/riplimit/purchase/verify/route.ts`               | Verify purchase                        |
+| `src/app/api/riplimit/refund/route.ts`                        | Request/get refunds                    |
+| `src/app/api/admin/riplimit/stats/route.ts`                   | Admin statistics                       |
+| `src/app/api/admin/riplimit/users/route.ts`                   | Admin user list                        |
+| `src/app/api/admin/riplimit/users/[id]/route.ts`              | User details                           |
+| `src/app/api/admin/riplimit/users/[id]/adjust/route.ts`       | Balance adjustment                     |
+| `src/app/api/admin/riplimit/users/[id]/clear-unpaid/route.ts` | Clear unpaid flag                      |
+| `src/app/api/header/stats/route.ts`                           | Combined header stats                  |
+| `src/app/api/cart/count/route.ts`                             | Cart item count                        |
+| `src/app/api/notifications/unread-count/route.ts`             | Notification count                     |
+| `src/app/api/messages/unread-count/route.ts`                  | Message count                          |
+
+**⚠️ Cleanup Notes**:
+
+The following older files/patterns may need review and potential removal:
+
+- Check for any legacy pagination implementations that should use Sieve
+- Review existing cart/notification hooks for duplication with new header stats API
+- Verify RipLimit integration doesn't conflict with existing bid logic
+
+---
 
 ### Session 10 - November 29, 2025
 
@@ -363,14 +474,14 @@ Tests are already organized with `(tests)` route groups where needed:
 | E023 | Messaging System             | ✅ Created | ✅      | 📋 Todo   | ⬜ Pending     |
 | E024 | Mobile PWA Experience        | ✅ Created | ✅      | ✅        | ✅ Complete    |
 | E025 | Mobile Component Int.        | ✅ Created | ✅      | 📋 Todo   | ⬜ Pending     |
-| E026 | Sieve Pagination & Filtering | ✅ Created | ✅      | 📋 Todo   | ⬜ Pending     |
+| E026 | Sieve Pagination & Filtering | ✅ Created | ✅      | 📋 Todo   | ✅ Implemented |
 | E027 | Design System & Theming      | ✅ Created | ✅      | 📋 Todo   | ⬜ Pending     |
-| E028 | RipLimit Bidding Currency    | ✅ Created | ✅      | 📋 Todo   | ⬜ Pending     |
+| E028 | RipLimit Bidding Currency    | ✅ Created | ✅      | 📋 Todo   | ✅ Implemented |
 | E029 | Smart Address System         | ✅ Created | ✅      | 📋 Todo   | ⬜ Pending     |
 | E030 | Code Quality & SonarQube     | ✅ Created | ✅      | N/A       | ⬜ Pending     |
 | E031 | Searchable Dropdowns         | ✅ Created | ✅      | 📋 Todo   | ⬜ Pending     |
 | E032 | Content Type Search Filter   | ✅ Created | ✅      | 📋 Todo   | ⬜ Pending     |
-| E033 | Live Header Data             | ✅ Created | ✅      | 📋 Todo   | ⬜ Pending     |
+| E033 | Live Header Data             | ✅ Created | ✅      | 📋 Todo   | ✅ Implemented |
 | E034 | Flexible Link Fields         | ✅ Created | ✅      | 📋 Todo   | ⬜ Pending     |
 
 ### Resources (28 Total)

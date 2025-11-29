@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
-import { adminAdjustBalance } from "@/services/riplimit.service";
+import { adminAdjustBalance } from "@/app/api/lib/riplimit";
 
 interface RouteParams {
   params: Promise<{ id: string }>;

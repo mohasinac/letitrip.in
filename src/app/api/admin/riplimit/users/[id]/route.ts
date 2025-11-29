@@ -3,18 +3,14 @@
  * Epic: E028 - RipLimit Bidding Currency
  *
  * GET /api/admin/riplimit/users/[id] - Get user's RipLimit details
- * POST /api/admin/riplimit/users/[id]/adjust - Adjust user's balance
- * POST /api/admin/riplimit/users/[id]/clear-unpaid - Clear unpaid auction flag
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
 import {
-  getBalance,
+  getBalanceDetails,
   getTransactionHistory,
-  adminAdjustBalance,
-  adminClearUnpaidAuction,
-} from "@/services/riplimit.service";
+} from "@/app/api/lib/riplimit";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -45,7 +41,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const balance = await getBalance(userId);
+    const balance = await getBalanceDetails(userId);
     const { transactions } = await getTransactionHistory(userId, { limit: 50 });
 
     return NextResponse.json({

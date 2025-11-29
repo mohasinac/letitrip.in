@@ -1,5 +1,18 @@
 # Epic E029: Smart Address System
 
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Key Requirements:**
+
+- Database logic in `src/app/api/lib/addresses/` (backend-only)
+- Services call APIs via `apiService`, NEVER access database directly
+- Use `COLLECTIONS` constant from `src/constants/database.ts`
+- FE/BE type separation with transforms
+
+---
+
 ## Overview
 
 Implement a comprehensive address system with GPS-based location detection, autocomplete suggestions for area/city/state/country, auto-population from pincode (zip code), and mobile number support per address. This reusable address system will be used across all address forms in the application.

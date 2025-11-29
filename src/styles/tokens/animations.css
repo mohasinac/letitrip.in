@@ -1,0 +1,106 @@
+/**
+ * Design System - Transition & Animation Tokens
+ * 
+ * Timing functions, durations, and animation utilities.
+ */
+
+:root {
+  /* ============================================
+   * Transition Durations
+   * ============================================ */
+  --duration-instant: 0ms;
+  --duration-75: 75ms;
+  --duration-100: 100ms;
+  --duration-150: 150ms;
+  --duration-200: 200ms;
+  --duration-300: 300ms;
+  --duration-500: 500ms;
+  --duration-700: 700ms;
+  --duration-1000: 1000ms;
+
+  /* Semantic durations */
+  --duration-fast: var(--duration-150);
+  --duration-normal: var(--duration-200);
+  --duration-slow: var(--duration-300);
+  --duration-slower: var(--duration-500);
+
+  /* ============================================
+   * Timing Functions (Easing)
+   * ============================================ */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Custom easings */
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* ============================================
+   * Pre-composed Transitions
+   * Common transition patterns
+   * ============================================ */
+  --transition-none: none;
+  --transition-all: all var(--duration-normal) var(--ease-in-out);
+  --transition-colors: color, background-color, border-color, text-decoration-color, fill, stroke var(--duration-normal) var(--ease-in-out);
+  --transition-opacity: opacity var(--duration-normal) var(--ease-in-out);
+  --transition-shadow: box-shadow var(--duration-normal) var(--ease-in-out);
+  --transition-transform: transform var(--duration-normal) var(--ease-in-out);
+  
+  /* Component-specific transitions */
+  --transition-button: all var(--duration-fast) var(--ease-in-out);
+  --transition-input: border-color var(--duration-fast) var(--ease-in-out), box-shadow var(--duration-fast) var(--ease-in-out);
+  --transition-card: box-shadow var(--duration-normal) var(--ease-in-out), transform var(--duration-normal) var(--ease-in-out);
+  --transition-dropdown: opacity var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+  --transition-modal: opacity var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out);
+  --transition-tooltip: opacity var(--duration-100) var(--ease-in-out);
+  --transition-link: color var(--duration-fast) var(--ease-in-out), text-decoration-color var(--duration-fast) var(--ease-in-out);
+
+  /* ============================================
+   * Z-Index Scale
+   * Layering system for overlays
+   * ============================================ */
+  --z-index-behind: -1;
+  --z-index-base: 0;
+  --z-index-dropdown: 10;
+  --z-index-sticky: 20;
+  --z-index-fixed: 30;
+  --z-index-backdrop: 40;
+  --z-index-modal: 50;
+  --z-index-popover: 60;
+  --z-index-tooltip: 70;
+  --z-index-toast: 80;
+  --z-index-max: 9999;
+
+  /* Component-specific z-indexes */
+  --z-index-header: var(--z-index-sticky);
+  --z-index-sidebar: var(--z-index-sticky);
+  --z-index-bottom-nav: var(--z-index-sticky);
+  --z-index-floating-action: var(--z-index-fixed);
+  --z-index-drawer: var(--z-index-modal);
+  --z-index-sheet: var(--z-index-modal);
+  --z-index-dialog: var(--z-index-modal);
+}
+
+/* ============================================
+ * Reduced Motion Support
+ * Respect user preferences
+ * ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-75: 0ms;
+    --duration-100: 0ms;
+    --duration-150: 0ms;
+    --duration-200: 0ms;
+    --duration-300: 0ms;
+    --duration-500: 0ms;
+    --duration-700: 0ms;
+    --duration-1000: 0ms;
+    
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+    --duration-slower: 0ms;
+  }
+}

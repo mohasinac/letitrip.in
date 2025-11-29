@@ -1,5 +1,17 @@
 # Epic E027: Design System & Theming
 
+## ⚠️ MANDATORY: Follow Project Standards
+
+Before implementing, read **[AI Agent Development Guide](/docs/ai/AI-AGENT-GUIDE.md)**
+
+**Key Requirements:**
+
+- Services call APIs via `apiService`, NEVER access database directly
+- Use `COLLECTIONS` constant from `src/constants/database.ts`
+- FE/BE type separation with transforms
+
+---
+
 ## Overview
 
 Implement a comprehensive design system with CSS custom properties (variables) for all colors, spacing, and styling. This enables easy theming (light/dark mode) and future brand customization without modifying component code. All hardcoded colors in the codebase must be replaced with design tokens.

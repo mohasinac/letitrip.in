@@ -10,6 +10,7 @@ import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { Timestamp } from "firebase-admin/firestore";
 import Razorpay from "razorpay";
+import { COLLECTIONS } from "@/constants/database";
 import {
   RIPLIMIT_MIN_PURCHASE,
   inrToRipLimit,
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
 
     // Create purchase record in Firestore
     const db = getFirestoreAdmin();
-    const purchaseRef = db.collection("riplimit_purchases").doc();
+    const purchaseRef = db.collection(COLLECTIONS.RIPLIMIT_PURCHASES).doc();
     
     await purchaseRef.set({
       userId: auth.user.uid,

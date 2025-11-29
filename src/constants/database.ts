@@ -105,6 +105,9 @@ export const SUBCOLLECTIONS = {
   // User subcollections
   USER_SESSIONS: "sessions",
   USER_DEVICES: "devices",
+
+  // RipLimit subcollections
+  RIPLIMIT_BLOCKED_BIDS: "blocked_bids",
 } as const;
 
 /**
