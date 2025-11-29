@@ -27,21 +27,21 @@ describe("Toast", () => {
   describe("Visibility", () => {
     it("renders when show is true", () => {
       render(
-        <Toast message="Test message" show={true} onClose={mockOnClose} />
+        <Toast message="Test message" show={true} onClose={mockOnClose} />,
       );
       expect(screen.getByText("Test message")).toBeInTheDocument();
     });
 
     it("does not render when show is false", () => {
       render(
-        <Toast message="Test message" show={false} onClose={mockOnClose} />
+        <Toast message="Test message" show={false} onClose={mockOnClose} />,
       );
       expect(screen.queryByText("Test message")).not.toBeInTheDocument();
     });
 
     it("returns null when show is false", () => {
       const { container } = render(
-        <Toast message="Test message" show={false} onClose={mockOnClose} />
+        <Toast message="Test message" show={false} onClose={mockOnClose} />,
       );
       expect(container.firstChild).toBeNull();
     });
@@ -65,7 +65,7 @@ describe("Toast", () => {
           message="Item added to cart! (2x)"
           show={true}
           onClose={mockOnClose}
-        />
+        />,
       );
       expect(screen.getByText("Item added to cart! (2x)")).toBeInTheDocument();
     });
@@ -85,14 +85,19 @@ describe("Toast", () => {
           type="success"
           show={true}
           onClose={mockOnClose}
-        />
+        />,
       );
       expect(screen.getByTestId("check-circle-icon")).toBeInTheDocument();
     });
 
     it("renders error type with correct icon", () => {
       render(
-        <Toast message="Error" type="error" show={true} onClose={mockOnClose} />
+        <Toast
+          message="Error"
+          type="error"
+          show={true}
+          onClose={mockOnClose}
+        />,
       );
       expect(screen.getByTestId("x-circle-icon")).toBeInTheDocument();
     });
@@ -109,7 +114,7 @@ describe("Toast", () => {
           type="warning"
           show={true}
           onClose={mockOnClose}
-        />
+        />,
       );
       expect(screen.getByTestId("alert-triangle-icon")).toBeInTheDocument();
     });
@@ -128,7 +133,7 @@ describe("Toast", () => {
           type="success"
           show={true}
           onClose={mockOnClose}
-        />
+        />,
       );
       const toast = container.querySelector(".bg-green-50");
       expect(toast).toHaveClass("text-green-800", "border-green-200");
@@ -136,7 +141,12 @@ describe("Toast", () => {
 
     it("applies error colors", () => {
       const { container } = render(
-        <Toast message="Error" type="error" show={true} onClose={mockOnClose} />
+        <Toast
+          message="Error"
+          type="error"
+          show={true}
+          onClose={mockOnClose}
+        />,
       );
       const toast = container.querySelector(".bg-red-50");
       expect(toast).toHaveClass("text-red-800", "border-red-200");
@@ -144,7 +154,7 @@ describe("Toast", () => {
 
     it("applies info colors", () => {
       const { container } = render(
-        <Toast message="Info" type="info" show={true} onClose={mockOnClose} />
+        <Toast message="Info" type="info" show={true} onClose={mockOnClose} />,
       );
       const toast = container.querySelector(".bg-blue-50");
       expect(toast).toHaveClass("text-blue-800", "border-blue-200");
@@ -157,7 +167,7 @@ describe("Toast", () => {
           type="warning"
           show={true}
           onClose={mockOnClose}
-        />
+        />,
       );
       const toast = container.querySelector(".bg-yellow-50");
       expect(toast).toHaveClass("text-yellow-800", "border-yellow-200");
@@ -182,7 +192,7 @@ describe("Toast", () => {
           show={true}
           duration={5000}
           onClose={mockOnClose}
-        />
+        />,
       );
 
       jest.advanceTimersByTime(4999);
@@ -194,7 +204,7 @@ describe("Toast", () => {
 
     it("does not auto-dismiss when duration is 0", () => {
       render(
-        <Toast message="Test" show={true} duration={0} onClose={mockOnClose} />
+        <Toast message="Test" show={true} duration={0} onClose={mockOnClose} />,
       );
 
       jest.advanceTimersByTime(10000);
@@ -204,7 +214,7 @@ describe("Toast", () => {
 
     it("clears timer on unmount", () => {
       const { unmount } = render(
-        <Toast message="Test" show={true} onClose={mockOnClose} />
+        <Toast message="Test" show={true} onClose={mockOnClose} />,
       );
 
       unmount();
@@ -215,7 +225,7 @@ describe("Toast", () => {
 
     it("resets timer when show changes to true", () => {
       const { rerender } = render(
-        <Toast message="Test" show={false} onClose={mockOnClose} />
+        <Toast message="Test" show={false} onClose={mockOnClose} />,
       );
 
       rerender(<Toast message="Test" show={true} onClose={mockOnClose} />);
@@ -257,7 +267,7 @@ describe("Toast", () => {
   describe("Positioning", () => {
     it("renders at top right", () => {
       const { container } = render(
-        <Toast message="Test" show={true} onClose={mockOnClose} />
+        <Toast message="Test" show={true} onClose={mockOnClose} />,
       );
       const wrapper = container.firstChild as HTMLElement;
       expect(wrapper).toHaveClass("fixed", "top-20", "right-4");
@@ -265,7 +275,7 @@ describe("Toast", () => {
 
     it("has high z-index", () => {
       const { container } = render(
-        <Toast message="Test" show={true} onClose={mockOnClose} />
+        <Toast message="Test" show={true} onClose={mockOnClose} />,
       );
       const wrapper = container.firstChild as HTMLElement;
       expect(wrapper).toHaveClass("z-[100]");
@@ -273,7 +283,7 @@ describe("Toast", () => {
 
     it("has slide-in animation", () => {
       const { container } = render(
-        <Toast message="Test" show={true} onClose={mockOnClose} />
+        <Toast message="Test" show={true} onClose={mockOnClose} />,
       );
       const wrapper = container.firstChild as HTMLElement;
       expect(wrapper).toHaveClass("animate-slide-in-right");
@@ -283,7 +293,7 @@ describe("Toast", () => {
   describe("Layout and Styling", () => {
     it("applies flex layout to toast content", () => {
       const { container } = render(
-        <Toast message="Test" show={true} onClose={mockOnClose} />
+        <Toast message="Test" show={true} onClose={mockOnClose} />,
       );
       const toast = container.querySelector(".flex.items-center");
       expect(toast).toBeInTheDocument();
@@ -292,7 +302,7 @@ describe("Toast", () => {
 
     it("applies padding and rounded corners", () => {
       const { container } = render(
-        <Toast message="Test" show={true} onClose={mockOnClose} />
+        <Toast message="Test" show={true} onClose={mockOnClose} />,
       );
       const toast = container.querySelector(".rounded-lg");
       expect(toast).toHaveClass("px-4", "py-3");
@@ -300,7 +310,7 @@ describe("Toast", () => {
 
     it("applies shadow and border", () => {
       const { container } = render(
-        <Toast message="Test" show={true} onClose={mockOnClose} />
+        <Toast message="Test" show={true} onClose={mockOnClose} />,
       );
       const toast = container.querySelector(".shadow-lg");
       expect(toast).toHaveClass("border");
@@ -308,7 +318,7 @@ describe("Toast", () => {
 
     it("applies min and max width", () => {
       const { container } = render(
-        <Toast message="Test" show={true} onClose={mockOnClose} />
+        <Toast message="Test" show={true} onClose={mockOnClose} />,
       );
       const toast = container.querySelector(".min-w-\\[300px\\]");
       expect(toast).toHaveClass("max-w-md");
@@ -328,7 +338,7 @@ describe("Toast", () => {
 
     it("applies flex-shrink-0 to icon", () => {
       const { container } = render(
-        <Toast message="Test" show={true} onClose={mockOnClose} />
+        <Toast message="Test" show={true} onClose={mockOnClose} />,
       );
       const iconWrapper = container.querySelector(".flex-shrink-0");
       expect(iconWrapper).toBeInTheDocument();
@@ -345,7 +355,7 @@ describe("Toast", () => {
 
     it("handles very short duration", () => {
       render(
-        <Toast message="Test" show={true} duration={1} onClose={mockOnClose} />
+        <Toast message="Test" show={true} duration={1} onClose={mockOnClose} />,
       );
 
       jest.advanceTimersByTime(1);
@@ -359,7 +369,7 @@ describe("Toast", () => {
           show={true}
           duration={-100}
           onClose={mockOnClose}
-        />
+        />,
       );
 
       jest.advanceTimersByTime(10000);
@@ -368,7 +378,7 @@ describe("Toast", () => {
 
     it("handles multiple re-renders", () => {
       const { rerender } = render(
-        <Toast message="Test 1" show={true} onClose={mockOnClose} />
+        <Toast message="Test 1" show={true} onClose={mockOnClose} />,
       );
 
       rerender(<Toast message="Test 2" show={true} onClose={mockOnClose} />);
@@ -385,7 +395,7 @@ describe("Toast", () => {
           duration={5000}
           show={true}
           onClose={mockOnClose}
-        />
+        />,
       );
 
       expect(screen.getByText("Complete test")).toBeInTheDocument();

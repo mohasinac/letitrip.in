@@ -9,15 +9,19 @@ import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 jest.mock("@/app/api/middleware/rbac-auth");
 jest.mock("@/app/api/lib/firebase/admin");
 
-const mockRequireAdmin = requireAdmin as jest.MockedFunction<typeof requireAdmin>;
-const mockGetFirestoreAdmin = getFirestoreAdmin as jest.MockedFunction<typeof getFirestoreAdmin>;
+const mockRequireAdmin = requireAdmin as jest.MockedFunction<
+  typeof requireAdmin
+>;
+const mockGetFirestoreAdmin = getFirestoreAdmin as jest.MockedFunction<
+  typeof getFirestoreAdmin
+>;
 
 describe("POST /api/reviews/bulk", () => {
   let mockDb: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockDb = {
       collection: jest.fn().mockReturnThis(),
       doc: jest.fn().mockReturnThis(),
@@ -25,12 +29,15 @@ describe("POST /api/reviews/bulk", () => {
       update: jest.fn(),
       delete: jest.fn(),
     };
-    
+
     mockGetFirestoreAdmin.mockReturnValue(mockDb as any);
   });
 
   it("should require admin authentication", async () => {
-    const errorResponse = NextResponse.json({ error: "Admin access required" }, { status: 403 });
+    const errorResponse = NextResponse.json(
+      { error: "Admin access required" },
+      { status: 403 },
+    );
     mockRequireAdmin.mockResolvedValue({
       user: null,
       error: errorResponse,
@@ -40,7 +47,7 @@ describe("POST /api/reviews/bulk", () => {
       method: "POST",
       body: JSON.stringify({ action: "approve", ids: ["rev1"] }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 
@@ -53,14 +60,14 @@ describe("POST /api/reviews/bulk", () => {
       user: { uid: "admin1", email: "admin@test.com", role: "admin" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({ exists: true });
 
     const req = new NextRequest("http://localhost/api/reviews/bulk", {
       method: "POST",
       body: JSON.stringify({ action: "approve", ids: ["rev1", "rev2"] }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 
@@ -68,9 +75,11 @@ describe("POST /api/reviews/bulk", () => {
     expect(data.success).toBe(true);
     expect(data.results.success).toHaveLength(2);
     expect(mockDb.update).toHaveBeenCalledTimes(2);
-    expect(mockDb.update).toHaveBeenCalledWith(expect.objectContaining({
-      status: "published",
-    }));
+    expect(mockDb.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "published",
+      }),
+    );
   });
 
   it("should reject multiple reviews", async () => {
@@ -78,22 +87,24 @@ describe("POST /api/reviews/bulk", () => {
       user: { uid: "admin1", email: "admin@test.com", role: "admin" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({ exists: true });
 
     const req = new NextRequest("http://localhost/api/reviews/bulk", {
       method: "POST",
       body: JSON.stringify({ action: "reject", ids: ["rev1", "rev2"] }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 
     expect(response.status).toBe(200);
     expect(data.results.success).toHaveLength(2);
-    expect(mockDb.update).toHaveBeenCalledWith(expect.objectContaining({
-      status: "rejected",
-    }));
+    expect(mockDb.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "rejected",
+      }),
+    );
   });
 
   it("should flag multiple reviews", async () => {
@@ -101,22 +112,24 @@ describe("POST /api/reviews/bulk", () => {
       user: { uid: "admin1", email: "admin@test.com", role: "admin" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({ exists: true });
 
     const req = new NextRequest("http://localhost/api/reviews/bulk", {
       method: "POST",
       body: JSON.stringify({ action: "flag", ids: ["rev1"] }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 
     expect(response.status).toBe(200);
     expect(data.results.success).toHaveLength(1);
-    expect(mockDb.update).toHaveBeenCalledWith(expect.objectContaining({
-      is_flagged: true,
-    }));
+    expect(mockDb.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        is_flagged: true,
+      }),
+    );
   });
 
   it("should unflag reviews", async () => {
@@ -124,23 +137,25 @@ describe("POST /api/reviews/bulk", () => {
       user: { uid: "admin1", email: "admin@test.com", role: "admin" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({ exists: true });
 
     const req = new NextRequest("http://localhost/api/reviews/bulk", {
       method: "POST",
       body: JSON.stringify({ action: "unflag", ids: ["rev1"] }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 
     expect(response.status).toBe(200);
     expect(data.results.success).toHaveLength(1);
-    expect(mockDb.update).toHaveBeenCalledWith(expect.objectContaining({
-      is_flagged: false,
-      flagged_at: null,
-    }));
+    expect(mockDb.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        is_flagged: false,
+        flagged_at: null,
+      }),
+    );
   });
 
   it("should delete multiple reviews", async () => {
@@ -148,14 +163,14 @@ describe("POST /api/reviews/bulk", () => {
       user: { uid: "admin1", email: "admin@test.com", role: "admin" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({ exists: true });
 
     const req = new NextRequest("http://localhost/api/reviews/bulk", {
       method: "POST",
       body: JSON.stringify({ action: "delete", ids: ["rev1", "rev2"] }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 
@@ -169,7 +184,7 @@ describe("POST /api/reviews/bulk", () => {
       user: { uid: "admin1", email: "admin@test.com", role: "admin" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({ exists: true });
 
     const req = new NextRequest("http://localhost/api/reviews/bulk", {
@@ -180,16 +195,18 @@ describe("POST /api/reviews/bulk", () => {
         data: { status: "published", is_flagged: false },
       }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 
     expect(response.status).toBe(200);
     expect(data.results.success).toHaveLength(1);
-    expect(mockDb.update).toHaveBeenCalledWith(expect.objectContaining({
-      status: "published",
-      is_flagged: false,
-    }));
+    expect(mockDb.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "published",
+        is_flagged: false,
+      }),
+    );
   });
 
   it("should handle partial failures", async () => {
@@ -197,7 +214,7 @@ describe("POST /api/reviews/bulk", () => {
       user: { uid: "admin1", email: "admin@test.com", role: "admin" as const },
       error: null,
     } as any);
-    
+
     mockDb.get
       .mockResolvedValueOnce({ exists: true })
       .mockResolvedValueOnce({ exists: false })
@@ -205,9 +222,12 @@ describe("POST /api/reviews/bulk", () => {
 
     const req = new NextRequest("http://localhost/api/reviews/bulk", {
       method: "POST",
-      body: JSON.stringify({ action: "approve", ids: ["rev1", "rev2", "rev3"] }),
+      body: JSON.stringify({
+        action: "approve",
+        ids: ["rev1", "rev2", "rev3"],
+      }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 
@@ -223,14 +243,14 @@ describe("POST /api/reviews/bulk", () => {
       user: { uid: "admin1", email: "admin@test.com", role: "admin" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockResolvedValue({ exists: true });
 
     const req = new NextRequest("http://localhost/api/reviews/bulk", {
       method: "POST",
       body: JSON.stringify({ action: "invalid", ids: ["rev1"] }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 
@@ -249,7 +269,7 @@ describe("POST /api/reviews/bulk", () => {
       method: "POST",
       body: JSON.stringify({ action: "approve" }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 
@@ -267,7 +287,7 @@ describe("POST /api/reviews/bulk", () => {
       method: "POST",
       body: JSON.stringify({ action: "approve", ids: [] }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 
@@ -280,14 +300,14 @@ describe("POST /api/reviews/bulk", () => {
       user: { uid: "admin1", email: "admin@test.com", role: "admin" as const },
       error: null,
     } as any);
-    
+
     mockDb.get.mockRejectedValue(new Error("DB error"));
 
     const req = new NextRequest("http://localhost/api/reviews/bulk", {
       method: "POST",
       body: JSON.stringify({ action: "approve", ids: ["rev1"] }),
     });
-    
+
     const response = await POST(req);
     const data = await response.json();
 

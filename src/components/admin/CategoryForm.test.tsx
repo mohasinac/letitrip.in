@@ -206,7 +206,7 @@ describe("CategoryForm", () => {
         <CategoryForm
           mode="edit"
           initialData={{ name: "Test", slug: "test" }}
-        />
+        />,
       );
       expect(screen.getByText("Save Changes")).toBeInTheDocument();
     });
@@ -222,7 +222,7 @@ describe("CategoryForm", () => {
     it("should render all required fields", () => {
       render(<CategoryForm mode="create" />);
       expect(
-        screen.getByPlaceholderText("Electronics, Fashion, etc.")
+        screen.getByPlaceholderText("Electronics, Fashion, etc."),
       ).toBeInTheDocument();
       expect(screen.getByTestId("slug-input")).toBeInTheDocument();
     });
@@ -236,7 +236,7 @@ describe("CategoryForm", () => {
       render(<CategoryForm mode="edit" initialData={initialData} />);
 
       const nameInput = screen.getByPlaceholderText(
-        "Electronics, Fashion, etc."
+        "Electronics, Fashion, etc.",
       ) as HTMLInputElement;
       expect(nameInput.value).toBe("Test Category");
     });
@@ -249,7 +249,7 @@ describe("CategoryForm", () => {
       render(<CategoryForm mode="create" />);
 
       const nameInput = screen.getByPlaceholderText(
-        "Electronics, Fashion, etc."
+        "Electronics, Fashion, etc.",
       );
       await user.clear(nameInput);
       await user.type(nameInput, "New Category");
@@ -295,7 +295,7 @@ describe("CategoryForm", () => {
       render(<CategoryForm mode="create" />);
 
       const metaInput = screen.getByPlaceholderText(
-        "SEO title (defaults to category name)"
+        "SEO title (defaults to category name)",
       );
       await user.clear(metaInput);
       await user.type(metaInput, "SEO Title");
@@ -487,7 +487,7 @@ describe("CategoryForm", () => {
       render(<CategoryForm mode="create" />);
 
       const nameInput = screen.getByPlaceholderText(
-        "Electronics, Fashion, etc."
+        "Electronics, Fashion, etc.",
       );
       await user.type(nameInput, "Test");
 
@@ -513,7 +513,7 @@ describe("CategoryForm", () => {
       render(<CategoryForm mode="create" />);
 
       const nameInput = screen.getByPlaceholderText(
-        "Electronics, Fashion, etc."
+        "Electronics, Fashion, etc.",
       );
       const submitBtn = screen.getByText("Create Category");
 
@@ -545,7 +545,7 @@ describe("CategoryForm", () => {
       render(<CategoryForm mode="create" />);
 
       const nameInput = screen.getByPlaceholderText(
-        "Electronics, Fashion, etc."
+        "Electronics, Fashion, etc.",
       );
       await user.type(nameInput, "New Category");
 
@@ -573,7 +573,7 @@ describe("CategoryForm", () => {
       render(<CategoryForm mode="edit" initialData={initialData} />);
 
       const nameInput = screen.getByPlaceholderText(
-        "Electronics, Fashion, etc."
+        "Electronics, Fashion, etc.",
       );
       await user.clear(nameInput);
       await user.type(nameInput, "Updated Name");
@@ -584,7 +584,7 @@ describe("CategoryForm", () => {
       await waitFor(() => {
         expect(categoriesService.update).toHaveBeenCalledWith(
           "old-slug",
-          expect.any(Object)
+          expect.any(Object),
         );
         expect(mockPush).toHaveBeenCalledWith("/admin/categories");
       });
@@ -593,13 +593,13 @@ describe("CategoryForm", () => {
     it("should show error on create failure", async () => {
       const user = userEvent.setup();
       (categoriesService.create as jest.Mock).mockRejectedValue(
-        new Error("Failed to create")
+        new Error("Failed to create"),
       );
 
       render(<CategoryForm mode="create" />);
 
       const nameInput = screen.getByPlaceholderText(
-        "Electronics, Fashion, etc."
+        "Electronics, Fashion, etc.",
       );
       await user.type(nameInput, "Test");
 
@@ -617,7 +617,7 @@ describe("CategoryForm", () => {
     it("should cleanup uploaded media on save failure", async () => {
       const user = userEvent.setup();
       (categoriesService.create as jest.Mock).mockRejectedValue(
-        new Error("Failed")
+        new Error("Failed"),
       );
 
       const useMediaUploadWithCleanup =
@@ -636,7 +636,7 @@ describe("CategoryForm", () => {
       render(<CategoryForm mode="create" />);
 
       const nameInput = screen.getByPlaceholderText(
-        "Electronics, Fashion, etc."
+        "Electronics, Fashion, etc.",
       );
       await user.type(nameInput, "Test");
 
@@ -654,13 +654,13 @@ describe("CategoryForm", () => {
     it("should disable submit button during submission", async () => {
       const user = userEvent.setup();
       (categoriesService.create as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(<CategoryForm mode="create" />);
 
       const nameInput = screen.getByPlaceholderText(
-        "Electronics, Fashion, etc."
+        "Electronics, Fashion, etc.",
       );
       await user.type(nameInput, "Test");
 
@@ -735,7 +735,7 @@ describe("CategoryForm", () => {
   describe("Edge Cases", () => {
     it("should handle category list load failure gracefully", async () => {
       (categoriesService.list as jest.Mock).mockRejectedValue(
-        new Error("Failed to load")
+        new Error("Failed to load"),
       );
 
       const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
@@ -745,7 +745,7 @@ describe("CategoryForm", () => {
       await waitFor(() => {
         expect(consoleErrorSpy).toHaveBeenCalledWith(
           "Failed to load categories:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -756,7 +756,7 @@ describe("CategoryForm", () => {
       render(<CategoryForm mode="edit" />);
 
       const nameInput = screen.getByPlaceholderText(
-        "Electronics, Fashion, etc."
+        "Electronics, Fashion, etc.",
       ) as HTMLInputElement;
       expect(nameInput.value).toBe("");
     });
@@ -770,7 +770,7 @@ describe("CategoryForm", () => {
       render(<CategoryForm mode="create" />);
 
       const nameInput = screen.getByPlaceholderText(
-        "Electronics, Fashion, etc."
+        "Electronics, Fashion, etc.",
       );
       await user.type(nameInput, "Test");
 
@@ -786,7 +786,7 @@ describe("CategoryForm", () => {
 
       await waitFor(() => {
         expect(categoriesService.create).toHaveBeenCalledWith(
-          expect.objectContaining({ sort_order: 10 })
+          expect.objectContaining({ sort_order: 10 }),
         );
       });
     });
@@ -805,7 +805,7 @@ describe("CategoryForm", () => {
       await waitFor(() => {
         expect(consoleErrorSpy).toHaveBeenCalledWith(
           "Failed to upload image:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -824,14 +824,14 @@ describe("CategoryForm", () => {
     it("should have labels for all inputs", () => {
       render(<CategoryForm mode="create" />);
       expect(
-        screen.getByPlaceholderText("Electronics, Fashion, etc.")
+        screen.getByPlaceholderText("Electronics, Fashion, etc."),
       ).toBeInTheDocument();
       expect(screen.getByPlaceholderText("0")).toBeInTheDocument();
       expect(
-        screen.getByPlaceholderText("SEO title (defaults to category name)")
+        screen.getByPlaceholderText("SEO title (defaults to category name)"),
       ).toBeInTheDocument();
       expect(
-        screen.getByPlaceholderText("SEO description")
+        screen.getByPlaceholderText("SEO description"),
       ).toBeInTheDocument();
     });
 

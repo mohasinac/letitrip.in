@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     if (user.role !== "seller" && user.role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
     // Update all affected category counts
     if (categoriesNeedingUpdate.size > 0) {
       console.log(
-        `Updating counts for ${categoriesNeedingUpdate.size} categories`
+        `Updating counts for ${categoriesNeedingUpdate.size} categories`,
       );
       for (const categoryId of categoriesNeedingUpdate) {
         try {
@@ -203,7 +203,7 @@ export async function POST(request: NextRequest) {
         } catch (error) {
           console.error(
             `Failed to update counts for category ${categoryId}:`,
-            error
+            error,
           );
           // Don't fail the bulk operation if count update fails
         }
@@ -219,13 +219,13 @@ export async function POST(request: NextRequest) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { success: false, error: error.message, errors: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
     console.error("Error in bulk product operation:", error);
     return NextResponse.json(
       { success: false, error: "Failed to perform bulk operation" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

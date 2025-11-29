@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching blog posts:", error);
     return NextResponse.json(
       { error: "Failed to fetch blog posts" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
     if (!title || !slug || !content) {
       return NextResponse.json(
         { error: "Missing required fields: title, slug, content" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
     if (!existingSlug.empty) {
       return NextResponse.json(
         { error: "A blog post with this slug already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -164,7 +164,7 @@ export async function POST(req: NextRequest) {
     console.error("Error creating blog post:", error);
     return NextResponse.json(
       { error: "Failed to create blog post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

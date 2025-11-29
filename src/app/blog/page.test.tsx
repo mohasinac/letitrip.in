@@ -103,14 +103,14 @@ describe("BlogListClient", () => {
         () =>
           new Promise(() => {
             // Never resolves to keep loading state
-          })
+          }),
       );
 
       render(<BlogListClient />);
 
       await waitFor(() => {
         expect(
-          screen.getByPlaceholderText("Search blog posts...")
+          screen.getByPlaceholderText("Search blog posts..."),
         ).toBeInTheDocument();
         // Loading skeleton should be present
         const pulseElements = document.querySelectorAll(".animate-pulse");
@@ -131,10 +131,10 @@ describe("BlogListClient", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Getting Started with Auctions")
+          screen.getByText("Getting Started with Auctions"),
         ).toBeInTheDocument();
         expect(
-          screen.getByText("Top Collectibles of 2024")
+          screen.getByText("Top Collectibles of 2024"),
         ).toBeInTheDocument();
       });
     });
@@ -153,7 +153,7 @@ describe("BlogListClient", () => {
       await waitFor(() => {
         expect(screen.getByText("Blog")).toBeInTheDocument();
         expect(
-          screen.getByText(/Discover articles, guides, and stories/)
+          screen.getByText(/Discover articles, guides, and stories/),
         ).toBeInTheDocument();
       });
     });
@@ -212,7 +212,7 @@ describe("BlogListClient", () => {
         expect(mockBlogService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             search: "collectibles",
-          })
+          }),
         );
       });
     });
@@ -311,7 +311,7 @@ describe("BlogListClient", () => {
         expect(mockBlogService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             sortBy: "views",
-          })
+          }),
         );
       });
     });
@@ -337,7 +337,7 @@ describe("BlogListClient", () => {
         expect(mockBlogService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             sortBy: "likes",
-          })
+          }),
         );
       });
     });
@@ -373,7 +373,7 @@ describe("BlogListClient", () => {
         expect(mockBlogService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             category: undefined,
-          })
+          }),
         );
       });
     });
@@ -444,7 +444,7 @@ describe("BlogListClient", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Getting Started with Auctions")
+          screen.getByText("Getting Started with Auctions"),
         ).toBeInTheDocument();
       });
 
@@ -529,7 +529,7 @@ describe("BlogListClient", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/Failed to load blog posts/)
+          screen.getByText(/Failed to load blog posts/),
         ).toBeInTheDocument();
       });
     });
@@ -558,7 +558,7 @@ describe("BlogListClient", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Getting Started with Auctions")
+          screen.getByText("Getting Started with Auctions"),
         ).toBeInTheDocument();
       });
     });
@@ -599,7 +599,7 @@ describe("BlogListClient", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/Try adjusting your filters/)
+          screen.getByText(/Try adjusting your filters/),
         ).toBeInTheDocument();
       });
     });
@@ -633,7 +633,7 @@ describe("BlogListClient", () => {
         expect(mockBlogService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             search: undefined,
-          })
+          }),
         );
       });
     });
@@ -662,7 +662,7 @@ describe("BlogListClient", () => {
       await waitFor(() => {
         expect(mockRouter.push).toHaveBeenCalledWith(
           expect.stringContaining("search=auction"),
-          { scroll: false }
+          { scroll: false },
         );
       });
     });
@@ -687,7 +687,7 @@ describe("BlogListClient", () => {
       await waitFor(() => {
         expect(mockRouter.push).toHaveBeenCalledWith(
           expect.stringContaining("sortBy=views"),
-          { scroll: false }
+          { scroll: false },
         );
       });
     });
@@ -707,10 +707,10 @@ describe("BlogListClient", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByTestId("blog-card-getting-started-with-auctions")
+          screen.getByTestId("blog-card-getting-started-with-auctions"),
         ).toBeInTheDocument();
         expect(
-          screen.getByTestId("blog-card-top-collectibles-2024")
+          screen.getByTestId("blog-card-top-collectibles-2024"),
         ).toBeInTheDocument();
       });
     });

@@ -169,7 +169,7 @@ describe("Homepage API", () => {
           specialEventBanner: newSettings.specialEventBanner,
           updatedBy: "admin1",
         }),
-        { merge: true }
+        { merge: true },
       );
     });
 
@@ -225,7 +225,7 @@ describe("Homepage API", () => {
           updatedAt: expect.any(String),
           updatedBy: "admin1",
         }),
-        { merge: true }
+        { merge: true },
       );
     });
   });
@@ -268,7 +268,7 @@ describe("Homepage API", () => {
           heroCarousel: expect.any(Object),
           sections: expect.any(Object),
           updatedBy: "admin1",
-        })
+        }),
       );
     });
 
@@ -287,7 +287,7 @@ describe("Homepage API", () => {
         expect.objectContaining({
           updatedAt: expect.any(String),
           updatedBy: "admin1",
-        })
+        }),
       );
     });
   });

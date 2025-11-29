@@ -4,7 +4,7 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 // GET /api/products/[slug]/variants - same leaf category
 export async function GET(
   _: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const { slug } = await params;
@@ -15,7 +15,7 @@ export async function GET(
     if (prodSnap.empty)
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 }
+        { status: 404 },
       );
     const prod: any = { id: prodSnap.docs[0].id, ...prodSnap.docs[0].data() };
 
@@ -44,7 +44,7 @@ export async function GET(
     console.error("Product variants error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to load variants" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

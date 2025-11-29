@@ -49,7 +49,7 @@ export default function CreateBlogPostPage() {
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
@@ -167,7 +167,7 @@ export default function CreateBlogPostPage() {
     } catch (error) {
       console.error("Failed to create blog post:", error);
       alert(
-        error instanceof Error ? error.message : "Failed to create blog post"
+        error instanceof Error ? error.message : "Failed to create blog post",
       );
     } finally {
       setLoading(false);
@@ -178,7 +178,7 @@ export default function CreateBlogPostPage() {
     if (formData.title || formData.content || uploadedUrls.length > 0) {
       if (
         confirm(
-          "Are you sure you want to cancel? All unsaved changes will be lost."
+          "Are you sure you want to cancel? All unsaved changes will be lost.",
         )
       ) {
         cleanupUploadedMedia();

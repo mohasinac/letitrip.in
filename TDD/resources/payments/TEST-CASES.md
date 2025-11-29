@@ -22,7 +22,7 @@ describe("Payment Service", () => {
           razorpay_payment_id: "pay_test123456",
           razorpay_order_id: "order_test123456",
           razorpay_signature: "invalid_signature",
-        })
+        }),
       ).rejects.toThrow("Payment verification failed");
     });
 
@@ -61,7 +61,7 @@ describe("Payment Service", () => {
 
     it("should fail for other user's payment", async () => {
       await expect(paymentService.getById("other_payment")).rejects.toThrow(
-        "Forbidden"
+        "Forbidden",
       );
     });
   });
@@ -128,7 +128,7 @@ describe("Admin Payment Operations", () => {
         paymentService.refund("payment_001", {
           amount: 500000,
           reason: "Too much",
-        })
+        }),
       ).rejects.toThrow("Refund amount exceeds payment amount");
     });
 
@@ -137,7 +137,7 @@ describe("Admin Payment Operations", () => {
         paymentService.refund("payment_refunded", {
           amount: 100,
           reason: "Duplicate",
-        })
+        }),
       ).rejects.toThrow("Payment already refunded");
     });
   });

@@ -16,7 +16,7 @@ describe("ErrorMessage", () => {
     it("renders default title", () => {
       render(<ErrorMessage message="Error" />);
       expect(
-        screen.getByText("Oops! Something went wrong")
+        screen.getByText("Oops! Something went wrong"),
       ).toBeInTheDocument();
     });
 
@@ -36,14 +36,14 @@ describe("ErrorMessage", () => {
     it("shows retry button when enabled", () => {
       render(<ErrorMessage message="Error" showRetry onRetry={() => {}} />);
       expect(
-        screen.getByRole("button", { name: /Try Again/i })
+        screen.getByRole("button", { name: /Try Again/i }),
       ).toBeInTheDocument();
     });
 
     it("does not show retry button by default", () => {
       render(<ErrorMessage message="Error" />);
       expect(
-        screen.queryByRole("button", { name: /Try Again/i })
+        screen.queryByRole("button", { name: /Try Again/i }),
       ).not.toBeInTheDocument();
     });
 
@@ -58,7 +58,7 @@ describe("ErrorMessage", () => {
     it("shows go home button when enabled", () => {
       render(<ErrorMessage message="Error" showGoHome />);
       expect(
-        screen.getByRole("button", { name: /Go Home/i })
+        screen.getByRole("button", { name: /Go Home/i }),
       ).toBeInTheDocument();
     });
 
@@ -83,7 +83,7 @@ describe("ErrorMessage", () => {
     it("shows go back button when enabled", () => {
       render(<ErrorMessage message="Error" showGoBack />);
       expect(
-        screen.getByRole("button", { name: /Go Back/i })
+        screen.getByRole("button", { name: /Go Back/i }),
       ).toBeInTheDocument();
     });
 
@@ -113,17 +113,17 @@ describe("ErrorMessage", () => {
           onRetry={() => {}}
           showGoHome
           showGoBack
-        />
+        />,
       );
 
       expect(
-        screen.getByRole("button", { name: /Try Again/i })
+        screen.getByRole("button", { name: /Try Again/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /Go Home/i })
+        screen.getByRole("button", { name: /Go Home/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /Go Back/i })
+        screen.getByRole("button", { name: /Go Back/i }),
       ).toBeInTheDocument();
     });
   });
@@ -170,7 +170,7 @@ describe("ErrorMessage", () => {
       render(<ErrorMessage message="User message" error={error} />);
 
       expect(
-        screen.queryByText("Show technical details")
+        screen.queryByText("Show technical details"),
       ).not.toBeInTheDocument();
     });
   });
@@ -178,14 +178,14 @@ describe("ErrorMessage", () => {
   describe("Custom Styling", () => {
     it("applies custom className", () => {
       const { container } = render(
-        <ErrorMessage message="Error" className="custom-class" />
+        <ErrorMessage message="Error" className="custom-class" />,
       );
       expect(container.querySelector(".custom-class")).toBeInTheDocument();
     });
 
     it("preserves base classes with custom className", () => {
       const { container } = render(
-        <ErrorMessage message="Error" className="mt-8" />
+        <ErrorMessage message="Error" className="mt-8" />,
       );
       const wrapper = container.querySelector(".flex.flex-col.mt-8");
       expect(wrapper).toBeInTheDocument();
@@ -196,7 +196,7 @@ describe("ErrorMessage", () => {
     it("handles empty message", () => {
       render(<ErrorMessage message="" />);
       expect(
-        screen.getByText("Oops! Something went wrong")
+        screen.getByText("Oops! Something went wrong"),
       ).toBeInTheDocument();
     });
 
@@ -224,13 +224,13 @@ describe("ErrorMessage", () => {
 describe("getUserFriendlyError", () => {
   it("returns default message for null error", () => {
     expect(getUserFriendlyError(null)).toBe(
-      "Something went wrong. Please try again."
+      "Something went wrong. Please try again.",
     );
   });
 
   it("returns default message for undefined error", () => {
     expect(getUserFriendlyError(undefined)).toBe(
-      "Something went wrong. Please try again."
+      "Something went wrong. Please try again.",
     );
   });
 
@@ -334,14 +334,14 @@ describe("InlineError", () => {
 
   it("applies custom className", () => {
     const { container } = render(
-      <InlineError message="Error" className="custom-class" />
+      <InlineError message="Error" className="custom-class" />,
     );
     expect(container.querySelector(".custom-class")).toBeInTheDocument();
   });
 
   it("preserves base classes with custom className", () => {
     const { container } = render(
-      <InlineError message="Error" className="mt-4" />
+      <InlineError message="Error" className="mt-4" />,
     );
     const wrapper = container.querySelector(".flex.items-center.mt-4");
     expect(wrapper).toBeInTheDocument();
@@ -357,7 +357,7 @@ describe("InlineError", () => {
     const longMessage = "Very long inline error message ".repeat(20);
     render(<InlineError message={longMessage} />);
     expect(
-      screen.getByText(/Very long inline error message/)
+      screen.getByText(/Very long inline error message/),
     ).toBeInTheDocument();
   });
 

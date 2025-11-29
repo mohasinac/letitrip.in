@@ -82,7 +82,7 @@ describe("HeroCarousel", () => {
       render(<HeroCarousel />);
       await waitFor(() => {
         expect(
-          screen.getByRole("heading", { name: "Test Slide 1" })
+          screen.getByRole("heading", { name: "Test Slide 1" }),
         ).toBeInTheDocument();
       });
     });
@@ -124,14 +124,14 @@ describe("HeroCarousel", () => {
 
     it("uses default slides on API error", async () => {
       (homepageService.getHeroSlides as jest.Mock).mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
       render(<HeroCarousel />);
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Error fetching hero slides:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
       consoleSpy.mockRestore();
@@ -143,7 +143,7 @@ describe("HeroCarousel", () => {
       await waitFor(() => {
         // Should use default slides
         expect(
-          document.querySelectorAll('[aria-label^="Go to slide"]')
+          document.querySelectorAll('[aria-label^="Go to slide"]'),
         ).toHaveLength(3);
       });
     });
@@ -412,7 +412,7 @@ describe("HeroCarousel", () => {
         { ...mockSlides[0], id: "4", enabled: false },
       ];
       (homepageService.getHeroSlides as jest.Mock).mockResolvedValue(
-        slidesWithDisabled
+        slidesWithDisabled,
       );
       render(<HeroCarousel />);
       await waitFor(() => {
@@ -429,7 +429,7 @@ describe("HeroCarousel", () => {
       await waitFor(() => {
         // Should use default slides
         expect(
-          document.querySelectorAll('[aria-label^="Go to slide"]')
+          document.querySelectorAll('[aria-label^="Go to slide"]'),
         ).toHaveLength(3);
       });
     });
@@ -445,7 +445,7 @@ describe("HeroCarousel", () => {
       await waitFor(() => {
         expect(screen.queryByLabelText("Next slide")).not.toBeInTheDocument();
         expect(
-          screen.queryByLabelText("Previous slide")
+          screen.queryByLabelText("Previous slide"),
         ).not.toBeInTheDocument();
       });
     });
@@ -486,7 +486,7 @@ describe("HeroCarousel", () => {
         // Check for carousel container with height classes (the outer relative container)
         const containers = document.querySelectorAll(".relative");
         const carouselContainer = Array.from(containers).find((el) =>
-          el.className.includes("h-[400px]")
+          el.className.includes("h-[400px]"),
         );
         expect(carouselContainer).toBeInTheDocument();
         expect(carouselContainer).toHaveClass("h-[400px]");
@@ -545,7 +545,7 @@ describe("HeroCarousel", () => {
     it("handles missing subtitle", async () => {
       const slidesWithoutSubtitle = [{ ...mockSlides[0], subtitle: "" }];
       (homepageService.getHeroSlides as jest.Mock).mockResolvedValue(
-        slidesWithoutSubtitle
+        slidesWithoutSubtitle,
       );
       render(<HeroCarousel />);
       await waitFor(() => {

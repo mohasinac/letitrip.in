@@ -86,7 +86,7 @@ describe("Home Page", () => {
     it("shows loading state initially", () => {
       // Mock the service to never resolve (simulate loading)
       (homepageSettingsService.getSettings as jest.Mock).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {}), // Never resolves
       );
 
       render(<Home />);
@@ -123,8 +123,8 @@ describe("Home Page", () => {
       expect(screen.getByText("Welcome to Test Company")).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Test Company Alt Text - Your Gateway to Authentic Collectibles"
-        )
+          "Test Company Alt Text - Your Gateway to Authentic Collectibles",
+        ),
       ).toBeInTheDocument();
 
       // Check value proposition banner (enabled)
@@ -177,13 +177,13 @@ describe("Home Page", () => {
 
       await waitFor(() => {
         expect(
-          document.getElementById("featured-categories")
+          document.getElementById("featured-categories"),
         ).toBeInTheDocument();
       });
 
       // Check that enabled sections are rendered
       expect(
-        document.getElementById("featured-categories")
+        document.getElementById("featured-categories"),
       ).toBeInTheDocument();
       expect(document.getElementById("featured-products")).toBeInTheDocument();
       expect(document.getElementById("featured-auctions")).toBeInTheDocument();
@@ -215,21 +215,21 @@ describe("Home Page", () => {
 
       await waitFor(() => {
         expect(
-          document.getElementById("featured-categories")
+          document.getElementById("featured-categories"),
         ).toBeInTheDocument();
       });
 
       // Disabled sections should not be present
       expect(
-        document.getElementById("featured-products")
+        document.getElementById("featured-products"),
       ).not.toBeInTheDocument();
       expect(
-        document.getElementById("featured-auctions")
+        document.getElementById("featured-auctions"),
       ).not.toBeInTheDocument();
 
       // Enabled sections should still be present
       expect(
-        document.getElementById("featured-categories")
+        document.getElementById("featured-categories"),
       ).toBeInTheDocument();
     });
 
@@ -265,7 +265,7 @@ describe("Home Page", () => {
 
       // Conditionally rendered sections should be hidden
       expect(
-        document.getElementById("value-proposition")
+        document.getElementById("value-proposition"),
       ).not.toBeInTheDocument();
     });
   });
@@ -277,7 +277,7 @@ describe("Home Page", () => {
         .mockImplementation(() => {});
 
       (homepageSettingsService.getSettings as jest.Mock).mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
 
       render(<Home />);
@@ -292,7 +292,7 @@ describe("Home Page", () => {
       // Should log the error
       expect(consoleSpy).toHaveBeenCalledWith(
         "Failed to load homepage settings:",
-        expect.any(Error)
+        expect.any(Error),
       );
 
       consoleSpy.mockRestore();
@@ -314,7 +314,7 @@ describe("Home Page", () => {
       expect(document.getElementById("hero-section")).toBeInTheDocument();
       expect(document.getElementById("value-proposition")).toBeInTheDocument();
       expect(
-        document.getElementById("featured-categories")
+        document.getElementById("featured-categories"),
       ).toBeInTheDocument();
     });
   });

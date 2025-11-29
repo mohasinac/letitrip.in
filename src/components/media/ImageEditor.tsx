@@ -104,7 +104,7 @@ export default function ImageEditor({
 
   const updateAdjustment = (
     key: "brightness" | "contrast" | "saturation",
-    value: number
+    value: number,
   ) => {
     setEditorState((prev) => ({
       ...prev,

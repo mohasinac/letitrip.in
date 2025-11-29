@@ -42,10 +42,13 @@ describe("CartItem", () => {
         item={mockItem}
         onUpdateQuantity={mockUpdate}
         onRemove={mockRemove}
-      />
+      />,
     );
-    expect(screen.getByText(/Test Product/i)).toBeInTheDocument();
-    expect(screen.getByDisplayValue("2")).toBeInTheDocument();
+    // Both mobile and desktop views render, so use getAllByText
+    expect(screen.getAllByText(/Test Product/i).length).toBeGreaterThanOrEqual(
+      1,
+    );
+    expect(screen.getAllByDisplayValue("2").length).toBeGreaterThanOrEqual(1);
   });
 
   it("calls onUpdateQuantity when quantity changes", async () => {
@@ -54,9 +57,11 @@ describe("CartItem", () => {
         item={mockItem}
         onUpdateQuantity={mockUpdate}
         onRemove={mockRemove}
-      />
+      />,
     );
-    fireEvent.change(screen.getByDisplayValue("2"), { target: { value: "3" } });
+    // Get the first quantity input (mobile view)
+    const quantityInputs = screen.getAllByDisplayValue("2");
+    fireEvent.change(quantityInputs[0], { target: { value: "3" } });
     expect(mockUpdate).toHaveBeenCalledWith("item1", 3);
   });
 
@@ -66,12 +71,14 @@ describe("CartItem", () => {
         item={mockItem}
         onUpdateQuantity={mockUpdate}
         onRemove={mockRemove}
-      />
+      />,
     );
-    fireEvent.click(screen.getByLabelText(/Remove/i));
-    // ConfirmDialog opens, now click the confirm button (second "Remove" button)
-    const removeButtons = screen.getAllByRole("button", { name: /Remove/i });
-    fireEvent.click(removeButtons[1]);
+    // Get the desktop remove button (visible one)
+    const removeButtons = screen.getAllByLabelText(/Remove/i);
+    fireEvent.click(removeButtons[0]);
+    // ConfirmDialog opens, now click the confirm button
+    const confirmButtons = screen.getAllByRole("button", { name: /Remove/i });
+    fireEvent.click(confirmButtons[confirmButtons.length - 1]);
     expect(mockRemove).toHaveBeenCalledWith("item1");
   });
 });

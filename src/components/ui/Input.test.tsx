@@ -95,7 +95,7 @@ describe("Input", () => {
         <Input
           leftIcon={<span data-testid="left-icon">🔍</span>}
           rightIcon={<span data-testid="right-icon">✓</span>}
-        />
+        />,
       );
 
       expect(screen.getByTestId("left-icon")).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe("Input", () => {
 
     it("sets aria-hidden on icons", () => {
       const { container } = render(
-        <Input leftIcon={<span>🔍</span>} rightIcon={<span>✓</span>} />
+        <Input leftIcon={<span>🔍</span>} rightIcon={<span>✓</span>} />,
       );
 
       const iconContainers = container.querySelectorAll('[aria-hidden="true"]');
@@ -223,7 +223,7 @@ describe("Input", () => {
       const input = screen.getByRole("textbox");
       expect(input).toHaveClass(
         "disabled:bg-gray-100",
-        "disabled:cursor-not-allowed"
+        "disabled:cursor-not-allowed",
       );
     });
   });
@@ -333,7 +333,7 @@ describe("Input", () => {
           maxLength={50}
           pattern="[a-z]+"
           autoComplete="email"
-        />
+        />,
       );
 
       const input = screen.getByRole("textbox");

@@ -74,7 +74,7 @@ export default function SellerOrderDetailPage() {
         shippingData.shippingProvider,
         shippingData.estimatedDelivery
           ? new Date(shippingData.estimatedDelivery)
-          : undefined
+          : undefined,
       );
       setShowShippingForm(false);
       setShippingData({
@@ -186,7 +186,7 @@ export default function SellerOrderDetailPage() {
               </div>
               <span
                 className={`px-4 py-2 text-sm font-semibold rounded-full ${getStatusColor(
-                  order.status
+                  order.status,
                 )}`}
               >
                 {order.status}
@@ -298,7 +298,7 @@ export default function SellerOrderDetailPage() {
                         </p>
                         <p className="font-semibold">
                           {new Date(
-                            order.estimatedDelivery
+                            order.estimatedDelivery,
                           ).toLocaleDateString()}
                         </p>
                       </div>
@@ -406,8 +406,8 @@ export default function SellerOrderDetailPage() {
                         order.paymentStatus === "paid"
                           ? "text-green-600"
                           : order.paymentStatus === "failed"
-                          ? "text-red-600"
-                          : "text-yellow-600"
+                            ? "text-red-600"
+                            : "text-yellow-600"
                       }`}
                     >
                       {order.paymentStatus}

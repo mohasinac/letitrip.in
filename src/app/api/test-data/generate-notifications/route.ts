@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
       // Generate random notifications per user
       const numNotifications = Math.min(
         notificationsPerUser,
-        faker.number.int({ min: 3, max: 10 })
+        faker.number.int({ min: 3, max: 10 }),
       );
 
       for (let i = 0; i < numNotifications; i++) {
@@ -251,7 +251,7 @@ export async function POST(req: NextRequest) {
         success: false,
         error: error.message || "Failed to generate notifications",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -114,7 +114,7 @@ describe("ToggleSwitch Component", () => {
           enabled={false}
           onToggle={jest.fn()}
           label="Enable notifications"
-        />
+        />,
       );
       expect(screen.getByText("Enable notifications")).toBeInTheDocument();
     });
@@ -126,7 +126,7 @@ describe("ToggleSwitch Component", () => {
           onToggle={jest.fn()}
           label="Enable notifications"
           description="Receive email updates"
-        />
+        />,
       );
       expect(screen.getByText("Enable notifications")).toBeInTheDocument();
       expect(screen.getByText("Receive email updates")).toBeInTheDocument();
@@ -138,14 +138,14 @@ describe("ToggleSwitch Component", () => {
           enabled={false}
           onToggle={jest.fn()}
           description="Receive email updates"
-        />
+        />,
       );
       expect(screen.getByText("Receive email updates")).toBeInTheDocument();
     });
 
     it("renders without label and description", () => {
       const { container } = render(
-        <ToggleSwitch enabled={false} onToggle={jest.fn()} />
+        <ToggleSwitch enabled={false} onToggle={jest.fn()} />,
       );
       // Only button should exist, no label/description wrapper
       expect(container.querySelector("label")).not.toBeInTheDocument();
@@ -154,7 +154,11 @@ describe("ToggleSwitch Component", () => {
 
     it("applies font-medium to label", () => {
       render(
-        <ToggleSwitch enabled={false} onToggle={jest.fn()} label="Test Label" />
+        <ToggleSwitch
+          enabled={false}
+          onToggle={jest.fn()}
+          label="Test Label"
+        />,
       );
       const label = screen.getByText("Test Label");
       expect(label).toHaveClass("font-medium");
@@ -166,7 +170,7 @@ describe("ToggleSwitch Component", () => {
           enabled={false}
           onToggle={jest.fn()}
           description="Test Description"
-        />
+        />,
       );
       const description = screen.getByText("Test Description");
       expect(description).toHaveClass("text-gray-500");
@@ -176,7 +180,7 @@ describe("ToggleSwitch Component", () => {
   describe("Circle Translation", () => {
     it("translates circle to left when disabled (sm)", () => {
       const { container } = render(
-        <ToggleSwitch enabled={false} onToggle={jest.fn()} size="sm" />
+        <ToggleSwitch enabled={false} onToggle={jest.fn()} size="sm" />,
       );
       const circle = container.querySelector("span");
       expect(circle).toHaveClass("translate-x-1");
@@ -184,7 +188,7 @@ describe("ToggleSwitch Component", () => {
 
     it("translates circle to right when enabled (sm)", () => {
       const { container } = render(
-        <ToggleSwitch enabled={true} onToggle={jest.fn()} size="sm" />
+        <ToggleSwitch enabled={true} onToggle={jest.fn()} size="sm" />,
       );
       const circle = container.querySelector("span");
       expect(circle).toHaveClass("translate-x-5");
@@ -192,7 +196,7 @@ describe("ToggleSwitch Component", () => {
 
     it("translates circle to left when disabled (md)", () => {
       const { container } = render(
-        <ToggleSwitch enabled={false} onToggle={jest.fn()} size="md" />
+        <ToggleSwitch enabled={false} onToggle={jest.fn()} size="md" />,
       );
       const circle = container.querySelector("span");
       expect(circle).toHaveClass("translate-x-1");
@@ -200,7 +204,7 @@ describe("ToggleSwitch Component", () => {
 
     it("translates circle to right when enabled (md)", () => {
       const { container } = render(
-        <ToggleSwitch enabled={true} onToggle={jest.fn()} size="md" />
+        <ToggleSwitch enabled={true} onToggle={jest.fn()} size="md" />,
       );
       const circle = container.querySelector("span");
       expect(circle).toHaveClass("translate-x-6");
@@ -208,7 +212,7 @@ describe("ToggleSwitch Component", () => {
 
     it("translates circle to left when disabled (lg)", () => {
       const { container } = render(
-        <ToggleSwitch enabled={false} onToggle={jest.fn()} size="lg" />
+        <ToggleSwitch enabled={false} onToggle={jest.fn()} size="lg" />,
       );
       const circle = container.querySelector("span");
       expect(circle).toHaveClass("translate-x-1");
@@ -216,7 +220,7 @@ describe("ToggleSwitch Component", () => {
 
     it("translates circle to right when enabled (lg)", () => {
       const { container } = render(
-        <ToggleSwitch enabled={true} onToggle={jest.fn()} size="lg" />
+        <ToggleSwitch enabled={true} onToggle={jest.fn()} size="lg" />,
       );
       const circle = container.querySelector("span");
       expect(circle).toHaveClass("translate-x-8");
@@ -226,7 +230,7 @@ describe("ToggleSwitch Component", () => {
   describe("Accessibility", () => {
     it("has aria-pressed attribute with correct value", () => {
       const { rerender } = render(
-        <ToggleSwitch enabled={false} onToggle={jest.fn()} />
+        <ToggleSwitch enabled={false} onToggle={jest.fn()} />,
       );
       let button = screen.getByRole("button", { pressed: false });
       expect(button).toHaveAttribute("aria-pressed", "false");
@@ -289,7 +293,7 @@ describe("ToggleSwitch Component", () => {
 
     it("applies rounded-full to circle", () => {
       const { container } = render(
-        <ToggleSwitch enabled={false} onToggle={jest.fn()} />
+        <ToggleSwitch enabled={false} onToggle={jest.fn()} />,
       );
       const circle = container.querySelector("span");
       expect(circle).toHaveClass("rounded-full", "bg-white");
@@ -319,7 +323,7 @@ describe("ToggleSwitch Component", () => {
     it("handles long label text", () => {
       const longLabel = "A".repeat(100);
       render(
-        <ToggleSwitch enabled={false} onToggle={jest.fn()} label={longLabel} />
+        <ToggleSwitch enabled={false} onToggle={jest.fn()} label={longLabel} />,
       );
       expect(screen.getByText(longLabel)).toBeInTheDocument();
     });
@@ -331,7 +335,7 @@ describe("ToggleSwitch Component", () => {
           enabled={false}
           onToggle={jest.fn()}
           description={longDescription}
-        />
+        />,
       );
       expect(screen.getByText(longDescription)).toBeInTheDocument();
     });
@@ -342,10 +346,10 @@ describe("ToggleSwitch Component", () => {
           enabled={false}
           onToggle={jest.fn()}
           label="Enable <notifications> & alerts!"
-        />
+        />,
       );
       expect(
-        screen.getByText("Enable <notifications> & alerts!")
+        screen.getByText("Enable <notifications> & alerts!"),
       ).toBeInTheDocument();
     });
 
@@ -358,7 +362,7 @@ describe("ToggleSwitch Component", () => {
           size="lg"
           label="Test Label"
           description="Test Description"
-        />
+        />,
       );
       const button = screen.getByRole("button");
       expect(button).toBeInTheDocument();

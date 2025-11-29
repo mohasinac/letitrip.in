@@ -21,7 +21,7 @@ describe("SpecialEventBanner", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (homepageService.getBanner as jest.Mock).mockResolvedValue(
-      mockBannerSettings
+      mockBannerSettings,
     );
   });
 
@@ -38,7 +38,7 @@ describe("SpecialEventBanner", () => {
       render(<SpecialEventBanner />);
       await waitFor(() => {
         expect(
-          screen.getByText(/Get 50% off on all items/)
+          screen.getByText(/Get 50% off on all items/),
         ).toBeInTheDocument();
       });
     });
@@ -47,7 +47,7 @@ describe("SpecialEventBanner", () => {
       render(<SpecialEventBanner />);
       await waitFor(() => {
         expect(
-          document.getElementById("special-event-banner")
+          document.getElementById("special-event-banner"),
         ).toBeInTheDocument();
       });
     });
@@ -71,7 +71,7 @@ describe("SpecialEventBanner", () => {
 
     it("does not render during loading", () => {
       (homepageService.getBanner as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
       render(<SpecialEventBanner />);
       expect(screen.queryByText(/Special Sale/)).not.toBeInTheDocument();
@@ -79,14 +79,14 @@ describe("SpecialEventBanner", () => {
 
     it("handles API error gracefully", async () => {
       (homepageService.getBanner as jest.Mock).mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
       render(<SpecialEventBanner />);
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to load banner settings:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
       consoleSpy.mockRestore();
@@ -94,7 +94,7 @@ describe("SpecialEventBanner", () => {
 
     it("does not render after error", async () => {
       (homepageService.getBanner as jest.Mock).mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
       render(<SpecialEventBanner />);
       await waitFor(() => {
@@ -392,7 +392,7 @@ describe("SpecialEventBanner", () => {
       render(<SpecialEventBanner />);
       await waitFor(() => {
         expect(
-          screen.getByText(/very long banner content/)
+          screen.getByText(/very long banner content/),
         ).toBeInTheDocument();
       });
     });

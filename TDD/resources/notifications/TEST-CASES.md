@@ -40,7 +40,7 @@ describe("NotificationService", () => {
       const result = await notificationService.list("user_123");
       for (let i = 1; i < result.data.length; i++) {
         expect(
-          new Date(result.data[i - 1].createdAt).getTime()
+          new Date(result.data[i - 1].createdAt).getTime(),
         ).toBeGreaterThanOrEqual(new Date(result.data[i].createdAt).getTime());
       }
     });
@@ -67,7 +67,7 @@ describe("NotificationService", () => {
       result.data.forEach((n) => {
         if (n.expiresAt) {
           expect(new Date(n.expiresAt).getTime()).toBeGreaterThan(
-            now.getTime()
+            now.getTime(),
           );
         }
       });
@@ -90,7 +90,7 @@ describe("NotificationService", () => {
     it("should not return notification for different user", async () => {
       const result = await notificationService.getById(
         "notif_001",
-        "user_different"
+        "user_different",
       );
       expect(result.success).toBe(false);
       expect(result.status).toBe(404);
@@ -150,7 +150,7 @@ describe("NotificationService", () => {
     it("should mark notification as read", async () => {
       const result = await notificationService.markAsRead(
         "notif_001",
-        "user_123"
+        "user_123",
       );
       expect(result.success).toBe(true);
       expect(result.data.isRead).toBe(true);
@@ -167,7 +167,7 @@ describe("NotificationService", () => {
     it("should not allow marking other user's notification", async () => {
       const result = await notificationService.markAsRead(
         "notif_001",
-        "user_different"
+        "user_different",
       );
       expect(result.success).toBe(false);
     });
@@ -212,7 +212,7 @@ describe("NotificationService", () => {
     it("should not allow deleting other user's notification", async () => {
       const result = await notificationService.delete(
         "notif_001",
-        "user_different"
+        "user_different",
       );
       expect(result.success).toBe(false);
     });
@@ -290,7 +290,7 @@ describe("NotificationPreferencesService", () => {
 
       // Other preferences should remain unchanged
       expect(after.data.email.orderUpdates).toBe(
-        before.data.email.orderUpdates
+        before.data.email.orderUpdates,
       );
     });
 
@@ -301,7 +301,7 @@ describe("NotificationPreferencesService", () => {
       });
       const after = await preferencesService.get("user_123");
       expect(new Date(after.data.updatedAt).getTime()).toBeGreaterThanOrEqual(
-        before.getTime()
+        before.getTime(),
       );
     });
   });
@@ -601,7 +601,7 @@ describe("E2E: Order Notification Flow", () => {
     const { data: notifications } = await notifRes.json();
 
     const orderNotif = notifications.find(
-      (n: any) => n.data?.orderId === order.id
+      (n: any) => n.data?.orderId === order.id,
     );
     expect(orderNotif).toBeDefined();
     expect(orderNotif.title).toContain("Order");
@@ -641,7 +641,7 @@ describe("E2E: Auction Outbid Notification", () => {
     const { data: notifications } = await notifRes.json();
 
     const outbidNotif = notifications.find((n: any) =>
-      n.title.toLowerCase().includes("outbid")
+      n.title.toLowerCase().includes("outbid"),
     );
     expect(outbidNotif).toBeDefined();
   });

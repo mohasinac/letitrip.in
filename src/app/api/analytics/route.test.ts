@@ -150,7 +150,7 @@ describe("GET /api/analytics", () => {
         .mockResolvedValueOnce({ docs: mockOrderItems }); // orderItems for top products
 
       const req = new NextRequest(
-        "http://localhost/api/analytics?shop_id=shop1"
+        "http://localhost/api/analytics?shop_id=shop1",
       );
       const response = await GET(req);
       const data = await response.json();
@@ -208,7 +208,7 @@ describe("GET /api/analytics", () => {
         .mockResolvedValueOnce({ docs: [] });
 
       const req = new NextRequest(
-        "http://localhost/api/analytics?shop_id=shop1"
+        "http://localhost/api/analytics?shop_id=shop1",
       );
       const response = await GET(req);
       const data = await response.json();
@@ -248,7 +248,7 @@ describe("GET /api/analytics", () => {
         .mockResolvedValueOnce({ docs: mockOrderItems }); // orderItems for top products
 
       const req = new NextRequest(
-        "http://localhost/api/analytics?shop_id=shop1"
+        "http://localhost/api/analytics?shop_id=shop1",
       );
       const response = await GET(req);
       const data = await response.json();
@@ -329,7 +329,7 @@ describe("GET /api/analytics", () => {
         .mockResolvedValueOnce({ docs: [] }); // orderItems for top products
 
       const req = new NextRequest(
-        "http://localhost/api/analytics?shop_id=shop1"
+        "http://localhost/api/analytics?shop_id=shop1",
       );
       const response = await GET(req);
 
@@ -389,19 +389,19 @@ describe("GET /api/analytics", () => {
         .mockResolvedValueOnce({ docs: [] });
 
       const req = new NextRequest(
-        "http://localhost/api/analytics?start_date=2024-01-01&end_date=2024-12-31"
+        "http://localhost/api/analytics?start_date=2024-01-01&end_date=2024-12-31",
       );
       await GET(req);
 
       expect(mockWhere).toHaveBeenCalledWith(
         "created_at",
         ">=",
-        expect.any(String)
+        expect.any(String),
       );
       expect(mockWhere).toHaveBeenCalledWith(
         "created_at",
         "<=",
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -416,12 +416,12 @@ describe("GET /api/analytics", () => {
       expect(mockWhere).toHaveBeenCalledWith(
         "created_at",
         ">=",
-        expect.any(String)
+        expect.any(String),
       );
       expect(mockWhere).toHaveBeenCalledWith(
         "created_at",
         "<=",
-        expect.any(String)
+        expect.any(String),
       );
     });
   });

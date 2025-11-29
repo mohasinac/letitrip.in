@@ -113,7 +113,7 @@ describe("BaseTable", () => {
 
     it("shows custom empty message", () => {
       render(
-        <BaseTable {...defaultProps} data={[]} emptyMessage="No users found" />
+        <BaseTable {...defaultProps} data={[]} emptyMessage="No users found" />,
       );
 
       expect(screen.getByText("No users found")).toBeInTheDocument();
@@ -166,7 +166,7 @@ describe("BaseTable", () => {
 
       expect(screen.getAllByText("ACTIVE")[0]).toBeInTheDocument();
       expect(screen.getAllByText("ACTIVE")[0].closest("span")).toHaveClass(
-        "badge"
+        "badge",
       );
     });
 
@@ -195,7 +195,7 @@ describe("BaseTable", () => {
 
       expect(screen.getByText("Full Name")).toBeInTheDocument();
       expect(screen.getByText("Full Name").closest("span")).toHaveClass(
-        "custom-header"
+        "custom-header",
       );
     });
   });
@@ -308,7 +308,7 @@ describe("BaseTable", () => {
   describe("Key Extractor", () => {
     it("uses keyExtractor to generate unique keys", () => {
       const keyExtractor = jest.fn(
-        (row: TestData, index: number) => `user-${row.id}`
+        (row: TestData, index: number) => `user-${row.id}`,
       );
 
       render(<BaseTable {...defaultProps} keyExtractor={keyExtractor} />);
@@ -321,7 +321,7 @@ describe("BaseTable", () => {
       const keyExtractor = (row: TestData) => row.id;
 
       const { container } = render(
-        <BaseTable {...defaultProps} keyExtractor={keyExtractor} />
+        <BaseTable {...defaultProps} keyExtractor={keyExtractor} />,
       );
 
       expect(container.querySelector("tbody")).toBeInTheDocument();
@@ -389,7 +389,7 @@ describe("BaseTable", () => {
         "overflow-x-auto",
         "bg-white",
         "rounded-lg",
-        "border"
+        "border",
       );
     });
 

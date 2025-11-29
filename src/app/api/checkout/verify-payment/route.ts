@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: validation.error.issues[0].message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (orderIdsToProcess.length === 0) {
       return NextResponse.json(
         { error: "No order IDs provided" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         { error: "Payment verification failed" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
         batch.update(productRef, {
           stock_count: Math.max(
             0,
-            product.stock_count - productQuantities[productId]
+            product.stock_count - productQuantities[productId],
           ),
           updated_at: new Date(),
         });
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
     console.error("Verify payment error:", error);
     return NextResponse.json(
       { error: error.message || "Failed to verify payment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

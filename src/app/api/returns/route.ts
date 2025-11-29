@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get("status") || undefined;
     const reason = searchParams.get("reason") || undefined;
     const requiresAdminIntervention = searchParams.get(
-      "requires_admin_intervention"
+      "requires_admin_intervention",
     );
     const startDate = searchParams.get("start_date") || undefined;
     const endDate = searchParams.get("end_date") || undefined;
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
       (id) => Collections.returns().doc(id).get(),
       (doc) => ({ id: doc.id, ...doc.data() }),
       20, // defaultLimit
-      100 // maxLimit
+      100, // maxLimit
     );
 
     return NextResponse.json(response);
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     console.error("Returns list error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to load returns" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
 
     const body = await req.json();
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     if (!orderId || !orderItemId || !reason || !shopId) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -94,13 +94,13 @@ export async function POST(req: NextRequest) {
     const doc = await ref.get();
     return NextResponse.json(
       { success: true, data: { id: doc.id, ...doc.data() } },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Return create error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to initiate return" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

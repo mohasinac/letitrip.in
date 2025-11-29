@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching static assets:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch assets" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     if (!id || !name || !type || !url || !storagePath) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
     console.error("Error creating asset:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create asset" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

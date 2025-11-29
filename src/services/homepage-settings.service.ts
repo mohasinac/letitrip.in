@@ -71,11 +71,11 @@ class HomepageSettingsService {
   // Update homepage settings (admin only)
   async updateSettings(
     settings: Partial<HomepageSettings>,
-    userId?: string
+    userId?: string,
   ): Promise<HomepageSettings> {
     const response = await apiService.patch<{ data: HomepageSettings }>(
       HOMEPAGE_ROUTES.SETTINGS,
-      { settings, userId }
+      { settings, userId },
     );
     return response.data;
   }
@@ -84,7 +84,7 @@ class HomepageSettingsService {
   async resetSettings(): Promise<HomepageSettings> {
     const response = await apiService.post<{ data: HomepageSettings }>(
       HOMEPAGE_ROUTES.SETTINGS,
-      {}
+      {},
     );
     return response.data;
   }
@@ -92,7 +92,7 @@ class HomepageSettingsService {
   // Toggle a section on/off (admin only)
   async toggleSection(
     sectionKey: string,
-    enabled: boolean
+    enabled: boolean,
   ): Promise<HomepageSettings> {
     const current = await this.getSettings();
     const sections = { ...current.settings.sections };
@@ -122,7 +122,7 @@ class HomepageSettingsService {
       productsPerShop?: number;
       maxBlogs?: number;
       maxReviews?: number;
-    }
+    },
   ): Promise<HomepageSettings> {
     const current = await this.getSettings();
     const sections = { ...current.settings.sections };

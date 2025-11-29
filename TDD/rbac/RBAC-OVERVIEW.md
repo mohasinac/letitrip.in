@@ -229,11 +229,50 @@ Guest (Level 0)
 
 ### Resource: Favorites
 
-| Action          | Admin | Seller | User | Guest |
-| --------------- | ----- | ------ | ---- | ----- |
-| List favorites  | ✅    | ✅     | ✅   | ❌    |
-| Add favorite    | ✅    | ✅     | ✅   | ❌    |
-| Remove favorite | ✅    | ✅     | ✅   | ❌    |
+| Action               | Admin | Seller | User | Guest         |
+| -------------------- | ----- | ------ | ---- | ------------- |
+| List favorites       | ✅    | ✅     | ✅   | Local storage |
+| Add favorite         | ✅    | ✅     | ✅   | Local storage |
+| Remove favorite      | ✅    | ✅     | ✅   | Local storage |
+| Enable notifications | ✅    | ✅     | ✅   | ❌            |
+| Sync on login        | ✅    | ✅     | ✅   | N/A           |
+| View analytics       | ✅    | Own    | ❌   | ❌            |
+
+### Resource: Blog
+
+| Action            | Admin | Seller    | User      | Guest     |
+| ----------------- | ----- | --------- | --------- | --------- |
+| List posts        | ✅    | Published | Published | Published |
+| View post         | ✅    | Published | Published | Published |
+| Create post       | ✅    | ❌        | ❌        | ❌        |
+| Update post       | ✅    | ❌        | ❌        | ❌        |
+| Delete post       | ✅    | ❌        | ❌        | ❌        |
+| Manage categories | ✅    | ❌        | ❌        | ❌        |
+| Manage tags       | ✅    | ❌        | ❌        | ❌        |
+
+### Resource: Messages
+
+| Action               | Admin | Seller   | User     | Guest |
+| -------------------- | ----- | -------- | -------- | ----- |
+| List conversations   | ✅    | Own only | Own only | ❌    |
+| View conversation    | ✅    | Own only | Own only | ❌    |
+| Send message         | ✅    | ✅       | ✅       | ❌    |
+| Reply to message     | ✅    | Own only | Own only | ❌    |
+| Archive conversation | ✅    | Own only | Own only | ❌    |
+| Delete message       | ✅    | Own only | Own only | ❌    |
+| View all messages    | ✅    | ❌       | ❌       | ❌    |
+
+### Resource: Settings
+
+| Action             | Admin | Seller | User | Guest |
+| ------------------ | ----- | ------ | ---- | ----- |
+| View settings      | ✅    | ❌     | ❌   | ❌    |
+| Update general     | ✅    | ❌     | ❌   | ❌    |
+| Update payment     | ✅    | ❌     | ❌   | ❌    |
+| Update shipping    | ✅    | ❌     | ❌   | ❌    |
+| Update email       | ✅    | ❌     | ❌   | ❌    |
+| Toggle features    | ✅    | ❌     | ❌   | ❌    |
+| Enable maintenance | ✅    | ❌     | ❌   | ❌    |
 
 ### Resource: Search
 
@@ -243,6 +282,23 @@ Guest (Level 0)
 | Search auctions | ✅    | ✅     | ✅   | ✅    |
 | Search shops    | ✅    | ✅     | ✅   | ✅    |
 | Global search   | ✅    | ✅     | ✅   | ✅    |
+
+### Resource: Mobile Features
+
+| Action                 | Admin | Seller | User | Guest               |
+| ---------------------- | ----- | ------ | ---- | ------------------- |
+| PWA install            | ✅    | ✅     | ✅   | ✅                  |
+| Offline browsing       | ✅    | ✅     | ✅   | ✅ (cached pages)   |
+| Push notifications     | ✅    | ✅     | ✅   | ❌                  |
+| Camera access          | ✅    | ✅     | ✅   | ❌                  |
+| Pull-to-refresh        | ✅    | ✅     | ✅   | ✅                  |
+| Swipe actions          | ✅    | ✅     | ✅   | ❌ (requires auth)  |
+| Mobile sidebar (Admin) | ✅    | ❌     | ❌   | ❌                  |
+| Mobile sidebar (Sell)  | ✅    | ✅     | ❌   | ❌                  |
+| Quick actions FAB      | ✅    | ✅     | ❌   | ❌                  |
+| Mobile data tables     | ✅    | ✅     | ✅   | ✅ (public data)    |
+| Mobile filters         | ✅    | ✅     | ✅   | ✅                  |
+| Mobile forms           | ✅    | ✅     | ✅   | ✅ (contact/search) |
 
 ## Ownership Rules
 
@@ -280,6 +336,40 @@ if (canWriteResource(user, "products", "update", productData)) {
 import { filterDataByRole } from "@/lib/rbac-permissions";
 const filteredProducts = filterDataByRole(user, "products", products);
 ```
+
+### Resource: RipLimit (E028)
+
+| Action              | Admin | Seller | User     | Guest |
+| ------------------- | ----- | ------ | -------- | ----- |
+| View balance        | ✅    | ✅     | Own only | ❌    |
+| Purchase RipLimit   | ✅    | ✅     | ✅       | ❌    |
+| View transactions   | ✅    | ✅     | Own only | ❌    |
+| Request refund      | ✅    | ❌     | ✅       | ❌    |
+| Adjust user balance | ✅    | ❌     | ❌       | ❌    |
+| View all balances   | ✅    | ❌     | ❌       | ❌    |
+| Clear unpaid flag   | ✅    | ❌     | ❌       | ❌    |
+| View RipLimit stats | ✅    | ❌     | ❌       | ❌    |
+
+### Resource: Addresses (E029)
+
+| Action           | Admin | Seller   | User     | Guest |
+| ---------------- | ----- | -------- | -------- | ----- |
+| List addresses   | ✅    | Own only | Own only | ❌    |
+| Create address   | ✅    | ✅       | ✅       | ❌    |
+| Update address   | ✅    | Own only | Own only | ❌    |
+| Delete address   | ✅    | Own only | Own only | ❌    |
+| Set default      | ✅    | Own only | Own only | ❌    |
+| Use GPS location | ✅    | ✅       | ✅       | ❌    |
+| Lookup pincode   | ✅    | ✅       | ✅       | ✅    |
+
+### Resource: Theme & Design (E027)
+
+| Action                | Admin | Seller | User | Guest |
+| --------------------- | ----- | ------ | ---- | ----- |
+| Toggle dark mode      | ✅    | ✅     | ✅   | ✅    |
+| Save theme preference | ✅    | ✅     | ✅   | ✅    |
+| Update theme colors   | ✅    | ❌     | ❌   | ❌    |
+| View design tokens    | ✅    | ❌     | ❌   | ❌    |
 
 ## API Middleware Pattern
 

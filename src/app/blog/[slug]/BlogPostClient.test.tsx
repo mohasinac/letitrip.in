@@ -86,7 +86,7 @@ describe("BlogPostClient", () => {
   describe("Loading State", () => {
     it("shows loading skeleton", () => {
       (blogService.getBySlug as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
 
       render(<BlogPostClient slug="test" />);
@@ -115,7 +115,7 @@ describe("BlogPostClient", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/this is the full content/i)
+          screen.getByText(/this is the full content/i),
         ).toBeInTheDocument();
       });
     });
@@ -222,7 +222,7 @@ describe("BlogPostClient", () => {
 
     it("handles like error gracefully", async () => {
       (blogService.toggleLike as jest.Mock).mockRejectedValueOnce(
-        new Error("Like failed")
+        new Error("Like failed"),
       );
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
 
@@ -238,7 +238,7 @@ describe("BlogPostClient", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Error liking post:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -309,7 +309,7 @@ describe("BlogPostClient", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Error sharing:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -320,7 +320,7 @@ describe("BlogPostClient", () => {
   describe("Error Handling", () => {
     it("shows error message when post not found", async () => {
       (blogService.getBySlug as jest.Mock).mockRejectedValueOnce(
-        new Error("Post not found")
+        new Error("Post not found"),
       );
 
       render(<BlogPostClient slug="non-existent" />);
@@ -333,7 +333,7 @@ describe("BlogPostClient", () => {
 
     it("shows back to blog link on error", async () => {
       (blogService.getBySlug as jest.Mock).mockRejectedValueOnce(
-        new Error("Error")
+        new Error("Error"),
       );
 
       render(<BlogPostClient slug="test" />);
@@ -348,7 +348,7 @@ describe("BlogPostClient", () => {
     it("logs error to console", async () => {
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
       (blogService.getBySlug as jest.Mock).mockRejectedValueOnce(
-        new Error("Test error")
+        new Error("Test error"),
       );
 
       render(<BlogPostClient slug="test" />);
@@ -356,7 +356,7 @@ describe("BlogPostClient", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Error fetching blog post:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -391,7 +391,7 @@ describe("BlogPostClient", () => {
     it("handles post without tags", async () => {
       const postWithoutTags = { ...mockPost, tags: [] };
       (blogService.getBySlug as jest.Mock).mockResolvedValueOnce(
-        postWithoutTags
+        postWithoutTags,
       );
 
       render(<BlogPostClient slug="test" />);

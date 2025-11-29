@@ -24,7 +24,7 @@ interface ModerateReviewData {
 class ReviewsService {
   // List reviews with cursor-based pagination
   async list(
-    filters?: Record<string, any>
+    filters?: Record<string, any>,
   ): Promise<PaginatedResponseFE<ReviewFE>> {
     const params = new URLSearchParams();
 
@@ -67,7 +67,7 @@ class ReviewsService {
     const request = toBECreateReviewRequest(formData as ReviewFormFE);
     const response: any = await apiService.patch(
       REVIEW_ROUTES.UPDATE(id),
-      request
+      request,
     );
     return toFEReview(response.data);
   }
@@ -81,7 +81,7 @@ class ReviewsService {
   async moderate(id: string, data: ModerateReviewData): Promise<ReviewFE> {
     const response: any = await apiService.patch(
       `${REVIEW_ROUTES.BY_ID(id)}/moderate`,
-      data
+      data,
     );
     return toFEReview(response.data);
   }
@@ -90,7 +90,7 @@ class ReviewsService {
   async markHelpful(id: string): Promise<{ helpfulCount: number }> {
     return apiService.post<{ helpfulCount: number }>(
       REVIEW_ROUTES.HELPFUL(id),
-      {}
+      {},
     );
   }
 
@@ -142,7 +142,7 @@ class ReviewsService {
   // Check if user can review
   async canReview(
     productId?: string,
-    auctionId?: string
+    auctionId?: string,
   ): Promise<{ canReview: boolean; reason?: string }> {
     const params = new URLSearchParams();
     if (productId) params.append("productId", productId);
@@ -157,7 +157,7 @@ class ReviewsService {
   // Get featured reviews
   async getFeatured(): Promise<ReviewFE[]> {
     const response = await apiService.get<{ data: ReviewBE[] }>(
-      "/reviews?featured=true&isApproved=true&limit=100"
+      "/reviews?featured=true&isApproved=true&limit=100",
     );
     return toFEReviews(response.data);
   }
@@ -165,7 +165,7 @@ class ReviewsService {
   // Get homepage reviews
   async getHomepage(): Promise<ReviewFE[]> {
     const response = await apiService.get<{ data: ReviewBE[] }>(
-      `${REVIEW_ROUTES.LIST}?featured=true&isApproved=true&verifiedPurchase=true&limit=20`
+      `${REVIEW_ROUTES.LIST}?featured=true&isApproved=true&verifiedPurchase=true&limit=20`,
     );
     return toFEReviews(response.data);
   }
@@ -174,7 +174,7 @@ class ReviewsService {
   private async bulkAction(
     action: string,
     ids: string[],
-    data?: Record<string, any>
+    data?: Record<string, any>,
   ): Promise<{
     success: boolean;
     results: {

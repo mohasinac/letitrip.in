@@ -84,7 +84,7 @@ export default function MyBidsPage() {
       // Sort by created_at descending
       bidsWithStatus.sort(
         (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );
 
       setBids(bidsWithStatus);
@@ -269,7 +269,7 @@ export default function MyBidsPage() {
                           <div className="text-gray-500 mb-1">Current Bid</div>
                           <div className="font-semibold text-gray-900">
                             {formatCurrency(
-                              bid.auction?.currentBid || bid.amount
+                              bid.auction?.currentBid || bid.amount,
                             )}
                           </div>
                         </div>

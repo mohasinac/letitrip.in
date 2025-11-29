@@ -209,12 +209,12 @@ describe("EditProductPage", () => {
 
     // Mock services to be loading
     mockProductsService.getBySlug.mockImplementation(
-      () => new Promise(() => {})
+      () => new Promise(() => {}),
     );
     mockShopsService.list.mockImplementation(() => new Promise(() => {}));
 
     render(
-      <EditProductPage params={Promise.resolve({ slug: "test-product" })} />
+      <EditProductPage params={Promise.resolve({ slug: "test-product" })} />,
     );
 
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
@@ -228,7 +228,7 @@ describe("EditProductPage", () => {
 
     await act(async () => {
       render(
-        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />
+        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />,
       );
     });
 
@@ -237,19 +237,19 @@ describe("EditProductPage", () => {
     });
 
     expect(
-      screen.getByText("You must be logged in to edit a product.")
+      screen.getByText("You must be logged in to edit a product."),
     ).toBeInTheDocument();
     expect(screen.getByText("Sign In")).toBeInTheDocument();
   });
 
   it("shows error when product fails to load", async () => {
     mockProductsService.getBySlug.mockRejectedValue(
-      new Error("Product not found")
+      new Error("Product not found"),
     );
 
     await act(async () => {
       render(
-        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />
+        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />,
       );
     });
 
@@ -266,7 +266,7 @@ describe("EditProductPage", () => {
 
     await act(async () => {
       render(
-        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />
+        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />,
       );
     });
 
@@ -276,21 +276,21 @@ describe("EditProductPage", () => {
 
     expect(
       screen.getByText(
-        "The product you're trying to edit doesn't exist or has been removed."
-      )
+        "The product you're trying to edit doesn't exist or has been removed.",
+      ),
     ).toBeInTheDocument();
   });
 
   it("loads and displays edit product form", async () => {
     await act(async () => {
       render(
-        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />
+        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />,
       );
     });
 
     await waitFor(() => {
       expect(mockProductsService.getBySlug).toHaveBeenCalledWith(
-        "test-product"
+        "test-product",
       );
       expect(mockShopsService.list).toHaveBeenCalledWith({ limit: 50 });
     });
@@ -298,7 +298,7 @@ describe("EditProductPage", () => {
     // Check header
     expect(screen.getByText("Edit Product")).toBeInTheDocument();
     expect(
-      screen.getByText("Update your product details and settings.")
+      screen.getByText("Update your product details and settings."),
     ).toBeInTheDocument();
 
     // Check back link
@@ -307,7 +307,7 @@ describe("EditProductPage", () => {
 
     // Check that product name is displayed
     expect(
-      screen.getByText("Editing product: Test Product")
+      screen.getByText("Editing product: Test Product"),
     ).toBeInTheDocument();
   });
 
@@ -316,7 +316,7 @@ describe("EditProductPage", () => {
 
     await act(async () => {
       render(
-        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />
+        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />,
       );
     });
 
@@ -326,7 +326,7 @@ describe("EditProductPage", () => {
 
     // Should still show the form even if shops fail to load
     expect(
-      screen.getByText("Editing product: Test Product")
+      screen.getByText("Editing product: Test Product"),
     ).toBeInTheDocument();
   });
 
@@ -336,7 +336,7 @@ describe("EditProductPage", () => {
 
     await act(async () => {
       render(
-        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />
+        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />,
       );
     });
 
@@ -356,7 +356,7 @@ describe("EditProductPage", () => {
 
     await act(async () => {
       render(
-        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />
+        <EditProductPage params={Promise.resolve({ slug: "test-product" })} />,
       );
     });
 

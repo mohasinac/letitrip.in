@@ -1,14 +1,14 @@
 /**
  * Batch Fetch Utilities
- * 
+ *
  * Prevents N+1 query problems by batching document fetches.
  * Uses Firestore's __name__ "in" query (max 10 items per query).
- * 
+ *
  * Location: /src/lib/batch-fetch.ts
  */
 
-import { getFirestoreAdmin } from '@/app/api/lib/firebase/admin';
-import { Collections } from '@/app/api/lib/firebase/collections';
+import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { Collections } from "@/app/api/lib/firebase/collections";
 
 /**
  * Generic batch fetch function
@@ -16,7 +16,7 @@ import { Collections } from '@/app/api/lib/firebase/collections';
  */
 export async function batchFetchDocuments<T = any>(
   collectionName: string,
-  ids: string[]
+  ids: string[],
 ): Promise<Map<string, T>> {
   const resultMap = new Map<string, T>();
 
@@ -36,7 +36,7 @@ export async function batchFetchDocuments<T = any>(
 
     const snapshot = await db
       .collection(collectionName)
-      .where('__name__', 'in', batch)
+      .where("__name__", "in", batch)
       .get();
 
     snapshot.docs.forEach((doc) => {
@@ -52,7 +52,7 @@ export async function batchFetchDocuments<T = any>(
 
 /**
  * Batch fetch products by IDs
- * 
+ *
  * @example
  * ```ts
  * const productIds = ['prod1', 'prod2', 'prod3'];
@@ -60,92 +60,106 @@ export async function batchFetchDocuments<T = any>(
  * const product1 = productsMap.get('prod1');
  * ```
  */
-export async function batchGetProducts(productIds: string[]): Promise<Map<string, any>> {
-  return batchFetchDocuments('products', productIds);
+export async function batchGetProducts(
+  productIds: string[],
+): Promise<Map<string, any>> {
+  return batchFetchDocuments("products", productIds);
 }
 
 /**
  * Batch fetch shops by IDs
- * 
+ *
  * @example
  * ```ts
  * const shopIds = ['shop1', 'shop2'];
  * const shopsMap = await batchGetShops(shopIds);
  * ```
  */
-export async function batchGetShops(shopIds: string[]): Promise<Map<string, any>> {
-  return batchFetchDocuments('shops', shopIds);
+export async function batchGetShops(
+  shopIds: string[],
+): Promise<Map<string, any>> {
+  return batchFetchDocuments("shops", shopIds);
 }
 
 /**
  * Batch fetch categories by IDs
- * 
+ *
  * @example
  * ```ts
  * const categoryIds = ['cat1', 'cat2', 'cat3'];
  * const categoriesMap = await batchGetCategories(categoryIds);
  * ```
  */
-export async function batchGetCategories(categoryIds: string[]): Promise<Map<string, any>> {
-  return batchFetchDocuments('categories', categoryIds);
+export async function batchGetCategories(
+  categoryIds: string[],
+): Promise<Map<string, any>> {
+  return batchFetchDocuments("categories", categoryIds);
 }
 
 /**
  * Batch fetch users by IDs
- * 
+ *
  * @example
  * ```ts
  * const userIds = ['user1', 'user2'];
  * const usersMap = await batchGetUsers(userIds);
  * ```
  */
-export async function batchGetUsers(userIds: string[]): Promise<Map<string, any>> {
-  return batchFetchDocuments('users', userIds);
+export async function batchGetUsers(
+  userIds: string[],
+): Promise<Map<string, any>> {
+  return batchFetchDocuments("users", userIds);
 }
 
 /**
  * Batch fetch orders by IDs
- * 
+ *
  * @example
  * ```ts
  * const orderIds = ['order1', 'order2'];
  * const ordersMap = await batchGetOrders(orderIds);
  * ```
  */
-export async function batchGetOrders(orderIds: string[]): Promise<Map<string, any>> {
-  return batchFetchDocuments('orders', orderIds);
+export async function batchGetOrders(
+  orderIds: string[],
+): Promise<Map<string, any>> {
+  return batchFetchDocuments("orders", orderIds);
 }
 
 /**
  * Batch fetch auctions by IDs
- * 
+ *
  * @example
  * ```ts
  * const auctionIds = ['auction1', 'auction2'];
  * const auctionsMap = await batchGetAuctions(auctionIds);
  * ```
  */
-export async function batchGetAuctions(auctionIds: string[]): Promise<Map<string, any>> {
-  return batchFetchDocuments('auctions', auctionIds);
+export async function batchGetAuctions(
+  auctionIds: string[],
+): Promise<Map<string, any>> {
+  return batchFetchDocuments("auctions", auctionIds);
 }
 
 /**
  * Batch fetch coupons by IDs
- * 
+ *
  * @example
  * ```ts
  * const couponIds = ['coupon1', 'coupon2'];
  * const couponsMap = await batchGetCoupons(couponIds);
  * ```
  */
-export async function batchGetCoupons(couponIds: string[]): Promise<Map<string, any>> {
-  return batchFetchDocuments('coupons', couponIds);
+export async function batchGetCoupons(
+  couponIds: string[],
+): Promise<Map<string, any>> {
+  return batchFetchDocuments("coupons", couponIds);
 }
 
 /**
  * Batch fetch by custom collection
  * For collections not covered by specific functions
- * 
+ *
  * @example
  * ```ts
  * const ids = ['id1', 'id2'];
@@ -154,14 +168,14 @@ export async function batchGetCoupons(couponIds: string[]): Promise<Map<string, 
  */
 export async function batchGetByCollection(
   collectionName: string,
-  ids: string[]
+  ids: string[],
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(collectionName, ids);
 }
 
 /**
  * Helper: Convert batch result map to array preserving order
- * 
+ *
  * @example
  * ```ts
  * const productIds = ['prod1', 'prod2', 'prod3'];
@@ -172,7 +186,7 @@ export async function batchGetByCollection(
  */
 export function mapToOrderedArray<T>(
   map: Map<string, T>,
-  orderedIds: string[]
+  orderedIds: string[],
 ): (T | null)[] {
   return orderedIds.map((id) => map.get(id) || null);
 }

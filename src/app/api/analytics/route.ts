@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     if (!user?.email) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     if (!(role === "seller" || role === "admin")) {
       return NextResponse.json(
         { success: false, error: "Forbidden" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "shop_id is required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -68,12 +68,12 @@ export async function GET(request: NextRequest) {
       .where(
         "created_at",
         ">=",
-        safeToISOString(start) ?? new Date().toISOString()
+        safeToISOString(start) ?? new Date().toISOString(),
       )
       .where(
         "created_at",
         "<=",
-        safeToISOString(end) ?? new Date().toISOString()
+        safeToISOString(end) ?? new Date().toISOString(),
       );
 
     if (shopId) {
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
 
       const orderIds = [
         ...new Set(
-          orderItemsSnapshot.docs.map((doc: any) => doc.data().order_id)
+          orderItemsSnapshot.docs.map((doc: any) => doc.data().order_id),
         ),
       ];
 
@@ -98,12 +98,12 @@ export async function GET(request: NextRequest) {
             .where(
               "created_at",
               ">=",
-              safeToISOString(start) ?? new Date().toISOString()
+              safeToISOString(start) ?? new Date().toISOString(),
             )
             .where(
               "created_at",
               "<=",
-              safeToISOString(end) ?? new Date().toISOString()
+              safeToISOString(end) ?? new Date().toISOString(),
             )
             .get();
           batches.push(...batchSnapshot.docs);
@@ -118,13 +118,13 @@ export async function GET(request: NextRequest) {
 
         analytics.orders.total = orders.length;
         analytics.orders.pending = orders.filter(
-          (o: any) => o.status === "pending" || o.status === "confirmed"
+          (o: any) => o.status === "pending" || o.status === "confirmed",
         ).length;
         analytics.orders.completed = orders.filter(
-          (o: any) => o.status === "delivered"
+          (o: any) => o.status === "delivered",
         ).length;
         analytics.orders.cancelled = orders.filter(
-          (o: any) => o.status === "cancelled"
+          (o: any) => o.status === "cancelled",
         ).length;
 
         analytics.revenue.average =
@@ -145,7 +145,7 @@ export async function GET(request: NextRequest) {
           if (date) {
             salesByDay.set(
               date,
-              (salesByDay.get(date) || 0) + (order.total || 0)
+              (salesByDay.get(date) || 0) + (order.total || 0),
             );
           }
         });
@@ -168,13 +168,13 @@ export async function GET(request: NextRequest) {
 
       analytics.orders.total = orders.length;
       analytics.orders.pending = orders.filter(
-        (o: any) => o.status === "pending" || o.status === "confirmed"
+        (o: any) => o.status === "pending" || o.status === "confirmed",
       ).length;
       analytics.orders.completed = orders.filter(
-        (o: any) => o.status === "delivered"
+        (o: any) => o.status === "delivered",
       ).length;
       analytics.orders.cancelled = orders.filter(
-        (o: any) => o.status === "cancelled"
+        (o: any) => o.status === "cancelled",
       ).length;
 
       analytics.revenue.average =
@@ -194,7 +194,7 @@ export async function GET(request: NextRequest) {
         if (date) {
           salesByDay.set(
             date,
-            (salesByDay.get(date) || 0) + (order.total || 0)
+            (salesByDay.get(date) || 0) + (order.total || 0),
           );
         }
       });
@@ -217,10 +217,10 @@ export async function GET(request: NextRequest) {
 
       analytics.products.total = products.length;
       analytics.products.active = products.filter(
-        (p: any) => p.status === "published"
+        (p: any) => p.status === "published",
       ).length;
       analytics.products.outOfStock = products.filter(
-        (p: any) => (p.stock_count || 0) === 0
+        (p: any) => (p.stock_count || 0) === 0,
       ).length;
 
       // Top products by sales
@@ -260,10 +260,10 @@ export async function GET(request: NextRequest) {
 
       analytics.products.total = products.length;
       analytics.products.active = products.filter(
-        (p: any) => p.status === "published"
+        (p: any) => p.status === "published",
       ).length;
       analytics.products.outOfStock = products.filter(
-        (p: any) => (p.stock_count || 0) === 0
+        (p: any) => (p.stock_count || 0) === 0,
       ).length;
     }
 
@@ -285,7 +285,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to fetch analytics",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

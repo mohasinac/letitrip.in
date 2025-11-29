@@ -49,7 +49,7 @@ export function hasChild(category: Category, childId: string): boolean {
  */
 export function getAncestorIds(
   category: Category,
-  allCategories: Category[]
+  allCategories: Category[],
 ): string[] {
   const ancestors = new Set<string>();
   const visited = new Set<string>(); // Prevent infinite loops
@@ -79,7 +79,7 @@ export function getAncestorIds(
  */
 export function getDescendantIds(
   category: Category,
-  allCategories: Category[]
+  allCategories: Category[],
 ): string[] {
   const descendants = new Set<string>();
   const visited = new Set<string>(); // Prevent infinite loops
@@ -109,7 +109,7 @@ export function getDescendantIds(
  */
 export function getBreadcrumbPath(
   category: Category,
-  allCategories: Category[]
+  allCategories: Category[],
 ): Category[] {
   const path: Category[] = [];
   const visited = new Set<string>();
@@ -135,7 +135,7 @@ export function getBreadcrumbPath(
  */
 export function getAllBreadcrumbPaths(
   category: Category,
-  allCategories: Category[]
+  allCategories: Category[],
 ): Category[][] {
   const paths: Category[][] = [];
   const visited = new Set<string>();
@@ -252,7 +252,7 @@ export function flattenCategoryTree(trees: CategoryTree[]): Category[] {
 export function wouldCreateCircularReference(
   categoryId: string,
   newParentId: string,
-  allCategories: Category[]
+  allCategories: Category[],
 ): boolean {
   // Check if newParent is a descendant of category
   const category = allCategories.find((c) => c.id === categoryId);
@@ -267,7 +267,7 @@ export function wouldCreateCircularReference(
  */
 export function getCategoryDepth(
   category: Category,
-  allCategories: Category[]
+  allCategories: Category[],
 ): number {
   let minDepth = 0;
   const visited = new Set<string>();
@@ -303,7 +303,7 @@ export function getCategoryDepth(
 export function getCategoryPathString(
   category: Category,
   allCategories: Category[],
-  separator: string = " > "
+  separator: string = " > ",
 ): string {
   const path = getBreadcrumbPath(category, allCategories);
   return path.map((cat) => cat.name).join(separator);
@@ -314,14 +314,14 @@ export function getCategoryPathString(
  */
 export function searchCategories(
   categories: Category[],
-  query: string
+  query: string,
 ): Category[] {
   const lowerQuery = query.toLowerCase();
   return categories.filter(
     (cat) =>
       cat.name.toLowerCase().includes(lowerQuery) ||
       cat.slug.toLowerCase().includes(lowerQuery) ||
-      cat.description?.toLowerCase().includes(lowerQuery)
+      cat.description?.toLowerCase().includes(lowerQuery),
   );
 }
 
@@ -330,7 +330,7 @@ export function searchCategories(
  */
 export function getCategoriesByParent(
   parentId: string,
-  categories: Category[]
+  categories: Category[],
 ): Category[] {
   return categories.filter((cat) => hasParent(cat, parentId));
 }
@@ -345,7 +345,7 @@ export interface CategoryValidationResult {
 
 export function validateCategory(
   category: Category,
-  allCategories: Category[]
+  allCategories: Category[],
 ): CategoryValidationResult {
   const errors: string[] = [];
 

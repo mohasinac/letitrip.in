@@ -39,13 +39,13 @@ describe("PaymentMethod - Comprehensive Tests", () => {
       render(<PaymentMethod selected="cod" onSelect={mockOnSelect} />);
       expect(screen.getByText("Cash on Delivery")).toBeInTheDocument();
       expect(
-        screen.getByText(/Pay with cash when your order is delivered/i)
+        screen.getByText(/Pay with cash when your order is delivered/i),
       ).toBeInTheDocument();
     });
 
     it("should render both payment options in the correct order", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const paymentOptions = container.querySelectorAll(".space-y-3 > div");
       expect(paymentOptions[0]).toHaveTextContent(/Online Payment/i);
@@ -54,7 +54,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should render in a space-y layout", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const spaceContainer = container.querySelector(".space-y-3");
       expect(spaceContainer).toBeInTheDocument();
@@ -68,7 +68,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should have proper HTML structure with payment options", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const paymentOptions = container.querySelectorAll(".space-y-3 > div");
       expect(paymentOptions).toHaveLength(2);
@@ -88,7 +88,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should render icons with proper styling", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const creditCardIcon = screen.getByTestId("credit-card-icon");
       expect(creditCardIcon).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should render payment method badges in flex layout", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const badgeContainer = container.querySelector(".flex.flex-wrap");
       expect(badgeContainer).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should style payment method badges with colored backgrounds", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const blueBadge = container.querySelector(".bg-blue-100");
       const purpleBadge = container.querySelector(".bg-purple-100");
@@ -124,10 +124,10 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should render payment badges with proper spacing", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const badgeContainer = container.querySelector(
-        ".flex.items-center.gap-2.flex-wrap"
+        ".flex.items-center.gap-2.flex-wrap",
       );
       expect(badgeContainer).toBeInTheDocument();
     });
@@ -160,7 +160,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should highlight selected option with primary border", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const paymentOptions = container.querySelectorAll(".space-y-3 > div");
       const selectedOption = paymentOptions[0]; // Razorpay is first
@@ -170,7 +170,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should show gray border for unselected option", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const paymentOptions = container.querySelectorAll(".space-y-3 > div");
       const unselectedOption = paymentOptions[1]; // COD is not selected
@@ -179,7 +179,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should apply background color to selected option", () => {
       const { container } = render(
-        <PaymentMethod selected="cod" onSelect={mockOnSelect} />
+        <PaymentMethod selected="cod" onSelect={mockOnSelect} />,
       );
       const paymentOptions = container.querySelectorAll(".space-y-3 > div");
       const selectedOption = paymentOptions[1]; // COD is selected
@@ -208,7 +208,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should allow switching from Razorpay to COD", () => {
       const { rerender } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const codRadio = screen.getAllByRole("radio")[1];
       fireEvent.click(codRadio);
@@ -221,7 +221,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should allow switching from COD to Razorpay", () => {
       const { rerender } = render(
-        <PaymentMethod selected="cod" onSelect={mockOnSelect} />
+        <PaymentMethod selected="cod" onSelect={mockOnSelect} />,
       );
       const razorpayRadio = screen.getAllByRole("radio")[0];
       fireEvent.click(razorpayRadio);
@@ -266,27 +266,27 @@ describe("PaymentMethod - Comprehensive Tests", () => {
     it("should display security note for Razorpay", () => {
       render(<PaymentMethod selected="razorpay" onSelect={mockOnSelect} />);
       expect(
-        screen.getByText(/Secure payment powered by Razorpay/i)
+        screen.getByText(/Secure payment powered by Razorpay/i),
       ).toBeInTheDocument();
     });
 
     it("should display COD charges note", () => {
       render(<PaymentMethod selected="cod" onSelect={mockOnSelect} />);
       expect(
-        screen.getByText(/Additional charges may apply/i)
+        screen.getByText(/Additional charges may apply/i),
       ).toBeInTheDocument();
     });
 
     it("should display overall security note at bottom", () => {
       render(<PaymentMethod selected="razorpay" onSelect={mockOnSelect} />);
       expect(
-        screen.getByText(/Your payment information is secure and encrypted/i)
+        screen.getByText(/Your payment information is secure and encrypted/i),
       ).toBeInTheDocument();
     });
 
     it("should style security notes with proper text color", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const securityNote = container.querySelector(".text-gray-500");
       expect(securityNote).toBeInTheDocument();
@@ -296,7 +296,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
   describe("Styling & Layout", () => {
     it("should apply hover effects on unselected options", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const paymentOptions = container.querySelectorAll(".space-y-3 > div");
       const unselectedOption = paymentOptions[1]; // COD is not selected
@@ -305,7 +305,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should have proper spacing between elements", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const labels = container.querySelectorAll("label");
       labels.forEach((label) => {
@@ -315,7 +315,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should have rounded corners on option cards", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const labels = container.querySelectorAll("label");
       labels.forEach((label) => {
@@ -325,7 +325,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should have proper border styling", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const labels = container.querySelectorAll("label");
       labels.forEach((label) => {
@@ -335,7 +335,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should use cursor pointer for interactive elements", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const labels = container.querySelectorAll("label");
       labels.forEach((label) => {
@@ -345,7 +345,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should have transition effects", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const labels = container.querySelectorAll("label");
       labels.forEach((label) => {
@@ -355,7 +355,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should have different styling for selected vs unselected options", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const paymentOptions = container.querySelectorAll(".space-y-3 > div");
       const selectedOption = paymentOptions[0];
@@ -376,7 +376,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
     it("should have radio inputs without ids (accessibility issue)", () => {
       // NOTE: BUG - Radio inputs lack id attributes for proper label association
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const radioInputs = container.querySelectorAll("input[type='radio']");
       const ids = Array.from(radioInputs).map((input) => input.id);
@@ -387,7 +387,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
     it("should have radio inputs without name attribute (accessibility issue)", () => {
       // NOTE: BUG - Radio inputs lack name attribute for proper grouping
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const radioInputs = container.querySelectorAll("input[type='radio']");
       radioInputs.forEach((input) => {
@@ -398,7 +398,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
     it("should not use semantic label elements (accessibility issue)", () => {
       // NOTE: BUG - Component uses divs instead of proper label elements
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const labels = container.querySelectorAll("label");
       expect(labels.length).toBe(0); // No labels present
@@ -428,7 +428,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
   describe("Edge Cases", () => {
     it("should handle undefined onSelect gracefully", () => {
       const { container } = render(
-        <PaymentMethod selected="razorpay" onSelect={undefined as any} />
+        <PaymentMethod selected="razorpay" onSelect={undefined as any} />,
       );
       expect(container).toBeInTheDocument();
     });
@@ -440,7 +440,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should maintain state when rerendering with same props", () => {
       const { rerender } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const razorpayRadio = screen.getAllByRole("radio")[0];
       expect(razorpayRadio).toBeChecked();
@@ -451,7 +451,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should update correctly when selected prop changes", () => {
       const { rerender } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       const [razorpayRadio, codRadio] = screen.getAllByRole("radio");
       expect(razorpayRadio).toBeChecked();
@@ -463,7 +463,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should handle rapid prop changes", () => {
       const { rerender } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       rerender(<PaymentMethod selected="cod" onSelect={mockOnSelect} />);
       rerender(<PaymentMethod selected="razorpay" onSelect={mockOnSelect} />);
@@ -476,11 +476,11 @@ describe("PaymentMethod - Comprehensive Tests", () => {
     it("should handle changing onSelect callback", () => {
       const newMockOnSelect = jest.fn();
       const { rerender } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
 
       rerender(
-        <PaymentMethod selected="razorpay" onSelect={newMockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={newMockOnSelect} />,
       );
 
       const codRadio = screen.getAllByRole("radio")[1];
@@ -503,7 +503,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
         <div>
           <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
           <div data-testid="sibling">Sibling Component</div>
-        </div>
+        </div>,
       );
       expect(screen.getByTestId("sibling")).toBeInTheDocument();
       expect(screen.getByText("Online Payment")).toBeInTheDocument();
@@ -511,7 +511,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
 
     it("should clean up properly when unmounted", () => {
       const { unmount, container } = render(
-        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
+        <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />,
       );
       unmount();
       expect(container.innerHTML).toBe("");
@@ -523,7 +523,7 @@ describe("PaymentMethod - Comprehensive Tests", () => {
         <div>
           <PaymentMethod selected="razorpay" onSelect={mockOnSelect} />
           <PaymentMethod selected="cod" onSelect={mockOnSelect2} />
-        </div>
+        </div>,
       );
       const radioInputs = container.querySelectorAll("input[type='radio']");
       expect(radioInputs).toHaveLength(4); // 2 instances × 2 options

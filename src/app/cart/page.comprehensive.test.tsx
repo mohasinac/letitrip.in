@@ -264,7 +264,7 @@ describe("CartPage - Comprehensive Tests", () => {
 
       expect(screen.getByTestId("loader-icon")).toBeInTheDocument();
       expect(
-        screen.getByText("Merging your cart items...")
+        screen.getByText("Merging your cart items..."),
       ).toBeInTheDocument();
     });
 
@@ -276,7 +276,7 @@ describe("CartPage - Comprehensive Tests", () => {
 
       const { container } = render(<CartPage />);
       const loadingContainer = container.querySelector(
-        ".min-h-screen.bg-gray-50"
+        ".min-h-screen.bg-gray-50",
       );
 
       expect(loadingContainer).toBeInTheDocument();
@@ -322,7 +322,9 @@ describe("CartPage - Comprehensive Tests", () => {
 
       expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
       expect(
-        screen.getByText("Start adding products to your cart to see them here.")
+        screen.getByText(
+          "Start adding products to your cart to see them here.",
+        ),
       ).toBeInTheDocument();
     });
 
@@ -470,7 +472,7 @@ describe("CartPage - Comprehensive Tests", () => {
       render(<CartPage />);
 
       expect(screen.getByTestId("subtotal")).toHaveTextContent(
-        "Subtotal: ₹2000"
+        "Subtotal: ₹2000",
       );
       expect(screen.getByTestId("shipping")).toHaveTextContent("Shipping: ₹0");
       expect(screen.getByTestId("tax")).toHaveTextContent("Tax: ₹360");
@@ -499,7 +501,7 @@ describe("CartPage - Comprehensive Tests", () => {
 
       expect(screen.getByText("You might also like")).toBeInTheDocument();
       expect(
-        screen.getByText("Product recommendations will appear here")
+        screen.getByText("Product recommendations will appear here"),
       ).toBeInTheDocument();
     });
 
@@ -630,12 +632,12 @@ describe("CartPage - Comprehensive Tests", () => {
       fireEvent.click(screen.getByText("Clear Cart"));
 
       expect(
-        screen.getByRole("heading", { name: "Clear Cart" })
+        screen.getByRole("heading", { name: "Clear Cart" }),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Are you sure you want to remove all items from your cart? This action cannot be undone."
-        )
+          "Are you sure you want to remove all items from your cart? This action cannot be undone.",
+        ),
       ).toBeInTheDocument();
     });
 
@@ -726,7 +728,7 @@ describe("CartPage - Comprehensive Tests", () => {
 
       await waitFor(() => {
         expect(mockAlert).toHaveBeenCalledWith(
-          "Failed to clear cart. Please try again."
+          "Failed to clear cart. Please try again.",
         );
       });
 
@@ -786,7 +788,7 @@ describe("CartPage - Comprehensive Tests", () => {
       render(<CartPage />);
 
       expect(screen.getByTestId("coupon-code")).toHaveTextContent(
-        "Coupon: SAVE20"
+        "Coupon: SAVE20",
       );
     });
 
@@ -850,7 +852,7 @@ describe("CartPage - Comprehensive Tests", () => {
       render(<CartPage />);
 
       expect(screen.getByTestId("discount")).toHaveTextContent(
-        "Discount: ₹400"
+        "Discount: ₹400",
       );
       expect(screen.getByTestId("total")).toHaveTextContent("Total: ₹1960");
     });
@@ -903,8 +905,8 @@ describe("CartPage - Comprehensive Tests", () => {
       expect(screen.getByText("New to Letitrip?")).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Create an account to track your order and enjoy faster checkout next time."
-        )
+          "Create an account to track your order and enjoy faster checkout next time.",
+        ),
       ).toBeInTheDocument();
     });
 
@@ -915,7 +917,7 @@ describe("CartPage - Comprehensive Tests", () => {
       expect(createAccountLink).toBeInTheDocument();
       expect(createAccountLink.closest("a")).toHaveAttribute(
         "href",
-        "/register"
+        "/register",
       );
     });
 
@@ -942,7 +944,7 @@ describe("CartPage - Comprehensive Tests", () => {
 
       expect(screen.getByTestId("toast")).toBeInTheDocument();
       expect(
-        screen.getByText("Your cart items have been successfully merged!")
+        screen.getByText("Your cart items have been successfully merged!"),
       ).toBeInTheDocument();
     });
 
@@ -1014,7 +1016,7 @@ describe("CartPage - Comprehensive Tests", () => {
       render(<CartPage />);
 
       expect(screen.getByTestId("subtotal")).toHaveTextContent(
-        "Subtotal: ₹5000"
+        "Subtotal: ₹5000",
       );
     });
 
@@ -1027,7 +1029,7 @@ describe("CartPage - Comprehensive Tests", () => {
       render(<CartPage />);
 
       expect(screen.getByTestId("shipping")).toHaveTextContent(
-        "Shipping: ₹100"
+        "Shipping: ₹100",
       );
     });
 
@@ -1057,7 +1059,7 @@ describe("CartPage - Comprehensive Tests", () => {
       render(<CartPage />);
 
       expect(screen.getByTestId("discount")).toHaveTextContent(
-        "Discount: ₹500"
+        "Discount: ₹500",
       );
     });
 
@@ -1081,7 +1083,7 @@ describe("CartPage - Comprehensive Tests", () => {
       render(<CartPage />);
 
       expect(screen.getByTestId("subtotal")).toHaveTextContent(
-        "Subtotal: ₹99999"
+        "Subtotal: ₹99999",
       );
       expect(screen.getByTestId("tax")).toHaveTextContent("Tax: ₹17999");
       expect(screen.getByTestId("total")).toHaveTextContent("Total: ₹117998");
@@ -1241,7 +1243,7 @@ describe("CartPage - Comprehensive Tests", () => {
       const { container } = render(<CartPage />);
 
       const gridContainer = container.querySelector(
-        ".lg\\:grid.lg\\:grid-cols-12"
+        ".lg\\:grid.lg\\:grid-cols-12",
       );
       expect(gridContainer).toBeInTheDocument();
     });

@@ -20,7 +20,7 @@ export default function AdminReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [selectedReviews, setSelectedReviews] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -62,8 +62,8 @@ export default function AdminReviewsPage() {
         case "approve":
           await Promise.all(
             reviewIds.map((id) =>
-              reviewsService.moderate(id, { isApproved: true })
-            )
+              reviewsService.moderate(id, { isApproved: true }),
+            ),
           );
           toast.success(`${reviewIds.length} reviews approved`);
           break;
@@ -73,8 +73,8 @@ export default function AdminReviewsPage() {
               reviewsService.moderate(id, {
                 isApproved: false,
                 moderationNotes: "Rejected by admin",
-              })
-            )
+              }),
+            ),
           );
           toast.success(`${reviewIds.length} reviews rejected`);
           break;
@@ -84,8 +84,8 @@ export default function AdminReviewsPage() {
               reviewsService.moderate(id, {
                 isApproved: false,
                 moderationNotes: "Flagged for review",
-              })
-            )
+              }),
+            ),
           );
           toast.success(`${reviewIds.length} reviews flagged`);
           break;
@@ -300,10 +300,10 @@ export default function AdminReviewsPage() {
                               review.status === "approved"
                                 ? "bg-green-100 text-green-800"
                                 : review.status === "rejected"
-                                ? "bg-red-100 text-red-800"
-                                : review.status === "flagged"
-                                ? "bg-orange-100 text-orange-800"
-                                : "bg-yellow-100 text-yellow-800"
+                                  ? "bg-red-100 text-red-800"
+                                  : review.status === "flagged"
+                                    ? "bg-orange-100 text-orange-800"
+                                    : "bg-yellow-100 text-yellow-800"
                             }`}
                           >
                             {review.status}

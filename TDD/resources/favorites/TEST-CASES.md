@@ -63,13 +63,13 @@ describe("Favorites Service", () => {
     it("should fail if already favorited", async () => {
       await favoritesService.add({ type: "product", entityId: "prod_001" });
       await expect(
-        favoritesService.add({ type: "product", entityId: "prod_001" })
+        favoritesService.add({ type: "product", entityId: "prod_001" }),
       ).rejects.toThrow("Item already in favorites");
     });
 
     it("should fail for non-existent entity", async () => {
       await expect(
-        favoritesService.add({ type: "product", entityId: "invalid" })
+        favoritesService.add({ type: "product", entityId: "invalid" }),
       ).rejects.toThrow("Product not found");
     });
   });
@@ -82,7 +82,7 @@ describe("Favorites Service", () => {
 
     it("should fail for non-existent favorite", async () => {
       await expect(favoritesService.remove("invalid")).rejects.toThrow(
-        "Favorite not found"
+        "Favorite not found",
       );
     });
   });
@@ -92,7 +92,7 @@ describe("Favorites Service", () => {
       await favoritesService.add({ type: "product", entityId: "prod_002" });
       const result = await favoritesService.removeByEntity(
         "product",
-        "prod_002"
+        "prod_002",
       );
       expect(result.success).toBe(true);
     });
@@ -259,7 +259,7 @@ describe("Favorites API Integration", () => {
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${userToken}` },
-        }
+        },
       );
       expect(response.status).toBe(200);
     });

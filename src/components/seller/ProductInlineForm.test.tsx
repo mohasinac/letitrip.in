@@ -89,7 +89,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(screen.getByText("Product Name *")).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(screen.getByText("Cancel")).toBeInTheDocument();
@@ -120,7 +120,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(screen.getByText("Update Product")).toBeInTheDocument();
@@ -129,7 +129,7 @@ describe("ProductInlineForm Component", () => {
 
     it("should show loader icon when loading", async () => {
       (productsService.create as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(
@@ -137,7 +137,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Fill required fields
@@ -147,12 +147,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "999" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "10" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "999" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "10" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
@@ -170,13 +176,21 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).not.toBeDisabled();
-      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).not.toBeDisabled();
-      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[1]).not.toBeDisabled();
-      expect(screen.getByPlaceholderText("e.g., electronics")).not.toBeDisabled();
+      expect(
+        (screen.getAllByRole("textbox") as HTMLElement[])[0],
+      ).not.toBeDisabled();
+      expect(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+      ).not.toBeDisabled();
+      expect(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+      ).not.toBeDisabled();
+      expect(
+        screen.getByPlaceholderText("e.g., electronics"),
+      ).not.toBeDisabled();
     });
   });
 
@@ -187,13 +201,19 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toHaveValue("");
+      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toHaveValue(
+        "",
+      );
       expect(screen.getByTestId("slug-input")).toHaveValue("");
-      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).toHaveValue(0);
-      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[1]).toHaveValue(0);
+      expect(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+      ).toHaveValue(0);
+      expect(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+      ).toHaveValue(0);
       expect(screen.getByPlaceholderText("e.g., electronics")).toHaveValue("");
       expect(document.querySelector("textarea")!).toHaveValue("");
     });
@@ -205,16 +225,24 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toHaveValue("Test Product");
+      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toHaveValue(
+        "Test Product",
+      );
       expect(screen.getByTestId("slug-input")).toHaveValue("test-product");
-      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).toHaveValue(1999);
-      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[1]).toHaveValue(50);
-      expect(screen.getByPlaceholderText("e.g., electronics")).toHaveValue("electronics");
+      expect(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+      ).toHaveValue(1999);
+      expect(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+      ).toHaveValue(50);
+      expect(screen.getByPlaceholderText("e.g., electronics")).toHaveValue(
+        "electronics",
+      );
       expect(document.querySelector("textarea")!).toHaveValue(
-        "Test product description"
+        "Test product description",
       );
     });
 
@@ -235,7 +263,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(document.querySelector("textarea")!).toHaveValue("");
@@ -258,11 +286,13 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Should not crash
-      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toBeInTheDocument();
+      expect(
+        (screen.getAllByRole("textbox") as HTMLElement[])[0],
+      ).toBeInTheDocument();
     });
   });
 
@@ -273,7 +303,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       const nameInput = (screen.getAllByRole("textbox") as HTMLElement[])[0];
@@ -288,7 +318,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       const slugInput = screen.getByTestId("slug-input");
@@ -303,10 +333,12 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      const priceInput = (screen.getAllByRole("spinbutton") as HTMLElement[])[0];
+      const priceInput = (
+        screen.getAllByRole("spinbutton") as HTMLElement[]
+      )[0];
       fireEvent.change(priceInput, { target: { value: "2999.99" } });
 
       expect(priceInput).toHaveValue(2999.99);
@@ -318,10 +350,12 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      const stockInput = (screen.getAllByRole("spinbutton") as HTMLElement[])[1];
+      const stockInput = (
+        screen.getAllByRole("spinbutton") as HTMLElement[]
+      )[1];
       fireEvent.change(stockInput, { target: { value: "100" } });
 
       expect(stockInput).toHaveValue(100);
@@ -333,7 +367,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       const categoryInput = screen.getByPlaceholderText("e.g., electronics");
@@ -348,7 +382,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       const descInput = document.querySelector("textarea")!;
@@ -365,7 +399,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       const nameInput = (screen.getAllByRole("textbox") as HTMLElement[])[0];
@@ -387,7 +421,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Fill all required fields
@@ -397,12 +431,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "1500" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "25" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "1500" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "25" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
@@ -441,7 +481,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Fill required fields
@@ -451,12 +491,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "999" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "10" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "999" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "10" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
@@ -474,19 +520,25 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Fill all fields except slug
       fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
         target: { value: "New Product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "999" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "10" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "999" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "10" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
@@ -502,7 +554,7 @@ describe("ProductInlineForm Component", () => {
 
     it("should show alert and not create product if shopId is missing", async () => {
       render(
-        <ProductInlineForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />
+        <ProductInlineForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />,
       );
 
       // Fill all required fields
@@ -512,12 +564,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "999" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "10" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "999" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "10" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
@@ -536,7 +594,7 @@ describe("ProductInlineForm Component", () => {
         .spyOn(console, "error")
         .mockImplementation(() => {});
       (productsService.create as jest.Mock).mockRejectedValue(
-        new Error("Creation failed")
+        new Error("Creation failed"),
       );
 
       render(
@@ -544,7 +602,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Fill required fields
@@ -554,12 +612,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "999" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "10" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "999" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "10" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
@@ -585,7 +649,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Update a field
@@ -618,7 +682,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       fireEvent.submit(screen.getByText("Update Product").closest("form")!);
@@ -633,7 +697,7 @@ describe("ProductInlineForm Component", () => {
         .spyOn(console, "error")
         .mockImplementation(() => {});
       (productsService.update as jest.Mock).mockRejectedValue(
-        new Error("Update failed")
+        new Error("Update failed"),
       );
 
       render(
@@ -642,7 +706,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       fireEvent.submit(screen.getByText("Update Product").closest("form")!);
@@ -662,7 +726,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Clear slug field
@@ -687,7 +751,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Cancel"));
@@ -697,7 +761,7 @@ describe("ProductInlineForm Component", () => {
 
     it("should disable Cancel button during submission", async () => {
       (productsService.create as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(
@@ -705,7 +769,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Fill required fields
@@ -715,12 +779,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "999" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "10" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "999" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "10" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
@@ -736,7 +806,7 @@ describe("ProductInlineForm Component", () => {
   describe("Loading State", () => {
     it("should disable submit button during submission", async () => {
       (productsService.create as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(
@@ -744,7 +814,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Fill required fields
@@ -754,12 +824,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "999" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "10" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "999" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "10" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
@@ -782,7 +858,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Fill required fields
@@ -792,12 +868,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "999" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "10" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "999" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "10" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
@@ -817,7 +899,7 @@ describe("ProductInlineForm Component", () => {
         .spyOn(console, "error")
         .mockImplementation(() => {});
       (productsService.create as jest.Mock).mockRejectedValue(
-        new Error("Creation failed")
+        new Error("Creation failed"),
       );
 
       render(
@@ -825,7 +907,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Fill required fields
@@ -835,12 +917,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "new-product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "999" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "10" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "999" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "10" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "electronics" },
       });
@@ -866,10 +954,12 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toBeRequired();
+      expect(
+        (screen.getAllByRole("textbox") as HTMLElement[])[0],
+      ).toBeRequired();
     });
 
     it("should have required attribute on price field", () => {
@@ -878,10 +968,12 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).toBeRequired();
+      expect(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+      ).toBeRequired();
     });
 
     it("should have required attribute on stock count field", () => {
@@ -890,10 +982,12 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[1]).toBeRequired();
+      expect(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+      ).toBeRequired();
     });
 
     it("should have required attribute on category ID field", () => {
@@ -902,7 +996,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(screen.getByPlaceholderText("e.g., electronics")).toBeRequired();
@@ -914,10 +1008,12 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).toHaveAttribute("min", "0");
+      expect(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+      ).toHaveAttribute("min", "0");
     });
 
     it("should have step=0.01 on price field", () => {
@@ -926,10 +1022,12 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[0]).toHaveAttribute("step", "0.01");
+      expect(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+      ).toHaveAttribute("step", "0.01");
     });
 
     it("should have min=0 on stock count field", () => {
@@ -938,10 +1036,12 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      expect((screen.getAllByRole("spinbutton") as HTMLElement[])[1]).toHaveAttribute("min", "0");
+      expect(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+      ).toHaveAttribute("min", "0");
     });
 
     it("should parse price as float", () => {
@@ -950,10 +1050,12 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      const priceInput = (screen.getAllByRole("spinbutton") as HTMLElement[])[0];
+      const priceInput = (
+        screen.getAllByRole("spinbutton") as HTMLElement[]
+      )[0];
       fireEvent.change(priceInput, { target: { value: "99.99" } });
 
       expect(priceInput).toHaveValue(99.99);
@@ -965,10 +1067,12 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
-      const stockInput = (screen.getAllByRole("spinbutton") as HTMLElement[])[1];
+      const stockInput = (
+        screen.getAllByRole("spinbutton") as HTMLElement[]
+      )[1];
       fireEvent.change(stockInput, { target: { value: "42.7" } });
 
       // Should be parsed as integer
@@ -983,7 +1087,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(screen.getByText("Product Name *")).toBeInTheDocument();
@@ -998,12 +1102,12 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(screen.getByPlaceholderText("e.g., electronics")).toHaveAttribute(
         "placeholder",
-        "e.g., electronics"
+        "e.g., electronics",
       );
     });
 
@@ -1013,7 +1117,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(screen.getByText(/Price \(₹\)/)).toBeInTheDocument();
@@ -1031,7 +1135,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
@@ -1040,12 +1144,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "expensive-product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "999999999.99" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "1" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "999999999.99" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "1" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "luxury" },
       });
@@ -1056,7 +1166,7 @@ describe("ProductInlineForm Component", () => {
         expect(productsService.create).toHaveBeenCalledWith(
           expect.objectContaining({
             price: 999999999.99,
-          })
+          }),
         );
       });
     });
@@ -1071,7 +1181,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
@@ -1080,12 +1190,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "bulk-product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "100" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "999999" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "100" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "999999" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "bulk" },
       });
@@ -1096,7 +1212,7 @@ describe("ProductInlineForm Component", () => {
         expect(productsService.create).toHaveBeenCalledWith(
           expect.objectContaining({
             stockCount: 999999,
-          })
+          }),
         );
       });
     });
@@ -1107,7 +1223,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       const longName = "A".repeat(500);
@@ -1115,7 +1231,9 @@ describe("ProductInlineForm Component", () => {
         target: { value: longName },
       });
 
-      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toHaveValue(longName);
+      expect((screen.getAllByRole("textbox") as HTMLElement[])[0]).toHaveValue(
+        longName,
+      );
     });
 
     it("should handle very long descriptions", () => {
@@ -1124,7 +1242,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       const longDesc = "B".repeat(5000);
@@ -1145,7 +1263,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       fireEvent.change((screen.getAllByRole("textbox") as HTMLElement[])[0], {
@@ -1154,12 +1272,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "100" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "10" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "100" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "10" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "general" },
       });
@@ -1170,14 +1294,14 @@ describe("ProductInlineForm Component", () => {
         expect(productsService.create).toHaveBeenCalledWith(
           expect.objectContaining({
             description: "",
-          })
+          }),
         );
       });
     });
 
     it("should handle rapid form submissions", async () => {
       (productsService.create as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
 
       render(
@@ -1185,7 +1309,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Fill required fields
@@ -1195,12 +1319,18 @@ describe("ProductInlineForm Component", () => {
       fireEvent.change(screen.getByTestId("slug-input"), {
         target: { value: "product" },
       });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[0], {
-        target: { value: "100" },
-      });
-      fireEvent.change((screen.getAllByRole("spinbutton") as HTMLElement[])[1], {
-        target: { value: "10" },
-      });
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[0],
+        {
+          target: { value: "100" },
+        },
+      );
+      fireEvent.change(
+        (screen.getAllByRole("spinbutton") as HTMLElement[])[1],
+        {
+          target: { value: "10" },
+        },
+      );
       fireEvent.change(screen.getByPlaceholderText("e.g., electronics"), {
         target: { value: "general" },
       });
@@ -1227,7 +1357,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(container.querySelector("form")).toBeInTheDocument();
@@ -1239,7 +1369,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(container.querySelector("form")).toHaveClass("space-y-4");
@@ -1251,7 +1381,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Check that all main inputs (except slug which is mocked) have proper classes
@@ -1267,7 +1397,7 @@ describe("ProductInlineForm Component", () => {
           "w-full",
           "rounded-lg",
           "border",
-          "border-gray-300"
+          "border-gray-300",
         );
       });
     });
@@ -1278,7 +1408,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       const textarea = document.querySelector("textarea")!;
@@ -1286,7 +1416,7 @@ describe("ProductInlineForm Component", () => {
         "w-full",
         "rounded-lg",
         "border",
-        "border-gray-300"
+        "border-gray-300",
       );
       expect(textarea.tagName).toBe("TEXTAREA");
     });
@@ -1297,7 +1427,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       const buttonContainer = screen
@@ -1314,7 +1444,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       // Check that labels exist for all fields
@@ -1331,7 +1461,7 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(screen.getByText("Cancel")).toHaveAttribute("type", "button");
@@ -1343,18 +1473,13 @@ describe("ProductInlineForm Component", () => {
           shopId="shop-1"
           onSuccess={mockOnSuccess}
           onCancel={mockOnCancel}
-        />
+        />,
       );
 
       expect(screen.getByText("Create Product")).toHaveAttribute(
         "type",
-        "submit"
+        "submit",
       );
     });
   });
 });
-
-
-
-
-

@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ordersService } from "@/services/orders.service";
-import { DataTable } from "@/components/common/DataTable";
+import { MobileDataTable } from "@/components/mobile/MobileDataTable";
+import { MobilePullToRefresh } from "@/components/mobile/MobilePullToRefresh";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
 import type { OrderCardFE } from "@/types/frontend/order.types";
@@ -141,81 +142,116 @@ export default function OrdersPage() {
     },
   ];
 
+  // Mobile card renderer for orders
+  const renderMobileOrderCard = (order: OrderCardFE) => (
+    <div className="bg-white border border-gray-200 rounded-lg p-4">
+      <div className="flex items-start justify-between mb-2">
+        <div>
+          <p className="font-medium text-gray-900">#{order.orderNumber}</p>
+          <p className="text-sm text-gray-500">
+            {new Date(order.createdAt).toLocaleDateString("en-IN")}
+          </p>
+        </div>
+        <StatusBadge status={order.status} />
+      </div>
+      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+        <div>
+          <p className="text-xs text-gray-500">{order.shopName || "N/A"}</p>
+          <p className="font-semibold text-gray-900">
+            ₹{order.total.toLocaleString()}
+          </p>
+        </div>
+        <StatusBadge status={order.paymentStatus} />
+      </div>
+    </div>
+  );
+
+  // Handle pull-to-refresh
+  const handleRefresh = async () => {
+    await loadOrders();
+  };
+
   if (!user) {
     router.push("/login?redirect=/user/orders");
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-          <p className="text-gray-600 mt-2">Track and manage your orders</p>
-        </div>
+    <MobilePullToRefresh onRefresh={handleRefresh} className="min-h-screen">
+      <div className="bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
+            <p className="text-gray-600 mt-2">Track and manage your orders</p>
+            <p className="text-xs text-gray-400 mt-1 lg:hidden">
+              Pull down to refresh
+            </p>
+          </div>
 
-        <div className="bg-white rounded-lg shadow-sm">
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2
-                className="w-8 h-8 text-primary animate-spin"
-                role="status"
+          <div className="bg-white rounded-lg shadow-sm">
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2
+                  className="w-8 h-8 text-primary animate-spin"
+                  role="status"
+                />
+              </div>
+            ) : orders.length === 0 ? (
+              <EmptyState
+                title="No orders found"
+                description="You haven't placed any orders yet"
+                action={{
+                  label: "Start Shopping",
+                  onClick: () => router.push("/"),
+                }}
               />
-            </div>
-          ) : orders.length === 0 ? (
-            <EmptyState
-              title="No orders found"
-              description="You haven't placed any orders yet"
-              action={{
-                label: "Start Shopping",
-                onClick: () => router.push("/"),
-              }}
-            />
-          ) : (
-            <>
-              <DataTable
-                data={orders}
-                columns={columns}
-                keyExtractor={(order) => order.id}
-                isLoading={loading}
-                onRowClick={(order: any) =>
-                  router.push(`/user/orders/${order.id}`)
-                }
-              />
+            ) : (
+              <>
+                <MobileDataTable
+                  data={orders}
+                  columns={columns}
+                  keyExtractor={(order) => order.id}
+                  isLoading={loading}
+                  onRowClick={(order) =>
+                    router.push(`/user/orders/${order.id}`)
+                  }
+                  renderMobileCard={renderMobileOrderCard}
+                />
 
-              {/* Pagination Controls */}
-              {orders.length > 0 && (
-                <div className="border-t border-gray-200 px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <button
-                      onClick={handlePrevPage}
-                      disabled={currentPage === 1 || loading}
-                      className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                      Previous
-                    </button>
+                {/* Pagination Controls */}
+                {orders.length > 0 && (
+                  <div className="border-t border-gray-200 px-6 py-4">
+                    <div className="flex items-center justify-between">
+                      <button
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 1 || loading}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-target"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        <span className="hidden sm:inline">Previous</span>
+                      </button>
 
-                    <span className="text-sm text-gray-600">
-                      Page {currentPage} • {orders.length} orders
-                    </span>
+                      <span className="text-sm text-gray-600">
+                        Page {currentPage}
+                      </span>
 
-                    <button
-                      onClick={handleNextPage}
-                      disabled={!hasNextPage || loading}
-                      className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Next
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
+                      <button
+                        onClick={handleNextPage}
+                        disabled={!hasNextPage || loading}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-target"
+                      >
+                        <span className="hidden sm:inline">Next</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </>
-          )}
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </MobilePullToRefresh>
   );
 }
 

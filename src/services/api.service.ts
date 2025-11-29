@@ -52,7 +52,7 @@ class ApiService {
     }
 
     console.log(
-      `[API Cache] Initialized ${this.cacheConfig.size} cache configurations`
+      `[API Cache] Initialized ${this.cacheConfig.size} cache configurations`,
     );
   }
 
@@ -81,7 +81,7 @@ class ApiService {
    */
   private isStaleButUsable(
     entry: CacheEntry<any>,
-    config: CacheConfig
+    config: CacheConfig,
   ): boolean {
     const staleUntil = entry.expiresAt + (config.staleWhileRevalidate || 0);
     return Date.now() < staleUntil;
@@ -92,7 +92,7 @@ class ApiService {
    */
   private getCachedData<T>(
     cacheKey: string,
-    config: CacheConfig | null
+    config: CacheConfig | null,
   ): {
     data: T | null;
     status: "fresh" | "stale" | "miss";
@@ -145,7 +145,7 @@ class ApiService {
    */
   private async deduplicateRequest<T>(
     cacheKey: string,
-    requestFn: () => Promise<T>
+    requestFn: () => Promise<T>,
   ): Promise<T> {
     // Check if there's already a pending request
     if (this.pendingRequests.has(cacheKey)) {
@@ -176,7 +176,7 @@ class ApiService {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<T> {
     // Handle server-side requests (when baseUrl is relative)
     let url = `${this.baseUrl}${endpoint}`;
@@ -209,7 +209,7 @@ class ApiService {
       if (response.status === 429) {
         const retryAfter = response.headers.get("Retry-After");
         throw new Error(
-          `Too many requests. Please try again in ${retryAfter} seconds.`
+          `Too many requests. Please try again in ${retryAfter} seconds.`,
         );
       }
 
@@ -268,7 +268,7 @@ class ApiService {
       }
     }
     console.log(
-      `[API Cache] Invalidated ${count} entries matching: ${pattern}`
+      `[API Cache] Invalidated ${count} entries matching: ${pattern}`,
     );
   }
 
@@ -296,11 +296,11 @@ class ApiService {
 
     const totalHits = Array.from(this.cacheHits.values()).reduce(
       (a, b) => a + b,
-      0
+      0,
     );
     const totalMisses = Array.from(this.cacheMisses.values()).reduce(
       (a, b) => a + b,
-      0
+      0,
     );
     const hitRate =
       totalHits + totalMisses > 0 ? totalHits / (totalHits + totalMisses) : 0;
@@ -354,7 +354,7 @@ class ApiService {
         this.request<T>(endpoint, {
           ...options,
           method: "GET",
-        })
+        }),
       )
         .then((freshData) => {
           // Update cache with fresh data
@@ -365,7 +365,7 @@ class ApiService {
         .catch((error) => {
           console.error(
             `[API Cache] Revalidation failed for ${endpoint}:`,
-            error
+            error,
           );
         });
 
@@ -383,7 +383,7 @@ class ApiService {
       this.request<T>(endpoint, {
         ...options,
         method: "GET",
-      })
+      }),
     );
 
     // Store in cache if config exists
@@ -397,7 +397,7 @@ class ApiService {
   async post<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit
+    options?: RequestInit,
   ): Promise<T> {
     // For POST requests, include body in cache key for idempotent operations
     // This allows deduplication of identical POST requests (e.g., search queries)
@@ -412,14 +412,14 @@ class ApiService {
         ...options,
         method: "POST",
         body,
-      })
+      }),
     );
   }
 
   async put<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit
+    options?: RequestInit,
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -431,7 +431,7 @@ class ApiService {
   async patch<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit
+    options?: RequestInit,
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -443,7 +443,7 @@ class ApiService {
   async delete<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit
+    options?: RequestInit,
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -515,7 +515,7 @@ class ApiService {
       this.cacheConfig.set(pattern, config);
     }
     console.log(
-      `[API Cache] Batch configured ${Object.keys(configs).length} endpoints`
+      `[API Cache] Batch configured ${Object.keys(configs).length} endpoints`,
     );
   }
 }

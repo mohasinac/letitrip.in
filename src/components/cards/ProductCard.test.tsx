@@ -179,7 +179,7 @@ describe("ProductCard", () => {
           {...mockProduct}
           inStock={false}
           onAddToCart={onAddToCart}
-        />
+        />,
       );
 
       expect(screen.queryByText("Add to Cart")).not.toBeInTheDocument();
@@ -204,7 +204,7 @@ describe("ProductCard", () => {
     it("renders favorite button when callback provided", () => {
       const onToggleFavorite = jest.fn();
       render(
-        <ProductCard {...mockProduct} onToggleFavorite={onToggleFavorite} />
+        <ProductCard {...mockProduct} onToggleFavorite={onToggleFavorite} />,
       );
       expect(screen.getByTestId("favorite-button")).toBeInTheDocument();
     });
@@ -212,7 +212,7 @@ describe("ProductCard", () => {
     it("calls onToggleFavorite when clicked", () => {
       const onToggleFavorite = jest.fn();
       render(
-        <ProductCard {...mockProduct} onToggleFavorite={onToggleFavorite} />
+        <ProductCard {...mockProduct} onToggleFavorite={onToggleFavorite} />,
       );
 
       const button = screen.getByTestId("favorite-button");
@@ -228,7 +228,7 @@ describe("ProductCard", () => {
           {...mockProduct}
           isFavorite={true}
           onToggleFavorite={onToggleFavorite}
-        />
+        />,
       );
 
       const button = screen.getByTestId("favorite-button");
@@ -242,7 +242,7 @@ describe("ProductCard", () => {
           {...mockProduct}
           isFavorite={false}
           onToggleFavorite={onToggleFavorite}
-        />
+        />,
       );
 
       const button = screen.getByTestId("favorite-button");
@@ -284,7 +284,7 @@ describe("ProductCard", () => {
   describe("Compact Mode", () => {
     it("applies compact styles when compact prop is true", () => {
       const { container } = render(
-        <ProductCard {...mockProduct} compact={true} />
+        <ProductCard {...mockProduct} compact={true} />,
       );
       const nameElement = screen.getByText("Vintage Watch");
       expect(nameElement).toHaveClass("text-sm");
@@ -310,21 +310,21 @@ describe("ProductCard", () => {
         <ProductCard
           {...mockProduct}
           images={["img1.jpg", "img2.jpg", "img3.jpg"]}
-        />
+        />,
       );
       expect(screen.getByText("3")).toBeInTheDocument();
     });
 
     it("shows video count badge when videos provided", () => {
       render(
-        <ProductCard {...mockProduct} videos={["video1.mp4", "video2.mp4"]} />
+        <ProductCard {...mockProduct} videos={["video1.mp4", "video2.mp4"]} />,
       );
       expect(screen.getByText("2")).toBeInTheDocument();
     });
 
     it("shows media indicators when multiple media items", () => {
       const { container } = render(
-        <ProductCard {...mockProduct} images={["img1.jpg", "img2.jpg"]} />
+        <ProductCard {...mockProduct} images={["img1.jpg", "img2.jpg"]} />,
       );
       // Media indicators would be shown on hover, but we can't easily test hover state
       expect(container).toBeInTheDocument();
@@ -385,7 +385,7 @@ describe("ProductCard", () => {
       const { shopId, ...productWithoutShopId } = mockProduct;
       const onAddToCart = jest.fn();
       render(
-        <ProductCard {...productWithoutShopId} onAddToCart={onAddToCart} />
+        <ProductCard {...productWithoutShopId} onAddToCart={onAddToCart} />,
       );
 
       const button = screen.getByText("Add to Cart");
@@ -395,7 +395,7 @@ describe("ProductCard", () => {
         "prod1",
         expect.objectContaining({
           shopId: "vintage-store",
-        })
+        }),
       );
     });
 
@@ -429,7 +429,7 @@ describe("ProductCard", () => {
     it("has accessible favorite button", () => {
       const onToggleFavorite = jest.fn();
       render(
-        <ProductCard {...mockProduct} onToggleFavorite={onToggleFavorite} />
+        <ProductCard {...mockProduct} onToggleFavorite={onToggleFavorite} />,
       );
       const button = screen.getByTestId("favorite-button");
       expect(button).toHaveAttribute("aria-label");

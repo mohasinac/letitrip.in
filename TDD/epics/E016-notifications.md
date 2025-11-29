@@ -70,6 +70,33 @@ interface NotificationBE {
 
 ---
 
+## Implementation Status
+
+**Status**: ⬜ PENDING (API is placeholder)
+
+**Current State**:
+
+- API at `/api/notifications` returns 501 Not Implemented
+- No notification service implemented
+- No preference management
+
+**Requires Implementation**:
+
+- Notifications API with Firestore persistence
+- Notification service for creating notifications
+- Email notification integration (Resend/SendGrid)
+- Preference management API
+- Notification triggers from other systems:
+  - Order status changes (E005)
+  - Auction events (E003)
+  - Ticket updates (E010)
+  - Price drops (E022)
+  - Messages (E023)
+
+**Priority**: HIGH - Many features depend on this epic
+
+---
+
 ## Test Documentation
 
 - **API Specs**: `/TDD/resources/notifications/API-SPECS.md`
@@ -77,8 +104,30 @@ interface NotificationBE {
 
 ### Test Coverage
 
-- Unit tests for notification service
-- Unit tests for preference management
-- Integration tests for all endpoints
-- E2E tests for order and auction notification flows
-- RBAC tests for notification access
+| Test File                                         | Status | Coverage          |
+| ------------------------------------------------- | ------ | ----------------- |
+| `src/app/api/notifications/(tests)/route.test.ts` | 📋     | Notifications API |
+
+### Placeholder Tests
+
+All tests in `route.test.ts` are `it.todo()` placeholders covering:
+
+- GET /api/notifications (list)
+- GET /api/notifications/unread-count
+- PUT /api/notifications/:id/read
+- PUT /api/notifications/mark-all-read
+- DELETE /api/notifications/:id
+- DELETE /api/notifications/clear-all
+- POST /api/notifications/preferences
+- GET /api/notifications/preferences
+
+---
+
+## Pending Routes
+
+| Route                           | Priority  | Status     | Notes                                                               |
+| ------------------------------- | --------- | ---------- | ------------------------------------------------------------------- |
+| `/user/notifications`           | 🔴 HIGH   | ⬜ PENDING | User notifications page. Depends on this epic's API implementation. |
+| `/admin/settings/notifications` | 🟡 MEDIUM | ⬜ PENDING | Admin notification settings. Part of E021.                          |
+
+**See**: `TDD/PENDING-ROUTES.md` for full details

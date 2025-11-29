@@ -54,7 +54,7 @@ describe("NotFound Page", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/page you're looking for doesn't exist/i)
+          screen.getByText(/page you're looking for doesn't exist/i),
         ).toBeInTheDocument();
       });
     });
@@ -90,7 +90,7 @@ describe("NotFound Page", () => {
       await waitFor(() => {
         expect(screen.getByText("Product Not Found")).toBeInTheDocument();
         expect(
-          screen.getByText(/product you're looking for doesn't exist/i)
+          screen.getByText(/product you're looking for doesn't exist/i),
         ).toBeInTheDocument();
       });
     });
@@ -192,7 +192,7 @@ describe("NotFound Page", () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByText("Requested Resource")
+          screen.queryByText("Requested Resource"),
         ).not.toBeInTheDocument();
       });
     });
@@ -213,7 +213,7 @@ describe("NotFound Page", () => {
       await waitFor(() => {
         // Developer info should not be visible
         expect(
-          screen.queryByText(/Developer Information/i)
+          screen.queryByText(/Developer Information/i),
         ).not.toBeInTheDocument();
         expect(screen.queryByText("Debug info here")).not.toBeInTheDocument();
       });

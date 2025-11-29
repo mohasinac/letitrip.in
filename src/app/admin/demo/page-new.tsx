@@ -36,7 +36,7 @@ export default function AdminDemoPage() {
       const data = await response.json();
       setSummary(data.summary);
       toast.success(
-        `Demo data generated successfully with ${DEMO_PREFIX} prefix!`
+        `Demo data generated successfully with ${DEMO_PREFIX} prefix!`,
       );
     } catch (error: any) {
       toast.error(`Generation failed: ${error.message}`);
@@ -48,7 +48,7 @@ export default function AdminDemoPage() {
   const handleCleanupAll = async () => {
     if (
       !confirm(
-        `Are you sure you want to delete ALL demo data with ${DEMO_PREFIX} prefix? This action cannot be undone.`
+        `Are you sure you want to delete ALL demo data with ${DEMO_PREFIX} prefix? This action cannot be undone.`,
       )
     ) {
       return;

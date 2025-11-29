@@ -24,7 +24,7 @@ describe("GlobalError Component", () => {
       const mockReset = jest.fn();
 
       const { container } = render(
-        <GlobalError error={mockError} reset={mockReset} />
+        <GlobalError error={mockError} reset={mockReset} />,
       );
 
       // Global error renders html/body tags but they won't be in container
@@ -40,7 +40,7 @@ describe("GlobalError Component", () => {
       const mockReset = jest.fn();
 
       const { container } = render(
-        <GlobalError error={mockError} reset={mockReset} />
+        <GlobalError error={mockError} reset={mockReset} />,
       );
 
       const svg = container.querySelector("svg");
@@ -58,7 +58,7 @@ describe("GlobalError Component", () => {
       render(<GlobalError error={mockError} reset={mockReset} />);
 
       expect(
-        screen.getByRole("heading", { name: /critical error/i })
+        screen.getByRole("heading", { name: /critical error/i }),
       ).toBeInTheDocument();
     });
 
@@ -72,10 +72,10 @@ describe("GlobalError Component", () => {
       render(<GlobalError error={mockError} reset={mockReset} />);
 
       expect(
-        screen.getByText(/a critical error occurred/i)
+        screen.getByText(/a critical error occurred/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/please refresh the page or contact support/i)
+        screen.getByText(/please refresh the page or contact support/i),
       ).toBeInTheDocument();
     });
 
@@ -89,7 +89,7 @@ describe("GlobalError Component", () => {
       render(<GlobalError error={mockError} reset={mockReset} />);
 
       expect(
-        screen.getByRole("button", { name: /try again/i })
+        screen.getByRole("button", { name: /try again/i }),
       ).toBeInTheDocument();
     });
 
@@ -103,7 +103,7 @@ describe("GlobalError Component", () => {
       render(<GlobalError error={mockError} reset={mockReset} />);
 
       expect(
-        screen.getByRole("button", { name: /go home/i })
+        screen.getByRole("button", { name: /go home/i }),
       ).toBeInTheDocument();
     });
   });
@@ -183,7 +183,7 @@ describe("GlobalError Component", () => {
       const mockReset = jest.fn();
 
       const { container } = render(
-        <GlobalError error={mockError} reset={mockReset} />
+        <GlobalError error={mockError} reset={mockReset} />,
       );
 
       const backgroundDiv = container.querySelector(".bg-gradient-to-br");
@@ -199,7 +199,7 @@ describe("GlobalError Component", () => {
       const mockReset = jest.fn();
 
       const { container } = render(
-        <GlobalError error={mockError} reset={mockReset} />
+        <GlobalError error={mockError} reset={mockReset} />,
       );
 
       const card = container.querySelector(".bg-white.rounded-2xl.shadow-2xl");
@@ -219,7 +219,7 @@ describe("GlobalError Component", () => {
       expect(tryAgainButton).toHaveClass(
         "bg-red-600",
         "text-white",
-        "hover:bg-red-700"
+        "hover:bg-red-700",
       );
     });
 
@@ -236,7 +236,7 @@ describe("GlobalError Component", () => {
       expect(goHomeButton).toHaveClass(
         "bg-gray-100",
         "text-gray-700",
-        "hover:bg-gray-200"
+        "hover:bg-gray-200",
       );
     });
 
@@ -248,7 +248,7 @@ describe("GlobalError Component", () => {
       const mockReset = jest.fn();
 
       const { container } = render(
-        <GlobalError error={mockError} reset={mockReset} />
+        <GlobalError error={mockError} reset={mockReset} />,
       );
 
       const iconContainer = container.querySelector(".bg-red-100.rounded-full");
@@ -281,10 +281,10 @@ describe("GlobalError Component", () => {
       render(<GlobalError error={mockError} reset={mockReset} />);
 
       expect(
-        screen.getByRole("button", { name: /try again/i })
+        screen.getByRole("button", { name: /try again/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /go home/i })
+        screen.getByRole("button", { name: /go home/i }),
       ).toBeInTheDocument();
     });
 
@@ -296,7 +296,7 @@ describe("GlobalError Component", () => {
       const mockReset = jest.fn();
 
       const { container } = render(
-        <GlobalError error={mockError} reset={mockReset} />
+        <GlobalError error={mockError} reset={mockReset} />,
       );
 
       const svg = container.querySelector("svg");
@@ -314,10 +314,10 @@ describe("GlobalError Component", () => {
       render(<GlobalError error={null as any} reset={mockReset} />);
 
       expect(
-        screen.getByRole("heading", { name: /critical error/i })
+        screen.getByRole("heading", { name: /critical error/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/a critical error occurred/i)
+        screen.getByText(/a critical error occurred/i),
       ).toBeInTheDocument();
     });
 
@@ -347,7 +347,7 @@ describe("GlobalError Component", () => {
       render(<GlobalError error={mockError} reset={mockReset} />);
 
       expect(
-        screen.getByRole("heading", { name: /critical error/i })
+        screen.getByRole("heading", { name: /critical error/i }),
       ).toBeInTheDocument();
     });
 
@@ -361,7 +361,7 @@ describe("GlobalError Component", () => {
       render(<GlobalError error={mockError} reset={mockReset} />);
 
       expect(
-        screen.getByText(/a critical error occurred/i)
+        screen.getByText(/a critical error occurred/i),
       ).toBeInTheDocument();
     });
   });
@@ -376,14 +376,14 @@ describe("GlobalError Component", () => {
       const mockReset = jest.fn();
 
       const { container } = render(
-        <GlobalError error={mockError} reset={mockReset} />
+        <GlobalError error={mockError} reset={mockReset} />,
       );
 
       const backgroundDiv = container.querySelector(".min-h-screen");
       expect(backgroundDiv).toHaveClass(
         "flex",
         "items-center",
-        "justify-center"
+        "justify-center",
       );
     });
 
@@ -395,7 +395,7 @@ describe("GlobalError Component", () => {
       const mockReset = jest.fn();
 
       const { container } = render(
-        <GlobalError error={mockError} reset={mockReset} />
+        <GlobalError error={mockError} reset={mockReset} />,
       );
 
       const buttonContainer = container.querySelector(".flex.flex-col.gap-3");
@@ -410,7 +410,7 @@ describe("GlobalError Component", () => {
       const mockReset = jest.fn();
 
       const { container } = render(
-        <GlobalError error={mockError} reset={mockReset} />
+        <GlobalError error={mockError} reset={mockReset} />,
       );
 
       const backgroundDiv = container.querySelector(".px-4");
@@ -430,16 +430,16 @@ describe("GlobalError Component", () => {
       render(<GlobalError error={mockError} reset={mockReset} />);
 
       expect(
-        screen.getByRole("heading", { name: /critical error/i })
+        screen.getByRole("heading", { name: /critical error/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/a critical error occurred/i)
+        screen.getByText(/a critical error occurred/i),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /try again/i })
+        screen.getByRole("button", { name: /try again/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /go home/i })
+        screen.getByRole("button", { name: /go home/i }),
       ).toBeInTheDocument();
     });
 
@@ -451,7 +451,7 @@ describe("GlobalError Component", () => {
       const mockReset = jest.fn();
 
       const { rerender } = render(
-        <GlobalError error={mockError} reset={mockReset} />
+        <GlobalError error={mockError} reset={mockReset} />,
       );
 
       const tryAgainButton = screen.getByRole("button", { name: /try again/i });

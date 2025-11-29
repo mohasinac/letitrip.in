@@ -94,7 +94,7 @@ export const validateFutureDate = (value: string): string | null => {
 // Bid amount validation
 export const validateBidAmount = (
   value: number,
-  formData?: Record<string, any>
+  formData?: Record<string, any>,
 ): string | null => {
   if (value === undefined || value === null) return "Bid amount is required";
   if (value < 0) return "Bid amount cannot be negative";
@@ -108,7 +108,7 @@ export const validateBidAmount = (
  * Product Fields - Complete set for inline editing
  */
 export const getProductFields = (
-  categories: Array<{ id: string; name: string }>
+  categories: Array<{ id: string; name: string }>,
 ): InlineField[] => [
   {
     key: "images",
@@ -244,7 +244,7 @@ export const getProductFields = (
  * Auction Fields - Complete set for inline editing
  */
 export const getAuctionFields = (
-  categories?: Array<{ id: string; name: string }>
+  categories?: Array<{ id: string; name: string }>,
 ): InlineField[] => [
   {
     key: "images",
@@ -391,7 +391,7 @@ export const getAuctionFields = (
  */
 export const getCategoryFields = (
   allCategories: Array<{ id: string; name: string }>,
-  editingId?: string
+  editingId?: string,
 ): InlineField[] => [
   {
     key: "image",

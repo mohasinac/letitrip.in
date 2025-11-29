@@ -36,7 +36,7 @@ interface ResolveDisputeData {
 class ReturnsService {
   // List returns (role-filtered)
   async list(
-    filters?: Partial<ReturnFiltersBE>
+    filters?: Partial<ReturnFiltersBE>,
   ): Promise<PaginatedResponseFE<ReturnFE>> {
     const params = new URLSearchParams();
 
@@ -51,9 +51,8 @@ class ReturnsService {
     const queryString = params.toString();
     const endpoint = queryString ? `/returns?${queryString}` : "/returns";
 
-    const response = await apiService.get<PaginatedResponseBE<ReturnBE>>(
-      endpoint
-    );
+    const response =
+      await apiService.get<PaginatedResponseBE<ReturnBE>>(endpoint);
 
     return {
       data: response.data.map(returnBEtoFE),
@@ -96,7 +95,7 @@ class ReturnsService {
   // Resolve dispute (admin only)
   async resolveDispute(
     id: string,
-    data: ResolveDisputeData
+    data: ResolveDisputeData,
   ): Promise<ReturnFE> {
     const response: any = await apiService.post(`/returns/${id}/resolve`, data);
     return returnBEtoFE(response.data);

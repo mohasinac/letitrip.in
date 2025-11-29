@@ -30,7 +30,7 @@ const CURRENCY_CONFIGS: Record<Currency, CurrencyConfig> = {
 export function formatPrice(
   value: number | null | undefined,
   currency: Currency = "INR",
-  showSymbol: boolean = true
+  showSymbol: boolean = true,
 ): string {
   // Handle null, undefined, NaN
   if (value == null || isNaN(value)) {
@@ -62,7 +62,7 @@ export function formatPrice(
  */
 export function safeToLocaleString(
   value: number | null | undefined,
-  locale: string = "en-IN"
+  locale: string = "en-IN",
 ): string {
   if (value == null || isNaN(value)) {
     return "0";
@@ -84,7 +84,7 @@ export function safeToLocaleString(
 export function formatPriceRange(
   min: number | null | undefined,
   max: number | null | undefined,
-  currency: Currency = "INR"
+  currency: Currency = "INR",
 ): string {
   if (min == null || max == null || isNaN(min) || isNaN(max)) {
     return "N/A";
@@ -106,7 +106,7 @@ export function formatPriceRange(
  */
 export function formatDiscount(
   originalPrice: number | null | undefined,
-  currentPrice: number | null | undefined
+  currentPrice: number | null | undefined,
 ): string | null {
   if (
     originalPrice == null ||

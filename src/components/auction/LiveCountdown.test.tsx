@@ -156,7 +156,7 @@ describe("LiveCountdown", () => {
         <LiveCountdown
           endTime={endTime}
           serverTime={serverTime.toISOString()}
-        />
+        />,
       );
 
       // Should show ~1m (with offset applied)
@@ -172,7 +172,7 @@ describe("LiveCountdown", () => {
         <LiveCountdown
           endTime={endTime}
           serverTime={serverTime.toISOString()}
-        />
+        />,
       );
 
       // Should show ~1m (with offset applied)
@@ -184,7 +184,7 @@ describe("LiveCountdown", () => {
     it("renders compact layout when compact=true", () => {
       const futureDate = new Date(Date.now() + 10 * 60 * 1000);
       const { container } = render(
-        <LiveCountdown endTime={futureDate} compact={true} />
+        <LiveCountdown endTime={futureDate} compact={true} />,
       );
 
       const compactEl = container.querySelector(".inline-flex");
@@ -194,7 +194,7 @@ describe("LiveCountdown", () => {
     it("renders full layout when compact=false", () => {
       const futureDate = new Date(Date.now() + 10 * 60 * 1000);
       const { container } = render(
-        <LiveCountdown endTime={futureDate} compact={false} />
+        <LiveCountdown endTime={futureDate} compact={false} />,
       );
 
       const fullEl = container.querySelector(".p-4.rounded-lg.border-2");
@@ -276,7 +276,7 @@ describe("LiveCountdown", () => {
     it("applies custom className", () => {
       const futureDate = new Date(Date.now() + 10 * 60 * 1000);
       const { container } = render(
-        <LiveCountdown endTime={futureDate} className="custom-class" />
+        <LiveCountdown endTime={futureDate} className="custom-class" />,
       );
       expect(container.querySelector(".custom-class")).toBeInTheDocument();
     });

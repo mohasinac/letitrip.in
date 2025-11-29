@@ -68,9 +68,12 @@ describe("/api/orders/[id]/cancel", () => {
     it("should return 401 if user is not authenticated", async () => {
       mockGetCurrentUser.mockResolvedValue(null);
 
-      const req = new NextRequest("http://localhost/api/orders/order123/cancel", {
-        method: "POST",
-      });
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/cancel",
+        {
+          method: "POST",
+        },
+      );
       const context = createContext("order123");
 
       const response = await POST(req, context);
@@ -82,13 +85,21 @@ describe("/api/orders/[id]/cancel", () => {
     });
 
     it("should return 404 if order does not exist", async () => {
-      mockGetCurrentUser.mockResolvedValue({ id: "user1", email: "user1@test.com", name: "User 1", role: "user" });
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
       mockDoc.exists = false;
 
-      const req = new NextRequest("http://localhost/api/orders/order123/cancel", {
-        method: "POST",
-        body: JSON.stringify({ reason: "Changed my mind" }),
-      });
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/cancel",
+        {
+          method: "POST",
+          body: JSON.stringify({ reason: "Changed my mind" }),
+        },
+      );
       const context = createContext("order123");
 
       const response = await POST(req, context);
@@ -100,16 +111,24 @@ describe("/api/orders/[id]/cancel", () => {
     });
 
     it("should return 403 if user does not own the order", async () => {
-      mockGetCurrentUser.mockResolvedValue({ id: "user2", email: "user2@test.com", name: "User 2", role: "user" });
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user2",
+        email: "user2@test.com",
+        name: "User 2",
+        role: "user",
+      });
       mockDoc.data.mockReturnValue({
         user_id: "user1",
         status: "pending",
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/cancel", {
-        method: "POST",
-        body: JSON.stringify({ reason: "Changed my mind" }),
-      });
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/cancel",
+        {
+          method: "POST",
+          body: JSON.stringify({ reason: "Changed my mind" }),
+        },
+      );
       const context = createContext("order123");
 
       const response = await POST(req, context);
@@ -121,16 +140,24 @@ describe("/api/orders/[id]/cancel", () => {
     });
 
     it("should allow admin to cancel any order", async () => {
-      mockGetCurrentUser.mockResolvedValue({ id: "admin1", email: "admin@test.com", name: "Admin", role: "admin" });
+      mockGetCurrentUser.mockResolvedValue({
+        id: "admin1",
+        email: "admin@test.com",
+        name: "Admin",
+        role: "admin",
+      });
       mockDoc.data.mockReturnValue({
         user_id: "user1",
         status: "pending",
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/cancel", {
-        method: "POST",
-        body: JSON.stringify({ reason: "Admin cancellation" }),
-      });
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/cancel",
+        {
+          method: "POST",
+          body: JSON.stringify({ reason: "Admin cancellation" }),
+        },
+      );
       const context = createContext("order123");
 
       const response = await POST(req, context);
@@ -143,21 +170,29 @@ describe("/api/orders/[id]/cancel", () => {
         expect.objectContaining({
           status: "canceled",
           cancel_reason: "Admin cancellation",
-        })
+        }),
       );
     });
 
     it("should return 400 if order is already shipped", async () => {
-      mockGetCurrentUser.mockResolvedValue({ id: "user1", email: "user1@test.com", name: "User 1", role: "user" });
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
       mockDoc.data.mockReturnValue({
         user_id: "user1",
         status: "shipped",
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/cancel", {
-        method: "POST",
-        body: JSON.stringify({ reason: "Changed my mind" }),
-      });
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/cancel",
+        {
+          method: "POST",
+          body: JSON.stringify({ reason: "Changed my mind" }),
+        },
+      );
       const context = createContext("order123");
 
       const response = await POST(req, context);
@@ -169,16 +204,24 @@ describe("/api/orders/[id]/cancel", () => {
     });
 
     it("should return 400 if order is already delivered", async () => {
-      mockGetCurrentUser.mockResolvedValue({ id: "user1", email: "user1@test.com", name: "User 1", role: "user" });
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
       mockDoc.data.mockReturnValue({
         user_id: "user1",
         status: "delivered",
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/cancel", {
-        method: "POST",
-        body: JSON.stringify({ reason: "Changed my mind" }),
-      });
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/cancel",
+        {
+          method: "POST",
+          body: JSON.stringify({ reason: "Changed my mind" }),
+        },
+      );
       const context = createContext("order123");
 
       const response = await POST(req, context);
@@ -190,17 +233,25 @@ describe("/api/orders/[id]/cancel", () => {
     });
 
     it("should successfully cancel order with reason", async () => {
-      mockGetCurrentUser.mockResolvedValue({ id: "user1", email: "user1@test.com", name: "User 1", role: "user" });
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
       mockDoc.data.mockReturnValue({
         user_id: "user1",
         status: "pending",
         amount: 1000,
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/cancel", {
-        method: "POST",
-        body: JSON.stringify({ reason: "Found better price elsewhere" }),
-      });
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/cancel",
+        {
+          method: "POST",
+          body: JSON.stringify({ reason: "Found better price elsewhere" }),
+        },
+      );
       const context = createContext("order123");
 
       const response = await POST(req, context);
@@ -215,21 +266,29 @@ describe("/api/orders/[id]/cancel", () => {
           cancel_reason: "Found better price elsewhere",
           canceled_at: expect.any(String),
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 
     it("should successfully cancel order without reason", async () => {
-      mockGetCurrentUser.mockResolvedValue({ id: "user1", email: "user1@test.com", name: "User 1", role: "user" });
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
       mockDoc.data.mockReturnValue({
         user_id: "user1",
         status: "pending",
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/cancel", {
-        method: "POST",
-        body: JSON.stringify({}),
-      });
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/cancel",
+        {
+          method: "POST",
+          body: JSON.stringify({}),
+        },
+      );
       const context = createContext("order123");
 
       const response = await POST(req, context);
@@ -241,21 +300,29 @@ describe("/api/orders/[id]/cancel", () => {
         expect.objectContaining({
           status: "canceled",
           cancel_reason: "",
-        })
+        }),
       );
     });
 
     it("should allow canceling order in processing status", async () => {
-      mockGetCurrentUser.mockResolvedValue({ id: "user1", email: "user1@test.com", name: "User 1", role: "user" });
+      mockGetCurrentUser.mockResolvedValue({
+        id: "user1",
+        email: "user1@test.com",
+        name: "User 1",
+        role: "user",
+      });
       mockDoc.data.mockReturnValue({
         user_id: "user1",
         status: "processing",
       });
 
-      const req = new NextRequest("http://localhost/api/orders/order123/cancel", {
-        method: "POST",
-        body: JSON.stringify({ reason: "Cancel processing order" }),
-      });
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/cancel",
+        {
+          method: "POST",
+          body: JSON.stringify({ reason: "Cancel processing order" }),
+        },
+      );
       const context = createContext("order123");
 
       const response = await POST(req, context);
@@ -268,10 +335,13 @@ describe("/api/orders/[id]/cancel", () => {
     it("should return 500 on server error", async () => {
       mockGetCurrentUser.mockRejectedValue(new Error("Database error"));
 
-      const req = new NextRequest("http://localhost/api/orders/order123/cancel", {
-        method: "POST",
-        body: JSON.stringify({ reason: "Test" }),
-      });
+      const req = new NextRequest(
+        "http://localhost/api/orders/order123/cancel",
+        {
+          method: "POST",
+          body: JSON.stringify({ reason: "Test" }),
+        },
+      );
       const context = createContext("order123");
 
       const response = await POST(req, context);

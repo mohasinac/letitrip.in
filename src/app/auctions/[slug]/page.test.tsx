@@ -401,7 +401,7 @@ describe("AuctionDetailPage", () => {
 
       await waitFor(() => {
         expect(mockAuctionsService.getBySlug).toHaveBeenCalledWith(
-          "test-auction"
+          "test-auction",
         );
       });
 
@@ -409,7 +409,7 @@ describe("AuctionDetailPage", () => {
       expect(mockAuctionsService.getBids).toHaveBeenCalledWith(
         "auction-1",
         20,
-        null
+        null,
       );
       expect(mockShopsService.getBySlug).toHaveBeenCalledWith("shop-1");
       expect(mockAuctionsService.list).toHaveBeenCalledTimes(2);
@@ -418,7 +418,7 @@ describe("AuctionDetailPage", () => {
     it("displays loading skeleton while loading", () => {
       mockAuctionsService.getBySlug.mockImplementation(
         () =>
-          new Promise((resolve) => setTimeout(() => resolve(mockAuction), 100))
+          new Promise((resolve) => setTimeout(() => resolve(mockAuction), 100)),
       );
 
       render(<AuctionDetailPage />);
@@ -431,12 +431,12 @@ describe("AuctionDetailPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole("heading", { level: 1, name: "Test Auction Item" })
+          screen.getByRole("heading", { level: 1, name: "Test Auction Item" }),
         ).toBeInTheDocument();
       });
 
       expect(
-        screen.getByText("This is a test auction description")
+        screen.getByText("This is a test auction description"),
       ).toBeInTheDocument();
       expect(screen.getAllByText("₹1,200").length).toBeGreaterThan(0);
       expect(screen.getByText("5 bids")).toBeInTheDocument();
@@ -460,7 +460,7 @@ describe("AuctionDetailPage", () => {
 
       await waitFor(() => {
         expect(screen.getAllByAltText(/^Test Auction Item \d+$/)).toHaveLength(
-          2
+          2,
         );
       });
     });
@@ -560,7 +560,7 @@ describe("AuctionDetailPage", () => {
       fireEvent.click(bidButton);
 
       expect(
-        screen.getByText("Bid must be higher than current bid")
+        screen.getByText("Bid must be higher than current bid"),
       ).toBeInTheDocument();
     });
 
@@ -577,7 +577,7 @@ describe("AuctionDetailPage", () => {
       fireEvent.click(bidButton);
 
       expect(mockRouter.push).toHaveBeenCalledWith(
-        "/login?redirect=/auctions/test-auction"
+        "/login?redirect=/auctions/test-auction",
       );
     });
   });
@@ -597,7 +597,7 @@ describe("AuctionDetailPage", () => {
 
       await waitFor(() => {
         expect(mockAuctionsService.toggleWatch).toHaveBeenCalledWith(
-          "auction-1"
+          "auction-1",
         );
       });
 
@@ -620,7 +620,7 @@ describe("AuctionDetailPage", () => {
       fireEvent.click(watchButton);
 
       expect(mockRouter.push).toHaveBeenCalledWith(
-        "/login?redirect=/auctions/test-auction"
+        "/login?redirect=/auctions/test-auction",
       );
     });
   });
@@ -778,8 +778,8 @@ describe("AuctionDetailPage", () => {
         // Component shows error message for ended auctions
         expect(
           screen.getByText(
-            "This auction has ended. Check out other active auctions."
-          )
+            "This auction has ended. Check out other active auctions.",
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -788,7 +788,7 @@ describe("AuctionDetailPage", () => {
   describe("Error Handling", () => {
     it("displays error message when auction fails to load", async () => {
       mockAuctionsService.getBySlug.mockRejectedValue(
-        new Error("Failed to load auction")
+        new Error("Failed to load auction"),
       );
 
       render(<AuctionDetailPage />);
@@ -805,7 +805,7 @@ describe("AuctionDetailPage", () => {
 
     it("handles auction not found", async () => {
       mockAuctionsService.getBySlug.mockRejectedValue(
-        new Error("Auction not found")
+        new Error("Auction not found"),
       );
 
       render(<AuctionDetailPage />);
@@ -845,7 +845,7 @@ describe("AuctionDetailPage", () => {
       expect(screen.getAllByText("Auctions").length).toBeGreaterThan(0);
       // Test Auction Item appears in both breadcrumb and h1
       expect(screen.getAllByText("Test Auction Item").length).toBeGreaterThan(
-        0
+        0,
       );
     });
 
@@ -860,7 +860,7 @@ describe("AuctionDetailPage", () => {
       // Link component uses href, not router.push
       expect(auctionsLinks[0].closest("a")).toHaveAttribute(
         "href",
-        "/auctions"
+        "/auctions",
       );
     });
   });
@@ -950,7 +950,7 @@ describe("AuctionDetailPage", () => {
 
         await waitFor(() => {
           expect(
-            screen.getByText(/higher than current bid/i)
+            screen.getByText(/higher than current bid/i),
           ).toBeInTheDocument();
         });
       });
@@ -977,7 +977,7 @@ describe("AuctionDetailPage", () => {
         await waitFor(() => {
           expect(mockAuctionsService.placeBid).toHaveBeenCalledWith(
             "auction-1",
-            expect.objectContaining({ amount: 1300 })
+            expect.objectContaining({ amount: 1300 }),
           );
         });
       });
@@ -1022,7 +1022,7 @@ describe("AuctionDetailPage", () => {
 
         // Auto-bid checkbox should not exist (feature not implemented)
         expect(
-          screen.queryByRole("checkbox", { name: /auto-bid/i })
+          screen.queryByRole("checkbox", { name: /auto-bid/i }),
         ).toBeNull();
       });
 
@@ -1051,7 +1051,7 @@ describe("AuctionDetailPage", () => {
             expect.objectContaining({
               amount: 1300,
               isAutoBid: false,
-            })
+            }),
           );
         });
       });
@@ -1071,7 +1071,7 @@ describe("AuctionDetailPage", () => {
 
         // Should show validation error
         expect(
-          screen.getByText(/higher than current bid/i)
+          screen.getByText(/higher than current bid/i),
         ).toBeInTheDocument();
       });
     });
@@ -1132,7 +1132,7 @@ describe("AuctionDetailPage", () => {
             screen.getByRole("heading", {
               level: 1,
               name: /Test Auction Item/i,
-            })
+            }),
           ).toBeInTheDocument();
         });
 
@@ -1147,7 +1147,7 @@ describe("AuctionDetailPage", () => {
         window.alert = jest.fn();
 
         mockAuctionsService.placeBid.mockRejectedValue(
-          new Error("Your bid has been outbid. Please enter a higher amount.")
+          new Error("Your bid has been outbid. Please enter a higher amount."),
         );
 
         render(<AuctionDetailPage />);
@@ -1173,7 +1173,7 @@ describe("AuctionDetailPage", () => {
         window.alert = jest.fn();
 
         mockAuctionsService.placeBid.mockRejectedValueOnce(
-          new Error("Bid amount is too low")
+          new Error("Bid amount is too low"),
         );
 
         render(<AuctionDetailPage />);
@@ -1206,7 +1206,7 @@ describe("AuctionDetailPage", () => {
             screen.getByRole("heading", {
               level: 1,
               name: /Test Auction Item/i,
-            })
+            }),
           ).toBeInTheDocument();
         });
 
@@ -1271,7 +1271,7 @@ describe("AuctionDetailPage", () => {
             screen.getByRole("heading", {
               level: 1,
               name: /Test Auction Item/i,
-            })
+            }),
           ).toBeInTheDocument();
         });
 
@@ -1295,7 +1295,7 @@ describe("AuctionDetailPage", () => {
             screen.getByRole("heading", {
               level: 1,
               name: /Test Auction Item/i,
-            })
+            }),
           ).toBeInTheDocument();
         });
 
@@ -1367,7 +1367,7 @@ describe("AuctionDetailPage", () => {
 
         // Should handle updates gracefully without crashing
         expect(
-          screen.getByRole("heading", { level: 1, name: /Test Auction Item/i })
+          screen.getByRole("heading", { level: 1, name: /Test Auction Item/i }),
         ).toBeInTheDocument();
       });
     });
@@ -1389,16 +1389,16 @@ describe("AuctionDetailPage", () => {
                       count: 1,
                     } as any,
                   }),
-                100
-              )
-            )
+                100,
+              ),
+            ),
         );
 
         render(<AuctionDetailPage />);
 
         await waitFor(() => {
           expect(
-            screen.getByTestId("auction-skeleton-grid")
+            screen.getByTestId("auction-skeleton-grid"),
           ).toBeInTheDocument();
         });
       });
@@ -1418,7 +1418,10 @@ describe("AuctionDetailPage", () => {
 
         await waitFor(() => {
           expect(
-            screen.getByRole("heading", { level: 1, name: "Test Auction Item" })
+            screen.getByRole("heading", {
+              level: 1,
+              name: "Test Auction Item",
+            }),
           ).toBeInTheDocument();
         });
 

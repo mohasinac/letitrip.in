@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     console.error("Error generating users:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to generate users" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

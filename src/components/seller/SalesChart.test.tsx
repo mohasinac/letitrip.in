@@ -104,7 +104,7 @@ describe("SalesChart", () => {
     it("should render empty state when data is empty", () => {
       render(<SalesChart data={[]} />);
       expect(
-        screen.getByText("No sales data available for the selected period")
+        screen.getByText("No sales data available for the selected period"),
       ).toBeInTheDocument();
     });
 
@@ -123,7 +123,7 @@ describe("SalesChart", () => {
       const { container } = render(<SalesChart data={[]} />);
       const emptyState = container.querySelector(".text-gray-500");
       expect(emptyState).toHaveTextContent(
-        "No sales data available for the selected period"
+        "No sales data available for the selected period",
       );
     });
   });
@@ -349,7 +349,7 @@ describe("SalesChart", () => {
     it("should provide clear empty state message", () => {
       render(<SalesChart data={[]} />);
       const message = screen.getByText(
-        "No sales data available for the selected period"
+        "No sales data available for the selected period",
       );
       expect(message).toBeVisible();
     });

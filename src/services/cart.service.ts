@@ -135,13 +135,13 @@ class CartService {
       | "canDecrement"
       | "hasDiscount"
       | "addedTimeAgo"
-    >
+    >,
   ): void {
     const cart = this.getGuestCart();
 
     // Check if item already exists
     const existingIndex = cart.findIndex(
-      (i) => i.productId === item.productId && i.variantId === item.variantId
+      (i) => i.productId === item.productId && i.variantId === item.variantId,
     );
 
     if (existingIndex >= 0) {

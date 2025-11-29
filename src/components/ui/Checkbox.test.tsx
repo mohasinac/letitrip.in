@@ -31,12 +31,12 @@ describe("Checkbox", () => {
         <Checkbox
           label="Subscribe"
           description="Get weekly updates via email"
-        />
+        />,
       );
 
       expect(screen.getByText("Subscribe")).toBeInTheDocument();
       expect(
-        screen.getByText("Get weekly updates via email")
+        screen.getByText("Get weekly updates via email"),
       ).toBeInTheDocument();
     });
 
@@ -101,7 +101,7 @@ describe("Checkbox", () => {
 
     it("can be controlled", () => {
       const { rerender } = render(
-        <Checkbox checked={false} onChange={() => {}} />
+        <Checkbox checked={false} onChange={() => {}} />,
       );
 
       let checkbox = screen.getByRole("checkbox") as HTMLInputElement;
@@ -148,7 +148,7 @@ describe("Checkbox", () => {
           target: expect.objectContaining({
             checked: true,
           }),
-        })
+        }),
       );
     });
   });
@@ -167,7 +167,7 @@ describe("Checkbox", () => {
       const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toHaveClass(
         "disabled:opacity-50",
-        "disabled:cursor-not-allowed"
+        "disabled:cursor-not-allowed",
       );
     });
 
@@ -204,7 +204,7 @@ describe("Checkbox", () => {
         "h-4",
         "text-blue-600",
         "border-gray-300",
-        "rounded"
+        "rounded",
       );
     });
 
@@ -295,7 +295,11 @@ describe("Checkbox", () => {
   describe("Custom Props", () => {
     it("passes through HTML input attributes", () => {
       render(
-        <Checkbox name="terms" value="accepted" data-testid="custom-checkbox" />
+        <Checkbox
+          name="terms"
+          value="accepted"
+          data-testid="custom-checkbox"
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox");
@@ -380,7 +384,7 @@ describe("Checkbox", () => {
       render(<Checkbox description="This should not show" />);
 
       expect(
-        screen.queryByText("This should not show")
+        screen.queryByText("This should not show"),
       ).not.toBeInTheDocument();
       expect(screen.getByRole("checkbox")).toBeInTheDocument();
     });

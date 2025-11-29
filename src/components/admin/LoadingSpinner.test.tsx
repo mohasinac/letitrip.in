@@ -160,7 +160,7 @@ describe("LoadingSpinner", () => {
           color="white"
           fullScreen
           message="Loading data..."
-        />
+        />,
       );
       const wrapper = container.querySelector(".min-h-\\[400px\\]");
       const spinner = container.querySelector(".animate-spin");
@@ -179,7 +179,7 @@ describe("LoadingSpinner", () => {
 
     it("renders xl spinner with message in full screen", () => {
       const { container } = render(
-        <LoadingSpinner size="xl" message="Please wait..." fullScreen />
+        <LoadingSpinner size="xl" message="Please wait..." fullScreen />,
       );
       const spinner = container.querySelector(".animate-spin");
       const message = screen.getByText("Please wait...");

@@ -57,7 +57,7 @@ export function cache(config: CacheConfig = {}) {
         timestamp: Date.now(),
         etag,
       };
-      
+
       memoryCache.set(cacheKey, entry, ttl);
     },
 
@@ -69,7 +69,9 @@ export function cache(config: CacheConfig = {}) {
 
       // Pattern-based invalidation not supported in FREE cache
       // Clear all cache instead
-      console.warn('[Cache] Pattern-based invalidation not supported, clearing all cache');
+      console.warn(
+        "[Cache] Pattern-based invalidation not supported, clearing all cache",
+      );
       memoryCache.clear();
     },
   };

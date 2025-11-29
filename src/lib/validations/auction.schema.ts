@@ -13,7 +13,7 @@ export const auctionSchema = z
       .max(200, "Slug must be less than 200 characters")
       .regex(
         /^[a-z0-9-]+$/,
-        "Slug can only contain lowercase letters, numbers, and hyphens"
+        "Slug can only contain lowercase letters, numbers, and hyphens",
       ),
     description: z
       .string()
@@ -76,7 +76,7 @@ export const auctionSchema = z
     {
       message: "Reserve price must be greater than or equal to starting bid",
       path: ["reservePrice"],
-    }
+    },
   )
   .refine((data) => !data.buyNowPrice || data.buyNowPrice > data.startingBid, {
     message: "Buy now price must be greater than starting bid",

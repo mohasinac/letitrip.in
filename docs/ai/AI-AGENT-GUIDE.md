@@ -212,7 +212,7 @@ class FeatureService {
 
   async getFeatureById(id: string): Promise<Feature> {
     const response = await apiService.get<{ feature: Feature }>(
-      `${this.BASE_PATH}/${id}`
+      `${this.BASE_PATH}/${id}`,
     );
     return response.feature;
   }
@@ -220,7 +220,7 @@ class FeatureService {
   async createFeature(data: Partial<Feature>): Promise<Feature> {
     const response = await apiService.post<{ feature: Feature }>(
       this.BASE_PATH,
-      data
+      data,
     );
     return response.feature;
   }
@@ -228,7 +228,7 @@ class FeatureService {
   async updateFeature(id: string, data: Partial<Feature>): Promise<Feature> {
     const response = await apiService.patch<{ feature: Feature }>(
       `${this.BASE_PATH}/${id}`,
-      data
+      data,
     );
     return response.feature;
   }
@@ -520,7 +520,7 @@ export async function uploadAsset(file: File, type: string, category?: string) {
   // Step 1: Get signed URL from API
   const { uploadUrl, assetId, storagePath } = await apiService.post(
     "/admin/static-assets/upload-url",
-    { fileName: file.name, contentType: file.type, type, category }
+    { fileName: file.name, contentType: file.type, type, category },
   );
 
   // Step 2: Upload directly to Firebase Storage
@@ -529,7 +529,7 @@ export async function uploadAsset(file: File, type: string, category?: string) {
   // Step 3: Confirm and save metadata
   const { asset } = await apiService.post(
     "/admin/static-assets/confirm-upload",
-    { assetId, name: file.name, type, storagePath, size: file.size }
+    { assetId, name: file.name, type, storagePath, size: file.size },
   );
 
   return asset;

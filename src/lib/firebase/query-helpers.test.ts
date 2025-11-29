@@ -235,7 +235,7 @@ describe("buildQueryConstraints", () => {
 describe("processPaginatedResults", () => {
   it("should process results with full page", () => {
     const mockDocs = Array.from({ length: 20 }, (_, i) =>
-      createMockDoc(`doc${i}`, { name: `Item ${i}` })
+      createMockDoc(`doc${i}`, { name: `Item ${i}` }),
     ) as any[];
 
     const result = processPaginatedResults(mockDocs, 20, false);
@@ -250,7 +250,7 @@ describe("processPaginatedResults", () => {
 
   it("should process results with partial page", () => {
     const mockDocs = Array.from({ length: 15 }, (_, i) =>
-      createMockDoc(`doc${i}`, { name: `Item ${i}` })
+      createMockDoc(`doc${i}`, { name: `Item ${i}` }),
     ) as any[];
 
     const result = processPaginatedResults(mockDocs, 20, false);
@@ -264,7 +264,7 @@ describe("processPaginatedResults", () => {
 
   it("should process results with previous cursor", () => {
     const mockDocs = Array.from({ length: 20 }, (_, i) =>
-      createMockDoc(`doc${i}`, { name: `Item ${i}` })
+      createMockDoc(`doc${i}`, { name: `Item ${i}` }),
     ) as any[];
 
     const result = processPaginatedResults(mockDocs, 20, true);

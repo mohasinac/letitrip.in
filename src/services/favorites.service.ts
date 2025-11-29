@@ -29,16 +29,16 @@ class FavoritesService {
   // Remove by product ID
   async removeByProductId(productId: string): Promise<{ message: string }> {
     return apiService.delete<{ message: string }>(
-      `/favorites/product/${productId}`
+      `/favorites/product/${productId}`,
     );
   }
 
   // Check if product is favorited
   async isFavorited(
-    productId: string
+    productId: string,
   ): Promise<{ isFavorited: boolean; favoriteId?: string }> {
     return apiService.get<{ isFavorited: boolean; favoriteId?: string }>(
-      `/favorites/check/${productId}`
+      `/favorites/check/${productId}`,
     );
   }
 
@@ -114,7 +114,7 @@ class FavoritesService {
         "/favorites/sync",
         {
           productIds: guestFavorites,
-        }
+        },
       );
 
       // Clear guest favorites after sync
