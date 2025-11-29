@@ -17,28 +17,66 @@ import {
   CategoryFormFE,
 } from "../frontend/category.types";
 
-function parseDate(date: Timestamp | string): Date {
-  return date instanceof Timestamp ? date.toDate() : new Date(date);
+function parseDate(date: Timestamp | string | Date | undefined | null): Date {
+  if (!date) return new Date();
+  if (date instanceof Date) return date;
+  if (date instanceof Timestamp) return date.toDate();
+  return new Date(date);
 }
 
-export function toFECategory(categoryBE: CategoryBE): CategoryFE {
-  const metadata = categoryBE.metadata as any; // Cast for backwards compat access
-  const parentIds = categoryBE.parentIds || [];
+/**
+ * Transform API response to CategoryFE
+ * Handles both snake_case (raw Firestore) and camelCase (API transformed) formats
+ */
+export function toFECategory(data: CategoryBE | any): CategoryFE {
+  // Handle both snake_case and camelCase field names from API
+  const parentIds = data.parentIds || data.parent_ids || (data.parent_id ? [data.parent_id] : []);
+  const productCount = data.productCount ?? data.product_count ?? 0;
+  const level = data.level ?? 0;
+  const isLeaf = data.isLeaf ?? data.is_leaf ?? !data.hasChildren ?? !data.has_children ?? true;
+  const order = data.order ?? data.sortOrder ?? data.sort_order ?? 0;
+  
+  // Determine status/isActive
+  let isActive = true;
+  if (data.status !== undefined) {
+    isActive = data.status === Status.PUBLISHED || data.status === "published";
+  } else if (data.isActive !== undefined) {
+    isActive = data.isActive;
+  } else if (data.is_active !== undefined) {
+    isActive = data.is_active;
+  }
+
+  // Determine featured
+  const featured = data.featured ?? data.is_featured ?? data.metadata?.featured ?? false;
+
   return {
-    ...categoryBE,
-    createdAt: parseDate(categoryBE.createdAt),
-    updatedAt: parseDate(categoryBE.updatedAt),
-    hasProducts: categoryBE.productCount > 0,
+    id: data.id,
+    name: data.name,
+    slug: data.slug,
+    description: data.description || null,
+    image: data.image || null,
+    banner: data.banner || null,
+    icon: data.icon || null,
+    parentIds,
+    level,
+    order,
+    status: isActive ? Status.PUBLISHED : Status.DRAFT,
+    productCount,
+    isLeaf,
+    metadata: data.metadata || {},
+    createdAt: parseDate(data.createdAt || data.created_at),
+    updatedAt: parseDate(data.updatedAt || data.updated_at),
+    // Computed properties
+    hasProducts: productCount > 0,
     hasParents: parentIds.length > 0,
-    isRoot: categoryBE.level === 0,
-    displayName: categoryBE.name,
-    urlPath: `/categories/${categoryBE.slug}`,
-    banner: categoryBE.banner || null,
-    // Backwards compatibility
+    isRoot: level === 0,
+    displayName: data.name,
+    urlPath: `/categories/${data.slug}`,
+    // Backwards compatibility aliases
     parentId: parentIds[0] || null,
-    featured: metadata?.featured || false,
-    isActive: categoryBE.status === Status.PUBLISHED,
-    sortOrder: categoryBE.order,
+    featured,
+    isActive,
+    sortOrder: order,
   };
 }
 

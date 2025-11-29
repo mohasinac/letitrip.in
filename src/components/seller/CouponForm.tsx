@@ -190,7 +190,11 @@ export default function CouponForm({
                 codeError
                   ? "border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500"
                   : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
-              } ${mode === "edit" ? "bg-gray-50 dark:bg-gray-700 cursor-not-allowed" : ""}`}
+              } ${
+                mode === "edit"
+                  ? "bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
+                  : ""
+              }`}
               placeholder="SUMMER2024"
               maxLength={20}
             />
@@ -201,7 +205,9 @@ export default function CouponForm({
             )}
           </div>
           {codeError && (
-            <p className="mt-1 text-xs text-red-600 dark:text-red-400">{codeError}</p>
+            <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+              {codeError}
+            </p>
           )}
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Use uppercase letters, numbers, and hyphens only (3-20 characters)
@@ -346,7 +352,9 @@ export default function CouponForm({
 
       {/* Requirements */}
       <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Requirements</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Requirements
+        </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Minimum Purchase */}
@@ -392,7 +400,9 @@ export default function CouponForm({
 
       {/* Applicability */}
       <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Applicability</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Applicability
+        </h3>
 
         {/* Applicability Type */}
         <div>
@@ -471,7 +481,9 @@ export default function CouponForm({
 
       {/* Usage Limits */}
       <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Usage Limits</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Usage Limits
+        </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Total Usage Limit */}
@@ -523,7 +535,9 @@ export default function CouponForm({
 
       {/* Validity Period */}
       <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Validity Period</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Validity Period
+        </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Start Date */}
@@ -558,7 +572,9 @@ export default function CouponForm({
 
       {/* Restrictions */}
       <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Restrictions</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Restrictions
+        </h3>
 
         <div className="space-y-3">
           {/* First Order Only */}

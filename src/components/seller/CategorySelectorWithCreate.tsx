@@ -56,17 +56,19 @@ export default function CategorySelectorWithCreate({
         isActive: true,
         _t: Date.now(), // Cache buster
       });
+      // CategoryFE already has the right format, just map to CategorySelector's expected format
       const transformed = response.data.map((cat: any) => ({
         id: cat.id,
         name: cat.name,
         slug: cat.slug,
-        parent_id: cat.parent_id,
-        parentIds: cat.parentIds,
-        childrenIds: cat.childrenIds,
+        parent_id: cat.parentId || null,
+        parentIds: cat.parentIds || [],
+        childrenIds: cat.childrenIds || [],
         level: cat.level || 0,
-        has_children: cat.has_children || false,
-        is_active: cat.is_active,
-        product_count: cat.product_count,
+        has_children:
+          !cat.isLeaf && (cat.childrenIds?.length > 0 || cat.hasChildren),
+        is_active: cat.isActive !== false,
+        product_count: cat.productCount || 0,
       }));
       setCategories(transformed);
     } catch (error) {

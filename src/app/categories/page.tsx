@@ -150,7 +150,7 @@ function CategoriesContent() {
 
   if (categories.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
         <div className="max-w-7xl mx-auto px-4">
           <EmptyState
             title="No categories available"
@@ -166,21 +166,21 @@ function CategoriesContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Browse Categories
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Discover {categories.length} categories and thousands of products
             </p>
           </div>
 
           {/* Search and Sort Controls */}
-          <div className="bg-white rounded-lg shadow-sm p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Search */}
@@ -191,7 +191,7 @@ function CategoriesContent() {
                     placeholder="Search categories..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </form>
 
@@ -202,7 +202,7 @@ function CategoriesContent() {
                     onChange={(e) =>
                       handleFilterChange("sortBy", e.target.value)
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="sort_order">Default Order</option>
                     <option value="name">Alphabetically</option>
@@ -219,7 +219,7 @@ function CategoriesContent() {
                   className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                     featured
                       ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
                   ⭐ Featured Only
@@ -234,16 +234,16 @@ function CategoriesContent() {
           {categoriesByLevel.map(([level, levelCategories]) => (
             <div key={level} className="space-y-4">
               {/* Level Header */}
-              <div className="flex items-center gap-3 pb-2 border-b-2 border-gray-200">
+              <div className="flex items-center gap-3 pb-2 border-b-2 border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
                   <List className="w-5 h-5 text-blue-600" />
-                  <h2 className="text-xl font-bold text-gray-900">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                     {level === 0
                       ? "Root Categories"
                       : `Level ${level} Categories`}
                   </h2>
                 </div>
-                <span className="text-sm text-gray-500 font-medium">
+                <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                   ({levelCategories.length}{" "}
                   {levelCategories.length === 1 ? "category" : "categories"})
                 </span>
@@ -255,11 +255,11 @@ function CategoriesContent() {
                   <Link
                     key={category.id}
                     href={`/categories/${category.slug}`}
-                    className="bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-lg transition-all overflow-hidden group"
+                    className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all overflow-hidden group"
                   >
                     {/* Category Image */}
                     {category.image && (
-                      <div className="w-full h-48 bg-gray-100 overflow-hidden">
+                      <div className="w-full h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden">
                         <img
                           src={category.image}
                           alt={category.name}
@@ -270,17 +270,17 @@ function CategoriesContent() {
 
                     {/* Category Info */}
                     <div className="p-4">
-                      <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
+                      <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2 line-clamp-2">
                         {category.name}
                       </h3>
 
                       <div className="flex items-center justify-between text-sm mb-2">
-                        <div className="flex items-center gap-1 text-gray-500">
+                        <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                           <Tag className="w-3 h-3" />
                           <span>{category.productCount} products</span>
                         </div>
                         {category.featured && (
-                          <span className="px-2 py-0.5 bg-blue-100 text-blue-600 text-xs font-medium rounded">
+                          <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-medium rounded">
                             Featured
                           </span>
                         )}
@@ -288,7 +288,7 @@ function CategoriesContent() {
 
                       {/* Parent indicator if not root */}
                       {level > 0 && category.hasParents && (
-                        <div className="flex items-center gap-1 text-xs text-gray-400">
+                        <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
                           <ChevronRight className="w-3 h-3" />
                           <span className="truncate">Subcategory</span>
                         </div>
@@ -303,7 +303,7 @@ function CategoriesContent() {
           {/* Empty state for search */}
           {categoriesByLevel.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500">
+              <p className="text-gray-500 dark:text-gray-400">
                 {searchQuery
                   ? `No categories found matching "${searchQuery}"`
                   : "No categories found"}
@@ -314,25 +314,25 @@ function CategoriesContent() {
 
         {/* Pagination Controls */}
         {categories.length > 0 && (
-          <div className="mt-8 bg-white rounded-lg shadow-sm p-4">
+          <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
             <div className="flex items-center justify-between">
               <button
                 onClick={handlePrevPage}
                 disabled={currentPage === 1 || loading}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous
               </button>
 
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
                 Page {currentPage} • {categories.length} categories
               </div>
 
               <button
                 onClick={handleNextPage}
                 disabled={!hasNextPage || loading}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Next
                 <ChevronRight className="w-4 h-4" />
