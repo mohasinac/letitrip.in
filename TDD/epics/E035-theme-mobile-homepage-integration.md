@@ -83,6 +83,7 @@ Ensure all homepage sections properly support dark mode.
 All major components updated with dark mode support:
 
 #### Layout Components ✅
+
 - MainNavBar.tsx - Dropdown menus, mobile menu
 - BottomNav.tsx - Full dark mode with active states
 - Footer.tsx - Complete dark mode
@@ -91,6 +92,7 @@ All major components updated with dark mode support:
 - SearchBar.tsx - Container and close button
 
 #### Card Components ✅
+
 - ProductCard.tsx - Container, text, buttons, ratings
 - AuctionCard.tsx - Container, bid info, time display
 - CategoryCard.tsx - Container, placeholder gradients
@@ -100,10 +102,12 @@ All major components updated with dark mode support:
 - All Skeleton variants - Dark mode backgrounds
 
 #### Quick View Modals ✅
+
 - ProductQuickView.tsx - Full dark mode
 - AuctionQuickView.tsx - Full dark mode with forms
 
 #### UI Components ✅
+
 - Button.tsx - All variants (secondary, ghost, outline)
 - Input.tsx - Labels, fields, helper text
 - Select.tsx - Labels, fields, options
@@ -115,6 +119,7 @@ All major components updated with dark mode support:
 - FormActions.tsx - Container background
 
 #### Common Components ✅
+
 - ConfirmDialog.tsx - Modal background, buttons
 - EmptyState.tsx - Icon container, buttons
 - Toast.tsx - All toast variants
@@ -155,15 +160,15 @@ All major components updated with dark mode support:
 
 ## Components Affected
 
-| Component                     | Changes                                    |
-| ----------------------------- | ------------------------------------------ |
-| `SubNavbar.tsx`               | Hide on mobile screens, dark mode support  |
-| `page.tsx` (homepage)         | Mobile grids, dark mode, touch targets     |
-| `globals.css`                 | Base layer dark mode for HTML elements     |
-| All Layout components (6)     | Full dark mode support                     |
-| All Card components (12)      | Full dark mode support                     |
-| All UI components (9)         | Full dark mode support                     |
-| All Common components (4)     | Full dark mode support                     |
+| Component                 | Changes                                   |
+| ------------------------- | ----------------------------------------- |
+| `SubNavbar.tsx`           | Hide on mobile screens, dark mode support |
+| `page.tsx` (homepage)     | Mobile grids, dark mode, touch targets    |
+| `globals.css`             | Base layer dark mode for HTML elements    |
+| All Layout components (6) | Full dark mode support                    |
+| All Card components (12)  | Full dark mode support                    |
+| All UI components (9)     | Full dark mode support                    |
+| All Common components (4) | Full dark mode support                    |
 
 ---
 

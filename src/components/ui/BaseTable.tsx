@@ -93,7 +93,9 @@ export function BaseTable<T>({
     <div className="w-full overflow-x-auto bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
       <table className="w-full">
         <thead
-          className={`bg-gray-50 dark:bg-gray-900 ${stickyHeader ? "sticky top-0 z-20" : ""}`}
+          className={`bg-gray-50 dark:bg-gray-900 ${
+            stickyHeader ? "sticky top-0 z-20" : ""
+          }`}
         >
           <tr>
             {columns.map((column, index) => (
@@ -107,7 +109,11 @@ export function BaseTable<T>({
                       ? "sticky left-0 z-30 bg-gray-50 dark:bg-gray-900"
                       : ""
                   }
-                  ${column.sortable ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" : ""}
+                  ${
+                    column.sortable
+                      ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                      : ""
+                  }
                 `}
                 style={{ width: column.width }}
               >
@@ -121,7 +127,11 @@ export function BaseTable<T>({
             <tr
               key={keyExtractor(row, rowIndex)}
               className={`
-                ${onRowClick ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700" : ""}
+                ${
+                  onRowClick
+                    ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                    : ""
+                }
                 ${rowClassName ? rowClassName(row) : ""}
               `}
               onClick={() => onRowClick?.(row)}
