@@ -365,8 +365,7 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           isOpen={true}
           onClose={onClose}
           title={addressId ? "Edit Address" : "Add New Address"}
-          snapPoints={[0.9, 0.5]}
-          defaultSnapPoint={0}
+          snapPoints={["full", "half"]}
         >
           {formContent}
         </MobileBottomSheet>

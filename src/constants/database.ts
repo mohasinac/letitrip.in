@@ -68,6 +68,16 @@ export const COLLECTIONS = {
   EMAIL_QUEUE: "email_queue",
   SMS_QUEUE: "sms_queue",
 
+  // Messaging Collections
+  MESSAGES: "messages",
+  CONVERSATIONS: "conversations",
+
+  // RipLimit Collections (Virtual Currency)
+  RIPLIMIT_ACCOUNTS: "riplimit_accounts",
+  RIPLIMIT_TRANSACTIONS: "riplimit_transactions",
+  RIPLIMIT_PURCHASES: "riplimit_purchases",
+  RIPLIMIT_REFUNDS: "riplimit_refunds",
+
   // Homepage Management Collections
   HERO_SLIDES: "hero_slides",
   FEATURED_SECTIONS: "featured_sections",

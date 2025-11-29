@@ -101,7 +101,7 @@ export default function OrdersPage() {
   const columns = [
     {
       key: "orderId",
-      label: "Order ID",
+      header: "Order ID",
       sortable: true,
       render: (order: any) => (
         <button
@@ -114,30 +114,32 @@ export default function OrdersPage() {
     },
     {
       key: "createdAt",
-      label: "Date",
+      header: "Date",
       sortable: true,
       render: (order: any) =>
-        new Date(order.createdAt).toLocaleDateString("en-IN"),
+        order.createdAt
+          ? new Date(order.createdAt).toLocaleDateString("en-IN")
+          : "N/A",
     },
     {
       key: "shopName",
-      label: "Shop",
+      header: "Shop",
       render: (order: any) => order.shopName || "N/A",
     },
     {
       key: "total",
-      label: "Total",
+      header: "Total",
       sortable: true,
       render: (order: any) => `₹${order.total.toLocaleString()}`,
     },
     {
       key: "status",
-      label: "Status",
+      header: "Status",
       render: (order: any) => <StatusBadge status={order.status} />,
     },
     {
       key: "paymentStatus",
-      label: "Payment",
+      header: "Payment",
       render: (order: any) => <StatusBadge status={order.paymentStatus} />,
     },
   ];
@@ -149,7 +151,9 @@ export default function OrdersPage() {
         <div>
           <p className="font-medium text-gray-900">#{order.orderNumber}</p>
           <p className="text-sm text-gray-500">
-            {new Date(order.createdAt).toLocaleDateString("en-IN")}
+            {order.createdAt
+              ? new Date(order.createdAt).toLocaleDateString("en-IN")
+              : "N/A"}
           </p>
         </div>
         <StatusBadge status={order.status} />
