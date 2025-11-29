@@ -55,6 +55,9 @@ next-env.d.ts
 logs/
 *.log
 
+# SonarCloud
+.scannerwork/
+
 # GitHub Copilot
 .github/copilot-instructions.md
 .env.example
