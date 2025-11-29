@@ -11,18 +11,19 @@ This document tracks page routes that were removed or commented out from navigat
 
 ## Priority Legend
 
-| Priority | Description |
-|----------|-------------|
-| 🔴 HIGH | Core functionality, should implement soon |
-| 🟡 MEDIUM | Nice to have, implement when resources available |
-| 🟢 LOW | Future consideration, not blocking anything |
-| ⚪ DEFERRED | Will not implement, alternative exists |
+| Priority    | Description                                      |
+| ----------- | ------------------------------------------------ |
+| 🔴 HIGH     | Core functionality, should implement soon        |
+| 🟡 MEDIUM   | Nice to have, implement when resources available |
+| 🟢 LOW      | Future consideration, not blocking anything      |
+| ⚪ DEFERRED | Will not implement, alternative exists           |
 
 ---
 
 ## User Routes (Authentication Required)
 
 ### `/user/notifications`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🔴 HIGH
 - **Epic**: E016 - Notifications
@@ -34,7 +35,8 @@ This document tracks page routes that were removed or commented out from navigat
   - Depends on: E016 API implementation
 
 ### `/user/returns`
-- **Status**: ⬜ NOT IMPLEMENTED  
+
+- **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟡 MEDIUM
 - **Epic**: E009 - Returns & Refunds
 - **Reason Removed**: No dedicated page, tracked in orders
@@ -44,6 +46,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Consider creating as a tab or filter in orders page
 
 ### `/user/reviews`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟢 LOW
 - **Epic**: E007 - Review System
@@ -58,6 +61,7 @@ This document tracks page routes that were removed or commented out from navigat
 ## Seller Routes (Seller Role Required)
 
 ### `/seller/dashboard`
+
 - **Status**: ⚪ DEFERRED
 - **Priority**: ⚪ DEFERRED
 - **Epic**: E006 - Shop Management
@@ -68,6 +72,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Links updated to point to `/seller`
 
 ### `/seller/settings`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟡 MEDIUM
 - **Epic**: E006 - Shop Management
@@ -78,6 +83,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Consider: notification preferences, payout settings, etc.
 
 ### `/seller/reviews`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟡 MEDIUM
 - **Epic**: E007 - Review System
@@ -88,6 +94,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Include response capability
 
 ### `/seller/help`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟢 LOW
 - **Epic**: E010 - Support Tickets
@@ -98,6 +105,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Consider seller-specific FAQ section
 
 ### `/seller/support-tickets/create`
+
 - **Status**: ⚪ DEFERRED
 - **Priority**: ⚪ DEFERRED
 - **Epic**: E010 - Support Tickets
@@ -112,6 +120,7 @@ This document tracks page routes that were removed or commented out from navigat
 ## Admin Routes (Admin Role Required)
 
 ### `/admin/featured-sections`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟡 MEDIUM
 - **Epic**: E014 - Homepage CMS
@@ -122,6 +131,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Could be a separate page or tab
 
 ### `/admin/analytics`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🔴 HIGH
 - **Epic**: E017 - Analytics & Reporting
@@ -132,6 +142,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Requires analytics service/data aggregation
 
 ### `/admin/analytics/sales`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🔴 HIGH
 - **Epic**: E017 - Analytics & Reporting
@@ -142,6 +153,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Part of E017 implementation
 
 ### `/admin/analytics/auctions`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟡 MEDIUM
 - **Epic**: E017 - Analytics & Reporting
@@ -151,6 +163,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Auction success rates, average bids, popular categories
 
 ### `/admin/analytics/users`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟡 MEDIUM
 - **Epic**: E017 - Analytics & Reporting
@@ -160,6 +173,7 @@ This document tracks page routes that were removed or commented out from navigat
   - User growth, retention, activity metrics
 
 ### `/admin/auctions/live`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟡 MEDIUM
 - **Epic**: E003 - Auction System
@@ -170,6 +184,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Real-time monitoring capability
 
 ### `/admin/auctions/moderation`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟢 LOW
 - **Epic**: E003 - Auction System
@@ -180,6 +195,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Flagged/reported auctions
 
 ### `/admin/blog/categories`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟢 LOW
 - **Epic**: E020 - Blog System
@@ -190,6 +206,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Consider if blog grows significantly
 
 ### `/admin/blog/tags`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟢 LOW
 - **Epic**: E020 - Blog System
@@ -200,6 +217,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Tag autocomplete in editor sufficient
 
 ### `/admin/settings/general`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🔴 HIGH
 - **Epic**: E021 - System Configuration
@@ -210,6 +228,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Part of E021 implementation
 
 ### `/admin/settings/payment`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🔴 HIGH
 - **Epic**: E021 - System Configuration
@@ -220,6 +239,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Part of E021 implementation
 
 ### `/admin/settings/shipping`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟡 MEDIUM
 - **Epic**: E021 - System Configuration
@@ -230,6 +250,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Part of E021 implementation
 
 ### `/admin/settings/email`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟡 MEDIUM
 - **Epic**: E021 - System Configuration
@@ -240,6 +261,7 @@ This document tracks page routes that were removed or commented out from navigat
   - Part of E021 implementation
 
 ### `/admin/settings/notifications`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🟡 MEDIUM
 - **Epic**: E021 - System Configuration
@@ -254,6 +276,7 @@ This document tracks page routes that were removed or commented out from navigat
 ## Authentication Routes (Public)
 
 ### `/forgot-password`
+
 - **Status**: ⬜ NOT IMPLEMENTED
 - **Priority**: 🔴 HIGH
 - **Epic**: E001 - User Management
@@ -269,18 +292,21 @@ This document tracks page routes that were removed or commented out from navigat
 ## Implementation Roadmap
 
 ### Immediate (HIGH Priority)
+
 1. `/forgot-password` - Critical for user experience
 2. `/user/notifications` - E016 epic
 3. `/admin/analytics` - E017 epic
 4. `/admin/settings/*` - E021 epic
 
 ### Short-term (MEDIUM Priority)
+
 1. `/seller/settings` - Consolidate seller preferences
 2. `/seller/reviews` - Review management for sellers
 3. `/admin/analytics/*` - Full analytics suite
 4. `/admin/auctions/live` - Real-time auction monitoring
 
 ### Long-term (LOW Priority)
+
 1. `/user/reviews` - User's reviews page
 2. `/seller/help` - Seller help center
 3. `/admin/blog/categories` - Blog category management
@@ -288,6 +314,7 @@ This document tracks page routes that were removed or commented out from navigat
 5. `/admin/auctions/moderation` - Moderation queue
 
 ### Not Needed (DEFERRED)
+
 1. `/seller/dashboard` - Use `/seller` instead
 2. `/seller/support-tickets/create` - Use `/support/create`
 
@@ -301,3 +328,54 @@ This document tracks page routes that were removed or commented out from navigat
 - **Epic E016**: `TDD/epics/E016-notifications.md`
 - **Epic E017**: `TDD/epics/E017-analytics-reporting.md`
 - **Epic E021**: `TDD/epics/E021-system-configuration.md`
+
+---
+
+## New Routes (E026-E034)
+
+### `/user/riplimit`
+
+- **Status**: ⬜ NOT IMPLEMENTED
+- **Priority**: 🔴 HIGH
+- **Epic**: E028 - RipLimit Bidding Currency
+- **Description**: RipLimit balance, purchase, and transaction history
+- **Implementation Notes**:
+  - Purchase RipLimit with Razorpay
+  - View balance and transaction history
+  - Request refund
+
+### `/admin/riplimit`
+
+- **Status**: ⬜ NOT IMPLEMENTED
+- **Priority**: 🔴 HIGH
+- **Epic**: E028 - RipLimit Bidding Currency
+- **Description**: Admin RipLimit management dashboard
+- **Implementation Notes**:
+  - View total circulation, revenue, blocked amounts
+  - Adjust user balances
+  - Clear unpaid auction flags
+
+### API Routes for New Epics
+
+```
+# E026 - Sieve Pagination
+All existing list APIs will be updated to support:
+?page=1&pageSize=20&sorts=-createdAt&filters=status==published
+
+# E028 - RipLimit
+GET    /api/riplimit/balance           # User balance
+GET    /api/riplimit/transactions      # Transaction history
+POST   /api/riplimit/purchase          # Initiate purchase
+POST   /api/riplimit/purchase/verify   # Verify payment
+POST   /api/riplimit/refund            # Request refund
+GET    /api/admin/riplimit/stats       # Admin dashboard
+POST   /api/admin/riplimit/users/:id/adjust  # Adjust balance
+
+# E029 - Smart Address
+GET    /api/location/pincode/:pincode  # Pincode lookup
+GET    /api/location/geocode           # Reverse geocode
+GET    /api/location/autocomplete      # Address autocomplete
+
+# E033 - Live Header
+GET    /api/header/stats               # Cart, notifications, RipLimit counts
+```

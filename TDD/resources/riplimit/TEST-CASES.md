@@ -12,11 +12,26 @@ describe("RipLimit Balance", () => {
   it.todo("should convert RipLimit to INR (÷ 20)");
   it.todo("should convert INR to RipLimit (× 20)");
   it.todo("should validate minimum purchase amount");
-  it.todo("should validate maximum balance limit");
+  it.todo("should allow unlimited maximum balance (no cap)");
+  it.todo("should allow users to purchase any amount of RipLimit");
 });
 ```
 
-#### TC-RIPLIMIT-002: Bid Block Logic
+#### TC-RIPLIMIT-002: Multi-Auction Bidding
+
+```typescript
+describe("Multi-Auction Bidding", () => {
+  it.todo("should allow bidding on multiple auctions simultaneously");
+  it.todo("should track blocked amounts per auction separately");
+  it.todo("should calculate total available = total - sum(all blocked)");
+  it.todo("should release specific auction's blocked amount when outbid");
+  it.todo("should allow new bids as long as available balance covers it");
+  it.todo("should handle winning multiple auctions");
+  it.todo("should update available balance correctly across auctions");
+});
+```
+
+#### TC-RIPLIMIT-003: Bid Block Logic
 
 ```typescript
 describe("Bid Block Logic", () => {
@@ -26,6 +41,7 @@ describe("Bid Block Logic", () => {
   it.todo("should release RipLimit when outbid");
   it.todo("should release RipLimit when auction cancelled");
   it.todo("should handle multiple blocked amounts per user");
+  it.todo("should track which auction each block belongs to");
 });
 ```
 

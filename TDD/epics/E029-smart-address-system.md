@@ -43,7 +43,8 @@ interface SmartAddress {
   longitude?: number;
 
   // Type & Preferences
-  type: "home" | "work" | "other";
+  type: "home" | "work" | "other" | "custom";
+  customLabel?: string; // User-defined label when type is "custom" (e.g., "Mom's House", "Office HQ")
   isDefault: boolean;
 
   // Metadata
@@ -267,7 +268,8 @@ Create modular, reusable address components.
 | `AddressSelector`     | Select from saved + add new           | 🔲 Todo |
 | `StateSelector`       | Searchable state dropdown             | 🔲 Todo |
 | `CountrySelector`     | Searchable country dropdown           | 🔲 Todo |
-| `AddressTypeSelector` | Home/Work/Other toggle                | 🔲 Todo |
+| `AddressTypeSelector` | Home/Work/Other/Custom toggle         | 🔲 Todo |
+| `AddressLabelInput`   | Custom label input for "Other" type   | 🔲 Todo |
 
 #### User Stories
 
@@ -287,6 +289,23 @@ Acceptance Criteria:
 - Supports all features (GPS, autocomplete, pincode)
 - Mobile-optimized
 - Accessible
+```
+
+**US029.5.2**: Custom Address Labels
+
+```
+As a user saving an address
+I want to give it a custom label
+So that I can easily identify it later
+
+Acceptance Criteria:
+- Default options: Home, Work, Other
+- When "Other" selected, show text input for custom label
+- Custom labels like "Mom's House", "Office HQ", "Warehouse"
+- Label shown prominently on address card
+- Labels are searchable in address selector
+- Maximum 50 characters for custom labels
+- Labels can be edited later
 ```
 
 ---

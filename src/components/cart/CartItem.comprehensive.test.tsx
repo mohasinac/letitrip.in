@@ -51,6 +51,38 @@ jest.mock("@/components/common/ConfirmDialog", () => ({
     ) : null,
 }));
 
+// Mock MobileSwipeActions to prevent duplicate rendering in tests
+// The component renders both mobile and desktop versions, causing duplicate elements
+jest.mock("@/components/mobile/MobileSwipeActions", () => ({
+  MobileSwipeActions: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  createDeleteAction: jest.fn((onClick) => ({
+    id: "delete",
+    icon: null,
+    label: "Delete",
+    color: "text-white",
+    bgColor: "bg-red-500",
+    onClick,
+  })),
+}));
+
+// Helper to get the desktop container to avoid duplicate element issues
+// The CartItem component renders both mobile (sm:hidden) and desktop (hidden sm:block) versions
+// We need to be careful to select the outer container div, not child elements with similar classes
+const getDesktopContainer = (container: HTMLElement) => {
+  // The desktop wrapper is a direct child div with classes "hidden sm:block"
+  const children = container.querySelectorAll(":scope > div.hidden.sm\\:block");
+  for (const child of children) {
+    // The desktop container has the cartItemContent inside, not just buttons
+    if (child.querySelector(".border-b")) {
+      return child as HTMLElement;
+    }
+  }
+  // Fallback - find any div with the classes that contains the cart content
+  return container.querySelector("div.hidden.sm\\:block") as HTMLElement;
+};
+
 describe("CartItem - Comprehensive Tests", () => {
   const mockItem = {
     id: "item-1",
@@ -85,6 +117,24 @@ describe("CartItem - Comprehensive Tests", () => {
   const mockOnUpdateQuantity = jest.fn();
   const mockOnRemove = jest.fn();
 
+  // Helper to render with scoped desktop queries
+  const renderWithDesktop = (item = mockItem, disabled = false) => {
+    const result = render(
+      <CartItem
+        item={item}
+        onUpdateQuantity={mockOnUpdateQuantity}
+        onRemove={mockOnRemove}
+        disabled={disabled}
+      />
+    );
+    const desktop = getDesktopContainer(result.container);
+    return {
+      ...result,
+      desktop,
+      withinDesktop: within(desktop),
+    };
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockOnUpdateQuantity.mockResolvedValue(undefined);
@@ -96,15 +146,9 @@ describe("CartItem - Comprehensive Tests", () => {
 
   describe("Basic Rendering", () => {
     it("should render product image", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const image = screen.getByAltText("Test Product");
+      const image = withinDesktop.getByAltText("Test Product");
       expect(image).toBeInTheDocument();
       expect(image).toHaveAttribute("src", "/test-image.jpg");
     });
@@ -112,78 +156,42 @@ describe("CartItem - Comprehensive Tests", () => {
     it("should render placeholder when no image provided", () => {
       const itemWithoutImage = { ...mockItem, productImage: "" };
 
-      render(
-        <CartItem
-          item={itemWithoutImage}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(itemWithoutImage);
 
-      expect(screen.getByText("No image")).toBeInTheDocument();
+      expect(withinDesktop.getByText("No image")).toBeInTheDocument();
     });
 
     it("should render product name", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      expect(screen.getByText("Test Product")).toBeInTheDocument();
+      expect(withinDesktop.getByText("Test Product")).toBeInTheDocument();
     });
 
     it("should render shop name", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      expect(screen.getByText("Test Shop")).toBeInTheDocument();
+      expect(withinDesktop.getByText("Test Shop")).toBeInTheDocument();
     });
 
     it("should render current quantity in input", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const input = screen.getByRole("spinbutton");
+      const input = withinDesktop.getByRole("spinbutton");
       expect(input).toHaveValue(2);
     });
 
     it("should render quantity control buttons", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      expect(screen.getByTestId("minus-icon")).toBeInTheDocument();
-      expect(screen.getByTestId("plus-icon")).toBeInTheDocument();
+      expect(withinDesktop.getByTestId("minus-icon")).toBeInTheDocument();
+      expect(withinDesktop.getByTestId("plus-icon")).toBeInTheDocument();
     });
 
     it("should render remove button", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      expect(screen.getByLabelText("Remove")).toBeInTheDocument();
-      expect(screen.getByTestId("trash-icon")).toBeInTheDocument();
+      expect(withinDesktop.getByLabelText("Remove")).toBeInTheDocument();
+      expect(withinDesktop.getByTestId("trash-icon")).toBeInTheDocument();
     });
 
     it("should render variant information when present", () => {
@@ -192,54 +200,30 @@ describe("CartItem - Comprehensive Tests", () => {
         variantId: "variant-1",
       };
 
-      render(
-        <CartItem
-          item={itemWithVariant}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(itemWithVariant);
 
-      expect(screen.getByText(/Variant: variant-1/)).toBeInTheDocument();
+      expect(withinDesktop.getByText(/Variant: variant-1/)).toBeInTheDocument();
     });
 
     it("should not render variant information when absent", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      expect(screen.queryByText(/Variant:/)).not.toBeInTheDocument();
+      expect(withinDesktop.queryByText(/Variant:/)).not.toBeInTheDocument();
     });
   });
 
   describe("Price Display", () => {
     it("should display product price with Indian formatting", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      expect(screen.getByText("₹1,000")).toBeInTheDocument();
+      expect(withinDesktop.getByText("₹1,000")).toBeInTheDocument();
     });
 
     it("should display subtotal based on quantity", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
       // Subtotal = price * quantity = 1000 * 2 = 2000
-      expect(screen.getByText("₹2,000")).toBeInTheDocument();
+      expect(withinDesktop.getByText("₹2,000")).toBeInTheDocument();
     });
 
     it("should display original price when discounted", () => {
@@ -249,16 +233,10 @@ describe("CartItem - Comprehensive Tests", () => {
         originalPrice: 1000,
       };
 
-      render(
-        <CartItem
-          item={discountedItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(discountedItem);
 
-      expect(screen.getByText("₹800")).toBeInTheDocument();
-      expect(screen.getByText("₹1,000")).toBeInTheDocument();
+      expect(withinDesktop.getByText("₹800")).toBeInTheDocument();
+      expect(withinDesktop.getByText("₹1,000")).toBeInTheDocument();
     });
 
     it("should display discount percentage", () => {
@@ -268,60 +246,40 @@ describe("CartItem - Comprehensive Tests", () => {
         originalPrice: 1000,
       };
 
-      render(
-        <CartItem
-          item={discountedItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(discountedItem);
 
       // Discount = (1000 - 800) / 1000 * 100 = 20%
-      expect(screen.getByText("20% off")).toBeInTheDocument();
+      expect(withinDesktop.getByText("20% off")).toBeInTheDocument();
     });
 
     it("should not display discount info when no original price", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      expect(screen.queryByText(/% off/)).not.toBeInTheDocument();
+      expect(withinDesktop.queryByText(/% off/)).not.toBeInTheDocument();
     });
 
     it("should update subtotal when quantity changes", async () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const plusButton = screen.getByTestId("plus-icon").closest("button")!;
+      const plusButton = withinDesktop
+        .getByTestId("plus-icon")
+        .closest("button")!;
       fireEvent.click(plusButton);
 
       await waitFor(() => {
         // New subtotal = 1000 * 3 = 3000
-        expect(screen.getByText("₹3,000")).toBeInTheDocument();
+        expect(withinDesktop.getByText("₹3,000")).toBeInTheDocument();
       });
     });
   });
 
   describe("Quantity Controls - Increment", () => {
     it("should increment quantity when plus button clicked", async () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const plusButton = screen.getByTestId("plus-icon").closest("button")!;
+      const plusButton = withinDesktop
+        .getByTestId("plus-icon")
+        .closest("button")!;
       fireEvent.click(plusButton);
 
       await waitFor(() => {
@@ -332,15 +290,11 @@ describe("CartItem - Comprehensive Tests", () => {
     it("should disable plus button when quantity is 99", () => {
       const maxQuantityItem = { ...mockItem, quantity: 99 };
 
-      render(
-        <CartItem
-          item={maxQuantityItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(maxQuantityItem);
 
-      const plusButton = screen.getByTestId("plus-icon").closest("button")!;
+      const plusButton = withinDesktop
+        .getByTestId("plus-icon")
+        .closest("button")!;
       expect(plusButton).toBeDisabled();
     });
 
@@ -349,21 +303,19 @@ describe("CartItem - Comprehensive Tests", () => {
         () => new Promise((resolve) => setTimeout(resolve, 100))
       );
 
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const plusButton = screen.getByTestId("plus-icon").closest("button")!;
+      const plusButton = withinDesktop
+        .getByTestId("plus-icon")
+        .closest("button")!;
       fireEvent.click(plusButton);
 
-      expect(screen.getByTestId("loader-icon")).toBeInTheDocument();
+      expect(withinDesktop.getByTestId("loader-icon")).toBeInTheDocument();
 
       await waitFor(() => {
-        expect(screen.queryByTestId("loader-icon")).not.toBeInTheDocument();
+        expect(
+          withinDesktop.queryByTestId("loader-icon")
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -372,19 +324,17 @@ describe("CartItem - Comprehensive Tests", () => {
         () => new Promise((resolve) => setTimeout(resolve, 100))
       );
 
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const plusButton = screen.getByTestId("plus-icon").closest("button")!;
+      const plusButton = withinDesktop
+        .getByTestId("plus-icon")
+        .closest("button")!;
       fireEvent.click(plusButton);
 
-      const minusButton = screen.getByTestId("minus-icon").closest("button")!;
-      const input = screen.getByRole("spinbutton");
+      const minusButton = withinDesktop
+        .getByTestId("minus-icon")
+        .closest("button")!;
+      const input = withinDesktop.getByRole("spinbutton");
 
       expect(plusButton).toBeDisabled();
       expect(minusButton).toBeDisabled();
@@ -394,15 +344,11 @@ describe("CartItem - Comprehensive Tests", () => {
 
   describe("Quantity Controls - Decrement", () => {
     it("should decrement quantity when minus button clicked", async () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const minusButton = screen.getByTestId("minus-icon").closest("button")!;
+      const minusButton = withinDesktop
+        .getByTestId("minus-icon")
+        .closest("button")!;
       fireEvent.click(minusButton);
 
       await waitFor(() => {
@@ -413,30 +359,22 @@ describe("CartItem - Comprehensive Tests", () => {
     it("should disable minus button when quantity is 1", () => {
       const minQuantityItem = { ...mockItem, quantity: 1 };
 
-      render(
-        <CartItem
-          item={minQuantityItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(minQuantityItem);
 
-      const minusButton = screen.getByTestId("minus-icon").closest("button")!;
+      const minusButton = withinDesktop
+        .getByTestId("minus-icon")
+        .closest("button")!;
       expect(minusButton).toBeDisabled();
     });
 
     it("should not call update when quantity would go below 1", () => {
       const minQuantityItem = { ...mockItem, quantity: 1 };
 
-      render(
-        <CartItem
-          item={minQuantityItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(minQuantityItem);
 
-      const minusButton = screen.getByTestId("minus-icon").closest("button")!;
+      const minusButton = withinDesktop
+        .getByTestId("minus-icon")
+        .closest("button")!;
       fireEvent.click(minusButton);
 
       expect(mockOnUpdateQuantity).not.toHaveBeenCalled();
@@ -445,15 +383,9 @@ describe("CartItem - Comprehensive Tests", () => {
 
   describe("Quantity Controls - Direct Input", () => {
     it("should update quantity when typing in input", async () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const input = screen.getByRole("spinbutton");
+      const input = withinDesktop.getByRole("spinbutton");
       fireEvent.change(input, { target: { value: "5" } });
 
       await waitFor(() => {
@@ -462,15 +394,9 @@ describe("CartItem - Comprehensive Tests", () => {
     });
 
     it("should handle empty input by setting quantity to 1", async () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const input = screen.getByRole("spinbutton");
+      const input = withinDesktop.getByRole("spinbutton");
       fireEvent.change(input, { target: { value: "" } });
 
       await waitFor(() => {
@@ -479,15 +405,9 @@ describe("CartItem - Comprehensive Tests", () => {
     });
 
     it("should handle invalid input by setting quantity to 1", async () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const input = screen.getByRole("spinbutton");
+      const input = withinDesktop.getByRole("spinbutton");
       fireEvent.change(input, { target: { value: "abc" } });
 
       await waitFor(() => {
@@ -496,15 +416,9 @@ describe("CartItem - Comprehensive Tests", () => {
     });
 
     it("should have min and max attributes", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const input = screen.getByRole("spinbutton");
+      const input = withinDesktop.getByRole("spinbutton");
       expect(input).toHaveAttribute("min", "1");
       expect(input).toHaveAttribute("max", "99");
     });
@@ -514,15 +428,11 @@ describe("CartItem - Comprehensive Tests", () => {
     it("should show alert and revert quantity on update error", async () => {
       mockOnUpdateQuantity.mockRejectedValueOnce(new Error("Update failed"));
 
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const plusButton = screen.getByTestId("plus-icon").closest("button")!;
+      const plusButton = withinDesktop
+        .getByTestId("plus-icon")
+        .closest("button")!;
       fireEvent.click(plusButton);
 
       await waitFor(() => {
@@ -532,26 +442,20 @@ describe("CartItem - Comprehensive Tests", () => {
       });
 
       // Quantity should revert to original
-      const input = screen.getByRole("spinbutton");
+      const input = withinDesktop.getByRole("spinbutton");
       expect(input).toHaveValue(2);
     });
 
     it("should show alert on remove error", async () => {
       mockOnRemove.mockRejectedValueOnce(new Error("Remove failed"));
 
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
       // Open dialog
-      const removeButton = screen.getByLabelText("Remove");
+      const removeButton = withinDesktop.getByLabelText("Remove");
       fireEvent.click(removeButton);
 
-      // Confirm removal
+      // Confirm removal (dialog is outside desktop container)
       const confirmButton = screen.getByText("Remove");
       fireEvent.click(confirmButton);
 
@@ -565,34 +469,26 @@ describe("CartItem - Comprehensive Tests", () => {
     it("should stop loading state after error", async () => {
       mockOnUpdateQuantity.mockRejectedValueOnce(new Error("Update failed"));
 
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const plusButton = screen.getByTestId("plus-icon").closest("button")!;
+      const plusButton = withinDesktop
+        .getByTestId("plus-icon")
+        .closest("button")!;
       fireEvent.click(plusButton);
 
       await waitFor(() => {
-        expect(screen.queryByTestId("loader-icon")).not.toBeInTheDocument();
+        expect(
+          withinDesktop.queryByTestId("loader-icon")
+        ).not.toBeInTheDocument();
       });
     });
   });
 
   describe("Remove Item", () => {
     it("should open confirm dialog when remove button clicked", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const removeButton = screen.getByLabelText("Remove");
+      const removeButton = withinDesktop.getByLabelText("Remove");
       fireEvent.click(removeButton);
 
       expect(screen.getByTestId("confirm-dialog")).toBeInTheDocument();
@@ -600,15 +496,9 @@ describe("CartItem - Comprehensive Tests", () => {
     });
 
     it("should display product name in confirm dialog", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const removeButton = screen.getByLabelText("Remove");
+      const removeButton = withinDesktop.getByLabelText("Remove");
       fireEvent.click(removeButton);
 
       expect(
@@ -617,16 +507,10 @@ describe("CartItem - Comprehensive Tests", () => {
     });
 
     it("should close dialog when cancel clicked", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
       // Open dialog
-      const removeButton = screen.getByLabelText("Remove");
+      const removeButton = withinDesktop.getByLabelText("Remove");
       fireEvent.click(removeButton);
 
       // Cancel
@@ -637,16 +521,10 @@ describe("CartItem - Comprehensive Tests", () => {
     });
 
     it("should call onRemove when confirmed", async () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
       // Open dialog
-      const removeButton = screen.getByLabelText("Remove");
+      const removeButton = withinDesktop.getByLabelText("Remove");
       fireEvent.click(removeButton);
 
       // Confirm
@@ -659,16 +537,10 @@ describe("CartItem - Comprehensive Tests", () => {
     });
 
     it("should close dialog after successful removal", async () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
       // Open dialog
-      const removeButton = screen.getByLabelText("Remove");
+      const removeButton = withinDesktop.getByLabelText("Remove");
       fireEvent.click(removeButton);
 
       // Confirm
@@ -681,16 +553,10 @@ describe("CartItem - Comprehensive Tests", () => {
     });
 
     it("should show danger variant for confirm dialog", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
       // Open dialog
-      const removeButton = screen.getByLabelText("Remove");
+      const removeButton = withinDesktop.getByLabelText("Remove");
       fireEvent.click(removeButton);
 
       const confirmButton = screen.getByText("Remove");
@@ -706,15 +572,11 @@ describe("CartItem - Comprehensive Tests", () => {
         stockCount: 3,
       };
 
-      render(
-        <CartItem
-          item={lowStockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(lowStockItem);
 
-      expect(screen.getByText("Only 3 left in stock")).toBeInTheDocument();
+      expect(
+        withinDesktop.getByText("Only 3 left in stock")
+      ).toBeInTheDocument();
     });
 
     it("should not show stock warning when stock is sufficient", () => {
@@ -724,86 +586,57 @@ describe("CartItem - Comprehensive Tests", () => {
         stockCount: 10,
       };
 
-      render(
-        <CartItem
-          item={sufficientStockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(sufficientStockItem);
 
-      expect(screen.queryByText(/left in stock/)).not.toBeInTheDocument();
+      expect(
+        withinDesktop.queryByText(/left in stock/)
+      ).not.toBeInTheDocument();
     });
 
     it("should not show stock warning when stockCount is undefined", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      expect(screen.queryByText(/left in stock/)).not.toBeInTheDocument();
+      expect(
+        withinDesktop.queryByText(/left in stock/)
+      ).not.toBeInTheDocument();
     });
   });
 
   describe("Links & Navigation", () => {
     it("should link product image to product page", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const imageLink = screen.getByAltText("Test Product").closest("a");
+      const imageLink = withinDesktop.getByAltText("Test Product").closest("a");
       expect(imageLink).toHaveAttribute("href", "/products/product-1");
     });
 
     it("should link product name to product page", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const nameLink = screen.getByText("Test Product").closest("a");
+      const nameLink = withinDesktop.getByText("Test Product").closest("a");
       expect(nameLink).toHaveAttribute("href", "/products/product-1");
     });
 
     it("should link shop name to shop page", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const shopLink = screen.getByText("Test Shop").closest("a");
+      const shopLink = withinDesktop.getByText("Test Shop").closest("a");
       expect(shopLink).toHaveAttribute("href", "/shops/shop-1");
     });
   });
 
   describe("Disabled State", () => {
     it("should disable all controls when disabled prop is true", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-          disabled={true}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(mockItem, true);
 
-      const plusButton = screen.getByTestId("plus-icon").closest("button")!;
-      const minusButton = screen.getByTestId("minus-icon").closest("button")!;
-      const input = screen.getByRole("spinbutton");
-      const removeButton = screen.getByLabelText("Remove");
+      const plusButton = withinDesktop
+        .getByTestId("plus-icon")
+        .closest("button")!;
+      const minusButton = withinDesktop
+        .getByTestId("minus-icon")
+        .closest("button")!;
+      const input = withinDesktop.getByRole("spinbutton");
+      const removeButton = withinDesktop.getByLabelText("Remove");
 
       expect(plusButton).toBeDisabled();
       expect(minusButton).toBeDisabled();
@@ -812,32 +645,20 @@ describe("CartItem - Comprehensive Tests", () => {
     });
 
     it("should not call onUpdateQuantity when disabled", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-          disabled={true}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(mockItem, true);
 
-      const plusButton = screen.getByTestId("plus-icon").closest("button")!;
+      const plusButton = withinDesktop
+        .getByTestId("plus-icon")
+        .closest("button")!;
       fireEvent.click(plusButton);
 
       expect(mockOnUpdateQuantity).not.toHaveBeenCalled();
     });
 
     it("should not open remove dialog when disabled", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-          disabled={true}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(mockItem, true);
 
-      const removeButton = screen.getByLabelText("Remove");
+      const removeButton = withinDesktop.getByLabelText("Remove");
       fireEvent.click(removeButton);
 
       expect(screen.queryByTestId("confirm-dialog")).not.toBeInTheDocument();
@@ -848,19 +669,13 @@ describe("CartItem - Comprehensive Tests", () => {
     it("should handle quantity of 1", () => {
       const singleItem = { ...mockItem, quantity: 1 };
 
-      render(
-        <CartItem
-          item={singleItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(singleItem);
 
-      const input = screen.getByRole("spinbutton");
+      const input = withinDesktop.getByRole("spinbutton");
       expect(input).toHaveValue(1);
 
       // Check subtotal specifically (not the unit price)
-      const subtotals = screen.getAllByText((content, element) => {
+      const subtotals = withinDesktop.getAllByText((content, element) => {
         return !!(
           element?.className?.includes("font-semibold") &&
           content.includes("1,000")
@@ -872,19 +687,13 @@ describe("CartItem - Comprehensive Tests", () => {
     it("should handle quantity of 99", () => {
       const maxItem = { ...mockItem, quantity: 99 };
 
-      render(
-        <CartItem
-          item={maxItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(maxItem);
 
-      const input = screen.getByRole("spinbutton");
+      const input = withinDesktop.getByRole("spinbutton");
       expect(input).toHaveValue(99);
 
       // Subtotal = 1000 * 99 = 99000
-      expect(screen.getByText("₹99,000")).toBeInTheDocument();
+      expect(withinDesktop.getByText("₹99,000")).toBeInTheDocument();
     });
 
     it("should handle large prices with proper formatting", () => {
@@ -894,16 +703,10 @@ describe("CartItem - Comprehensive Tests", () => {
         quantity: 1,
       };
 
-      render(
-        <CartItem
-          item={expensiveItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(expensiveItem);
 
       // Look for the formatted price text in the unit price section (font-bold)
-      const unitPrices = screen.getAllByText((content, element) => {
+      const unitPrices = withinDesktop.getAllByText((content, element) => {
         return !!(
           element?.className?.includes("font-bold") &&
           content.includes("1,23,456")
@@ -919,16 +722,10 @@ describe("CartItem - Comprehensive Tests", () => {
         originalPrice: 1000,
       };
 
-      render(
-        <CartItem
-          item={noDiscountItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(noDiscountItem);
 
       // When prices are equal, component treats it as no discount (hasDiscount = false)
-      expect(screen.queryByText(/% off/)).not.toBeInTheDocument();
+      expect(withinDesktop.queryByText(/% off/)).not.toBeInTheDocument();
     });
 
     it("should handle item without shop information", () => {
@@ -938,28 +735,18 @@ describe("CartItem - Comprehensive Tests", () => {
         shopName: null,
       };
 
-      render(
-        <CartItem
-          item={noShopItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(noShopItem);
 
       // Should not crash, shop name should not be rendered
-      expect(screen.queryByText("Test Shop")).not.toBeInTheDocument();
+      expect(withinDesktop.queryByText("Test Shop")).not.toBeInTheDocument();
     });
 
     it("should handle multiple rapid quantity changes", async () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const plusButton = screen.getByTestId("plus-icon").closest("button")!;
+      const plusButton = withinDesktop
+        .getByTestId("plus-icon")
+        .closest("button")!;
 
       // Click multiple times rapidly
       fireEvent.click(plusButton);
@@ -975,56 +762,34 @@ describe("CartItem - Comprehensive Tests", () => {
 
   describe("Accessibility", () => {
     it("should have accessible remove button with aria-label", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const removeButton = screen.getByLabelText("Remove");
+      const removeButton = withinDesktop.getByLabelText("Remove");
       expect(removeButton).toHaveAttribute("aria-label", "Remove");
     });
 
     it("should have proper title attribute on remove button", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const removeButton = screen.getByLabelText("Remove");
+      const removeButton = withinDesktop.getByLabelText("Remove");
       expect(removeButton).toHaveAttribute("title", "Remove from cart");
     });
 
     it("should have number input with proper type", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const input = screen.getByRole("spinbutton");
+      const input = withinDesktop.getByRole("spinbutton");
       expect(input).toHaveAttribute("type", "number");
     });
 
     it("should disable buttons with proper opacity styling", () => {
       const minItem = { ...mockItem, quantity: 1 };
 
-      render(
-        <CartItem
-          item={minItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(minItem);
 
-      const minusButton = screen.getByTestId("minus-icon").closest("button")!;
+      const minusButton = withinDesktop
+        .getByTestId("minus-icon")
+        .closest("button")!;
       expect(minusButton).toHaveClass("disabled:opacity-50");
       expect(minusButton).toHaveClass("disabled:cursor-not-allowed");
     });
@@ -1032,55 +797,33 @@ describe("CartItem - Comprehensive Tests", () => {
 
   describe("Styling & Layout", () => {
     it("should have proper border styling", () => {
-      const { container } = render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { desktop } = renderWithDesktop();
 
-      const mainDiv = container.querySelector(".border-b");
+      const mainDiv = desktop.querySelector(".border-b");
       expect(mainDiv).toHaveClass("border-gray-200");
     });
 
     it("should have proper image container size", () => {
-      const { container } = render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { desktop } = renderWithDesktop();
 
-      const imageContainer = container.querySelector(".w-24.h-24");
+      const imageContainer = desktop.querySelector(".w-24.h-24");
       expect(imageContainer).toBeInTheDocument();
       expect(imageContainer).toHaveClass("rounded-lg");
     });
 
     it("should have proper gap spacing", () => {
-      const { container } = render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { desktop } = renderWithDesktop();
 
-      const mainDiv = container.querySelector(".gap-4");
+      const mainDiv = desktop.querySelector(".gap-4");
       expect(mainDiv).toBeInTheDocument();
     });
 
     it("should have hover effects on buttons", () => {
-      render(
-        <CartItem
-          item={mockItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop();
 
-      const plusButton = screen.getByTestId("plus-icon").closest("button")!;
+      const plusButton = withinDesktop
+        .getByTestId("plus-icon")
+        .closest("button")!;
       expect(plusButton).toHaveClass("hover:border-gray-400");
     });
 
@@ -1091,15 +834,9 @@ describe("CartItem - Comprehensive Tests", () => {
         originalPrice: 1000,
       };
 
-      render(
-        <CartItem
-          item={discountedItem}
-          onUpdateQuantity={mockOnUpdateQuantity}
-          onRemove={mockOnRemove}
-        />
-      );
+      const { withinDesktop } = renderWithDesktop(discountedItem);
 
-      const discountText = screen.getByText("20% off");
+      const discountText = withinDesktop.getByText("20% off");
       expect(discountText).toHaveClass("text-green-600");
     });
   });

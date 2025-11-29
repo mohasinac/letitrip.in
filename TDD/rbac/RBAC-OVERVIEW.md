@@ -337,6 +337,40 @@ import { filterDataByRole } from "@/lib/rbac-permissions";
 const filteredProducts = filterDataByRole(user, "products", products);
 ```
 
+### Resource: RipLimit (E028)
+
+| Action              | Admin | Seller | User     | Guest |
+| ------------------- | ----- | ------ | -------- | ----- |
+| View balance        | ✅    | ✅     | Own only | ❌    |
+| Purchase RipLimit   | ✅    | ✅     | ✅       | ❌    |
+| View transactions   | ✅    | ✅     | Own only | ❌    |
+| Request refund      | ✅    | ❌     | ✅       | ❌    |
+| Adjust user balance | ✅    | ❌     | ❌       | ❌    |
+| View all balances   | ✅    | ❌     | ❌       | ❌    |
+| Clear unpaid flag   | ✅    | ❌     | ❌       | ❌    |
+| View RipLimit stats | ✅    | ❌     | ❌       | ❌    |
+
+### Resource: Addresses (E029)
+
+| Action           | Admin | Seller   | User     | Guest |
+| ---------------- | ----- | -------- | -------- | ----- |
+| List addresses   | ✅    | Own only | Own only | ❌    |
+| Create address   | ✅    | ✅       | ✅       | ❌    |
+| Update address   | ✅    | Own only | Own only | ❌    |
+| Delete address   | ✅    | Own only | Own only | ❌    |
+| Set default      | ✅    | Own only | Own only | ❌    |
+| Use GPS location | ✅    | ✅       | ✅       | ❌    |
+| Lookup pincode   | ✅    | ✅       | ✅       | ✅    |
+
+### Resource: Theme & Design (E027)
+
+| Action                | Admin | Seller | User | Guest |
+| --------------------- | ----- | ------ | ---- | ----- |
+| Toggle dark mode      | ✅    | ✅     | ✅   | ✅    |
+| Save theme preference | ✅    | ✅     | ✅   | ✅    |
+| Update theme colors   | ✅    | ❌     | ❌   | ❌    |
+| View design tokens    | ✅    | ❌     | ❌   | ❌    |
+
 ## API Middleware Pattern
 
 ```typescript

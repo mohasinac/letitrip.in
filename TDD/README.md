@@ -37,7 +37,16 @@ TDD/
 │   ├── E022-wishlist-favorites.md
 │   ├── E023-messaging-system.md
 │   ├── E024-mobile-pwa-experience.md
-│   └── E025-mobile-component-integration.md
+│   ├── E025-mobile-component-integration.md
+│   ├── E026-sieve-pagination-filtering.md
+│   ├── E027-design-system-theming.md
+│   ├── E028-riplimit-bidding-currency.md
+│   ├── E029-smart-address-system.md
+│   ├── E030-code-quality-sonarqube.md
+│   ├── E031-searchable-dropdowns.md
+│   ├── E032-content-type-search-filter.md
+│   ├── E033-live-header-data.md
+│   └── E034-flexible-link-fields.md
 │
 ├── rbac/
 │   ├── RBAC-OVERVIEW.md         # Role hierarchy & permissions matrix
@@ -69,6 +78,14 @@ TDD/
 │   ├── blog/
 │   ├── settings/
 │   ├── messages/
+│   ├── pagination/              # E026 Sieve pagination
+│   ├── theming/                 # E027 Design system
+│   ├── riplimit/                # E028 RipLimit currency
+│   ├── addresses/               # E029 Smart addresses
+│   ├── quality/                 # E030 Code quality
+│   ├── dropdowns/               # E031 Searchable dropdowns
+│   ├── header/                  # E033 Live header
+│   ├── links/                   # E034 Flexible links
 │   └── mobile/
 │       ├── TEST-CASES.md        # E024 Mobile PWA test cases
 │       └── E025-TEST-CASES.md   # E025 Mobile Integration test cases
@@ -186,6 +203,20 @@ TDD/
 **See**: `TDD/epics/E025-mobile-component-integration.md` for detailed implementation plan  
 **See**: `TDD/resources/mobile/E025-TEST-CASES.md` for comprehensive test cases
 
+### Phase 8: Platform Enhancements (E026-E034) ⬜
+
+- [ ] E026: Sieve Pagination & Filtering - Backend API standardization
+- [ ] E027: Design System & Theming - CSS variables, light/dark mode
+- [ ] E028: RipLimit Bidding Currency - Virtual currency for auctions
+- [ ] E029: Smart Address System - GPS, autocomplete, pincode lookup
+- [ ] E030: Code Quality & SonarQube - Static analysis integration
+- [ ] E031: Searchable Dropdowns - Unified select components
+- [ ] E032: Content Type Search Filter - Filter by products/auctions/shops
+- [ ] E033: Live Header Data - Real-time cart, notifications, RipLimit
+- [ ] E034: Flexible Link Fields - Support relative URLs
+
+**See**: `TDD/epics/E026-*.md` through `E034-*.md` for detailed implementation plans
+
 ## 🔄 How to Continue
 
 1. Open `TDD/PROGRESS.md` to see current status
@@ -218,6 +249,15 @@ Acceptance Criteria:
 - E020-E023: Additional features (Blog, Settings, Wishlist, Messaging)
 - E024: Mobile PWA Experience (component creation)
 - E025: Mobile Component Integration (integration across app)
+- E026: Sieve-Style Pagination & Filtering
+- E027: Design System & Theming
+- E028: RipLimit Bidding Currency
+- E029: Smart Address System
+- E030: Code Quality & SonarQube
+- E031: Searchable Dropdowns
+- E032: Content Type Search Filter
+- E033: Live Header Data
+- E034: Flexible Link Fields
 
 ### Status Indicators
 

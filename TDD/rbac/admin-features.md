@@ -212,3 +212,76 @@ if (user.role === "admin") {
 - ⬜ Settings form mobile-optimized (pending)
 - ⬜ Logo upload touch-friendly (pending)
 - ⬜ Feature toggles touch-friendly (pending)
+
+## Platform Enhancement Features (E026-E034)
+
+### Sieve Pagination (E026)
+
+- ✅ Page-based navigation on all admin tables
+- ✅ Advanced filtering with all operators
+- ✅ Multi-column sorting
+- ✅ Configure default page sizes
+- ✅ Export filtered data
+
+### Design System (E027)
+
+- ✅ Toggle light/dark mode
+- ✅ Access design token configuration
+- ✅ Preview theme changes
+- ✅ Update brand colors (future)
+
+### RipLimit Management (E028)
+
+- `/admin/riplimit` - RipLimit dashboard
+- ✅ View total RipLimit in circulation
+- ✅ View total revenue from purchases
+- ✅ View blocked RipLimit in bids
+- ✅ View refund statistics
+- ✅ Search users by RipLimit balance
+- ✅ Adjust user balance (with reason)
+- ✅ Force release blocked RipLimit
+- ✅ Clear unpaid auction flag
+- ✅ Ban user from RipLimit system
+
+### Smart Address (E029)
+
+- ✅ View all user addresses
+- ✅ Edit any user address
+- ✅ Verify address accuracy
+- ✅ Configure Google Places API
+- ✅ Manage pincode database
+
+### Code Quality (E030)
+
+- ✅ Access SonarQube dashboard (external)
+- ✅ View code quality metrics
+- ✅ Configure quality gates
+- ✅ Review duplication reports
+
+### Searchable Dropdowns (E031)
+
+- ✅ All admin selects are searchable
+- ✅ User role assignment searchable
+- ✅ Category multi-select searchable
+- ✅ Status filters searchable
+
+### Content Type Search (E032)
+
+- ✅ Global search across all content
+- ✅ Filter by any content type
+- ✅ Admin-only content types (users, orders, etc.)
+
+### Live Header (E033)
+
+- ✅ Pending order count
+- ✅ Pending payout count
+- ✅ Open ticket count
+- ✅ Review queue count
+- ✅ Real-time updates
+
+### Flexible Links (E034)
+
+- ✅ Hero slides support relative links
+- ✅ Banner links support relative paths
+- ✅ Blog post links flexible
+- ✅ CTA buttons support all formats
