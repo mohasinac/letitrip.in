@@ -108,7 +108,7 @@ export const USER_ROUTES = {
 
   // NOTE: These routes do not exist yet - pending implementation
   // NOTIFICATIONS: "/user/notifications", // E016 - Not implemented
-  // RETURNS: "/user/returns", // Uses /user/orders for now
+  RETURNS: "/user/returns",
   // REVIEWS: "/user/reviews", // Uses /reviews for now
 } as const;
 
@@ -165,9 +165,9 @@ export const SELLER_ROUTES = {
   SUPPORT_TICKET_DETAIL: (id: string) => `/seller/support-tickets/${id}`,
   // NOTE: /seller/support-tickets/create does not exist - use support/create or inline creation
 
-  // NOTE: These routes do not exist
-  // SETTINGS: "/seller/settings", // REMOVED - Use shop edit page instead
-  // REVIEWS: "/seller/reviews", // REMOVED - Not implemented
+  // Settings & Reviews
+  SETTINGS: "/seller/settings",
+  REVIEWS: "/seller/reviews",
   // HELP: "/seller/help", // REMOVED - Not implemented
 } as const;
 
@@ -225,20 +225,19 @@ export const ADMIN_ROUTES = {
   BLOG_EDIT: (id: string) => `/admin/blog/${id}/edit`,
   // NOTE: /admin/blog/categories and /admin/blog/tags do not exist yet
 
-  // Settings (placeholder page exists)
+  // Settings
   SETTINGS: "/admin/settings",
-  // NOTE: Individual settings pages do not exist yet:
-  // SETTINGS_GENERAL: "/admin/settings/general",
-  // SETTINGS_PAYMENT: "/admin/settings/payment",
-  // SETTINGS_SHIPPING: "/admin/settings/shipping",
-  // SETTINGS_EMAIL: "/admin/settings/email",
-  // SETTINGS_NOTIFICATIONS: "/admin/settings/notifications",
+  SETTINGS_GENERAL: "/admin/settings/general",
+  SETTINGS_PAYMENT: "/admin/settings/payment",
+  SETTINGS_SHIPPING: "/admin/settings/shipping",
+  SETTINGS_EMAIL: "/admin/settings/email",
+  SETTINGS_NOTIFICATIONS: "/admin/settings/notifications",
 
-  // NOTE: Analytics routes do not exist yet
-  // ANALYTICS: "/admin/analytics",
-  // ANALYTICS_SALES: "/admin/analytics/sales",
-  // ANALYTICS_AUCTIONS: "/admin/analytics/auctions",
-  // ANALYTICS_USERS: "/admin/analytics/users",
+  // Analytics
+  ANALYTICS: "/admin/analytics",
+  ANALYTICS_SALES: "/admin/analytics/sales",
+  ANALYTICS_AUCTIONS: "/admin/analytics/auctions",
+  ANALYTICS_USERS: "/admin/analytics/users",
 
   // Demo
   DEMO: "/admin/demo",

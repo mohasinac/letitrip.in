@@ -51,13 +51,12 @@ export const USER_MENU_ITEMS = [
         icon: "heart",
       },
       { id: "history", name: "History", link: "/user/history", icon: "clock" },
-      // REMOVED: /user/returns - Route does not exist, returns are tracked in orders
-      // {
-      //   id: "returns",
-      //   name: "Returns & Refunds",
-      //   link: "/user/returns",
-      //   icon: "rotate-ccw",
-      // },
+      {
+        id: "returns",
+        name: "Returns & Refunds",
+        link: "/user/returns",
+        icon: "rotate-ccw",
+      },
     ],
   },
   {
@@ -97,13 +96,12 @@ export const USER_MENU_ITEMS = [
         link: "/user/addresses",
         icon: "map-pin",
       },
-      // REMOVED: /user/reviews - Route does not exist
-      // {
-      //   id: "reviews",
-      //   name: "My Reviews",
-      //   link: "/user/reviews",
-      //   icon: "star",
-      // },
+      {
+        id: "reviews",
+        name: "My Reviews",
+        link: "/user/reviews",
+        icon: "star",
+      },
       {
         id: "settings",
         name: "Account Settings",
@@ -233,8 +231,12 @@ export const SELLER_MENU_ITEMS = [
         link: "/seller/revenue",
         icon: "dollar-sign",
       },
-      // REMOVED: /seller/reviews - Route does not exist
-      // { id: "reviews", name: "Reviews", link: "/seller/reviews", icon: "star" },
+      {
+        id: "reviews",
+        name: "Reviews",
+        link: "/seller/reviews",
+        icon: "star",
+      },
     ],
   },
   {
@@ -248,13 +250,18 @@ export const SELLER_MENU_ITEMS = [
         link: "/seller/support-tickets",
         icon: "life-buoy",
       },
-      // REMOVED: /seller/help - Route does not exist
-      // {
-      //   id: "help",
-      //   name: "Help Center",
-      //   link: "/seller/help",
-      //   icon: "book-open",
-      // },
+      {
+        id: "help",
+        name: "Help Center",
+        link: "/seller/help",
+        icon: "book-open",
+      },
+      {
+        id: "settings",
+        name: "Settings",
+        link: "/seller/settings",
+        icon: "settings",
+      },
     ],
   },
 ];
@@ -298,13 +305,12 @@ export const ADMIN_MENU_ITEMS = [
         link: "/admin/hero-slides",
         icon: "image",
       },
-      // REMOVED: /admin/featured-sections - Route does not exist, use homepage
-      // {
-      //   id: "featured-sections",
-      //   name: "Featured Sections",
-      //   link: "/admin/featured-sections",
-      //   icon: "star",
-      // },
+      {
+        id: "featured-sections",
+        name: "Featured Sections",
+        link: "/admin/featured-sections",
+        icon: "star",
+      },
       {
         id: "categories",
         name: "Categories",
@@ -337,20 +343,18 @@ export const ADMIN_MENU_ITEMS = [
         link: "/admin/auctions",
         icon: "gavel",
       },
-      // REMOVED: /admin/auctions/live - Route does not exist
-      // {
-      //   id: "auction-live",
-      //   name: "Live Auctions",
-      //   link: "/admin/auctions/live",
-      //   icon: "zap",
-      // },
-      // REMOVED: /admin/auctions/moderation - Route does not exist
-      // {
-      //   id: "auction-moderation",
-      //   name: "Auction Moderation",
-      //   link: "/admin/auctions/moderation",
-      //   icon: "shield",
-      // },
+      {
+        id: "auction-live",
+        name: "Live Auctions",
+        link: "/admin/auctions/live",
+        icon: "zap",
+      },
+      {
+        id: "auction-moderation",
+        name: "Auction Moderation",
+        link: "/admin/auctions/moderation",
+        icon: "shield",
+      },
     ],
   },
   {
@@ -453,15 +457,18 @@ export const ADMIN_MENU_ITEMS = [
         link: "/admin/blog/create",
         icon: "plus-circle",
       },
-      // REMOVED: /admin/blog/categories - Route does not exist
-      // {
-      //   id: "blog-categories",
-      //   name: "Categories",
-      //   link: "/admin/blog/categories",
-      //   icon: "folder",
-      // },
-      // REMOVED: /admin/blog/tags - Route does not exist
-      // { id: "blog-tags", name: "Tags", link: "/admin/blog/tags", icon: "tag" },
+      {
+        id: "blog-categories",
+        name: "Categories",
+        link: "/admin/blog/categories",
+        icon: "folder",
+      },
+      {
+        id: "blog-tags",
+        name: "Tags",
+        link: "/admin/blog/tags",
+        icon: "tag",
+      },
     ],
   },
   {
@@ -469,15 +476,14 @@ export const ADMIN_MENU_ITEMS = [
     name: "Settings",
     link: "/admin/settings",
     icon: "settings",
-    description: "System settings (placeholder)",
-    // REMOVED: Individual settings pages do not exist yet
-    // children: [
-    //   { id: "settings-general", name: "General", link: "/admin/settings/general", icon: "sliders" },
-    //   { id: "settings-payment", name: "Payment Gateways", link: "/admin/settings/payment", icon: "credit-card" },
-    //   { id: "settings-shipping", name: "Shipping", link: "/admin/settings/shipping", icon: "truck" },
-    //   { id: "settings-email", name: "Email", link: "/admin/settings/email", icon: "mail" },
-    //   { id: "settings-notifications", name: "Notifications", link: "/admin/settings/notifications", icon: "bell" },
-    // ],
+    description: "System settings",
+    children: [
+      { id: "settings-general", name: "General", link: "/admin/settings/general", icon: "sliders" },
+      { id: "settings-payment", name: "Payment Gateways", link: "/admin/settings/payment", icon: "credit-card" },
+      { id: "settings-shipping", name: "Shipping", link: "/admin/settings/shipping", icon: "truck" },
+      { id: "settings-email", name: "Email", link: "/admin/settings/email", icon: "mail" },
+      { id: "settings-notifications", name: "Notifications", link: "/admin/settings/notifications", icon: "bell" },
+    ],
   },
 ];
 
