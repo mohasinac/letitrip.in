@@ -74,15 +74,17 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <ThemeProvider defaultTheme="system" enableSystem enableStorage>
+        <ThemeProvider defaultTheme="dark" enableStorage>
           <AuthProvider>
             <ErrorInitializer />
             <ToastContainer />
             <MobileOfflineIndicator />
-            <div className="flex flex-col min-h-screen">
+            <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
               <Header />
               <Breadcrumb />
-              <main className="flex-1 pb-16 lg:pb-0">{children}</main>
+              <main className="flex-1 pb-16 lg:pb-0 bg-white dark:bg-gray-900">
+                {children}
+              </main>
               <Footer />
               <BottomNav />
               <MobileInstallPrompt />

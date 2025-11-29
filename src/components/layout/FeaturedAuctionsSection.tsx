@@ -41,12 +41,12 @@ export default function FeaturedAuctionsSection() {
     return (
       <section className="py-8">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-64 mb-6"></div>
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-6"></div>
           <div className="flex gap-4 overflow-hidden">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="min-w-[280px] h-96 bg-gray-200 rounded-lg"
+                className="min-w-[280px] h-96 bg-gray-200 dark:bg-gray-700 rounded-lg"
               ></div>
             ))}
           </div>
@@ -74,12 +74,12 @@ export default function FeaturedAuctionsSection() {
             auction={
               {
                 id: auction.id,
-                name: auction.productName || "",
-                slug: auction.productSlug || "",
-                images: [auction.productImage],
-                currentBid: auction.currentBid || auction.startingBid || 0,
+                name: auction.productName || auction.name || "",
+                slug: auction.productSlug || auction.slug || "",
+                images: auction.images || (auction.productImage ? [auction.productImage] : []),
+                currentBid: auction.currentPrice || auction.currentBid || auction.startingBid || 0,
                 startingBid: auction.startingBid || 0,
-                bidCount: auction.bidCount || 0,
+                bidCount: auction.totalBids || auction.bidCount || 0,
                 endTime: auction.endTime,
                 featured: auction.featured,
                 shop: auction.shopId

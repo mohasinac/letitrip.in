@@ -73,12 +73,12 @@ export default function FeaturedShopsSection() {
       <div className="space-y-12 py-8">
         {[1, 2, 3].map((i) => (
           <div key={i} className="animate-pulse">
-            <div className="h-32 bg-gray-200 rounded-lg mb-6"></div>
+            <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-6"></div>
             <div className="flex gap-4 overflow-hidden">
               {[1, 2, 3, 4].map((j) => (
                 <div
                   key={j}
-                  className="min-w-[280px] h-96 bg-gray-200 rounded-lg"
+                  className="min-w-[280px] h-96 bg-gray-200 dark:bg-gray-700 rounded-lg"
                 ></div>
               ))}
             </div>
@@ -95,10 +95,10 @@ export default function FeaturedShopsSection() {
   return (
     <div className="space-y-12 py-8">
       <div className="mb-6">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
           Featured Shops
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           Discover products from our verified seller partners
         </p>
       </div>
