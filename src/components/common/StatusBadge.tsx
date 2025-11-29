@@ -54,7 +54,11 @@ const statusStyles: Record<
     text: "text-red-800 dark:text-red-400",
     border: "border-red-300 dark:border-red-700",
   },
-  banned: { bg: "bg-red-100 dark:bg-red-900/30", text: "text-red-800 dark:text-red-400", border: "border-red-300 dark:border-red-700" },
+  banned: {
+    bg: "bg-red-100 dark:bg-red-900/30",
+    text: "text-red-800 dark:text-red-400",
+    border: "border-red-300 dark:border-red-700",
+  },
   verified: {
     bg: "bg-blue-100 dark:bg-blue-900/30",
     text: "text-blue-800 dark:text-blue-400",
@@ -90,13 +94,21 @@ const statusStyles: Record<
     text: "text-green-800 dark:text-green-400",
     border: "border-green-300 dark:border-green-700",
   },
-  error: { bg: "bg-red-100 dark:bg-red-900/30", text: "text-red-800 dark:text-red-400", border: "border-red-300 dark:border-red-700" },
+  error: {
+    bg: "bg-red-100 dark:bg-red-900/30",
+    text: "text-red-800 dark:text-red-400",
+    border: "border-red-300 dark:border-red-700",
+  },
   warning: {
     bg: "bg-yellow-100 dark:bg-yellow-900/30",
     text: "text-yellow-800 dark:text-yellow-400",
     border: "border-yellow-300 dark:border-yellow-700",
   },
-  info: { bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-blue-800 dark:text-blue-400", border: "border-blue-300 dark:border-blue-700" },
+  info: {
+    bg: "bg-blue-100 dark:bg-blue-900/30",
+    text: "text-blue-800 dark:text-blue-400",
+    border: "border-blue-300 dark:border-blue-700",
+  },
 };
 
 const sizeStyles = {
