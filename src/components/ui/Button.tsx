@@ -3,7 +3,8 @@
 import React from "react";
 import { Loader2 } from "lucide-react";
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "danger" | "ghost" | "outline";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
@@ -14,12 +15,13 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const variantStyles = {
   primary: "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400",
-  secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300 disabled:bg-gray-100",
+  secondary:
+    "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 disabled:bg-gray-100 dark:disabled:bg-gray-800",
   danger: "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-400",
   ghost:
-    "bg-transparent text-gray-700 hover:bg-gray-100 disabled:bg-transparent disabled:text-gray-400",
+    "bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:bg-transparent disabled:text-gray-400",
   outline:
-    "bg-transparent border-2 border-gray-300 text-gray-700 hover:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400",
+    "bg-transparent border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:border-gray-200 dark:disabled:border-gray-700 disabled:text-gray-400",
 };
 
 const sizeStyles = {
@@ -42,7 +44,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       disabled,
       ...props
     },
-    ref,
+    ref
   ) => {
     return (
       <button
@@ -82,7 +84,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </button>
     );
-  },
+  }
 );
 
 Button.displayName = "Button";

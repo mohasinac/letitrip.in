@@ -41,7 +41,7 @@ export const FormActions: React.FC<FormActionsProps> = ({
   return (
     <div
       className={`
-        flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4
+        flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4
         ${positionClasses[position]}
         ${className}
       `}

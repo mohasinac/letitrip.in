@@ -39,15 +39,15 @@ export function EmptyState({
       className={`flex flex-col items-center justify-center py-16 px-4 text-center ${className}`}
     >
       {icon && (
-        <div className="mb-6 p-4 rounded-full bg-gray-100 text-gray-400">
+        <div className="mb-6 p-4 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400">
           {icon}
         </div>
       )}
 
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
 
       {description && (
-        <p className="text-sm text-gray-500 mb-8 max-w-md leading-relaxed">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-md leading-relaxed">
           {description}
         </p>
       )}
@@ -65,7 +65,7 @@ export function EmptyState({
           {secondaryAction && (
             <button
               onClick={secondaryAction.onClick}
-              className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
             >
               {secondaryAction.label}
             </button>

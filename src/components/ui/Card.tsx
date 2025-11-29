@@ -20,16 +20,22 @@ export const Card: React.FC<CardProps> = ({
   noPadding = false,
 }) => {
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}
+    >
       {(title || description || headerAction) && (
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-start justify-between">
             <div>
               {title && (
-                <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {title}
+                </h2>
               )}
               {description && (
-                <p className="mt-1 text-sm text-gray-500">{description}</p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  {description}
+                </p>
               )}
             </div>
             {headerAction && <div className="ml-4">{headerAction}</div>}
@@ -59,10 +65,14 @@ export const CardSection: React.FC<CardSectionProps> = ({
       {(title || description) && (
         <div className="mb-4">
           {title && (
-            <h3 className="text-base font-medium text-gray-900">{title}</h3>
+            <h3 className="text-base font-medium text-gray-900 dark:text-white">
+              {title}
+            </h3>
           )}
           {description && (
-            <p className="mt-1 text-sm text-gray-500">{description}</p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              {description}
+            </p>
           )}
         </div>
       )}

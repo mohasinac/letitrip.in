@@ -8,7 +8,8 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+export interface SelectProps
+  extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -31,7 +32,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       required,
       ...props
     },
-    ref,
+    ref
   ) => {
     const selectId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
@@ -40,7 +41,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >
             {label}
             {required && <span className="text-red-500 ml-1">*</span>}
@@ -51,10 +52,10 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           id={selectId}
           className={`
             w-full px-4 py-2 border rounded-lg
-            bg-white text-gray-900
+            bg-white dark:bg-gray-800 text-gray-900 dark:text-white
             focus:outline-none focus:ring-2 focus:ring-blue-500
-            disabled:bg-gray-100 disabled:cursor-not-allowed
-            ${error ? "border-red-500" : "border-gray-300"}
+            disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed
+            ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
             ${className}
           `}
           aria-invalid={!!error}
@@ -62,8 +63,8 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             error
               ? `${selectId}-error`
               : helperText
-                ? `${selectId}-helper`
-                : undefined
+              ? `${selectId}-helper`
+              : undefined
           }
           {...props}
         >
@@ -88,13 +89,16 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           </p>
         )}
         {helperText && !error && (
-          <p id={`${selectId}-helper`} className="mt-1 text-sm text-gray-500">
+          <p
+            id={`${selectId}-helper`}
+            className="mt-1 text-sm text-gray-500 dark:text-gray-400"
+          >
             {helperText}
           </p>
         )}
       </div>
     );
-  },
+  }
 );
 
 Select.displayName = "Select";

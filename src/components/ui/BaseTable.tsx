@@ -46,12 +46,12 @@ export function BaseTable<T>({
     return (
       <div className="w-full overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className={`${cellPadding} text-left text-xs font-medium text-gray-500 uppercase tracking-wider`}
+                  className={`${cellPadding} text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider`}
                   style={{ width: column.width }}
                 >
                   {column.label}
@@ -59,12 +59,12 @@ export function BaseTable<T>({
               ))}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
             {[...Array(5)].map((_, i) => (
               <tr key={i}>
                 {columns.map((column) => (
                   <td key={column.key} className={cellPadding}>
-                    <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                   </td>
                 ))}
               </tr>
@@ -77,8 +77,8 @@ export function BaseTable<T>({
 
   if (data.length === 0) {
     return (
-      <div className="w-full text-center py-12 bg-white rounded-lg border border-gray-200">
-        <p className="text-gray-500">{emptyMessage}</p>
+      <div className="w-full text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+        <p className="text-gray-500 dark:text-gray-400">{emptyMessage}</p>
       </div>
     );
   }
@@ -90,24 +90,24 @@ export function BaseTable<T>({
   };
 
   return (
-    <div className="w-full overflow-x-auto bg-white rounded-lg border border-gray-200">
+    <div className="w-full overflow-x-auto bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
       <table className="w-full">
         <thead
-          className={`bg-gray-50 ${stickyHeader ? "sticky top-0 z-20" : ""}`}
+          className={`bg-gray-50 dark:bg-gray-900 ${stickyHeader ? "sticky top-0 z-20" : ""}`}
         >
           <tr>
             {columns.map((column, index) => (
               <th
                 key={column.key}
                 className={`
-                  ${cellPadding} text-xs font-medium text-gray-500 uppercase tracking-wider
+                  ${cellPadding} text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider
                   ${alignmentClasses[column.align || "left"]}
                   ${
                     stickyFirstColumn && index === 0
-                      ? "sticky left-0 z-30 bg-gray-50"
+                      ? "sticky left-0 z-30 bg-gray-50 dark:bg-gray-900"
                       : ""
                   }
-                  ${column.sortable ? "cursor-pointer hover:bg-gray-100" : ""}
+                  ${column.sortable ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" : ""}
                 `}
                 style={{ width: column.width }}
               >
@@ -116,12 +116,12 @@ export function BaseTable<T>({
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           {data.map((row, rowIndex) => (
             <tr
               key={keyExtractor(row, rowIndex)}
               className={`
-                ${onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}
+                ${onRowClick ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700" : ""}
                 ${rowClassName ? rowClassName(row) : ""}
               `}
               onClick={() => onRowClick?.(row)}
@@ -132,11 +132,11 @@ export function BaseTable<T>({
                   <td
                     key={column.key}
                     className={`
-                      ${cellPadding} text-sm text-gray-900 whitespace-nowrap
+                      ${cellPadding} text-sm text-gray-900 dark:text-white whitespace-nowrap
                       ${alignmentClasses[column.align || "left"]}
                       ${
                         stickyFirstColumn && colIndex === 0
-                          ? "sticky left-0 z-10 bg-white"
+                          ? "sticky left-0 z-10 bg-white dark:bg-gray-800"
                           : ""
                       }
                     `}
