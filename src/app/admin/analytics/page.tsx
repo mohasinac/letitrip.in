@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
   TrendingUp,
   TrendingDown,
@@ -12,6 +13,8 @@ import {
   Calendar,
   RefreshCw,
   Loader2,
+  Gavel,
+  ArrowRight,
 } from "lucide-react";
 import { analyticsService } from "@/services/analytics.service";
 import type {
@@ -366,6 +369,69 @@ export default function AdminAnalyticsPage() {
                 Top Products
               </h2>
               <TopProductsTable products={topProducts} />
+            </div>
+
+            {/* Quick Links to Sub-Analytics */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Link
+                href="/admin/analytics/sales"
+                className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                    <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900 dark:text-white">
+                      Sales Analytics
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Revenue breakdown & trends
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+              </Link>
+
+              <Link
+                href="/admin/analytics/auctions"
+                className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                    <Gavel className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900 dark:text-white">
+                      Auction Analytics
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Bidding activity & success rates
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+              </Link>
+
+              <Link
+                href="/admin/analytics/users"
+                className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                    <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900 dark:text-white">
+                      User Analytics
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Growth & engagement metrics
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+              </Link>
             </div>
           </>
         ) : null}

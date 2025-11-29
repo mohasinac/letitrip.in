@@ -1,10 +1,10 @@
 /**
  * Admin Settings Page
  *
- * @status PLACEHOLDER - Feature pending implementation
+ * @status IMPLEMENTED
  * @epic E021 - System Configuration
  *
- * This page will provide admin access to system settings including:
+ * Admin access to system settings including:
  * - General settings (site name, logo, contact info)
  * - Payment gateway configuration
  * - Shipping settings
@@ -24,62 +24,57 @@ export const metadata: Metadata = {
 export default function AdminSettingsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">System Settings</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+        System Settings
+      </h1>
 
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
-        <h2 className="text-lg font-semibold text-yellow-800 mb-2">
-          🚧 Coming Soon
-        </h2>
-        <p className="text-yellow-700">
-          This feature is under development. The settings management system will
-          include:
-        </p>
-        <ul className="list-disc list-inside mt-2 text-yellow-700">
-          <li>General site settings</li>
-          <li>Payment gateway configuration (Razorpay, PayU)</li>
-          <li>Shipping zones and carriers</li>
-          <li>Email/SMTP configuration</li>
-          <li>Feature flags</li>
-          <li>Maintenance mode</li>
-        </ul>
-      </div>
+      <p className="text-gray-600 dark:text-gray-400 mb-8">
+        Configure your platform settings, payment gateways, and system
+        preferences.
+      </p>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <SettingsCard
           title="General"
           description="Site name, logo, and contact information"
           href="/admin/settings/general"
-          status="pending"
+          status="ready"
+          icon="⚙️"
         />
         <SettingsCard
           title="Payment"
-          description="Payment gateway configuration"
+          description="Payment gateway configuration (Razorpay, PayU, COD)"
           href="/admin/settings/payment"
-          status="pending"
+          status="ready"
+          icon="💳"
         />
         <SettingsCard
           title="Shipping"
           description="Shipping zones and carrier settings"
           href="/admin/settings/shipping"
           status="pending"
+          icon="📦"
         />
         <SettingsCard
           title="Email"
           description="SMTP configuration and templates"
           href="/admin/settings/email"
           status="pending"
+          icon="📧"
         />
         <SettingsCard
           title="Features"
           description="Enable or disable platform features"
           href="/admin/settings/features"
           status="pending"
+          icon="🎛️"
         />
         <SettingsCard
           title="Maintenance"
           description="Maintenance mode and access control"
           href="/admin/settings/maintenance"
           status="pending"
+          icon="🔧"
         />
       </div>
     </div>
@@ -91,29 +86,48 @@ function SettingsCard({
   description,
   href,
   status,
+  icon,
 }: {
   title: string;
   description: string;
   href: string;
   status: "pending" | "ready";
+  icon: string;
 }) {
+  const isReady = status === "ready";
+
   return (
-    <div className="border rounded-lg p-4 bg-white hover:shadow-md transition-shadow">
+    <Link
+      href={isReady ? href : "#"}
+      className={`block border rounded-lg p-4 transition-all ${
+        isReady
+          ? "bg-white dark:bg-gray-800 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 border-gray-200 dark:border-gray-700 cursor-pointer"
+          : "bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-700 cursor-not-allowed opacity-60"
+      }`}
+    >
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-semibold">{title}</h3>
-        {status === "pending" && (
-          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{icon}</span>
+          <h3 className="font-semibold text-gray-900 dark:text-white">
+            {title}
+          </h3>
+        </div>
+        {status === "pending" ? (
+          <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
             Coming Soon
+          </span>
+        ) : (
+          <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-1 rounded">
+            Ready
           </span>
         )}
       </div>
-      <p className="text-sm text-gray-600 mb-4">{description}</p>
-      <Link
-        href={href}
-        className="text-sm text-blue-600 hover:text-blue-800 inline-flex items-center"
-      >
-        Configure →
-      </Link>
-    </div>
+      <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
+      {isReady && (
+        <span className="mt-3 text-sm text-blue-600 dark:text-blue-400 inline-flex items-center">
+          Configure →
+        </span>
+      )}
+    </Link>
   );
 }
