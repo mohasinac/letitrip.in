@@ -54,7 +54,7 @@ export interface AuctionQuickViewProps {
     auctionId: string,
     bidAmount: number,
     isAutoBid: boolean,
-    maxAutoBid?: number,
+    maxAutoBid?: number
   ) => Promise<void>;
   onWatch?: (auctionId: string) => void;
   isWatched?: boolean;
@@ -97,19 +97,19 @@ export default function AuctionQuickView({
   const minNextBid = getNextMinimumBid(
     currentBid,
     auction.startingBid,
-    auction.bidIncrement,
+    auction.bidIncrement
   );
   const isEnded = timeRemaining.isEnded;
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === 0 ? auction.images.length - 1 : prev - 1,
+      prev === 0 ? auction.images.length - 1 : prev - 1
     );
   };
 
   const handleNextImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === auction.images.length - 1 ? 0 : prev + 1,
+      prev === auction.images.length - 1 ? 0 : prev + 1
     );
   };
 
@@ -141,7 +141,7 @@ export default function AuctionQuickView({
       setIsAutoBid(false);
     } catch (error) {
       setBidError(
-        error instanceof Error ? error.message : "Failed to place bid",
+        error instanceof Error ? error.message : "Failed to place bid"
       );
     } finally {
       setIsPlacingBid(false);
@@ -155,21 +155,23 @@ export default function AuctionQuickView({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-900">Quick View</h2>
+        <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Quick View
+          </h2>
           <div className="flex items-center gap-2">
             <Link
               href={`/auctions/${auction.slug}`}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors dark:text-gray-300"
               title="View full details"
             >
               <ExternalLink size={20} />
             </Link>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors dark:text-gray-300"
             >
               <X size={20} />
             </button>
@@ -181,7 +183,7 @@ export default function AuctionQuickView({
           <div className="grid md:grid-cols-2 gap-6 p-6">
             {/* Left Column - Images */}
             <div>
-              <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
+              <div className="relative aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden mb-4">
                 {auction.images.length > 0 && (
                   <Image
                     src={auction.images[currentImageIndex]}
@@ -197,15 +199,15 @@ export default function AuctionQuickView({
                   <>
                     <button
                       onClick={handlePrevImage}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 rounded-full shadow-md hover:bg-white transition-colors"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 dark:bg-gray-700/90 rounded-full shadow-md hover:bg-white dark:hover:bg-gray-600 transition-colors"
                     >
-                      <ChevronLeft size={20} />
+                      <ChevronLeft size={20} className="dark:text-gray-300" />
                     </button>
                     <button
                       onClick={handleNextImage}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 rounded-full shadow-md hover:bg-white transition-colors"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 dark:bg-gray-700/90 rounded-full shadow-md hover:bg-white dark:hover:bg-gray-600 transition-colors"
                     >
-                      <ChevronRight size={20} />
+                      <ChevronRight size={20} className="dark:text-gray-300" />
                     </button>
                   </>
                 )}
@@ -228,7 +230,7 @@ export default function AuctionQuickView({
                       className={`relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-colors ${
                         index === currentImageIndex
                           ? "border-blue-500"
-                          : "border-transparent hover:border-gray-300"
+                          : "border-transparent hover:border-gray-300 dark:hover:border-gray-600"
                       }`}
                     >
                       <Image
@@ -257,7 +259,7 @@ export default function AuctionQuickView({
                     className="rounded-full"
                   />
                 )}
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
                   {auction.shop.name}
                 </span>
                 {auction.shop.isVerified && (
@@ -276,27 +278,29 @@ export default function AuctionQuickView({
               </div>
 
               {/* Auction Name */}
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                 {auction.name}
               </h3>
 
               {/* Condition Badge */}
               {auction.condition && (
-                <span className="inline-block bg-gray-100 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full mb-3">
+                <span className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold px-3 py-1 rounded-full mb-3">
                   {auction.condition.toUpperCase()}
                 </span>
               )}
 
               {/* Current Bid & Time */}
-              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
                 <div className="mb-3">
-                  <div className="text-sm text-gray-600 mb-1">Current Bid</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                    Current Bid
+                  </div>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-green-600">
+                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">
                       {formatCurrency(currentBid)}
                     </span>
                     {auction.bidCount > 0 && (
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         ({auction.bidCount}{" "}
                         {auction.bidCount === 1 ? "bid" : "bids"})
                       </span>
@@ -306,7 +310,9 @@ export default function AuctionQuickView({
 
                 <div
                   className={`flex items-center gap-2 ${
-                    isEnded ? "text-gray-500" : "text-red-600 font-semibold"
+                    isEnded
+                      ? "text-gray-500 dark:text-gray-400"
+                      : "text-red-600 dark:text-red-400 font-semibold"
                   }`}
                 >
                   <Clock size={16} />
@@ -320,7 +326,7 @@ export default function AuctionQuickView({
               {!isEnded && (
                 <div className="space-y-3 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Your Bid (Min: {formatCurrency(minNextBid)})
                     </label>
                     <div className="flex gap-2">
@@ -332,15 +338,15 @@ export default function AuctionQuickView({
                           setBidError("");
                         }}
                         placeholder={`Enter ${formatCurrency(
-                          minNextBid,
+                          minNextBid
                         )} or more`}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         min={minNextBid}
                         step={auction.bidIncrement}
                       />
                       <button
                         onClick={handleSetMinimumBid}
-                        className="px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                       >
                         Min Bid
                       </button>
@@ -357,7 +363,7 @@ export default function AuctionQuickView({
                           onChange={(e) => setIsAutoBid(e.target.checked)}
                           className="rounded text-blue-600 focus:ring-blue-500"
                         />
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                           Enable Auto-bid
                         </span>
                       </label>
@@ -370,7 +376,7 @@ export default function AuctionQuickView({
                             setBidError("");
                           }}
                           placeholder="Maximum auto-bid amount"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           min={
                             bidAmount
                               ? parseFloat(bidAmount) + auction.bidIncrement
@@ -383,7 +389,7 @@ export default function AuctionQuickView({
 
                   {/* Error Message */}
                   {bidError && (
-                    <div className="flex items-center gap-2 text-red-600 text-sm">
+                    <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm">
                       <AlertCircle size={16} />
                       <span>{bidError}</span>
                     </div>
@@ -393,7 +399,7 @@ export default function AuctionQuickView({
                   <button
                     onClick={handlePlaceBid}
                     disabled={isPlacingBid || !bidAmount}
-                    className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                   >
                     <Gavel size={18} />
                     {isPlacingBid ? "Placing Bid..." : "Place Bid"}
@@ -404,40 +410,44 @@ export default function AuctionQuickView({
               {/* Watch Button */}
               <button
                 onClick={() => onWatch?.(auction.id)}
-                className="w-full py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
               >
                 <Heart
                   size={18}
                   className={
-                    isWatched ? "fill-red-500 text-red-500" : "text-gray-600"
+                    isWatched
+                      ? "fill-red-500 text-red-500"
+                      : "text-gray-600 dark:text-gray-400"
                   }
                 />
-                <span className="font-medium text-gray-700">
+                <span className="font-medium text-gray-700 dark:text-gray-300">
                   {isWatched ? "Remove from Watchlist" : "Add to Watchlist"}
                 </span>
               </button>
 
               {/* Description */}
-              <div className="mt-4 pt-4 border-t">
-                <h4 className="font-semibold text-gray-900 mb-2">
+              <div className="mt-4 pt-4 border-t dark:border-gray-700">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                   Description
                 </h4>
-                <p className="text-sm text-gray-600 line-clamp-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-4">
                   {auction.description}
                 </p>
               </div>
 
               {/* Specifications */}
               {auction.specifications && auction.specifications.length > 0 && (
-                <div className="mt-4 pt-4 border-t">
-                  <h4 className="font-semibold text-gray-900 mb-2">
+                <div className="mt-4 pt-4 border-t dark:border-gray-700">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                     Specifications
                   </h4>
                   <div className="space-y-1">
                     {auction.specifications.slice(0, 5).map((spec, index) => (
                       <div key={index} className="flex justify-between text-sm">
-                        <span className="text-gray-600">{spec.name}:</span>
-                        <span className="text-gray-900 font-medium">
+                        <span className="text-gray-600 dark:text-gray-400">
+                          {spec.name}:
+                        </span>
+                        <span className="text-gray-900 dark:text-white font-medium">
                           {spec.value}
                         </span>
                       </div>
@@ -449,7 +459,7 @@ export default function AuctionQuickView({
               {/* View Full Details Link */}
               <Link
                 href={`/auctions/${auction.slug}`}
-                className="block mt-4 text-center text-blue-600 hover:text-blue-700 font-medium text-sm"
+                className="block mt-4 text-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium text-sm"
               >
                 View Full Details →
               </Link>

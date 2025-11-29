@@ -46,11 +46,11 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
   return (
     <Link
       href={`/categories/${slug}`}
-      className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+      className="group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-200 hover:-translate-y-1"
     >
       {/* Image Container */}
       <div
-        className={`relative ${sizeClasses[variant]} overflow-hidden bg-gray-100`}
+        className={`relative ${sizeClasses[variant]} overflow-hidden bg-gray-100 dark:bg-gray-700`}
       >
         {image ? (
           <Image
@@ -61,8 +61,8 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
-            <Package className="w-16 h-16 text-gray-400" />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30">
+            <Package className="w-16 h-16 text-gray-400 dark:text-gray-500" />
           </div>
         )}
 
@@ -98,12 +98,14 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
       <div className="p-4">
         {/* Parent Category */}
         {parentCategory && variant !== "compact" && (
-          <p className="text-xs text-gray-500 mb-1">{parentCategory}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+            {parentCategory}
+          </p>
         )}
 
         {/* Category Name */}
         <h3
-          className={`font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors ${
+          className={`font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors ${
             textSizeClasses[variant]
           } ${variant === "compact" ? "line-clamp-1" : "line-clamp-2"}`}
         >
@@ -112,18 +114,18 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
 
         {/* Description */}
         {description && variant === "large" && (
-          <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
             {description}
           </p>
         )}
 
         {/* Stats */}
         {variant !== "compact" && (
-          <div className="flex items-center justify-between text-sm text-gray-600">
+          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
             <span>
               {productCount} {productCount === 1 ? "item" : "items"}
             </span>
-            <span className="text-blue-600 font-medium group-hover:underline">
+            <span className="text-blue-600 dark:text-blue-400 font-medium group-hover:underline">
               Browse →
             </span>
           </div>

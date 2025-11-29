@@ -20,7 +20,10 @@ export default function Footer() {
   };
 
   return (
-    <footer id="main-footer" className="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
+    <footer
+      id="main-footer"
+      className="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto"
+    >
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-8">
@@ -45,7 +48,9 @@ export default function Footer() {
 
           {/* Column 2: Shopping Notes */}
           <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Shopping Notes</h3>
+            <h3 className="font-semibold text-gray-800 dark:text-white mb-4">
+              Shopping Notes
+            </h3>
             <ul className="space-y-2">
               {SHOPPING_NOTES.map((link) => (
                 <li key={link.id}>
@@ -125,7 +130,9 @@ export default function Footer() {
                   <Link
                     key={social.id}
                     href={social.link}
-                    className={`text-gray-600 dark:text-gray-400 ${colorMap[social.icon]}`}
+                    className={`text-gray-600 dark:text-gray-400 ${
+                      colorMap[social.icon]
+                    }`}
                     aria-label={social.name}
                   >
                     <Icon className="w-5 h-5" />

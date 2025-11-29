@@ -145,7 +145,9 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
               <div className="flex-shrink-0 min-w-[70px] lg:min-w-[200px] border-r border-gray-300 dark:border-gray-600">
                 {loadingCategories ? (
                   <div className="h-full px-3 lg:px-5 flex items-center justify-center">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">Loading...</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      Loading...
+                    </span>
                   </div>
                 ) : (
                   <CategorySelector
