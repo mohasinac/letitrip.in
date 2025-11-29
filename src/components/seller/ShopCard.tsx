@@ -65,7 +65,9 @@ export default function ShopCard({
               {shop.name}
             </h3>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-gray-600 dark:text-gray-400">@{shop.slug}</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400">
+                @{shop.slug}
+              </span>
               {shop.isVerified && (
                 <CheckCircle className="w-3 h-3 text-blue-500" />
               )}
@@ -119,7 +121,9 @@ export default function ShopCard({
             <h3 className="font-semibold text-gray-900 dark:text-white text-lg truncate">
               {shop.name}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">@{shop.slug}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
+              @{shop.slug}
+            </p>
           </div>
 
           {showActions && (

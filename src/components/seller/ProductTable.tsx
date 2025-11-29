@@ -25,7 +25,7 @@ export default function ProductTable({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductCardFE | null>(
-    null,
+    null
   );
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -79,7 +79,9 @@ export default function ProductTable({
       sortable: true,
       render: (_, ProductCardFE) => (
         <div className="min-w-[200px]">
-          <div className="font-medium text-gray-900 dark:text-white">{ProductCardFE.name}</div>
+          <div className="font-medium text-gray-900 dark:text-white">
+            {ProductCardFE.name}
+          </div>
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             SKU: {ProductCardFE.sku || "N/A"}
           </div>
@@ -140,17 +142,21 @@ export default function ProductTable({
                 isOutOfStock
                   ? "text-red-600 dark:text-red-400"
                   : isLowStock
-                    ? "text-yellow-600 dark:text-yellow-400"
-                    : "text-gray-900 dark:text-white"
+                  ? "text-yellow-600 dark:text-yellow-400"
+                  : "text-gray-900 dark:text-white"
               }`}
             >
               {stockCount}
             </span>
             {isLowStock && (
-              <div className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">Low stock</div>
+              <div className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+                Low stock
+              </div>
             )}
             {isOutOfStock && (
-              <div className="text-xs text-red-600 dark:text-red-400 mt-1">Out of stock</div>
+              <div className="text-xs text-red-600 dark:text-red-400 mt-1">
+                Out of stock
+              </div>
             )}
           </div>
         );
