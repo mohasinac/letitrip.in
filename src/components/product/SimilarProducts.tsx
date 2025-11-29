@@ -139,14 +139,14 @@ export function SimilarProducts({
   if (loading) {
     return (
       <div className="space-y-4 mt-12">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
           Similar Products in {parentCategoryName}
         </h2>
         <div className="flex gap-4 overflow-hidden">
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-48 h-64 bg-gray-200 rounded-lg animate-pulse"
+              className="flex-shrink-0 w-48 h-64 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
             />
           ))}
         </div>
@@ -165,13 +165,13 @@ export function SimilarProducts({
       <div className="space-y-4 mt-12">
         {/* Header with Show All button */}
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
             More from {parentCategoryName}
           </h2>
           {products.length > 12 && (
             <button
               onClick={() => setShowAllModal(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
             >
               <Grid className="w-4 h-4" />
               Show All ({products.length})
@@ -185,10 +185,10 @@ export function SimilarProducts({
           {canScrollLeft && (
             <button
               onClick={() => handleScroll("left")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-700 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 dark:hover:bg-gray-600"
               aria-label="Scroll left"
             >
-              <ChevronLeft className="w-6 h-6 text-gray-700" />
+              <ChevronLeft className="w-6 h-6 text-gray-700 dark:text-gray-300" />
             </button>
           )}
 
@@ -224,21 +224,21 @@ export function SimilarProducts({
           {canScrollRight && (
             <button
               onClick={() => handleScroll("right")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-700 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 dark:hover:bg-gray-600"
               aria-label="Scroll right"
             >
-              <ChevronRight className="w-6 h-6 text-gray-700" />
+              <ChevronRight className="w-6 h-6 text-gray-700 dark:text-gray-300" />
             </button>
           )}
         </div>
 
         {/* Show indicator if more products available */}
         {products.length > 12 && (
-          <p className="text-sm text-gray-500 text-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
             Showing 12 of {products.length} products •{" "}
             <button
               onClick={() => setShowAllModal(true)}
-              className="text-blue-600 hover:underline font-medium"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
             >
               View all
             </button>
@@ -253,20 +253,20 @@ export function SimilarProducts({
           onClick={() => setShowAllModal(false)}
         >
           <div
-            className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+            className="bg-white dark:bg-gray-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b">
-              <h3 className="text-2xl font-bold text-gray-900">
+            <div className="flex items-center justify-between p-6 border-b dark:border-gray-700">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                 All Products in {parentCategoryName}
               </h3>
               <button
                 onClick={() => setShowAllModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 aria-label="Close modal"
               >
-                <X className="w-6 h-6 text-gray-500" />
+                <X className="w-6 h-6 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
 
@@ -296,8 +296,8 @@ export function SimilarProducts({
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t bg-gray-50">
-              <p className="text-sm text-gray-600 text-center">
+            <div className="p-6 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+              <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
                 Showing {products.length} products from the same category
               </p>
             </div>

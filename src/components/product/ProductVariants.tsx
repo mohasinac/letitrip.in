@@ -94,14 +94,14 @@ export function ProductVariants({
   if (loading) {
     return (
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Other options in {categoryName}
         </h3>
         <div className="flex gap-3 overflow-hidden">
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-40 h-56 bg-gray-200 rounded-lg animate-pulse"
+              className="flex-shrink-0 w-40 h-56 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
             />
           ))}
         </div>
@@ -115,7 +115,7 @@ export function ProductVariants({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-gray-900">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
         Other options in {categoryName}
       </h3>
 
@@ -123,10 +123,10 @@ export function ProductVariants({
         {canScrollLeft && (
           <button
             onClick={() => handleScroll("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-700 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 dark:hover:bg-gray-600"
             aria-label="Scroll left"
           >
-            <ChevronLeft className="w-5 h-5 text-gray-700" />
+            <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
         )}
 
@@ -160,10 +160,10 @@ export function ProductVariants({
         {canScrollRight && (
           <button
             onClick={() => handleScroll("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-700 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 dark:hover:bg-gray-600"
             aria-label="Scroll right"
           >
-            <ChevronRight className="w-5 h-5 text-gray-700" />
+            <ChevronRight className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
         )}
       </div>

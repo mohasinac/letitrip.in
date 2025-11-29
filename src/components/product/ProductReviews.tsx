@@ -35,21 +35,21 @@ export function ProductReviews({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-gray-200 rounded w-1/4" />
-          <div className="h-20 bg-gray-200 rounded" />
-          <div className="h-20 bg-gray-200 rounded" />
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4" />
+          <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded" />
+          <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
       {/* Header with Write ReviewFE Button */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Customer Reviews</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Customer Reviews</h2>
         {!showReviewForm && (
           <button
             onClick={() => setShowReviewForm(true)}
@@ -63,8 +63,8 @@ export function ProductReviews({
 
       {/* ReviewFE Form */}
       {showReviewForm && (
-        <div className="mb-8 p-6 border border-gray-200 rounded-lg bg-gray-50">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="mb-8 p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Write Your ReviewFE
           </h3>
           <ReviewForm

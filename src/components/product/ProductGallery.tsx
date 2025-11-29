@@ -40,8 +40,8 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
 
   if (!media || media.length === 0) {
     return (
-      <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-        <p className="text-gray-400">No images available</p>
+      <div className="aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
+        <p className="text-gray-400 dark:text-gray-500">No images available</p>
       </div>
     );
   }
@@ -60,7 +60,7 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
     <>
       <div className="space-y-4">
         {/* Main Display */}
-        <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden group">
+        <div className="relative aspect-square bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden group">
           {activeMedia.type === "image" ? (
             <Image
               src={activeMedia.url}
@@ -82,17 +82,17 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
             <>
               <button
                 onClick={handlePrevious}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-gray-700/90 hover:bg-white dark:hover:bg-gray-600 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
                 aria-label="Previous image"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-5 h-5 dark:text-white" />
               </button>
               <button
                 onClick={handleNext}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-gray-700/90 hover:bg-white dark:hover:bg-gray-600 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
                 aria-label="Next image"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-5 h-5 dark:text-white" />
               </button>
             </>
           )}
@@ -106,10 +106,10 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
                 setIsLightboxOpen(true);
               }
             }}
-            className="absolute top-2 right-2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            className="absolute top-2 right-2 bg-white/90 dark:bg-gray-700/90 hover:bg-white dark:hover:bg-gray-600 p-2 rounded-full shadow-lg opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             aria-label="Zoom image"
           >
-            <ZoomIn className="w-5 h-5" />
+            <ZoomIn className="w-5 h-5 dark:text-white" />
           </button>
 
           {/* Media Count Badges (Top Right) */}
@@ -162,7 +162,7 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
                 className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
                   index === activeIndex
                     ? "border-primary ring-2 ring-primary/20"
-                    : "border-gray-200 hover:border-gray-300"
+                    : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
                 }`}
               >
                 {item.type === "image" ? (
@@ -173,8 +173,8 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
                     className="object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                    <span className="text-xs text-gray-500">Video</span>
+                  <div className="w-full h-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Video</span>
                   </div>
                 )}
               </button>

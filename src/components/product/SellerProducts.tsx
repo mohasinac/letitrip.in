@@ -104,8 +104,8 @@ export function SellerProducts({
     return (
       <div className="space-y-4 mt-8">
         <div className="flex items-center gap-2">
-          <Store className="w-5 h-5 text-gray-600" />
-          <h3 className="text-xl font-bold text-gray-900">
+          <Store className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
             More from {shopName}
           </h3>
         </div>
@@ -113,7 +113,7 @@ export function SellerProducts({
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-48 h-64 bg-gray-200 rounded-lg animate-pulse"
+              className="flex-shrink-0 w-48 h-64 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
             />
           ))}
         </div>
@@ -128,8 +128,8 @@ export function SellerProducts({
   return (
     <div className="space-y-4 mt-8">
       <div className="flex items-center gap-2">
-        <Store className="w-5 h-5 text-gray-600" />
-        <h3 className="text-xl font-bold text-gray-900">
+        <Store className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
           More from {shopName}
         </h3>
       </div>
@@ -138,10 +138,10 @@ export function SellerProducts({
         {canScrollLeft && (
           <button
             onClick={() => handleScroll("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-700 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 dark:hover:bg-gray-600"
             aria-label="Scroll left"
           >
-            <ChevronLeft className="w-6 h-6 text-gray-700" />
+            <ChevronLeft className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           </button>
         )}
 
@@ -175,10 +175,10 @@ export function SellerProducts({
         {canScrollRight && (
           <button
             onClick={() => handleScroll("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-700 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 dark:hover:bg-gray-600"
             aria-label="Scroll right"
           >
-            <ChevronRight className="w-6 h-6 text-gray-700" />
+            <ChevronRight className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           </button>
         )}
       </div>

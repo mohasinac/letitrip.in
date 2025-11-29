@@ -28,9 +28,9 @@ export function ProductDescription({
   ].filter((tab) => tab.show);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
       {/* Tabs */}
-      <div className="border-b">
+      <div className="border-b dark:border-gray-700">
         <div className="flex">
           {tabs.map((tab) => (
             <button
@@ -39,7 +39,7 @@ export function ProductDescription({
               className={`flex-1 px-6 py-4 font-medium transition-colors relative ${
                 activeTab === tab.id
                   ? "text-primary"
-                  : "text-gray-600 hover:text-gray-900"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               }`}
             >
               {tab.label}
@@ -55,7 +55,7 @@ export function ProductDescription({
       <div className="p-6">
         {activeTab === "description" && (
           <div
-            className="prose max-w-none"
+            className="prose dark:prose-invert max-w-none"
             dangerouslySetInnerHTML={{ __html: description }}
           />
         )}
@@ -63,9 +63,9 @@ export function ProductDescription({
         {activeTab === "specifications" && specifications && (
           <div className="space-y-3">
             {Object.entries(specifications).map(([key, value]) => (
-              <div key={key} className="flex py-3 border-b last:border-b-0">
-                <span className="w-1/3 text-gray-600 font-medium">{key}</span>
-                <span className="w-2/3 text-gray-900">{value}</span>
+              <div key={key} className="flex py-3 border-b dark:border-gray-700 last:border-b-0">
+                <span className="w-1/3 text-gray-600 dark:text-gray-400 font-medium">{key}</span>
+                <span className="w-2/3 text-gray-900 dark:text-white">{value}</span>
               </div>
             ))}
           </div>
@@ -75,13 +75,13 @@ export function ProductDescription({
           <div className="space-y-4">
             {shipping ? (
               <div
-                className="prose max-w-none"
+                className="prose dark:prose-invert max-w-none"
                 dangerouslySetInnerHTML={{ __html: shipping }}
               />
             ) : (
-              <div className="space-y-4 text-gray-700">
+              <div className="space-y-4 text-gray-700 dark:text-gray-300">
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                     Shipping Information
                   </h3>
                   <ul className="space-y-2 list-disc list-inside">
@@ -93,7 +93,7 @@ export function ProductDescription({
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                     Return Policy
                   </h3>
                   <ul className="space-y-2 list-disc list-inside">
@@ -105,7 +105,7 @@ export function ProductDescription({
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                     Customer Support
                   </h3>
                   <p>

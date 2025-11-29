@@ -71,10 +71,10 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="mb-6">
-            <div className="h-8 w-32 bg-gray-200 rounded animate-pulse mb-2"></div>
+            <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
           </div>
           <ProductCardSkeletonGrid count={1} />
         </div>
@@ -84,7 +84,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <ErrorMessage
           message={error}
           showRetry
@@ -98,7 +98,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <ErrorMessage
           message="Product not found. It may have been removed or is no longer available."
           showGoBack
@@ -118,13 +118,13 @@ export default function ProductPage({ params }: ProductPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Breadcrumbs */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
             Back
@@ -133,7 +133,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       </div>
 
       {/* Amazon-Style Layout: Main Product Section */}
-      <div className="bg-white">
+      <div className="bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="grid lg:grid-cols-12 gap-6">
             {/* 1. Product Gallery (Left - 40%) */}
@@ -146,7 +146,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             {/* 2. Product Info & Features (Center - 35%) */}
             <div className="lg:col-span-4">
               <div className="space-y-4">
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                   {product.name}
                 </h1>
 
@@ -154,7 +154,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {shop && (
                   <Link
                     href={`/shops/${shop.slug}`}
-                    className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline font-medium"
+                    className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
                   >
                     Visit the {shop.name} Store
                   </Link>
@@ -180,14 +180,14 @@ export default function ProductPage({ params }: ProductPageProps) {
                     </div>
                     <a
                       href="#reviews"
-                      className="text-sm text-blue-600 hover:underline"
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       {product.reviewCount} ratings
                     </a>
                   </div>
                 )}
 
-                <hr className="my-4" />
+                <hr className="my-4 dark:border-gray-700" />
 
                 {/* Price (shown in center col like Amazon) */}
                 {product.price && (
@@ -197,40 +197,40 @@ export default function ProductPage({ params }: ProductPageProps) {
                         product.compareAtPrice,
                         product.price,
                       ) && (
-                        <span className="text-sm font-medium text-red-600">
+                        <span className="text-sm font-medium text-red-600 dark:text-red-400">
                           {formatDiscount(
                             product.compareAtPrice,
                             product.price,
                           )}
                         </span>
                       )}
-                      <span className="text-3xl font-medium text-gray-900">
+                      <span className="text-3xl font-medium text-gray-900 dark:text-white">
                         {formatINR(product.price)}
                       </span>
                     </div>
                     {product.compareAtPrice &&
                       product.compareAtPrice > product.price && (
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
                           M.R.P.:{" "}
                           <span className="line-through">
                             {formatINR(product.compareAtPrice)}
                           </span>
                         </div>
                       )}
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       Inclusive of all taxes
                     </p>
                   </>
                 )}
 
-                <hr className="my-4" />
+                <hr className="my-4 dark:border-gray-700" />
 
                 {/* Product Features */}
                 <div>
-                  <h3 className="font-bold text-gray-900 mb-2">
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-2">
                     About this item
                   </h3>
-                  <ul className="list-disc pl-5 space-y-1.5 text-sm text-gray-700">
+                  <ul className="list-disc pl-5 space-y-1.5 text-sm text-gray-700 dark:text-gray-300">
                     <li>
                       Condition:{" "}
                       <span className="capitalize">
@@ -239,7 +239,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                     </li>
                     <li>Stock: {product.stockCount} units available</li>
                     {product.isReturnable && (
-                      <li className="text-green-600">
+                      <li className="text-green-600 dark:text-green-400">
                         7-day return policy available
                       </li>
                     )}
@@ -250,17 +250,17 @@ export default function ProductPage({ params }: ProductPageProps) {
 
             {/* 3. Price & Actions Box (Right - 25%) */}
             <div className="lg:col-span-3">
-              <div className="border border-gray-300 rounded-lg p-4 lg:sticky lg:top-4">
+              <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 lg:sticky lg:top-4 bg-white dark:bg-gray-800">
                 <div className="space-y-4">
                   {/* Price in Buy Box */}
                   {product.price && (
                     <div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-medium text-gray-900">
+                        <span className="text-2xl font-medium text-gray-900 dark:text-white">
                           {formatINR(product.price)}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-600 mt-1">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                         Inclusive of all taxes
                       </p>
                     </div>
@@ -268,11 +268,11 @@ export default function ProductPage({ params }: ProductPageProps) {
 
                   {/* Stock Status */}
                   <div className="text-sm">
-                    <p className="text-green-600 font-medium">In Stock</p>
-                    <p className="text-gray-600 text-xs">
+                    <p className="text-green-600 dark:text-green-400 font-medium">In Stock</p>
+                    <p className="text-gray-600 dark:text-gray-400 text-xs">
                       Ships from: {shop?.name || "Seller"}
                     </p>
-                    <p className="text-gray-600 text-xs">
+                    <p className="text-gray-600 dark:text-gray-400 text-xs">
                       Sold by: {shop?.name || "Seller"}
                     </p>
                   </div>
@@ -280,7 +280,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   {/* Quantity Selector */}
                   {product.stockCount > 0 && (
                     <div>
-                      <label className="text-sm font-medium text-gray-900">
+                      <label className="text-sm font-medium text-gray-900 dark:text-white">
                         Quantity:
                       </label>
                       <select
@@ -288,7 +288,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                         onChange={(e) =>
                           setSelectedQuantity(Number(e.target.value))
                         }
-                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                        className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
                       >
                         {[...Array(Math.min(product.stockCount, 10))].map(
                           (_, i) => (
@@ -366,11 +366,11 @@ export default function ProductPage({ params }: ProductPageProps) {
                   </div>
 
                   {/* Additional Options */}
-                  <div className="text-sm space-y-2 border-t pt-3">
-                    <button className="w-full text-left text-blue-600 hover:text-blue-700 hover:underline">
+                  <div className="text-sm space-y-2 border-t dark:border-gray-700 pt-3">
+                    <button className="w-full text-left text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline">
                       Add to Wish List
                     </button>
-                    <button className="w-full text-left text-blue-600 hover:text-blue-700 hover:underline">
+                    <button className="w-full text-left text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline">
                       Share
                     </button>
                   </div>
@@ -382,7 +382,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       </div>
 
       {/* 4. Product Variants (Same Category) */}
-      <div className="bg-white border-t">
+      <div className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <ProductVariants
             productId={product.id}
@@ -394,9 +394,9 @@ export default function ProductPage({ params }: ProductPageProps) {
       </div>
 
       {/* 5. Product Description (Full Width) */}
-      <div className="bg-white border-t">
+      <div className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Product Description
           </h2>
           <ProductDescription
@@ -407,7 +407,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       </div>
 
       {/* 6. Seller Products (Same/Parent Category) */}
-      <div className="bg-white border-t">
+      <div className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <SellerProducts
             productId={product.id}
@@ -420,7 +420,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
       {/* 7. Similar Products (From Parent Categories) */}
       {product.categoryIds && product.categoryIds.length > 0 && (
-        <div className="bg-white border-t">
+        <div className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 py-6">
             <SimilarProducts
               productId={product.id}
@@ -435,7 +435,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       )}
 
       {/* 8. Customer Reviews & Ratings */}
-      <div className="bg-white border-t" id="reviews">
+      <div className="bg-white dark:bg-gray-800 border-t dark:border-gray-700" id="reviews">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <ProductReviews productId={product.id} productSlug={product.slug} />
         </div>
