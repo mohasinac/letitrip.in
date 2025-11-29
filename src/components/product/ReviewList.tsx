@@ -139,18 +139,18 @@ export default function ReviewList({ productId }: ReviewListProps) {
               onClick={() =>
                 setFilterRating(filterRating === rating ? null : rating)
               }
-              className={`w-full flex items-center gap-2 hover:bg-gray-50 p-2 rounded transition-colors ${
-                filterRating === rating ? "bg-blue-50" : ""
+              className={`w-full flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors ${
+                filterRating === rating ? "bg-blue-50 dark:bg-blue-900/30" : ""
               }`}
             >
-              <span className="text-sm font-medium w-12">{rating} star</span>
-              <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <span className="text-sm font-medium w-12 text-gray-900 dark:text-white">{rating} star</span>
+              <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-yellow-400 transition-all duration-300"
                   style={{ width: `${percentage}%` }}
                 />
               </div>
-              <span className="text-sm text-gray-600 w-12 text-right">
+              <span className="text-sm text-gray-600 dark:text-gray-400 w-12 text-right">
                 {count}
               </span>
             </button>
@@ -165,9 +165,9 @@ export default function ReviewList({ productId }: ReviewListProps) {
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
           <div key={i} className="animate-pulse">
-            <div className="h-4 bg-gray-200 rounded w-1/4 mb-2" />
-            <div className="h-3 bg-gray-200 rounded w-1/2 mb-2" />
-            <div className="h-20 bg-gray-200 rounded" />
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-2" />
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2" />
+            <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded" />
           </div>
         ))}
       </div>
@@ -178,16 +178,16 @@ export default function ReviewList({ productId }: ReviewListProps) {
     <div className="space-y-6">
       {/* Stats Summary */}
       {stats && stats.totalReviews > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b dark:border-gray-700">
           {/* Average Rating */}
           <div className="text-center">
-            <div className="text-5xl font-bold text-gray-900 mb-2">
+            <div className="text-5xl font-bold text-gray-900 dark:text-white mb-2">
               {stats.averageRating.toFixed(1)}
             </div>
             <div className="flex justify-center mb-2">
               {renderStars(Math.round(stats.averageRating))}
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Based on {stats.totalReviews} review
               {stats.totalReviews !== 1 ? "s" : ""}
             </p>
@@ -202,11 +202,11 @@ export default function ReviewList({ productId }: ReviewListProps) {
       <div className="flex flex-wrap gap-4 items-center justify-between">
         {/* Sort */}
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">Sort by:</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sort by:</label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="recent">Most Recent</option>
             <option value="helpful">Most Helpful</option>
@@ -218,7 +218,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
         {filterRating && (
           <button
             onClick={() => setFilterRating(null)}
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
           >
             Clear filter
           </button>
@@ -239,26 +239,26 @@ export default function ReviewList({ productId }: ReviewListProps) {
       ) : (
         <div className="space-y-6">
           {reviews.map((review) => (
-            <div key={review.id} className="border-b pb-6 last:border-b-0">
+            <div key={review.id} className="border-b dark:border-gray-700 pb-6 last:border-b-0">
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     {renderStars(review.rating)}
                     {review.verified_purchase && (
-                      <span className="flex items-center gap-1 text-xs font-medium text-green-600">
+                      <span className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
                         <Check className="w-3 h-3" />
                         Verified Purchase
                       </span>
                     )}
                   </div>
                   {review.title && (
-                    <h4 className="font-semibold text-gray-900 mb-1">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
                       {review.title}
                     </h4>
                   )}
                 </div>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   {new Date(review.created_at).toLocaleDateString("en-IN", {
                     year: "numeric",
                     month: "short",
@@ -268,7 +268,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
               </div>
 
               {/* Comment */}
-              <p className="text-gray-700 mb-3 whitespace-pre-wrap">
+              <p className="text-gray-700 dark:text-gray-300 mb-3 whitespace-pre-wrap">
                 {review.comment}
               </p>
 
@@ -280,7 +280,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
                       key={index}
                       src={url}
                       alt={`Review image ${index + 1}`}
-                      className="w-20 h-20 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-75 transition-opacity"
+                      className="w-20 h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:opacity-75 transition-opacity"
                     />
                   ))}
                 </div>
@@ -289,7 +289,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
               {/* Helpful */}
               <button
                 onClick={() => handleMarkHelpful(review.id)}
-                className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               >
                 <ThumbsUp className="w-4 h-4" />
                 <span>
