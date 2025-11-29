@@ -1,39 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  MapPin,
-  Plus,
-  Edit,
-  Trash2,
-  CheckCircle,
-  Loader2,
-  AlertCircle,
-} from "lucide-react";
+import { MapPin, Plus, Edit, Trash2, CheckCircle, Loader2 } from "lucide-react";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { addressService } from "@/services/address.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { FormModal } from "@/components/common/FormModal";
+import { SmartAddressForm } from "@/components/common/SmartAddressForm";
 import type { AddressFE } from "@/types/frontend/address.types";
 
 function AddressesContent() {
   const [addresses, setAddresses] = useState<AddressFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [editingAddress, setEditingAddress] = useState<AddressFE | null>(null);
+  const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    phoneNumber: "",
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "India",
-    addressType: "home" as "home" | "work" | "other",
-    isDefault: false,
-  });
 
   useEffect(() => {
     loadAddresses();
@@ -43,7 +23,7 @@ function AddressesContent() {
     try {
       setLoading(true);
       const data = await addressService.getAll();
-      setAddresses(data); // Service returns AddressFE[] directly
+      setAddresses(data);
     } catch (error) {
       console.error("Failed to load addresses:", error);
     } finally {
@@ -51,54 +31,19 @@ function AddressesContent() {
     }
   };
 
-  const handleOpenForm = (address?: AddressFE) => {
-    if (address) {
-      setEditingAddress(address);
-      setFormData({
-        fullName: address.fullName,
-        phoneNumber: address.phoneNumber,
-        addressLine1: address.addressLine1,
-        addressLine2: address.addressLine2 || "",
-        city: address.city,
-        state: address.state,
-        postalCode: address.postalCode,
-        country: address.country,
-        addressType: address.addressType,
-        isDefault: address.isDefault,
-      });
-    } else {
-      setEditingAddress(null);
-      setFormData({
-        fullName: "",
-        phoneNumber: "",
-        addressLine1: "",
-        addressLine2: "",
-        city: "",
-        state: "",
-        postalCode: "",
-        country: "India",
-        addressType: "home",
-        isDefault: addresses.length === 0,
-      });
-    }
+  const handleOpenForm = (addressId?: string) => {
+    setEditingAddressId(addressId || null);
     setShowAddressForm(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleFormClose = () => {
+    setShowAddressForm(false);
+    setEditingAddressId(null);
+  };
 
-    try {
-      if (editingAddress) {
-        await addressService.update(editingAddress.id, formData);
-      } else {
-        await addressService.create(formData as any);
-      }
-      setShowAddressForm(false);
-      loadAddresses();
-    } catch (error) {
-      console.error("Failed to save address:", error);
-      alert("Failed to save address. Please try again.");
-    }
+  const handleFormSuccess = () => {
+    loadAddresses();
+    handleFormClose();
   };
 
   const handleDelete = async () => {
@@ -215,7 +160,7 @@ function AddressesContent() {
                     </button>
                   )}
                   <button
-                    onClick={() => handleOpenForm(address)}
+                    onClick={() => handleOpenForm(address.id)}
                     className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-semibold text-sm"
                   >
                     <Edit className="w-4 h-4" />
@@ -233,171 +178,13 @@ function AddressesContent() {
         )}
 
         {/* Address Form Modal */}
-        <FormModal
-          isOpen={showAddressForm}
-          onClose={() => setShowAddressForm(false)}
-          title={editingAddress ? "Edit Address" : "Add New Address"}
-        >
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.fullName}
-                onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="John Doe"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Phone Number <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="tel"
-                required
-                value={formData.phoneNumber}
-                onChange={(e) =>
-                  setFormData({ ...formData, phoneNumber: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="+91 98765 43210"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Address Line 1 <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.addressLine1}
-                onChange={(e) =>
-                  setFormData({ ...formData, addressLine1: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="House/Flat No., Street Name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Address Line 2 (Optional)
-              </label>
-              <input
-                type="text"
-                value={formData.addressLine2}
-                onChange={(e) =>
-                  setFormData({ ...formData, addressLine2: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="Landmark, Area"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  City <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.city}
-                  onChange={(e) =>
-                    setFormData({ ...formData, city: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  State <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.state}
-                  onChange={(e) =>
-                    setFormData({ ...formData, state: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Postal Code <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.postalCode}
-                  onChange={(e) =>
-                    setFormData({ ...formData, postalCode: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Country <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.country}
-                  onChange={(e) =>
-                    setFormData({ ...formData, country: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isDefault"
-                checked={formData.isDefault}
-                onChange={(e) =>
-                  setFormData({ ...formData, isDefault: e.target.checked })
-                }
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-              />
-              <label htmlFor="isDefault" className="text-sm text-gray-700">
-                Set as default address
-              </label>
-            </div>
-
-            <div className="flex gap-3 pt-4">
-              <button
-                type="button"
-                onClick={() => setShowAddressForm(false)}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-semibold"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
-              >
-                {editingAddress ? "Update" : "Add"} Address
-              </button>
-            </div>
-          </form>
-        </FormModal>
+        {showAddressForm && (
+          <SmartAddressForm
+            addressId={editingAddressId}
+            onClose={handleFormClose}
+            onSuccess={handleFormSuccess}
+          />
+        )}
 
         {/* Delete Confirmation */}
         <ConfirmDialog
