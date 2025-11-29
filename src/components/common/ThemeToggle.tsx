@@ -71,7 +71,11 @@ interface ThemeOption {
 const themeOptions: ThemeOption[] = [
   { value: "light", label: "Light", icon: <SunIcon className="w-4 h-4" /> },
   { value: "dark", label: "Dark", icon: <MoonIcon className="w-4 h-4" /> },
-  { value: "system", label: "System", icon: <MonitorIcon className="w-4 h-4" /> },
+  {
+    value: "system",
+    label: "System",
+    icon: <MonitorIcon className="w-4 h-4" />,
+  },
 ];
 
 interface ThemeToggleProps {
@@ -87,14 +91,14 @@ interface ThemeToggleProps {
 
 /**
  * ThemeToggle Component
- * 
+ *
  * A button that cycles through themes (button variant) or
  * shows a dropdown with all theme options (dropdown variant).
- * 
+ *
  * @example
  * // Simple toggle button
  * <ThemeToggle />
- * 
+ *
  * // Dropdown with label
  * <ThemeToggle variant="dropdown" showLabel />
  */
@@ -229,7 +233,9 @@ export function ThemeToggle({
           <span className="text-sm font-medium">{currentOption?.label}</span>
         )}
         <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`w-4 h-4 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -278,7 +284,13 @@ export function ThemeToggle({
                 transition-colors duration-150
               `}
             >
-              <span className={theme === option.value ? "text-yellow-600 dark:text-yellow-400" : ""}>
+              <span
+                className={
+                  theme === option.value
+                    ? "text-yellow-600 dark:text-yellow-400"
+                    : ""
+                }
+              >
                 {option.icon}
               </span>
               <span>{option.label}</span>
