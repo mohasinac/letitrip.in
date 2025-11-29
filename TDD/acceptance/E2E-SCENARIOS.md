@@ -483,3 +483,116 @@
 - Browsers: Safari iOS, Chrome Mobile, Samsung Internet
 - User states: Guest, Logged in, Seller, Admin
 - Content: Long product names, many images, complex forms
+
+---
+
+## New Epic User Journeys
+
+### UJ009: RipLimit Purchase & Bidding Journey ⬜ PENDING (E028)
+
+```
+1. User navigates to /user/riplimit         ⬜ E028 implementation
+2. Views current balance                    ⬜ E028 implementation
+3. Selects purchase amount                  ⬜ E028 implementation
+4. Completes payment via Razorpay           ⬜ E028 implementation
+5. Sees balance update immediately          ⬜ E028 implementation
+6. Browses auctions                         ✅ src/app/auctions/page.test.tsx
+7. Views required RipLimit for bid          ⬜ E028 implementation
+8. Places bid with RipLimit                 ⬜ E028 implementation
+9. Sees available balance decrease          ⬜ E028 implementation
+10. Gets outbid, RipLimit released          ⬜ E028 implementation
+11. Places winning bid                      ⬜ E028 implementation
+12. Proceeds to checkout                    ⬜ E028 implementation
+13. RipLimit applied as payment             ⬜ E028 implementation
+14. Pays remaining amount (if any)          ⬜ E028 implementation
+```
+
+### UJ010: Smart Address Entry Journey ⬜ PENDING (E029)
+
+```
+1. User goes to add new address             ⬜ E029 implementation
+2. Clicks "Use Current Location"            ⬜ E029 implementation
+3. Grants GPS permission                    ⬜ E029 implementation
+4. Address auto-filled from GPS             ⬜ E029 implementation
+5. OR enters pincode                        ⬜ E029 implementation
+6. Area/City/State auto-populated           ⬜ E029 implementation
+7. Selects area from dropdown (if multiple) ⬜ E029 implementation
+8. Enters remaining details                 ⬜ E029 implementation
+9. Adds mobile number                       ⬜ E029 implementation
+10. Labels address (Home/Work/Custom)       ⬜ E029 implementation
+11. Saves address successfully              ⬜ E029 implementation
+12. Uses address in checkout                ✅ src/app/checkout/page.test.tsx
+```
+
+### UJ011: Searchable Dropdown Usage ⬜ PENDING (E031)
+
+```
+1. User opens category filter               ⬜ E031 implementation
+2. Types to search categories               ⬜ E031 implementation
+3. Sees filtered results                    ⬜ E031 implementation
+4. Selects multiple categories              ⬜ E031 implementation
+5. Sees chips for selections                ⬜ E031 implementation
+6. Removes a chip with × button             ⬜ E031 implementation
+7. Clicks "Clear All"                       ⬜ E031 implementation
+8. All selections cleared                   ⬜ E031 implementation
+9. Uses keyboard to navigate                ⬜ E031 implementation
+10. Closes dropdown with Escape             ⬜ E031 implementation
+```
+
+### UJ012: Content Type Search Journey ⬜ PENDING (E032)
+
+```
+1. User clicks search bar                   ✅ src/app/search/page.test.tsx
+2. Selects "Auctions" type filter           ⬜ E032 implementation
+3. Types search query                       ⬜ E032 implementation
+4. Sees only auction results                ⬜ E032 implementation
+5. Views result counts per type             ⬜ E032 implementation
+6. Clicks "Products" tab                    ⬜ E032 implementation
+7. Sees product results for same query      ⬜ E032 implementation
+8. URL shows ?type=products                 ⬜ E032 implementation
+9. Shares URL                               ⬜ E032 implementation
+10. Recipient sees filtered results         ⬜ E032 implementation
+```
+
+### UJ013: Live Header Updates Journey ⬜ PENDING (E033)
+
+```
+1. User logs in                             ✅ src/app/login/page.test.tsx
+2. Header shows cart count, notifications  ⬜ E033 implementation
+3. Adds item to cart                        ✅ src/app/api/cart/route.test.ts
+4. Cart badge updates immediately           ⬜ E033 implementation
+5. Hovers cart icon                         ⬜ E033 implementation
+6. Sees cart preview dropdown               ⬜ E033 implementation
+7. Receives new notification                ⬜ E033 implementation
+8. Notification badge increments            ⬜ E033 implementation
+9. Clicks notification icon                 ⬜ E033 implementation
+10. Sees notification dropdown              ⬜ E033 implementation
+11. Marks notification as read              ⬜ E033 implementation
+12. Badge decrements                        ⬜ E033 implementation
+```
+
+---
+
+## New Epic Performance Scenarios
+
+### PS008: Sieve Pagination Performance ⬜ PENDING (E026)
+
+- 10,000 products filtered in < 500ms
+- Page navigation < 200ms
+- Filter application < 300ms
+- Sort change < 200ms
+- URL sync < 50ms
+
+### PS009: Searchable Dropdown Performance ⬜ PENDING (E031)
+
+- 1,000 options filter in < 100ms
+- Virtual scroll for large lists
+- Search debounce effective
+- No UI lag during typing
+
+### PS010: Live Header Performance ⬜ PENDING (E033)
+
+- Header stats API < 100ms
+- Optimistic updates instant
+- Polling doesn't affect performance
+- Animations smooth (60fps)
