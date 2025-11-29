@@ -44,24 +44,6 @@ const MoonIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const MonitorIcon = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
-    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-    <line x1="8" y1="21" x2="16" y2="21" />
-    <line x1="12" y1="17" x2="12" y2="21" />
-  </svg>
-);
-
 interface ThemeOption {
   value: Theme;
   label: string;
@@ -71,11 +53,6 @@ interface ThemeOption {
 const themeOptions: ThemeOption[] = [
   { value: "light", label: "Light", icon: <SunIcon className="w-4 h-4" /> },
   { value: "dark", label: "Dark", icon: <MoonIcon className="w-4 h-4" /> },
-  {
-    value: "system",
-    label: "System",
-    icon: <MonitorIcon className="w-4 h-4" />,
-  },
 ];
 
 interface ThemeToggleProps {
@@ -108,7 +85,7 @@ export function ThemeToggle({
   showLabel = false,
   size = "md",
 }: ThemeToggleProps) {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -146,22 +123,17 @@ export function ThemeToggle({
 
   // Get current icon based on theme
   const getCurrentIcon = () => {
-    if (theme === "system") {
-      return <MonitorIcon className={iconSizeClass} />;
-    }
-    return resolvedTheme === "light" ? (
+    return theme === "light" ? (
       <SunIcon className={iconSizeClass} />
     ) : (
       <MoonIcon className={iconSizeClass} />
     );
   };
 
-  // Cycle through themes (for button variant)
+  // Toggle between light and dark
   const cycleTheme = () => {
-    const themes: Theme[] = ["light", "dark", "system"];
-    const currentIndex = themes.indexOf(theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex]);
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
   };
 
   // Size classes

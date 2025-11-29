@@ -9,20 +9,17 @@ import React, {
   useMemo,
 } from "react";
 
-// Theme types
-export type Theme = "light" | "dark" | "system";
-export type ResolvedTheme = "light" | "dark";
+// Theme types - Only light and dark (no system)
+export type Theme = "light" | "dark";
 
 interface ThemeContextType {
-  /** Current theme setting (light, dark, or system) */
+  /** Current theme setting (light or dark) */
   theme: Theme;
   /** Set the theme */
   setTheme: (theme: Theme) => void;
-  /** The actual resolved theme (light or dark) */
-  resolvedTheme: ResolvedTheme;
   /** Whether the theme is currently loading */
   isLoading: boolean;
-  /** Toggle between light and dark (ignores system) */
+  /** Toggle between light and dark */
   toggleTheme: () => void;
 }
 
@@ -31,23 +28,13 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const THEME_STORAGE_KEY = "jfv-theme";
 
 /**
- * Get the system theme preference
- */
-function getSystemTheme(): ResolvedTheme {
-  if (typeof window === "undefined") return "light";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
-}
-
-/**
  * Get the stored theme from localStorage
  */
 function getStoredTheme(): Theme | null {
   if (typeof window === "undefined") return null;
   try {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === "light" || stored === "dark" || stored === "system") {
+    if (stored === "light" || stored === "dark") {
       return stored;
     }
   } catch {
@@ -69,19 +56,9 @@ function storeTheme(theme: Theme): void {
 }
 
 /**
- * Resolve the theme to light or dark
- */
-function resolveTheme(theme: Theme): ResolvedTheme {
-  if (theme === "system") {
-    return getSystemTheme();
-  }
-  return theme;
-}
-
-/**
  * Apply theme to document
  */
-function applyTheme(resolvedTheme: ResolvedTheme): void {
+function applyTheme(theme: Theme): void {
   if (typeof document === "undefined") return;
 
   const root = document.documentElement;
@@ -89,43 +66,36 @@ function applyTheme(resolvedTheme: ResolvedTheme): void {
   // Remove both classes first
   root.classList.remove("light", "dark");
 
-  // Add the resolved theme class
-  root.classList.add(resolvedTheme);
+  // Add the theme class
+  root.classList.add(theme);
 
   // Set data-theme attribute for CSS selectors
-  root.setAttribute("data-theme", resolvedTheme);
+  root.setAttribute("data-theme", theme);
 
   // Update meta theme-color for mobile browsers
   const metaThemeColor = document.querySelector('meta[name="theme-color"]');
   if (metaThemeColor) {
     metaThemeColor.setAttribute(
       "content",
-      resolvedTheme === "dark" ? "#111827" : "#ffffff"
+      theme === "dark" ? "#111827" : "#ffffff"
     );
   }
 }
 
 interface ThemeProviderProps {
   children: React.ReactNode;
-  /** Default theme if none stored */
+  /** Default theme if none stored - defaults to dark */
   defaultTheme?: Theme;
-  /** Force a specific theme (overrides user preference) */
-  forcedTheme?: ResolvedTheme;
-  /** Enable system theme detection */
-  enableSystem?: boolean;
   /** Enable localStorage persistence */
   enableStorage?: boolean;
 }
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
-  forcedTheme,
-  enableSystem = true,
+  defaultTheme = "dark",
   enableStorage = true,
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(defaultTheme);
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>("light");
   const [isLoading, setIsLoading] = useState(true);
 
   // Initialize theme from storage or default
@@ -134,31 +104,10 @@ export function ThemeProvider({
     const initialTheme = storedTheme || defaultTheme;
 
     setThemeState(initialTheme);
-
-    const resolved = forcedTheme || resolveTheme(initialTheme);
-    setResolvedTheme(resolved);
-    applyTheme(resolved);
+    applyTheme(initialTheme);
 
     setIsLoading(false);
-  }, [defaultTheme, enableStorage, forcedTheme]);
-
-  // Listen for system theme changes
-  useEffect(() => {
-    if (!enableSystem || forcedTheme) return;
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const handleChange = () => {
-      if (theme === "system") {
-        const newResolved = getSystemTheme();
-        setResolvedTheme(newResolved);
-        applyTheme(newResolved);
-      }
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [theme, enableSystem, forcedTheme]);
+  }, [defaultTheme, enableStorage]);
 
   // Set theme function
   const setTheme = useCallback(
@@ -169,29 +118,26 @@ export function ThemeProvider({
         storeTheme(newTheme);
       }
 
-      const resolved = forcedTheme || resolveTheme(newTheme);
-      setResolvedTheme(resolved);
-      applyTheme(resolved);
+      applyTheme(newTheme);
     },
-    [enableStorage, forcedTheme]
+    [enableStorage]
   );
 
   // Toggle between light and dark
   const toggleTheme = useCallback(() => {
-    const newTheme = resolvedTheme === "light" ? "dark" : "light";
+    const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-  }, [resolvedTheme, setTheme]);
+  }, [theme, setTheme]);
 
   // Memoize context value
   const value = useMemo<ThemeContextType>(
     () => ({
       theme,
       setTheme,
-      resolvedTheme,
       isLoading,
       toggleTheme,
     }),
-    [theme, setTheme, resolvedTheme, isLoading, toggleTheme]
+    [theme, setTheme, isLoading, toggleTheme]
   );
 
   return (
@@ -219,16 +165,14 @@ export const ThemeScript = () => {
     (function() {
       try {
         var stored = localStorage.getItem('${THEME_STORAGE_KEY}');
-        var theme = stored || 'system';
-        var resolved = theme;
+        var theme = (stored === 'light' || stored === 'dark') ? stored : 'dark';
         
-        if (theme === 'system') {
-          resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        
-        document.documentElement.classList.add(resolved);
-        document.documentElement.setAttribute('data-theme', resolved);
-      } catch (e) {}
+        document.documentElement.classList.add(theme);
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
     })();
   `;
 

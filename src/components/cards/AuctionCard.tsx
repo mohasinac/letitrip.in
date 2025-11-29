@@ -130,7 +130,7 @@ const AuctionCardComponent = ({
   }, [isHovered, currentMediaIndex, allMedia]);
 
   const currentMedia = allMedia[currentMediaIndex] ||
-    allMedia[0] || { type: "image", url: auction.images[0] };
+    allMedia[0] || (auction.images && auction.images[0] ? { type: "image" as const, url: auction.images[0] } : null);
 
   // Determine urgency level for styling
   const isEndingSoon =
@@ -145,8 +145,8 @@ const AuctionCardComponent = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image/Video Section */}
-      <div className="relative aspect-square overflow-hidden bg-gray-100">
-        {allMedia.length > 0 ? (
+      <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
+        {currentMedia && allMedia.length > 0 ? (
           currentMedia.type === "video" && isHovered ? (
             <video
               ref={videoRef}
@@ -265,7 +265,7 @@ const AuctionCardComponent = ({
             size="md"
           />
           {auction.viewCount && auction.viewCount > 0 && (
-            <div className="p-2 rounded-full bg-white shadow-md text-gray-600 flex items-center gap-1 text-xs">
+            <div className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md text-gray-600 dark:text-gray-300 flex items-center gap-1 text-xs">
               <Eye size={14} />
               <span>
                 {auction.viewCount > 999
