@@ -62,7 +62,7 @@ describe("Support Ticket Service", () => {
 
     it("should fail for other user's ticket", async () => {
       await expect(supportService.getById("other_ticket")).rejects.toThrow(
-        "Forbidden"
+        "Forbidden",
       );
     });
   });
@@ -76,7 +76,7 @@ describe("Support Ticket Service", () => {
         expect.objectContaining({
           sender: "user",
           content: "Any update on this?",
-        })
+        }),
       );
     });
 
@@ -125,7 +125,7 @@ describe("Admin Ticket Management", () => {
         expect.objectContaining({
           sender: "agent",
           content: "We're looking into this...",
-        })
+        }),
       );
     });
   });
@@ -134,7 +134,7 @@ describe("Admin Ticket Management", () => {
     it("should update ticket status", async () => {
       const result = await supportService.updateStatus(
         "ticket_001",
-        "resolved"
+        "resolved",
       );
       expect(result.status).toBe("resolved");
     });
@@ -144,7 +144,7 @@ describe("Admin Ticket Management", () => {
     it("should escalate priority", async () => {
       const result = await supportService.updatePriority(
         "ticket_001",
-        "critical"
+        "critical",
       );
       expect(result.priority).toBe("critical");
     });

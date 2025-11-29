@@ -46,8 +46,8 @@ describe("About Page", () => {
       expect(screen.getByText("About Let It Rip")).toBeInTheDocument();
       expect(
         screen.getByText(
-          "India's Trusted Source for Authentic Imported Collectibles"
-        )
+          "India's Trusted Source for Authentic Imported Collectibles",
+        ),
       ).toBeInTheDocument();
     });
 
@@ -70,13 +70,13 @@ describe("About Page", () => {
       // Check key phrases from the story - use partial matches since text is split
       expect(screen.getByText(/famous battle cry/)).toBeInTheDocument();
       expect(
-        screen.getByText(/We're India's premier seller/)
+        screen.getByText(/We're India's premier seller/),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Founded by collectors, for collectors/)
+        screen.getByText(/Founded by collectors, for collectors/),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/That's why we created Let It Rip/)
+        screen.getByText(/That's why we created Let It Rip/),
       ).toBeInTheDocument();
     });
 
@@ -138,7 +138,7 @@ describe("About Page", () => {
       expect(screen.getByText("Our Promise to You")).toBeInTheDocument();
       // Check for key phrases that are unique to the promise section
       expect(
-        screen.getByText(/Every order is handled with/)
+        screen.getByText(/Every order is handled with/),
       ).toBeInTheDocument();
       expect(screen.getByText(/Every customer gets the/)).toBeInTheDocument();
       expect(screen.getByText(/We're not just a store/)).toBeInTheDocument();
@@ -150,7 +150,7 @@ describe("About Page", () => {
       render(<AboutPage />);
 
       expect(
-        screen.getByText("Questions? We're Here to Help!")
+        screen.getByText("Questions? We're Here to Help!"),
       ).toBeInTheDocument();
       expect(screen.getByText("Contact Support")).toBeInTheDocument();
       expect(screen.getByText("View FAQs")).toBeInTheDocument();
@@ -174,7 +174,7 @@ describe("About Page", () => {
       render(<AboutPage />);
 
       const scriptElement = document.querySelector(
-        'script[type="application/ld+json"]'
+        'script[type="application/ld+json"]',
       );
       expect(scriptElement).toBeInTheDocument();
     });
@@ -222,7 +222,7 @@ describe("About Page", () => {
 
       // The grid should contain category cards
       const categoryCards = screen.getAllByText(
-        /Authentic Takara Tomy|Official booster packs|Konami originals|Hasbro & Takara Tomy|Die-cast cars|Collectible stickers|Japanese washi tape|Figurines, model kits/
+        /Authentic Takara Tomy|Official booster packs|Konami originals|Hasbro & Takara Tomy|Die-cast cars|Collectible stickers|Japanese washi tape|Figurines, model kits/,
       );
       expect(categoryCards.length).toBe(8); // Should have 8 categories
     });

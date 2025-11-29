@@ -37,7 +37,7 @@ describe("ShopFilters", () => {
       render(<ShopFilters {...defaultProps} />);
 
       expect(
-        screen.getByRole("button", { name: /Apply Filters/i })
+        screen.getByRole("button", { name: /Apply Filters/i }),
       ).toBeInTheDocument();
     });
 
@@ -269,7 +269,7 @@ describe("ShopFilters", () => {
         .getByText("4+ Stars")
         .closest("label") as HTMLLabelElement;
       const ratingRadio = ratingLabel.querySelector(
-        "input"
+        "input",
       ) as HTMLInputElement;
       expect(ratingRadio).toBeChecked();
 
@@ -287,7 +287,7 @@ describe("ShopFilters", () => {
         <ShopFilters
           {...defaultProps}
           filters={{ verified: true, rating: 4 }}
-        />
+        />,
       );
 
       const featuredCheckbox = screen.getByText("Featured Only")
@@ -342,7 +342,7 @@ describe("ShopFilters", () => {
       expect(header?.parentElement).toHaveClass(
         "flex",
         "items-center",
-        "justify-between"
+        "justify-between",
       );
     });
 
@@ -354,7 +354,7 @@ describe("ShopFilters", () => {
         "w-full",
         "rounded-lg",
         "bg-blue-600",
-        "text-white"
+        "text-white",
       );
     });
 

@@ -40,7 +40,7 @@ describe("StatsCard", () => {
           title="Products"
           value={100}
           icon={<Package data-testid="package-icon" />}
-        />
+        />,
       );
 
       expect(screen.getByTestId("package-icon")).toBeInTheDocument();
@@ -48,7 +48,7 @@ describe("StatsCard", () => {
 
     it("renders without icon when not provided", () => {
       const { container } = render(
-        <StatsCard title="Revenue" value="₹50,000" />
+        <StatsCard title="Revenue" value="₹50,000" />,
       );
 
       const icons = container.querySelectorAll("svg");
@@ -61,7 +61,7 @@ describe("StatsCard", () => {
           title="Orders"
           value={25}
           icon={<Package className="custom-class" />}
-        />
+        />,
       );
 
       const iconWrapper = container.querySelector(".text-gray-400");
@@ -78,7 +78,7 @@ describe("StatsCard", () => {
           title="Sales"
           value={100}
           trend={{ value: 15, isPositive: true }}
-        />
+        />,
       );
 
       const trendElement = screen.getByText(/↑ 15%/);
@@ -92,7 +92,7 @@ describe("StatsCard", () => {
           title="Returns"
           value={5}
           trend={{ value: 10, isPositive: false }}
-        />
+        />,
       );
 
       const trendElement = screen.getByText(/↓ 10%/);
@@ -106,7 +106,7 @@ describe("StatsCard", () => {
           title="Neutral"
           value={50}
           trend={{ value: 0, isPositive: true }}
-        />
+        />,
       );
 
       expect(screen.getByText(/↑ 0%/)).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe("StatsCard", () => {
           title="Growth"
           value={200}
           trend={{ value: 250, isPositive: true }}
-        />
+        />,
       );
 
       expect(screen.getByText(/↑ 250%/)).toBeInTheDocument();
@@ -128,7 +128,7 @@ describe("StatsCard", () => {
       const { container } = render(<StatsCard title="Static" value={100} />);
 
       const trendElements = container.querySelectorAll(
-        ".text-green-600, .text-red-600"
+        ".text-green-600, .text-red-600",
       );
       expect(trendElements).toHaveLength(0);
     });
@@ -138,7 +138,7 @@ describe("StatsCard", () => {
   describe("Description Display", () => {
     it("renders description when provided", () => {
       render(
-        <StatsCard title="Orders" value={50} description="Last 30 days" />
+        <StatsCard title="Orders" value={50} description="Last 30 days" />,
       );
 
       expect(screen.getByText("Last 30 days")).toBeInTheDocument();
@@ -158,7 +158,7 @@ describe("StatsCard", () => {
           title="Info"
           value={10}
           description="This is a very long description that should be truncated"
-        />
+        />,
       );
 
       const description = screen.getByText(/This is a very long/);
@@ -171,7 +171,7 @@ describe("StatsCard", () => {
     it("calls onClick when card is clicked", () => {
       const mockOnClick = jest.fn();
       const { container } = render(
-        <StatsCard title="Clickable" value={100} onClick={mockOnClick} />
+        <StatsCard title="Clickable" value={100} onClick={mockOnClick} />,
       );
 
       const card = container.firstChild as HTMLElement;
@@ -189,7 +189,7 @@ describe("StatsCard", () => {
 
     it("has cursor pointer when onClick provided", () => {
       const { container } = render(
-        <StatsCard title="Clickable" value={100} onClick={jest.fn()} />
+        <StatsCard title="Clickable" value={100} onClick={jest.fn()} />,
       );
 
       const card = container.firstChild as HTMLElement;
@@ -205,7 +205,7 @@ describe("StatsCard", () => {
 
     it("has hover effect when onClick provided", () => {
       const { container } = render(
-        <StatsCard title="Hoverable" value={100} onClick={jest.fn()} />
+        <StatsCard title="Hoverable" value={100} onClick={jest.fn()} />,
       );
 
       const card = container.firstChild as HTMLElement;
@@ -217,7 +217,7 @@ describe("StatsCard", () => {
   describe("Custom Styling", () => {
     it("applies custom className", () => {
       const { container } = render(
-        <StatsCard title="Custom" value={100} className="custom-class" />
+        <StatsCard title="Custom" value={100} className="custom-class" />,
       );
 
       const card = container.firstChild as HTMLElement;
@@ -226,7 +226,7 @@ describe("StatsCard", () => {
 
     it("preserves base classes with custom className", () => {
       const { container } = render(
-        <StatsCard title="Custom" value={100} className="extra-class" />
+        <StatsCard title="Custom" value={100} className="extra-class" />,
       );
 
       const card = container.firstChild as HTMLElement;
@@ -264,7 +264,7 @@ describe("StatsCard", () => {
           title="Test"
           value={100}
           icon={<Package data-testid="icon" />}
-        />
+        />,
       );
 
       const headerDiv = container.querySelector(".flex.items-center");
@@ -277,7 +277,7 @@ describe("StatsCard", () => {
           title="Test"
           value={100}
           trend={{ value: 10, isPositive: true }}
-        />
+        />,
       );
 
       const valueDiv = container.querySelector(".flex.items-baseline");
@@ -314,7 +314,7 @@ describe("StatsCard", () => {
           title="Test"
           value={100}
           trend={{ value: 5, isPositive: true }}
-        />
+        />,
       );
 
       const valueContainer = screen.getByText("100").parentElement;
@@ -335,7 +335,7 @@ describe("StatsCard", () => {
           description="Last month"
           className="custom-class"
           onClick={mockOnClick}
-        />
+        />,
       );
 
       expect(screen.getByText("Complete Stats")).toBeInTheDocument();
@@ -373,7 +373,7 @@ describe("StatsCard", () => {
         <StatsCard
           title="This is a very long title that should be truncated properly"
           value={100}
-        />
+        />,
       );
 
       const title = screen.getByText(/This is a very long/);
@@ -386,7 +386,7 @@ describe("StatsCard", () => {
           title="Decimal"
           value={100}
           trend={{ value: 12.5, isPositive: true }}
-        />
+        />,
       );
 
       expect(screen.getByText(/↑ 12.5%/)).toBeInTheDocument();

@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       }));
 
       const publishedCount = products.filter(
-        (p) => p.status === "published" && p.is_deleted !== true
+        (p) => p.status === "published" && p.is_deleted !== true,
       ).length;
 
       return NextResponse.json({
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
       summary: {
         totalProducts: products.length,
         publishedProducts: products.filter(
-          (p) => p.status === "published" && p.is_deleted !== true
+          (p) => p.status === "published" && p.is_deleted !== true,
         ).length,
         categoriesWithProducts: Object.keys(byCategory).length,
       },
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch debug info",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

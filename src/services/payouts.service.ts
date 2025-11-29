@@ -121,7 +121,7 @@ class PayoutsService {
    */
   async getPayoutStats(): Promise<PayoutStats> {
     const response = await apiService.get<{ stats: PayoutStats }>(
-      `${PAYOUT_ROUTES.LIST}/stats`
+      `${PAYOUT_ROUTES.LIST}/stats`,
     );
     return response.stats;
   }
@@ -131,7 +131,7 @@ class PayoutsService {
    */
   async getPayoutById(id: string): Promise<Payout> {
     const response = await apiService.get<{ payout: Payout }>(
-      PAYOUT_ROUTES.BY_ID(id)
+      PAYOUT_ROUTES.BY_ID(id),
     );
     return response.payout;
   }
@@ -142,7 +142,7 @@ class PayoutsService {
   async createPayout(data: PayoutFormData): Promise<Payout> {
     const response = await apiService.post<{ payout: Payout }>(
       PAYOUT_ROUTES.LIST,
-      data
+      data,
     );
     return response.payout;
   }
@@ -154,11 +154,11 @@ class PayoutsService {
     id: string,
     status: Payout["status"],
     transactionId?: string,
-    failureReason?: string
+    failureReason?: string,
   ): Promise<Payout> {
     const response = await apiService.patch<{ payout: Payout }>(
       `${PAYOUT_ROUTES.BY_ID(id)}/status`,
-      { status, transactionId, failureReason }
+      { status, transactionId, failureReason },
     );
     return response.payout;
   }
@@ -169,7 +169,7 @@ class PayoutsService {
   async processPayout(id: string, transactionId: string): Promise<Payout> {
     const response = await apiService.post<{ payout: Payout }>(
       `${PAYOUT_ROUTES.BY_ID(id)}/process`,
-      { transactionId }
+      { transactionId },
     );
     return response.payout;
   }
@@ -180,7 +180,7 @@ class PayoutsService {
   async cancelPayout(id: string, reason: string): Promise<Payout> {
     const response = await apiService.post<{ payout: Payout }>(
       `${PAYOUT_ROUTES.BY_ID(id)}/cancel`,
-      { reason }
+      { reason },
     );
     return response.payout;
   }
@@ -208,7 +208,7 @@ class PayoutsService {
     sellerId: string,
     shopId: string,
     startDate: string,
-    endDate: string
+    endDate: string,
   ): Promise<{
     totalSales: number;
     orderCount: number;
@@ -255,7 +255,7 @@ class PayoutsService {
   private async bulkAction(
     action: string,
     ids: string[],
-    data?: Record<string, any>
+    data?: Record<string, any>,
   ): Promise<{
     success: boolean;
     results: {

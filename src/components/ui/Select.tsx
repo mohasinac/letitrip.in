@@ -8,8 +8,7 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-export interface SelectProps
-  extends React.SelectHTMLAttributes<HTMLSelectElement> {
+export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -32,7 +31,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       required,
       ...props
     },
-    ref
+    ref,
   ) => {
     const selectId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
@@ -63,8 +62,8 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             error
               ? `${selectId}-error`
               : helperText
-              ? `${selectId}-helper`
-              : undefined
+                ? `${selectId}-helper`
+                : undefined
           }
           {...props}
         >
@@ -95,7 +94,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 Select.displayName = "Select";

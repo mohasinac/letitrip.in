@@ -25,10 +25,10 @@ describe("EmptyState", () => {
         <EmptyState
           title="No items"
           description="Add some items to get started"
-        />
+        />,
       );
       expect(
-        screen.getByText("Add some items to get started")
+        screen.getByText("Add some items to get started"),
       ).toBeInTheDocument();
     });
 
@@ -52,7 +52,7 @@ describe("EmptyState", () => {
     it("renders primary action button", () => {
       const onClick = jest.fn();
       render(
-        <EmptyState title="No items" action={{ label: "Add Item", onClick }} />
+        <EmptyState title="No items" action={{ label: "Add Item", onClick }} />,
       );
       expect(screen.getByText("Add Item")).toBeInTheDocument();
     });
@@ -60,7 +60,7 @@ describe("EmptyState", () => {
     it("calls action onClick when button clicked", () => {
       const onClick = jest.fn();
       render(
-        <EmptyState title="No items" action={{ label: "Add Item", onClick }} />
+        <EmptyState title="No items" action={{ label: "Add Item", onClick }} />,
       );
 
       fireEvent.click(screen.getByText("Add Item"));
@@ -73,7 +73,7 @@ describe("EmptyState", () => {
         <EmptyState
           title="No items"
           secondaryAction={{ label: "Browse", onClick }}
-        />
+        />,
       );
       expect(screen.getByText("Browse")).toBeInTheDocument();
     });
@@ -84,7 +84,7 @@ describe("EmptyState", () => {
         <EmptyState
           title="No items"
           secondaryAction={{ label: "Browse", onClick }}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Browse"));
@@ -97,7 +97,7 @@ describe("EmptyState", () => {
           title="No items"
           action={{ label: "Add Item", onClick: jest.fn() }}
           secondaryAction={{ label: "Browse", onClick: jest.fn() }}
-        />
+        />,
       );
       expect(screen.getByText("Add Item")).toBeInTheDocument();
       expect(screen.getByText("Browse")).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe("EmptyState", () => {
     it("does not render action container when no actions provided", () => {
       const { container } = render(<EmptyState title="No items" />);
       expect(
-        container.querySelector(".flex.flex-col.sm\\:flex-row")
+        container.querySelector(".flex.flex-col.sm\\:flex-row"),
       ).not.toBeInTheDocument();
     });
   });
@@ -114,7 +114,7 @@ describe("EmptyState", () => {
   describe("Styling", () => {
     it("applies custom className", () => {
       const { container } = render(
-        <EmptyState title="No items" className="custom-class" />
+        <EmptyState title="No items" className="custom-class" />,
       );
       expect(container.querySelector(".custom-class")).toBeInTheDocument();
     });
@@ -124,7 +124,7 @@ describe("EmptyState", () => {
         <EmptyState
           title="No items"
           action={{ label: "Add Item", onClick: jest.fn() }}
-        />
+        />,
       );
       const button = screen.getByText("Add Item");
       expect(button).toHaveClass("bg-blue-600");
@@ -135,7 +135,7 @@ describe("EmptyState", () => {
         <EmptyState
           title="No items"
           secondaryAction={{ label: "Browse", onClick: jest.fn() }}
-        />
+        />,
       );
       const button = screen.getByText("Browse");
       expect(button).toHaveClass("border-gray-300");
@@ -196,7 +196,7 @@ describe("EmptyState", () => {
     it("overrides action in NoProducts", () => {
       const onClick = jest.fn();
       render(
-        <EmptyStates.NoProducts action={{ label: "Shop Now", onClick }} />
+        <EmptyStates.NoProducts action={{ label: "Shop Now", onClick }} />,
       );
       expect(screen.getByText("Shop Now")).toBeInTheDocument();
     });
@@ -208,7 +208,7 @@ describe("EmptyState", () => {
 
     it("adds custom className to predefined state", () => {
       const { container } = render(
-        <EmptyStates.NoProducts className="custom" />
+        <EmptyStates.NoProducts className="custom" />,
       );
       expect(container.querySelector(".custom")).toBeInTheDocument();
     });
@@ -229,7 +229,7 @@ describe("EmptyState", () => {
 
     it("handles empty string action label", () => {
       render(
-        <EmptyState title="Test" action={{ label: "", onClick: jest.fn() }} />
+        <EmptyState title="Test" action={{ label: "", onClick: jest.fn() }} />,
       );
       const button = screen.getByRole("button");
       expect(button).toHaveTextContent("");
@@ -257,7 +257,7 @@ describe("EmptyState", () => {
         <EmptyState
           title="Test"
           icon={<div data-testid="custom-icon">Custom</div>}
-        />
+        />,
       );
       expect(screen.getByTestId("custom-icon")).toBeInTheDocument();
     });
@@ -271,7 +271,7 @@ describe("EmptyState", () => {
         "flex",
         "flex-col",
         "items-center",
-        "justify-center"
+        "justify-center",
       );
     });
 
@@ -282,7 +282,7 @@ describe("EmptyState", () => {
 
     it("icon has mb-6 margin", () => {
       const { container } = render(
-        <EmptyState title="Test" icon={<ShoppingBag />} />
+        <EmptyState title="Test" icon={<ShoppingBag />} />,
       );
       const iconContainer = container.querySelector(".rounded-full");
       expect(iconContainer).toHaveClass("mb-6");
@@ -290,7 +290,7 @@ describe("EmptyState", () => {
 
     it("description has max-w-md constraint", () => {
       const { container } = render(
-        <EmptyState title="Test" description="Description" />
+        <EmptyState title="Test" description="Description" />,
       );
       const description = container.querySelector("p");
       expect(description).toHaveClass("max-w-md");
@@ -302,10 +302,10 @@ describe("EmptyState", () => {
           title="Test"
           action={{ label: "Action", onClick: jest.fn() }}
           secondaryAction={{ label: "Secondary", onClick: jest.fn() }}
-        />
+        />,
       );
       const actionsContainer = container.querySelector(
-        ".flex-col.sm\\:flex-row"
+        ".flex-col.sm\\:flex-row",
       );
       expect(actionsContainer).toHaveClass("gap-3");
     });
@@ -323,10 +323,10 @@ describe("EmptyState", () => {
         <EmptyState
           title="Test"
           action={{ label: "Click Me", onClick: jest.fn() }}
-        />
+        />,
       );
       expect(
-        screen.getByRole("button", { name: "Click Me" })
+        screen.getByRole("button", { name: "Click Me" }),
       ).toBeInTheDocument();
     });
 
@@ -335,10 +335,10 @@ describe("EmptyState", () => {
         <EmptyState
           title="Test"
           secondaryAction={{ label: "Cancel", onClick: jest.fn() }}
-        />
+        />,
       );
       expect(
-        screen.getByRole("button", { name: "Cancel" })
+        screen.getByRole("button", { name: "Cancel" }),
       ).toBeInTheDocument();
     });
 
@@ -355,10 +355,10 @@ describe("EmptyState", () => {
           title="Test"
           action={{ label: "Primary", onClick: jest.fn() }}
           secondaryAction={{ label: "Secondary", onClick: jest.fn() }}
-        />
+        />,
       );
       const actionsContainer = container.querySelector(
-        ".flex-col.sm\\:flex-row"
+        ".flex-col.sm\\:flex-row",
       );
       expect(actionsContainer).toHaveClass("flex-col", "sm:flex-row");
     });

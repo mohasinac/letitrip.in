@@ -109,7 +109,7 @@ describe("Auction Platform - Acceptance Tests", () => {
       // When: User registers
       const registeredUser = await mockAuthService.signUp(
         userData.email,
-        userData.password
+        userData.password,
       );
 
       // Then: User should be created with valid data
@@ -119,7 +119,7 @@ describe("Auction Platform - Acceptance Tests", () => {
       // And: User should be able to sign in
       const signedInUser = await mockAuthService.signIn(
         userData.email,
-        userData.password
+        userData.password,
       );
       assert.strictEqual(signedInUser.email, userData.email);
       assert.strictEqual(signedInUser.uid, registeredUser.uid);
@@ -151,9 +151,8 @@ describe("Auction Platform - Acceptance Tests", () => {
       };
 
       // When: Seller creates a product
-      const createdProduct = await mockProductService.createProduct(
-        productData
-      );
+      const createdProduct =
+        await mockProductService.createProduct(productData);
 
       // Then: Product should be created with correct data
       assert(createdProduct.id, "Product should have an ID");
@@ -201,9 +200,8 @@ describe("Auction Platform - Acceptance Tests", () => {
       };
 
       // When: Seller creates an auction
-      const createdAuction = await mockAuctionService.createAuction(
-        auctionData
-      );
+      const createdAuction =
+        await mockAuctionService.createAuction(auctionData);
 
       // Then: Auction should be created
       assert(createdAuction.id, "Auction should have an ID");
@@ -215,7 +213,7 @@ describe("Auction Platform - Acceptance Tests", () => {
       const bid = await mockAuctionService.placeBid(
         createdAuction.id,
         bidAmount,
-        "user123"
+        "user123",
       );
 
       assert.strictEqual(bid.auctionId, createdAuction.id);
@@ -233,11 +231,11 @@ describe("Auction Platform - Acceptance Tests", () => {
         assert(auction.endTime, "Auction should have end time");
         assert(
           new Date(auction.endTime) > new Date(),
-          "Auction should not be ended"
+          "Auction should not be ended",
         );
         assert(
           auction.currentBid >= 0,
-          "Auction should have valid current bid"
+          "Auction should have valid current bid",
         );
       });
     });
@@ -290,7 +288,7 @@ describe("Auction Platform - Acceptance Tests", () => {
       // Step 1: User registers
       const user = await mockAuthService.signUp(
         "buyer@example.com",
-        "Pass123!"
+        "Pass123!",
       );
       assert(user.uid, "User should be registered");
 
@@ -315,7 +313,7 @@ describe("Auction Platform - Acceptance Tests", () => {
       // Step 1: Seller registers
       const seller = await mockAuthService.signUp(
         "seller@example.com",
-        "Pass123!"
+        "Pass123!",
       );
       assert(seller.uid, "Seller should be registered");
 
@@ -347,17 +345,17 @@ describe("Auction Platform - Acceptance Tests", () => {
       // Test various invalid inputs
       await assert.rejects(
         mockAuthService.signUp("", ""),
-        "Should reject empty email/password"
+        "Should reject empty email/password",
       );
 
       await assert.rejects(
         mockProductService.createProduct({}),
-        "Should reject invalid product data"
+        "Should reject invalid product data",
       );
 
       await assert.rejects(
         mockAuctionService.placeBid("invalid", -100, "user"),
-        "Should reject invalid bid data"
+        "Should reject invalid bid data",
       );
     });
 
@@ -374,7 +372,7 @@ describe("Auction Platform - Acceptance Tests", () => {
         product.id,
         {
           price: 600,
-        }
+        },
       );
 
       // Verify consistency

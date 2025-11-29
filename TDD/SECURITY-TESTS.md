@@ -128,7 +128,7 @@ describe("Authentication Security", () => {
     it("should reject tokens signed with wrong secret", async () => {
       const wrongSecret = jwt.sign(
         { userId: "user_123", role: "admin" },
-        "wrongsecret"
+        "wrongsecret",
       );
       const res = await fetch("/api/admin/dashboard", {
         headers: { Authorization: `Bearer ${wrongSecret}` },
@@ -239,8 +239,8 @@ describe("Injection Prevention", () => {
       for (const payload of injectionPayloads) {
         const res = await fetch(
           `/api/products?category=${encodeURIComponent(
-            JSON.stringify(payload)
-          )}`
+            JSON.stringify(payload),
+          )}`,
         );
         expect(res.status).not.toBe(500);
         // Should not return unfiltered data
@@ -567,7 +567,7 @@ describe("API Security", () => {
     it("should rate limit API requests", async () => {
       const requests = Array(150).fill(null);
       const responses = await Promise.all(
-        requests.map(() => fetch("/api/products"))
+        requests.map(() => fetch("/api/products")),
       );
 
       const rateLimited = responses.filter((r) => r.status === 429);
@@ -585,8 +585,8 @@ describe("API Security", () => {
               email: "test@example.com",
               password: "wrong",
             }),
-          })
-        )
+          }),
+        ),
       );
 
       const rateLimited = responses.filter((r) => r.status === 429);
@@ -605,14 +605,14 @@ describe("API Security", () => {
 
       expect(res.headers.get("Access-Control-Allow-Origin")).not.toBe("*");
       expect(res.headers.get("Access-Control-Allow-Origin")).not.toBe(
-        "https://evil.com"
+        "https://evil.com",
       );
     });
 
     it("should not allow credentials with wildcard origin", async () => {
       const corsOrigin = res.headers.get("Access-Control-Allow-Origin");
       const corsCredentials = res.headers.get(
-        "Access-Control-Allow-Credentials"
+        "Access-Control-Allow-Credentials",
       );
 
       if (corsCredentials === "true") {
@@ -634,7 +634,7 @@ describe("API Security", () => {
       const res = await fetch("https://api.justforview.in/products");
 
       expect(res.headers.get("Strict-Transport-Security")).toContain(
-        "max-age="
+        "max-age=",
       );
     });
   });

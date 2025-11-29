@@ -30,7 +30,7 @@ jest.mock("@/components/auth/AuthGuard", () => {
     return React.createElement(
       "div",
       { "data-testid": "auth-guard" },
-      children
+      children,
     );
   };
   return {
@@ -187,7 +187,7 @@ describe("SellerRevenuePage", () => {
       await waitFor(() => {
         expect(screen.getByText("Revenue Dashboard")).toBeInTheDocument();
         expect(
-          screen.getByText("Track your sales performance and earnings")
+          screen.getByText("Track your sales performance and earnings"),
         ).toBeInTheDocument();
       });
     });
@@ -223,7 +223,7 @@ describe("SellerRevenuePage", () => {
 
     it("handles API error gracefully", async () => {
       mockAnalyticsService.getOverview.mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
 
       render(<SellerRevenuePage />);
@@ -292,7 +292,7 @@ describe("SellerRevenuePage", () => {
       await waitFor(() => {
         expect(mockAnalyticsService.getOverview).toHaveBeenCalledTimes(2);
         expect(mockAnalyticsService.getOverview).toHaveBeenLastCalledWith(
-          expect.objectContaining({ period: "week" })
+          expect.objectContaining({ period: "week" }),
         );
       });
     });
@@ -340,10 +340,10 @@ describe("SellerRevenuePage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("No sales data available for the selected period")
+          screen.getByText("No sales data available for the selected period"),
         ).toBeInTheDocument();
         expect(
-          screen.getByText("No product data available")
+          screen.getByText("No product data available"),
         ).toBeInTheDocument();
       });
     });
@@ -367,7 +367,7 @@ describe("SellerRevenuePage", () => {
             endDate: "2024-01-31",
             period: "day",
           }),
-          "csv"
+          "csv",
         );
         expect(mockCreateObjectURL).toHaveBeenCalled();
         expect(mockClick).toHaveBeenCalled();
@@ -391,14 +391,14 @@ describe("SellerRevenuePage", () => {
             endDate: "2024-01-31",
             period: "day",
           }),
-          "pdf"
+          "pdf",
         );
       });
     });
 
     it("handles export error gracefully", async () => {
       mockAnalyticsService.exportData.mockRejectedValue(
-        new Error("Export failed")
+        new Error("Export failed"),
       );
 
       render(<SellerRevenuePage />);

@@ -105,7 +105,7 @@ describe("AddressSelector", () => {
   describe("Loading State", () => {
     it("renders loading skeleton", () => {
       (addressService.getAll as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
 
       render(
@@ -113,7 +113,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       // Should render 2 skeleton items
@@ -129,7 +129,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -145,7 +145,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -159,7 +159,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="billing"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -173,7 +173,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -188,7 +188,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -205,7 +205,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -223,7 +223,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -237,7 +237,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -254,7 +254,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -268,7 +268,7 @@ describe("AddressSelector", () => {
         isDefault: false,
       }));
       (addressService.getAll as jest.Mock).mockResolvedValue(
-        noDefaultAddresses
+        noDefaultAddresses,
       );
 
       render(
@@ -276,7 +276,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -290,7 +290,7 @@ describe("AddressSelector", () => {
           selectedId="addr-1"
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -304,7 +304,7 @@ describe("AddressSelector", () => {
           selectedId="addr-1"
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -321,7 +321,7 @@ describe("AddressSelector", () => {
           selectedId="addr-1"
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -337,7 +337,7 @@ describe("AddressSelector", () => {
           selectedId="addr-1"
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -357,7 +357,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -374,7 +374,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -390,7 +390,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -408,7 +408,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -434,7 +434,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -449,7 +449,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -459,7 +459,7 @@ describe("AddressSelector", () => {
 
       expect(screen.getByTestId("address-form")).toBeInTheDocument();
       expect(
-        screen.getByText("Address Form (Edit: addr-1)")
+        screen.getByText("Address Form (Edit: addr-1)"),
       ).toBeInTheDocument();
     });
 
@@ -469,7 +469,7 @@ describe("AddressSelector", () => {
           selectedId="addr-2"
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -490,7 +490,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -505,7 +505,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -523,7 +523,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -545,7 +545,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -568,7 +568,7 @@ describe("AddressSelector", () => {
           selectedId="addr-1"
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -590,7 +590,7 @@ describe("AddressSelector", () => {
           selectedId="addr-2"
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -606,7 +606,7 @@ describe("AddressSelector", () => {
   describe("Error Handling", () => {
     it("handles load error gracefully", async () => {
       (addressService.getAll as jest.Mock).mockRejectedValue(
-        new Error("Load failed")
+        new Error("Load failed"),
       );
       console.error = jest.fn();
 
@@ -615,20 +615,20 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
         expect(console.error).toHaveBeenCalledWith(
           "Failed to load addresses:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
     });
 
     it("handles delete error gracefully", async () => {
       (addressService.delete as jest.Mock).mockRejectedValue(
-        new Error("Delete failed")
+        new Error("Delete failed"),
       );
       console.error = jest.fn();
 
@@ -637,7 +637,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -661,7 +661,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -676,7 +676,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -693,7 +693,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -720,7 +720,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -743,7 +743,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {
@@ -764,7 +764,7 @@ describe("AddressSelector", () => {
           selectedId={null}
           onSelect={mockOnSelect}
           type="shipping"
-        />
+        />,
       );
 
       await waitFor(() => {

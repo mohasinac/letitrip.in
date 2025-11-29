@@ -10,7 +10,7 @@ import type { ProductListItemBE } from "@/types/backend/product.types";
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const { slug } = await params;
@@ -34,7 +34,7 @@ export async function GET(
     if (categorySnapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -50,7 +50,7 @@ export async function GET(
     let allProducts: ProductListItemBE[] = [];
 
     console.log(
-      `Fetching products for category ${slug} (${categoryIds.length} categories including descendants)`
+      `Fetching products for category ${slug} (${categoryIds.length} categories including descendants)`,
     );
 
     for (let i = 0; i < categoryIds.length; i += batchSize) {
@@ -75,12 +75,12 @@ export async function GET(
       sortBy === "price"
         ? "price"
         : sortBy === "rating"
-        ? "average_rating"
-        : sortBy === "sales"
-        ? "sales_count"
-        : sortBy === "views"
-        ? "view_count"
-        : "created_at";
+          ? "average_rating"
+          : sortBy === "sales"
+            ? "sales_count"
+            : sortBy === "views"
+              ? "view_count"
+              : "created_at";
 
     // Apply client-side sorting (since we fetched from multiple batches)
     allProducts.sort((a, b) => {
@@ -133,7 +133,7 @@ export async function GET(
         success: false,
         error: error.message || "Failed to fetch category products",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

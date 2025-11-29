@@ -61,7 +61,9 @@ export default function EditHeroSlidePage() {
   const loadSlide = async () => {
     try {
       setLoading(true);
-      const slide = await heroSlidesService.getHeroSlideById(params.id as string);
+      const slide = await heroSlidesService.getHeroSlideById(
+        params.id as string,
+      );
       // Transform from service format to form format
       const data: HeroSlide = {
         id: slide.id,

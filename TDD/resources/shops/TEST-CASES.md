@@ -21,7 +21,7 @@ describe("Shop Service", () => {
 
     it("should throw for non-existent shop", async () => {
       await expect(shopsService.getBySlug("invalid")).rejects.toThrow(
-        "Shop not found"
+        "Shop not found",
       );
     });
 
@@ -127,13 +127,13 @@ describe("Seller Shop Management", () => {
 
     it("should fail if seller already has shop", async () => {
       await expect(
-        shopsService.create({ name: "Second Shop" })
+        shopsService.create({ name: "Second Shop" }),
       ).rejects.toThrow("Seller already has a shop");
     });
 
     it("should validate required fields", async () => {
       await expect(shopsService.create({})).rejects.toThrow(
-        "Shop name is required"
+        "Shop name is required",
       );
     });
   });
@@ -156,7 +156,7 @@ describe("Seller Shop Management", () => {
 
     it("should fail for other seller's shop", async () => {
       await expect(
-        shopsService.update("other_shop", { name: "Hacked" })
+        shopsService.update("other_shop", { name: "Hacked" }),
       ).rejects.toThrow("Forbidden");
     });
   });
@@ -191,16 +191,14 @@ describe("Shop Verification", () => {
 
   describe("verification requirements", () => {
     it("should check if shop is eligible for verification", async () => {
-      const eligibility = await shopsService.checkVerificationEligibility(
-        "shop_001"
-      );
+      const eligibility =
+        await shopsService.checkVerificationEligibility("shop_001");
       expect(eligibility.eligible).toBe(true);
     });
 
     it("should list missing requirements", async () => {
-      const eligibility = await shopsService.checkVerificationEligibility(
-        "shop_incomplete"
-      );
+      const eligibility =
+        await shopsService.checkVerificationEligibility("shop_incomplete");
       expect(eligibility.eligible).toBe(false);
       expect(eligibility.missing).toContain("bank_account");
     });

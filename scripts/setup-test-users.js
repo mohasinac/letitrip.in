@@ -13,7 +13,7 @@ if (!admin.apps.length) {
     const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
     const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(
       /\\n/g,
-      "\n"
+      "\n",
     );
 
     if (!projectId || !clientEmail || !privateKey) {
@@ -32,7 +32,7 @@ if (!admin.apps.length) {
   } catch (error) {
     console.error("❌ Failed to initialize Firebase Admin:", error.message);
     console.log(
-      "\n💡 Tip: Make sure FIREBASE_ADMIN_* environment variables are set"
+      "\n💡 Tip: Make sure FIREBASE_ADMIN_* environment variables are set",
     );
     process.exit(1);
   }

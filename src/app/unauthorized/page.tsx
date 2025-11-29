@@ -149,12 +149,7 @@ function UnauthorizedContent() {
               >
                 Create Account
               </Link>
-              <Link
-                href="/forgot-password"
-                className="text-sm text-red-600 hover:text-red-700 font-medium"
-              >
-                Reset Password
-              </Link>
+              {/* NOTE: /forgot-password route does not exist - password reset via support ticket */}
               <Link
                 href="/support/ticket"
                 className="text-sm text-red-600 hover:text-red-700 font-medium"

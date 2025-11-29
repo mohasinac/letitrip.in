@@ -272,7 +272,7 @@ describe("/api/cart/[itemId]", () => {
         expect.objectContaining({
           quantity: 5,
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
 

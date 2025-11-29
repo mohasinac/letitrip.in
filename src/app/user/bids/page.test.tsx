@@ -107,7 +107,7 @@ describe("MyBidsPage", () => {
         expect(screen.getByText("My Bids")).toBeInTheDocument();
       });
       expect(
-        screen.getByText("Track all your auction bids in one place")
+        screen.getByText("Track all your auction bids in one place"),
       ).toBeInTheDocument();
     });
 
@@ -140,7 +140,7 @@ describe("MyBidsPage", () => {
       render(<MyBidsPage />);
 
       expect(
-        screen.getByText("Please log in to view your bids")
+        screen.getByText("Please log in to view your bids"),
       ).toBeInTheDocument();
     });
 
@@ -184,7 +184,7 @@ describe("MyBidsPage", () => {
         expect(screen.getAllByText("Winning").length).toBeGreaterThan(0);
         // Should show 1 winning bid (auction2)
         const stats = document.querySelector(
-          ".text-2xl.font-bold.text-green-600"
+          ".text-2xl.font-bold.text-green-600",
         );
         expect(stats?.textContent).toBe("1");
       });
@@ -199,7 +199,7 @@ describe("MyBidsPage", () => {
         expect(screen.getAllByText("Outbid").length).toBeGreaterThan(0);
         // Should show 1 outbid (auction1)
         const stats = document.querySelector(
-          ".text-2xl.font-bold.text-red-600"
+          ".text-2xl.font-bold.text-red-600",
         );
         expect(stats?.textContent).toBe("1");
       });
@@ -214,7 +214,7 @@ describe("MyBidsPage", () => {
         expect(screen.getAllByText("Ended").length).toBeGreaterThan(0);
         // Should show 1 ended (auction3)
         const stats = document.querySelector(
-          ".text-2xl.font-bold.text-gray-600"
+          ".text-2xl.font-bold.text-gray-600",
         );
         expect(stats?.textContent).toBe("1");
       });
@@ -411,8 +411,8 @@ describe("MyBidsPage", () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            "Start bidding on auctions to see your activity here"
-          )
+            "Start bidding on auctions to see your activity here",
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -517,7 +517,7 @@ describe("MyBidsPage", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to load bids:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -592,7 +592,7 @@ describe("MyBidsPage", () => {
 
       await waitFor(() => {
         const statsGrid = document.querySelector(
-          ".grid-cols-1.sm\\:grid-cols-4"
+          ".grid-cols-1.sm\\:grid-cols-4",
         );
         expect(statsGrid).toBeInTheDocument();
       });

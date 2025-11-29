@@ -155,9 +155,9 @@ describe("BlogListClient", () => {
                 count: 2,
                 pagination: { hasNextPage: false, nextCursor: null },
               }),
-            100
-          )
-        )
+            100,
+          ),
+        ),
     );
 
     await act(async () => {
@@ -168,7 +168,7 @@ describe("BlogListClient", () => {
     expect(
       screen
         .getAllByRole("generic", { hidden: true })
-        .some((el) => el.classList.contains("animate-pulse"))
+        .some((el) => el.classList.contains("animate-pulse")),
     ).toBeTruthy();
   });
 
@@ -179,7 +179,7 @@ describe("BlogListClient", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByPlaceholderText("Search blog posts...")
+        screen.getByPlaceholderText("Search blog posts..."),
       ).toBeInTheDocument();
     });
 
@@ -193,7 +193,7 @@ describe("BlogListClient", () => {
 
     await waitFor(() => {
       expect(mockBlogService.list.mock.calls.length).toBeGreaterThan(
-        initialCallCount
+        initialCallCount,
       );
     });
 
@@ -216,7 +216,7 @@ describe("BlogListClient", () => {
       expect(mockBlogService.list).toHaveBeenCalledWith(
         expect.objectContaining({
           sortBy: "views",
-        })
+        }),
       );
     });
   });
@@ -230,7 +230,7 @@ describe("BlogListClient", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Failed to load blog posts. Please try again later.")
+        screen.getByText("Failed to load blog posts. Please try again later."),
       ).toBeInTheDocument();
       expect(screen.getByText("Try Again")).toBeInTheDocument();
     });
@@ -250,7 +250,7 @@ describe("BlogListClient", () => {
     await waitFor(() => {
       expect(screen.getByText("No blog posts found")).toBeInTheDocument();
       expect(
-        screen.getByText("Check back later for new content")
+        screen.getByText("Check back later for new content"),
       ).toBeInTheDocument();
     });
   });
@@ -278,7 +278,7 @@ describe("BlogListClient", () => {
       expect(mockBlogService.list).toHaveBeenCalledWith(
         expect.objectContaining({
           startAfter: "cursor123",
-        })
+        }),
       );
     });
   });
@@ -298,11 +298,11 @@ describe("BlogListClient", () => {
 
     await waitFor(() => {
       expect(mockRouter.push.mock.calls.length).toBeGreaterThan(
-        initialCallCount
+        initialCallCount,
       );
       const calls = mockRouter.push.mock.calls;
       const hasSearchParam = calls.some((call) =>
-        call[0].includes("search=test")
+        call[0].includes("search=test"),
       );
       expect(hasSearchParam).toBe(true);
     });
@@ -337,7 +337,7 @@ describe("BlogListClient", () => {
         expect.objectContaining({
           sortBy: "publishedAt",
           sortOrder: "desc",
-        })
+        }),
       );
     });
   });

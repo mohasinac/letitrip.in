@@ -18,7 +18,7 @@ describe("Card", () => {
         "bg-white",
         "rounded-lg",
         "border",
-        "border-gray-200"
+        "border-gray-200",
       );
     });
 
@@ -73,7 +73,7 @@ describe("Card", () => {
       render(
         <Card title="Title" description="Description">
           Content
-        </Card>
+        </Card>,
       );
 
       expect(screen.getByText("Title")).toBeInTheDocument();
@@ -91,7 +91,7 @@ describe("Card", () => {
   describe("Header Action", () => {
     it("renders header action when provided", () => {
       render(
-        <Card headerAction={<button>Action Button</button>}>Content</Card>
+        <Card headerAction={<button>Action Button</button>}>Content</Card>,
       );
 
       expect(screen.getByText("Action Button")).toBeInTheDocument();
@@ -101,7 +101,7 @@ describe("Card", () => {
       render(
         <Card title="Title" headerAction={<button>Action</button>}>
           Content
-        </Card>
+        </Card>,
       );
 
       expect(screen.getByText("Title")).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe("Card", () => {
           }
         >
           Content
-        </Card>
+        </Card>,
       );
 
       expect(screen.getByTestId("complex-action")).toBeInTheDocument();
@@ -141,7 +141,7 @@ describe("Card", () => {
       const { container } = render(<Card title="Title">Content</Card>);
 
       const headerContent = container.querySelector(
-        ".flex.items-start.justify-between"
+        ".flex.items-start.justify-between",
       );
       expect(headerContent).toBeInTheDocument();
     });
@@ -150,7 +150,7 @@ describe("Card", () => {
       const { container } = render(
         <Card title="Title" headerAction={<button>Action</button>}>
           Content
-        </Card>
+        </Card>,
       );
 
       const actionWrapper = screen.getByText("Action").parentElement;
@@ -180,7 +180,7 @@ describe("Card", () => {
       const { container } = render(
         <Card title="Title" noPadding>
           Content
-        </Card>
+        </Card>,
       );
 
       const header = container.querySelector(".px-6.py-4");
@@ -191,7 +191,7 @@ describe("Card", () => {
   describe("Custom ClassName", () => {
     it("applies custom className", () => {
       const { container } = render(
-        <Card className="custom-card-class">Content</Card>
+        <Card className="custom-card-class">Content</Card>,
       );
 
       const card = container.firstChild as HTMLElement;
@@ -200,7 +200,7 @@ describe("Card", () => {
 
     it("preserves base classes with custom className", () => {
       const { container } = render(
-        <Card className="custom-class">Content</Card>
+        <Card className="custom-class">Content</Card>,
       );
 
       const card = container.firstChild as HTMLElement;
@@ -215,7 +215,7 @@ describe("Card", () => {
           <p>First paragraph</p>
           <p>Second paragraph</p>
           <button>Action</button>
-        </Card>
+        </Card>,
       );
 
       expect(screen.getByText("First paragraph")).toBeInTheDocument();
@@ -229,7 +229,7 @@ describe("Card", () => {
           <div data-testid="nested-content">
             <span>Nested span</span>
           </div>
-        </Card>
+        </Card>,
       );
 
       expect(screen.getByTestId("nested-content")).toBeInTheDocument();
@@ -248,7 +248,7 @@ describe("Card", () => {
       render(
         <Card title="" description="">
           Content
-        </Card>
+        </Card>,
       );
 
       expect(screen.getByText("Content")).toBeInTheDocument();
@@ -265,7 +265,7 @@ describe("Card", () => {
       render(<Card title="Title with & special <chars>">Content</Card>);
 
       expect(
-        screen.getByText("Title with & special <chars>")
+        screen.getByText("Title with & special <chars>"),
       ).toBeInTheDocument();
     });
   });
@@ -306,7 +306,7 @@ describe("CardSection", () => {
   describe("Description", () => {
     it("renders description when provided", () => {
       render(
-        <CardSection description="Section description">Content</CardSection>
+        <CardSection description="Section description">Content</CardSection>,
       );
 
       expect(screen.getByText("Section description")).toBeInTheDocument();
@@ -324,7 +324,7 @@ describe("CardSection", () => {
       render(
         <CardSection title="Title" description="Description">
           Content
-        </CardSection>
+        </CardSection>,
       );
 
       expect(screen.getByText("Title")).toBeInTheDocument();
@@ -335,7 +335,7 @@ describe("CardSection", () => {
   describe("Header Spacing", () => {
     it("applies margin bottom when header present", () => {
       const { container } = render(
-        <CardSection title="Title">Content</CardSection>
+        <CardSection title="Title">Content</CardSection>,
       );
 
       const header = screen.getByText("Title").parentElement;
@@ -353,7 +353,7 @@ describe("CardSection", () => {
   describe("Custom ClassName", () => {
     it("applies custom className to root", () => {
       const { container } = render(
-        <CardSection className="custom-section-class">Content</CardSection>
+        <CardSection className="custom-section-class">Content</CardSection>,
       );
 
       const section = container.firstChild as HTMLElement;
@@ -364,7 +364,7 @@ describe("CardSection", () => {
       const { container } = render(
         <CardSection className="custom-class" title="Title">
           Content
-        </CardSection>
+        </CardSection>,
       );
 
       const section = container.firstChild as HTMLElement;
@@ -378,7 +378,7 @@ describe("CardSection", () => {
         <Card title="Card Title">
           <CardSection title="Section 1">Section 1 content</CardSection>
           <CardSection title="Section 2">Section 2 content</CardSection>
-        </Card>
+        </Card>,
       );
 
       expect(screen.getByText("Card Title")).toBeInTheDocument();
@@ -392,7 +392,7 @@ describe("CardSection", () => {
           <CardSection title="First">First content</CardSection>
           <CardSection title="Second">Second content</CardSection>
           <CardSection title="Third">Third content</CardSection>
-        </Card>
+        </Card>,
       );
 
       expect(screen.getByText("First")).toBeInTheDocument();
@@ -412,7 +412,7 @@ describe("CardSection", () => {
       render(
         <CardSection title="" description="">
           Content
-        </CardSection>
+        </CardSection>,
       );
 
       expect(screen.getByText("Content")).toBeInTheDocument();

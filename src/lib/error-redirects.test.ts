@@ -8,7 +8,7 @@ import { describe, it, expect } from "@jest/globals";
 // Mock functions for error redirects
 const generateErrorRedirectUrl = (
   errorType: string,
-  params?: Record<string, string>
+  params?: Record<string, string>,
 ) => {
   const baseUrl = "/error";
   const searchParams = new URLSearchParams();
@@ -74,7 +74,7 @@ const generateRateLimitErrorRedirectUrl = (retryAfter?: number) => {
 
 const generateConflictErrorRedirectUrl = (
   resource?: string,
-  action?: string
+  action?: string,
 ) => {
   const params: Record<string, string> = {};
   if (resource) {
@@ -114,7 +114,7 @@ describe("Error Redirect URL Generation", () => {
 
   it("should encode special characters in return URL", () => {
     const url = generateUnauthorizedRedirectUrl(
-      "/dashboard?tab=profile&user=123"
+      "/dashboard?tab=profile&user=123",
     );
     const expected =
       "/error?type=unauthorized&returnUrl=%2Fdashboard%3Ftab%3Dprofile%26user%3D123";

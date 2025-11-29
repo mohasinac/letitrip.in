@@ -50,7 +50,7 @@ jest.mock("./SearchBar", () => {
     __esModule: true,
     default: React.forwardRef(function MockSearchBar(
       { isVisible, onClose }: { isVisible: boolean; onClose: () => void },
-      ref: any
+      ref: any,
     ) {
       React.useImperativeHandle(ref, () => ({
         focusSearch: jest.fn(),

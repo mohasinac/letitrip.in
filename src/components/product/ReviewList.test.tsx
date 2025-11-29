@@ -78,7 +78,7 @@ describe("ReviewList", () => {
   describe("Loading State", () => {
     it("displays loading skeletons", () => {
       (reviewsService.list as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
       render(<ReviewList productId="prod-1" />);
       expect(document.querySelectorAll(".animate-pulse")).toHaveLength(3);
@@ -100,10 +100,10 @@ describe("ReviewList", () => {
       render(<ReviewList productId="prod-1" />);
       await waitFor(() => {
         expect(
-          screen.getByText("Absolutely love this product. Great quality!")
+          screen.getByText("Absolutely love this product. Great quality!"),
         ).toBeInTheDocument();
         expect(
-          screen.getByText("Nice product for the price.")
+          screen.getByText("Nice product for the price."),
         ).toBeInTheDocument();
       });
     });
@@ -197,7 +197,7 @@ describe("ReviewList", () => {
       });
       await waitFor(() => {
         expect(reviewsService.list).toHaveBeenCalledWith(
-          expect.objectContaining({ rating: 5 })
+          expect.objectContaining({ rating: 5 }),
         );
       });
     });
@@ -214,7 +214,7 @@ describe("ReviewList", () => {
       });
       await waitFor(() => {
         expect(reviewsService.list).toHaveBeenLastCalledWith(
-          expect.objectContaining({ rating: undefined })
+          expect.objectContaining({ rating: undefined }),
         );
       });
     });
@@ -238,7 +238,7 @@ describe("ReviewList", () => {
       });
       await waitFor(() => {
         expect(reviewsService.list).toHaveBeenCalledWith(
-          expect.objectContaining({ sortBy: "createdAt" })
+          expect.objectContaining({ sortBy: "createdAt" }),
         );
       });
     });
@@ -251,7 +251,7 @@ describe("ReviewList", () => {
       });
       await waitFor(() => {
         expect(reviewsService.list).toHaveBeenCalledWith(
-          expect.objectContaining({ sortBy: "helpfulCount" })
+          expect.objectContaining({ sortBy: "helpfulCount" }),
         );
       });
     });
@@ -264,7 +264,7 @@ describe("ReviewList", () => {
       });
       await waitFor(() => {
         expect(reviewsService.list).toHaveBeenCalledWith(
-          expect.objectContaining({ sortBy: "rating" })
+          expect.objectContaining({ sortBy: "rating" }),
         );
       });
     });
@@ -295,7 +295,7 @@ describe("ReviewList", () => {
       });
       await waitFor(() => {
         expect(reviewsService.list).toHaveBeenLastCalledWith(
-          expect.objectContaining({ rating: undefined })
+          expect.objectContaining({ rating: undefined }),
         );
       });
     });
@@ -369,7 +369,7 @@ describe("ReviewList", () => {
       render(<ReviewList productId="prod-1" />);
       await waitFor(() => {
         const reviewImages = document.querySelectorAll(
-          'img[alt^="Review image"]'
+          'img[alt^="Review image"]',
         );
         expect(reviewImages.length).toBe(3); // 1 + 2 images
       });
@@ -382,7 +382,7 @@ describe("ReviewList", () => {
           .getByText("Good value")
           .closest(".border-b");
         const images = goodValueReview?.querySelectorAll(
-          'img[alt^="Review image"]'
+          'img[alt^="Review image"]',
         );
         expect(images?.length || 0).toBe(0);
       });
@@ -442,7 +442,7 @@ describe("ReviewList", () => {
 
     it("handles markHelpful error", async () => {
       (reviewsService.markHelpful as jest.Mock).mockRejectedValue(
-        new Error("Failed")
+        new Error("Failed"),
       );
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
       render(<ReviewList productId="prod-1" />);
@@ -455,7 +455,7 @@ describe("ReviewList", () => {
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to mark as helpful:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
       consoleSpy.mockRestore();
@@ -489,7 +489,7 @@ describe("ReviewList", () => {
       await waitFor(() => {
         // EmptyState component shows generic message for all empty states
         expect(
-          screen.getByText(/No reviews yet|Be the first to review/i)
+          screen.getByText(/No reviews yet|Be the first to review/i),
         ).toBeInTheDocument();
       });
     });
@@ -499,14 +499,14 @@ describe("ReviewList", () => {
   describe("Error Handling", () => {
     it("handles API error gracefully", async () => {
       (reviewsService.list as jest.Mock).mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
       render(<ReviewList productId="prod-1" />);
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
           "Failed to load reviews:",
-          expect.any(Error)
+          expect.any(Error),
         );
       });
       consoleSpy.mockRestore();
@@ -514,7 +514,7 @@ describe("ReviewList", () => {
 
     it("sets empty state on error", async () => {
       (reviewsService.list as jest.Mock).mockRejectedValue(
-        new Error("API Error")
+        new Error("API Error"),
       );
       render(<ReviewList productId="prod-1" />);
       await waitFor(() => {
@@ -548,7 +548,7 @@ describe("ReviewList", () => {
       render(<ReviewList productId="prod-1" />);
       await waitFor(() => {
         expect(
-          screen.getByText("Absolutely love this product. Great quality!")
+          screen.getByText("Absolutely love this product. Great quality!"),
         ).toBeInTheDocument();
       });
     });

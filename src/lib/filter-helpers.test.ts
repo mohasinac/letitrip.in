@@ -68,7 +68,7 @@ describe("filtersToSearchParams", () => {
 describe("searchParamsToFilters", () => {
   it("should parse search params to filters", () => {
     const params = new URLSearchParams(
-      'category=electronics&price=100&tags=["laptop"]'
+      'category=electronics&price=100&tags=["laptop"]',
     );
     const initial = { category: "", price: 0, tags: [] };
     const result = searchParamsToFilters(params, initial);
@@ -91,7 +91,7 @@ describe("mergeFilters", () => {
     const result = mergeFilters(
       { category: "electronics" },
       { price: 100 },
-      { inStock: true }
+      { inStock: true },
     );
     expect(result).toEqual({
       category: "electronics",
@@ -103,7 +103,7 @@ describe("mergeFilters", () => {
   it("should override with later values", () => {
     const result = mergeFilters(
       { category: "electronics" },
-      { category: "books" }
+      { category: "books" },
     );
     expect(result.category).toBe("books");
   });
@@ -224,7 +224,7 @@ describe("validateFilters", () => {
     const result = validateFilters(filters, schema);
     expect(result.valid).toBe(false);
     expect(result.errors).toContain(
-      "category must be one of: electronics, books"
+      "category must be one of: electronics, books",
     );
   });
 });

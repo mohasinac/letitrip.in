@@ -24,7 +24,7 @@ describe("Cart Service", () => {
       const cart = await cartService.get();
       const expectedSubtotal = cart.items.reduce(
         (sum, item) => sum + item.product.price * item.quantity,
-        0
+        0,
       );
       expect(cart.subtotal).toBe(expectedSubtotal);
     });
@@ -38,7 +38,7 @@ describe("Cart Service", () => {
       });
       expect(result.success).toBe(true);
       expect(result.cart.items).toContainEqual(
-        expect.objectContaining({ productId: "prod_001", quantity: 2 })
+        expect.objectContaining({ productId: "prod_001", quantity: 2 }),
       );
     });
 
@@ -52,13 +52,13 @@ describe("Cart Service", () => {
 
     it("should fail if product not found", async () => {
       await expect(
-        cartService.addItem({ productId: "invalid", quantity: 1 })
+        cartService.addItem({ productId: "invalid", quantity: 1 }),
       ).rejects.toThrow("Product not found");
     });
 
     it("should fail if quantity exceeds stock", async () => {
       await expect(
-        cartService.addItem({ productId: "prod_001", quantity: 100 })
+        cartService.addItem({ productId: "prod_001", quantity: 100 }),
       ).rejects.toThrow("Insufficient stock");
     });
 
@@ -88,7 +88,7 @@ describe("Cart Service", () => {
 
     it("should fail for invalid item", async () => {
       await expect(
-        cartService.updateItem("invalid", { quantity: 1 })
+        cartService.updateItem("invalid", { quantity: 1 }),
       ).rejects.toThrow("Cart item not found");
     });
   });
@@ -135,7 +135,7 @@ describe("Cart Validation", () => {
       expect.objectContaining({
         itemId: "item_001",
         error: "out_of_stock",
-      })
+      }),
     );
   });
 
@@ -146,7 +146,7 @@ describe("Cart Validation", () => {
         itemId: "item_002",
         warning: "quantity_reduced",
         newQuantity: 3,
-      })
+      }),
     );
   });
 
@@ -156,7 +156,7 @@ describe("Cart Validation", () => {
       expect.objectContaining({
         itemId: "item_003",
         error: "product_unavailable",
-      })
+      }),
     );
   });
 });
@@ -185,13 +185,13 @@ describe("Cart Coupon", () => {
 
   it("should fail for invalid coupon", async () => {
     await expect(cartService.applyCoupon("INVALID")).rejects.toThrow(
-      "Invalid coupon code"
+      "Invalid coupon code",
     );
   });
 
   it("should fail for expired coupon", async () => {
     await expect(cartService.applyCoupon("EXPIRED")).rejects.toThrow(
-      "Coupon has expired"
+      "Coupon has expired",
     );
   });
 
@@ -260,7 +260,7 @@ describe("Cart API Integration", () => {
       });
       const data = await response.json();
       expect(data.data.items).toContainEqual(
-        expect.objectContaining({ productId: "prod_002" })
+        expect.objectContaining({ productId: "prod_002" }),
       );
     });
   });
@@ -303,7 +303,7 @@ describe("Cart API Integration", () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.data.items).toContainEqual(
-        expect.objectContaining({ productId: "prod_003" })
+        expect.objectContaining({ productId: "prod_003" }),
       );
     });
   });
@@ -330,7 +330,7 @@ describe("Cart to Checkout Flow", () => {
   it("should block checkout with invalid cart", async () => {
     // Add OOS item
     await expect(checkoutService.initiate()).rejects.toThrow(
-      "Cart has invalid items"
+      "Cart has invalid items",
     );
   });
 });

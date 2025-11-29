@@ -73,7 +73,7 @@ jest.mock("./SearchBar", () => {
     __esModule: true,
     default: React.forwardRef(function MockSearchBar(
       { isVisible, onClose }: { isVisible: boolean; onClose: () => void },
-      ref: any
+      ref: any,
     ) {
       const focusSearchMock = jest.fn();
       const hideMock = jest.fn();
@@ -295,7 +295,7 @@ describe("Header Component - Comprehensive Tests", () => {
       render(<Header />);
 
       expect(
-        screen.queryByText("Mobile Sidebar Content")
+        screen.queryByText("Mobile Sidebar Content"),
       ).not.toBeInTheDocument();
     });
 
@@ -394,7 +394,7 @@ describe("Header Component - Comprehensive Tests", () => {
 
       expect(screen.getByTestId("search-input")).toBeInTheDocument();
       expect(
-        screen.getByPlaceholderText("Search products...")
+        screen.getByPlaceholderText("Search products..."),
       ).toBeInTheDocument();
     });
 

@@ -182,7 +182,7 @@ describe("/api/payments", () => {
       expect(mockQuery.where).not.toHaveBeenCalledWith(
         "user_id",
         "==",
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -208,7 +208,7 @@ describe("/api/payments", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments?status=completed"
+        "http://localhost/api/payments?status=completed",
       );
       const response = await GET(request);
 
@@ -240,16 +240,12 @@ describe("/api/payments", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments?gateway=razorpay"
+        "http://localhost/api/payments?gateway=razorpay",
       );
       const response = await GET(request);
 
       expect(response.status).toBe(200);
-      expect(mockQuery.where).toHaveBeenCalledWith(
-        "gateway",
-        "==",
-        "razorpay"
-      );
+      expect(mockQuery.where).toHaveBeenCalledWith("gateway", "==", "razorpay");
     });
 
     it("filters payments by orderId", async () => {
@@ -274,12 +270,16 @@ describe("/api/payments", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments?orderId=order123"
+        "http://localhost/api/payments?orderId=order123",
       );
       const response = await GET(request);
 
       expect(response.status).toBe(200);
-      expect(mockQuery.where).toHaveBeenCalledWith("order_id", "==", "order123");
+      expect(mockQuery.where).toHaveBeenCalledWith(
+        "order_id",
+        "==",
+        "order123",
+      );
     });
 
     it("filters payments by shopId for admin", async () => {
@@ -307,7 +307,7 @@ describe("/api/payments", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments?shopId=shop123"
+        "http://localhost/api/payments?shopId=shop123",
       );
       const response = await GET(request);
 
@@ -337,7 +337,7 @@ describe("/api/payments", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments?startDate=2025-01-01&endDate=2025-01-01"
+        "http://localhost/api/payments?startDate=2025-01-01&endDate=2025-01-01",
       );
       const response = await GET(request);
 
@@ -345,12 +345,12 @@ describe("/api/payments", () => {
       expect(mockQuery.where).toHaveBeenCalledWith(
         "created_at",
         ">=",
-        expect.any(String)
+        expect.any(String),
       );
       expect(mockQuery.where).toHaveBeenCalledWith(
         "created_at",
         "<=",
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -376,18 +376,18 @@ describe("/api/payments", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments?status=completed&gateway=razorpay&orderId=order123"
+        "http://localhost/api/payments?status=completed&gateway=razorpay&orderId=order123",
       );
       const response = await GET(request);
 
       expect(response.status).toBe(200);
       expect(mockQuery.where).toHaveBeenCalledWith("status", "==", "completed");
+      expect(mockQuery.where).toHaveBeenCalledWith("gateway", "==", "razorpay");
       expect(mockQuery.where).toHaveBeenCalledWith(
-        "gateway",
+        "order_id",
         "==",
-        "razorpay"
+        "order123",
       );
-      expect(mockQuery.where).toHaveBeenCalledWith("order_id", "==", "order123");
     });
 
     it("handles pagination parameters", async () => {
@@ -412,7 +412,7 @@ describe("/api/payments", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/payments?page=2&limit=10"
+        "http://localhost/api/payments?page=2&limit=10",
       );
       const response = await GET(request);
 
@@ -434,7 +434,7 @@ describe("/api/payments", () => {
       });
 
       (executeOffsetPaginatedQuery as jest.Mock).mockRejectedValue(
-        new Error("Database error")
+        new Error("Database error"),
       );
 
       const request = new NextRequest("http://localhost/api/payments");
@@ -463,7 +463,7 @@ describe("/api/payments", () => {
       (requireRole as jest.Mock).mockResolvedValue({
         error: NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 }
+          { status: 403 },
         ),
       });
 
@@ -519,7 +519,7 @@ describe("/api/payments", () => {
           gateway: "razorpay",
           status: "pending",
           currency: "INR",
-        })
+        }),
       );
     });
 
@@ -621,7 +621,7 @@ describe("/api/payments", () => {
       expect(mockAdd).toHaveBeenCalledWith(
         expect.objectContaining({
           currency: "INR",
-        })
+        }),
       );
     });
 
@@ -660,7 +660,7 @@ describe("/api/payments", () => {
       expect(mockAdd).toHaveBeenCalledWith(
         expect.objectContaining({
           status: "pending",
-        })
+        }),
       );
     });
 
@@ -703,7 +703,7 @@ describe("/api/payments", () => {
       expect(mockAdd).toHaveBeenCalledWith(
         expect.objectContaining({
           shop_id: null,
-        })
+        }),
       );
     });
 
@@ -742,7 +742,7 @@ describe("/api/payments", () => {
       expect(mockAdd).toHaveBeenCalledWith(
         expect.objectContaining({
           gateway_payment_id: "pay_xyz123",
-        })
+        }),
       );
     });
 
@@ -803,7 +803,7 @@ describe("/api/payments", () => {
         expect.objectContaining({
           created_at: expect.any(String),
           updated_at: expect.any(String),
-        })
+        }),
       );
     });
   });

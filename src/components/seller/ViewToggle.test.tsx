@@ -20,7 +20,7 @@ describe("ViewToggle", () => {
 
     it("renders with correct container styling", () => {
       const { container } = render(
-        <ViewToggle view="grid" onViewChange={mockOnViewChange} />
+        <ViewToggle view="grid" onViewChange={mockOnViewChange} />,
       );
 
       const wrapper = container.firstChild;
@@ -152,7 +152,7 @@ describe("ViewToggle", () => {
   describe("Layout", () => {
     it("displays buttons in horizontal layout", () => {
       const { container } = render(
-        <ViewToggle view="grid" onViewChange={mockOnViewChange} />
+        <ViewToggle view="grid" onViewChange={mockOnViewChange} />,
       );
 
       const wrapper = container.firstChild;
@@ -203,7 +203,7 @@ describe("ViewToggle", () => {
   describe("Edge Cases", () => {
     it("handles view prop changes", () => {
       const { rerender } = render(
-        <ViewToggle view="grid" onViewChange={mockOnViewChange} />
+        <ViewToggle view="grid" onViewChange={mockOnViewChange} />,
       );
 
       let gridButton = screen.getByText("Grid").closest("button");
@@ -219,7 +219,7 @@ describe("ViewToggle", () => {
 
     it("maintains state through multiple toggles", () => {
       const { rerender } = render(
-        <ViewToggle view="grid" onViewChange={mockOnViewChange} />
+        <ViewToggle view="grid" onViewChange={mockOnViewChange} />,
       );
 
       rerender(<ViewToggle view="table" onViewChange={mockOnViewChange} />);
@@ -235,7 +235,7 @@ describe("ViewToggle", () => {
       const callback2 = jest.fn();
 
       const { rerender } = render(
-        <ViewToggle view="grid" onViewChange={callback1} />
+        <ViewToggle view="grid" onViewChange={callback1} />,
       );
       fireEvent.click(screen.getByText("Table"));
       expect(callback1).toHaveBeenCalled();

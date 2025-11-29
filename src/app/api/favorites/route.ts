@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 }
+        { status: 401 },
       );
     }
     const userId = user.id;
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
         ...doc.data(),
       }),
       50, // defaultLimit
-      200 // maxLimit
+      200, // maxLimit
     );
 
     const favorites = response.data;
@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching favorites:", error);
     return NextResponse.json(
       { error: "Failed to fetch favorites" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 }
+        { status: 401 },
       );
     }
     const userId = user.id;
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
     if (!body.product_id) {
       return NextResponse.json(
         { error: "Product ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
     if (!existing.empty) {
       return NextResponse.json(
         { error: "Product already in favorites" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -129,13 +129,13 @@ export async function POST(req: NextRequest) {
         id: docRef.id,
         ...favoriteData,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error adding favorite:", error);
     return NextResponse.json(
       { error: "Failed to add favorite" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

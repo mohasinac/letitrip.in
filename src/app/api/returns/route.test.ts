@@ -59,9 +59,7 @@ describe("GET /api/returns", () => {
       data: [],
     });
 
-    const req = new NextRequest(
-      "http://localhost/api/returns?status=pending"
-    );
+    const req = new NextRequest("http://localhost/api/returns?status=pending");
     const res = await GET(req);
 
     expect(mockQuery.where).toHaveBeenCalledWith("status", "==", "pending");
@@ -84,19 +82,19 @@ describe("GET /api/returns", () => {
     });
 
     const req = new NextRequest(
-      "http://localhost/api/returns?start_date=2025-01-01&end_date=2025-12-31"
+      "http://localhost/api/returns?start_date=2025-01-01&end_date=2025-12-31",
     );
     const res = await GET(req);
 
     expect(mockQuery.where).toHaveBeenCalledWith(
       "created_at",
       ">=",
-      "2025-01-01"
+      "2025-01-01",
     );
     expect(mockQuery.where).toHaveBeenCalledWith(
       "created_at",
       "<=",
-      "2025-12-31"
+      "2025-12-31",
     );
   });
 

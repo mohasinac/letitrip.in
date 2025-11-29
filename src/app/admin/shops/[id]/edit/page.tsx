@@ -98,7 +98,7 @@ export default function AdminEditShopPage() {
   } = useMediaUploadWithCleanup({
     onUploadSuccess: (url) => {
       setShop((prev: ShopFE | null) =>
-        prev ? { ...prev, banner: url } : null
+        prev ? { ...prev, banner: url } : null,
       );
     },
   });

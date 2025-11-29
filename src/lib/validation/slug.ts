@@ -82,15 +82,7 @@ export function useRemoteValidation({
       if (abortRef.current) abortRef.current.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    value,
-    endpoint,
-    paramName,
-    extraParamsStr,
-    debounceMs,
-    skip,
-    minLength,
-  ]);
+  }, [value, endpoint, paramName, extraParamsStr, debounceMs, skip, minLength]);
 
   return { checking, available, error };
 }

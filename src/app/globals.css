@@ -5,6 +5,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-left: env(safe-area-inset-left);
+  --safe-area-inset-right: env(safe-area-inset-right);
 }
 
 /* Mobile & Accessibility Utilities - Core Classes */
@@ -13,6 +17,41 @@
   .touch-target {
     min-height: 44px;
     min-width: 44px;
+  }
+
+  .touch-target-lg {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Safe Area Utilities */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .pl-safe {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .pr-safe {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .p-safe {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  .mt-safe {
+    margin-top: env(safe-area-inset-top);
+  }
+
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom);
   }
 
   /* Focus Indicators */
@@ -71,6 +110,42 @@
   .form-hint-accessible {
     @apply text-sm text-gray-500 mt-1;
   }
+
+  /* Mobile Form Input - larger touch targets */
+  .mobile-input {
+    @apply min-h-[48px] w-full px-4 py-3 text-base border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500;
+    @apply disabled:bg-gray-100 disabled:cursor-not-allowed;
+    /* Prevent iOS zoom on focus */
+    font-size: 16px;
+  }
+
+  /* Mobile Button - full width with touch-friendly size */
+  .mobile-btn {
+    @apply min-h-[48px] w-full px-6 py-3 text-base font-medium rounded-lg;
+    @apply active:scale-[0.98] transition-transform;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+  }
+
+  .mobile-btn-primary {
+    @apply mobile-btn bg-yellow-500 text-gray-900 hover:bg-yellow-600 focus-visible:ring-yellow-500;
+  }
+
+  .mobile-btn-secondary {
+    @apply mobile-btn bg-gray-100 text-gray-700 hover:bg-gray-200 focus-visible:ring-gray-500;
+  }
+
+  /* Mobile Card */
+  .mobile-card {
+    @apply bg-white rounded-lg border border-gray-200 p-4;
+    @apply active:bg-gray-50 transition-colors;
+  }
+
+  /* Mobile List Item */
+  .mobile-list-item {
+    @apply flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-100;
+    @apply active:bg-gray-50 transition-colors;
+  }
 }
 
 /* Reduced Motion Support */
@@ -88,6 +163,20 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  /* Prevent pull-to-refresh in standalone mode */
+  overscroll-behavior-y: contain;
+}
+
+/* Prevent text selection during swipe gestures */
+.swipe-container {
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+/* iOS momentum scrolling */
+.scroll-touch {
+  -webkit-overflow-scrolling: touch;
 }
 
 @layer utilities {
@@ -104,6 +193,7 @@ body {
     display: none;
   }
 
+  /* Animation keyframes */
   @keyframes slide-in {
     from {
       transform: translateX(100%);
@@ -132,5 +222,78 @@ body {
 
   .animate-slide-in-right {
     animation: slide-in-right 0.3s ease-out;
+  }
+
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.3s ease-out;
+  }
+
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+
+  @keyframes slide-down {
+    from {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-down {
+    animation: slide-down 0.3s ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
   }
 }

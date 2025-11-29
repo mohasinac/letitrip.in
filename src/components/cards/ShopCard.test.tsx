@@ -106,7 +106,7 @@ describe("ShopCard", () => {
     it("renders description", () => {
       render(<ShopCard {...mockShop} />);
       expect(
-        screen.getByText("Best vintage items in town")
+        screen.getByText("Best vintage items in town"),
       ).toBeInTheDocument();
     });
 
@@ -203,7 +203,7 @@ describe("ShopCard", () => {
   describe("Categories", () => {
     it("renders category tags when provided", () => {
       render(
-        <ShopCard {...mockShop} categories={["Collectibles", "Antiques"]} />
+        <ShopCard {...mockShop} categories={["Collectibles", "Antiques"]} />,
       );
       expect(screen.getByText("Collectibles")).toBeInTheDocument();
       expect(screen.getByText("Antiques")).toBeInTheDocument();
@@ -266,7 +266,7 @@ describe("ShopCard", () => {
       const { description, ...shopWithoutDescription } = mockShop;
       render(<ShopCard {...shopWithoutDescription} />);
       expect(
-        screen.queryByText("Best vintage items in town")
+        screen.queryByText("Best vintage items in town"),
       ).not.toBeInTheDocument();
     });
 

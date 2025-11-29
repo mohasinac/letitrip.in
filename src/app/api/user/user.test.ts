@@ -20,10 +20,16 @@ import { requireAuth, handleAuthError } from "@/app/api/lib/auth-helpers";
 import { getCurrentUser } from "../lib/session";
 import { COLLECTIONS } from "@/constants/database";
 
-const mockGetFirestoreAdmin = getFirestoreAdmin as jest.MockedFunction<typeof getFirestoreAdmin>;
+const mockGetFirestoreAdmin = getFirestoreAdmin as jest.MockedFunction<
+  typeof getFirestoreAdmin
+>;
 const mockRequireAuth = requireAuth as jest.MockedFunction<typeof requireAuth>;
-const mockHandleAuthError = handleAuthError as jest.MockedFunction<typeof handleAuthError>;
-const mockGetCurrentUser = getCurrentUser as jest.MockedFunction<typeof getCurrentUser>;
+const mockHandleAuthError = handleAuthError as jest.MockedFunction<
+  typeof handleAuthError
+>;
+const mockGetCurrentUser = getCurrentUser as jest.MockedFunction<
+  typeof getCurrentUser
+>;
 
 describe("GET /api/user/profile", () => {
   let mockDb: any;
@@ -52,13 +58,16 @@ describe("GET /api/user/profile", () => {
     };
 
     mockGetFirestoreAdmin.mockReturnValue(mockDb);
-    mockRequireAuth.mockResolvedValue({ id: "user1", email: "test@example.com" } as any);
+    mockRequireAuth.mockResolvedValue({
+      id: "user1",
+      email: "test@example.com",
+    } as any);
   });
 
   it("should require authentication", async () => {
     mockRequireAuth.mockRejectedValue(new Error("Unauthorized"));
     mockHandleAuthError.mockReturnValue(
-      NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     );
 
     const request = new NextRequest("http://localhost:3000/api/user/profile");
@@ -148,13 +157,16 @@ describe("PATCH /api/user/profile", () => {
     };
 
     mockGetFirestoreAdmin.mockReturnValue(mockDb);
-    mockRequireAuth.mockResolvedValue({ id: "user1", email: "test@example.com" } as any);
+    mockRequireAuth.mockResolvedValue({
+      id: "user1",
+      email: "test@example.com",
+    } as any);
   });
 
   it("should require authentication", async () => {
     mockRequireAuth.mockRejectedValue(new Error("Unauthorized"));
     mockHandleAuthError.mockReturnValue(
-      NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     );
 
     const request = new NextRequest("http://localhost:3000/api/user/profile", {
@@ -258,7 +270,7 @@ describe("PATCH /api/user/profile", () => {
         email: "updated@example.com",
         phone: "9876543210",
         updated_at: expect.any(String),
-      })
+      }),
     );
     expect(data.user.name).toBe("Updated User");
   });
@@ -277,7 +289,7 @@ describe("PATCH /api/user/profile", () => {
     const localMockWhere = {
       get: jest.fn().mockResolvedValue({ empty: true, docs: [] }),
     };
-    
+
     const localMockCollection = {
       doc: jest.fn().mockReturnValue({
         update: localMockUpdate,
@@ -291,7 +303,10 @@ describe("PATCH /api/user/profile", () => {
     };
 
     mockGetFirestoreAdmin.mockReturnValue(localMockDb as any);
-    mockRequireAuth.mockResolvedValue({ id: "user1", email: "test@example.com" } as any);
+    mockRequireAuth.mockResolvedValue({
+      id: "user1",
+      email: "test@example.com",
+    } as any);
 
     const request = new NextRequest("http://localhost:3000/api/user/profile", {
       method: "PATCH",
@@ -322,7 +337,7 @@ describe("PATCH /api/user/profile", () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.not.objectContaining({
         phone: expect.anything(),
-      })
+      }),
     );
   });
 });
@@ -357,7 +372,10 @@ describe("GET /api/user/addresses", () => {
     };
 
     mockGetFirestoreAdmin.mockReturnValue(mockDb);
-    mockGetCurrentUser.mockResolvedValue({ id: "user1", email: "test@example.com" } as any);
+    mockGetCurrentUser.mockResolvedValue({
+      id: "user1",
+      email: "test@example.com",
+    } as any);
   });
 
   it("should require authentication", async () => {
@@ -433,16 +451,22 @@ describe("POST /api/user/addresses", () => {
     };
 
     mockGetFirestoreAdmin.mockReturnValue(mockDb);
-    mockGetCurrentUser.mockResolvedValue({ id: "user1", email: "test@example.com" } as any);
+    mockGetCurrentUser.mockResolvedValue({
+      id: "user1",
+      email: "test@example.com",
+    } as any);
   });
 
   it("should require authentication", async () => {
     mockGetCurrentUser.mockResolvedValue(null);
 
-    const request = new NextRequest("http://localhost:3000/api/user/addresses", {
-      method: "POST",
-      body: JSON.stringify({}),
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/user/addresses",
+      {
+        method: "POST",
+        body: JSON.stringify({}),
+      },
+    );
 
     const response = await addressesPOST(request);
     const data = await response.json();
@@ -452,13 +476,16 @@ describe("POST /api/user/addresses", () => {
   });
 
   it("should require all mandatory fields", async () => {
-    const request = new NextRequest("http://localhost:3000/api/user/addresses", {
-      method: "POST",
-      body: JSON.stringify({
-        name: "Home",
-        phone: "1234567890",
-      }),
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/user/addresses",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          name: "Home",
+          phone: "1234567890",
+        }),
+      },
+    );
 
     const response = await addressesPOST(request);
     const data = await response.json();
@@ -474,18 +501,21 @@ describe("POST /api/user/addresses", () => {
       set: mockSet,
     });
 
-    const request = new NextRequest("http://localhost:3000/api/user/addresses", {
-      method: "POST",
-      body: JSON.stringify({
-        name: "Home",
-        phone: "1234567890",
-        addressLine1: "123 Main St",
-        city: "City",
-        state: "State",
-        postalCode: "12345",
-        country: "Country",
-      }),
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/user/addresses",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          name: "Home",
+          phone: "1234567890",
+          addressLine1: "123 Main St",
+          city: "City",
+          state: "State",
+          postalCode: "12345",
+          country: "Country",
+        }),
+      },
+    );
 
     const response = await addressesPOST(request);
 
@@ -500,31 +530,31 @@ describe("POST /api/user/addresses", () => {
         state: "State",
         postalCode: "12345",
         country: "Country",
-      })
+      }),
     );
   });
 
   it("should unset other default addresses when isDefault=true", async () => {
     mockCollection.get.mockResolvedValue({
-      docs: [
-        { ref: "ref1" },
-        { ref: "ref2" },
-      ],
+      docs: [{ ref: "ref1" }, { ref: "ref2" }],
     });
 
-    const request = new NextRequest("http://localhost:3000/api/user/addresses", {
-      method: "POST",
-      body: JSON.stringify({
-        name: "Home",
-        phone: "1234567890",
-        addressLine1: "123 Main St",
-        city: "City",
-        state: "State",
-        postalCode: "12345",
-        country: "Country",
-        isDefault: true,
-      }),
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/user/addresses",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          name: "Home",
+          phone: "1234567890",
+          addressLine1: "123 Main St",
+          city: "City",
+          state: "State",
+          postalCode: "12345",
+          country: "Country",
+          isDefault: true,
+        }),
+      },
+    );
 
     await addressesPOST(request);
 
@@ -539,25 +569,28 @@ describe("POST /api/user/addresses", () => {
       set: mockSet,
     });
 
-    const request = new NextRequest("http://localhost:3000/api/user/addresses", {
-      method: "POST",
-      body: JSON.stringify({
-        name: "Home",
-        phone: "1234567890",
-        addressLine1: "123 Main St",
-        city: "City",
-        state: "State",
-        postalCode: "12345",
-        country: "Country",
-      }),
-    });
+    const request = new NextRequest(
+      "http://localhost:3000/api/user/addresses",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          name: "Home",
+          phone: "1234567890",
+          addressLine1: "123 Main St",
+          city: "City",
+          state: "State",
+          postalCode: "12345",
+          country: "Country",
+        }),
+      },
+    );
 
     await addressesPOST(request);
 
     expect(mockSet).toHaveBeenCalledWith(
       expect.objectContaining({
         addressLine2: null,
-      })
+      }),
     );
   });
 });

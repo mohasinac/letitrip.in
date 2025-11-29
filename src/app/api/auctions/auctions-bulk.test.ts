@@ -35,8 +35,12 @@ jest.mock("@/app/api/lib/firebase/queries");
 jest.mock("@/app/api/lib/session");
 
 const mockRequireAuth = requireAuth as jest.MockedFunction<typeof requireAuth>;
-const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<typeof userOwnsShop>;
-const mockGetCurrentUser = getCurrentUser as jest.MockedFunction<typeof getCurrentUser>;
+const mockUserOwnsShop = userOwnsShop as jest.MockedFunction<
+  typeof userOwnsShop
+>;
+const mockGetCurrentUser = getCurrentUser as jest.MockedFunction<
+  typeof getCurrentUser
+>;
 
 describe("Auctions API - POST /api/auctions/bulk", () => {
   const mockDoc = jest.fn();
@@ -64,14 +68,20 @@ describe("Auctions API - POST /api/auctions/bulk", () => {
     mockGet.mockResolvedValue({
       exists: true,
       id: "a1",
-      data: () => ({ name: "Auction 1", status: "scheduled", shop_id: "shop1" }),
+      data: () => ({
+        name: "Auction 1",
+        status: "scheduled",
+        shop_id: "shop1",
+      }),
     });
   });
 
   it("should require authentication", async () => {
     mockRequireAuth.mockResolvedValue({
       user: null,
-      error: new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }),
+      error: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+      }),
     } as any);
 
     const request = new Request("http://localhost/api/auctions/bulk", {
@@ -137,7 +147,7 @@ describe("Auctions API - POST /api/auctions/bulk", () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         status: "active",
-      })
+      }),
     );
   });
 
@@ -175,7 +185,7 @@ describe("Auctions API - POST /api/auctions/bulk", () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         status: "ended",
-      })
+      }),
     );
   });
 
@@ -196,7 +206,7 @@ describe("Auctions API - POST /api/auctions/bulk", () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         status: "cancelled",
-      })
+      }),
     );
   });
 
@@ -212,7 +222,7 @@ describe("Auctions API - POST /api/auctions/bulk", () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         is_featured: true,
-      })
+      }),
     );
   });
 
@@ -228,7 +238,7 @@ describe("Auctions API - POST /api/auctions/bulk", () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         is_featured: false,
-      })
+      }),
     );
   });
 
@@ -379,8 +389,14 @@ describe("Auctions API - GET /api/auctions/live", () => {
 
     mockGet.mockResolvedValue({
       docs: [
-        { id: "a1", data: () => ({ name: "Live Auction 1", status: "active" }) },
-        { id: "a2", data: () => ({ name: "Live Auction 2", status: "active" }) },
+        {
+          id: "a1",
+          data: () => ({ name: "Live Auction 1", status: "active" }),
+        },
+        {
+          id: "a2",
+          data: () => ({ name: "Live Auction 2", status: "active" }),
+        },
       ],
     });
   });
@@ -393,7 +409,11 @@ describe("Auctions API - GET /api/auctions/live", () => {
     expect(data.success).toBe(true);
     expect(data.data).toHaveLength(2);
     expect(mockWhere).toHaveBeenCalledWith("status", "==", "active");
-    expect(mockWhere).toHaveBeenCalledWith("end_time", ">=", expect.any(String));
+    expect(mockWhere).toHaveBeenCalledWith(
+      "end_time",
+      ">=",
+      expect.any(String),
+    );
     expect(mockOrderBy).toHaveBeenCalledWith("end_time", "asc");
     expect(mockLimit).toHaveBeenCalledWith(50);
   });
@@ -472,8 +492,22 @@ describe("Auctions API - GET /api/auctions/watchlist", () => {
     mockGetCurrentUser.mockResolvedValue({ id: "u1", role: "user" } as any);
     mockGet.mockResolvedValue({
       docs: [
-        { id: "f1", data: () => ({ user_id: "u1", type: "auction_watch", auction_id: "a1" }) },
-        { id: "f2", data: () => ({ user_id: "u1", type: "auction_watch", auction_id: "a2" }) },
+        {
+          id: "f1",
+          data: () => ({
+            user_id: "u1",
+            type: "auction_watch",
+            auction_id: "a1",
+          }),
+        },
+        {
+          id: "f2",
+          data: () => ({
+            user_id: "u1",
+            type: "auction_watch",
+            auction_id: "a2",
+          }),
+        },
       ],
     });
   });

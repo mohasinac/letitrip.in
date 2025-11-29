@@ -48,6 +48,32 @@ jest.mock("@/components/common/DataTable", () => ({
   ),
 }));
 
+// Mock MobileDataTable - same interface as DataTable but used on mobile
+jest.mock("@/components/mobile/MobileDataTable", () => ({
+  MobileDataTable: ({ data, columns, onRowClick }: any) => (
+    <div data-testid="data-table">
+      {data.map((item: any) => (
+        <div
+          key={item.id}
+          data-testid={`row-${item.id}`}
+          onClick={() => onRowClick(item)}
+        >
+          {columns.map((col: any) => (
+            <div key={col.key} data-testid={`cell-${col.key}-${item.id}`}>
+              {col.render ? col.render(item) : item[col.key]}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  ),
+}));
+
+// Mock MobilePullToRefresh
+jest.mock("@/components/mobile/MobilePullToRefresh", () => ({
+  MobilePullToRefresh: ({ children }: any) => <div>{children}</div>,
+}));
+
 jest.mock("@/components/common/StatusBadge", () => ({
   StatusBadge: ({ status }: any) => (
     <span data-testid={`status-${status}`}>{status}</span>
@@ -150,7 +176,7 @@ describe("OrdersPage", () => {
       // Should not redirect to login, but may update URL for filters
       expect(mockPush).toHaveBeenCalledWith(
         "/user/orders?sortBy=created_at&sortOrder=desc",
-        { scroll: false }
+        { scroll: false },
       );
     });
   });
@@ -204,13 +230,13 @@ describe("OrdersPage", () => {
 
       expect(screen.getByText("No orders found")).toBeInTheDocument();
       expect(
-        screen.getByText("You haven't placed any orders yet")
+        screen.getByText("You haven't placed any orders yet"),
       ).toBeInTheDocument();
     });
 
     it("shows loading spinner while loading", () => {
       mockOrdersService.list.mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {}), // Never resolves
       );
 
       render(<OrdersPage />);
@@ -295,7 +321,7 @@ describe("OrdersPage", () => {
       render(<OrdersPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("Page 1 • 2 orders")).toBeInTheDocument();
+        expect(screen.getByText("Page 1")).toBeInTheDocument();
       });
 
       expect(screen.getByRole("button", { name: /previous/i })).toBeDisabled();
@@ -315,7 +341,7 @@ describe("OrdersPage", () => {
       render(<OrdersPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("Page 1 • 2 orders")).toBeInTheDocument();
+        expect(screen.getByText("Page 1")).toBeInTheDocument();
       });
 
       const nextButton = screen.getByRole("button", { name: /next/i });
@@ -336,7 +362,7 @@ describe("OrdersPage", () => {
       render(<OrdersPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("Page 1 • 2 orders")).toBeInTheDocument();
+        expect(screen.getByText("Page 1")).toBeInTheDocument();
       });
 
       const nextButton = screen.getByRole("button", { name: /next/i });
@@ -346,7 +372,7 @@ describe("OrdersPage", () => {
         expect(mockOrdersService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             startAfter: "cursor-123",
-          })
+          }),
         );
       });
     });

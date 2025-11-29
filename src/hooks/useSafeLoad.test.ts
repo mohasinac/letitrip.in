@@ -57,7 +57,7 @@ describe("useSafeLoad", () => {
     const { rerender } = renderHook(
       ({ skipIfLoaded }) =>
         useSafeLoad(loadFn, { enabled: true, skipIfLoaded }),
-      { initialProps: { skipIfLoaded: false } }
+      { initialProps: { skipIfLoaded: false } },
     );
 
     await waitFor(() => {
@@ -80,7 +80,7 @@ describe("useSafeLoad", () => {
     const loadFn = jest.fn().mockReturnValue(loadPromise);
 
     const { rerender } = renderHook(() =>
-      useSafeLoad(loadFn, { enabled: true, deps: [] })
+      useSafeLoad(loadFn, { enabled: true, deps: [] }),
     );
 
     // First call starts
@@ -123,7 +123,7 @@ describe("useSafeLoad", () => {
     expect(result.current.hasLoaded).toBe(false);
     expect(consoleSpy).toHaveBeenCalledWith(
       "[useSafeLoad] Error:",
-      expect.any(Error)
+      expect.any(Error),
     );
 
     consoleSpy.mockRestore();
@@ -149,7 +149,7 @@ describe("useSafeLoad", () => {
     await waitFor(() => {
       expect(loadFn).toHaveBeenCalledTimes(2);
     });
-    
+
     expect(result.current.hasLoaded).toBe(true);
   });
 
@@ -158,7 +158,7 @@ describe("useSafeLoad", () => {
 
     const { rerender } = renderHook(
       ({ dep }) => useSafeLoad(loadFn, { enabled: true, deps: [dep] }),
-      { initialProps: { dep: "initial" } }
+      { initialProps: { dep: "initial" } },
     );
 
     await waitFor(() => {
@@ -177,7 +177,7 @@ describe("useSafeLoad", () => {
     const loadFn = jest.fn().mockResolvedValue(undefined);
 
     const { unmount } = renderHook(() =>
-      useSafeLoad(loadFn, { enabled: true, debounce: 1000 })
+      useSafeLoad(loadFn, { enabled: true, debounce: 1000 }),
     );
 
     unmount();
@@ -192,7 +192,7 @@ describe("useAdminLoad", () => {
     const user = { uid: "user1", role: "admin" };
 
     const { result } = renderHook(() =>
-      useAdminLoad(loadFn, { user, requiredRole: "admin" })
+      useAdminLoad(loadFn, { user, requiredRole: "admin" }),
     );
 
     await waitFor(() => {
@@ -225,7 +225,7 @@ describe("useAdminLoad", () => {
 
     const { rerender } = renderHook(
       ({ user }) => useAdminLoad(loadFn, { user, requiredRole: "admin" }),
-      { initialProps: { user: user1 } }
+      { initialProps: { user: user1 } },
     );
 
     await waitFor(() => {

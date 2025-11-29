@@ -38,7 +38,7 @@ class AuctionsService {
 
   // List auctions (role-filtered) with cursor-based pagination
   async list(
-    filters?: Partial<AuctionFiltersBE>
+    filters?: Partial<AuctionFiltersBE>,
   ): Promise<PaginatedResponseFE<AuctionCardFE>> {
     try {
       const endpoint = buildUrl(AUCTION_ROUTES.LIST, filters);
@@ -58,7 +58,7 @@ class AuctionsService {
   async getById(id: string): Promise<AuctionFE> {
     try {
       const auctionBE = await apiService.get<AuctionBE>(
-        AUCTION_ROUTES.BY_ID(id)
+        AUCTION_ROUTES.BY_ID(id),
       );
       return toFEAuction(auctionBE);
     } catch (error) {
@@ -70,7 +70,7 @@ class AuctionsService {
   async getBySlug(slug: string): Promise<AuctionFE> {
     try {
       const auctionBE = await apiService.get<AuctionBE>(
-        AUCTION_ROUTES.BY_SLUG(slug)
+        AUCTION_ROUTES.BY_SLUG(slug),
       );
       return toFEAuction(auctionBE);
     } catch (error) {
@@ -84,7 +84,7 @@ class AuctionsService {
       const request = toBECreateAuctionRequest(formData);
       const auctionBE = await apiService.post<AuctionBE>(
         AUCTION_ROUTES.LIST,
-        request
+        request,
       );
       return toFEAuction(auctionBE);
     } catch (error) {
@@ -95,12 +95,12 @@ class AuctionsService {
   // Update auction (owner/admin)
   async update(
     id: string,
-    formData: Partial<AuctionFormFE>
+    formData: Partial<AuctionFormFE>,
   ): Promise<AuctionFE> {
     try {
       const auctionBE = await apiService.patch<AuctionBE>(
         AUCTION_ROUTES.BY_ID(id),
-        formData
+        formData,
       );
       return toFEAuction(auctionBE);
     } catch (error) {
@@ -120,14 +120,14 @@ class AuctionsService {
   // Validate slug availability
   async validateSlug(
     slug: string,
-    shopId?: string
+    shopId?: string,
   ): Promise<{ available: boolean; message?: string }> {
     const params = new URLSearchParams();
     params.append("slug", slug);
     if (shopId) params.append("shop_id", shopId);
 
     return apiService.get<{ available: boolean; message?: string }>(
-      `/auctions/validate-slug?${params.toString()}`
+      `/auctions/validate-slug?${params.toString()}`,
     );
   }
 
@@ -136,7 +136,7 @@ class AuctionsService {
     id: string,
     limit?: number,
     startAfter?: string | null,
-    sortOrder: "asc" | "desc" = "desc"
+    sortOrder: "asc" | "desc" = "desc",
   ): Promise<PaginatedResponseFE<BidFE>> {
     try {
       const params = new URLSearchParams();
@@ -149,9 +149,8 @@ class AuctionsService {
         ? `/auctions/${id}/bid?${queryString}`
         : `/auctions/${id}/bid`;
 
-      const response = await apiService.get<PaginatedResponseBE<BidBE>>(
-        endpoint
-      );
+      const response =
+        await apiService.get<PaginatedResponseBE<BidBE>>(endpoint);
 
       return {
         data: response.data.map((bid) => toFEBid(bid)),
@@ -181,14 +180,14 @@ class AuctionsService {
   async setFeatured(
     id: string,
     featured: boolean,
-    priority?: number
+    priority?: number,
   ): Promise<AuctionFE> {
     const auctionBE = await apiService.patch<AuctionBE>(
       `/auctions/${id}/feature`,
       {
         featured,
         featuredPriority: priority,
-      }
+      },
     );
     return toFEAuction(auctionBE);
   }
@@ -251,7 +250,7 @@ class AuctionsService {
   async getWatchlist(): Promise<AuctionFE[]> {
     try {
       const auctionsBE = await apiService.get<AuctionBE[]>(
-        "/auctions/watchlist"
+        "/auctions/watchlist",
       );
       return toFEAuctions(auctionsBE);
     } catch (error) {
@@ -285,7 +284,7 @@ class AuctionsService {
   async bulkAction(
     action: string,
     auctionIds: string[],
-    data?: any
+    data?: any,
   ): Promise<BulkActionResponse> {
     try {
       const response = await apiService.post<BulkActionResponse>(
@@ -294,7 +293,7 @@ class AuctionsService {
           action,
           ids: auctionIds,
           updates: data,
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -350,7 +349,7 @@ class AuctionsService {
    */
   async bulkUpdate(
     auctionIds: string[],
-    updates: Partial<AuctionFormFE>
+    updates: Partial<AuctionFormFE>,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update", auctionIds, updates);
   }
@@ -375,11 +374,11 @@ class AuctionsService {
   // Quick update for inline editing
   async quickUpdate(
     id: string,
-    data: Partial<AuctionFormFE>
+    data: Partial<AuctionFormFE>,
   ): Promise<AuctionFE> {
     const auctionBE = await apiService.patch<AuctionBE>(
       AUCTION_ROUTES.BY_ID(id),
-      data
+      data,
     );
     return toFEAuction(auctionBE);
   }

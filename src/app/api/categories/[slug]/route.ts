@@ -13,7 +13,7 @@ import {
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const user = await getUserFromRequest(request);
@@ -25,7 +25,7 @@ export async function GET(
     if (snapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
     const doc = snapshot.docs[0];
@@ -35,7 +35,7 @@ export async function GET(
     if ((!user || user.role !== "admin") && !data.is_active) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
     return NextResponse.json({
@@ -65,7 +65,7 @@ export async function GET(
     console.error("Error fetching category:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch category" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -76,7 +76,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const roleResult = await requireRole(request, ["admin"]);
@@ -92,7 +92,7 @@ export async function PATCH(
     if (snapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
     const doc = snapshot.docs[0];
@@ -107,7 +107,7 @@ export async function PATCH(
       if (!exists.empty) {
         return NextResponse.json(
           { success: false, error: "Slug already in use" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -127,7 +127,7 @@ export async function PATCH(
 
       // Remove from old parents
       const removedParents = oldParentIds.filter(
-        (id: string) => !newParentIds.includes(id)
+        (id: string) => !newParentIds.includes(id),
       );
       for (const parentId of removedParents) {
         const parentRef = Collections.categories().doc(parentId);
@@ -135,7 +135,7 @@ export async function PATCH(
         if (parentDoc.exists) {
           const parentData: any = parentDoc.data();
           const childrenIds = (parentData.children_ids || []).filter(
-            (id: string) => id !== doc.id
+            (id: string) => id !== doc.id,
           );
           await parentRef.update({
             children_ids: childrenIds,
@@ -148,7 +148,7 @@ export async function PATCH(
 
       // Add to new parents
       const addedParents = newParentIds.filter(
-        (id: string) => !oldParentIds.includes(id)
+        (id: string) => !oldParentIds.includes(id),
       );
       for (const parentId of addedParents) {
         const parentRef = Collections.categories().doc(parentId);
@@ -204,7 +204,7 @@ export async function PATCH(
     console.error("Error updating category:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update category" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -215,7 +215,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const roleResult = await requireRole(request, ["admin"]);
@@ -231,7 +231,7 @@ export async function DELETE(
     if (snapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
     const doc = snapshot.docs[0];
@@ -242,7 +242,7 @@ export async function DELETE(
     if (childrenIds.length > 0) {
       return NextResponse.json(
         { success: false, error: "Cannot delete category with children" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -257,7 +257,7 @@ export async function DELETE(
       if (parentDoc.exists) {
         const parentData: any = parentDoc.data();
         const updatedChildrenIds = (parentData.children_ids || []).filter(
-          (id: string) => id !== doc.id
+          (id: string) => id !== doc.id,
         );
         await parentRef.update({
           children_ids: updatedChildrenIds,
@@ -274,7 +274,7 @@ export async function DELETE(
     console.error("Error deleting category:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete category" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -23,20 +23,20 @@ describe("Select", () => {
     it("renders all options", () => {
       render(<Select options={mockOptions} />);
       expect(
-        screen.getByRole("option", { name: "Option 1" })
+        screen.getByRole("option", { name: "Option 1" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("option", { name: "Option 2" })
+        screen.getByRole("option", { name: "Option 2" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("option", { name: "Option 3" })
+        screen.getByRole("option", { name: "Option 3" }),
       ).toBeInTheDocument();
     });
 
     it("renders placeholder option", () => {
       render(<Select options={mockOptions} placeholder="Select an option" />);
       expect(
-        screen.getByRole("option", { name: "Select an option" })
+        screen.getByRole("option", { name: "Select an option" }),
       ).toBeInTheDocument();
     });
 
@@ -134,13 +134,13 @@ describe("Select", () => {
       render(<Select options={mockOptions} error="Error" />);
       expect(screen.getByRole("combobox")).toHaveAttribute(
         "aria-invalid",
-        "true"
+        "true",
       );
     });
 
     it("associates error with select via aria-describedby", () => {
       render(
-        <Select label="Type" options={mockOptions} error="Error message" />
+        <Select label="Type" options={mockOptions} error="Error message" />,
       );
       const select = screen.getByRole("combobox");
       expect(select).toHaveAttribute("aria-describedby", "type-error");
@@ -148,7 +148,7 @@ describe("Select", () => {
 
     it("hides helper text when error is shown", () => {
       render(
-        <Select options={mockOptions} helperText="Helper" error="Error" />
+        <Select options={mockOptions} helperText="Helper" error="Error" />,
       );
       expect(screen.queryByText("Helper")).not.toBeInTheDocument();
       expect(screen.getByText("Error")).toBeInTheDocument();
@@ -163,7 +163,7 @@ describe("Select", () => {
 
     it("associates helper text with select", () => {
       render(
-        <Select label="Status" options={mockOptions} helperText="Helper" />
+        <Select label="Status" options={mockOptions} helperText="Helper" />,
       );
       const select = screen.getByRole("combobox");
       expect(select).toHaveAttribute("aria-describedby", "status-helper");
@@ -179,7 +179,7 @@ describe("Select", () => {
 
     it("can disable fullWidth", () => {
       const { container } = render(
-        <Select options={mockOptions} fullWidth={false} />
+        <Select options={mockOptions} fullWidth={false} />,
       );
       const wrapper = container.firstChild as HTMLElement;
       expect(wrapper).not.toHaveClass("w-full");
@@ -197,7 +197,7 @@ describe("Select", () => {
       const select = screen.getByRole("combobox");
       expect(select).toHaveClass(
         "disabled:bg-gray-100",
-        "disabled:cursor-not-allowed"
+        "disabled:cursor-not-allowed",
       );
     });
   });
@@ -215,13 +215,13 @@ describe("Select", () => {
 
     it("updates selected value", () => {
       const { rerender } = render(
-        <Select options={mockOptions} value="option1" onChange={() => {}} />
+        <Select options={mockOptions} value="option1" onChange={() => {}} />,
       );
       const select = screen.getByRole("combobox") as HTMLSelectElement;
       expect(select.value).toBe("option1");
 
       rerender(
-        <Select options={mockOptions} value="option2" onChange={() => {}} />
+        <Select options={mockOptions} value="option2" onChange={() => {}} />,
       );
       expect(select.value).toBe("option2");
     });
@@ -290,7 +290,7 @@ describe("Select", () => {
       render(<Select options={mockOptions} aria-label="Custom label" />);
       expect(screen.getByRole("combobox")).toHaveAttribute(
         "aria-label",
-        "Custom label"
+        "Custom label",
       );
     });
   });
@@ -326,7 +326,7 @@ describe("Select", () => {
       const longError = "This is a very long error message ".repeat(10);
       render(<Select options={mockOptions} error={longError} />);
       expect(
-        screen.getByText(/This is a very long error message/)
+        screen.getByText(/This is a very long error message/),
       ).toBeInTheDocument();
     });
 
@@ -336,7 +336,7 @@ describe("Select", () => {
       ];
       render(<Select options={specialOptions} />);
       expect(
-        screen.getByRole("option", { name: '<Option> & "Quotes"' })
+        screen.getByRole("option", { name: '<Option> & "Quotes"' }),
       ).toBeInTheDocument();
     });
 

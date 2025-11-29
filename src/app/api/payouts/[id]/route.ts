@@ -14,7 +14,7 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -30,7 +30,7 @@ export async function GET(
     if (!payoutDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Payout not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -40,7 +40,7 @@ export async function GET(
     if (user.role === "seller" && payout.seller_id !== user.uid) {
       return NextResponse.json(
         { success: false, error: "Access denied" },
-        { status: 403 }
+        { status: 403 },
       );
     }
     // Admin can see all
@@ -56,14 +56,14 @@ export async function GET(
         success: false,
         error: error.message || "Failed to fetch payout",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -80,7 +80,7 @@ export async function PATCH(
     if (!payoutDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Payout not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -92,7 +92,7 @@ export async function PATCH(
     if (!isOwner && !isAdmin) {
       return NextResponse.json(
         { success: false, error: "Access denied" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -124,7 +124,7 @@ export async function PATCH(
           error:
             "Cannot update payout. Only pending payouts can be modified by seller.",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -146,14 +146,14 @@ export async function PATCH(
         success: false,
         error: error.message || "Failed to update payout",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -167,7 +167,7 @@ export async function DELETE(
     if (user.role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Only admins can delete payouts" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -176,7 +176,7 @@ export async function DELETE(
     if (!payoutDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Payout not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -193,7 +193,7 @@ export async function DELETE(
         success: false,
         error: error.message || "Failed to delete payout",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

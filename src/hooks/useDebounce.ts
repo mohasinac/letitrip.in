@@ -26,7 +26,7 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
  */
 export function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
-  delay: number = 500
+  delay: number = 500,
 ): T {
   const timeoutRef = useRef<NodeJS.Timeout>();
 
@@ -40,7 +40,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
         callback(...args);
       }, delay);
     },
-    [callback, delay]
+    [callback, delay],
   ) as T;
 
   // Cleanup on unmount
@@ -92,7 +92,7 @@ interface UseApiOptions {
 export function useApi<T>(
   apiCall: () => Promise<T>,
   dependencies: any[],
-  options: UseApiOptions = {}
+  options: UseApiOptions = {},
 ) {
   const {
     debounce = 0,
@@ -145,7 +145,7 @@ export function useApi<T>(
 
         // Wait before retry
         await new Promise((resolve) =>
-          setTimeout(resolve, retryDelay * attempts)
+          setTimeout(resolve, retryDelay * attempts),
         );
       }
     }
@@ -155,7 +155,7 @@ export function useApi<T>(
 
   useEffect(() => {
     mountedRef.current = true; // Reset mounted state when effect runs
-    
+
     if (debounce > 0) {
       debouncedExecute();
     } else {

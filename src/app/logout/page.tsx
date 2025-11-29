@@ -11,7 +11,7 @@ export default function LogoutPage() {
   const router = useRouter();
   const { logout, user } = useAuth();
   const [status, setStatus] = useState<"logging-out" | "success" | "error">(
-    "logging-out"
+    "logging-out",
   );
   const [error, setError] = useState("");
 

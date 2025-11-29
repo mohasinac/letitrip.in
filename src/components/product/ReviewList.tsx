@@ -38,7 +38,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<"recent" | "helpful" | "rating">(
-    "recent"
+    "recent",
   );
   const [filterRating, setFilterRating] = useState<number | null>(null);
 
@@ -56,8 +56,8 @@ export default function ReviewList({ productId }: ReviewListProps) {
           sortBy === "helpful"
             ? "helpfulCount"
             : sortBy === "rating"
-            ? "rating"
-            : "createdAt",
+              ? "rating"
+              : "createdAt",
         sortOrder: "desc",
         limit: 20,
       });
@@ -75,7 +75,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
               acc[item.rating] = item.count;
               return acc;
             },
-            {}
+            {},
           ),
         });
       }
@@ -95,8 +95,8 @@ export default function ReviewList({ productId }: ReviewListProps) {
       // Update local state
       setReviews(
         reviews.map((r) =>
-          r.id === reviewId ? { ...r, helpful_count: result.helpfulCount } : r
-        )
+          r.id === reviewId ? { ...r, helpful_count: result.helpfulCount } : r,
+        ),
       );
     } catch (error: any) {
       console.error("Failed to mark as helpful:", error);

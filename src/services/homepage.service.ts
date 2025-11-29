@@ -24,7 +24,7 @@ class HomepageService {
   async getHeroSlides(): Promise<HeroSlide[]> {
     try {
       const response = await apiService.get<HeroSlidesResponse>(
-        HOMEPAGE_ROUTES.HERO_SLIDES
+        HOMEPAGE_ROUTES.HERO_SLIDES,
       );
       return response.slides || [];
     } catch (error) {

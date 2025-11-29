@@ -21,7 +21,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.getByText("Filters")).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.getByText("Category Features")).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.getByText("Featured Only")).toBeInTheDocument();
@@ -65,7 +65,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.getByText("Leaf Categories Only")).toBeInTheDocument();
@@ -78,7 +78,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.getByText("Apply Filters")).toBeInTheDocument();
@@ -93,7 +93,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox", { name: /Featured Only/i });
@@ -107,7 +107,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox", { name: /Featured Only/i });
@@ -121,7 +121,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox", { name: /Featured Only/i });
@@ -137,7 +137,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox", { name: /Featured Only/i });
@@ -155,7 +155,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox", { name: /Homepage Only/i });
@@ -169,7 +169,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox", { name: /Homepage Only/i });
@@ -183,7 +183,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox", { name: /Homepage Only/i });
@@ -201,7 +201,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox", {
@@ -217,7 +217,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox", {
@@ -233,7 +233,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox", {
@@ -253,7 +253,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.queryByText("Clear All")).not.toBeInTheDocument();
@@ -266,7 +266,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.getByText("Clear All")).toBeInTheDocument();
@@ -279,7 +279,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.getByText("Clear All")).toBeInTheDocument();
@@ -292,7 +292,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.getByText("Clear All")).toBeInTheDocument();
@@ -305,7 +305,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.getByText("Clear All")).toBeInTheDocument();
@@ -318,7 +318,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const clearButton = screen.getByText("Clear All");
@@ -334,7 +334,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const xIcon = document.querySelector("svg.lucide-x");
@@ -350,7 +350,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const applyButton = screen.getByText("Apply Filters");
@@ -366,7 +366,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const applyButton = screen.getByText("Apply Filters");
@@ -380,7 +380,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.getByText("Apply Filters")).toBeInTheDocument();
@@ -391,7 +391,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(screen.getByText("Apply Filters")).toBeInTheDocument();
@@ -406,7 +406,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const featuredCheckbox = screen.getByRole("checkbox", {
@@ -427,7 +427,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const featuredCheckbox = screen.getByRole("checkbox", {
@@ -452,7 +452,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const isLeafCheckbox = screen.getByRole("checkbox", {
@@ -476,7 +476,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       // Should show clear all button even for non-checkbox filters
@@ -490,7 +490,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const checkbox = screen.getByRole("checkbox", { name: /Featured Only/i });
@@ -508,7 +508,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const applyButton = screen.getByText("Apply Filters");
@@ -528,17 +528,17 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       expect(
-        screen.getByRole("checkbox", { name: /Featured Only/i })
+        screen.getByRole("checkbox", { name: /Featured Only/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("checkbox", { name: /Homepage Only/i })
+        screen.getByRole("checkbox", { name: /Homepage Only/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("checkbox", { name: /Leaf Categories Only/i })
+        screen.getByRole("checkbox", { name: /Leaf Categories Only/i }),
       ).toBeInTheDocument();
     });
 
@@ -549,7 +549,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const labels = container.querySelectorAll("label.cursor-pointer");
@@ -563,7 +563,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const applyButton = screen.getByText("Apply Filters");
@@ -579,7 +579,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const mainContainer = container.firstChild;
@@ -593,7 +593,7 @@ describe("CategoryFilters", () => {
           onChange={mockOnChange}
           onApply={mockOnApply}
           onReset={mockOnReset}
-        />
+        />,
       );
 
       const headers = screen.getAllByRole("heading", { level: 4 });

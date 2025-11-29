@@ -184,7 +184,7 @@ describe("Analytics Functions", () => {
       productId: string,
       productName: string,
       price: number,
-      quantity: number
+      quantity: number,
     ) => {
       mockTrackEvent("add_to_cart", {
         item_id: productId,
@@ -243,7 +243,7 @@ describe("Analytics Functions", () => {
     const trackPurchase = (
       orderId: string,
       totalAmount: number,
-      items: any[]
+      items: any[],
     ) => {
       mockTrackEvent("purchase", {
         transaction_id: orderId,

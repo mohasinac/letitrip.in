@@ -109,7 +109,7 @@ export default function AnalyticsPage() {
       } catch (err) {
         console.error("Error fetching analytics:", err);
         setError(
-          err instanceof Error ? err.message : "Failed to load analytics"
+          err instanceof Error ? err.message : "Failed to load analytics",
         );
       } finally {
         setLoading(false);

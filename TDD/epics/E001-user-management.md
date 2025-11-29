@@ -490,3 +490,13 @@ interface AddressBE {
 - Integration tests for all user endpoints
 - E2E tests for registration to login flow
 - RBAC tests for admin user management
+
+---
+
+## Pending Routes
+
+| Route              | Priority | Status     | Notes                                                                                                                       |
+| ------------------ | -------- | ---------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `/forgot-password` | 🔴 HIGH  | ⬜ PENDING | Password reset flow not implemented. Currently redirects to `/support/ticket`. Consider using Firebase Auth password reset. |
+
+**See**: `TDD/PENDING-ROUTES.md` for full details
