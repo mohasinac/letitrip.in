@@ -59,7 +59,7 @@ export const MobileFormInput = forwardRef<
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 mb-1.5"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
           >
             {label}
             {props.required && <span className="text-red-500 ml-1">*</span>}
@@ -68,7 +68,7 @@ export const MobileFormInput = forwardRef<
 
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none">
               {leftIcon}
             </div>
           )}
@@ -81,17 +81,17 @@ export const MobileFormInput = forwardRef<
             className={cn(
               // Base styles - touch optimized
               "w-full min-h-[48px] px-4 py-3",
-              "text-base text-gray-900 placeholder:text-gray-400",
-              "bg-white border rounded-lg",
+              "text-base text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500",
+              "bg-white dark:bg-gray-700 border rounded-lg",
               "transition-colors duration-200",
               // Focus styles
               "focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500",
               // Error styles
               error
                 ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                : "border-gray-300",
+                : "border-gray-300 dark:border-gray-600",
               // Disabled styles
-              props.disabled && "bg-gray-100 text-gray-500 cursor-not-allowed",
+              props.disabled && "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed",
               // Icon padding
               leftIcon && "pl-10",
               rightIcon && "pr-10",
@@ -109,7 +109,7 @@ export const MobileFormInput = forwardRef<
           />
 
           {rightIcon && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">
               {rightIcon}
             </div>
           )}
@@ -119,7 +119,7 @@ export const MobileFormInput = forwardRef<
         {error && (
           <p
             id={`${inputId}-error`}
-            className="mt-1.5 text-sm text-red-600 flex items-center gap-1"
+            className="mt-1.5 text-sm text-red-600 dark:text-red-400 flex items-center gap-1"
             role="alert"
           >
             <svg
@@ -139,7 +139,7 @@ export const MobileFormInput = forwardRef<
 
         {/* Helper Text */}
         {!error && helperText && (
-          <p id={`${inputId}-helper`} className="mt-1.5 text-sm text-gray-500">
+          <p id={`${inputId}-helper`} className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
             {helperText}
           </p>
         )}

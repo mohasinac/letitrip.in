@@ -114,15 +114,15 @@ export const HorizontalScrollContainer: React.FC<
               {
                 className:
                   headingLevel === "h2"
-                    ? "text-2xl font-bold text-gray-900"
-                    : "text-xl font-bold text-gray-900",
+                    ? "text-2xl font-bold text-gray-900 dark:text-white"
+                    : "text-xl font-bold text-gray-900 dark:text-white",
               },
               title,
             )}
           {viewAllLink && (
             <Link
               href={viewAllLink}
-              className="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
+              className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium text-sm transition-colors"
             >
               <span>{viewAllText}</span>
               <ExternalLink className="w-4 h-4" />
@@ -142,16 +142,16 @@ export const HorizontalScrollContainer: React.FC<
             onClick={() => scroll("left")}
             className={
               arrowStyle === "full-height"
-                ? "flex-shrink-0 z-10 bg-white/90 hover:bg-white shadow-lg px-3 transition-all flex items-center justify-center group"
-                : "absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-100 transition-colors"
+                ? "flex-shrink-0 z-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 shadow-lg px-3 transition-all flex items-center justify-center group"
+                : "absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 shadow-lg rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             }
             aria-label="Scroll left"
           >
             <ChevronLeft
               className={
                 arrowStyle === "full-height"
-                  ? "w-8 h-8 text-gray-700 group-hover:text-gray-900"
-                  : "w-6 h-6 text-gray-700"
+                  ? "w-8 h-8 text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
+                  : "w-6 h-6 text-gray-700 dark:text-gray-300"
               }
             />
           </button>
@@ -184,16 +184,16 @@ export const HorizontalScrollContainer: React.FC<
             onClick={() => scroll("right")}
             className={
               arrowStyle === "full-height"
-                ? "flex-shrink-0 z-10 bg-white/90 hover:bg-white shadow-lg px-3 transition-all flex items-center justify-center group"
-                : "absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-100 transition-colors"
+                ? "flex-shrink-0 z-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 shadow-lg px-3 transition-all flex items-center justify-center group"
+                : "absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 shadow-lg rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             }
             aria-label="Scroll right"
           >
             <ChevronRight
               className={
                 arrowStyle === "full-height"
-                  ? "w-8 h-8 text-gray-700 group-hover:text-gray-900"
-                  : "w-6 h-6 text-gray-700"
+                  ? "w-8 h-8 text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
+                  : "w-6 h-6 text-gray-700 dark:text-gray-300"
               }
             />
           </button>

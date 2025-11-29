@@ -60,8 +60,8 @@ function ForbiddenContent() {
   const messageInfo = getMessage();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 px-4">
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 px-4">
+      <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-6">
           <div className="flex items-center gap-4">
@@ -77,32 +77,32 @@ function ForbiddenContent() {
 
         {/* Content */}
         <div className="p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {messageInfo.title}
           </h2>
 
-          <p className="text-gray-600 mb-4">{messageInfo.message}</p>
-          <p className="text-gray-500 text-sm mb-6">{messageInfo.suggestion}</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">{messageInfo.message}</p>
+          <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">{messageInfo.suggestion}</p>
 
           {/* Role Information */}
           {(requiredRole || currentRole) && (
-            <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
-              <p className="text-sm font-medium text-purple-900 mb-2">
+            <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 rounded-lg">
+              <p className="text-sm font-medium text-purple-900 dark:text-purple-300 mb-2">
                 Permission Details
               </p>
               <div className="space-y-1">
                 {requiredRole && (
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-purple-700">Required Role:</span>
-                    <span className="font-semibold text-purple-900">
+                    <span className="text-purple-700 dark:text-purple-400">Required Role:</span>
+                    <span className="font-semibold text-purple-900 dark:text-purple-300">
                       {requiredRole}
                     </span>
                   </div>
                 )}
                 {currentRole && (
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-purple-700">Your Role:</span>
-                    <span className="font-semibold text-purple-900">
+                    <span className="text-purple-700 dark:text-purple-400">Your Role:</span>
+                    <span className="font-semibold text-purple-900 dark:text-purple-300">
                       {currentRole}
                     </span>
                   </div>
@@ -113,11 +113,11 @@ function ForbiddenContent() {
 
           {/* Resource Info */}
           {resource && (
-            <div className="mb-6 p-4 bg-pink-50 border border-pink-200 rounded-lg">
-              <p className="text-sm font-medium text-pink-900 mb-1">
+            <div className="mb-6 p-4 bg-pink-50 dark:bg-pink-900/30 border border-pink-200 dark:border-pink-800 rounded-lg">
+              <p className="text-sm font-medium text-pink-900 dark:text-pink-300 mb-1">
                 Requested Resource
               </p>
-              <p className="text-sm text-pink-700 font-mono break-all">
+              <p className="text-sm text-pink-700 dark:text-pink-400 font-mono break-all">
                 {resource}
               </p>
             </div>
@@ -125,11 +125,11 @@ function ForbiddenContent() {
 
           {/* Developer Details */}
           {isDevelopment && decodedDetails && (
-            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-xs font-semibold text-yellow-900 uppercase mb-2">
+            <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <p className="text-xs font-semibold text-yellow-900 dark:text-yellow-300 uppercase mb-2">
                 Developer Information
               </p>
-              <pre className="text-xs text-yellow-800 font-mono whitespace-pre-wrap break-words">
+              <pre className="text-xs text-yellow-800 dark:text-yellow-400 font-mono whitespace-pre-wrap break-words">
                 {decodedDetails}
               </pre>
             </div>
@@ -140,7 +140,7 @@ function ForbiddenContent() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => window.history.back()}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-all"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Go Back
@@ -166,8 +166,8 @@ function ForbiddenContent() {
           </div>
 
           {/* Help Section */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600 mb-2">Need assistance?</p>
+          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Need assistance?</p>
             <div className="flex gap-4">
               <Link
                 href="/support/ticket"
@@ -199,10 +199,10 @@ export default function ForbiddenPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
           </div>
         </div>
       }

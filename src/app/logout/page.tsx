@@ -11,7 +11,7 @@ export default function LogoutPage() {
   const router = useRouter();
   const { logout, user } = useAuth();
   const [status, setStatus] = useState<"logging-out" | "success" | "error">(
-    "logging-out",
+    "logging-out"
   );
   const [error, setError] = useState("");
 
@@ -43,30 +43,32 @@ export default function LogoutPage() {
   }, []); // Only run once on mount
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4 py-12">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-4">
-            <h1 className="text-3xl font-bold text-gray-800">{COMPANY_NAME}</h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+              {COMPANY_NAME}
+            </h1>
           </Link>
         </div>
 
         {/* Logout Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
           {/* Logging Out State */}
           {status === "logging-out" && (
             <div className="text-center space-y-6">
               <div className="flex justify-center">
-                <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
                   <Loader2 className="w-10 h-10 text-yellow-500 animate-spin" />
                 </div>
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   Logging you out...
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   {user?.fullName && `Goodbye, ${user.fullName}!`}
                   {!user?.fullName && "Please wait a moment"}
                 </p>
@@ -78,19 +80,19 @@ export default function LogoutPage() {
           {status === "success" && (
             <div className="text-center space-y-6">
               <div className="flex justify-center">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
                   <CheckCircle className="w-10 h-10 text-green-500" />
                 </div>
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   You've been logged out
                 </h2>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Thanks for visiting! Redirecting you to the homepage...
                 </p>
                 <div className="flex items-center justify-center mb-4">
-                  <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+                  <Loader2 className="w-5 h-5 text-gray-400 dark:text-gray-500 animate-spin" />
                 </div>
               </div>
               {/* Manual redirect button as fallback */}
@@ -107,16 +109,16 @@ export default function LogoutPage() {
           {status === "error" && (
             <div className="text-center space-y-6">
               <div className="flex justify-center">
-                <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
                   <LogOut className="w-10 h-10 text-red-500" />
                 </div>
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   Logout Error
                 </h2>
-                <p className="text-red-600 mb-4">{error}</p>
-                <p className="text-gray-600">
+                <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+                <p className="text-gray-600 dark:text-gray-400">
                   Don't worry, you can still go back to the homepage.
                 </p>
               </div>
@@ -133,11 +135,11 @@ export default function LogoutPage() {
         {/* Quick Links */}
         {status !== "error" && (
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Want to sign back in?{" "}
               <Link
                 href="/login"
-                className="text-yellow-600 hover:text-yellow-700 font-medium"
+                className="text-yellow-600 hover:text-yellow-700 dark:text-yellow-500 dark:hover:text-yellow-400 font-medium"
               >
                 Login here
               </Link>
