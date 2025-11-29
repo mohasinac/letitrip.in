@@ -25,7 +25,7 @@ export default function FAQSection({
   defaultCategory,
 }: FAQSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    defaultCategory || null,
+    defaultCategory || null
   );
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -40,7 +40,7 @@ export default function FAQSection({
     faqs = faqs.filter(
       (faq) =>
         faq.question.toLowerCase().includes(lowerQuery) ||
-        faq.answer.toLowerCase().includes(lowerQuery),
+        faq.answer.toLowerCase().includes(lowerQuery)
     );
   }
 
@@ -58,9 +58,13 @@ export default function FAQSection({
     <section className="w-full">
       {/* Header */}
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">{title}</h2>
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+          {title}
+        </h2>
         {description && (
-          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">{description}</p>
+          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            {description}
+          </p>
         )}
       </div>
 

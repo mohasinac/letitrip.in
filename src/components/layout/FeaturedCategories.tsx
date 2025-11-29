@@ -73,7 +73,7 @@ export default function FeaturedCategories() {
           setShowLeftArrow(scrollRef.current.scrollLeft > 0);
           setShowRightArrow(
             scrollRef.current.scrollLeft <
-              scrollRef.current.scrollWidth - scrollRef.current.clientWidth,
+              scrollRef.current.scrollWidth - scrollRef.current.clientWidth
           );
         }
       }, 300);
@@ -81,7 +81,10 @@ export default function FeaturedCategories() {
   };
 
   return (
-    <div id="featured-categories" className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 py-4 lg:py-4">
+    <div
+      id="featured-categories"
+      className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 py-4 lg:py-4"
+    >
       <div className="container mx-auto px-4">
         {/* Heading */}
         <h2 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4">
@@ -108,7 +111,7 @@ export default function FeaturedCategories() {
               const target = e.target as HTMLDivElement;
               setShowLeftArrow(target.scrollLeft > 0);
               setShowRightArrow(
-                target.scrollLeft < target.scrollWidth - target.clientWidth,
+                target.scrollLeft < target.scrollWidth - target.clientWidth
               );
             }}
           >

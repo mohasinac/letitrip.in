@@ -90,7 +90,9 @@ function NotFoundContent() {
             {errorInfo.title}
           </h2>
 
-          <p className="text-gray-600 dark:text-gray-400 mb-6">{errorInfo.message}</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {errorInfo.message}
+          </p>
 
           {/* Resource Info */}
           {resource && (

@@ -81,8 +81,12 @@ function ForbiddenContent() {
             {messageInfo.title}
           </h2>
 
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{messageInfo.message}</p>
-          <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">{messageInfo.suggestion}</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {messageInfo.message}
+          </p>
+          <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">
+            {messageInfo.suggestion}
+          </p>
 
           {/* Role Information */}
           {(requiredRole || currentRole) && (
@@ -93,7 +97,9 @@ function ForbiddenContent() {
               <div className="space-y-1">
                 {requiredRole && (
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-purple-700 dark:text-purple-400">Required Role:</span>
+                    <span className="text-purple-700 dark:text-purple-400">
+                      Required Role:
+                    </span>
                     <span className="font-semibold text-purple-900 dark:text-purple-300">
                       {requiredRole}
                     </span>
@@ -101,7 +107,9 @@ function ForbiddenContent() {
                 )}
                 {currentRole && (
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-purple-700 dark:text-purple-400">Your Role:</span>
+                    <span className="text-purple-700 dark:text-purple-400">
+                      Your Role:
+                    </span>
                     <span className="font-semibold text-purple-900 dark:text-purple-300">
                       {currentRole}
                     </span>
@@ -167,7 +175,9 @@ function ForbiddenContent() {
 
           {/* Help Section */}
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Need assistance?</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Need assistance?
+            </p>
             <div className="flex gap-4">
               <Link
                 href="/support/ticket"

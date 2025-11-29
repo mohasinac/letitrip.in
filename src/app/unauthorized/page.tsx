@@ -69,8 +69,12 @@ function UnauthorizedContent() {
             {messageInfo.title}
           </h2>
 
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{messageInfo.message}</p>
-          <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">{messageInfo.suggestion}</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {messageInfo.message}
+          </p>
+          <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">
+            {messageInfo.suggestion}
+          </p>
 
           {/* Required Role */}
           {requiredRole && (

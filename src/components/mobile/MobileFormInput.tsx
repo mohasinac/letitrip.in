@@ -3,10 +3,8 @@
 import { forwardRef, InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-interface MobileFormInputProps extends Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "size"
-> {
+interface MobileFormInputProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -32,7 +30,7 @@ export const MobileFormInput = forwardRef<
       type = "text",
       ...props
     },
-    ref,
+    ref
   ) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
@@ -91,19 +89,20 @@ export const MobileFormInput = forwardRef<
                 ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                 : "border-gray-300 dark:border-gray-600",
               // Disabled styles
-              props.disabled && "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed",
+              props.disabled &&
+                "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed",
               // Icon padding
               leftIcon && "pl-10",
               rightIcon && "pr-10",
-              className,
+              className
             )}
             aria-invalid={!!error}
             aria-describedby={
               error
                 ? `${inputId}-error`
                 : helperText
-                  ? `${inputId}-helper`
-                  : undefined
+                ? `${inputId}-helper`
+                : undefined
             }
             {...props}
           />
@@ -139,13 +138,16 @@ export const MobileFormInput = forwardRef<
 
         {/* Helper Text */}
         {!error && helperText && (
-          <p id={`${inputId}-helper`} className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
+          <p
+            id={`${inputId}-helper`}
+            className="mt-1.5 text-sm text-gray-500 dark:text-gray-400"
+          >
             {helperText}
           </p>
         )}
       </div>
     );
-  },
+  }
 );
 
 MobileFormInput.displayName = "MobileFormInput";

@@ -109,7 +109,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
     return (
       <div key={category.id} style={{ marginLeft: `${depth * 12}px` }}>
-        <label className="flex items-center gap-2 cursor-pointer py-1 hover:bg-gray-50 rounded px-1">
+        <label className="flex items-center gap-2 cursor-pointer py-1 hover:bg-gray-50 dark:hover:bg-gray-700 rounded px-1">
           {hasChildren && (
             <button
               type="button"
@@ -117,7 +117,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                 e.preventDefault();
                 toggleCategoryExpand(category.id);
               }}
-              className="p-0.5 hover:bg-gray-200 rounded"
+              className="p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
             >
               {isExpanded ? (
                 <ChevronDown className="h-3 w-3" />
@@ -131,10 +131,10 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
             type="checkbox"
             checked={isSelected}
             onChange={() => toggleArrayFilter("categories", category.id)}
-            className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
+            className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
           />
-          <span className="text-sm text-gray-700 flex-1">{category.name}</span>
-          <span className="text-xs text-gray-500">
+          <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{category.name}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
             ({category.productCount || 0})
           </span>
         </label>
@@ -152,13 +152,13 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Filter className="h-5 w-5 text-gray-600" />
-          <h3 className="font-semibold text-gray-900">Filters</h3>
+          <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+          <h3 className="font-semibold text-gray-900 dark:text-white">Filters</h3>
         </div>
         {hasActiveFilters && (
           <button
             onClick={onReset}
-            className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+            className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
           >
             <X className="h-4 w-4" />
             Clear All
@@ -168,19 +168,19 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Categories */}
       <div className="space-y-3">
-        <h4 className="font-medium text-gray-900">Categories</h4>
+        <h4 className="font-medium text-gray-900 dark:text-white">Categories</h4>
         <input
           type="text"
           placeholder="Search categories..."
           value={categorySearch}
           onChange={(e) => setCategorySearch(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
         />
         <div className="max-h-64 overflow-y-auto space-y-1">
           {loadingCategories ? (
-            <p className="text-sm text-gray-500 py-2">Loading categories...</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 py-2">Loading categories...</p>
           ) : rootCategories.length === 0 ? (
-            <p className="text-sm text-gray-500 py-2">No categories found</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 py-2">No categories found</p>
           ) : (
             rootCategories.map((CategoryFE) => renderCategoryTree(CategoryFE))
           )}
@@ -189,10 +189,10 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Price Range */}
       <div className="space-y-3">
-        <h4 className="font-medium text-gray-900">Price Range</h4>
+        <h4 className="font-medium text-gray-900 dark:text-white">Price Range</h4>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-xs text-gray-600">Min</label>
+            <label className="text-xs text-gray-600 dark:text-gray-400">Min</label>
             <input
               type="number"
               placeholder="₹0"
@@ -203,11 +203,11 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                   e.target.value ? Number(e.target.value) : undefined,
                 )
               }
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600">Max</label>
+            <label className="text-xs text-gray-600 dark:text-gray-400">Max</label>
             <input
               type="number"
               placeholder="₹100,000"
@@ -218,7 +218,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                   e.target.value ? Number(e.target.value) : undefined,
                 )
               }
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
         </div>
@@ -231,9 +231,9 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
             step="500"
             value={filters.priceMax || 100000}
             onChange={(e) => updateFilter("priceMax", Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+            className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
           />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
             <span>₹0</span>
             <span>₹1,00,000</span>
           </div>
@@ -243,7 +243,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
       {/* Brands */}
       {availableBrands.length > 0 && (
         <div className="space-y-3">
-          <h4 className="font-medium text-gray-900">Brand</h4>
+          <h4 className="font-medium text-gray-900 dark:text-white">Brand</h4>
           <div className="max-h-48 overflow-y-auto space-y-2">
             {availableBrands.map((brand) => (
               <label
@@ -254,9 +254,9 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                   type="checkbox"
                   checked={(filters.brands || []).includes(brand)}
                   onChange={() => toggleArrayFilter("brands", brand)}
-                  className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
+                  className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
                 />
-                <span className="text-sm text-gray-700">{brand}</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">{brand}</span>
               </label>
             ))}
           </div>
@@ -265,7 +265,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Stock Status */}
       <div className="space-y-3">
-        <h4 className="font-medium text-gray-900">Stock Status</h4>
+        <h4 className="font-medium text-gray-900 dark:text-white">Stock Status</h4>
         <div className="space-y-2">
           {[
             { label: "In Stock", value: "in_stock" },
@@ -281,9 +281,9 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                 name="stock"
                 checked={filters.stock === option.value}
                 onChange={() => updateFilter("stock", option.value as any)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
               />
-              <span className="text-sm text-gray-700">{option.label}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">{option.label}</span>
             </label>
           ))}
         </div>
@@ -291,7 +291,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Condition */}
       <div className="space-y-3">
-        <h4 className="font-medium text-gray-900">Condition</h4>
+        <h4 className="font-medium text-gray-900 dark:text-white">Condition</h4>
         <div className="space-y-2">
           {[
             { label: "New", value: "new" },
@@ -309,9 +309,9 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                   option.value as any,
                 )}
                 onChange={() => toggleArrayFilter("condition", option.value)}
-                className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
+                className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
               />
-              <span className="text-sm text-gray-700">{option.label}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">{option.label}</span>
             </label>
           ))}
         </div>
@@ -319,7 +319,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Rating */}
       <div className="space-y-3">
-        <h4 className="font-medium text-gray-900">Minimum Rating</h4>
+        <h4 className="font-medium text-gray-900 dark:text-white">Minimum Rating</h4>
         <div className="space-y-2">
           {[4, 3, 2, 1].map((rating) => (
             <label
@@ -331,9 +331,9 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                 name="rating"
                 checked={filters.rating === rating}
                 onChange={() => updateFilter("rating", rating)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
               />
-              <div className="flex items-center gap-1 text-sm text-gray-700">
+              <div className="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
                 <span className="text-yellow-500">★</span>
                 <span>{rating}+ Stars</span>
               </div>
@@ -344,7 +344,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Additional Options */}
       <div className="space-y-3">
-        <h4 className="font-medium text-gray-900">Additional Options</h4>
+        <h4 className="font-medium text-gray-900 dark:text-white">Additional Options</h4>
         <div className="space-y-2">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -353,9 +353,9 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
               onChange={(e) =>
                 updateFilter("featured", e.target.checked || undefined)
               }
-              className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
             />
-            <span className="text-sm text-gray-700">Featured Only</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Featured Only</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -364,9 +364,9 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
               onChange={(e) =>
                 updateFilter("returnable", e.target.checked || undefined)
               }
-              className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
             />
-            <span className="text-sm text-gray-700">Returnable</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Returnable</span>
           </label>
         </div>
       </div>
