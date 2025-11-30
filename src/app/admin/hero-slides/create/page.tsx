@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import MediaUploader from "@/components/media/MediaUploader";
 import { heroSlidesService } from "@/services/hero-slides.service";
@@ -38,7 +39,7 @@ export default function CreateHeroSlidePage() {
       setFormData((prev) => ({ ...prev, image_url: url }));
     },
     onUploadError: (error) => {
-      alert(`Upload failed: ${error}`);
+      toast.error(`Upload failed: ${error}`);
     },
     onCleanupComplete: () => {
       console.log("Uploaded media cleaned up");
@@ -62,7 +63,7 @@ export default function CreateHeroSlidePage() {
     e.preventDefault();
 
     if (!formData.title || !formData.image_url) {
-      alert("Title and image are required");
+      toast.error("Title and image are required");
       return;
     }
 
@@ -83,7 +84,7 @@ export default function CreateHeroSlidePage() {
         setFormData((prev) => ({ ...prev, image_url: "" }));
       }
 
-      alert("Failed to create slide. Uploaded image deleted.");
+      toast.error("Failed to create slide. Uploaded image deleted.");
     } finally {
       setLoading(false);
     }

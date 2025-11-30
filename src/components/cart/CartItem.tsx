@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Minus, Plus, Trash2, Loader2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import {
@@ -41,7 +42,7 @@ export function CartItem({
     } catch (error) {
       // Revert on error
       setQuantity(item.quantity);
-      alert("Failed to update quantity. Please try again.");
+      toast.error("Failed to update quantity. Please try again.");
     } finally {
       setUpdating(false);
     }
@@ -52,7 +53,7 @@ export function CartItem({
       await onRemove(item.id);
       setShowDeleteDialog(false);
     } catch (error) {
-      alert("Failed to remove item. Please try again.");
+      toast.error("Failed to remove item. Please try again.");
     }
   };
 

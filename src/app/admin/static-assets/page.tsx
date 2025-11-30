@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import {
@@ -69,7 +70,7 @@ export default function StaticAssetsPage() {
       e.target.value = "";
     } catch (error) {
       console.error("Error uploading:", error);
-      alert("Upload failed");
+      toast.error("Upload failed");
     } finally {
       setUploading(false);
     }
@@ -83,7 +84,7 @@ export default function StaticAssetsPage() {
       await loadAssets();
     } catch (error) {
       console.error("Error deleting:", error);
-      alert("Delete failed");
+      toast.error("Delete failed");
     }
   };
 
@@ -94,13 +95,13 @@ export default function StaticAssetsPage() {
       setEditingAsset(null);
     } catch (error) {
       console.error("Error updating:", error);
-      alert("Update failed");
+      toast.error("Update failed");
     }
   };
 
   const copyUrl = (url: string) => {
     navigator.clipboard.writeText(url);
-    alert("URL copied to clipboard!");
+    toast.success("URL copied to clipboard!");
   };
 
   return (

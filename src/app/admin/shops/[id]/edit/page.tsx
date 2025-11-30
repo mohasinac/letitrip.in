@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   Save,
@@ -216,7 +217,7 @@ export default function AdminEditShopPage() {
       router.push("/admin/shops");
     } catch (error) {
       console.error("Failed to update shop:", error);
-      alert("Failed to update shop");
+      toast.error("Failed to update shop");
     } finally {
       setSaving(false);
     }
@@ -231,7 +232,7 @@ export default function AdminEditShopPage() {
       await loadShopData();
     } catch (error) {
       console.error("Failed to verify shop:", error);
-      alert("Failed to update verification status");
+      toast.error("Failed to update verification status");
     }
   };
 
@@ -244,7 +245,7 @@ export default function AdminEditShopPage() {
       await loadShopData();
     } catch (error) {
       console.error("Failed to feature shop:", error);
-      alert("Failed to update feature status");
+      toast.error("Failed to update feature status");
     }
   };
 
@@ -260,7 +261,7 @@ export default function AdminEditShopPage() {
       setBanReason("");
     } catch (error) {
       console.error("Failed to ban shop:", error);
-      alert("Failed to update ban status");
+      toast.error("Failed to update ban status");
     }
   };
 
@@ -271,7 +272,7 @@ export default function AdminEditShopPage() {
       router.push("/admin/shops");
     } catch (error) {
       console.error("Failed to delete shop:", error);
-      alert("Failed to delete shop. It may have active products or orders.");
+      toast.error("Failed to delete shop. It may have active products or orders.");
       setShowDeleteDialog(false);
     } finally {
       setDeleting(false);

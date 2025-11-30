@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   Edit,
   Power,
@@ -75,7 +76,7 @@ export default function HeroSlidesPage() {
       await loadSlides();
     } catch (error) {
       console.error("Bulk action failed:", error);
-      alert("Failed to perform bulk action");
+      toast.error("Failed to perform bulk action");
     } finally {
       setActionLoading(false);
     }
@@ -124,7 +125,7 @@ export default function HeroSlidesPage() {
       );
     } catch (error) {
       console.error("Failed to reorder slides:", error);
-      alert("Failed to save new order");
+      toast.error("Failed to save new order");
       // Revert on error
       loadSlides();
     }
@@ -289,7 +290,7 @@ export default function HeroSlidesPage() {
                         await loadSlides();
                       } catch (error) {
                         console.error("Failed to create slide:", error);
-                        alert("Failed to create slide");
+                        toast.error("Failed to create slide");
                       } finally {
                         setActionLoading(false);
                       }
@@ -335,7 +336,7 @@ export default function HeroSlidesPage() {
                           await loadSlides();
                         } catch (error) {
                           console.error("Failed to update slide:", error);
-                          alert("Failed to update slide");
+                          toast.error("Failed to update slide");
                         } finally {
                           setActionLoading(false);
                         }

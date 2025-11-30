@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import Link from "next/link";
 import {
   Search,
@@ -166,7 +167,7 @@ export default function AdminAuctionsPage() {
       setSelectedIds([]);
     } catch (error) {
       console.error("Bulk action failed:", error);
-      alert("Failed to perform bulk action");
+      toast.error("Failed to perform bulk action");
     } finally {
       setActionLoading(false);
     }
@@ -180,7 +181,7 @@ export default function AdminAuctionsPage() {
       setDeleteId(null);
     } catch (error) {
       console.error("Failed to delete auction:", error);
-      alert("Failed to delete auction");
+      toast.error("Failed to delete auction");
     }
   };
 

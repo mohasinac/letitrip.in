@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import { ArrowLeft, Save, Eye, Loader2, Upload, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -166,7 +167,7 @@ export default function CreateBlogPostPage() {
       router.push("/admin/blog");
     } catch (error) {
       console.error("Failed to create blog post:", error);
-      alert(
+      toast.error(
         error instanceof Error ? error.message : "Failed to create blog post",
       );
     } finally {

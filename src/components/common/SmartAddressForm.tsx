@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { toast } from "sonner";
 import {
   X,
   Loader2,
@@ -239,7 +240,7 @@ export function SmartAddressForm({
       onClose();
     } catch (error: any) {
       console.error("Form error:", error);
-      alert(error.message || "Something went wrong");
+      toast.error(error.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

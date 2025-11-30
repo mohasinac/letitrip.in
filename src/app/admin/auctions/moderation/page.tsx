@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { AUCTION_FILTERS } from "@/constants/filters";
@@ -78,7 +79,7 @@ export default function AuctionModerationPage() {
     try {
       setProcessingId(id);
       // In a real app, this would call a flag endpoint
-      alert(`Auction ${id} flagged for: ${reason}`);
+      toast.success(`Auction ${id} flagged for: ${reason}`);
       await loadAuctions();
     } catch (error: any) {
       console.error("Failed to flag auction:", error);

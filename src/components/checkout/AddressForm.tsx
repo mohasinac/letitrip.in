@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { toast } from "sonner";
 import { X, Loader2 } from "lucide-react";
 import { addressService } from "@/services/address.service";
 import { MobileBottomSheet } from "@/components/mobile/MobileBottomSheet";
@@ -93,7 +94,7 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
       onClose();
     } catch (error: any) {
       console.error("Form error:", error);
-      alert(error.message || "Something went wrong");
+      toast.error(error.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import MediaUploader from "@/components/media/MediaUploader";
 import { heroSlidesService } from "@/services/hero-slides.service";
@@ -46,7 +47,7 @@ export default function EditHeroSlidePage() {
       setFormData((prev) => (prev ? { ...prev, image_url: url } : null));
     },
     onUploadError: (error) => {
-      alert(`Upload failed: ${error}`);
+      toast.error(`Upload failed: ${error}`);
     },
     onCleanupComplete: () => {
       console.log("Uploaded media cleaned up");
@@ -78,7 +79,7 @@ export default function EditHeroSlidePage() {
       setFormData(data);
     } catch (error) {
       console.error("Failed to load slide:", error);
-      alert("Failed to load slide");
+      toast.error("Failed to load slide");
       router.push("/admin/hero-slides");
     } finally {
       setLoading(false);
@@ -101,7 +102,7 @@ export default function EditHeroSlidePage() {
     e.preventDefault();
 
     if (!formData || !formData.title || !formData.image_url) {
-      alert("Title and image are required");
+      toast.error("Title and image are required");
       return;
     }
 
@@ -132,7 +133,7 @@ export default function EditHeroSlidePage() {
         // Restore original image URL would need to be tracked separately
       }
 
-      alert("Failed to update slide. New image deleted.");
+      toast.error("Failed to update slide. New image deleted.");
     } finally {
       setSaving(false);
     }
@@ -152,7 +153,7 @@ export default function EditHeroSlidePage() {
       router.push("/admin/hero-slides");
     } catch (error) {
       console.error("Failed to delete slide:", error);
-      alert("Failed to delete slide");
+      toast.error("Failed to delete slide");
     }
   };
 

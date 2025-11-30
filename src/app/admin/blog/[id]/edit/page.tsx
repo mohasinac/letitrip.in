@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import { ArrowLeft, Save, Eye, Loader2, Upload, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -74,7 +75,7 @@ export default function EditBlogPostPage() {
       });
     } catch (error) {
       console.error("Failed to load post:", error);
-      alert("Failed to load blog post");
+      toast.error("Failed to load blog post");
       router.push("/admin/blog");
     } finally {
       setLoadingPost(false);
@@ -213,7 +214,7 @@ export default function EditBlogPostPage() {
       router.push("/admin/blog");
     } catch (error) {
       console.error("Failed to update blog post:", error);
-      alert(
+      toast.error(
         error instanceof Error ? error.message : "Failed to update blog post",
       );
     } finally {
