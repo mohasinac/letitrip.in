@@ -58,6 +58,9 @@ logs/
 # SonarCloud
 .scannerwork/
 
+# Scripts
+/scripts/
+
 # GitHub Copilot
 .github/copilot-instructions.md
 .env.example
