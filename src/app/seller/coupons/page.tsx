@@ -19,25 +19,36 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/useMobile";
 import type { CouponFE } from "@/types/frontend/coupon.types";
 import { toast } from "@/components/admin/Toast";
+import type { FilterSection } from "@/components/common/FilterSidebar";
 
-const COUPON_FILTERS = [
+const COUPON_FILTERS: FilterSection[] = [
   {
-    id: "status",
     title: "Status",
-    type: "checkbox" as const,
-    options: [
-      { label: "Active", value: "active" },
-      { label: "Expired", value: "expired" },
-      { label: "Inactive", value: "inactive" },
+    fields: [
+      {
+        key: "status",
+        label: "Status",
+        type: "checkbox",
+        options: [
+          { label: "Active", value: "active" },
+          { label: "Expired", value: "expired" },
+          { label: "Inactive", value: "inactive" },
+        ],
+      },
     ],
   },
   {
-    id: "type",
     title: "Type",
-    type: "checkbox" as const,
-    options: [
-      { label: "Percentage", value: "percentage" },
-      { label: "Fixed Amount", value: "fixed" },
+    fields: [
+      {
+        key: "type",
+        label: "Coupon Type",
+        type: "checkbox",
+        options: [
+          { label: "Percentage", value: "percentage" },
+          { label: "Fixed Amount", value: "fixed" },
+        ],
+      },
     ],
   },
 ];
