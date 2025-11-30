@@ -43,7 +43,7 @@ class HomepageService {
       const response = await apiService.get<HeroSlidesResponse>(
         HOMEPAGE_ROUTES.HERO_SLIDES,
       );
-      return response.slides || [];
+      return (response.slides || []).map(transformSlide);
     } catch (error) {
       logServiceError("HomepageService", "getHeroSlides", error as Error);
       return [];

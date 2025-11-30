@@ -18,10 +18,11 @@ export default function CreateHeroSlidePage() {
     title: "",
     subtitle: "",
     description: "",
-    image_url: "",
-    link_url: "",
-    cta_text: "Shop Now",
-    is_active: true,
+    image: "",
+    ctaLink: "",
+    ctaText: "Shop Now",
+    isActive: true,
+    order: 0,
   });
 
   const {
@@ -36,7 +37,7 @@ export default function CreateHeroSlidePage() {
     enableNavigationGuard: true,
     navigationGuardMessage: "You have uploaded an image. Leave and delete it?",
     onUploadSuccess: (url) => {
-      setFormData((prev) => ({ ...prev, image_url: url }));
+      setFormData((prev) => ({ ...prev, image: url }));
     },
     onUploadError: (error) => {
       toast.error(`Upload failed: ${error}`);
@@ -62,14 +63,14 @@ export default function CreateHeroSlidePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.image_url) {
+    if (!formData.title || !formData.image) {
       toast.error("Title and image are required");
       return;
     }
 
     try {
       setLoading(true);
-      await heroSlidesService.createHeroSlide(formData as any);
+      await heroSlidesService.createHeroSlide(formData);
 
       // Success! Clear tracking
       clearTracking();
@@ -81,7 +82,7 @@ export default function CreateHeroSlidePage() {
       // Failure! Clean up uploaded media
       if (hasUploadedMedia) {
         await cleanupUploadedMedia();
-        setFormData((prev) => ({ ...prev, image_url: "" }));
+        setFormData((prev) => ({ ...prev, image: "" }));
       }
 
       toast.error("Failed to create slide. Uploaded image deleted.");
@@ -192,7 +193,7 @@ export default function CreateHeroSlidePage() {
               resourceType="shop"
               onFilesAdded={handleFilesAdded}
               onFileRemoved={() => {
-                setFormData({ ...formData, image_url: "" });
+                setFormData({ ...formData, image: "" });
                 setUploadedFiles([]);
               }}
               files={uploadedFiles}
@@ -200,10 +201,10 @@ export default function CreateHeroSlidePage() {
               enableCamera={true}
             />
 
-            {formData.image_url && !uploadedFiles.length && (
+            {formData.image && !uploadedFiles.length && (
               <div className="mt-4">
                 <img
-                  src={formData.image_url}
+                  src={formData.image}
                   alt="Hero slide preview"
                   className="w-full h-48 object-cover rounded-lg"
                 />
@@ -218,9 +219,9 @@ export default function CreateHeroSlidePage() {
             </label>
             <input
               type="url"
-              value={formData.link_url}
+              value={formData.ctaLink}
               onChange={(e) =>
-                setFormData({ ...formData, link_url: e.target.value })
+                setFormData({ ...formData, ctaLink: e.target.value })
               }
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="https://..."
@@ -237,9 +238,9 @@ export default function CreateHeroSlidePage() {
             </label>
             <input
               type="text"
-              value={formData.cta_text}
+              value={formData.ctaText}
               onChange={(e) =>
-                setFormData({ ...formData, cta_text: e.target.value })
+                setFormData({ ...formData, ctaText: e.target.value })
               }
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="Shop Now"
@@ -251,9 +252,9 @@ export default function CreateHeroSlidePage() {
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={formData.is_active}
+                checked={formData.isActive}
                 onChange={(e) =>
-                  setFormData({ ...formData, is_active: e.target.checked })
+                  setFormData({ ...formData, isActive: e.target.checked })
                 }
                 className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
               />
@@ -273,7 +274,7 @@ export default function CreateHeroSlidePage() {
               isUploading ||
               isCleaning ||
               !formData.title ||
-              !formData.image_url
+              !formData.image
             }
             className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >

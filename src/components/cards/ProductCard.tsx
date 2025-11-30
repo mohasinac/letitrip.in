@@ -3,14 +3,18 @@
 import React from "react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { Star, ShoppingCart, Eye } from "lucide-react";
+import { Star, ShoppingCart, Eye, Edit, Trash2, Package } from "lucide-react";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
 import { CompareButton } from "@/components/products/CompareButton";
+import { StatusBadge } from "@/components/common/StatusBadge";
 import {
   formatCurrency,
   formatDiscount,
   formatCompactNumber,
 } from "@/lib/formatters";
+import type { ProductStatus } from "@/types/shared/common.types";
+
+export type ProductCardVariant = "public" | "admin" | "seller" | "compact";
 
 export interface ProductCardProps {
   id: string;
@@ -23,12 +27,20 @@ export interface ProductCardProps {
   videos?: string[]; // Video URLs
   rating?: number;
   reviewCount?: number;
-  shopName: string;
-  shopSlug: string;
+  shopName?: string;
+  shopSlug?: string;
   shopId?: string;
   inStock: boolean;
   featured?: boolean;
   condition?: "new" | "used" | "refurbished";
+  // Admin/Seller specific
+  status?: ProductStatus;
+  sku?: string;
+  stockCount?: number;
+  salesCount?: number;
+  // Variant control
+  variant?: ProductCardVariant;
+  // Action handlers
   onAddToCart?: (
     id: string,
     productDetails?: {
@@ -41,9 +53,15 @@ export interface ProductCardProps {
   ) => void;
   onToggleFavorite?: (id: string) => void;
   onQuickView?: (id: string) => void;
+  onEdit?: (slug: string) => void;
+  onDelete?: (slug: string) => void;
+  onSelect?: (id: string, selected: boolean) => void;
   isFavorite?: boolean;
+  isSelected?: boolean;
   showShopName?: boolean;
+  /** @deprecated Use variant="compact" instead */
   compact?: boolean;
+  className?: string;
 }
 
 const ProductCardComponent: React.FC<ProductCardProps> = ({
@@ -57,19 +75,37 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
   videos = [],
   rating = 0,
   reviewCount = 0,
-  shopName,
-  shopSlug,
+  shopName = "",
+  shopSlug = "",
   shopId,
   inStock,
   featured = false,
   condition = "new",
+  // Admin/Seller specific
+  status,
+  sku,
+  stockCount,
+  salesCount,
+  // Variant control
+  variant = "public",
+  // Action handlers
   onAddToCart,
   onToggleFavorite,
   onQuickView,
+  onEdit,
+  onDelete,
+  onSelect,
   isFavorite = false,
+  isSelected = false,
   showShopName = true,
   compact = false,
+  className = "",
 }) => {
+  // Use compact variant if compact prop is true (backwards compatibility)
+  const effectiveVariant = compact ? "compact" : variant;
+  const isAdminOrSeller =
+    effectiveVariant === "admin" || effectiveVariant === "seller";
+  const isCompact = effectiveVariant === "compact";
   const [isHovered, setIsHovered] = React.useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = React.useState(0);
   const [isPlayingVideo, setIsPlayingVideo] = React.useState(false);
@@ -169,10 +205,41 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
     }
   };
 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onEdit) {
+      onEdit(slug);
+    }
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onDelete) {
+      onDelete(slug);
+    }
+  };
+
+  const handleSelect = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onSelect) {
+      onSelect(id, !isSelected);
+    }
+  };
+
+  // Determine link destination based on variant
+  const linkHref = isAdminOrSeller
+    ? `/products/${slug}` // View product for admin
+    : `/products/${slug}`;
+
   return (
     <Link
-      href={`/products/${slug}`}
-      className="group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow duration-200"
+      href={linkHref}
+      className={`group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow duration-200 ${
+        isSelected ? "ring-2 ring-purple-500" : ""
+      } ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -279,45 +346,54 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <FavoriteButton
-            itemId={id}
-            itemType="product"
-            initialIsFavorite={isFavorite}
-            onToggle={() => onToggleFavorite?.(id)}
-            size="md"
-          />
-          <CompareButton
-            product={{
-              id,
-              name,
-              slug,
-              price,
-              originalPrice,
-              image,
-              rating,
-              reviewCount,
-              shopName,
-              shopSlug,
-              inStock,
-              condition,
-            }}
-            size="md"
-          />
-          {onQuickView && (
-            <button
-              onClick={handleQuickView}
-              className="p-2 rounded-full bg-white dark:bg-gray-700 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 transition-colors"
-              aria-label="Quick view"
-            >
-              <Eye className="w-5 h-5" />
-            </button>
-          )}
-        </div>
+        {/* Action Buttons - Public variant */}
+        {!isAdminOrSeller && (
+          <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <FavoriteButton
+              itemId={id}
+              itemType="product"
+              initialIsFavorite={isFavorite}
+              onToggle={() => onToggleFavorite?.(id)}
+              size="md"
+            />
+            <CompareButton
+              product={{
+                id,
+                name,
+                slug,
+                price,
+                originalPrice,
+                image,
+                rating,
+                reviewCount,
+                shopName,
+                shopSlug,
+                inStock,
+                condition,
+              }}
+              size="md"
+            />
+            {onQuickView && (
+              <button
+                onClick={handleQuickView}
+                className="p-2 rounded-full bg-white dark:bg-gray-700 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 transition-colors"
+                aria-label="Quick view"
+              >
+                <Eye className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        )}
 
-        {/* Add to Cart Overlay */}
-        {onAddToCart && inStock && (
+        {/* Admin/Seller Status Badge */}
+        {isAdminOrSeller && status && (
+          <div className="absolute top-2 right-2">
+            <StatusBadge status={status} />
+          </div>
+        )}
+
+        {/* Add to Cart Overlay - Public only */}
+        {!isAdminOrSeller && onAddToCart && inStock && (
           <div className="absolute bottom-0 left-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <button
               onClick={handleAddToCart}
@@ -331,18 +407,25 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Content */}
-      <div className={`p-${compact ? "3" : "4"}`}>
+      <div className={`p-${isCompact ? "3" : "4"}`}>
         {/* Product Name */}
         <h3
           className={`font-semibold text-gray-900 dark:text-white ${
-            compact ? "text-sm line-clamp-1" : "text-base line-clamp-2"
+            isCompact ? "text-sm line-clamp-1" : "text-base line-clamp-2"
           } mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors`}
         >
           {name}
         </h3>
 
-        {/* Shop Name */}
-        {showShopName && (
+        {/* SKU - Admin/Seller only */}
+        {isAdminOrSeller && sku && (
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 truncate">
+            SKU: {sku}
+          </p>
+        )}
+
+        {/* Shop Name - Public only */}
+        {!isAdminOrSeller && showShopName && shopSlug && (
           <span
             onClick={(e) => {
               e.preventDefault();
@@ -366,8 +449,32 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
           </span>
         )}
 
-        {/* Rating */}
-        {!compact && rating > 0 && (
+        {/* Price & Stock Row */}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-baseline gap-2">
+            <span
+              className={`font-bold text-gray-900 dark:text-white ${
+                isCompact ? "text-lg" : "text-xl"
+              }`}
+            >
+              {formatCurrency(price)}
+            </span>
+            {originalPrice && originalPrice > price && (
+              <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
+                {formatCurrency(originalPrice)}
+              </span>
+            )}
+          </div>
+          {/* Stock count - Admin/Seller */}
+          {isAdminOrSeller && stockCount !== undefined && (
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Stock: {stockCount}
+            </span>
+          )}
+        </div>
+
+        {/* Rating - Public only */}
+        {!isAdminOrSeller && !isCompact && rating > 0 && (
           <div className="flex items-center gap-1 mb-2">
             <div className="flex items-center">
               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
@@ -383,21 +490,47 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        {/* Price */}
-        <div className="flex items-baseline gap-2">
-          <span
-            className={`font-bold text-gray-900 dark:text-white ${
-              compact ? "text-lg" : "text-xl"
-            }`}
-          >
-            {formatCurrency(price)}
-          </span>
-          {originalPrice && originalPrice > price && (
-            <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-              {formatCurrency(originalPrice)}
-            </span>
-          )}
-        </div>
+        {/* Stats - Admin/Seller */}
+        {isAdminOrSeller && (rating > 0 || salesCount !== undefined) && (
+          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
+            {rating > 0 && (
+              <span className="flex items-center gap-1">
+                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                {rating.toFixed(1)}
+              </span>
+            )}
+            {salesCount !== undefined && (
+              <>
+                <span>•</span>
+                <span>{salesCount} sales</span>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Admin/Seller Action Buttons */}
+        {isAdminOrSeller && (onEdit || onDelete) && (
+          <div className="flex gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+            {onEdit && (
+              <button
+                onClick={handleEdit}
+                className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center gap-1"
+              >
+                <Edit className="w-4 h-4" />
+                Edit
+              </button>
+            )}
+            <Link
+              href={`/products/${slug}`}
+              target="_blank"
+              onClick={(e) => e.stopPropagation()}
+              className="flex-1 rounded-lg bg-purple-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-purple-700 flex items-center justify-center gap-1"
+            >
+              <Eye className="w-4 h-4" />
+              View
+            </Link>
+          </div>
+        )}
       </div>
     </Link>
   );
