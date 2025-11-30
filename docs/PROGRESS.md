@@ -5,7 +5,44 @@
 
 ---
 
-## Session 4 Checklist (Current)
+## Session 5 Checklist (Current)
+
+### Priority 1: Structural Work - Mobile Responsiveness Fixes
+
+- [ ] 1. Update MainNavBar to hide user menu on mobile (use `hidden lg:block`)
+- [ ] 2. Update AdminLayoutClient to hide sidebar toggle on mobile
+- [ ] 3. Update SellerLayoutClient to hide sidebar toggle on mobile
+- [ ] 4. Fix MobileFilterSidebar footer overlap with bottom nav (change from `bottom-0` to `bottom-32`)
+- [ ] 5. Add scroll arrows to MobileNavRow component
+
+### Priority 2: Structural Work - Code Quality (Sonar Accessibility Bugs)
+
+- [ ] 6. Fix S1082 accessibility bugs - add mouse event handlers alongside keyboard handlers (41 issues)
+- [ ] 7. Fix S3923 identical branches in conditionals (3 issues)
+
+### Priority 3: Cognitive Complexity Reduction
+
+- [ ] 8. Reduce cognitive complexity in `/api/hero-slides` route (currently 16, max 15)
+- [ ] 9. Fix S7755 issues - use `.at(-1)` instead of `[length-1]` in hero-slides and notifications routes
+
+### Priority 4: Form UX - Wizard Simplification
+
+- [ ] 10. Replace alert() with inline errors in product wizard pages
+- [ ] 11. Replace alert() with inline errors in auction wizard pages
+
+### Priority 5: Documentation Updates
+
+- [ ] 12. Update mobile-responsiveness document status markers
+- [ ] 13. Update form-ux-improvements document status markers
+
+### Priority 6: Git & Sonar
+
+- [ ] 14. Commit and push all changes to GitHub
+- [ ] 15. Run Sonar scan and document results
+
+---
+
+## Session 4 Checklist (Completed ✅)
 
 ### Priority 1: Remaining API Sieve Migrations
 
@@ -33,22 +70,22 @@
 
 ### Overall Status
 
-| Metric               | Before (Session 3) | After (Session 4) | Delta   |
-| -------------------- | ------------------ | ----------------- | ------- |
-| **Quality Gate**     | ❌ FAILED          | ❌ FAILED         | —       |
-| **Lines of Code**    | ~153K              | 153,223           | ~stable |
-| **Files Analyzed**   | 1000 TS + 10 CSS   | 1000 TS + 10 CSS  | —       |
-| **Analysis Time**    | 4:53               | ~3:00             | -1:53   |
+| Metric             | Before (Session 3) | After (Session 4) | Delta   |
+| ------------------ | ------------------ | ----------------- | ------- |
+| **Quality Gate**   | ❌ FAILED          | ❌ FAILED         | —       |
+| **Lines of Code**  | ~153K              | 153,223           | ~stable |
+| **Files Analyzed** | 1000 TS + 10 CSS   | 1000 TS + 10 CSS  | —       |
+| **Analysis Time**  | 4:53               | ~3:00             | -1:53   |
 
 ### Sub-Ratings Breakdown
 
 #### 🔁 Duplication
 
-| Metric              | Before | After | Delta     |
-| ------------------- | ------ | ----- | --------- |
-| **Rating**          | —      | —     | —         |
-| **Duplicated %**    | 6.6%   | 6.6%  | 0.0%      |
-| **Duplicated Blocks** | 501  | 503   | +2 blocks |
+| Metric                | Before | After | Delta     |
+| --------------------- | ------ | ----- | --------- |
+| **Rating**            | —      | —     | —         |
+| **Duplicated %**      | 6.6%   | 6.6%  | 0.0%      |
+| **Duplicated Blocks** | 501    | 503   | +2 blocks |
 
 - **Current Status**: 6.6% duplication (503 blocks)
 - **New Duplicates**: +2 blocks (from hero-slides/notifications Sieve migration)
@@ -57,11 +94,11 @@
 
 #### ⚡ Reliability (Bugs)
 
-| Metric            | Before | After | Delta    |
-| ----------------- | ------ | ----- | -------- |
-| **Rating**        | C      | C     | —        |
-| **Bug Count**     | 56     | 56    | 0        |
-| **Remediation**   | 334min | 334min| —        |
+| Metric          | Before | After  | Delta |
+| --------------- | ------ | ------ | ----- |
+| **Rating**      | C      | C      | —     |
+| **Bug Count**   | 56     | 56     | 0     |
+| **Remediation** | 334min | 334min | —     |
 
 - **Current Rating**: C (3.0)
 - **Absolute Counts**: 56 bugs total
@@ -74,11 +111,11 @@
 
 #### 🔒 Security
 
-| Metric              | Before | After | Delta |
-| ------------------- | ------ | ----- | ----- |
-| **Rating**          | A      | A     | —     |
-| **Vulnerabilities** | 0      | 0     | 0     |
-| **Security Hotspots** | 150  | 150   | 0     |
+| Metric                | Before | After | Delta |
+| --------------------- | ------ | ----- | ----- |
+| **Rating**            | A      | A     | —     |
+| **Vulnerabilities**   | 0      | 0     | 0     |
+| **Security Hotspots** | 150    | 150   | 0     |
 
 - **Current Rating**: A (1.0) ✅
 - **Vulnerabilities**: 0 (best value)
@@ -108,10 +145,10 @@
 
 ### Coverage
 
-| Metric           | Before | After | Delta |
-| ---------------- | ------ | ----- | ----- |
-| **Line Coverage**| 0.0%   | 0.0%  | 0.0%  |
-| **Test Count**   | N/A    | N/A   | —     |
+| Metric            | Before | After | Delta |
+| ----------------- | ------ | ----- | ----- |
+| **Line Coverage** | 0.0%   | 0.0%  | 0.0%  |
+| **Test Count**    | N/A    | N/A   | —     |
 
 - **Status**: ❌ No coverage data (LCOV not configured)
 - **Reason**: No coverage reports generated during CI
@@ -129,10 +166,12 @@
 ### 🎯 Top 3 Recommendations
 
 1. **Fix Accessibility Bugs (41 issues)**
+
    - Add `onMouseOver`/`onFocus` handlers alongside `onMouseEnter`/`onKeyDown`
    - Quick win: ~41 bugs resolved, upgrades Reliability from C to B
 
 2. **Reduce Cognitive Complexity in Sieve Routes**
+
    - Extract helper functions from GET handlers in migrated routes
    - Affected: `orders`, `payouts`, `favorites`, `hero-slides`, `notifications`
    - Each route has complexity 16-25 (max 15)

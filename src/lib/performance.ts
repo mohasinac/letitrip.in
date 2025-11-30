@@ -310,7 +310,7 @@ class PerformanceMonitorClass {
       p95: this.calculatePercentile(durations, 95),
       p99: this.calculatePercentile(durations, 99),
       total: sum,
-      lastUpdated: entries[entries.length - 1].timestamp,
+      lastUpdated: entries.at(-1)?.timestamp ?? Date.now(),
     };
   }
 

@@ -140,8 +140,8 @@ export async function GET(request: NextRequest) {
     const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
     if (offset > 0) {
       const skipSnapshot = await query.limit(offset).get();
-      if (skipSnapshot.docs.length > 0) {
-        const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+      const lastDoc = skipSnapshot.docs.at(-1);
+      if (lastDoc) {
         query = query.startAfter(lastDoc);
       }
     }
