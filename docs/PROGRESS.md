@@ -24,8 +24,131 @@
 
 ### Priority 4: Git & Sonar
 
-- [ ] 7. Commit and push all changes to GitHub
-- [ ] 8. Run Sonar scan and document results
+- [x] 7. Commit and push all changes to GitHub ✅ (0925dfb)
+- [x] 8. Run Sonar scan and document results ✅
+
+---
+
+## Session 4 Sonar Scan Results
+
+### Overall Status
+
+| Metric               | Before (Session 3) | After (Session 4) | Delta   |
+| -------------------- | ------------------ | ----------------- | ------- |
+| **Quality Gate**     | ❌ FAILED          | ❌ FAILED         | —       |
+| **Lines of Code**    | ~153K              | 153,223           | ~stable |
+| **Files Analyzed**   | 1000 TS + 10 CSS   | 1000 TS + 10 CSS  | —       |
+| **Analysis Time**    | 4:53               | ~3:00             | -1:53   |
+
+### Sub-Ratings Breakdown
+
+#### 🔁 Duplication
+
+| Metric              | Before | After | Delta     |
+| ------------------- | ------ | ----- | --------- |
+| **Rating**          | —      | —     | —         |
+| **Duplicated %**    | 6.6%   | 6.6%  | 0.0%      |
+| **Duplicated Blocks** | 501  | 503   | +2 blocks |
+
+- **Current Status**: 6.6% duplication (503 blocks)
+- **New Duplicates**: +2 blocks (from hero-slides/notifications Sieve migration)
+- **Remaining**: 503 duplicated blocks to address
+- **Notable**: The Sieve migration pattern creates minor duplication in cursor handling
+
+#### ⚡ Reliability (Bugs)
+
+| Metric            | Before | After | Delta    |
+| ----------------- | ------ | ----- | -------- |
+| **Rating**        | C      | C     | —        |
+| **Bug Count**     | 56     | 56    | 0        |
+| **Remediation**   | 334min | 334min| —        |
+
+- **Current Rating**: C (3.0)
+- **Absolute Counts**: 56 bugs total
+- **New Issues**: 0
+- **Resolved Issues**: 0
+- **Notable Issues**:
+  - 41× S1082: Missing mouse event handlers alongside keyboard handlers
+  - 6× S5850: Regex-related bugs
+  - 3× S3923: Identical branches in conditionals
+
+#### 🔒 Security
+
+| Metric              | Before | After | Delta |
+| ------------------- | ------ | ----- | ----- |
+| **Rating**          | A      | A     | —     |
+| **Vulnerabilities** | 0      | 0     | 0     |
+| **Security Hotspots** | 150  | 150   | 0     |
+
+- **Current Rating**: A (1.0) ✅
+- **Vulnerabilities**: 0 (best value)
+- **Security Hotspots**: 150 to review (0% reviewed)
+- **New Issues**: 0
+- **Notable**: Most hotspots are password-related patterns in test files
+
+#### 🛠️ Maintainability (Code Smells)
+
+| Metric          | Before | After | Delta |
+| --------------- | ------ | ----- | ----- |
+| **Rating**      | A      | A     | —     |
+| **Code Smells** | 2044   | 2044  | 0     |
+| **Tech Debt**   | ~188h  | ~188h | —     |
+
+- **Current Rating**: A (1.0) ✅
+- **Code Smells**: 2,044 total
+- **New Issues Introduced** (Session 4):
+  - `hero-slides/route.ts`: S3776 Cognitive Complexity 16 (max 15)
+  - `hero-slides/route.ts`: S7755 Use `.at()` instead of `[length-1]`
+  - `notifications/route.ts`: S7755 Use `.at()` instead of `[length-1]`
+- **Severity Distribution**:
+  - CRITICAL: 118
+  - MAJOR: 903
+  - MINOR: 1,062
+  - INFO: 17
+
+### Coverage
+
+| Metric           | Before | After | Delta |
+| ---------------- | ------ | ----- | ----- |
+| **Line Coverage**| 0.0%   | 0.0%  | 0.0%  |
+| **Test Count**   | N/A    | N/A   | —     |
+
+- **Status**: ❌ No coverage data (LCOV not configured)
+- **Reason**: No coverage reports generated during CI
+
+### Summary Table
+
+| Category        | Rating | Issues | New | Resolved |
+| --------------- | ------ | ------ | --- | -------- |
+| Bugs            | C      | 56     | 0   | 0        |
+| Vulnerabilities | A      | 0      | 0   | 0        |
+| Code Smells     | A      | 2,044  | +3  | 0        |
+| Hotspots        | —      | 150    | 0   | 0        |
+| Duplication     | —      | 6.6%   | +2  | 0        |
+
+### 🎯 Top 3 Recommendations
+
+1. **Fix Accessibility Bugs (41 issues)**
+   - Add `onMouseOver`/`onFocus` handlers alongside `onMouseEnter`/`onKeyDown`
+   - Quick win: ~41 bugs resolved, upgrades Reliability from C to B
+
+2. **Reduce Cognitive Complexity in Sieve Routes**
+   - Extract helper functions from GET handlers in migrated routes
+   - Affected: `orders`, `payouts`, `favorites`, `hero-slides`, `notifications`
+   - Each route has complexity 16-25 (max 15)
+
+3. **Add Test Coverage**
+   - Configure Jest to output LCOV reports
+   - Target: 80% coverage for new code
+   - Critical for Quality Gate pass
+
+### Actionable Observations
+
+- ✅ **Security is excellent** - No vulnerabilities, rating A
+- ✅ **Maintainability is healthy** - Rating A despite 2K+ smells
+- ⚠️ **Reliability needs work** - C rating from accessibility bugs
+- ⚠️ **Duplication slightly increased** - Sieve cursor pattern is repetitive
+- ❌ **Coverage is blocking** - Quality Gate fails on 0% coverage
 
 ---
 
