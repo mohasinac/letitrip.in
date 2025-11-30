@@ -16,7 +16,9 @@ export default function AdminMaintenancePage() {
       backHref="/admin/settings"
       backLabel="Back to Settings"
       expectedDate="Q1 2025"
-      icon={<Wrench className="w-10 h-10 text-orange-600 dark:text-orange-400" />}
+      icon={
+        <Wrench className="w-10 h-10 text-orange-600 dark:text-orange-400" />
+      }
     />
   );
 }
