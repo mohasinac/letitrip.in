@@ -49,19 +49,35 @@ export function formatCompactCurrency(amount: number): string {
  * Format date to localized string
  */
 export function formatDate(
-  date: Date | string | number,
+  date: Date | string | number | null | undefined,
   options: {
     format?: "short" | "medium" | "long" | "full";
     includeTime?: boolean;
     locale?: string;
+    fallback?: string;
   } = {},
 ): string {
-  const { format = "medium", includeTime = false, locale = "en-IN" } = options;
+  const {
+    format = "medium",
+    includeTime = false,
+    locale = "en-IN",
+    fallback = "N/A",
+  } = options;
+
+  // Handle null/undefined
+  if (date == null) {
+    return fallback;
+  }
 
   const dateObj =
     typeof date === "string" || typeof date === "number"
       ? new Date(date)
       : date;
+
+  // Validate date is finite (handles Invalid Date / NaN)
+  if (!dateObj || !isFinite(dateObj.getTime())) {
+    return fallback;
+  }
 
   const dateFormatOptions: Intl.DateTimeFormatOptions = {
     dateStyle: format,
