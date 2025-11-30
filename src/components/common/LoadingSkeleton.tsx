@@ -20,17 +20,17 @@ export default function LoadingSkeleton({
       <>
         {skeletons.map((i) => (
           <div key={i} className={`animate-pulse ${className}`}>
-            <div className="bg-gray-200 rounded-lg overflow-hidden">
+            <div className="bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
               {/* Image skeleton */}
-              <div className="w-full h-48 bg-gray-300" />
+              <div className="w-full h-48 bg-gray-300 dark:bg-gray-600" />
 
               {/* Content skeleton */}
               <div className="p-4 space-y-3">
-                <div className="h-4 bg-gray-300 rounded w-3/4" />
-                <div className="h-4 bg-gray-300 rounded w-1/2" />
+                <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4" />
+                <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
                 <div className="flex items-center justify-between mt-4">
-                  <div className="h-6 bg-gray-300 rounded w-1/4" />
-                  <div className="h-8 bg-gray-300 rounded w-1/3" />
+                  <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-1/4" />
+                  <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded w-1/3" />
                 </div>
               </div>
             </div>
@@ -46,23 +46,23 @@ export default function LoadingSkeleton({
         {skeletons.map((i) => (
           <div
             key={i}
-            className={`animate-pulse flex items-center gap-4 p-4 bg-white rounded-lg ${className}`}
+            className={`animate-pulse flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg ${className}`}
           >
             {/* Image skeleton */}
-            <div className="w-24 h-24 bg-gray-300 rounded flex-shrink-0" />
+            <div className="w-24 h-24 bg-gray-300 dark:bg-gray-600 rounded flex-shrink-0" />
 
             {/* Content skeleton */}
             <div className="flex-1 space-y-3">
-              <div className="h-4 bg-gray-300 rounded w-3/4" />
-              <div className="h-4 bg-gray-300 rounded w-1/2" />
+              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4" />
+              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
               <div className="flex items-center gap-4 mt-2">
-                <div className="h-6 bg-gray-300 rounded w-20" />
-                <div className="h-6 bg-gray-300 rounded w-24" />
+                <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-20" />
+                <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-24" />
               </div>
             </div>
 
             {/* Action skeleton */}
-            <div className="h-10 bg-gray-300 rounded w-32" />
+            <div className="h-10 bg-gray-300 dark:bg-gray-600 rounded w-32" />
           </div>
         ))}
       </>
@@ -75,27 +75,30 @@ export default function LoadingSkeleton({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Image gallery skeleton */}
           <div className="space-y-4">
-            <div className="w-full h-96 bg-gray-300 rounded-lg" />
+            <div className="w-full h-96 bg-gray-300 dark:bg-gray-600 rounded-lg" />
             <div className="flex gap-2">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-20 h-20 bg-gray-300 rounded" />
+                <div
+                  key={i}
+                  className="w-20 h-20 bg-gray-300 dark:bg-gray-600 rounded"
+                />
               ))}
             </div>
           </div>
 
           {/* Info skeleton */}
           <div className="space-y-4">
-            <div className="h-8 bg-gray-300 rounded w-3/4" />
-            <div className="h-6 bg-gray-300 rounded w-1/2" />
-            <div className="h-10 bg-gray-300 rounded w-1/3" />
+            <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded w-3/4" />
+            <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
+            <div className="h-10 bg-gray-300 dark:bg-gray-600 rounded w-1/3" />
             <div className="space-y-2 mt-6">
-              <div className="h-4 bg-gray-300 rounded w-full" />
-              <div className="h-4 bg-gray-300 rounded w-5/6" />
-              <div className="h-4 bg-gray-300 rounded w-4/6" />
+              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-full" />
+              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-5/6" />
+              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-4/6" />
             </div>
             <div className="flex gap-4 mt-8">
-              <div className="h-12 bg-gray-300 rounded flex-1" />
-              <div className="h-12 bg-gray-300 rounded flex-1" />
+              <div className="h-12 bg-gray-300 dark:bg-gray-600 rounded flex-1" />
+              <div className="h-12 bg-gray-300 dark:bg-gray-600 rounded flex-1" />
             </div>
           </div>
         </div>
@@ -110,14 +113,14 @@ export default function LoadingSkeleton({
       >
         {skeletons.map((i) => (
           <div key={i} className="animate-pulse">
-            <div className="bg-gray-200 rounded-lg overflow-hidden">
-              <div className="w-full h-48 bg-gray-300" />
+            <div className="bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+              <div className="w-full h-48 bg-gray-300 dark:bg-gray-600" />
               <div className="p-4 space-y-3">
-                <div className="h-4 bg-gray-300 rounded w-3/4" />
-                <div className="h-4 bg-gray-300 rounded w-1/2" />
+                <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4" />
+                <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
                 <div className="flex items-center justify-between mt-4">
-                  <div className="h-6 bg-gray-300 rounded w-1/4" />
-                  <div className="h-8 bg-gray-300 rounded w-1/3" />
+                  <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-1/4" />
+                  <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded w-1/3" />
                 </div>
               </div>
             </div>

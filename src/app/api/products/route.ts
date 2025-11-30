@@ -4,19 +4,53 @@ import {
   requireAuth,
 } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import {
-  getProductsQuery,
-  userOwnsShop,
-  UserRole,
-} from "@/app/api/lib/firebase/queries";
+import { userOwnsShop, UserRole } from "@/app/api/lib/firebase/queries";
 import { withCache } from "@/app/api/middleware/cache";
 import { ValidationError } from "@/lib/api-errors";
 import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
-import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
+import {
+  parseSieveQuery,
+  productsSieveConfig,
+  createPaginationMeta,
+} from "@/app/api/lib/sieve";
+
+// Extended Sieve config with field mappings for products
+const productsConfig = {
+  ...productsSieveConfig,
+  fieldMappings: {
+    categoryId: "category_id",
+    shopId: "shop_id",
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    stockCount: "stock_count",
+    featured: "is_featured",
+  },
+};
+
+/**
+ * Transform product document to API response format
+ */
+function transformProduct(id: string, data: any) {
+  return {
+    id,
+    ...data,
+    // Add camelCase aliases for snake_case fields
+    shopId: data.shop_id,
+    categoryId: data.category_id,
+    stockCount: data.stock_count,
+    featured: data.is_featured,
+    isDeleted: data.is_deleted,
+    originalPrice: data.original_price,
+    reviewCount: data.review_count,
+  };
+}
 
 /**
  * GET /api/products
- * List products with role-based filtering
+ * List products with Sieve pagination
+ * Query Format: ?page=1&pageSize=20&sorts=-createdAt&filters=status==published,price>100
+ *
+ * Role-based filtering:
  * - Public: Published products only
  * - Seller: Own products (all statuses)
  * - Admin: All products
@@ -27,37 +61,48 @@ export async function GET(request: NextRequest) {
     async (req: NextRequest) => {
       try {
         const user = await getUserFromRequest(req);
-
         const { searchParams } = new URL(req.url);
-        const shopId =
-          searchParams.get("shopId") || searchParams.get("shop_id");
-        const categoryId =
-          searchParams.get("categoryId") || searchParams.get("category_id");
-        const status = searchParams.get("status");
-        const minPrice = searchParams.get("minPrice");
-        const maxPrice = searchParams.get("maxPrice");
-        const featured = searchParams.get("featured");
-        const slug = searchParams.get("slug");
-        const search = searchParams.get("search");
-        const sortBy = searchParams.get("sortBy") || "created_at";
-        const sortOrder = searchParams.get("sortOrder") || "desc";
 
-        // For public requests, show only published products
-        const role = user?.role ? (user.role as UserRole) : UserRole.USER;
-        const userId = user?.uid;
-
-        // Build base query based on role
-        let query = getProductsQuery(
-          role,
-          role === "seller" ? shopId || userId : undefined,
+        // Parse Sieve query
+        const { query: sieveQuery, errors, warnings } = parseSieveQuery(
+          searchParams,
+          productsConfig
         );
+
+        if (errors.length > 0) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Invalid query parameters",
+              details: errors,
+            },
+            { status: 400 }
+          );
+        }
+
+        // Build base Firestore query
+        const productsRef = Collections.products();
+        let query = productsRef.where("is_deleted", "!=", true);
+
+        // Role-based filtering
+        const role = user?.role ? (user.role as UserRole) : UserRole.USER;
 
         // For non-authenticated users, force published status
         if (!user) {
           query = query.where("status", "==", "published");
         }
 
-        // Apply equality filters (these can be combined)
+        // Legacy query params support (for backward compatibility)
+        const shopId = searchParams.get("shopId") || searchParams.get("shop_id");
+        const categoryId = searchParams.get("categoryId") || searchParams.get("category_id");
+        const status = searchParams.get("status");
+        const minPrice = searchParams.get("minPrice");
+        const maxPrice = searchParams.get("maxPrice");
+        const featured = searchParams.get("featured");
+        const slug = searchParams.get("slug");
+        const search = searchParams.get("search");
+
+        // Apply direct query params (backward compatibility)
         if (shopId) {
           query = query.where("shop_id", "==", shopId);
         }
@@ -74,7 +119,17 @@ export async function GET(request: NextRequest) {
           query = query.where("slug", "==", slug);
         }
 
-        // Price range filters (Firebase supports these with proper indexes)
+        // Apply Sieve filters
+        for (const filter of sieveQuery.filters) {
+          const dbField = productsConfig.fieldMappings[filter.field] || filter.field;
+          if (filter.operator === "==" || filter.operator === "!=" ||
+              filter.operator === ">" || filter.operator === ">=" ||
+              filter.operator === "<" || filter.operator === "<=") {
+            query = query.where(dbField, filter.operator, filter.value);
+          }
+        }
+
+        // Price range (legacy support)
         if (minPrice) {
           const min = parseFloat(minPrice);
           if (!isNaN(min)) {
@@ -88,74 +143,76 @@ export async function GET(request: NextRequest) {
           }
         }
 
-        // Add sorting (required for pagination)
-        // If we have price filters, we must order by price
-        // Otherwise order by the requested field
-        if (minPrice || maxPrice) {
-          query = query.orderBy("price", sortOrder as any);
-          // Add secondary sort by created_at for consistent ordering
-          if (sortBy !== "price") {
-            query = query.orderBy("created_at", "desc");
+        // Apply sorting
+        if (sieveQuery.sorts.length > 0) {
+          for (const sort of sieveQuery.sorts) {
+            const dbField = productsConfig.fieldMappings[sort.field] || sort.field;
+            query = query.orderBy(dbField, sort.direction);
           }
         } else {
-          // Order by requested field
-          const validSortFields = ["created_at", "updated_at", "price", "name"];
-          const sortField = validSortFields.includes(sortBy)
-            ? sortBy
-            : "created_at";
-          query = query.orderBy(sortField, sortOrder as any);
+          // Default sort
+          query = query.orderBy("created_at", "desc");
         }
 
-        // Execute paginated query
-        const response = await executeCursorPaginatedQuery(
-          query,
-          searchParams,
-          (id) => Collections.products().doc(id).get(),
-          (doc) => {
-            const data: any = doc.data();
-            return {
-              id: doc.id,
-              ...data,
-              // Add camelCase aliases for snake_case fields
-              shopId: data.shop_id,
-              categoryId: data.category_id,
-              stockCount: data.stock_count,
-              featured: data.is_featured,
-              isDeleted: data.is_deleted,
-              originalPrice: data.original_price,
-              reviewCount: data.review_count,
-            };
-          },
-          50, // defaultLimit
-          200, // maxLimit
-        );
+        // Get total count (for pagination meta)
+        const countSnapshot = await query.count().get();
+        const totalCount = countSnapshot.data().count;
 
-        // Apply text search filter (if no other solution available)
-        // TODO: Replace with Algolia/Typesense for better performance
+        // Apply pagination
+        const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
+        if (offset > 0) {
+          // Skip to the correct page
+          const skipSnapshot = await query.limit(offset).get();
+          if (skipSnapshot.docs.length > 0) {
+            const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+            query = query.startAfter(lastDoc);
+          }
+        }
+        query = query.limit(sieveQuery.pageSize);
+
+        // Execute query
+        const snapshot = await query.get();
+        let data = snapshot.docs.map((doc) => transformProduct(doc.id, doc.data()));
+
+        // Apply text search filter (client-side)
         if (search) {
           const searchLower = search.toLowerCase();
-          response.data = response.data.filter(
+          data = data.filter(
             (p: any) =>
               p.name?.toLowerCase().includes(searchLower) ||
               p.description?.toLowerCase().includes(searchLower) ||
               p.slug?.toLowerCase().includes(searchLower) ||
               p.tags?.some((tag: string) =>
-                tag.toLowerCase().includes(searchLower),
-              ),
+                tag.toLowerCase().includes(searchLower)
+              )
           );
-          response.count = response.data.length;
         }
 
-        return NextResponse.json(response);
+        // Build response with Sieve pagination meta
+        const pagination = createPaginationMeta(
+          search ? data.length : totalCount,
+          sieveQuery
+        );
+
+        return NextResponse.json({
+          success: true,
+          data,
+          pagination,
+          meta: {
+            appliedFilters: sieveQuery.filters,
+            appliedSorts: sieveQuery.sorts,
+            warnings: warnings.length > 0 ? warnings : undefined,
+          },
+        });
       } catch (error) {
         console.error("Error fetching products:", error);
         return NextResponse.json(
           { success: false, error: "Failed to fetch products" },
-          { status: 500 },
+          { status: 500 }
         );
       }
     },
-    { ttl: 120 },
+    { ttl: 120 }
   );
 }
 

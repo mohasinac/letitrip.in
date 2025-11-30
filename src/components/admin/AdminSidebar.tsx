@@ -278,7 +278,7 @@ export function AdminSidebar() {
     return (
       <>
         {text.slice(0, index)}
-        <span className="bg-yellow-200 text-yellow-900 font-semibold">
+        <span className="bg-yellow-200 dark:bg-yellow-500/40 text-yellow-900 dark:text-yellow-200 font-semibold px-0.5 rounded">
           {text.slice(index, index + searchQuery.length)}
         </span>
         {text.slice(index + searchQuery.length)}

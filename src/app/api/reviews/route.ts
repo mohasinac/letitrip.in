@@ -5,48 +5,97 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
-import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
+import {
+  parseSieveQuery,
+  reviewsSieveConfig,
+  createPaginationMeta,
+} from "@/app/api/lib/sieve";
+
+// Extended Sieve config with field mappings for reviews
+const reviewsConfig = {
+  ...reviewsSieveConfig,
+  fieldMappings: {
+    productId: "product_id",
+    shopId: "shop_id",
+    userId: "user_id",
+    orderId: "order_id",
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    helpfulCount: "helpful_count",
+    verifiedPurchase: "verified_purchase",
+  },
+};
 
 /**
- * Unified Reviews API with RBAC
- * GET: List reviews (public: approved only, admin: all)
- * POST: Create review (authenticated users only)
+ * Transform review document to API response format
  */
+function transformReview(id: string, data: any) {
+  return {
+    id,
+    ...data,
+    // Add camelCase aliases
+    productId: data.product_id,
+    shopId: data.shop_id,
+    userId: data.user_id,
+    orderId: data.order_id,
+    helpfulCount: data.helpful_count,
+    verifiedPurchase: data.verified_purchase,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
+}
 
-// GET /api/reviews - List reviews (filtered by product/shop/user)
+/**
+ * GET /api/reviews
+ * List reviews with Sieve pagination
+ * Query Format: ?page=1&pageSize=20&sorts=-rating&filters=productId==xxx
+ *
+ * Role-based filtering:
+ * - Public: Published reviews only
+ * - Admin: All reviews
+ */
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
     const user = await getUserFromRequest(req);
     const { searchParams } = new URL(req.url);
 
-    // Filter params
-    const productId = searchParams.get("product_id");
-    const shopId = searchParams.get("shop_id");
-    const userId = searchParams.get("user_id");
+    // Parse Sieve query
+    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
+      searchParams,
+      reviewsConfig
+    );
+
+    if (errors.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid query parameters",
+          details: errors,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Legacy filter params (backward compatibility)
+    const productId = searchParams.get("product_id") || searchParams.get("productId");
+    const shopId = searchParams.get("shop_id") || searchParams.get("shopId");
+    const userId = searchParams.get("user_id") || searchParams.get("userId");
     const status = searchParams.get("status");
     const minRating = searchParams.get("minRating");
     const maxRating = searchParams.get("maxRating");
     const verified = searchParams.get("verified");
 
-    // Sort params
-    const sortBy = searchParams.get("sortBy") || "created_at";
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as
-      | "asc"
-      | "desc";
-
     let query: FirebaseFirestore.Query = db.collection(COLLECTIONS.REVIEWS);
 
     // Role-based filtering
     if (!user || user.role !== "admin") {
-      // Public users only see published reviews
       query = query.where("status", "==", "published");
     } else if (status) {
-      // Admin can filter by status
       query = query.where("status", "==", status);
     }
 
-    // Apply filters
+    // Apply legacy filters (backward compatibility)
     if (productId) {
       query = query.where("product_id", "==", productId);
     }
@@ -60,40 +109,57 @@ export async function GET(req: NextRequest) {
       query = query.where("verified_purchase", "==", true);
     }
 
-    // Rating range filters (only if sorting by rating)
-    const validSortFields = ["created_at", "rating", "helpful_count"];
-    const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
-
-    if (sortField === "rating") {
-      if (minRating) {
-        const minRatingNum = parseInt(minRating);
-        if (!isNaN(minRatingNum) && minRatingNum >= 1 && minRatingNum <= 5) {
-          query = query.where("rating", ">=", minRatingNum);
-        }
-      }
-      if (maxRating) {
-        const maxRatingNum = parseInt(maxRating);
-        if (!isNaN(maxRatingNum) && maxRatingNum >= 1 && maxRatingNum <= 5) {
-          query = query.where("rating", "<=", maxRatingNum);
-        }
+    // Apply Sieve filters
+    for (const filter of sieveQuery.filters) {
+      const dbField = reviewsConfig.fieldMappings[filter.field] || filter.field;
+      if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
+        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
       }
     }
 
-    // Add sorting
-    query = query.orderBy(sortField, sortOrder);
+    // Rating range (legacy support)
+    if (minRating) {
+      const minRatingNum = parseInt(minRating);
+      if (!isNaN(minRatingNum) && minRatingNum >= 1 && minRatingNum <= 5) {
+        query = query.where("rating", ">=", minRatingNum);
+      }
+    }
+    if (maxRating) {
+      const maxRatingNum = parseInt(maxRating);
+      if (!isNaN(maxRatingNum) && maxRatingNum >= 1 && maxRatingNum <= 5) {
+        query = query.where("rating", "<=", maxRatingNum);
+      }
+    }
 
-    // Execute paginated query
-    const response = await executeCursorPaginatedQuery(
-      query,
-      searchParams,
-      (id) => db.collection(COLLECTIONS.REVIEWS).doc(id).get(),
-      (doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }),
-      20, // defaultLimit
-      100, // maxLimit
-    );
+    // Apply sorting
+    if (sieveQuery.sorts.length > 0) {
+      for (const sort of sieveQuery.sorts) {
+        const dbField = reviewsConfig.fieldMappings[sort.field] || sort.field;
+        query = query.orderBy(dbField, sort.direction);
+      }
+    } else {
+      // Default sort
+      query = query.orderBy("created_at", "desc");
+    }
+
+    // Get total count
+    const countSnapshot = await query.count().get();
+    const totalCount = countSnapshot.data().count;
+
+    // Apply pagination
+    const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0) {
+      const skipSnapshot = await query.limit(offset).get();
+      if (skipSnapshot.docs.length > 0) {
+        const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+        query = query.startAfter(lastDoc);
+      }
+    }
+    query = query.limit(sieveQuery.pageSize);
+
+    // Execute query
+    const snapshot = await query.get();
+    const reviews = snapshot.docs.map((doc) => transformReview(doc.id, doc.data()));
 
     // Calculate stats if filtering by product
     let stats = null;
@@ -110,7 +176,7 @@ export async function GET(req: NextRequest) {
       if (totalReviews > 0) {
         const totalRating = allReviews.reduce(
           (sum: number, r: any) => sum + r.rating,
-          0,
+          0
         );
         const averageRating = totalRating / totalReviews;
 
@@ -130,15 +196,25 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // Build Sieve pagination meta
+    const pagination = createPaginationMeta(totalCount, sieveQuery);
+
     return NextResponse.json({
-      ...response,
+      success: true,
+      data: reviews,
+      pagination,
       stats,
+      meta: {
+        appliedFilters: sieveQuery.filters,
+        appliedSorts: sieveQuery.sorts,
+        warnings: warnings.length > 0 ? warnings : undefined,
+      },
     });
   } catch (error) {
     console.error("Error fetching reviews:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch reviews" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
