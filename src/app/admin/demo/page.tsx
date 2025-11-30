@@ -101,7 +101,7 @@ export default function AdminDemoPage() {
       const data = await demoDataService.generateDemoData();
       setSummary(data.summary as ExtendedSummary);
       toast.success(
-        `Demo data generated successfully with ${DEMO_PREFIX} prefix!`,
+        `Demo data generated successfully with ${DEMO_PREFIX} prefix!`
       );
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Unknown error";
@@ -114,7 +114,7 @@ export default function AdminDemoPage() {
   const handleCleanupAll = async () => {
     if (
       !confirm(
-        `Are you sure you want to delete ALL demo data with ${DEMO_PREFIX} prefix? This action cannot be undone.`,
+        `Are you sure you want to delete ALL demo data with ${DEMO_PREFIX} prefix? This action cannot be undone.`
       )
     ) {
       return;
@@ -128,7 +128,7 @@ export default function AdminDemoPage() {
         method: "DELETE",
       });
       const data = await response.json();
-      
+
       if (data.success) {
         setSummary(null);
         setDeletionResult({
@@ -154,7 +154,9 @@ export default function AdminDemoPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-            <p className="text-gray-600 dark:text-gray-400">Loading demo data...</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Loading demo data...
+            </p>
           </div>
         </div>
       </div>
@@ -162,7 +164,10 @@ export default function AdminDemoPage() {
   }
 
   // Collection icon and color mapping
-  const collectionConfig: Record<string, { icon: typeof Package; color: string; label: string }> = {
+  const collectionConfig: Record<
+    string,
+    { icon: typeof Package; color: string; label: string }
+  > = {
     categories: { icon: Tag, color: "text-purple-600", label: "Categories" },
     users: { icon: Users, color: "text-green-600", label: "Users" },
     shops: { icon: Store, color: "text-blue-600", label: "Shops" },
@@ -170,8 +175,16 @@ export default function AdminDemoPage() {
     auctions: { icon: Gavel, color: "text-red-600", label: "Auctions" },
     bids: { icon: DollarSign, color: "text-yellow-600", label: "Bids" },
     orders: { icon: ShoppingCart, color: "text-indigo-600", label: "Orders" },
-    order_items: { icon: Package, color: "text-indigo-400", label: "Order Items" },
-    payments: { icon: CreditCard, color: "text-emerald-600", label: "Payments" },
+    order_items: {
+      icon: Package,
+      color: "text-indigo-400",
+      label: "Order Items",
+    },
+    payments: {
+      icon: CreditCard,
+      color: "text-emerald-600",
+      label: "Payments",
+    },
     shipments: { icon: Truck, color: "text-cyan-600", label: "Shipments" },
     reviews: { icon: Star, color: "text-amber-600", label: "Reviews" },
     coupons: { icon: Tag, color: "text-pink-600", label: "Coupons" },
@@ -181,17 +194,45 @@ export default function AdminDemoPage() {
     addresses: { icon: MapPin, color: "text-teal-600", label: "Addresses" },
     hero_slides: { icon: Image, color: "text-sky-600", label: "Hero Slides" },
     media: { icon: Image, color: "text-fuchsia-600", label: "Media" },
-    blog_posts: { icon: FileText, color: "text-slate-600", label: "Blog Posts" },
-    blog_categories: { icon: Tag, color: "text-slate-500", label: "Blog Categories" },
+    blog_posts: {
+      icon: FileText,
+      color: "text-slate-600",
+      label: "Blog Posts",
+    },
+    blog_categories: {
+      icon: Tag,
+      color: "text-slate-500",
+      label: "Blog Categories",
+    },
     blog_tags: { icon: Tag, color: "text-slate-400", label: "Blog Tags" },
     favorites: { icon: Heart, color: "text-red-500", label: "Favorites" },
     carts: { icon: ShoppingCart, color: "text-orange-500", label: "Carts" },
-    cart_items: { icon: Package, color: "text-orange-400", label: "Cart Items" },
-    conversations: { icon: MessageSquare, color: "text-blue-500", label: "Conversations" },
-    messages: { icon: MessageSquare, color: "text-blue-400", label: "Messages" },
+    cart_items: {
+      icon: Package,
+      color: "text-orange-400",
+      label: "Cart Items",
+    },
+    conversations: {
+      icon: MessageSquare,
+      color: "text-blue-500",
+      label: "Conversations",
+    },
+    messages: {
+      icon: MessageSquare,
+      color: "text-blue-400",
+      label: "Messages",
+    },
     settings: { icon: Settings, color: "text-gray-600", label: "Settings" },
-    feature_flags: { icon: Settings, color: "text-gray-500", label: "Feature Flags" },
-    notifications: { icon: Bell, color: "text-yellow-500", label: "Notifications" },
+    feature_flags: {
+      icon: Settings,
+      color: "text-gray-500",
+      label: "Feature Flags",
+    },
+    notifications: {
+      icon: Bell,
+      color: "text-yellow-500",
+      label: "Notifications",
+    },
   };
 
   return (
@@ -258,7 +299,7 @@ export default function AdminDemoPage() {
               Deletion Complete - {deletionResult.total} Documents Deleted
             </h2>
           </div>
-          
+
           {deletionResult.breakdown.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {deletionResult.breakdown.map((item) => {
@@ -275,8 +316,12 @@ export default function AdminDemoPage() {
                   >
                     <Icon className={`w-4 h-4 ${config.color}`} />
                     <div>
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">{item.count}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">{config.label}</p>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">
+                        {item.count}
+                      </p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        {config.label}
+                      </p>
                     </div>
                   </div>
                 );
@@ -295,32 +340,150 @@ export default function AdminDemoPage() {
 
           {/* Main Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            <StatCard icon={Tag} color="text-purple-600" label="Categories" value={summary.categories} />
-            <StatCard icon={Users} color="text-green-600" label="Users" value={summary.users} />
-            <StatCard icon={Store} color="text-blue-600" label="Shops" value={summary.shops} />
-            <StatCard icon={Package} color="text-orange-600" label="Products" value={summary.products} />
-            <StatCard icon={Gavel} color="text-red-600" label="Auctions" value={summary.auctions} />
-            <StatCard icon={DollarSign} color="text-yellow-600" label="Bids" value={summary.bids} />
-            <StatCard icon={ShoppingCart} color="text-indigo-600" label="Orders" value={summary.orders} />
-            <StatCard icon={CreditCard} color="text-emerald-600" label="Payments" value={summary.payments} />
-            <StatCard icon={Truck} color="text-cyan-600" label="Shipments" value={summary.shipments} />
-            <StatCard icon={Star} color="text-amber-600" label="Reviews" value={summary.reviews || 0} />
+            <StatCard
+              icon={Tag}
+              color="text-purple-600"
+              label="Categories"
+              value={summary.categories}
+            />
+            <StatCard
+              icon={Users}
+              color="text-green-600"
+              label="Users"
+              value={summary.users}
+            />
+            <StatCard
+              icon={Store}
+              color="text-blue-600"
+              label="Shops"
+              value={summary.shops}
+            />
+            <StatCard
+              icon={Package}
+              color="text-orange-600"
+              label="Products"
+              value={summary.products}
+            />
+            <StatCard
+              icon={Gavel}
+              color="text-red-600"
+              label="Auctions"
+              value={summary.auctions}
+            />
+            <StatCard
+              icon={DollarSign}
+              color="text-yellow-600"
+              label="Bids"
+              value={summary.bids}
+            />
+            <StatCard
+              icon={ShoppingCart}
+              color="text-indigo-600"
+              label="Orders"
+              value={summary.orders}
+            />
+            <StatCard
+              icon={CreditCard}
+              color="text-emerald-600"
+              label="Payments"
+              value={summary.payments}
+            />
+            <StatCard
+              icon={Truck}
+              color="text-cyan-600"
+              label="Shipments"
+              value={summary.shipments}
+            />
+            <StatCard
+              icon={Star}
+              color="text-amber-600"
+              label="Reviews"
+              value={summary.reviews || 0}
+            />
           </div>
 
           {/* Additional Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {summary.carts && <MiniStatCard icon={ShoppingCart} label="Carts" value={summary.carts} />}
-            {summary.favorites && <MiniStatCard icon={Heart} label="Favorites" value={summary.favorites} />}
-            {summary.conversations && <MiniStatCard icon={MessageSquare} label="Conversations" value={summary.conversations} />}
-            {summary.messages && <MiniStatCard icon={MessageSquare} label="Messages" value={summary.messages} />}
-            {summary.heroSlides && <MiniStatCard icon={Image} label="Hero Slides" value={summary.heroSlides} />}
-            {summary.blogPosts && <MiniStatCard icon={FileText} label="Blog Posts" value={summary.blogPosts} />}
-            {summary.returns && <MiniStatCard icon={RotateCcw} label="Returns" value={summary.returns} />}
-            {summary.tickets && <MiniStatCard icon={Ticket} label="Tickets" value={summary.tickets} />}
-            {summary.payouts && <MiniStatCard icon={Wallet} label="Payouts" value={summary.payouts} />}
-            {summary.addresses && <MiniStatCard icon={MapPin} label="Addresses" value={summary.addresses} />}
-            {summary.notifications && <MiniStatCard icon={Bell} label="Notifications" value={summary.notifications} />}
-            {summary.media && <MiniStatCard icon={Image} label="Media" value={summary.media} />}
+            {summary.carts && (
+              <MiniStatCard
+                icon={ShoppingCart}
+                label="Carts"
+                value={summary.carts}
+              />
+            )}
+            {summary.favorites && (
+              <MiniStatCard
+                icon={Heart}
+                label="Favorites"
+                value={summary.favorites}
+              />
+            )}
+            {summary.conversations && (
+              <MiniStatCard
+                icon={MessageSquare}
+                label="Conversations"
+                value={summary.conversations}
+              />
+            )}
+            {summary.messages && (
+              <MiniStatCard
+                icon={MessageSquare}
+                label="Messages"
+                value={summary.messages}
+              />
+            )}
+            {summary.heroSlides && (
+              <MiniStatCard
+                icon={Image}
+                label="Hero Slides"
+                value={summary.heroSlides}
+              />
+            )}
+            {summary.blogPosts && (
+              <MiniStatCard
+                icon={FileText}
+                label="Blog Posts"
+                value={summary.blogPosts}
+              />
+            )}
+            {summary.returns && (
+              <MiniStatCard
+                icon={RotateCcw}
+                label="Returns"
+                value={summary.returns}
+              />
+            )}
+            {summary.tickets && (
+              <MiniStatCard
+                icon={Ticket}
+                label="Tickets"
+                value={summary.tickets}
+              />
+            )}
+            {summary.payouts && (
+              <MiniStatCard
+                icon={Wallet}
+                label="Payouts"
+                value={summary.payouts}
+              />
+            )}
+            {summary.addresses && (
+              <MiniStatCard
+                icon={MapPin}
+                label="Addresses"
+                value={summary.addresses}
+              />
+            )}
+            {summary.notifications && (
+              <MiniStatCard
+                icon={Bell}
+                label="Notifications"
+                value={summary.notifications}
+              />
+            )}
+            {summary.media && (
+              <MiniStatCard icon={Image} label="Media" value={summary.media} />
+            )}
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
@@ -371,15 +534,15 @@ export default function AdminDemoPage() {
 }
 
 // Stat Card Component
-function StatCard({ 
-  icon: Icon, 
-  color, 
-  label, 
-  value 
-}: { 
-  icon: typeof Package; 
-  color: string; 
-  label: string; 
+function StatCard({
+  icon: Icon,
+  color,
+  label,
+  value,
+}: {
+  icon: typeof Package;
+  color: string;
+  label: string;
   value: number;
 }) {
   return (
@@ -396,20 +559,22 @@ function StatCard({
 }
 
 // Mini Stat Card Component
-function MiniStatCard({ 
-  icon: Icon, 
-  label, 
-  value 
-}: { 
-  icon: typeof Package; 
-  label: string; 
+function MiniStatCard({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof Package;
+  label: string;
   value: number;
 }) {
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center gap-2">
       <Icon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
       <div>
-        <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
+        <p className="text-lg font-bold text-gray-900 dark:text-white">
+          {value}
+        </p>
         <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>
       </div>
     </div>
