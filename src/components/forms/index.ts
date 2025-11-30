@@ -22,7 +22,3 @@ export type { FormListInputProps } from "./FormListInput";
 
 export { FormKeyValueInput } from "./FormKeyValueInput";
 export type { FormKeyValueInputProps } from "./FormKeyValueInput";
-
-// Layout Components
-export { FormSection, FormRow, FormActions } from "./FormSection";
-export type { FormSectionProps, FormRowProps, FormActionsProps } from "./FormSection";

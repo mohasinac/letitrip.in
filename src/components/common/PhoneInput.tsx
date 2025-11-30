@@ -10,7 +10,7 @@ import {
 } from "@/constants/location";
 import { locationService } from "@/services/location.service";
 
-export interface MobileInputProps {
+export interface PhoneInputProps {
   value: string;
   onChange: (value: string) => void;
   countryCode?: string;
@@ -27,8 +27,8 @@ export interface MobileInputProps {
   name?: string;
 }
 
-export const MobileInput = forwardRef<HTMLInputElement, MobileInputProps>(
-  function MobileInput(
+export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
+  function PhoneInput(
     {
       value,
       onChange,
@@ -214,4 +214,4 @@ export const MobileInput = forwardRef<HTMLInputElement, MobileInputProps>(
   }
 );
 
-export default MobileInput;
+export default PhoneInput;

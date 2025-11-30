@@ -7,13 +7,8 @@ export { InlineEditRow } from "./InlineEditRow";
 export { QuickCreateRow } from "./QuickCreateRow";
 export { BulkActionBar } from "./BulkActionBar";
 export { InlineImageUpload } from "./InlineImageUpload";
-export { MobileFilterSidebar } from "./MobileFilterSidebar";
 export { TableCheckbox } from "./TableCheckbox";
-export { ResponsiveTable } from "./ResponsiveTable";
-export { UnifiedFilterSidebar } from "./UnifiedFilterSidebar";
-export { FilterSidebar } from "./FilterSidebar";
-export { default as ResourceListWrapper } from "./ResourceListWrapper";
-export { default as ResourceDetailWrapper } from "./ResourceDetailWrapper";
+export { UnifiedFilterSidebar, type FilterSection, type FilterField } from "./UnifiedFilterSidebar";
 
 // Re-export types
 export type {
@@ -24,7 +19,6 @@ export type {
   QuickCreateRowProps,
   BulkActionBarProps,
   InlineImageUploadProps,
-  MobileFilterSidebarProps,
   TableCheckboxProps,
   BulkOperationResult,
   FieldType,

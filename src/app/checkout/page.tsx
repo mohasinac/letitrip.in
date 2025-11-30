@@ -18,7 +18,7 @@ import { AddressSelector } from "@/components/checkout/AddressSelector";
 import { PaymentMethod } from "@/components/checkout/PaymentMethod";
 import { ShopOrderSummary } from "@/components/checkout/ShopOrderSummary";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
-import { MobileTextarea } from "@/components/mobile/MobileTextarea";
+import { FormTextarea } from "@/components/forms";
 import { checkoutService } from "@/services/checkout.service";
 
 declare global {
@@ -471,7 +471,7 @@ export default function CheckoutPage() {
                   ))}
 
                   <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
-                    <MobileTextarea
+                    <FormTextarea
                       label="Delivery Notes (Optional)"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}

@@ -18,7 +18,7 @@ import { formatINR, formatDiscount } from "@/lib/price.utils";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "@/components/admin/Toast";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
-import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
+import { ProductCardSkeletonGrid } from "@/components/cards";
 import type { ProductFE, ProductCardFE } from "@/types/frontend/product.types";
 import type { ShopFE } from "@/types/frontend/shop.types";
 

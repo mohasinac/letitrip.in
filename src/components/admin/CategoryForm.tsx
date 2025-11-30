@@ -11,7 +11,8 @@ import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { categoriesService } from "@/services/categories.service";
-import { Card, Input, Textarea, Checkbox, FormActions } from "@/components/ui";
+import { Card, Checkbox, FormActions } from "@/components/ui";
+import { FormInput, FormTextarea } from "@/components/forms";
 
 interface CategoryFormProps {
   initialData?: {
@@ -124,7 +125,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       } else {
         await categoriesService.update(
           initialData?.slug || "",
-          formData as any,
+          formData as any
         );
       }
 
@@ -180,7 +181,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       <Card title="Basic Information">
         <div className="space-y-4">
           {/* Name */}
-          <Input
+          <FormInput
             label="Category Name"
             required
             value={formData.name}
@@ -250,7 +251,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
           </div>
 
           {/* Sort Order */}
-          <Input
+          <FormInput
             label="Sort Order"
             type="number"
             value={formData.sort_order}
@@ -357,7 +358,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       {/* SEO Metadata */}
       <Card title="SEO Metadata">
         <div className="space-y-4">
-          <Input
+          <FormInput
             label="Meta Title"
             value={formData.meta_title}
             onChange={(e) =>
@@ -369,7 +370,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
             disabled={loading}
           />
 
-          <Textarea
+          <FormTextarea
             label="Meta Description"
             value={formData.meta_description}
             onChange={(e) =>

@@ -44,20 +44,6 @@ const mockUseCart = require("@/hooks/useCart").useCart;
 const mockUseIsMobile = require("@/hooks/useMobile").useIsMobile;
 
 // Mock components
-jest.mock("@/components/cards/ProductCard", () => ({
-  ProductCard: ({ name, onAddToCart, id }: any) => (
-    <div data-testid="product-card">
-      <h3>{name}</h3>
-      <button
-        data-testid="add-to-cart"
-        onClick={() => onAddToCart && onAddToCart(id)}
-      >
-        Add to Cart
-      </button>
-    </div>
-  ),
-}));
-
 jest.mock("@/components/common/FavoriteButton", () => ({
   FavoriteButton: () => <button data-testid="favorite-button">Favorite</button>,
 }));
@@ -78,8 +64,13 @@ jest.mock("@/components/common/UnifiedFilterSidebar", () => ({
   ),
 }));
 
-jest.mock("@/components/common/skeletons/ProductCardSkeleton", () => ({
-  ProductCardSkeletonGrid: ({ count }: any) => (
+jest.mock("@/components/cards", () => ({
+  ProductCard: ({ product }: any) => (
+    <div data-testid="product-card" data-id={product.id}>
+      {product.name}
+    </div>
+  ),
+  ProductCardSkeletonGrid: ({ count }: { count: number }) => (
     <div data-testid="skeleton-grid" data-count={count}>
       Loading...
     </div>
@@ -286,7 +277,7 @@ describe("ProductsPage", () => {
       expect(mockProductsService.list).toHaveBeenCalledWith(
         expect.objectContaining({
           search: "test search",
-        }),
+        })
       );
     });
   });
@@ -303,7 +294,7 @@ describe("ProductsPage", () => {
       expect(mockProductsService.list).toHaveBeenCalledWith(
         expect.objectContaining({
           sortBy: "price",
-        }),
+        })
       );
     });
   });
@@ -321,7 +312,7 @@ describe("ProductsPage", () => {
         expect.objectContaining({
           sortBy: "createdAt",
           // Note: The component uses sortOrder but service expects different format
-        }),
+        })
       );
     });
   });
@@ -436,7 +427,7 @@ describe("ProductsPage", () => {
         // The component makes two calls: first with defaults, then with URL params
         expect(mockProductsService.list).toHaveBeenCalledTimes(2);
       },
-      { timeout: 2000 },
+      { timeout: 2000 }
     );
 
     // Check that the second call (after URL params are processed) has the correct parameters
@@ -447,7 +438,7 @@ describe("ProductsPage", () => {
         categoryId: "cat-1",
         priceRange: { min: 500, max: 2000 },
         sortBy: "price",
-      }),
+      })
     );
 
     // Clean up
@@ -504,7 +495,7 @@ describe("ProductsPage", () => {
       expect(mockProductsService.list).toHaveBeenCalledWith(
         expect.objectContaining({
           startAfter: "next-page-cursor",
-        }),
+        })
       );
     });
   });
@@ -563,7 +554,7 @@ describe("ProductsPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Showing 2 products (Page 1)"),
+        screen.getByText("Showing 2 products (Page 1)")
       ).toBeInTheDocument();
     });
   });

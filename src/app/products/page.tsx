@@ -8,7 +8,7 @@ import { ProductCard } from "@/components/cards/ProductCard";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { PRODUCT_FILTERS } from "@/constants/filters";
-import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
+import { ProductCardSkeletonGrid } from "@/components/cards";
 import { EmptyStates } from "@/components/common/EmptyState";
 import { useIsMobile } from "@/hooks/useMobile";
 import { productsService } from "@/services/products.service";

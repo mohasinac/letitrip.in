@@ -18,7 +18,10 @@ export interface FormSelectProps
   options: FormSelectOption[];
   placeholder?: string;
   fullWidth?: boolean;
+  /** Use compact sizing (smaller padding). Default: false */
   compact?: boolean;
+  /** Show error icon alongside error message. Default: true */
+  showErrorIcon?: boolean;
 }
 
 export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
@@ -32,6 +35,7 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
       className,
       fullWidth = true,
       compact = false,
+      showErrorIcon = true,
       id,
       ...props
     },
@@ -56,9 +60,12 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
             ref={ref}
             id={selectId}
             className={cn(
-              "w-full rounded-lg border text-sm appearance-none cursor-pointer",
+              "w-full rounded-lg border appearance-none cursor-pointer",
               "transition-colors duration-200",
-              compact ? "px-3 py-1.5 pr-8" : "px-3 py-2 pr-10",
+              // Responsive sizing: touch-optimized on mobile, compact on desktop
+              compact
+                ? "px-3 py-1.5 pr-8 text-sm"
+                : "min-h-[48px] md:min-h-0 px-4 md:px-3 py-3 md:py-2 pr-10 text-base md:text-sm",
               "focus:outline-none focus:ring-1",
               error
                 ? "border-red-500 focus:border-red-500 focus:ring-red-500"
@@ -103,9 +110,22 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
         {error && (
           <p
             id={`${selectId}-error`}
-            className="mt-1 text-sm text-red-600 dark:text-red-400"
+            className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1"
             role="alert"
           >
+            {showErrorIcon && (
+              <svg
+                className="w-4 h-4 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            )}
             {error}
           </p>
         )}

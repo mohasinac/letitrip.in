@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
 import type { ShopCardFE } from "@/types/frontend/shop.types";

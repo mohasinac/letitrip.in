@@ -1,8 +1,35 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, ReactNode } from "react";
 import { X, Search, ChevronDown, ChevronUp } from "lucide-react";
-import { FilterSection, FilterField } from "./FilterSidebar";
+
+export interface FilterField {
+  key: string;
+  label: string;
+  type:
+    | "text"
+    | "number"
+    | "select"
+    | "multiselect"
+    | "checkbox"
+    | "radio"
+    | "date"
+    | "daterange"
+    | "range";
+  options?: { label: string; value: string | number; count?: number }[];
+  placeholder?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  icon?: ReactNode;
+}
+
+export interface FilterSection {
+  title: string;
+  fields: FilterField[];
+  collapsible?: boolean;
+  defaultCollapsed?: boolean;
+}
 
 export interface UnifiedFilterSidebarProps {
   sections: FilterSection[];

@@ -8,19 +8,6 @@ export {
   createEditAction,
   createMoreAction,
 } from "./MobileSwipeActions";
-export { MobileFormInput } from "./MobileFormInput";
-export { MobileFormSelect } from "./MobileFormSelect";
-export { MobileTextarea } from "./MobileTextarea";
-export {
-  MobileSkeleton,
-  ProductCardSkeleton,
-  OrderCardSkeleton,
-  UserCardSkeleton,
-  AddressCardSkeleton,
-  DashboardStatSkeleton,
-  TableRowSkeleton,
-  ListSkeleton,
-} from "./MobileSkeleton";
 export { MobileAdminSidebar } from "./MobileAdminSidebar";
 export { MobileSellerSidebar } from "./MobileSellerSidebar";
 export { MobileInstallPrompt } from "./MobileInstallPrompt";

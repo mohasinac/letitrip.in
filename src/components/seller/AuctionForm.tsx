@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import SlugInput from "@/components/common/SlugInput";
@@ -8,14 +8,13 @@ import RichTextEditor from "@/components/common/RichTextEditor";
 import type { ProductAuctionFormFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 import { auctionsService } from "@/services/auctions.service";
+import { Card, FormActions } from "@/components/ui";
 import {
-  Card,
-  Input,
-  Select,
-  Textarea,
-  FormActions,
-  SelectOption,
-} from "@/components/ui";
+  FormInput,
+  FormTextarea,
+  FormSelect,
+  type FormSelectOption,
+} from "@/components/forms";
 
 interface AuctionFormProps {
   mode: "create" | "edit";
@@ -25,7 +24,7 @@ interface AuctionFormProps {
   isSubmitting?: boolean;
 }
 
-const STATUS_OPTIONS: SelectOption[] = [
+const STATUS_OPTIONS: FormSelectOption[] = [
   { value: AuctionStatus.DRAFT, label: "Draft" },
   { value: AuctionStatus.SCHEDULED, label: "Scheduled" },
   { value: AuctionStatus.ACTIVE, label: "Active" },
@@ -150,7 +149,7 @@ export default function AuctionForm({
       {/* Basic Information */}
       <Card title="Basic Information">
         <div className="space-y-4">
-          <Input
+          <FormInput
             label="Auction Name"
             required
             value={formData.name}
@@ -199,7 +198,7 @@ export default function AuctionForm({
       {/* Bidding Details */}
       <Card title="Bidding Details">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Input
+          <FormInput
             label="Starting Bid (₹)"
             required
             type="number"
@@ -207,20 +206,20 @@ export default function AuctionForm({
             onChange={(e) =>
               handleChange("startingBid", parseFloat(e.target.value))
             }
-            min="1"
-            step="1"
+            min={1}
+            step={1}
             disabled={isSubmitting}
           />
 
-          <Input
+          <FormInput
             label="Reserve Price (₹)"
             type="number"
             value={formData.reservePrice}
             onChange={(e) =>
               handleChange("reservePrice", parseFloat(e.target.value) || 0)
             }
-            min="0"
-            step="1"
+            min={0}
+            step={1}
             helperText="Minimum price for the item to be sold (optional)"
             disabled={isSubmitting}
           />
@@ -257,7 +256,7 @@ export default function AuctionForm({
       {/* Media */}
       <Card title="Media">
         <div className="space-y-4">
-          <Textarea
+          <FormTextarea
             label="Images (URLs, comma-separated)"
             value={formData.images.join(", ")}
             onChange={(e) =>
@@ -275,7 +274,7 @@ export default function AuctionForm({
             disabled={isSubmitting}
           />
 
-          <Textarea
+          <FormTextarea
             label="Videos (URLs, comma-separated)"
             value={(formData.videos || []).join(", ")}
             onChange={(e) =>
@@ -297,7 +296,7 @@ export default function AuctionForm({
 
       {/* Status */}
       <Card title="Status">
-        <Select
+        <FormSelect
           label="Auction Status"
           value={formData.status}
           onChange={(e) =>

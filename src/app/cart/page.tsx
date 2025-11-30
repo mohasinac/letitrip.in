@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, ArrowLeft, Trash2, Loader2 } from "lucide-react";
@@ -9,7 +8,7 @@ import { CartItem } from "@/components/cart/CartItem";
 import { CartSummary } from "@/components/cart/CartSummary";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import Toast from "@/components/common/Toast";
+import { toast } from "@/components/admin/Toast";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -28,7 +27,6 @@ export default function CartPage() {
     removeCoupon,
   } = useCart();
   const [showClearDialog, setShowClearDialog] = useState(false);
-  const [showToast, setShowToast] = useState(false);
 
   const handleClearCart = async () => {
     try {
@@ -60,7 +58,7 @@ export default function CartPage() {
   // Show toast when merge succeeds
   useEffect(() => {
     if (mergeSuccess) {
-      setShowToast(true);
+      toast.success("Your cart items have been successfully merged!");
     }
   }, [mergeSuccess]);
 
@@ -110,16 +108,7 @@ export default function CartPage() {
 
   return (
     <>
-      {/* Toast Notification */}
-      <Toast
-        message="Your cart items have been successfully merged!"
-        type="success"
-        duration={3000}
-        show={showToast && mergeSuccess}
-        onClose={() => setShowToast(false)}
-      />
-
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Header - Mobile Optimized */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

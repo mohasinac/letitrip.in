@@ -6,7 +6,8 @@ import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { useShopSlugValidation } from "@/lib/validation/slug";
 import type { ShopFE } from "@/types/frontend/shop.types";
-import { Card, Input, Button, FormActions } from "@/components/ui";
+import { Card, Button, FormActions } from "@/components/ui";
+import { FormInput } from "@/components/forms";
 
 interface ShopFormProps {
   shop?: ShopFE;
@@ -84,7 +85,7 @@ export default function ShopForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card title="Basic Information">
         <div className="space-y-4">
-          <Input
+          <FormInput
             label="Shop Name"
             required
             value={name}
@@ -147,7 +148,7 @@ export default function ShopForm({
       <Card title="Contact Information">
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
+            <FormInput
               label="Email"
               type="email"
               value={email}
@@ -156,7 +157,7 @@ export default function ShopForm({
               placeholder="shop@example.com"
               disabled={isSubmitting}
             />
-            <Input
+            <FormInput
               label="Phone"
               type="tel"
               value={phone}
@@ -167,7 +168,7 @@ export default function ShopForm({
             />
           </div>
 
-          <Input
+          <FormInput
             label="Location"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
@@ -175,7 +176,7 @@ export default function ShopForm({
             disabled={isSubmitting}
           />
 
-          <Input
+          <FormInput
             label="Website"
             type="url"
             value={website}
@@ -211,8 +212,8 @@ export default function ShopForm({
                 ? "Creating..."
                 : "Saving..."
               : mode === "create"
-                ? "Create Shop"
-                : "Save Changes"}
+              ? "Create Shop"
+              : "Save Changes"}
           </Button>
         }
       />

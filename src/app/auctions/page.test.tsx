@@ -61,8 +61,11 @@ jest.mock("@/components/common/EmptyState", () => ({
   },
 }));
 
-jest.mock("@/components/common/skeletons/AuctionCardSkeleton", () => ({
-  AuctionCardSkeletonGrid: ({ count }: any) => (
+jest.mock("@/components/cards", () => ({
+  CardGrid: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="card-grid">{children}</div>
+  ),
+  AuctionCardSkeletonGrid: ({ count }: { count: number }) => (
     <div data-testid="auction-skeleton-grid" data-count={count} />
   ),
 }));
@@ -223,7 +226,7 @@ describe("AuctionsPage", () => {
       });
 
       expect(
-        screen.getByRole("heading", { level: 1, name: "Live Auctions" }),
+        screen.getByRole("heading", { level: 1, name: "Live Auctions" })
       ).toBeInTheDocument();
       expect(screen.getByText("Showing 1-2 of 2 results")).toBeInTheDocument();
     });
@@ -268,7 +271,7 @@ describe("AuctionsPage", () => {
         expect(mockAuctionsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             status: "ended",
-          }),
+          })
         );
       });
     });
@@ -291,7 +294,7 @@ describe("AuctionsPage", () => {
         expect(mockAuctionsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             featured: true,
-          }),
+          })
         );
       });
     });
@@ -331,7 +334,7 @@ describe("AuctionsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByPlaceholderText("Search auctions..."),
+          screen.getByPlaceholderText("Search auctions...")
         ).toBeInTheDocument();
       });
 
@@ -342,7 +345,7 @@ describe("AuctionsPage", () => {
         expect(mockAuctionsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             search: "laptop",
-          }),
+          })
         );
       });
     });
@@ -365,7 +368,7 @@ describe("AuctionsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByTestId("filter-sidebar-desktop"),
+          screen.getByTestId("filter-sidebar-desktop")
         ).toBeInTheDocument();
       });
     });
@@ -462,7 +465,7 @@ describe("AuctionsPage", () => {
       // Switch to list view
       const listButtons = screen.getAllByRole("button");
       const listButton = listButtons.find((btn) =>
-        btn.textContent?.includes("List"),
+        btn.textContent?.includes("List")
       );
       if (listButton) {
         fireEvent.click(listButton);
@@ -493,7 +496,7 @@ describe("AuctionsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Showing 1-12 of 25 results"),
+          screen.getByText("Showing 1-12 of 25 results")
         ).toBeInTheDocument();
       });
 
@@ -515,7 +518,7 @@ describe("AuctionsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Showing 1-2 of 2 results"),
+          screen.getByText("Showing 1-2 of 2 results")
         ).toBeInTheDocument();
       });
 
@@ -598,18 +601,18 @@ describe("AuctionsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole("heading", { level: 1, name: "Live Auctions" }),
+          screen.getByRole("heading", { level: 1, name: "Live Auctions" })
         ).toBeInTheDocument();
       });
 
       // Find the stats container (the grid with 3 columns)
       const statsContainer = document.querySelector(
-        ".mb-6.grid.gap-4.sm\\:grid-cols-3",
+        ".mb-6.grid.gap-4.sm\\:grid-cols-3"
       ) as HTMLElement;
       expect(statsContainer).toBeInTheDocument();
 
       const statLabels = within(statsContainer).getAllByText(
-        /^Live Auctions$|^Ending Soon$|^Total Bids$/,
+        /^Live Auctions$|^Ending Soon$|^Total Bids$/
       );
       expect(statLabels).toHaveLength(3);
 
@@ -744,7 +747,7 @@ describe("AuctionsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByTestId("filter-sidebar-desktop"),
+          screen.queryByTestId("filter-sidebar-desktop")
         ).not.toBeInTheDocument();
         expect(screen.getByTestId("filter-sidebar-mobile")).toBeInTheDocument();
       });
@@ -766,10 +769,10 @@ describe("AuctionsPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByTestId("filter-sidebar-desktop"),
+          screen.getByTestId("filter-sidebar-desktop")
         ).toBeInTheDocument();
         expect(
-          screen.queryByTestId("filter-sidebar-mobile"),
+          screen.queryByTestId("filter-sidebar-mobile")
         ).not.toBeInTheDocument();
       });
     });
@@ -881,7 +884,7 @@ describe("AuctionsPage", () => {
             expect.objectContaining({
               status: AuctionStatus.ACTIVE,
               featured: true,
-            }),
+            })
           );
         });
       });
@@ -911,7 +914,7 @@ describe("AuctionsPage", () => {
         await waitFor(() => {
           expect(mockRouter.push).toHaveBeenCalledWith(
             expect.stringMatching(/^\/auctions/),
-            expect.anything(),
+            expect.anything()
           );
         });
       });
@@ -959,7 +962,7 @@ describe("AuctionsPage", () => {
             expect.objectContaining({
               sortBy: "currentPrice",
               sortOrder: "asc",
-            }),
+            })
           );
         });
       });
@@ -984,7 +987,7 @@ describe("AuctionsPage", () => {
             expect.objectContaining({
               sortBy: "endTime",
               sortOrder: "asc",
-            }),
+            })
           );
         });
       });
@@ -1009,7 +1012,7 @@ describe("AuctionsPage", () => {
             expect.objectContaining({
               sortBy: "totalBids",
               sortOrder: "desc",
-            }),
+            })
           );
         });
       });
@@ -1037,7 +1040,7 @@ describe("AuctionsPage", () => {
 
       it("shows error state when API call fails", async () => {
         mockAuctionsService.list.mockRejectedValue(
-          new Error("Failed to load auctions"),
+          new Error("Failed to load auctions")
         );
 
         render(<AuctionsPage />);
@@ -1085,7 +1088,7 @@ describe("AuctionsPage", () => {
         // Should call API with search param
         await waitFor(() => {
           expect(mockAuctionsService.list).toHaveBeenCalledWith(
-            expect.objectContaining({ search: "gaming laptop" }),
+            expect.objectContaining({ search: "gaming laptop" })
           );
         });
       });
@@ -1107,7 +1110,7 @@ describe("AuctionsPage", () => {
         });
 
         const searchInput = screen.getByPlaceholderText(
-          /search/i,
+          /search/i
         ) as HTMLInputElement;
 
         // Enter search text
@@ -1159,7 +1162,7 @@ describe("AuctionsPage", () => {
             expect.objectContaining({
               status: AuctionStatus.ACTIVE,
               sortBy: "currentPrice",
-            }),
+            })
           );
         });
       });
@@ -1185,7 +1188,7 @@ describe("AuctionsPage", () => {
 
         expect(mockRouter.push).toHaveBeenCalledWith(
           expect.any(String),
-          expect.objectContaining({ scroll: false }),
+          expect.objectContaining({ scroll: false })
         );
       });
 
@@ -1239,7 +1242,7 @@ describe("AuctionsPage", () => {
 
         await waitFor(() => {
           expect(
-            screen.getByRole("heading", { level: 1, name: "Live Auctions" }),
+            screen.getByRole("heading", { level: 1, name: "Live Auctions" })
           ).toBeInTheDocument();
         });
       });
@@ -1265,7 +1268,7 @@ describe("AuctionsPage", () => {
 
         expect(mockRouter.push).toHaveBeenCalledWith(
           expect.any(String),
-          expect.objectContaining({ scroll: false }),
+          expect.objectContaining({ scroll: false })
         );
       });
 
@@ -1288,7 +1291,7 @@ describe("AuctionsPage", () => {
         const gridButtons = screen.getAllByRole("button");
         const gridButton = gridButtons.find((b) => b.querySelector("svg"));
         const listButton = gridButtons.find(
-          (b, i) => i > 0 && b.querySelector("svg"),
+          (b, i) => i > 0 && b.querySelector("svg")
         );
 
         // Rapid toggles - if buttons exist
@@ -1301,7 +1304,7 @@ describe("AuctionsPage", () => {
 
         // Should still show page title (using heading selector to avoid duplicate matches)
         expect(
-          screen.getByRole("heading", { level: 1, name: "Live Auctions" }),
+          screen.getByRole("heading", { level: 1, name: "Live Auctions" })
         ).toBeInTheDocument();
       });
     });
@@ -1331,7 +1334,7 @@ describe("AuctionsPage", () => {
 
         // Component loaded successfully (using heading selector to avoid duplicate matches)
         expect(
-          screen.getByRole("heading", { level: 1, name: "Live Auctions" }),
+          screen.getByRole("heading", { level: 1, name: "Live Auctions" })
         ).toBeInTheDocument();
       });
 

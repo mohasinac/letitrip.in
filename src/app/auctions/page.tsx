@@ -16,7 +16,7 @@ import Link from "next/link";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState, EmptyStates } from "@/components/common/EmptyState";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
+import { AuctionCardSkeletonGrid } from "@/components/cards";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import { auctionsService } from "@/services/auctions.service";

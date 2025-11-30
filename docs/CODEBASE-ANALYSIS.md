@@ -11,7 +11,7 @@ All documentation has been split into focused, actionable documents:
 | 01  | [Dark Mode Issues](./01-dark-mode-issues.md)                     | ✅ Complete      | High     | All components have dark mode support |
 | 02  | [Mobile Responsiveness](./02-mobile-responsiveness.md)           | ✅ Complete      | High     | Mobile navigation and layout fixed    |
 | 03  | [Form UX Improvements](./03-form-ux-improvements.md)             | ✅ Complete      | Medium   | Inline errors implemented             |
-| 04  | [Component Consolidation](./04-component-consolidation.md)       | 🟡 Deferred      | Medium   | Some consolidation deferred           |
+| 04  | [Component Consolidation](./04-component-consolidation.md)       | 🟡 Planned       | Medium   | Some consolidation Planned            |
 | 05  | [Sieve Pagination Migration](./05-sieve-pagination-migration.md) | ✅ Complete      | High     | All core APIs migrated to Sieve       |
 | 06  | [Firebase Functions](./06-firebase-functions.md)                 | 🟡 Planned       | Medium   | Background jobs and triggers          |
 | 07  | [Infrastructure Config](./07-infrastructure-config.md)           | 🟡 Needs Updates | Medium   | Firestore, Storage, Vercel configs    |

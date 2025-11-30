@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { User, Mail, Phone, MapPin, Save } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { authService } from "@/services/auth.service";
-import { MobileFormInput } from "@/components/mobile/MobileFormInput";
+import { FormInput } from "@/components/forms";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -73,7 +73,7 @@ export default function SettingsPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name - Mobile Optimized */}
-          <MobileFormInput
+          <FormInput
             label="Full Name"
             type="text"
             value={formData.name}
@@ -84,7 +84,7 @@ export default function SettingsPage() {
           />
 
           {/* Email - Mobile Optimized */}
-          <MobileFormInput
+          <FormInput
             label="Email Address"
             type="email"
             value={formData.email}
@@ -98,7 +98,7 @@ export default function SettingsPage() {
           />
 
           {/* Phone - Mobile Optimized */}
-          <MobileFormInput
+          <FormInput
             label="Phone Number"
             type="tel"
             value={formData.phone}

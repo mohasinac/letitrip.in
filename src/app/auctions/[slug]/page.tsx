@@ -21,7 +21,7 @@ import { shopsService } from "@/services/shops.service";
 import { notFound } from "@/lib/error-redirects";
 import { formatINR, safeToLocaleString } from "@/lib/price.utils";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
-import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
+import { AuctionCardSkeletonGrid } from "@/components/cards";
 import type {
   AuctionFE,
   AuctionCardFE,

@@ -134,8 +134,8 @@ jest.mock("@/components/common/ErrorMessage", () => ({
   ),
 }));
 
-jest.mock("@/components/common/skeletons/ProductCardSkeleton", () => ({
-  ProductCardSkeletonGrid: ({ count }: any) => (
+jest.mock("@/components/cards", () => ({
+  ProductCardSkeletonGrid: ({ count }: { count: number }) => (
     <div data-testid="skeleton-grid" data-count={count}>
       Loading...
     </div>
@@ -304,22 +304,20 @@ describe("ProductPage", () => {
     // The component uses Suspense, so it immediately suspends
     // We can't test the loading state directly, but we can test that it renders
     expect(() =>
-      render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
-      ),
+      render(<ProductPage params={Promise.resolve({ slug: "test-product" })} />)
     ).not.toThrow();
   });
 
   it("loads and displays product details", async () => {
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
     await waitFor(() => {
       expect(mockProductsService.getBySlug).toHaveBeenCalledWith(
-        "test-product",
+        "test-product"
       );
       expect(mockShopsService.getBySlug).toHaveBeenCalledWith("shop-1");
     });
@@ -327,7 +325,7 @@ describe("ProductPage", () => {
     // Check main product elements
     expect(screen.getByText("Test Product")).toBeInTheDocument();
     expect(
-      screen.getByText("This is a test product description"),
+      screen.getByText("This is a test product description")
     ).toBeInTheDocument();
     expect(screen.getAllByText("₹999")).toHaveLength(2); // Price appears in center and right columns
     expect(screen.getByText("-23%")).toBeInTheDocument();
@@ -355,7 +353,7 @@ describe("ProductPage", () => {
   it("displays product gallery with images and videos", async () => {
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -370,7 +368,7 @@ describe("ProductPage", () => {
   it("handles back navigation", async () => {
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -388,7 +386,7 @@ describe("ProductPage", () => {
   it("handles quantity selection", async () => {
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -406,7 +404,7 @@ describe("ProductPage", () => {
   it("handles add to cart", async () => {
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -432,7 +430,7 @@ describe("ProductPage", () => {
   it("handles buy now", async () => {
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -458,7 +456,7 @@ describe("ProductPage", () => {
   it("handles add to cart with custom quantity", async () => {
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -492,7 +490,7 @@ describe("ProductPage", () => {
 
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -513,7 +511,7 @@ describe("ProductPage", () => {
 
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -531,12 +529,12 @@ describe("ProductPage", () => {
 
   it("handles product load error", async () => {
     mockProductsService.getBySlug.mockRejectedValueOnce(
-      new Error("Product not found"),
+      new Error("Product not found")
     );
 
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -554,7 +552,7 @@ describe("ProductPage", () => {
 
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -571,7 +569,7 @@ describe("ProductPage", () => {
   it("displays product specifications", async () => {
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -588,7 +586,7 @@ describe("ProductPage", () => {
 
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -602,7 +600,7 @@ describe("ProductPage", () => {
   it("displays product features", async () => {
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -613,7 +611,7 @@ describe("ProductPage", () => {
     expect(screen.getByText("Condition:")).toBeInTheDocument();
     expect(screen.getByText("new")).toBeInTheDocument();
     expect(
-      screen.getByText("7-day return policy available"),
+      screen.getByText("7-day return policy available")
     ).toBeInTheDocument();
   });
 
@@ -627,7 +625,7 @@ describe("ProductPage", () => {
 
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -642,7 +640,7 @@ describe("ProductPage", () => {
   it("displays discount information correctly", async () => {
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -661,7 +659,7 @@ describe("ProductPage", () => {
 
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -676,7 +674,7 @@ describe("ProductPage", () => {
   it("passes correct props to child components", async () => {
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -687,39 +685,39 @@ describe("ProductPage", () => {
     // Check that components receive correct props
     expect(screen.getByTestId("product-reviews")).toHaveAttribute(
       "data-product-id",
-      "product-1",
+      "product-1"
     );
     expect(screen.getByTestId("product-variants")).toHaveAttribute(
       "data-product-id",
-      "product-1",
+      "product-1"
     );
     expect(screen.getByTestId("product-variants")).toHaveAttribute(
       "data-category-id",
-      "cat-1",
+      "cat-1"
     );
     expect(screen.getByTestId("seller-products")).toHaveAttribute(
       "data-shop-id",
-      "shop-1",
+      "shop-1"
     );
     expect(screen.getByTestId("seller-products")).toHaveAttribute(
       "data-shop-name",
-      "Test Shop",
+      "Test Shop"
     );
     expect(screen.getByTestId("similar-products")).toHaveAttribute(
       "data-product-id",
-      "product-1",
+      "product-1"
     );
   });
 
   it("handles retry on error", async () => {
     mockProductsService.getBySlug.mockRejectedValueOnce(
-      new Error("Network error"),
+      new Error("Network error")
     );
     mockProductsService.getBySlug.mockResolvedValueOnce(mockProduct);
 
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -738,12 +736,12 @@ describe("ProductPage", () => {
 
   it("handles go back on error", async () => {
     mockProductsService.getBySlug.mockRejectedValueOnce(
-      new Error("Product not found"),
+      new Error("Product not found")
     );
 
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -764,7 +762,7 @@ describe("ProductPage", () => {
 
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 
@@ -786,7 +784,7 @@ describe("ProductPage", () => {
 
     await act(async () => {
       render(
-        <ProductPage params={Promise.resolve({ slug: "test-product" })} />,
+        <ProductPage params={Promise.resolve({ slug: "test-product" })} />
       );
     });
 

@@ -19,7 +19,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/useMobile";
 import type { CouponFE } from "@/types/frontend/coupon.types";
 import { toast } from "@/components/admin/Toast";
-import type { FilterSection } from "@/components/common/FilterSidebar";
+import type { FilterSection } from "@/components/common/UnifiedFilterSidebar";
 
 const COUPON_FILTERS: FilterSection[] = [
   {

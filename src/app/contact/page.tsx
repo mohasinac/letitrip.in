@@ -14,8 +14,7 @@ import {
   FileText,
 } from "lucide-react";
 import { supportService } from "@/services/support.service";
-import { MobileFormInput } from "@/components/mobile/MobileFormInput";
-import { MobileTextarea } from "@/components/mobile/MobileTextarea";
+import { FormInput, FormTextarea } from "@/components/forms";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -195,7 +194,7 @@ export default function ContactPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Name - Mobile Optimized */}
-              <MobileFormInput
+              <FormInput
                 label="Your Name"
                 type="text"
                 id="name"
@@ -209,7 +208,7 @@ export default function ContactPage() {
               />
 
               {/* Email - Mobile Optimized */}
-              <MobileFormInput
+              <FormInput
                 label="Email Address"
                 type="email"
                 id="email"
@@ -223,7 +222,7 @@ export default function ContactPage() {
               />
 
               {/* Phone - Mobile Optimized */}
-              <MobileFormInput
+              <FormInput
                 label="Phone Number"
                 type="tel"
                 id="phone"
@@ -237,7 +236,7 @@ export default function ContactPage() {
               />
 
               {/* Subject - Mobile Optimized */}
-              <MobileFormInput
+              <FormInput
                 label="Subject"
                 type="text"
                 id="subject"
@@ -250,7 +249,7 @@ export default function ContactPage() {
               />
 
               {/* Message - Mobile Optimized */}
-              <MobileTextarea
+              <FormTextarea
                 label="Message"
                 id="message"
                 name="message"

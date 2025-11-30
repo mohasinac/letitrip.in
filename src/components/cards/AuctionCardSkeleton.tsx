@@ -6,7 +6,7 @@
 
 import React from "react";
 
-export default function AuctionCardSkeleton() {
+export function AuctionCardSkeleton() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse">
       {/* Image Skeleton */}
@@ -38,6 +38,22 @@ export default function AuctionCardSkeleton() {
         {/* Button Skeleton */}
         <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-full" />
       </div>
+    </div>
+  );
+}
+
+export interface AuctionCardSkeletonGridProps {
+  count?: number;
+}
+
+export function AuctionCardSkeletonGrid({
+  count = 8,
+}: AuctionCardSkeletonGridProps) {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      {Array.from({ length: count }).map((_, index) => (
+        <AuctionCardSkeleton key={index} />
+      ))}
     </div>
   );
 }

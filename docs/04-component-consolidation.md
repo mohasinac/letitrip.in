@@ -1,33 +1,87 @@
 # Component Consolidation Plan
 
-> **Status**: 🟡 Ready for Implementation
+> **Status**: 🟢 Form, Skeleton, Filter & Utility Components Complete
 > **Priority**: Medium
-> **Last Updated**: November 30, 2025
+> **Last Updated**: January 2025
 
-## Duplicate Components to Merge
+## ✅ Form Components (COMPLETE)
+
+All form components consolidated into `/src/components/forms/`:
+
+| Unified Component | Replaces                     | Status      |
+| ----------------- | ---------------------------- | ----------- |
+| `FormInput`       | `Input`, `MobileFormInput`   | ✅ Complete |
+| `FormTextarea`    | `Textarea`, `MobileTextarea` | ✅ Complete |
+| `FormSelect`      | `Select`, `MobileFormSelect` | ✅ Complete |
+
+**See**: [Form Component Migration](./10-form-component-migration.md)
+
+## ✅ Skeleton Components (COMPLETE)
+
+All skeleton components consolidated into `/src/components/cards/`:
+
+| Unified Component         | Replaces                                | Status      |
+| ------------------------- | --------------------------------------- | ----------- |
+| `ProductCardSkeleton`     | `/common/skeletons/ProductCardSkeleton` | ✅ Complete |
+| `ProductCardSkeletonGrid` | Grid wrapper added to same file         | ✅ Complete |
+| `AuctionCardSkeleton`     | `/common/skeletons/AuctionCardSkeleton` | ✅ Complete |
+| `AuctionCardSkeletonGrid` | Grid wrapper added to same file         | ✅ Complete |
+
+Deleted duplicates:
+
+- `/src/components/common/skeletons/` folder (removed entirely)
+- `/src/components/common/LoadingSkeleton.tsx`
+- `/src/components/common/ErrorState.tsx`
+
+Mobile-specific skeletons renamed to avoid conflicts:
+
+- `ProductCardSkeleton` → `MobileProductCardSkeleton` in `/components/mobile/MobileSkeleton.tsx`
+
+## ✅ Filter Components (COMPLETE)
+
+| Unified Component      | Replaces              | Status      |
+| ---------------------- | --------------------- | ----------- |
+| `UnifiedFilterSidebar` | `FilterSidebar`       | ✅ Complete |
+| `UnifiedFilterSidebar` | `MobileFilterSidebar` | ✅ Complete |
+| `UnifiedFilterSidebar` | `MobileFilterDrawer`  | ✅ Complete |
+
+Deleted:
+
+- `/src/components/common/FilterSidebar.tsx` - Types moved to UnifiedFilterSidebar
+- `/src/components/common/MobileFilterSidebar.tsx` - Unused
+- `/src/components/common/MobileFilterDrawer.tsx` - Unused
+
+## ✅ Utility Components (COMPLETE)
+
+| Unified Component | Replaces                   | Status      |
+| ----------------- | -------------------------- | ----------- |
+| `toast` (admin)   | `Toast` (common)           | ✅ Complete |
+| `LoadingSpinner`  | Moved to `/common/`        | ✅ Complete |
+| `PhoneInput`      | Renamed from `MobileInput` | ✅ Complete |
+| `ErrorMessage`    | `ErrorState`               | ✅ Complete |
+
+Deleted:
+
+- `/src/components/common/Toast.tsx` - Using admin Toast global system
+- Renamed `/common/MobileInput.tsx` → `/common/PhoneInput.tsx` (clearer naming)
+- Moved `/admin/LoadingSpinner.tsx` → `/common/LoadingSpinner.tsx`
+
+## Remaining Components to Review
 
 ### UI Components
 
-| Keep               | Remove/Merge       | Reason                          |
-| ------------------ | ------------------ | ------------------------------- |
-| `Input`            | `MobileInput`      | Use responsive design instead   |
-| `Textarea`         | `MobileTextarea`   | Use responsive design instead   |
-| `Select`           | `MobileFormSelect` | Use responsive design instead   |
-| `BaseCard`         | `Card`             | Consolidate to single component |
-| `DataTable`        | `ResponsiveTable`  | Keep DataTable, add responsive  |
-| `LoadingSkeleton`  | `Skeleton`         | Keep one skeleton component     |
-| `ErrorState`       | `ErrorMessage`     | Consolidate error display       |
-| `Toast`            | `Admin/Toast`      | Use single toast system         |
-| `SearchBar`        | `Layout/SearchBar` | Consolidate search components   |
-| `ProductQuickView` | `AuctionQuickView` | Create generic QuickView        |
+| Keep        | Remove/Merge                   | Reason                        | Status     |
+| ----------- | ------------------------------ | ----------------------------- | ---------- |
+| `BaseCard`  | `Card`                         | Both serve different purposes | ⬜ Review  |
+| `DataTable` | `ResponsiveTable`, `BaseTable` | Similar table implementations | ⬜ Pending |
 
-### Filter Components
+### Notes on Non-Duplicates
 
-| Keep                   | Remove/Merge          | Reason                      |
-| ---------------------- | --------------------- | --------------------------- |
-| `UnifiedFilterSidebar` | `FilterSidebar`       | Already unified             |
-| `UnifiedFilterSidebar` | `MobileFilterSidebar` | Already handles mobile      |
-| `UnifiedFilterSidebar` | `MobileFilterDrawer`  | Already handles drawer mode |
+These were reviewed and determined NOT to be duplicates:
+
+- `SearchBar` (layout) vs `SearchBar` (common) - Different purposes (header search vs autocomplete)
+- `ProductQuickView` vs `AuctionQuickView` - Domain-specific functionality
+- `Card` vs `BaseCard` - Card is container, BaseCard is interactive link card
 
 ## Card Components Hierarchy
 
@@ -58,12 +112,15 @@ interface BaseCardProps {
 
 ## Fix Checklist
 
-### Phase 1: Form Components
+### Phase 1: Form Components ✅ COMPLETE
 
-- [ ] Merge Input + MobileInput
-- [ ] Merge Textarea + MobileTextarea
-- [ ] Merge Select + MobileFormSelect
-- [ ] Update all usages
+- [x] Merge Input + MobileFormInput → `FormInput`
+- [x] Merge Textarea + MobileTextarea → `FormTextarea`
+- [x] Merge Select + MobileFormSelect → `FormSelect`
+- [x] Update all usages
+- [x] Add responsive sizing (touch-optimized on mobile)
+- [x] Add error icons
+- [x] Add inputMode auto-detection
 
 ### Phase 2: Card Components
 
@@ -83,8 +140,8 @@ interface BaseCardProps {
 
 ### Phase 4: Utility Components
 
-- [ ] Consolidate LoadingSkeleton + Skeleton
-- [ ] Consolidate ErrorState + ErrorMessage
+- [x] Consolidate LoadingSkeleton + Skeleton → All now in `/cards/`
+- [x] Consolidate ErrorState + ErrorMessage → Kept ErrorMessage only
 - [ ] Consolidate Toast components
 - [ ] Merge ProductQuickView + AuctionQuickView
 
@@ -102,15 +159,17 @@ src/components/
 ├── cards/                 # Card components
 │   ├── BaseCard.tsx
 │   ├── ProductCard.tsx
+│   ├── ProductCardSkeleton.tsx   # Includes ProductCardSkeletonGrid
 │   ├── AuctionCard.tsx
+│   ├── AuctionCardSkeleton.tsx   # Includes AuctionCardSkeletonGrid
 │   ├── ShopCard.tsx
+│   ├── ShopCardSkeleton.tsx
 │   ├── CategoryCard.tsx
+│   ├── CategoryCardSkeleton.tsx
 │   ├── BlogCard.tsx
 │   ├── ReviewCard.tsx
 │   ├── CardGrid.tsx
-│   └── skeletons/
-│       ├── ProductCardSkeleton.tsx
-│       └── ...
+│   └── index.ts              # Exports all cards and skeletons
 ├── common/                # Shared components
 │   ├── DataTable.tsx
 │   ├── FilterSidebar.tsx

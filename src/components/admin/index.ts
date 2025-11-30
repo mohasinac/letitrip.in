@@ -5,6 +5,6 @@
 
 export { AdminPageHeader } from "./AdminPageHeader";
 export { ToggleSwitch } from "./ToggleSwitch";
-export { LoadingSpinner } from "./LoadingSpinner";
+export { LoadingSpinner } from "@/components/common/LoadingSpinner";
 export { toast, ToastContainer } from "./Toast";
 export type { ToastType } from "./Toast";

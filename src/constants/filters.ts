@@ -3,7 +3,7 @@
  * Predefined filter configurations for each resource type
  */
 
-import { FilterSection } from "@/components/common/FilterSidebar";
+import { FilterSection } from "@/components/common/UnifiedFilterSidebar";
 
 /**
  * Product Filters Configuration

@@ -13,7 +13,7 @@ import {
   MapPin as MapPinIcon,
 } from "lucide-react";
 import { PincodeInput } from "./PincodeInput";
-import { MobileInput } from "./MobileInput";
+import { PhoneInput } from "./PhoneInput";
 import { GPSButton } from "./GPSButton";
 import { StateSelector } from "./StateSelector";
 import { addressService } from "@/services/address.service";
@@ -298,7 +298,7 @@ export function SmartAddressForm({
             name="mobileNumber"
             control={control}
             render={({ field }) => (
-              <MobileInput
+              <PhoneInput
                 value={field.value || ""}
                 onChange={field.onChange}
                 countryCode={watch("countryCode")}
@@ -316,7 +316,7 @@ export function SmartAddressForm({
           name="alternateMobileNumber"
           control={control}
           render={({ field }) => (
-            <MobileInput
+            <PhoneInput
               value={field.value || ""}
               onChange={field.onChange}
               countryCode={watch("countryCode")}

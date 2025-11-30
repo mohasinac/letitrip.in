@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { COMPANY_NAME } from "@/constants/navigation";
-import { MobileFormInput } from "@/components/mobile/MobileFormInput";
+import { FormInput } from "@/components/forms";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 
@@ -103,7 +103,7 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name - Mobile Optimized */}
-            <MobileFormInput
+            <FormInput
               label="Full Name"
               type="text"
               id="name"
@@ -117,7 +117,7 @@ export default function RegisterPage() {
             />
 
             {/* Email - Mobile Optimized */}
-            <MobileFormInput
+            <FormInput
               label="Email Address"
               type="email"
               id="email"
@@ -131,7 +131,7 @@ export default function RegisterPage() {
             />
 
             {/* Password - Mobile Optimized with show/hide */}
-            <MobileFormInput
+            <FormInput
               label="Password"
               type={showPassword ? "text" : "password"}
               id="password"
@@ -160,7 +160,7 @@ export default function RegisterPage() {
             />
 
             {/* Confirm Password - Mobile Optimized with show/hide */}
-            <MobileFormInput
+            <FormInput
               label="Confirm Password"
               type={showConfirmPassword ? "text" : "password"}
               id="confirmPassword"
