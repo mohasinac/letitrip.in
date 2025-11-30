@@ -21,19 +21,24 @@ import {
   XCircle,
   Package,
   AlertTriangle,
+  Filter,
 } from "lucide-react";
+import { useIsMobile } from "@/hooks/useMobile";
 
 export default function SellerReturnsPage() {
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [returns, setReturns] = useState<ReturnCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterValues, setFilterValues] = useState<Partial<ReturnFiltersFE>>(
-    {},
+    {}
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalReturns, setTotalReturns] = useState(0);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(!isMobile);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     loadReturns();
@@ -126,7 +131,20 @@ export default function SellerReturnsPage() {
   return (
     <AuthGuard requireAuth allowedRoles={["seller"]}>
       <ErrorBoundary>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          {/* Mobile Filter Toggle */}
+          {isMobile && (
+            <div className="p-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="w-full px-4 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+              >
+                <Filter className="w-4 h-4" />
+                <span>{showFilters ? "Hide" : "Show"} Filters</span>
+              </button>
+            </div>
+          )}
+
           <div className="flex">
             <UnifiedFilterSidebar
               sections={RETURN_FILTERS}
@@ -137,16 +155,25 @@ export default function SellerReturnsPage() {
                   [key]: value,
                 }));
               }}
-              onApply={() => setCurrentPage(1)}
+              onApply={() => {
+                setCurrentPage(1);
+                if (isMobile) setShowFilters(false);
+              }}
               onReset={() => {
                 setFilterValues({});
+                setSearchQuery("");
                 setCurrentPage(1);
               }}
-              isOpen={false}
-              onClose={() => {}}
+              isOpen={showFilters}
+              onClose={() => setShowFilters(false)}
               searchable={true}
+              mobile={isMobile}
               resultCount={totalReturns}
               isLoading={loading}
+              showInlineSearch={true}
+              inlineSearchValue={searchQuery}
+              onInlineSearchChange={setSearchQuery}
+              inlineSearchPlaceholder="Search returns..."
             />
 
             <div className="flex-1 p-6">
@@ -225,7 +252,7 @@ export default function SellerReturnsPage() {
                             <button
                               onClick={() =>
                                 router.push(
-                                  `/seller/orders/${returnItem.orderId}`,
+                                  `/seller/orders/${returnItem.orderId}`
                                 )
                               }
                               className="text-sm text-indigo-600 hover:text-indigo-900 font-mono"
@@ -249,7 +276,7 @@ export default function SellerReturnsPage() {
                           <td className="px-6 py-4">
                             <span
                               className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                                returnItem.status,
+                                returnItem.status
                               )}`}
                             >
                               {returnItem.status}
@@ -257,7 +284,7 @@ export default function SellerReturnsPage() {
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-500">
                             {new Date(
-                              returnItem.createdAt,
+                              returnItem.createdAt
                             ).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 text-sm space-x-2">
@@ -274,7 +301,7 @@ export default function SellerReturnsPage() {
                                 <button
                                   onClick={() => {
                                     const notes = prompt(
-                                      "Reason for rejection (optional):",
+                                      "Reason for rejection (optional):"
                                     );
                                     if (notes !== null) {
                                       handleReject(returnItem.id, notes);

@@ -1,22 +1,27 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { X, Search } from "lucide-react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { X, Search, ChevronDown, ChevronUp } from "lucide-react";
 import { FilterSection, FilterField } from "./FilterSidebar";
 
 export interface UnifiedFilterSidebarProps {
   sections: FilterSection[];
   values: Record<string, any>;
   onChange: (key: string, value: any) => void;
-  onApply: () => void;
+  onApply: (pendingValues?: Record<string, any>) => void;
   onReset: () => void;
   isOpen: boolean;
   onClose?: () => void;
   className?: string;
   resultCount?: number;
   isLoading?: boolean;
-  searchable?: boolean; // Enable option search
+  searchable?: boolean; // Enable filter option search
   mobile?: boolean; // Force mobile mode
+  // Inline search for admin/seller pages
+  showInlineSearch?: boolean;
+  inlineSearchValue?: string;
+  onInlineSearchChange?: (value: string) => void;
+  inlineSearchPlaceholder?: string;
 }
 
 export function UnifiedFilterSidebar({
@@ -32,12 +37,54 @@ export function UnifiedFilterSidebar({
   isLoading = false,
   searchable = true,
   mobile = false,
+  showInlineSearch = false,
+  inlineSearchValue = "",
+  onInlineSearchChange,
+  inlineSearchPlaceholder = "Search...",
 }: UnifiedFilterSidebarProps) {
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
     new Set()
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
+  // Pending values - only applied when user clicks Apply
+  const [pendingValues, setPendingValues] =
+    useState<Record<string, any>>(values);
+
+  // Sync pending values when external values change (e.g., on reset)
+  useEffect(() => {
+    setPendingValues(values);
+  }, [values]);
+
+  const handlePendingChange = useCallback((key: string, value: any) => {
+    setPendingValues((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
+  const handleApply = useCallback(() => {
+    // Apply all pending values
+    Object.entries(pendingValues).forEach(([key, value]) => {
+      onChange(key, value);
+    });
+    onApply(pendingValues);
+  }, [pendingValues, onChange, onApply]);
+
+  const handleReset = useCallback(() => {
+    setPendingValues({});
+    onReset();
+  }, [onReset]);
+
+  const hasPendingChanges = useMemo(() => {
+    const currentKeys = new Set([
+      ...Object.keys(values),
+      ...Object.keys(pendingValues),
+    ]);
+    for (const key of currentKeys) {
+      if (JSON.stringify(values[key]) !== JSON.stringify(pendingValues[key])) {
+        return true;
+      }
+    }
+    return false;
+  }, [values, pendingValues]);
 
   useEffect(() => {
     const initialCollapsed = new Set<string>();
@@ -74,7 +121,7 @@ export function UnifiedFilterSidebar({
     });
   };
 
-  const hasActiveFilters = Object.values(values).some((value) => {
+  const hasActiveFilters = Object.values(pendingValues).some((value) => {
     if (Array.isArray(value)) return value.length > 0;
     if (typeof value === "object" && value !== null)
       return Object.keys(value).length > 0;
@@ -155,11 +202,11 @@ export function UnifiedFilterSidebar({
     optionValue: string | number,
     checked: boolean
   ) => {
-    const currentValues = values[key] || [];
+    const currentValues = pendingValues[key] || [];
     const newValues = checked
       ? [...currentValues, optionValue]
       : currentValues.filter((v: any) => v !== optionValue);
-    onChange(key, newValues);
+    handlePendingChange(key, newValues);
   };
 
   const highlightText = (text: string) => {
@@ -181,7 +228,7 @@ export function UnifiedFilterSidebar({
   };
 
   const renderField = (field: FilterField & { _highlighted?: boolean }) => {
-    const value = values[field.key];
+    const value = pendingValues[field.key];
 
     switch (field.type) {
       case "text":
@@ -189,7 +236,7 @@ export function UnifiedFilterSidebar({
           <input
             type="text"
             value={value || ""}
-            onChange={(e) => onChange(field.key, e.target.value)}
+            onChange={(e) => handlePendingChange(field.key, e.target.value)}
             placeholder={field.placeholder}
             className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
           />
@@ -200,7 +247,7 @@ export function UnifiedFilterSidebar({
           <input
             type="number"
             value={value || ""}
-            onChange={(e) => onChange(field.key, e.target.value)}
+            onChange={(e) => handlePendingChange(field.key, e.target.value)}
             placeholder={field.placeholder}
             min={field.min}
             max={field.max}
@@ -213,7 +260,7 @@ export function UnifiedFilterSidebar({
         return (
           <select
             value={value || ""}
-            onChange={(e) => onChange(field.key, e.target.value)}
+            onChange={(e) => handlePendingChange(field.key, e.target.value)}
             className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="">All</option>
@@ -273,7 +320,9 @@ export function UnifiedFilterSidebar({
                   name={field.key}
                   value={option.value}
                   checked={value === option.value}
-                  onChange={(e) => onChange(field.key, e.target.value)}
+                  onChange={(e) =>
+                    handlePendingChange(field.key, e.target.value)
+                  }
                   className="w-4 h-4 text-blue-600 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                 />
                 <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">
@@ -294,7 +343,7 @@ export function UnifiedFilterSidebar({
           <input
             type="date"
             value={value || ""}
-            onChange={(e) => onChange(field.key, e.target.value)}
+            onChange={(e) => handlePendingChange(field.key, e.target.value)}
             className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           />
         );
@@ -306,7 +355,10 @@ export function UnifiedFilterSidebar({
               type="date"
               value={value?.from || ""}
               onChange={(e) =>
-                onChange(field.key, { ...value, from: e.target.value })
+                handlePendingChange(field.key, {
+                  ...value,
+                  from: e.target.value,
+                })
               }
               placeholder="From"
               className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -315,7 +367,7 @@ export function UnifiedFilterSidebar({
               type="date"
               value={value?.to || ""}
               onChange={(e) =>
-                onChange(field.key, { ...value, to: e.target.value })
+                handlePendingChange(field.key, { ...value, to: e.target.value })
               }
               placeholder="To"
               className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -331,7 +383,10 @@ export function UnifiedFilterSidebar({
                 type="number"
                 value={value?.min || ""}
                 onChange={(e) =>
-                  onChange(field.key, { ...value, min: e.target.value })
+                  handlePendingChange(field.key, {
+                    ...value,
+                    min: e.target.value,
+                  })
                 }
                 placeholder="Min"
                 min={field.min}
@@ -344,7 +399,10 @@ export function UnifiedFilterSidebar({
                 type="number"
                 value={value?.max || ""}
                 onChange={(e) =>
-                  onChange(field.key, { ...value, max: e.target.value })
+                  handlePendingChange(field.key, {
+                    ...value,
+                    max: e.target.value,
+                  })
                 }
                 placeholder="Max"
                 min={field.min}
@@ -377,37 +435,98 @@ export function UnifiedFilterSidebar({
         className={`${
           mobile
             ? "fixed inset-y-0 left-0 z-50 w-80 transform transition-transform duration-300"
-            : "sticky top-20 h-[calc(100vh-5rem)]"
+            : isOpen
+            ? "w-72 shrink-0"
+            : "w-0 overflow-hidden"
         } ${
           mobile && !isOpen ? "-translate-x-full" : "translate-x-0"
-        } bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col ${className}`}
+        } bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ${className}`}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Filters
-            </h2>
-            {resultCount !== undefined && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {resultCount} result{resultCount !== 1 ? "s" : ""}
-              </p>
+        {/* Header with Apply Button (Desktop: Fixed Top) */}
+        <div className="flex-shrink-0 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Filters
+              </h2>
+              {resultCount !== undefined && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {resultCount} result{resultCount !== 1 ? "s" : ""}
+                </p>
+              )}
+            </div>
+            {mobile && onClose && (
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                aria-label="Close filters"
+              >
+                <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              </button>
             )}
           </div>
-          {mobile && onClose && (
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              aria-label="Close filters"
-            >
-              <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            </button>
+          {/* Desktop: Apply/Reset buttons fixed at top */}
+          {!mobile && (
+            <div className="space-y-2">
+              <button
+                onClick={handleApply}
+                disabled={isLoading}
+                className={`w-full px-4 py-2 rounded-lg font-medium transition-colors ${
+                  hasPendingChanges
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {isLoading
+                  ? "Applying..."
+                  : hasPendingChanges
+                  ? "Apply Filters"
+                  : "Filters Applied"}
+              </button>
+              {hasActiveFilters && (
+                <button
+                  onClick={handleReset}
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                >
+                  Reset All
+                </button>
+              )}
+            </div>
           )}
         </div>
 
-        {/* Search Box */}
+        {/* Inline Search - For admin/seller pages */}
+        {showInlineSearch && onInlineSearchChange && (
+          <div className="flex-shrink-0 p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
+              Search
+            </label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+              <input
+                type="text"
+                value={inlineSearchValue}
+                onChange={(e) => onInlineSearchChange(e.target.value)}
+                placeholder={inlineSearchPlaceholder}
+                className="w-full pl-9 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+              />
+              {inlineSearchValue && (
+                <button
+                  onClick={() => onInlineSearchChange("")}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
+                  aria-label="Clear search"
+                >
+                  <X className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Filter Search Box */}
         {searchable && (
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex-shrink-0 p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
               <input
@@ -513,28 +632,38 @@ export function UnifiedFilterSidebar({
           )}
         </div>
 
-        {/* Footer Actions */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
-          <button
-            onClick={() => {
-              onApply();
-              if (mobile) onClose?.();
-            }}
-            disabled={isLoading}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-          >
-            {isLoading ? "Applying..." : "Apply Filters"}
-          </button>
-          {hasActiveFilters && (
+        {/* Footer Actions - Mobile Only (Fixed Bottom) */}
+        {mobile && (
+          <div className="flex-shrink-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 space-y-2">
             <button
-              onClick={onReset}
+              onClick={() => {
+                handleApply();
+                onClose?.();
+              }}
               disabled={isLoading}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className={`w-full px-4 py-3 rounded-lg font-medium transition-colors ${
+                hasPendingChanges
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              Reset All
+              {isLoading
+                ? "Applying..."
+                : hasPendingChanges
+                ? "Apply Filters"
+                : "Filters Applied"}
             </button>
-          )}
-        </div>
+            {hasActiveFilters && (
+              <button
+                onClick={handleReset}
+                disabled={isLoading}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Reset All
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

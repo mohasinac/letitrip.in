@@ -4,30 +4,54 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Plus,
-  Search,
   Filter,
   Edit,
   Trash2,
   Copy,
-  Eye,
   Loader2,
   AlertCircle,
 } from "lucide-react";
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { couponsService } from "@/services/coupons.service";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsMobile } from "@/hooks/useMobile";
 import type { CouponFE } from "@/types/frontend/coupon.types";
 import { toast } from "@/components/admin/Toast";
 
+const COUPON_FILTERS = [
+  {
+    id: "status",
+    title: "Status",
+    type: "checkbox" as const,
+    options: [
+      { label: "Active", value: "active" },
+      { label: "Expired", value: "expired" },
+      { label: "Inactive", value: "inactive" },
+    ],
+  },
+  {
+    id: "type",
+    title: "Type",
+    type: "checkbox" as const,
+    options: [
+      { label: "Percentage", value: "percentage" },
+      { label: "Fixed Amount", value: "fixed" },
+    ],
+  },
+];
+
 export default function CouponsPage() {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
   const [coupons, setCoupons] = useState<CouponFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
 
   useEffect(() => {
     loadCoupons();
@@ -74,7 +98,7 @@ export default function CouponsPage() {
     (coupon) =>
       coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       coupon.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      coupon.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+      coupon.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) {
@@ -122,213 +146,264 @@ export default function CouponsPage() {
         </div>
       </div>
 
-      {/* Search & Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            type="search"
-            placeholder="Search coupons..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          <Filter className="h-4 w-4" />
-          Filters
-        </button>
-      </div>
-
-      {/* Grid View */}
-      {view === "grid" && (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredCoupons.length === 0 ? (
-            <div className="col-span-full text-center py-12">
-              <p className="text-gray-500">No coupons found</p>
-            </div>
-          ) : (
-            filteredCoupons.map((coupon) => (
-              <div
-                key={coupon.id}
-                className="group relative rounded-lg border border-gray-200 bg-white p-6 hover:shadow-lg transition-shadow"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <code className="rounded bg-blue-50 px-3 py-1 text-lg font-mono font-bold text-blue-700">
-                        {coupon.code}
-                      </code>
-                      <button
-                        onClick={() => handleCopyCode(coupon.code)}
-                        className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
-                        title="Copy code"
-                      >
-                        <Copy className="h-4 w-4" />
-                      </button>
-                    </div>
-                    <p className="mt-2 text-sm text-gray-600">
-                      {coupon.description}
-                    </p>
-                  </div>
-                  <StatusBadge status={coupon.status} />
-                </div>
-                <div className="mt-4 space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Discount:</span>
-                    <span className="font-medium text-gray-900">
-                      {coupon.type === "percentage"
-                        ? `${coupon.discountValue || 0}%`
-                        : `₹${coupon.discountValue || 0}`}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Usage:</span>
-                    <span className="font-medium text-gray-900">
-                      {coupon.usageCount || 0} / {coupon.usageLimit || "∞"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Valid Until:</span>
-                    <span className="font-medium text-gray-900">
-                      {new Date(coupon.endDate).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-4 flex gap-2">
-                  <Link
-                    href={`/seller/coupons/${coupon.code}/edit`}
-                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(coupon.code)}
-                    className="flex-1 rounded-lg border border-red-300 px-3 py-2 text-center text-sm font-medium text-red-700 hover:bg-red-50"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
+      {/* Mobile Filter Toggle */}
+      {isMobile && (
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+          </button>
         </div>
       )}
 
-      {/* Table View */}
-      {view === "table" && (
-        <div className="rounded-lg border border-gray-200 bg-white">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-gray-200 bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Code
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Discount
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Usage
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Valid Until
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {filteredCoupons.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="px-6 py-12 text-center text-gray-500"
-                    >
-                      No coupons found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredCoupons.map((coupon) => (
-                    <tr key={coupon.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
+      {/* Main Content with Sidebar Layout */}
+      <div className="flex gap-6">
+        {/* Desktop Filters */}
+        {!isMobile && (
+          <UnifiedFilterSidebar
+            sections={COUPON_FILTERS}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({ ...prev, [key]: value }));
+            }}
+            onApply={() => {}}
+            onReset={() => {
+              setFilterValues({});
+              setSearchQuery("");
+            }}
+            isOpen={false}
+            onClose={() => {}}
+            searchable={true}
+            mobile={false}
+            resultCount={filteredCoupons.length}
+            isLoading={loading}
+            showInlineSearch={true}
+            onInlineSearchChange={setSearchQuery}
+            inlineSearchValue={searchQuery}
+            inlineSearchPlaceholder="Search coupons..."
+          />
+        )}
+
+        {/* Content Area */}
+        <div className="flex-1 space-y-6">
+          {/* Grid View */}
+          {view === "grid" && (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredCoupons.length === 0 ? (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-500">No coupons found</p>
+                </div>
+              ) : (
+                filteredCoupons.map((coupon) => (
+                  <div
+                    key={coupon.id}
+                    className="group relative rounded-lg border border-gray-200 bg-white p-6 hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <code className="rounded bg-blue-50 px-2 py-1 font-mono text-sm font-bold text-blue-700">
+                          <code className="rounded bg-blue-50 px-3 py-1 text-lg font-mono font-bold text-blue-700">
                             {coupon.code}
                           </code>
                           <button
                             onClick={() => handleCopyCode(coupon.code)}
-                            className="rounded p-1 text-gray-600 hover:bg-gray-100"
+                            className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
                             title="Copy code"
                           >
-                            <Copy className="h-3 w-3" />
+                            <Copy className="h-4 w-4" />
                           </button>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">
-                        {coupon.type}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {coupon.type === "percentage"
-                          ? `${coupon.discountValue || 0}%`
-                          : `₹${coupon.discountValue || 0}`}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {coupon.usageCount || 0} / {coupon.usageLimit || "∞"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {new Date(coupon.endDate).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <StatusBadge status={coupon.status} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            href={`/seller/coupons/${coupon.code}/edit`}
-                            className="rounded p-1.5 text-blue-600 hover:bg-blue-50"
-                            title="Edit"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(coupon.code)}
-                            className="rounded p-1.5 text-red-600 hover:bg-red-50"
-                            title="Delete"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                        <p className="mt-2 text-sm text-gray-600">
+                          {coupon.description}
+                        </p>
+                      </div>
+                      <StatusBadge status={coupon.status} />
+                    </div>
+                    <div className="mt-4 space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Discount:</span>
+                        <span className="font-medium text-gray-900">
+                          {coupon.type === "percentage"
+                            ? `${coupon.discountValue || 0}%`
+                            : `₹${coupon.discountValue || 0}`}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Usage:</span>
+                        <span className="font-medium text-gray-900">
+                          {coupon.usageCount || 0} / {coupon.usageLimit || "∞"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Valid Until:</span>
+                        <span className="font-medium text-gray-900">
+                          {new Date(coupon.endDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex gap-2">
+                      <Link
+                        href={`/seller/coupons/${coupon.code}/edit`}
+                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(coupon.code)}
+                        className="flex-1 rounded-lg border border-red-300 px-3 py-2 text-center text-sm font-medium text-red-700 hover:bg-red-50"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
 
-          {/* Inline Create Row */}
-          <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
-            <Link
-              href="/seller/coupons/create"
-              className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
-            >
-              <Plus className="h-4 w-4" />
-              Create New Coupon
-            </Link>
-          </div>
+          {/* Table View */}
+          {view === "table" && (
+            <div className="rounded-lg border border-gray-200 bg-white">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b border-gray-200 bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Code
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Discount
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Usage
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Valid Until
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {filteredCoupons.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={7}
+                          className="px-6 py-12 text-center text-gray-500"
+                        >
+                          No coupons found
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredCoupons.map((coupon) => (
+                        <tr key={coupon.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <code className="rounded bg-blue-50 px-2 py-1 font-mono text-sm font-bold text-blue-700">
+                                {coupon.code}
+                              </code>
+                              <button
+                                onClick={() => handleCopyCode(coupon.code)}
+                                className="rounded p-1 text-gray-600 hover:bg-gray-100"
+                                title="Copy code"
+                              >
+                                <Copy className="h-3 w-3" />
+                              </button>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">
+                            {coupon.type}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {coupon.type === "percentage"
+                              ? `${coupon.discountValue || 0}%`
+                              : `₹${coupon.discountValue || 0}`}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {coupon.usageCount || 0} /{" "}
+                            {coupon.usageLimit || "∞"}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {new Date(coupon.endDate).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <StatusBadge status={coupon.status} />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                            <div className="flex items-center justify-end gap-2">
+                              <Link
+                                href={`/seller/coupons/${coupon.code}/edit`}
+                                className="rounded p-1.5 text-blue-600 hover:bg-blue-50"
+                                title="Edit"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Link>
+                              <button
+                                onClick={() => handleDelete(coupon.code)}
+                                className="rounded p-1.5 text-red-600 hover:bg-red-50"
+                                title="Delete"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Inline Create Row */}
+              <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
+                <Link
+                  href="/seller/coupons/create"
+                  className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create New Coupon
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Mobile Filters */}
+        {isMobile && (
+          <UnifiedFilterSidebar
+            sections={COUPON_FILTERS}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({ ...prev, [key]: value }));
+            }}
+            onApply={() => setShowFilters(false)}
+            onReset={() => {
+              setFilterValues({});
+              setSearchQuery("");
+            }}
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
+            searchable={true}
+            mobile={true}
+            resultCount={filteredCoupons.length}
+            isLoading={loading}
+            showInlineSearch={true}
+            onInlineSearchChange={setSearchQuery}
+            inlineSearchValue={searchQuery}
+            inlineSearchPlaceholder="Search coupons..."
+          />
+        )}
+      </div>
     </div>
   );
 }

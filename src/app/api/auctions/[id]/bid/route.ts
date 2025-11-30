@@ -76,8 +76,9 @@ export async function POST(
       );
     const { id } = await params;
     const body = await request.json();
-    const bidAmount = Number(body.bidAmount);
-    if (!Number.isFinite(bidAmount))
+    // Accept both 'amount' (from service) and 'bidAmount' (legacy) for backwards compatibility
+    const bidAmount = Number(body.amount ?? body.bidAmount);
+    if (!Number.isFinite(bidAmount) || bidAmount <= 0)
       return NextResponse.json(
         { success: false, error: "Invalid bid amount" },
         { status: 400 },

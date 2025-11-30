@@ -50,8 +50,9 @@ export default function SellerAuctionsPage() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "table">("table");
   const [totalAuctions, setTotalAuctions] = useState(0);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(!isMobile);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Inline edit states
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -81,7 +82,7 @@ export default function SellerAuctionsPage() {
 
   // Fields configuration for inline edit (using centralized config)
   const fields: InlineField[] = toInlineFields(
-    getFieldsForContext(AUCTION_FIELDS, "table"),
+    getFieldsForContext(AUCTION_FIELDS, "table")
   );
 
   // Bulk actions configuration
@@ -166,13 +167,18 @@ export default function SellerAuctionsPage() {
           onApply={() => {}}
           onReset={() => {
             setFilterValues({});
+            setSearchQuery("");
           }}
-          isOpen={true}
-          onClose={() => {}}
+          isOpen={showFilters}
+          onClose={() => setShowFilters(false)}
           searchable={true}
           mobile={false}
           resultCount={totalAuctions}
           isLoading={loading}
+          showInlineSearch={true}
+          inlineSearchValue={searchQuery}
+          onInlineSearchChange={setSearchQuery}
+          inlineSearchPlaceholder="Search auctions..."
         />
       )}
 
@@ -339,7 +345,7 @@ export default function SellerAuctionsPage() {
                             }
                             onChange={(checked) => {
                               setSelectedIds(
-                                checked ? auctions.map((a) => a.id) : [],
+                                checked ? auctions.map((a) => a.id) : []
                               );
                             }}
                             aria-label="Select all auctions"
@@ -374,11 +380,11 @@ export default function SellerAuctionsPage() {
                             // Validate form fields
                             const fieldsToValidate = getFieldsForContext(
                               AUCTION_FIELDS,
-                              "table",
+                              "table"
                             );
                             const { isValid, errors } = validateForm(
                               values,
-                              fieldsToValidate,
+                              fieldsToValidate
                             );
 
                             if (!isValid) {
@@ -431,17 +437,17 @@ export default function SellerAuctionsPage() {
                                   // Validate form fields
                                   const fieldsToValidate = getFieldsForContext(
                                     AUCTION_FIELDS,
-                                    "table",
+                                    "table"
                                   );
                                   const { isValid, errors } = validateForm(
                                     values,
-                                    fieldsToValidate,
+                                    fieldsToValidate
                                   );
 
                                   if (!isValid) {
                                     setValidationErrors(errors);
                                     throw new Error(
-                                      "Please fix validation errors",
+                                      "Please fix validation errors"
                                     );
                                   }
 
@@ -449,14 +455,14 @@ export default function SellerAuctionsPage() {
 
                                   await auctionsService.quickUpdate(
                                     auction.id,
-                                    values,
+                                    values
                                   );
                                   await loadAuctions();
                                   setEditingId(null);
                                 } catch (error) {
                                   console.error(
                                     "Failed to update auction:",
-                                    error,
+                                    error
                                   );
                                   throw error;
                                 }
@@ -481,7 +487,7 @@ export default function SellerAuctionsPage() {
                                   setSelectedIds((prev) =>
                                     checked
                                       ? [...prev, auction.id]
-                                      : prev.filter((id) => id !== auction.id),
+                                      : prev.filter((id) => id !== auction.id)
                                   );
                                 }}
                                 aria-label={`Select ${auction.name}`}
@@ -535,10 +541,10 @@ export default function SellerAuctionsPage() {
                                     new Date(auction.endTime),
                                     {
                                       addSuffix: true,
-                                    },
+                                    }
                                   )
                                 : new Date(
-                                    auction.endTime,
+                                    auction.endTime
                                   ).toLocaleDateString()}
                             </td>
 
@@ -703,6 +709,7 @@ export default function SellerAuctionsPage() {
           }}
           onReset={() => {
             setFilterValues({});
+            setSearchQuery("");
           }}
           isOpen={showFilters}
           onClose={() => setShowFilters(false)}
@@ -710,6 +717,10 @@ export default function SellerAuctionsPage() {
           mobile={true}
           resultCount={totalAuctions}
           isLoading={loading}
+          showInlineSearch={true}
+          inlineSearchValue={searchQuery}
+          onInlineSearchChange={setSearchQuery}
+          inlineSearchPlaceholder="Search auctions..."
         />
       )}
     </div>

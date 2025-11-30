@@ -60,8 +60,8 @@ export function SimilarProducts({
         new Map(
           allProducts
             .filter((p: ProductCardFE) => p.id !== productId)
-            .map((p) => [p.id, p]),
-        ).values(),
+            .map((p) => [p.id, p])
+        ).values()
       );
 
       // Diversify by prioritizing different shops
@@ -78,7 +78,7 @@ export function SimilarProducts({
   // Helper to diversify products by shop
   const diversifyByShop = (
     products: ProductCardFE[],
-    currentShopId: string,
+    currentShopId: string
   ) => {
     const otherShops: ProductCardFE[] = [];
     const sameShop: ProductCardFE[] = [];
@@ -118,7 +118,7 @@ export function SimilarProducts({
 
     setCanScrollLeft(container.scrollLeft > 0);
     setCanScrollRight(
-      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10,
+      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10
     );
   };
 

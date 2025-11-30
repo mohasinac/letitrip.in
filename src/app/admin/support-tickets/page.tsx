@@ -22,6 +22,7 @@ function SupportTicketsContent() {
   const [error, setError] = useState<string | null>(null);
 
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -38,7 +39,7 @@ function SupportTicketsContent() {
   useEffect(() => {
     loadTickets();
     loadStats();
-  }, [filterValues, currentPage]);
+  }, [filterValues, currentPage, searchQuery]);
 
   const loadTickets = async () => {
     try {
@@ -47,6 +48,7 @@ function SupportTicketsContent() {
 
       const response = await supportService.listTickets({
         ...filterValues,
+        search: searchQuery || undefined,
         page: currentPage,
         limit: 20,
       });
@@ -199,8 +201,16 @@ function SupportTicketsContent() {
               onApply={() => setCurrentPage(1)}
               onReset={() => {
                 setFilterValues({});
+                setSearchQuery("");
                 setCurrentPage(1);
               }}
+              showInlineSearch={true}
+              onInlineSearchChange={(value: string) => {
+                setSearchQuery(value);
+                setCurrentPage(1);
+              }}
+              inlineSearchValue={searchQuery}
+              inlineSearchPlaceholder="Search tickets..."
             />
           </div>
 
@@ -299,7 +309,7 @@ function SupportTicketsContent() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
-                                  ticket.priority,
+                                  ticket.priority
                                 )}`}
                               >
                                 {formatStatus(ticket.priority)}
@@ -308,7 +318,7 @@ function SupportTicketsContent() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 text-xs font-medium rounded-md border ${getStatusColor(
-                                  ticket.status,
+                                  ticket.status
                                 )}`}
                               >
                                 {formatStatus(ticket.status)}

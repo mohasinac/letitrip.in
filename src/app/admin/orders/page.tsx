@@ -47,7 +47,7 @@ export default function AdminOrdersPage() {
 
   // Filters - unified state
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || "",
+    searchParams.get("search") || ""
   );
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [filterValues, setFilterValues] = useState<Partial<OrderFiltersBE>>({
@@ -149,7 +149,7 @@ export default function AdminOrdersPage() {
     } catch (error) {
       console.error("Failed to load orders:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load orders",
+        error instanceof Error ? error.message : "Failed to load orders"
       );
     } finally {
       setLoading(false);
@@ -187,7 +187,7 @@ export default function AdminOrdersPage() {
     ]);
 
     const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
-      "\n",
+      "\n"
     );
 
     const blob = new Blob([csv], { type: "text/csv" });
@@ -349,22 +349,9 @@ export default function AdminOrdersPage() {
         </div>
       )}
 
-      {/* Search Bar */}
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            type="search"
-            placeholder="Search by order number, customer name..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-          />
-        </div>
-        {isMobile && (
+      {/* Mobile Filter Toggle */}
+      {isMobile && (
+        <div className="flex justify-end">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -372,8 +359,8 @@ export default function AdminOrdersPage() {
             <Filter className="h-4 w-4" />
             Filters
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Main Content with Sidebar Layout */}
       <div className="flex gap-6">
@@ -391,6 +378,7 @@ export default function AdminOrdersPage() {
               setFilterValues({
                 status: undefined,
               });
+              setSearchQuery("");
               setCurrentPage(1);
               setCursors([null]);
             }}
@@ -400,6 +388,13 @@ export default function AdminOrdersPage() {
             mobile={false}
             resultCount={totalOrders}
             isLoading={loading}
+            showInlineSearch={true}
+            onInlineSearchChange={(value: string) => {
+              setSearchQuery(value);
+              setCurrentPage(1);
+            }}
+            inlineSearchValue={searchQuery}
+            inlineSearchPlaceholder="Search by order number, customer..."
           />
         )}
 
@@ -475,7 +470,7 @@ export default function AdminOrdersPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(
-                            order.status,
+                            order.status
                           )}`}
                         >
                           {order.status}
@@ -484,7 +479,7 @@ export default function AdminOrdersPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getPaymentStatusColor(
-                            order.paymentStatus,
+                            order.paymentStatus
                           )}`}
                         >
                           {order.paymentStatus}
@@ -569,6 +564,7 @@ export default function AdminOrdersPage() {
             setFilterValues({
               status: undefined,
             });
+            setSearchQuery("");
             setCurrentPage(1);
             setCursors([null]);
           }}
@@ -578,6 +574,13 @@ export default function AdminOrdersPage() {
           mobile={true}
           resultCount={totalOrders}
           isLoading={loading}
+          showInlineSearch={true}
+          onInlineSearchChange={(value: string) => {
+            setSearchQuery(value);
+            setCurrentPage(1);
+          }}
+          inlineSearchValue={searchQuery}
+          inlineSearchPlaceholder="Search by order number, customer..."
         />
       )}
     </div>

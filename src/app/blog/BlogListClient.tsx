@@ -29,7 +29,7 @@ export default function BlogListClient() {
 
   // Filters from URL
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || "",
+    searchParams.get("search") || ""
   );
   const [filters, setFilters] = useState<BlogFilters>({
     status: "published",
@@ -149,35 +149,8 @@ export default function BlogListClient() {
       {/* Search and Filters */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Search */}
-          <div className="lg:col-span-2">
-            <div className="relative flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSearch(searchQuery);
-                    }
-                  }}
-                  placeholder="Search blog posts..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <button
-                onClick={() => handleSearch(searchQuery)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Search
-              </button>
-            </div>
-          </div>
-
           {/* Sort */}
-          <div>
+          <div className="lg:col-span-2">
             <select
               value={filters.sortBy}
               onChange={(e) => handleSortChange(e.target.value)}
@@ -189,6 +162,9 @@ export default function BlogListClient() {
             </select>
           </div>
 
+          {/* Empty spacer */}
+          <div></div>
+
           {/* Filter Toggle for Mobile */}
           <button className="md:hidden flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
             <Filter className="w-5 h-5" />
@@ -197,31 +173,17 @@ export default function BlogListClient() {
         </div>
 
         {/* Active Filters */}
-        {(filters.category || filters.search) && (
+        {filters.category && (
           <div className="flex items-center gap-2 mt-4 pt-4 border-t">
             <span className="text-sm text-gray-600">Active filters:</span>
-            {filters.category && (
-              <button
-                onClick={() => handleCategoryFilter(filters.category!)}
-                className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200"
-              >
-                <Tag className="w-3 h-3" />
-                <span>{filters.category}</span>
-                <span className="ml-1">×</span>
-              </button>
-            )}
-            {filters.search && (
-              <button
-                onClick={() =>
-                  setFilters((prev) => ({ ...prev, search: undefined }))
-                }
-                className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200"
-              >
-                <Search className="w-3 h-3" />
-                <span>{filters.search}</span>
-                <span className="ml-1">×</span>
-              </button>
-            )}
+            <button
+              onClick={() => handleCategoryFilter(filters.category!)}
+              className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200"
+            >
+              <Tag className="w-3 h-3" />
+              <span>{filters.category}</span>
+              <span className="ml-1">×</span>
+            </button>
           </div>
         )}
       </div>

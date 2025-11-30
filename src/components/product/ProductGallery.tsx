@@ -174,7 +174,9 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Video</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      Video
+                    </span>
                   </div>
                 )}
               </button>

@@ -54,7 +54,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       // Load shop info
       if (data.shopId) {
         try {
-          const shopData = await shopsService.getBySlug(data.shopId);
+          const shopData = await shopsService.getById(data.shopId);
           setShop(shopData);
         } catch (error) {
           console.error("Failed to load shop:", error);
@@ -195,12 +195,12 @@ export default function ProductPage({ params }: ProductPageProps) {
                     <div className="flex items-baseline gap-2 mb-2">
                       {formatDiscount(
                         product.compareAtPrice,
-                        product.price,
+                        product.price
                       ) && (
                         <span className="text-sm font-medium text-red-600 dark:text-red-400">
                           {formatDiscount(
                             product.compareAtPrice,
-                            product.price,
+                            product.price
                           )}
                         </span>
                       )}
@@ -268,7 +268,9 @@ export default function ProductPage({ params }: ProductPageProps) {
 
                   {/* Stock Status */}
                   <div className="text-sm">
-                    <p className="text-green-600 dark:text-green-400 font-medium">In Stock</p>
+                    <p className="text-green-600 dark:text-green-400 font-medium">
+                      In Stock
+                    </p>
                     <p className="text-gray-600 dark:text-gray-400 text-xs">
                       Ships from: {shop?.name || "Seller"}
                     </p>
@@ -295,7 +297,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                             <option key={i + 1} value={i + 1}>
                               {i + 1}
                             </option>
-                          ),
+                          )
                         )}
                       </select>
                     </div>
@@ -320,10 +322,10 @@ export default function ProductPage({ params }: ProductPageProps) {
                               image: product.images[0],
                               shopId: product.shopId,
                               shopName: shop?.name || product.shopId,
-                            },
+                            }
                           );
                           toast.success(
-                            `Added ${selectedQuantity} item(s) to cart`,
+                            `Added ${selectedQuantity} item(s) to cart`
                           );
                         } catch (error: any) {
                           toast.error(error.message || "Failed to add to cart");
@@ -351,7 +353,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                               image: product.images[0],
                               shopId: product.shopId,
                               shopName: shop?.name || product.shopId,
-                            },
+                            }
                           );
                           router.push("/checkout");
                         } catch (error: any) {
@@ -425,7 +427,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             <SimilarProducts
               productId={product.id}
               parentCategoryIds={product.categoryIds.filter(
-                (id: string) => id !== product.categoryId,
+                (id: string) => id !== product.categoryId
               )}
               currentShopId={product.shopId}
               parentCategoryName="related categories"
@@ -435,7 +437,10 @@ export default function ProductPage({ params }: ProductPageProps) {
       )}
 
       {/* 8. Customer Reviews & Ratings */}
-      <div className="bg-white dark:bg-gray-800 border-t dark:border-gray-700" id="reviews">
+      <div
+        className="bg-white dark:bg-gray-800 border-t dark:border-gray-700"
+        id="reviews"
+      >
         <div className="max-w-7xl mx-auto px-4 py-8">
           <ProductReviews productId={product.id} productSlug={product.slug} />
         </div>

@@ -73,8 +73,8 @@ function ProductsContent() {
     loadFilterOptions();
   }, []);
 
-  // Update URL when filters change
-  useEffect(() => {
+  // Update URL when filters change - only on explicit apply
+  const updateUrlAndLoad = useCallback(() => {
     const params = new URLSearchParams();
 
     // Add filter values to URL
@@ -99,6 +99,11 @@ function ProductsContent() {
 
     loadProducts();
   }, [filterValues, sortBy, sortOrder, currentPage, searchQuery]);
+
+  // Load on mount and when sort/page changes
+  useEffect(() => {
+    updateUrlAndLoad();
+  }, [sortBy, sortOrder, currentPage]);
 
   const loadFilterOptions = async () => {
     try {
@@ -250,23 +255,11 @@ function ProductsContent() {
           </p>
         </div>
 
-        {/* Search & Controls - Mobile Optimized */}
+        {/* Controls - No Search (use main search bar) */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1">
-              <input
-                type="search"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && loadProducts()}
-                className="w-full px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent touch-manipulation"
-              />
-            </div>
-
+          <div className="flex flex-col sm:flex-row gap-4">
             {/* Sort */}
-            <div className="flex gap-2 flex-wrap sm:flex-nowrap">
+            <div className="flex gap-2 flex-wrap sm:flex-nowrap flex-1">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -310,16 +303,16 @@ function ProductsContent() {
                   <List className="w-5 h-5" />
                 </button>
               </div>
-            </div>
 
-            {/* Filter Toggle Button */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="px-4 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
-            >
-              <Filter className="w-4 h-4" />
-              <span>{showFilters ? "Hide" : "Show"} Filters</span>
-            </button>
+              {/* Filter Toggle Button */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="px-4 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+              >
+                <Filter className="w-4 h-4" />
+                <span>{showFilters ? "Hide" : "Show"} Filters</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -332,10 +325,13 @@ function ProductsContent() {
             onChange={(key, value) => {
               setFilterValues((prev) => ({ ...prev, [key]: value }));
             }}
-            onApply={() => {
+            onApply={(pendingValues) => {
+              if (pendingValues) setFilterValues(pendingValues);
               setCurrentPage(1);
               setCursors([null]); // Reset pagination when filters change
               if (isMobile) setShowFilters(false);
+              // Trigger load after state updates
+              setTimeout(() => updateUrlAndLoad(), 0);
             }}
             onReset={handleResetFilters}
             isOpen={showFilters}
@@ -549,9 +545,12 @@ function ProductsContent() {
             onChange={(key, value) => {
               setFilterValues((prev) => ({ ...prev, [key]: value }));
             }}
-            onApply={() => {
+            onApply={(pendingValues) => {
+              if (pendingValues) setFilterValues(pendingValues);
               setCurrentPage(1);
+              setCursors([null]);
               setShowFilters(false);
+              setTimeout(() => updateUrlAndLoad(), 0);
             }}
             onReset={handleResetFilters}
             isOpen={showFilters}

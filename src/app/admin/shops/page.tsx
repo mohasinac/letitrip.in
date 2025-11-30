@@ -97,7 +97,7 @@ export default function AdminShopsPage() {
 
       // Deduplicate shops by ID to prevent React key warnings
       const uniqueShops = Array.from(
-        new Map((response.data || []).map((shop) => [shop.id, shop])).values(),
+        new Map((response.data || []).map((shop) => [shop.id, shop])).values()
       );
       setShops(uniqueShops);
       // Calculate total pages from count
@@ -121,7 +121,7 @@ export default function AdminShopsPage() {
 
   // Fields configuration for inline edit - using centralized config
   const fields: InlineField[] = toInlineFields(
-    getFieldsForContext(SHOP_FIELDS, "table"),
+    getFieldsForContext(SHOP_FIELDS, "table")
   );
 
   // Bulk actions configuration
@@ -167,7 +167,7 @@ export default function AdminShopsPage() {
               await shopsService.delete(shop.slug);
               break;
           }
-        }),
+        })
       );
 
       await loadShops();
@@ -216,7 +216,7 @@ export default function AdminShopsPage() {
     ]);
 
     const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
-      "\n",
+      "\n"
     );
 
     const blob = new Blob([csv], { type: "text/csv" });
@@ -294,29 +294,18 @@ export default function AdminShopsPage() {
         </div>
       </div>
 
-      {/* Search & Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            type="search"
-            placeholder="Search shops..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-          />
+      {/* Mobile Filter Toggle */}
+      {isMobile && (
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+          </button>
         </div>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          <Filter className="h-4 w-4" />
-          Filters {showFilters ? "▲" : "▼"}
-        </button>
-      </div>
+      )}
 
       {/* Main Content with Sidebar Layout */}
       <div className="flex gap-6">
@@ -334,6 +323,7 @@ export default function AdminShopsPage() {
             onApply={() => setCurrentPage(1)}
             onReset={() => {
               setFilterValues({});
+              setSearchQuery("");
               setCurrentPage(1);
             }}
             isOpen={false}
@@ -342,6 +332,13 @@ export default function AdminShopsPage() {
             mobile={false}
             resultCount={totalShops}
             isLoading={loading}
+            showInlineSearch={true}
+            onInlineSearchChange={(value: string) => {
+              setSearchQuery(value);
+              setCurrentPage(1);
+            }}
+            inlineSearchValue={searchQuery}
+            inlineSearchPlaceholder="Search shops..."
           />
         )}
 
@@ -521,16 +518,16 @@ export default function AdminShopsPage() {
                                 // Validate form fields
                                 const fieldsToValidate = getFieldsForContext(
                                   SHOP_FIELDS,
-                                  "table",
+                                  "table"
                                 );
                                 const { isValid } = validateForm(
                                   values,
-                                  fieldsToValidate,
+                                  fieldsToValidate
                                 );
 
                                 if (!isValid) {
                                   throw new Error(
-                                    "Please fix validation errors",
+                                    "Please fix validation errors"
                                   );
                                 }
 
@@ -544,7 +541,7 @@ export default function AdminShopsPage() {
                                     shop.slug,
                                     {
                                       featured: values.featured,
-                                    },
+                                    }
                                   );
                                 }
                                 if (values.name !== shop.name) {
@@ -578,7 +575,7 @@ export default function AdminShopsPage() {
                                 setSelectedIds((prev) =>
                                   checked
                                     ? [...prev, shop.id]
-                                    : prev.filter((id) => id !== shop.id),
+                                    : prev.filter((id) => id !== shop.id)
                                 );
                               }}
                               label={`Select ${shop.name}`}
@@ -765,6 +762,7 @@ export default function AdminShopsPage() {
             }}
             onReset={() => {
               setFilterValues({});
+              setSearchQuery("");
               setCurrentPage(1);
             }}
             isOpen={showFilters}
@@ -773,6 +771,13 @@ export default function AdminShopsPage() {
             mobile={true}
             resultCount={totalShops}
             isLoading={loading}
+            showInlineSearch={true}
+            onInlineSearchChange={(value: string) => {
+              setSearchQuery(value);
+              setCurrentPage(1);
+            }}
+            inlineSearchValue={searchQuery}
+            inlineSearchPlaceholder="Search shops..."
           />
         )}
       </div>

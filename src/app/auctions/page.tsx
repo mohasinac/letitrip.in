@@ -8,10 +8,8 @@ import {
   Loader2,
   Clock,
   TrendingUp,
-  Star,
   Grid,
   List,
-  Search,
   Filter as FilterIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -35,7 +33,6 @@ function AuctionsContent() {
   const [totalCount, setTotalCount] = useState(0);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   // Cursor-based pagination
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
@@ -56,10 +53,16 @@ function AuctionsContent() {
     if (status) initialFilters.status = status;
     if (featured) initialFilters.featured = featured;
     setFilterValues(initialFilters);
+    // Load on mount
+    loadAuctions();
   }, []);
 
-  // Update URL when filters change
+  // Update URL when sort/page changes (not filters - those wait for Apply)
   useEffect(() => {
+    updateUrlAndLoad();
+  }, [sortBy, sortOrder, currentPage]);
+
+  const updateUrlAndLoad = useCallback(() => {
     const params = new URLSearchParams();
     if (filterValues.status) params.set("status", filterValues.status);
     if (filterValues.categoryId)
@@ -73,19 +76,9 @@ function AuctionsContent() {
 
     const newUrl = params.toString() ? `?${params.toString()}` : "/auctions";
     router.push(newUrl, { scroll: false });
-  }, [filterValues, sortBy, sortOrder, currentPage]);
 
-  useEffect(() => {
     loadAuctions();
-  }, [
-    status,
-    featured,
-    currentPage,
-    filterValues,
-    searchQuery,
-    sortBy,
-    sortOrder,
-  ]);
+  }, [filterValues, sortBy, sortOrder, currentPage]);
 
   const loadAuctions = async () => {
     try {
@@ -108,10 +101,6 @@ function AuctionsContent() {
 
       if (featured === "true") {
         apiFilters.featured = true;
-      }
-
-      if (searchQuery) {
-        apiFilters.search = searchQuery;
       }
 
       const response = await auctionsService.list(apiFilters);
@@ -143,11 +132,11 @@ function AuctionsContent() {
 
   const handleResetFilters = useCallback(() => {
     setFilterValues({});
-    setSearchQuery("");
     setShowFilters(false);
     setCurrentPage(1);
     setCursors([null]);
-  }, []);
+    setTimeout(() => updateUrlAndLoad(), 0);
+  }, [updateUrlAndLoad]);
 
   const renderPagination = () => {
     if (!hasNextPage && currentPage === 1) return null;
@@ -243,10 +232,15 @@ function AuctionsContent() {
             onChange={(key, value) => {
               setFilterValues((prev) => ({ ...prev, [key]: value }));
             }}
-            onApply={() => {}}
+            onApply={(pendingValues) => {
+              if (pendingValues) setFilterValues(pendingValues);
+              setCurrentPage(1);
+              setCursors([null]);
+              setTimeout(() => updateUrlAndLoad(), 0);
+            }}
             onReset={handleResetFilters}
-            isOpen={true}
-            onClose={() => {}}
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
             searchable={true}
             mobile={false}
             resultCount={totalCount}
@@ -256,20 +250,8 @@ function AuctionsContent() {
 
         {/* Auctions Section */}
         <div className="flex-1">
-          {/* Search & Controls - Mobile Optimized */}
+          {/* Controls - No Search (use main search bar) */}
           <div className="mb-6 flex flex-col sm:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
-              <input
-                type="text"
-                placeholder="Search auctions..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 min-h-[48px] text-base rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary touch-manipulation"
-              />
-            </div>
-
             {/* Filter Toggle Button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -280,7 +262,7 @@ function AuctionsContent() {
             </button>
 
             {/* View Toggle - Hidden on mobile */}
-            <div className="hidden md:flex border border-gray-300 rounded-lg overflow-hidden">
+            <div className="hidden md:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
               <button
                 onClick={() => setView("grid")}
                 className={`px-4 py-3 min-h-[48px] touch-manipulation ${
@@ -584,8 +566,12 @@ function AuctionsContent() {
           onChange={(key, value) => {
             setFilterValues((prev) => ({ ...prev, [key]: value }));
           }}
-          onApply={() => {
+          onApply={(pendingValues) => {
+            if (pendingValues) setFilterValues(pendingValues);
+            setCurrentPage(1);
+            setCursors([null]);
             setShowFilters(false);
+            setTimeout(() => updateUrlAndLoad(), 0);
           }}
           onReset={handleResetFilters}
           isOpen={showFilters}
