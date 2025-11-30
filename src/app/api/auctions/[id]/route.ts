@@ -5,6 +5,7 @@ import {
   requireAuth,
 } from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { updateCategoryAuctionCounts } from "@/lib/category-hierarchy";
 
 /**
  * GET /api/auctions/[id]
@@ -144,9 +145,31 @@ export async function PATCH(
     delete update.shop_id;
     delete update.created_at;
 
+    // Track if status or category changed
+    const statusChanged = body.status && body.status !== auction.status;
+    const categoryChanged =
+      body.category_id && body.category_id !== auction.category_id;
+    const oldCategoryId = auction.category_id;
+    const newCategoryId = body.category_id || oldCategoryId;
+
     await docRef.update(update);
     const updated = await docRef.get();
     const updatedData: any = updated.data();
+
+    // Update category auction counts if status or category changed
+    if (statusChanged || categoryChanged) {
+      try {
+        if (categoryChanged && oldCategoryId) {
+          await updateCategoryAuctionCounts(oldCategoryId);
+        }
+        if (newCategoryId) {
+          await updateCategoryAuctionCounts(newCategoryId);
+        }
+      } catch (err) {
+        console.error("Failed to update category auction counts:", err);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: {
@@ -219,6 +242,16 @@ export async function DELETE(
     }
 
     await docRef.delete();
+
+    // Update category auction counts after deletion
+    if (auction.category_id) {
+      try {
+        await updateCategoryAuctionCounts(auction.category_id);
+      } catch (err) {
+        console.error("Failed to update category auction counts:", err);
+      }
+    }
+
     return NextResponse.json({ success: true, message: "Auction deleted" });
   } catch (error) {
     console.error("Error deleting auction:", error);

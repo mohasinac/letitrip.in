@@ -18,8 +18,37 @@ const INDIAN_CITIES = [
 ];
 
 const STREETS = ["Marine Drive", "MG Road", "Park Street", "Anna Salai", "FC Road", "Brigade Road", "Linking Road", "Gandhi Nagar", "Civil Lines", "Mall Road"];
-const SHOP_PREFIXES = ["Collector's", "Elite", "Premium", "Rare", "Ultimate", "Epic", "Legendary", "Master", "Super", "Mega", "Pro", "Classic", "Modern", "Galaxy", "Star", "Nova"];
-const SHOP_SUFFIXES = ["Cards", "Collectibles", "Treasures", "Hub", "Zone", "Store", "Emporium", "Palace", "Corner", "World", "Den", "Vault", "Paradise", "Market", "Bazaar", "Plaza"];
+
+// Beyblade-themed shop names
+const SHOP_PREFIXES = ["Blader's", "Spin", "Burst", "Battle", "Storm", "Dragon", "Phoenix", "Ultimate", "Pro", "Master", "Legend", "Galaxy", "Turbo", "Nova", "Metal", "Champion"];
+const SHOP_SUFFIXES = ["Arena", "Den", "Hub", "Zone", "Store", "Emporium", "Palace", "Corner", "World", "Vault", "Paradise", "Bazaar", "Haven", "Fortress", "Stadium", "Dojo"];
+
+// Shop logos and banners - Beyblade themed
+const SHOP_LOGOS = [
+  "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1598808503491-fa80d3e5a0d9?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop",
+];
+
+const SHOP_BANNERS = [
+  "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=1200&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=1200&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=1200&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=1200&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1493711662062-fa541f7f76cc?w=1200&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=1200&h=400&fit=crop",
+];
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,20 +73,40 @@ export async function POST(request: NextRequest) {
       await shopRef.set({
         name: shopName,
         slug: shopSlug,
-        description: `Premium collectibles shop - TCG, Beyblades, and Figurines`,
+        description: `Premium Beyblade shop - Attack, Defense, Stamina types and accessories. Authentic Takara Tomy and Hasbro products!`,
+        tagline: ["Let it rip!", "Authentic Beyblades only", "Fast shipping worldwide", "Blader's choice"][i % 4],
         email: `shop${i + 1}@demo.justforview.in`,
         phone: `+91-${8000000000 + i}`,
+        whatsapp: `+91-${8000000000 + i}`,
         address: `${100 + i} ${STREETS[i % STREETS.length]}, ${city.city}, ${city.state} ${city.pincode}`,
         owner_id: seller.id,
         is_active: true,
         status: "active",
         verified: true,
         featured: i < 10,
-        logo: `https://picsum.photos/seed/shop-${shopRef.id}/200/200`,
-        banner: `https://picsum.photos/seed/banner-${shopRef.id}/1200/400`,
+        logo: SHOP_LOGOS[i % SHOP_LOGOS.length],
+        banner: SHOP_BANNERS[i % SHOP_BANNERS.length],
+        cover_images: [
+          SHOP_BANNERS[i % SHOP_BANNERS.length],
+          SHOP_BANNERS[(i + 1) % SHOP_BANNERS.length],
+          SHOP_BANNERS[(i + 2) % SHOP_BANNERS.length],
+        ],
+        gallery: [
+          `https://images.unsplash.com/photo-${1560000000000 + i * 1000}?w=600&h=400&fit=crop`,
+          `https://images.unsplash.com/photo-${1570000000000 + i * 1000}?w=600&h=400&fit=crop`,
+          `https://images.unsplash.com/photo-${1580000000000 + i * 1000}?w=600&h=400&fit=crop`,
+        ],
         rating: 3.5 + Math.random() * 1.5,
+        review_count: Math.floor(Math.random() * 200) + 10,
         product_count: 0,
         auction_count: 0,
+        follower_count: Math.floor(Math.random() * 5000) + 100,
+        total_sales: Math.floor(Math.random() * 50000) + 5000,
+        social_links: {
+          facebook: `https://facebook.com/demo-shop-${i}`,
+          instagram: `https://instagram.com/demo_shop_${i}`,
+          twitter: `https://twitter.com/demo_shop_${i}`,
+        },
         settings: {
           minOrderAmount: 200 + (i % 5) * 100,
           shippingCharge: 40 + (i % 3) * 10,
@@ -65,6 +114,15 @@ export async function POST(request: NextRequest) {
           acceptsCOD: i % 3 !== 0,
           acceptsReturns: true,
           returnWindow: 7,
+        },
+        business_hours: {
+          monday: { open: "09:00", close: "21:00" },
+          tuesday: { open: "09:00", close: "21:00" },
+          wednesday: { open: "09:00", close: "21:00" },
+          thursday: { open: "09:00", close: "21:00" },
+          friday: { open: "09:00", close: "21:00" },
+          saturday: { open: "10:00", close: "20:00" },
+          sunday: { open: "10:00", close: "18:00" },
         },
         created_at: timestamp,
         updated_at: timestamp,

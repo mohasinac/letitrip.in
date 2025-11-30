@@ -6,6 +6,7 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
+import { updateCategoryAuctionCounts } from "@/lib/category-hierarchy";
 
 /**
  * GET /api/auctions
@@ -164,7 +165,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { shop_id, name, slug, starting_bid, end_time } = body;
+    const { shop_id, name, slug, starting_bid, end_time, category_id } = body;
     if (!shop_id || !name || !slug || starting_bid == null || !end_time) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
@@ -215,6 +216,7 @@ export async function POST(request: NextRequest) {
       name,
       slug,
       description: body.description || "",
+      category_id: category_id || null,
       starting_bid,
       current_bid: starting_bid,
       bid_count: 0,
@@ -225,6 +227,16 @@ export async function POST(request: NextRequest) {
       updated_at: now,
     });
     const created = await docRef.get();
+    
+    // Update category auction counts if category is provided
+    if (category_id) {
+      try {
+        await updateCategoryAuctionCounts(category_id);
+      } catch (err) {
+        console.error("Failed to update category auction counts:", err);
+      }
+    }
+    
     return NextResponse.json(
       { success: true, data: { id: created.id, ...created.data() } },
       { status: 201 },

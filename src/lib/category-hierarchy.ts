@@ -186,8 +186,33 @@ export async function updateCategoryProductCounts(
 
   // Update the category itself first
   const count = await countCategoryProducts(categoryId);
+  
+  // Count in-stock and out-of-stock products
+  const productsSnapshot = await db
+    .collection("products")
+    .where("category_id", "==", categoryId)
+    .where("status", "==", "published")
+    .get();
+
+  let inStockCount = 0;
+  let outOfStockCount = 0;
+  
+  for (const doc of productsSnapshot.docs) {
+    const data = doc.data();
+    if (data.is_deleted !== true) {
+      const stockCount = data.stock_count || 0;
+      if (stockCount > 0) {
+        inStockCount++;
+      } else {
+        outOfStockCount++;
+      }
+    }
+  }
+
   await db.collection("categories").doc(categoryId).update({
     product_count: count,
+    in_stock_count: inStockCount,
+    out_of_stock_count: outOfStockCount,
   });
 
   // Update all ancestors (from bottom to top)
@@ -196,8 +221,26 @@ export async function updateCategoryProductCounts(
   // Sort ancestors by level (if available) or update one by one
   for (const ancestorId of ancestorIds) {
     const ancestorCount = await countCategoryProducts(ancestorId);
+    
+    // Sum up in_stock and out_of_stock from children
+    const childrenSnapshot = await db
+      .collection("categories")
+      .where("parent_ids", "array-contains", ancestorId)
+      .get();
+    
+    let ancestorInStock = 0;
+    let ancestorOutOfStock = 0;
+    
+    for (const childDoc of childrenSnapshot.docs) {
+      const childData = childDoc.data();
+      ancestorInStock += childData.in_stock_count || 0;
+      ancestorOutOfStock += childData.out_of_stock_count || 0;
+    }
+
     await db.collection("categories").doc(ancestorId).update({
       product_count: ancestorCount,
+      in_stock_count: ancestorInStock,
+      out_of_stock_count: ancestorOutOfStock,
     });
   }
 }
@@ -345,6 +388,58 @@ export async function getCategoryProducts(
 }
 
 /**
+ * Update auction counts for a category and all its ancestors
+ */
+export async function updateCategoryAuctionCounts(
+  categoryId: string,
+): Promise<void> {
+  const db = getFirestoreAdmin();
+
+  // Count live and ended auctions for this category
+  const liveAuctionsSnapshot = await db
+    .collection("auctions")
+    .where("category_id", "==", categoryId)
+    .where("status", "==", "active")
+    .get();
+
+  const endedAuctionsSnapshot = await db
+    .collection("auctions")
+    .where("category_id", "==", categoryId)
+    .where("status", "in", ["ended", "completed"])
+    .get();
+
+  await db.collection("categories").doc(categoryId).update({
+    live_auction_count: liveAuctionsSnapshot.size,
+    ended_auction_count: endedAuctionsSnapshot.size,
+  });
+
+  // Update all ancestors
+  const ancestorIds = await getAllAncestorIds(categoryId);
+
+  for (const ancestorId of ancestorIds) {
+    // Sum up auction counts from children
+    const childrenSnapshot = await db
+      .collection("categories")
+      .where("parent_ids", "array-contains", ancestorId)
+      .get();
+    
+    let liveCount = 0;
+    let endedCount = 0;
+    
+    for (const childDoc of childrenSnapshot.docs) {
+      const childData = childDoc.data();
+      liveCount += childData.live_auction_count || 0;
+      endedCount += childData.ended_auction_count || 0;
+    }
+
+    await db.collection("categories").doc(ancestorId).update({
+      live_auction_count: liveCount,
+      ended_auction_count: endedCount,
+    });
+  }
+}
+
+/**
  * Rebuild all category product counts (useful for maintenance)
  */
 export async function rebuildAllCategoryCounts(): Promise<{
@@ -367,20 +462,66 @@ export async function rebuildAllCategoryCounts(): Promise<{
   for (const doc of categoriesSnapshot.docs) {
     try {
       const categoryData = doc.data();
-      const count = await countCategoryProducts(doc.id);
+      const categoryId = doc.id;
+      
+      // Count products
+      const count = await countCategoryProducts(categoryId);
+      
+      // Count in-stock and out-of-stock products
+      const productsSnapshot = await db
+        .collection("products")
+        .where("category_id", "==", categoryId)
+        .where("status", "==", "published")
+        .get();
 
-      await db.collection("categories").doc(doc.id).update({
+      let inStockCount = 0;
+      let outOfStockCount = 0;
+      
+      for (const prodDoc of productsSnapshot.docs) {
+        const data = prodDoc.data();
+        if (data.is_deleted !== true) {
+          const stockCount = data.stock_count || 0;
+          if (stockCount > 0) {
+            inStockCount++;
+          } else {
+            outOfStockCount++;
+          }
+        }
+      }
+
+      // Count auctions
+      const liveAuctionsSnapshot = await db
+        .collection("auctions")
+        .where("category_id", "==", categoryId)
+        .where("status", "==", "active")
+        .get();
+
+      const endedAuctionsSnapshot = await db
+        .collection("auctions")
+        .where("category_id", "==", categoryId)
+        .where("status", "in", ["ended", "completed"])
+        .get();
+
+      await db.collection("categories").doc(categoryId).update({
         product_count: count,
+        in_stock_count: inStockCount,
+        out_of_stock_count: outOfStockCount,
+        live_auction_count: liveAuctionsSnapshot.size,
+        ended_auction_count: endedAuctionsSnapshot.size,
       });
 
-      details.categoryCounts[doc.id] = {
+      details.categoryCounts[categoryId] = {
         name: categoryData.name,
-        count: count,
-        isLeaf: await isCategoryLeaf(doc.id),
+        productCount: count,
+        inStockCount,
+        outOfStockCount,
+        liveAuctionCount: liveAuctionsSnapshot.size,
+        endedAuctionCount: endedAuctionsSnapshot.size,
+        isLeaf: await isCategoryLeaf(categoryId),
       };
 
       console.log(
-        `Updated ${categoryData.name} (${doc.id}): ${count} products`,
+        `Updated ${categoryData.name} (${categoryId}): ${count} products (${inStockCount} in stock, ${outOfStockCount} out of stock), ${liveAuctionsSnapshot.size} live auctions, ${endedAuctionsSnapshot.size} ended auctions`,
       );
       updated++;
     } catch (error: any) {
