@@ -88,6 +88,9 @@ function NotificationItem({
           : ""
       }`}
       onClick={handleClick}
+      onKeyDown={(e) => e.key === "Enter" && handleClick()}
+      role={notification.link ? "button" : undefined}
+      tabIndex={notification.link ? 0 : undefined}
     >
       {/* Type icon */}
       <div

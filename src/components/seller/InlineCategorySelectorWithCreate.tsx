@@ -192,6 +192,10 @@ export default function InlineCategorySelectorWithCreate({
           onClick={(e) => {
             if (e.target === e.currentTarget) handleCloseCreateDialog();
           }}
+          onKeyDown={(e) => e.key === "Escape" && handleCloseCreateDialog()}
+          role="dialog"
+          aria-modal="true"
+          tabIndex={-1}
         >
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}

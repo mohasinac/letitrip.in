@@ -188,7 +188,13 @@ export default function MediaGallery({
             )}
 
             {/* Media Card */}
-            <div onClick={() => openLightbox(index)} className="cursor-pointer">
+            <div
+              onClick={() => openLightbox(index)}
+              onKeyDown={(e) => e.key === "Enter" && openLightbox(index)}
+              role="button"
+              tabIndex={0}
+              className="cursor-pointer"
+            >
               <MediaPreviewCard
                 media={file}
                 onRemove={() => onRemove?.(file.id)}
@@ -202,7 +208,17 @@ export default function MediaGallery({
 
       {/* Lightbox */}
       {lightboxIndex !== null && (
-        <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center">
+        <div
+          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center"
+          onKeyDown={(e) => {
+            if (e.key === "Escape") closeLightbox();
+            if (e.key === "ArrowLeft") prevImage();
+            if (e.key === "ArrowRight") nextImage();
+          }}
+          role="dialog"
+          aria-modal="true"
+          tabIndex={-1}
+        >
           <button
             onClick={closeLightbox}
             className="absolute top-4 right-4 p-2 text-white hover:bg-white/20 rounded-lg transition-colors"

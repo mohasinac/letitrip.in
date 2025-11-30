@@ -185,6 +185,9 @@ export default function TagInput({
       {/* Tags container */}
       <div
         onClick={() => inputRef.current?.focus()}
+        onKeyDown={(e) => e.key === "Enter" && inputRef.current?.focus()}
+        role="textbox"
+        tabIndex={-1}
         className={`
           flex flex-wrap gap-2 p-3 border rounded-lg min-h-[42px] cursor-text
           ${
@@ -265,6 +268,12 @@ export default function TagInput({
               <div
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && handleSuggestionClick(suggestion)
+                }
+                role="option"
+                tabIndex={0}
+                aria-selected={index === selectedSuggestionIndex}
                 className={`
                   px-3 py-2 cursor-pointer
                   ${

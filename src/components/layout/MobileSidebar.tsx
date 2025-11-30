@@ -88,6 +88,10 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
         id="mobile-sidebar-overlay"
         className="fixed inset-0 bg-black/50 z-50 lg:hidden animate-fade-in"
         onClick={onClose}
+        onKeyDown={(e) => e.key === "Escape" && onClose()}
+        role="button"
+        tabIndex={-1}
+        aria-label="Close menu"
       />
 
       {/* Sidebar */}

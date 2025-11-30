@@ -17,6 +17,9 @@ export function PaymentMethod({ selected, onSelect }: PaymentMethodProps) {
       <div className="space-y-3">
         <div
           onClick={() => onSelect("razorpay")}
+          onKeyDown={(e) => e.key === "Enter" && onSelect("razorpay")}
+          role="button"
+          tabIndex={0}
           className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
             selected === "razorpay"
               ? "border-primary bg-primary/5 dark:bg-primary/10"
@@ -64,6 +67,9 @@ export function PaymentMethod({ selected, onSelect }: PaymentMethodProps) {
 
         <div
           onClick={() => onSelect("cod")}
+          onKeyDown={(e) => e.key === "Enter" && onSelect("cod")}
+          role="button"
+          tabIndex={0}
           className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
             selected === "cod"
               ? "border-primary bg-primary/5 dark:bg-primary/10"

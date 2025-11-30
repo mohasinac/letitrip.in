@@ -331,6 +331,15 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
               e.stopPropagation();
               window.location.href = `/shops/${shopSlug}`;
             }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                window.location.href = `/shops/${shopSlug}`;
+              }
+            }}
+            role="link"
+            tabIndex={0}
             className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-2 block cursor-pointer"
           >
             {shopName}

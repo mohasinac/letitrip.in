@@ -203,6 +203,11 @@ export default function DateTimePicker({
       {/* Input trigger */}
       <div
         onClick={() => !disabled && setIsOpen(!isOpen)}
+        onKeyDown={(e) => e.key === "Enter" && !disabled && setIsOpen(!isOpen)}
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-expanded={isOpen}
+        aria-haspopup="dialog"
         className={`
           flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer
           ${
@@ -271,6 +276,10 @@ export default function DateTimePicker({
           <div
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
+            onKeyDown={(e) => e.key === "Escape" && setIsOpen(false)}
+            role="button"
+            tabIndex={-1}
+            aria-label="Close date picker"
           />
 
           {/* Picker content */}

@@ -30,6 +30,9 @@ export function StatsCard({
         onClick ? "cursor-pointer hover:shadow-lg transition-shadow" : ""
       } ${className}`}
       onClick={onClick}
+      onKeyDown={onClick ? (e) => e.key === "Enter" && onClick() : undefined}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
     >
       <div className="flex items-center justify-between mb-2 md:mb-4">
         <h3 className="text-xs md:text-sm font-medium text-gray-500 truncate">

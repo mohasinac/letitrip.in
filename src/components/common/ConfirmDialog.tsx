@@ -86,6 +86,10 @@ export function ConfirmDialog({
       <div
         className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
         onClick={() => !loading && onClose()}
+        onKeyDown={(e) => e.key === "Escape" && !loading && onClose()}
+        role="button"
+        tabIndex={-1}
+        aria-label="Close dialog"
       />
 
       {/* Dialog */}

@@ -129,6 +129,10 @@ export default function EditProductPage() {
                   index !== STEPS.length - 1 ? "flex-1" : ""
                 }`}
                 onClick={() => setCurrentStep(step.id)}
+                onKeyDown={(e) => e.key === "Enter" && setCurrentStep(step.id)}
+                role="button"
+                tabIndex={0}
+                aria-current={currentStep === step.id ? "step" : undefined}
               >
                 {index !== STEPS.length - 1 && (
                   <div
