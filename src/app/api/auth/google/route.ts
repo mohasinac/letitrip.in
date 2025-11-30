@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     const userDoc = await userRef.get();
 
     let isNewUser = false;
-    let user;
+    let user: Record<string, any>;
 
     if (userDoc.exists) {
       // Update existing user with latest Google info

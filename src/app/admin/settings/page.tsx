@@ -94,15 +94,11 @@ function SettingsCard({
   status: "pending" | "ready";
   icon: string;
 }) {
-  const isReady = status === "ready";
-
   return (
     <Link
-      href={isReady ? href : "#"}
-      className={`block border rounded-lg p-4 transition-all ${
-        isReady
-          ? "bg-white dark:bg-gray-800 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 border-gray-200 dark:border-gray-700 cursor-pointer"
-          : "bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-700 cursor-not-allowed opacity-60"
+      href={href}
+      className={`block border rounded-lg p-4 transition-all bg-white dark:bg-gray-800 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 border-gray-200 dark:border-gray-700 cursor-pointer ${
+        status === "pending" ? "opacity-80" : ""
       }`}
     >
       <div className="flex items-center justify-between mb-2">
@@ -113,7 +109,7 @@ function SettingsCard({
           </h3>
         </div>
         {status === "pending" ? (
-          <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
+          <span className="text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 px-2 py-1 rounded">
             Coming Soon
           </span>
         ) : (
@@ -123,11 +119,9 @@ function SettingsCard({
         )}
       </div>
       <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
-      {isReady && (
-        <span className="mt-3 text-sm text-blue-600 dark:text-blue-400 inline-flex items-center">
-          Configure →
-        </span>
-      )}
+      <span className="mt-3 text-sm text-blue-600 dark:text-blue-400 inline-flex items-center">
+        {status === "pending" ? "View Details →" : "Configure →"}
+      </span>
     </Link>
   );
 }
