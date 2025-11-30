@@ -204,10 +204,14 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         </h4>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-xs text-gray-600 dark:text-gray-400">
+            <label
+              htmlFor="product-filter-min-price"
+              className="text-xs text-gray-600 dark:text-gray-400"
+            >
               Min
             </label>
             <input
+              id="product-filter-min-price"
               type="number"
               placeholder="₹0"
               value={filters.priceMin || ""}
@@ -221,10 +225,14 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600 dark:text-gray-400">
+            <label
+              htmlFor="product-filter-max-price"
+              className="text-xs text-gray-600 dark:text-gray-400"
+            >
               Max
             </label>
             <input
+              id="product-filter-max-price"
               type="number"
               placeholder="₹100,000"
               value={filters.priceMax || ""}

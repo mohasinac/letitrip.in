@@ -75,10 +75,14 @@ export default function MediaMetadataForm({
     <div className={`space-y-4 ${className}`}>
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="media-description"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Description <span className="text-red-500">*</span>
         </label>
         <textarea
+          id="media-description"
           value={localMetadata.description || ""}
           onChange={(e) => handleDescriptionChange(e.target.value)}
           rows={3}
@@ -90,10 +94,14 @@ export default function MediaMetadataForm({
 
       {/* Slug */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="media-slug"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Slug <span className="text-red-500">*</span>
         </label>
         <input
+          id="media-slug"
           type="text"
           value={localMetadata.slug || ""}
           onChange={(e) => handleSlugChange(e.target.value)}
@@ -109,10 +117,14 @@ export default function MediaMetadataForm({
 
       {/* Alt Text (for images) */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="media-alt"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Alt Text
         </label>
         <input
+          id="media-alt"
           type="text"
           value={localMetadata.alt || ""}
           onChange={(e) => handleAltChange(e.target.value)}
@@ -126,10 +138,14 @@ export default function MediaMetadataForm({
 
       {/* Caption */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="media-caption"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Caption
         </label>
         <input
+          id="media-caption"
           type="text"
           value={localMetadata.caption || ""}
           onChange={(e) => handleCaptionChange(e.target.value)}
@@ -140,10 +156,14 @@ export default function MediaMetadataForm({
 
       {/* Tags */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="media-tags"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Tags
         </label>
         <input
+          id="media-tags"
           type="text"
           value={localMetadata.tags?.join(", ") || ""}
           onChange={(e) => handleTagsChange(e.target.value)}

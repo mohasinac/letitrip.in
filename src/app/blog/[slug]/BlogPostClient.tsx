@@ -76,14 +76,14 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
         await navigator.share({
           title: post?.title,
           text: post?.excerpt,
-          url: window.location.href,
+          url: globalThis.location?.href || "",
         });
       } catch (err) {
         console.error("Error sharing:", err);
       }
     } else {
       // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
+      navigator.clipboard.writeText(globalThis.location?.href || "");
       toast.success("Link copied to clipboard!");
     }
   };

@@ -179,7 +179,10 @@ function SearchContent() {
             description={`We couldn't find any results for "${query}". Try different keywords or browse our categories.`}
             action={{
               label: "Browse Categories",
-              onClick: () => (window.location.href = "/categories"),
+              onClick: () => {
+                if (globalThis.location)
+                  globalThis.location.href = "/categories";
+              },
             }}
           />
         )}

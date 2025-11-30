@@ -70,21 +70,23 @@ export default function AdminOrdersPage() {
     }
 
     const queryString = params.toString();
-    const newUrl = queryString ? `?${queryString}` : window.location.pathname;
-    window.history.replaceState({}, "", newUrl);
+    const newUrl = queryString
+      ? `?${queryString}`
+      : globalThis.location?.pathname || "";
+    globalThis.history?.replaceState({}, "", newUrl);
   }, [searchQuery, filterValues]);
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleNextPage = () => {
     if (hasNextPage) {
       setCurrentPage((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
 

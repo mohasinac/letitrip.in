@@ -49,10 +49,14 @@ export default function ShopSelector({
 
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label
+        htmlFor="shop-selector"
+        className="block text-sm font-medium text-gray-700 mb-1"
+      >
         Shop
       </label>
       <select
+        id="shop-selector"
         value={value || ""}
         onChange={(e) => {
           const val = e.target.value || undefined;

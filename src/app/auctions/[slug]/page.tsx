@@ -172,7 +172,7 @@ export default function AuctionDetailPage() {
   };
 
   const handleShare = async () => {
-    const url = window.location.href;
+    const url = globalThis.location?.href || "";
     if (navigator.share) {
       try {
         await navigator.share({

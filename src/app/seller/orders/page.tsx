@@ -56,7 +56,9 @@ export default function SellerOrdersPage() {
     if (filterValues.sortOrder) params.set("sortOrder", filterValues.sortOrder);
 
     const queryString = params.toString();
-    const newUrl = queryString ? `?${queryString}` : globalThis.location?.pathname || '';
+    const newUrl = queryString
+      ? `?${queryString}`
+      : globalThis.location?.pathname || "";
     globalThis.history?.replaceState({}, "", newUrl);
   }, [filterValues]);
 
@@ -102,14 +104,14 @@ export default function SellerOrdersPage() {
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleNextPage = () => {
     if (hasNextPage) {
       setCurrentPage((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
 

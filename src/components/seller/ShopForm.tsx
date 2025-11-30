@@ -95,10 +95,14 @@ export default function ShopForm({
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="shop-slug"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Shop Slug <span className="text-red-500">*</span>
             </label>
             <SlugInput
+              id="shop-slug"
               value={slug}
               onChange={setSlug}
               sourceText={name}
@@ -125,10 +129,14 @@ export default function ShopForm({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="shop-description"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Shop Description <span className="text-red-500">*</span>
             </label>
             <RichTextEditor
+              id="shop-description"
               value={description}
               onChange={setDescription}
               placeholder="Describe your shop..."
@@ -211,8 +219,8 @@ export default function ShopForm({
                 ? "Creating..."
                 : "Saving..."
               : mode === "create"
-                ? "Create Shop"
-                : "Save Changes"}
+              ? "Create Shop"
+              : "Save Changes"}
           </Button>
         }
       />

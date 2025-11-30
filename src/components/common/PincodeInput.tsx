@@ -209,10 +209,14 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
           lookupResult.hasMultipleAreas &&
           lookupResult.areas.length > 1 && (
             <div className="mt-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label
+                htmlFor="pincode-area-select"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
                 Select Area
               </label>
               <select
+                id="pincode-area-select"
                 value={selectedArea}
                 onChange={(e) => handleAreaSelect(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg

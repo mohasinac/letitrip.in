@@ -99,7 +99,7 @@ export function CartSummary({
               style={{
                 width: `${Math.min(
                   (subtotal / freeShippingThreshold) * 100,
-                  100,
+                  100
                 )}%`,
               }}
             />
@@ -110,11 +110,15 @@ export function CartSummary({
       {/* Coupon Input */}
       {!couponCode && onApplyCoupon && (
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="cart-coupon-input"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Have a coupon code?
           </label>
           <div className="flex gap-2">
             <input
+              id="cart-coupon-input"
               type="text"
               value={couponInput}
               onChange={(e) => {

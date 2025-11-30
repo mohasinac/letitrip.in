@@ -159,8 +159,11 @@ export default function AuctionForm({
             disabled={isSubmitting}
           />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div id="auction-slug-wrapper">
+            <label
+              htmlFor="auction-slug-wrapper"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Auction URL <span className="text-red-500">*</span>
             </label>
             <SlugInput
@@ -183,8 +186,11 @@ export default function AuctionForm({
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div id="auction-description-wrapper">
+            <label
+              htmlFor="auction-description-wrapper"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Description <span className="text-red-500">*</span>
             </label>
             <RichTextEditor
@@ -230,8 +236,11 @@ export default function AuctionForm({
       {/* Timing */}
       <Card title="Auction Timing">
         <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div id="auction-start-time-wrapper">
+            <label
+              htmlFor="auction-start-time-wrapper"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Start Time <span className="text-red-500">*</span>
             </label>
             <DateTimePicker
@@ -241,8 +250,11 @@ export default function AuctionForm({
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div id="auction-end-time-wrapper">
+            <label
+              htmlFor="auction-end-time-wrapper"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               End Time <span className="text-red-500">*</span>
             </label>
             <DateTimePicker

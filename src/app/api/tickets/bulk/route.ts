@@ -3,6 +3,26 @@ import { requireRole } from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { ValidationError } from "@/lib/api-errors";
 
+// Build update object for each action (excluding delete which needs special handling)
+function buildTicketUpdate(action: string, now: Date, updates?: any): Record<string, any> | null {
+  switch (action) {
+    case "update":
+      if (!updates || typeof updates !== "object") return null;
+      return { ...updates, updatedAt: now };
+    case "assign":
+      if (!updates?.assignedTo) return null;
+      return { assignedTo: updates.assignedTo, status: "in-progress", updatedAt: now };
+    case "resolve":
+      return { status: "resolved", resolvedAt: now, updatedAt: now };
+    case "close":
+      return { status: "closed", resolvedAt: now, updatedAt: now };
+    case "escalate":
+      return { status: "escalated", priority: "urgent", updatedAt: now };
+    default:
+      return null;
+  }
+}
+
 /**
  * POST /api/tickets/bulk
  * Bulk operations on tickets (admin only)
@@ -64,76 +84,25 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        switch (action) {
-          case "delete":
-            // Delete all messages first
-            const messagesSnapshot = await ticketRef
-              .collection("messages")
-              .get();
-            messagesSnapshot.docs.forEach((doc) => {
-              batch.delete(doc.ref);
-            });
-            batch.delete(ticketRef);
-            break;
-
-          case "update":
-            if (!updates || typeof updates !== "object") {
-              results.failed.push({
-                id: ticketId,
-                error: "Updates object required",
-              });
-              continue;
-            }
-            batch.update(ticketRef, {
-              ...updates,
-              updatedAt: now,
-            });
-            break;
-
-          case "assign":
-            if (!updates?.assignedTo) {
-              results.failed.push({
-                id: ticketId,
-                error: "assignedTo field required",
-              });
-              continue;
-            }
-            batch.update(ticketRef, {
-              assignedTo: updates.assignedTo,
-              status: "in-progress",
-              updatedAt: now,
-            });
-            break;
-
-          case "resolve":
-            batch.update(ticketRef, {
-              status: "resolved",
-              resolvedAt: now,
-              updatedAt: now,
-            });
-            break;
-
-          case "close":
-            batch.update(ticketRef, {
-              status: "closed",
-              resolvedAt: now,
-              updatedAt: now,
-            });
-            break;
-
-          case "escalate":
-            batch.update(ticketRef, {
-              status: "escalated",
-              priority: "urgent",
-              updatedAt: now,
-            });
-            break;
-
-          default:
-            results.failed.push({ id: ticketId, error: "Unknown action" });
-            continue;
+        // Handle delete action (needs to delete messages first)
+        if (action === "delete") {
+          const messagesSnapshot = await ticketRef.collection("messages").get();
+          messagesSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+          batch.delete(ticketRef);
+          results.success.push(ticketId);
+          continue;
         }
 
+        // Build update for other actions
+        const ticketUpdate = buildTicketUpdate(action, now, updates);
+        if (!ticketUpdate) {
+          const errorMsg = action === "update" ? "Updates object required" : 
+                           action === "assign" ? "assignedTo field required" : "Unknown action";
+          results.failed.push({ id: ticketId, error: errorMsg });
+          continue;
+        }
+
+        batch.update(ticketRef, ticketUpdate);
         results.success.push(ticketId);
       } catch (error: any) {
         results.failed.push({ id: ticketId, error: error.message });

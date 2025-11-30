@@ -154,14 +154,14 @@ export default function AdminUsersPage() {
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleNextPage = () => {
     if (hasNextPage) {
       setCurrentPage((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -201,14 +201,14 @@ export default function AdminUsersPage() {
         ].join("\n");
 
         const blob = new Blob([csv], { type: "text/csv" });
-        const url = window.URL.createObjectURL(blob);
+        const url = globalThis.URL?.createObjectURL(blob) || "";
         const a = document.createElement("a");
         a.href = url;
         a.download = `users-export-${new Date().toISOString()}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        globalThis.URL?.revokeObjectURL(url);
 
         setSelectedIds([]);
         return;

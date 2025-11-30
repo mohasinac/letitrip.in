@@ -127,7 +127,7 @@ function NotFoundContent() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={() => window.history.back()}
+                onClick={() => globalThis.history?.back()}
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
               >
                 <ArrowLeft className="w-4 h-4" />

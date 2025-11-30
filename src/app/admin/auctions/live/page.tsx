@@ -560,7 +560,7 @@ export default function LiveAuctionsPage() {
                       onPause={(id) => setPauseAuctionId(id)}
                       onEnd={(id) => setEndAuctionId(id)}
                       onView={(slug) =>
-                        window.open(`/auctions/${slug}`, "_blank")
+                        globalThis.open?.(`/auctions/${slug}`, "_blank")
                       }
                     />
                   ))

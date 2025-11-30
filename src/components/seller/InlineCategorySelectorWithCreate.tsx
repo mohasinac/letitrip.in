@@ -217,11 +217,15 @@ export default function InlineCategorySelectorWithCreate({
             <div className="px-6 py-4 space-y-4">
               {/* Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="new-category-name"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Category Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
+                  id="new-category-name"
                   value={createForm.name}
                   onChange={(e) => {
                     setCreateForm((prev) => ({
@@ -250,10 +254,14 @@ export default function InlineCategorySelectorWithCreate({
 
               {/* Slug */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="new-category-slug"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   URL Slug <span className="text-red-500">*</span>
                 </label>
                 <SlugInput
+                  id="new-category-slug"
                   sourceText={createForm.name}
                   value={createForm.slug}
                   onChange={(slug) => {
@@ -268,10 +276,14 @@ export default function InlineCategorySelectorWithCreate({
 
               {/* Description (Optional) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="new-category-desc"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Description (Optional)
                 </label>
                 <textarea
+                  id="new-category-desc"
                   value={createForm.description}
                   onChange={(e) =>
                     setCreateForm((prev) => ({

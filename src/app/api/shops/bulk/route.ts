@@ -2,6 +2,50 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
+// Build update object for each action
+function buildShopUpdate(action: string, data?: any): Record<string, any> | null {
+  const now = new Date();
+  switch (action) {
+    case "verify":
+      return { is_verified: true, updated_at: now };
+    case "unverify":
+      return { is_verified: false, updated_at: now };
+    case "feature":
+      return { is_featured: true, updated_at: now };
+    case "unfeature":
+      return { is_featured: false, updated_at: now };
+    case "activate":
+      return { is_active: true, is_banned: false, updated_at: now };
+    case "deactivate":
+      return { is_active: false, updated_at: now };
+    case "ban":
+      return { is_banned: true, is_active: false, ban_reason: data?.banReason || "Bulk ban action", updated_at: now };
+    case "unban":
+      return { is_banned: false, ban_reason: null, updated_at: now };
+    case "update":
+      if (!data) return null;
+      const allowedFields = ["is_verified", "is_featured", "show_on_homepage", "is_banned", "ban_reason"];
+      const updates: Record<string, any> = { updated_at: now };
+      for (const field of allowedFields) {
+        if (field in data) updates[field] = data[field];
+      }
+      return updates;
+    default:
+      return null;
+  }
+}
+
+// Check if shop can be deleted
+async function canDeleteShop(shopId: string): Promise<string | null> {
+  const productsSnapshot = await Collections.products().where("shop_id", "==", shopId).limit(1).get();
+  if (!productsSnapshot.empty) return "Shop has products";
+
+  const auctionsSnapshot = await Collections.auctions().where("shop_id", "==", shopId).limit(1).get();
+  if (!auctionsSnapshot.empty) return "Shop has auctions";
+
+  return null;
+}
+
 /**
  * Unified Bulk Operations for Shops
  * POST /api/shops/bulk
@@ -44,136 +88,29 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        switch (action) {
-          case "verify":
-            await shopRef.update({
-              is_verified: true,
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "unverify":
-            await shopRef.update({
-              is_verified: false,
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "feature":
-            await shopRef.update({
-              is_featured: true,
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "unfeature":
-            await shopRef.update({
-              is_featured: false,
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "activate":
-            await shopRef.update({
-              is_active: true,
-              is_banned: false,
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "deactivate":
-            await shopRef.update({
-              is_active: false,
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "ban":
-            await shopRef.update({
-              is_banned: true,
-              is_active: false,
-              ban_reason: data?.banReason || "Bulk ban action",
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "unban":
-            await shopRef.update({
-              is_banned: false,
-              ban_reason: null,
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "delete":
-            // Check if shop has products
-            const productsSnapshot = await Collections.products()
-              .where("shop_id", "==", id)
-              .limit(1)
-              .get();
-
-            if (!productsSnapshot.empty) {
-              results.failed.push({ id, error: "Shop has products" });
-              continue;
-            }
-
-            // Check if shop has auctions
-            const auctionsSnapshot = await Collections.auctions()
-              .where("shop_id", "==", id)
-              .limit(1)
-              .get();
-
-            if (!auctionsSnapshot.empty) {
-              results.failed.push({ id, error: "Shop has auctions" });
-              continue;
-            }
-
+        // Handle delete action separately
+        if (action === "delete") {
+          const deleteError = await canDeleteShop(id);
+          if (deleteError) {
+            results.failed.push({ id, error: deleteError });
+          } else {
             await shopRef.delete();
             results.success.push(id);
-            break;
-
-          case "update":
-            if (!data) {
-              results.failed.push({ id, error: "No update data provided" });
-              continue;
-            }
-
-            // Only allow specific fields to be updated in bulk
-            const allowedFields = [
-              "is_verified",
-              "is_featured",
-              "show_on_homepage",
-              "is_banned",
-              "ban_reason",
-            ];
-            const updates: Record<string, any> = { updated_at: new Date() };
-
-            for (const field of allowedFields) {
-              if (field in data) {
-                updates[field] = data[field];
-              }
-            }
-
-            await shopRef.update(updates);
-            results.success.push(id);
-            break;
-
-          default:
-            results.failed.push({ id, error: `Unknown action: ${action}` });
+          }
+          continue;
         }
+
+        // Build and apply update
+        const updates = buildShopUpdate(action, data);
+        if (!updates) {
+          results.failed.push({ id, error: action === "update" ? "No update data provided" : `Unknown action: ${action}` });
+          continue;
+        }
+
+        await shopRef.update(updates);
+        results.success.push(id);
       } catch (error: any) {
-        results.failed.push({
-          id,
-          error: error.message || "Operation failed",
-        });
+        results.failed.push({ id, error: error.message || "Operation failed" });
       }
     }
 

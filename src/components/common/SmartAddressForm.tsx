@@ -277,11 +277,15 @@ export function SmartAddressForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Full Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="address-fullname"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Full Name <span className="text-red-500">*</span>
             </label>
             <input
               {...register("fullName")}
+              id="address-fullname"
               type="text"
               className="input w-full"
               placeholder="John Doe"
@@ -336,11 +340,15 @@ export function SmartAddressForm({
 
         {/* Address Line 1 */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="address-line1"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Flat, House No., Building <span className="text-red-500">*</span>
           </label>
           <input
             {...register("addressLine1")}
+            id="address-line1"
             type="text"
             className="input w-full"
             placeholder="123, ABC Apartments"
@@ -354,11 +362,15 @@ export function SmartAddressForm({
 
         {/* Address Line 2 */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="address-line2"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Street, Road (Optional)
           </label>
           <input
             {...register("addressLine2")}
+            id="address-line2"
             type="text"
             className="input w-full"
             placeholder="MG Road"
@@ -367,11 +379,15 @@ export function SmartAddressForm({
 
         {/* Landmark */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="address-landmark"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Landmark (Optional)
           </label>
           <input
             {...register("landmark")}
+            id="address-landmark"
             type="text"
             className="input w-full"
             placeholder="Near XYZ Mall"
@@ -405,11 +421,15 @@ export function SmartAddressForm({
 
           {/* Area */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="address-area"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Area/Locality <span className="text-red-500">*</span>
             </label>
             <input
               {...register("area")}
+              id="address-area"
               type="text"
               className="input w-full"
               placeholder="Koramangala"
@@ -423,11 +443,15 @@ export function SmartAddressForm({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* City */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="address-city"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               City <span className="text-red-500">*</span>
             </label>
             <input
               {...register("city")}
+              id="address-city"
               type="text"
               className="input w-full"
               placeholder="Bangalore"
@@ -453,11 +477,15 @@ export function SmartAddressForm({
 
           {/* Country */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="address-country"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Country
             </label>
             <input
               {...register("country")}
+              id="address-country"
               type="text"
               className="input w-full bg-gray-50"
               readOnly
@@ -499,11 +527,15 @@ export function SmartAddressForm({
         {/* Custom Label for "other" type */}
         {addressType === "other" && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="address-custom-label"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Custom Label
             </label>
             <input
               {...register("customLabel")}
+              id="address-custom-label"
               type="text"
               className="input w-full"
               placeholder="e.g., Mom's House, Office HQ"

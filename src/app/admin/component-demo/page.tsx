@@ -27,7 +27,7 @@ export default function ComponentDemoPage() {
     setTimeout(() => toast.error("Error! Something went wrong."), 500);
     setTimeout(
       () => toast.warning("Warning! Please review your changes."),
-      1000,
+      1000
     );
     setTimeout(() => toast.info("Info: Processing your request..."), 1500);
   };
@@ -58,7 +58,7 @@ export default function ComponentDemoPage() {
           actions={
             <>
               <button
-                onClick={() => window.location.reload()}
+                onClick={() => globalThis.location?.reload()}
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
                 Reset

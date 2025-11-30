@@ -31,7 +31,7 @@ export const AuctionFilters: React.FC<AuctionFiltersProps> = ({
 
   const updateFilter = <K extends keyof AuctionFilterValues>(
     key: K,
-    value: AuctionFilterValues[K],
+    value: AuctionFilterValues[K]
   ) => {
     onChange({ ...filters, [key]: value });
   };
@@ -114,30 +114,42 @@ export const AuctionFilters: React.FC<AuctionFiltersProps> = ({
         <h4 className="font-medium text-gray-900">Current Bid Range</h4>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-xs text-gray-600">Min</label>
+            <label
+              htmlFor="auction-filter-min-bid"
+              className="text-xs text-gray-600"
+            >
+              Min
+            </label>
             <input
+              id="auction-filter-min-bid"
               type="number"
               placeholder="₹0"
               value={filters.bidMin || ""}
               onChange={(e) =>
                 updateFilter(
                   "bidMin",
-                  e.target.value ? Number(e.target.value) : undefined,
+                  e.target.value ? Number(e.target.value) : undefined
                 )
               }
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600">Max</label>
+            <label
+              htmlFor="auction-filter-max-bid"
+              className="text-xs text-gray-600"
+            >
+              Max
+            </label>
             <input
+              id="auction-filter-max-bid"
               type="number"
               placeholder="₹100,000"
               value={filters.bidMax || ""}
               onChange={(e) =>
                 updateFilter(
                   "bidMax",
-                  e.target.value ? Number(e.target.value) : undefined,
+                  e.target.value ? Number(e.target.value) : undefined
                 )
               }
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"

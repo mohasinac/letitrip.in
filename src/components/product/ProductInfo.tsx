@@ -168,7 +168,10 @@ export function ProductInfo({ product }: ProductInfoProps) {
       {/* Quantity Selector */}
       {inStock && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="product-quantity"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Quantity
           </label>
           <div className="flex items-center gap-3">
@@ -181,6 +184,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
             </button>
             <input
               type="number"
+              id="product-quantity"
               min="1"
               max={product.stock}
               value={quantity}

@@ -29,7 +29,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
 
   const updateFilter = <K extends keyof OrderFilterValues>(
     key: K,
-    value: OrderFilterValues[K],
+    value: OrderFilterValues[K]
   ) => {
     onChange({ ...filters, [key]: value });
   };
@@ -94,8 +94,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
         <h4 className="font-medium text-gray-900">Date Range</h4>
         <div className="space-y-2">
           <div>
-            <label className="text-xs text-gray-600">From</label>
+            <label
+              htmlFor="order-filter-from-date"
+              className="text-xs text-gray-600"
+            >
+              From
+            </label>
             <input
+              id="order-filter-from-date"
               type="date"
               value={filters.dateFrom || ""}
               onChange={(e) =>
@@ -105,8 +111,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600">To</label>
+            <label
+              htmlFor="order-filter-to-date"
+              className="text-xs text-gray-600"
+            >
+              To
+            </label>
             <input
+              id="order-filter-to-date"
               type="date"
               value={filters.dateTo || ""}
               onChange={(e) =>
@@ -123,30 +135,42 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
         <h4 className="font-medium text-gray-900">Order Amount</h4>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-xs text-gray-600">Min</label>
+            <label
+              htmlFor="order-filter-min-amount"
+              className="text-xs text-gray-600"
+            >
+              Min
+            </label>
             <input
+              id="order-filter-min-amount"
               type="number"
               placeholder="₹0"
               value={filters.amountMin || ""}
               onChange={(e) =>
                 updateFilter(
                   "amountMin",
-                  e.target.value ? Number(e.target.value) : undefined,
+                  e.target.value ? Number(e.target.value) : undefined
                 )
               }
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600">Max</label>
+            <label
+              htmlFor="order-filter-max-amount"
+              className="text-xs text-gray-600"
+            >
+              Max
+            </label>
             <input
+              id="order-filter-max-amount"
               type="number"
               placeholder="₹100,000"
               value={filters.amountMax || ""}
               onChange={(e) =>
                 updateFilter(
                   "amountMax",
-                  e.target.value ? Number(e.target.value) : undefined,
+                  e.target.value ? Number(e.target.value) : undefined
                 )
               }
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"

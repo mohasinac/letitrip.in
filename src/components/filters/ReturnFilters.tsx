@@ -28,7 +28,7 @@ export const ReturnFilters: React.FC<ReturnFiltersProps> = ({
 
   const updateFilter = <K extends keyof ReturnFilterValues>(
     key: K,
-    value: ReturnFilterValues[K],
+    value: ReturnFilterValues[K]
   ) => {
     onChange({ ...filters, [key]: value });
   };
@@ -120,8 +120,14 @@ export const ReturnFilters: React.FC<ReturnFiltersProps> = ({
         <h4 className="font-medium text-gray-900">Date Range</h4>
         <div className="space-y-2">
           <div>
-            <label className="text-xs text-gray-600">From</label>
+            <label
+              htmlFor="return-filter-from-date"
+              className="text-xs text-gray-600"
+            >
+              From
+            </label>
             <input
+              id="return-filter-from-date"
               type="date"
               value={filters.dateFrom || ""}
               onChange={(e) =>
@@ -131,8 +137,14 @@ export const ReturnFilters: React.FC<ReturnFiltersProps> = ({
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600">To</label>
+            <label
+              htmlFor="return-filter-to-date"
+              className="text-xs text-gray-600"
+            >
+              To
+            </label>
             <input
+              id="return-filter-to-date"
               type="date"
               value={filters.dateTo || ""}
               onChange={(e) =>

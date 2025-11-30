@@ -131,8 +131,10 @@ export default function MyShopsPage() {
             !searchQuery
               ? {
                   label: "Create Shop",
-                  onClick: () =>
-                    (window.location.href = "/seller/my-shops/create"),
+                  onClick: () => {
+                    if (globalThis.location)
+                      globalThis.location.href = "/seller/my-shops/create";
+                  },
                 }
               : undefined
           }

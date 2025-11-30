@@ -123,10 +123,17 @@ export default function ReviewForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Rating */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          id="rating-label"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Your Rating *
         </label>
-        <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-2"
+          role="radiogroup"
+          aria-labelledby="rating-label"
+        >
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
@@ -200,7 +207,10 @@ export default function ReviewForm({
 
       {/* Images */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          id="media-label"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Add Photos/Videos (Optional)
         </label>
         <p className="text-xs text-gray-500 mb-3">
@@ -219,6 +229,7 @@ export default function ReviewForm({
           disabled={isUploading || submitting}
           enableCamera={true}
           enableVideoRecording={true}
+          aria-labelledby="media-label"
         />
 
         {isUploading && (

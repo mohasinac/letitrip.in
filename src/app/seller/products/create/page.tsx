@@ -185,10 +185,14 @@ export default function CreateProductPage() {
         {currentStep === 1 && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-name"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Product Name *
               </label>
               <input
+                id="product-name"
                 type="text"
                 required
                 value={formData.name}
@@ -211,8 +215,11 @@ export default function CreateProductPage() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div id="product-category-wrapper">
+              <label
+                htmlFor="product-category-wrapper"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Category *
               </label>
               <CategorySelectorWithCreate
@@ -226,10 +233,14 @@ export default function CreateProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-brand"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Brand
               </label>
               <input
+                id="product-brand"
                 type="text"
                 value={formData.brand}
                 onChange={(e) =>
@@ -242,10 +253,14 @@ export default function CreateProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-sku"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 SKU *
               </label>
               <input
+                id="product-sku"
                 type="text"
                 required
                 value={formData.sku}
@@ -267,10 +282,14 @@ export default function CreateProductPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="product-price"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Price (₹) *
                 </label>
                 <input
+                  id="product-price"
                   type="number"
                   required
                   min="0"
@@ -288,10 +307,14 @@ export default function CreateProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="product-compare-price"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Compare at Price (₹)
                 </label>
                 <input
+                  id="product-compare-price"
                   type="number"
                   min="0"
                   step="0.01"
@@ -313,10 +336,14 @@ export default function CreateProductPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="product-stock"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Stock Quantity *
                 </label>
                 <input
+                  id="product-stock"
                   type="number"
                   required
                   min="0"
@@ -333,10 +360,14 @@ export default function CreateProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="product-low-stock"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Low Stock Alert
                 </label>
                 <input
+                  id="product-low-stock"
                   type="number"
                   min="0"
                   value={formData.lowStockThreshold}
@@ -356,10 +387,14 @@ export default function CreateProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-weight"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Weight (kg)
               </label>
               <input
+                id="product-weight"
                 type="number"
                 min="0"
                 step="0.01"
@@ -384,10 +419,14 @@ export default function CreateProductPage() {
         {currentStep === 3 && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-description"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Description
               </label>
               <textarea
+                id="product-description"
                 rows={6}
                 value={formData.description}
                 onChange={(e) =>
@@ -403,10 +442,14 @@ export default function CreateProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-condition"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Condition *
               </label>
               <select
+                id="product-condition"
                 value={formData.condition}
                 onChange={(e) =>
                   setFormData({
@@ -422,13 +465,17 @@ export default function CreateProductPage() {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div id="product-features-wrapper">
+              <label
+                htmlFor="product-features-wrapper"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Features
               </label>
               <div className="space-y-2">
                 <div className="flex gap-2">
                   <input
+                    id="product-feature-input"
                     type="text"
                     value={newFeature}
                     onChange={(e) => setNewFeature(e.target.value)}
@@ -490,13 +537,17 @@ export default function CreateProductPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div id="product-specifications-wrapper">
+              <label
+                htmlFor="product-specifications-wrapper"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Specifications
               </label>
               <div className="space-y-2">
                 <div className="grid grid-cols-2 gap-2">
                   <input
+                    id="product-spec-key"
                     type="text"
                     value={newSpecKey}
                     onChange={(e) => setNewSpecKey(e.target.value)}
@@ -887,10 +938,14 @@ export default function CreateProductPage() {
         {currentStep === 5 && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-shipping-class"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Shipping Class
               </label>
               <select
+                id="product-shipping-class"
                 value={formData.shippingClass}
                 onChange={(e) =>
                   setFormData({
@@ -907,10 +962,14 @@ export default function CreateProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-return-policy"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Return Policy
               </label>
               <textarea
+                id="product-return-policy"
                 rows={4}
                 value={formData.returnPolicy}
                 onChange={(e) =>
@@ -922,10 +981,14 @@ export default function CreateProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-warranty"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Warranty Information
               </label>
               <textarea
+                id="product-warranty"
                 rows={3}
                 value={formData.warrantyInfo}
                 onChange={(e) =>
@@ -951,10 +1014,14 @@ export default function CreateProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-meta-title"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Meta Title
               </label>
               <input
+                id="product-meta-title"
                 type="text"
                 value={formData.metaTitle}
                 onChange={(e) =>
@@ -973,10 +1040,14 @@ export default function CreateProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-meta-description"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Meta Description
               </label>
               <textarea
+                id="product-meta-description"
                 rows={3}
                 value={formData.metaDescription}
                 onChange={(e) =>

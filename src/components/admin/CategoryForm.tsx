@@ -124,7 +124,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       } else {
         await categoriesService.update(
           initialData?.slug || "",
-          formData as any,
+          formData as any
         );
       }
 
@@ -194,8 +194,11 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
           />
 
           {/* Slug */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div id="category-slug-wrapper">
+            <label
+              htmlFor="category-slug-wrapper"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               URL Slug <span className="text-red-500">*</span>
             </label>
             <SlugInput
@@ -214,8 +217,11 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
           </div>
 
           {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div id="category-description-wrapper">
+            <label
+              htmlFor="category-description-wrapper"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Description
             </label>
             <RichTextEditor
@@ -228,8 +234,11 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
           </div>
 
           {/* Parent Category */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div id="parent-category-wrapper">
+            <label
+              htmlFor="parent-category-wrapper"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Parent Category
             </label>
             <CategorySelector
