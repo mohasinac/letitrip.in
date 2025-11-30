@@ -119,11 +119,15 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           />
         </div>
         <div className="hidden sm:block">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="address-fullName"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Full Name <span className="text-red-500">*</span>
           </label>
           <input
             {...register("fullName")}
+            id="address-fullName"
             type="text"
             className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
             placeholder="John Doe"
@@ -147,11 +151,15 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           />
         </div>
         <div className="hidden sm:block">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="address-phoneNumber"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Phone Number <span className="text-red-500">*</span>
           </label>
           <input
             {...register("phoneNumber")}
+            id="address-phoneNumber"
             type="tel"
             className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
             placeholder="9876543210"
@@ -175,11 +183,15 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
         />
       </div>
       <div className="hidden sm:block">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="address-addressLine1"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Address Line 1 <span className="text-red-500">*</span>
         </label>
         <input
           {...register("addressLine1")}
+          id="address-addressLine1"
           type="text"
           className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
           placeholder="Flat, House no., Building, Company, Apartment"
@@ -201,11 +213,15 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
         />
       </div>
       <div className="hidden sm:block">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="address-addressLine2"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Address Line 2 (Optional)
         </label>
         <input
           {...register("addressLine2")}
+          id="address-addressLine2"
           type="text"
           className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
           placeholder="Area, Street, Sector, Village"
@@ -224,11 +240,15 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           />
         </div>
         <div className="hidden sm:block">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="address-city"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             City <span className="text-red-500">*</span>
           </label>
           <input
             {...register("city")}
+            id="address-city"
             type="text"
             className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
             placeholder="Mumbai"
@@ -251,11 +271,15 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           />
         </div>
         <div className="hidden sm:block">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="address-state"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             State <span className="text-red-500">*</span>
           </label>
           <input
             {...register("state")}
+            id="address-state"
             type="text"
             className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
             placeholder="Maharashtra"
@@ -280,11 +304,15 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           />
         </div>
         <div className="hidden sm:block">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="address-postalCode"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Pincode <span className="text-red-500">*</span>
           </label>
           <input
             {...register("postalCode")}
+            id="address-postalCode"
             type="text"
             className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
             placeholder="400001"
@@ -309,11 +337,15 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
         />
       </div>
       <div className="hidden sm:block">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="address-country"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Country <span className="text-red-500">*</span>
         </label>
         <input
           {...register("country")}
+          id="address-country"
           type="text"
           className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
           placeholder="India"

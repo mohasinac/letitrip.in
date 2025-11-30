@@ -139,11 +139,15 @@ export function ShopOrderSummary({
           </div>
         ) : (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor={`coupon-${shopId}`}
+              className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Have a coupon for this shop?
             </label>
             <div className="flex gap-2">
               <input
+                id={`coupon-${shopId}`}
                 type="text"
                 value={couponCode}
                 onChange={(e) => {

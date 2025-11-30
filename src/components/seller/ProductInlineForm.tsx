@@ -106,10 +106,14 @@ export function ProductInlineForm({
 
       {/* Name */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="product-name"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Product Name *
         </label>
         <input
+          id="product-name"
           type="text"
           required
           value={formData.name}
@@ -149,10 +153,14 @@ export function ProductInlineForm({
 
       {/* Price */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="product-price"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Price (₹) *
         </label>
         <input
+          id="product-price"
           type="number"
           required
           min="0"
@@ -177,10 +185,14 @@ export function ProductInlineForm({
 
       {/* Stock */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="product-stock"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Stock Count *
         </label>
         <input
+          id="product-stock"
           type="number"
           required
           min="0"
@@ -194,10 +206,14 @@ export function ProductInlineForm({
 
       {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="product-category"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Category ID *
         </label>
         <input
+          id="product-category"
           type="text"
           required
           value={formData.categoryId}
@@ -211,10 +227,14 @@ export function ProductInlineForm({
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="product-description"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Description
         </label>
         <textarea
+          id="product-description"
           rows={3}
           value={formData.description}
           onChange={(e) =>

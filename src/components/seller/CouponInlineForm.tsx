@@ -123,10 +123,14 @@ export function CouponInlineForm({
 
       {/* Code */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="coupon-code"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Coupon Code *
         </label>
         <input
+          id="coupon-code"
           type="text"
           required
           value={formData.code}
@@ -151,10 +155,14 @@ export function CouponInlineForm({
 
       {/* Name */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="coupon-name"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Display Name *
         </label>
         <input
+          id="coupon-name"
           type="text"
           required
           value={formData.name}
@@ -178,10 +186,14 @@ export function CouponInlineForm({
       {/* Type & Discount */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="coupon-type"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Discount Type *
           </label>
           <select
+            id="coupon-type"
             value={formData.type}
             onChange={(e) =>
               setFormData({ ...formData, type: e.target.value as any })
@@ -193,10 +205,14 @@ export function CouponInlineForm({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="coupon-discount-value"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Discount Value *
           </label>
           <input
+            id="coupon-discount-value"
             type="number"
             required
             min="0"
@@ -226,10 +242,14 @@ export function CouponInlineForm({
       {/* Date Range */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="coupon-start-date"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Start Date *
           </label>
           <input
+            id="coupon-start-date"
             type="date"
             required
             value={formData.startDate}
@@ -240,10 +260,14 @@ export function CouponInlineForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="coupon-end-date"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             End Date *
           </label>
           <input
+            id="coupon-end-date"
             type="date"
             required
             value={formData.endDate}
