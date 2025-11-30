@@ -2,6 +2,39 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
+// Status requirements for each action
+const STATUS_REQUIREMENTS: Record<string, { required: string[]; excluded?: string[]; message: string }> = {
+  approve: { required: ["pending"], message: "Only pending payouts can be approved" },
+  process: { required: ["pending", "approved"], message: "Only pending or approved payouts can be processed" },
+  complete: { required: ["processing"], message: "Only processing payouts can be completed" },
+  reject: { required: ["pending"], message: "Only pending payouts can be rejected" },
+  delete: { excluded: ["completed", "processing"], message: "Cannot delete completed or processing payouts" },
+};
+
+// Build update object for each action
+function buildPayoutUpdate(action: string, userId: string, data?: any): Record<string, any> | null {
+  const now = new Date();
+  switch (action) {
+    case "approve":
+      return { status: "approved", approved_at: now, updated_at: now };
+    case "process":
+      return { status: "processing", processing_at: now, processed_by: userId, updated_at: now };
+    case "complete":
+      return { status: "completed", completed_at: now, updated_at: now };
+    case "reject":
+      return { status: "rejected", rejected_at: now, failure_reason: data?.reason || "Rejected by admin", updated_at: now };
+    case "update":
+      if (!data) return null;
+      const updates: Record<string, any> = { updated_at: now };
+      if ("status" in data) updates.status = data.status;
+      if ("transaction_id" in data) updates.transaction_id = data.transaction_id;
+      if ("notes" in data) updates.notes = data.notes;
+      return updates;
+    default:
+      return null;
+  }
+}
+
 /**
  * Unified Bulk Operations for Payouts
  * POST /api/payouts/bulk
@@ -47,115 +80,37 @@ export async function POST(request: NextRequest) {
 
         const payout: any = payoutDoc.data();
 
-        switch (action) {
-          case "approve":
-            if (payout.status !== "pending") {
-              results.failed.push({
-                id,
-                error: "Only pending payouts can be approved",
-              });
-              continue;
-            }
-            await payoutRef.update({
-              status: "approved",
-              approved_at: new Date(),
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "process":
-            if (payout.status !== "pending" && payout.status !== "approved") {
-              results.failed.push({
-                id,
-                error: "Only pending or approved payouts can be processed",
-              });
-              continue;
-            }
-            await payoutRef.update({
-              status: "processing",
-              processing_at: new Date(),
-              processed_by: user.uid,
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "complete":
-            if (payout.status !== "processing") {
-              results.failed.push({
-                id,
-                error: "Only processing payouts can be completed",
-              });
-              continue;
-            }
-            await payoutRef.update({
-              status: "completed",
-              completed_at: new Date(),
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "reject":
-            if (payout.status !== "pending") {
-              results.failed.push({
-                id,
-                error: "Only pending payouts can be rejected",
-              });
-              continue;
-            }
-            await payoutRef.update({
-              status: "rejected",
-              rejected_at: new Date(),
-              failure_reason: data?.reason || "Rejected by admin",
-              updated_at: new Date(),
-            });
-            results.success.push(id);
-            break;
-
-          case "delete":
-            // Only allow deleting rejected or cancelled payouts
-            if (
-              payout.status === "completed" ||
-              payout.status === "processing"
-            ) {
-              results.failed.push({
-                id,
-                error: "Cannot delete completed or processing payouts",
-              });
-              continue;
-            }
-            await payoutRef.delete();
-            results.success.push(id);
-            break;
-
-          case "update":
-            if (!data) {
-              results.failed.push({ id, error: "No update data provided" });
-              continue;
-            }
-
-            // Only allow specific fields to be updated in bulk
-            const updates: Record<string, any> = { updated_at: new Date() };
-
-            if ("status" in data) updates.status = data.status;
-            if ("transaction_id" in data)
-              updates.transaction_id = data.transaction_id;
-            if ("notes" in data) updates.notes = data.notes;
-
-            await payoutRef.update(updates);
-            results.success.push(id);
-            break;
-
-          default:
-            results.failed.push({ id, error: `Unknown action: ${action}` });
+        // Validate status requirements
+        const requirement = STATUS_REQUIREMENTS[action];
+        if (requirement) {
+          if (requirement.required && !requirement.required.includes(payout.status)) {
+            results.failed.push({ id, error: requirement.message });
+            continue;
+          }
+          if (requirement.excluded && requirement.excluded.includes(payout.status)) {
+            results.failed.push({ id, error: requirement.message });
+            continue;
+          }
         }
+
+        // Handle delete action
+        if (action === "delete") {
+          await payoutRef.delete();
+          results.success.push(id);
+          continue;
+        }
+
+        // Build and apply update
+        const updates = buildPayoutUpdate(action, user.uid, data);
+        if (!updates) {
+          results.failed.push({ id, error: action === "update" ? "No update data provided" : `Unknown action: ${action}` });
+          continue;
+        }
+
+        await payoutRef.update(updates);
+        results.success.push(id);
       } catch (error: any) {
-        results.failed.push({
-          id,
-          error: error.message || "Operation failed",
-        });
+        results.failed.push({ id, error: error.message || "Operation failed" });
       }
     }
 

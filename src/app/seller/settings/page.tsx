@@ -271,12 +271,16 @@ export default function SellerSettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="settings-display-name"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Display Name
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
+                    id="settings-display-name"
                     type="text"
                     value={profile.displayName}
                     onChange={(e) =>
@@ -289,12 +293,16 @@ export default function SellerSettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="settings-email"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Email Address
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
+                    id="settings-email"
                     type="email"
                     value={profile.email}
                     onChange={(e) =>
@@ -307,12 +315,16 @@ export default function SellerSettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="settings-phone"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Phone Number
                 </label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
+                    id="settings-phone"
                     type="tel"
                     value={profile.phone}
                     onChange={(e) =>
@@ -336,12 +348,13 @@ export default function SellerSettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label htmlFor="settings-business-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Business Name
                 </label>
                 <div className="relative">
                   <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
+                    id="settings-business-name"
                     type="text"
                     value={profile.businessName}
                     onChange={(e) =>
@@ -354,10 +367,11 @@ export default function SellerSettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label htmlFor="settings-business-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Business Type
                 </label>
                 <select
+                  id="settings-business-type"
                   value={profile.businessType}
                   onChange={(e) =>
                     setProfile({

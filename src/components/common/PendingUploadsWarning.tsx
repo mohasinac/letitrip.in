@@ -93,8 +93,8 @@ export default function PendingUploadsWarning({
       setPendingNavigation(null);
 
       // Use native history API to bypass our override
-      window.history.pushState({}, "", pendingNavigation);
-      window.location.href = pendingNavigation;
+      globalThis.history?.pushState({}, "", pendingNavigation);
+      if (globalThis.location) globalThis.location.href = pendingNavigation;
     }
   };
 

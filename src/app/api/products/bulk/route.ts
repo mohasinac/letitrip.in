@@ -5,6 +5,37 @@ import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ValidationError } from "@/lib/api-errors";
 import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
 
+// Actions that affect category counts
+const STATUS_CHANGING_ACTIONS = new Set(["publish", "unpublish", "archive", "delete"]);
+
+// Build update object for each action
+function buildProductUpdate(action: string, now: string, updates?: any): { update: Record<string, any> | null; error?: string } {
+  switch (action) {
+    case "publish":
+      return { update: { status: "published", updated_at: now } };
+    case "unpublish":
+      return { update: { status: "draft", updated_at: now } };
+    case "archive":
+      return { update: { status: "archived", updated_at: now } };
+    case "feature":
+      return { update: { is_featured: true, updated_at: now } };
+    case "unfeature":
+      return { update: { is_featured: false, updated_at: now } };
+    case "update-stock":
+      if (!updates?.stockCount && updates?.stockCount !== 0) {
+        return { update: null, error: "Stock count required" };
+      }
+      return { update: { stock_count: parseInt(String(updates.stockCount)), updated_at: now } };
+    case "update":
+      if (!updates || typeof updates !== "object") {
+        return { update: null, error: "Updates object required" };
+      }
+      return { update: { ...updates, updated_at: now } };
+    default:
+      return { update: null, error: "Unknown action" };
+  }
+}
+
 /**
  * POST /api/products/bulk
  * Bulk operations on products (seller/admin)
@@ -83,107 +114,42 @@ export async function POST(request: NextRequest) {
         if (user.role === "seller") {
           const ownsShop = await userOwnsShop(productData?.shop_id, user.uid);
           if (!ownsShop) {
-            results.failed.push({
-              id: productId,
-              error: "Not authorized to edit this product",
-            });
+            results.failed.push({ id: productId, error: "Not authorized to edit this product" });
             continue;
           }
         }
 
-        // Track categories that need count updates
         const categoryId = productData.category_id;
-        let needsCountUpdate = false;
 
-        switch (action) {
-          case "publish":
-            await productRef.update({
-              status: "published",
-              updated_at: now,
-            });
-            needsCountUpdate = true;
-            break;
-
-          case "unpublish":
-            await productRef.update({
-              status: "draft",
-              updated_at: now,
-            });
-            needsCountUpdate = true;
-            break;
-
-          case "archive":
-            await productRef.update({
-              status: "archived",
-              updated_at: now,
-            });
-            needsCountUpdate = true;
-            break;
-
-          case "feature":
-            await productRef.update({
-              is_featured: true,
-              updated_at: now,
-            });
-            break;
-
-          case "unfeature":
-            await productRef.update({
-              is_featured: false,
-              updated_at: now,
-            });
-            break;
-
-          case "update-stock":
-            if (!updates?.stockCount && updates?.stockCount !== 0) {
-              results.failed.push({
-                id: productId,
-                error: "Stock count required",
-              });
-              continue;
-            }
-            await productRef.update({
-              stock_count: parseInt(String(updates.stockCount)),
-              updated_at: now,
-            });
-            break;
-
-          case "update":
-            if (!updates || typeof updates !== "object") {
-              results.failed.push({
-                id: productId,
-                error: "Updates object required",
-              });
-              continue;
-            }
-            await productRef.update({
-              ...updates,
-              updated_at: now,
-            });
-            // Check if status changed
-            if (updates.status && updates.status !== productData.status) {
-              needsCountUpdate = true;
-            }
-            // Check if category changed
-            if (updates.category_id && updates.category_id !== categoryId) {
-              categoriesNeedingUpdate.add(categoryId);
-              categoriesNeedingUpdate.add(updates.category_id);
-              needsCountUpdate = false; // Will be handled by category change
-            }
-            break;
-
-          case "delete":
-            await productRef.delete();
-            needsCountUpdate = true;
-            break;
-
-          default:
-            results.failed.push({ id: productId, error: "Unknown action" });
-            continue;
+        // Handle delete action
+        if (action === "delete") {
+          await productRef.delete();
+          if (categoryId) categoriesNeedingUpdate.add(categoryId);
+          results.success.push(productId);
+          continue;
         }
 
-        if (needsCountUpdate && categoryId) {
+        // Build and apply update
+        const { update, error } = buildProductUpdate(action, now, updates);
+        if (!update) {
+          results.failed.push({ id: productId, error: error || "Unknown action" });
+          continue;
+        }
+
+        await productRef.update(update);
+
+        // Track category updates
+        if (STATUS_CHANGING_ACTIONS.has(action) && categoryId) {
           categoriesNeedingUpdate.add(categoryId);
+        }
+        if (action === "update") {
+          if (updates.status && updates.status !== productData.status && categoryId) {
+            categoriesNeedingUpdate.add(categoryId);
+          }
+          if (updates.category_id && updates.category_id !== categoryId) {
+            if (categoryId) categoriesNeedingUpdate.add(categoryId);
+            categoriesNeedingUpdate.add(updates.category_id);
+          }
         }
 
         results.success.push(productId);

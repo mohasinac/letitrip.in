@@ -4,6 +4,26 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ValidationError } from "@/lib/api-errors";
 
+// Build update object for each action
+function buildCouponUpdate(action: string, now: string, data?: any): Record<string, any> | null {
+  switch (action) {
+    case "activate":
+      return { is_active: true, updated_at: now };
+    case "deactivate":
+      return { is_active: false, updated_at: now };
+    case "update":
+      if (!data) return null;
+      const updates = { ...data, updated_at: now };
+      delete updates.id;
+      delete updates.shop_id;
+      delete updates.code;
+      delete updates.created_at;
+      return updates;
+    default:
+      return null;
+  }
+}
+
 /**
  * POST /api/coupons/bulk
  * Bulk operations on coupons
@@ -55,11 +75,7 @@ export async function POST(request: NextRequest) {
         const couponDoc = await couponRef.get();
 
         if (!couponDoc.exists) {
-          results.push({
-            id: couponId,
-            success: false,
-            error: "Coupon not found",
-          });
+          results.push({ id: couponId, success: false, error: "Coupon not found" });
           continue;
         }
 
@@ -69,72 +85,29 @@ export async function POST(request: NextRequest) {
         if (role === "seller") {
           const ownsShop = await userOwnsShop(couponData.shop_id, user.uid);
           if (!ownsShop) {
-            results.push({
-              id: couponId,
-              success: false,
-              error: "Not authorized to edit this coupon",
-            });
+            results.push({ id: couponId, success: false, error: "Not authorized to edit this coupon" });
             continue;
           }
         }
 
-        // Perform action
-        switch (action) {
-          case "activate":
-            await couponRef.update({
-              is_active: true,
-              updated_at: now,
-            });
-            break;
-
-          case "deactivate":
-            await couponRef.update({
-              is_active: false,
-              updated_at: now,
-            });
-            break;
-
-          case "delete":
-            await couponRef.delete();
-            break;
-
-          case "update":
-            if (!data) {
-              results.push({
-                id: couponId,
-                success: false,
-                error: "Update data is required for update action",
-              });
-              continue;
-            }
-            const updates: any = { ...data, updated_at: now };
-            // Prevent updating protected fields
-            delete updates.id;
-            delete updates.shop_id;
-            delete updates.code;
-            delete updates.created_at;
-            await couponRef.update(updates);
-            break;
-
-          default:
-            results.push({
-              id: couponId,
-              success: false,
-              error: `Unknown action: ${action}`,
-            });
-            continue;
+        // Handle delete action
+        if (action === "delete") {
+          await couponRef.delete();
+          results.push({ id: couponId, success: true });
+          continue;
         }
 
-        results.push({
-          id: couponId,
-          success: true,
-        });
+        // Build and apply update
+        const updates = buildCouponUpdate(action, now, data);
+        if (!updates) {
+          results.push({ id: couponId, success: false, error: action === "update" ? "Update data is required" : `Unknown action: ${action}` });
+          continue;
+        }
+
+        await couponRef.update(updates);
+        results.push({ id: couponId, success: true });
       } catch (err: any) {
-        results.push({
-          id: couponId,
-          success: false,
-          error: err.message || "Failed to process coupon",
-        });
+        results.push({ id: couponId, success: false, error: err.message || "Failed to process coupon" });
       }
     }
 

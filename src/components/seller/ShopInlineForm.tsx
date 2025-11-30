@@ -59,11 +59,15 @@ export function ShopInlineForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Name */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="shop-name"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Shop Name *
         </label>
         <input
           type="text"
+          id="shop-name"
           required
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -82,10 +86,14 @@ export function ShopInlineForm({
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="shop-description"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Description
         </label>
         <textarea
+          id="shop-description"
           rows={3}
           value={formData.description}
           onChange={(e) =>
@@ -97,11 +105,15 @@ export function ShopInlineForm({
 
       {/* Email */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="shop-email"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Email
         </label>
         <input
           type="email"
+          id="shop-email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -110,11 +122,15 @@ export function ShopInlineForm({
 
       {/* Phone */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="shop-phone"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Phone
         </label>
         <input
           type="tel"
+          id="shop-phone"
           value={formData.phone}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"

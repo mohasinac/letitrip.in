@@ -4,6 +4,44 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ValidationError } from "@/lib/api-errors";
 
+// Status requirements for each action
+const STATUS_REQUIREMENTS: Record<string, { required: string[]; message: string }> = {
+  confirm: { required: ["pending"], message: "Only pending orders can be confirmed" },
+  process: { required: ["confirmed"], message: "Only confirmed orders can be processed" },
+  ship: { required: ["processing"], message: "Only processing orders can be shipped" },
+  deliver: { required: ["shipped"], message: "Only shipped orders can be marked as delivered" },
+  cancel: { required: ["pending", "confirmed", "processing"], message: "Can only cancel pending/confirmed/processing orders" },
+  refund: { required: ["delivered", "cancelled"], message: "Can only refund delivered or cancelled orders" },
+  delete: { required: ["cancelled", "failed", "refunded"], message: "Can only delete cancelled, failed, or refunded orders" },
+};
+
+// Build update object for each action
+function buildActionUpdate(action: string, now: string, orderData: any, data?: any): Record<string, any> | null {
+  switch (action) {
+    case "confirm":
+      return { status: "confirmed", confirmed_at: now, updated_at: now };
+    case "process":
+      return { status: "processing", processing_at: now, updated_at: now };
+    case "ship":
+      return { status: "shipped", shipped_at: now, tracking_number: data?.trackingNumber || "", updated_at: now };
+    case "deliver":
+      return { status: "delivered", delivered_at: now, updated_at: now };
+    case "cancel":
+      return { status: "cancelled", cancelled_at: now, cancellation_reason: data?.reason || "Cancelled by seller/admin", updated_at: now };
+    case "refund":
+      return { status: "refunded", refunded_at: now, refund_amount: data?.refundAmount || orderData.amount, refund_reason: data?.reason || "Refund processed", updated_at: now };
+    case "update":
+      if (!data) return null;
+      const updates = { ...data, updated_at: now };
+      delete updates.id;
+      delete updates.user_id;
+      delete updates.created_at;
+      return updates;
+    default:
+      return null;
+  }
+}
+
 /**
  * POST /api/orders/bulk
  * Bulk operations on orders
@@ -68,11 +106,7 @@ export async function POST(request: NextRequest) {
         const orderDoc = await orderRef.get();
 
         if (!orderDoc.exists) {
-          results.push({
-            id: orderId,
-            success: false,
-            error: "Order not found",
-          });
+          results.push({ id: orderId, success: false, error: "Order not found" });
           continue;
         }
 
@@ -82,176 +116,36 @@ export async function POST(request: NextRequest) {
         if (role === "seller") {
           const ownsShop = await userOwnsShop(orderData.shop_id, user.uid);
           if (!ownsShop) {
-            results.push({
-              id: orderId,
-              success: false,
-              error: "Not authorized to edit this order",
-            });
+            results.push({ id: orderId, success: false, error: "Not authorized to edit this order" });
             continue;
           }
         }
 
-        // Perform action with status validation
-        switch (action) {
-          case "confirm":
-            if (orderData.status !== "pending") {
-              results.push({
-                id: orderId,
-                success: false,
-                error: "Only pending orders can be confirmed",
-              });
-              continue;
-            }
-            await orderRef.update({
-              status: "confirmed",
-              confirmed_at: now,
-              updated_at: now,
-            });
-            break;
-
-          case "process":
-            if (orderData.status !== "confirmed") {
-              results.push({
-                id: orderId,
-                success: false,
-                error: "Only confirmed orders can be processed",
-              });
-              continue;
-            }
-            await orderRef.update({
-              status: "processing",
-              processing_at: now,
-              updated_at: now,
-            });
-            break;
-
-          case "ship":
-            if (orderData.status !== "processing") {
-              results.push({
-                id: orderId,
-                success: false,
-                error: "Only processing orders can be shipped",
-              });
-              continue;
-            }
-            await orderRef.update({
-              status: "shipped",
-              shipped_at: now,
-              tracking_number: data?.trackingNumber || "",
-              updated_at: now,
-            });
-            break;
-
-          case "deliver":
-            if (orderData.status !== "shipped") {
-              results.push({
-                id: orderId,
-                success: false,
-                error: "Only shipped orders can be marked as delivered",
-              });
-              continue;
-            }
-            await orderRef.update({
-              status: "delivered",
-              delivered_at: now,
-              updated_at: now,
-            });
-            break;
-
-          case "cancel":
-            if (
-              orderData.status !== "pending" &&
-              orderData.status !== "confirmed" &&
-              orderData.status !== "processing"
-            ) {
-              results.push({
-                id: orderId,
-                success: false,
-                error: "Can only cancel pending/confirmed/processing orders",
-              });
-              continue;
-            }
-            await orderRef.update({
-              status: "cancelled",
-              cancelled_at: now,
-              cancellation_reason: data?.reason || "Cancelled by seller/admin",
-              updated_at: now,
-            });
-            break;
-
-          case "refund":
-            if (
-              orderData.status !== "delivered" &&
-              orderData.status !== "cancelled"
-            ) {
-              results.push({
-                id: orderId,
-                success: false,
-                error: "Can only refund delivered or cancelled orders",
-              });
-              continue;
-            }
-            await orderRef.update({
-              status: "refunded",
-              refunded_at: now,
-              refund_amount: data?.refundAmount || orderData.amount,
-              refund_reason: data?.reason || "Refund processed",
-              updated_at: now,
-            });
-            break;
-
-          case "delete":
-            if (
-              orderData.status !== "cancelled" &&
-              orderData.status !== "failed" &&
-              orderData.status !== "refunded"
-            ) {
-              results.push({
-                id: orderId,
-                success: false,
-                error: "Can only delete cancelled, failed, or refunded orders",
-              });
-              continue;
-            }
-            await orderRef.delete();
-            break;
-
-          case "update":
-            if (!data) {
-              results.push({
-                id: orderId,
-                success: false,
-                error: "Update data is required for update action",
-              });
-              continue;
-            }
-            const updates: any = { ...data, updated_at: now };
-            // Prevent updating protected fields
-            delete updates.id;
-            delete updates.user_id;
-            delete updates.created_at;
-            await orderRef.update(updates);
-            break;
-
-          default:
-            results.push({
-              id: orderId,
-              success: false,
-              error: `Unknown action: ${action}`,
-            });
-            continue;
+        // Validate status requirements
+        const requirement = STATUS_REQUIREMENTS[action];
+        if (requirement && !requirement.required.includes(orderData.status)) {
+          results.push({ id: orderId, success: false, error: requirement.message });
+          continue;
         }
 
-        results.push({
-          id: orderId,
-          success: true,
-        });
+        // Handle delete action
+        if (action === "delete") {
+          await orderRef.delete();
+          results.push({ id: orderId, success: true });
+          continue;
+        }
+
+        // Build and apply update
+        const updates = buildActionUpdate(action, now, orderData, data);
+        if (!updates) {
+          results.push({ id: orderId, success: false, error: action === "update" ? "Update data is required" : `Unknown action: ${action}` });
+          continue;
+        }
+
+        await orderRef.update(updates);
+        results.push({ id: orderId, success: true });
       } catch (err: any) {
-        results.push({
-          id: orderId,
-          success: false,
-          error: err.message || "Failed to process order",
-        });
+        results.push({ id: orderId, success: false, error: err.message || "Failed to process order" });
       }
     }
 

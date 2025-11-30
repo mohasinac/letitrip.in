@@ -28,7 +28,7 @@ export const CouponFilters: React.FC<CouponFiltersProps> = ({
 
   const updateFilter = <K extends keyof CouponFilterValues>(
     key: K,
-    value: CouponFilterValues[K],
+    value: CouponFilterValues[K]
   ) => {
     onChange({ ...filters, [key]: value });
   };
@@ -120,8 +120,14 @@ export const CouponFilters: React.FC<CouponFiltersProps> = ({
         <h4 className="font-medium text-gray-900">Expiry Date</h4>
         <div className="space-y-2">
           <div>
-            <label className="text-xs text-gray-600">From</label>
+            <label
+              htmlFor="coupon-filter-from-date"
+              className="text-xs text-gray-600"
+            >
+              From
+            </label>
             <input
+              id="coupon-filter-from-date"
               type="date"
               value={filters.expiryFrom || ""}
               onChange={(e) =>
@@ -131,8 +137,14 @@ export const CouponFilters: React.FC<CouponFiltersProps> = ({
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600">To</label>
+            <label
+              htmlFor="coupon-filter-to-date"
+              className="text-xs text-gray-600"
+            >
+              To
+            </label>
             <input
+              id="coupon-filter-to-date"
               type="date"
               value={filters.expiryTo || ""}
               onChange={(e) =>

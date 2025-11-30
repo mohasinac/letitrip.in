@@ -104,7 +104,7 @@ export default function ImageEditor({
 
   const updateAdjustment = (
     key: "brightness" | "contrast" | "saturation",
-    value: number,
+    value: number
   ) => {
     setEditorState((prev) => ({
       ...prev,
@@ -213,11 +213,15 @@ export default function ImageEditor({
             <div className="space-y-4">
               {/* Brightness */}
               <div>
-                <label className="text-white text-sm mb-2 flex justify-between">
+                <label
+                  htmlFor="editor-brightness"
+                  className="text-white text-sm mb-2 flex justify-between"
+                >
                   <span>Brightness</span>
                   <span>{editorState.brightness}</span>
                 </label>
                 <input
+                  id="editor-brightness"
                   type="range"
                   min="-100"
                   max="100"
@@ -231,11 +235,15 @@ export default function ImageEditor({
 
               {/* Contrast */}
               <div>
-                <label className="text-white text-sm mb-2 flex justify-between">
+                <label
+                  htmlFor="editor-contrast"
+                  className="text-white text-sm mb-2 flex justify-between"
+                >
                   <span>Contrast</span>
                   <span>{editorState.contrast}</span>
                 </label>
                 <input
+                  id="editor-contrast"
                   type="range"
                   min="-100"
                   max="100"
@@ -249,11 +257,15 @@ export default function ImageEditor({
 
               {/* Saturation */}
               <div>
-                <label className="text-white text-sm mb-2 flex justify-between">
+                <label
+                  htmlFor="editor-saturation"
+                  className="text-white text-sm mb-2 flex justify-between"
+                >
                   <span>Saturation</span>
                   <span>{editorState.saturation}</span>
                 </label>
                 <input
+                  id="editor-saturation"
                   type="range"
                   min="-100"
                   max="100"

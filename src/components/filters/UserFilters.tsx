@@ -28,7 +28,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
 
   const updateFilter = <K extends keyof UserFilterValues>(
     key: K,
-    value: UserFilterValues[K],
+    value: UserFilterValues[K]
   ) => {
     onChange({ ...filters, [key]: value });
   };
@@ -133,8 +133,14 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
         <h4 className="font-medium text-gray-900">Registration Date</h4>
         <div className="space-y-2">
           <div>
-            <label className="text-xs text-gray-600">From</label>
+            <label
+              htmlFor="user-filter-from-date"
+              className="text-xs text-gray-600"
+            >
+              From
+            </label>
             <input
+              id="user-filter-from-date"
               type="date"
               value={filters.registeredFrom || ""}
               onChange={(e) =>
@@ -144,8 +150,14 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600">To</label>
+            <label
+              htmlFor="user-filter-to-date"
+              className="text-xs text-gray-600"
+            >
+              To
+            </label>
             <input
+              id="user-filter-to-date"
               type="date"
               value={filters.registeredTo || ""}
               onChange={(e) =>

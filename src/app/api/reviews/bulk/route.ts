@@ -3,6 +3,29 @@ import { requireAdmin } from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
+// Build update object for each action
+function buildReviewUpdate(action: string, data?: any): Record<string, any> | null {
+  const now = new Date().toISOString();
+  switch (action) {
+    case "approve":
+      return { status: "published", approved_at: now, updated_at: now };
+    case "reject":
+      return { status: "rejected", rejected_at: now, updated_at: now };
+    case "flag":
+      return { is_flagged: true, flagged_at: now, updated_at: now };
+    case "unflag":
+      return { is_flagged: false, flagged_at: null, updated_at: now };
+    case "update":
+      if (!data) return null;
+      const updates: Record<string, any> = { updated_at: now };
+      if ("status" in data) updates.status = data.status;
+      if ("is_flagged" in data) updates.is_flagged = data.is_flagged;
+      return updates;
+    default:
+      return null;
+  }
+}
+
 /**
  * Unified Bulk Operations for Reviews
  * POST /api/reviews/bulk
@@ -46,74 +69,24 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        switch (action) {
-          case "approve":
-            await reviewRef.update({
-              status: "published",
-              approved_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            });
-            results.success.push(id);
-            break;
-
-          case "reject":
-            await reviewRef.update({
-              status: "rejected",
-              rejected_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            });
-            results.success.push(id);
-            break;
-
-          case "flag":
-            await reviewRef.update({
-              is_flagged: true,
-              flagged_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            });
-            results.success.push(id);
-            break;
-
-          case "unflag":
-            await reviewRef.update({
-              is_flagged: false,
-              flagged_at: null,
-              updated_at: new Date().toISOString(),
-            });
-            results.success.push(id);
-            break;
-
-          case "delete":
-            await reviewRef.delete();
-            results.success.push(id);
-            break;
-
-          case "update":
-            if (!data) {
-              results.failed.push({ id, error: "No update data provided" });
-              continue;
-            }
-
-            // Only allow specific fields to be updated in bulk
-            const updates: Record<string, any> = {
-              updated_at: new Date().toISOString(),
-            };
-
-            if ("status" in data) updates.status = data.status;
-            if ("is_flagged" in data) updates.is_flagged = data.is_flagged;
-
-            await reviewRef.update(updates);
-            results.success.push(id);
-            break;
-
-          default:
-            results.failed.push({ id, error: `Unknown action: ${action}` });
+        // Handle delete action
+        if (action === "delete") {
+          await reviewRef.delete();
+          results.success.push(id);
+          continue;
         }
+
+        // Build and apply update
+        const updates = buildReviewUpdate(action, data);
+        if (!updates) {
+          results.failed.push({ id, error: action === "update" ? "No update data provided" : `Unknown action: ${action}` });
+          continue;
+        }
+
+        await reviewRef.update(updates);
+        results.success.push(id);
       } catch (error: any) {
-        results.failed.push({
-          id,
-          error: error.message || "Operation failed",
-        });
+        results.failed.push({ id, error: error.message || "Operation failed" });
       }
     }
 

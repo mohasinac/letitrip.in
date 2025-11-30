@@ -302,14 +302,14 @@ export default function AdminRipLimitPage() {
                 ].join("\n");
 
                 const blob = new Blob([csv], { type: "text/csv" });
-                const url = window.URL.createObjectURL(blob);
+                const url = globalThis.URL?.createObjectURL(blob) || "";
                 const a = document.createElement("a");
                 a.href = url;
                 a.download = `riplimit-users-${new Date().toISOString()}.csv`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
+                globalThis.URL?.revokeObjectURL(url);
               }}
             >
               Export

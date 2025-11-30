@@ -237,11 +237,15 @@ export default function CategorySelectorWithCreate({
             <div className="px-6 py-4 space-y-4">
               {/* Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="create-category-name"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Category Name{" "}
                   {required && <span className="text-red-500">*</span>}
                 </label>
                 <input
+                  id="create-category-name"
                   type="text"
                   value={createForm.name}
                   onChange={(e) => {
@@ -270,8 +274,11 @@ export default function CategorySelectorWithCreate({
               </div>
 
               {/* Slug */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div id="create-category-slug-wrapper">
+                <label
+                  htmlFor="create-category-slug-wrapper"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   URL Slug {required && <span className="text-red-500">*</span>}
                 </label>
                 <SlugInput
@@ -289,10 +296,14 @@ export default function CategorySelectorWithCreate({
 
               {/* Description (Optional) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="create-category-description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Description (Optional)
                 </label>
                 <textarea
+                  id="create-category-description"
                   value={createForm.description}
                   onChange={(e) =>
                     setCreateForm((prev) => ({

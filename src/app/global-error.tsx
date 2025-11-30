@@ -48,7 +48,9 @@ export default function GlobalError({
               </button>
 
               <button
-                onClick={() => (window.location.href = "/")}
+                onClick={() => {
+                  if (globalThis.location) globalThis.location.href = "/";
+                }}
                 className="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
                 Go Home

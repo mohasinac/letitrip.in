@@ -160,14 +160,14 @@ function CategoriesContent() {
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleNextPage = () => {
     if (hasNextPage) {
       setCurrentPage((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -213,7 +213,9 @@ function CategoriesContent() {
               onClick:
                 Object.keys(filterValues).length > 0
                   ? handleResetFilters
-                  : () => (window.location.href = "/"),
+                  : () => {
+                      if (globalThis.location) globalThis.location.href = "/";
+                    },
             }}
           />
         </div>

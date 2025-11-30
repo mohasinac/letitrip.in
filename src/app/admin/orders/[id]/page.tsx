@@ -126,13 +126,13 @@ export default function OrderDetailPage() {
 
     try {
       const blob = await ordersService.downloadInvoice(order.id);
-      const url = window.URL.createObjectURL(blob);
+      const url = globalThis.URL?.createObjectURL(blob) || "";
       const a = document.createElement("a");
       a.href = url;
       a.download = `invoice-${order.orderNumber}.pdf`;
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
+      globalThis.URL?.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (err: any) {
       toast.error(err.message || "Failed to download invoice");

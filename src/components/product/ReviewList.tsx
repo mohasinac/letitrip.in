@@ -204,10 +204,14 @@ export default function ReviewList({ productId }: ReviewListProps) {
       <div className="flex flex-wrap gap-4 items-center justify-between">
         {/* Sort */}
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="review-sort"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Sort by:
           </label>
           <select
+            id="review-sort"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"

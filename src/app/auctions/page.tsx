@@ -147,7 +147,7 @@ function AuctionsContent() {
           onClick={() => {
             if (currentPage > 1) {
               setCurrentPage(currentPage - 1);
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
             }
           }}
           disabled={currentPage === 1}
@@ -164,7 +164,7 @@ function AuctionsContent() {
           onClick={() => {
             if (hasNextPage) {
               setCurrentPage(currentPage + 1);
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
             }
           }}
           disabled={!hasNextPage}
