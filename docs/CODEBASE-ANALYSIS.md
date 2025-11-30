@@ -74,13 +74,14 @@ The following files have malformed CSS: `hover:bg-gray-100:bg-gray-700` should b
 
 ### Mobile Navigation UX Issues
 
-| Issue                                     | Component                              | Problem                                                           | Fix                                                                  |
-| ----------------------------------------- | -------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------- |
-| **User profile in main navbar on mobile** | `MainNavBar.tsx` (userMenuRef section) | User profile/avatar shown in header when bottom nav has "Account" | Hide user menu on mobile (`hidden lg:block`), use bottom nav Account |
-| **Admin Sidebar shown on mobile**         | `AdminLayoutClient.tsx`                | Hamburger menu opens sidebar when bottom nav already exists       | Hide sidebar toggle on mobile, use bottom nav instead                |
-| **Seller Sidebar shown on mobile**        | `SellerLayoutClient.tsx`               | Hamburger menu opens sidebar when bottom nav already exists       | Hide sidebar toggle on mobile, use bottom nav instead                |
-| **No scroll arrows on nav row**           | `MobileNavRow.tsx`                     | Horizontal overflow without left/right scroll buttons             | Wrap with `HorizontalScrollContainer` component                      |
-| **Back-to-top behind nav**                | `Footer.tsx` line 188                  | Button at `bottom-20` overlaps with `MobileNavRow` at `bottom-16` | Change to `bottom-36 lg:bottom-8` (above both navs)                  |
+| Issue                                         | Component                                           | Problem                                                                                          | Fix                                                                                       |
+| --------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| **User profile in main navbar on mobile**     | `MainNavBar.tsx` (userMenuRef section)              | User profile/avatar shown in header when bottom nav has "Account"                                | Hide user menu on mobile (`hidden lg:block`), use bottom nav Account                      |
+| **Admin Sidebar shown on mobile**             | `AdminLayoutClient.tsx`                             | Hamburger menu opens sidebar when bottom nav already exists                                      | Hide sidebar toggle on mobile, use bottom nav instead                                     |
+| **Seller Sidebar shown on mobile**            | `SellerLayoutClient.tsx`                            | Hamburger menu opens sidebar when bottom nav already exists                                      | Hide sidebar toggle on mobile, use bottom nav instead                                     |
+| **No scroll arrows on nav row**               | `MobileNavRow.tsx`                                  | Horizontal overflow without left/right scroll buttons                                            | Wrap with `HorizontalScrollContainer` component                                           |
+| **Back-to-top behind nav**                    | `Footer.tsx` line 188                               | Button at `bottom-20` overlaps with `MobileNavRow` at `bottom-16`                                | Change to `bottom-36 lg:bottom-8` (above both navs)                                       |
+| **Mobile filter sidebar overlaps bottom nav** | `MobileFilterSidebar.tsx`, `MobileFilterDrawer.tsx` | Filter sidebars use `bottom-0` which overlaps with BottomNav (h-16) and MobileNavRow (bottom-16) | Add `pb-16` or `pb-32` to content area, use `bottom-16` or `bottom-32` for footer actions |
 
 ### Mobile Navigation Architecture Issues
 
@@ -1318,3 +1319,683 @@ Admin routes may use IDs since they're not public-facing:
 4. **Admin Internal URLs**: Can use IDs since not public-facing
 5. **API Calls**: Services support both `getById()` and `getBySlug()` methods
 6. **Route Constants**: Defined in `src/constants/routes.ts`
+
+---
+
+## 8. API Routes Analysis
+
+### Route Necessity Criteria
+
+A route is considered **NEEDED** if:
+
+1. ✅ A frontend service (in `src/services/`) calls it
+2. ✅ It's used by Firebase Cloud Functions for backend processing
+3. ✅ It's a cron/webhook endpoint called by external services
+
+A route is **NOT NEEDED** if:
+
+- ❌ Only referenced in route constants but no service uses it
+- ❌ Only has test files but no production usage
+- ❌ Duplicate of another route with same functionality
+- ❌ Development-only route that shouldn't be in production
+
+**IMPORTANT**: Pages and components must NEVER call `fetch()` directly. All API calls must go through services in `src/services/`.
+
+### Direct fetch() Violations (Must Fix)
+
+| File                              | Line | Direct fetch() Call                                | Fix                                                 |
+| --------------------------------- | ---- | -------------------------------------------------- | --------------------------------------------------- |
+| `src/app/user/favorites/page.tsx` | 39   | `fetch(\`/api/favorites/list/${activeTab}\`)`      | Use `favoritesService.getList()`                    |
+| `src/app/user/favorites/page.tsx` | 54   | `fetch(\`/api/favorites/${activeTab}/${itemId}\`)` | Use `favoritesService.remove()`                     |
+| `src/app/admin/demo/page-new.tsx` | 29   | `fetch("/api/admin/demo/generate")`                | Use `demoDataService.generate()`                    |
+| `src/app/admin/demo/page-new.tsx` | 61   | `fetch("/api/admin/demo/cleanup-all")`             | Use `demoDataService.cleanupAll()`                  |
+| `src/hooks/useSlugValidation.ts`  | 108  | `fetch(\`${endpoint}?...\`)`                       | Create `validationService` or use existing services |
+
+### API Routes Status
+
+| Route Path                                       | Service Using It                       | Status    | Notes                                |
+| ------------------------------------------------ | -------------------------------------- | --------- | ------------------------------------ |
+| **Auth Routes** (`/api/auth/`)                   |                                        |           |                                      |
+| `/auth/login`                                    | `auth.service.ts`                      | ✅ KEEP   | Login endpoint                       |
+| `/auth/register`                                 | `auth.service.ts`                      | ✅ KEEP   | Registration                         |
+| `/auth/logout`                                   | `auth.service.ts`                      | ✅ KEEP   | Logout                               |
+| `/auth/me`                                       | `auth.service.ts`                      | ✅ KEEP   | Current user                         |
+| `/auth/reset-password`                           | `auth.service.ts`                      | ✅ KEEP   | Password reset                       |
+| `/auth/sessions`                                 | `auth.service.ts`                      | ✅ KEEP   | Session management                   |
+| **User Routes** (`/api/user/`)                   |                                        |           |                                      |
+| `/user/profile`                                  | `users.service.ts`                     | ✅ KEEP   | User profile                         |
+| `/user/addresses`                                | `address.service.ts`                   | ✅ KEEP   | Address CRUD                         |
+| `/user/addresses/[id]`                           | `address.service.ts`                   | ✅ KEEP   | Single address                       |
+| **Products Routes** (`/api/products/`)           |                                        |           |                                      |
+| `/products`                                      | `products.service.ts`                  | ✅ KEEP   | List/create products                 |
+| `/products/[slug]`                               | `products.service.ts`                  | ✅ KEEP   | Get by slug                          |
+| `/products/bulk`                                 | `products.service.ts`                  | ✅ KEEP   | Bulk operations                      |
+| `/products/validate-slug`                        | `products.service.ts`                  | ✅ KEEP   | Slug validation                      |
+| **Auctions Routes** (`/api/auctions/`)           |                                        |           |                                      |
+| `/auctions`                                      | `auctions.service.ts`                  | ✅ KEEP   | List/create auctions                 |
+| `/auctions/[id]`                                 | `auctions.service.ts`                  | ✅ KEEP   | Single auction                       |
+| `/auctions/bulk`                                 | `auctions.service.ts`                  | ✅ KEEP   | Bulk operations                      |
+| `/auctions/featured`                             | `auctions.service.ts`                  | ✅ KEEP   | Featured auctions                    |
+| `/auctions/live`                                 | `auctions.service.ts`                  | ✅ KEEP   | Live auctions                        |
+| `/auctions/my-bids`                              | `auctions.service.ts`                  | ✅ KEEP   | User's bids                          |
+| `/auctions/watchlist`                            | `auctions.service.ts`                  | ✅ KEEP   | User's watchlist                     |
+| `/auctions/won`                                  | `auctions.service.ts`                  | ✅ KEEP   | Won auctions                         |
+| `/auctions/validate-slug`                        | `auctions.service.ts`                  | ✅ KEEP   | Slug validation                      |
+| `/auctions/cron`                                 | None                                   | ⚠️ REVIEW | Empty folder - Firebase handles cron |
+| **Categories Routes** (`/api/categories/`)       |                                        |           |                                      |
+| `/categories`                                    | `categories.service.ts`                | ✅ KEEP   | List/create categories               |
+| `/categories/[slug]`                             | `categories.service.ts`                | ✅ KEEP   | Single category                      |
+| `/categories/bulk`                               | `categories.service.ts`                | ✅ KEEP   | Bulk operations                      |
+| `/categories/tree`                               | `categories.service.ts`                | ✅ KEEP   | Category tree                        |
+| `/categories/featured`                           | `categories.service.ts`                | ✅ KEEP   | Featured categories                  |
+| `/categories/homepage`                           | `categories.service.ts`                | ✅ KEEP   | Homepage categories                  |
+| `/categories/leaves`                             | `categories.service.ts`                | ✅ KEEP   | Leaf categories                      |
+| `/categories/reorder`                            | `categories.service.ts`                | ✅ KEEP   | Reorder categories                   |
+| `/categories/search`                             | `categories.service.ts`                | ✅ KEEP   | Search categories                    |
+| `/categories/validate-slug`                      | `categories.service.ts`                | ✅ KEEP   | Slug validation                      |
+| **Shops Routes** (`/api/shops/`)                 |                                        |           |                                      |
+| `/shops`                                         | `shops.service.ts`                     | ✅ KEEP   | List/create shops                    |
+| `/shops/[slug]`                                  | `shops.service.ts`                     | ✅ KEEP   | Single shop                          |
+| `/shops/bulk`                                    | `shops.service.ts`                     | ✅ KEEP   | Bulk operations                      |
+| `/shops/following`                               | `shops.service.ts`                     | ✅ KEEP   | Following shops                      |
+| `/shops/validate-slug`                           | `shops.service.ts`                     | ✅ KEEP   | Slug validation                      |
+| **Cart Routes** (`/api/cart/`)                   |                                        |           |                                      |
+| `/cart`                                          | `cart.service.ts`                      | ✅ KEEP   | Cart operations                      |
+| `/cart/[itemId]`                                 | `cart.service.ts`                      | ✅ KEEP   | Cart item                            |
+| `/cart/count`                                    | `cart.service.ts`                      | ✅ KEEP   | Cart count                           |
+| `/cart/merge`                                    | `cart.service.ts`                      | ✅ KEEP   | Merge carts                          |
+| `/cart/coupon`                                   | `cart.service.ts`                      | ✅ KEEP   | Apply coupon                         |
+| **Checkout Routes** (`/api/checkout/`)           |                                        |           |                                      |
+| `/checkout/create-order`                         | `checkout.service.ts`                  | ✅ KEEP   | Order creation                       |
+| `/checkout/verify-payment`                       | `checkout.service.ts`                  | ✅ KEEP   | Payment verification                 |
+| **Orders Routes** (`/api/orders/`)               |                                        |           |                                      |
+| `/orders`                                        | `orders.service.ts`                    | ✅ KEEP   | List/create orders                   |
+| `/orders/[id]`                                   | `orders.service.ts`                    | ✅ KEEP   | Single order                         |
+| `/orders/bulk`                                   | `orders.service.ts`                    | ✅ KEEP   | Bulk operations                      |
+| **Payments Routes** (`/api/payments/`)           |                                        |           |                                      |
+| `/payments`                                      | `payouts.service.ts`                   | ✅ KEEP   | Payments list                        |
+| `/payments/[id]`                                 | `payouts.service.ts`                   | ✅ KEEP   | Single payment                       |
+| **Payouts Routes** (`/api/payouts/`)             |                                        |           |                                      |
+| `/payouts`                                       | `payouts.service.ts`                   | ✅ KEEP   | Payouts list                         |
+| `/payouts/[id]`                                  | `payouts.service.ts`                   | ✅ KEEP   | Single payout                        |
+| `/payouts/bulk`                                  | `payouts.service.ts`                   | ✅ KEEP   | Bulk payouts                         |
+| **Coupons Routes** (`/api/coupons/`)             |                                        |           |                                      |
+| `/coupons`                                       | `coupons.service.ts`                   | ✅ KEEP   | Coupons list                         |
+| `/coupons/[code]`                                | `coupons.service.ts`                   | ✅ KEEP   | Single coupon                        |
+| `/coupons/bulk`                                  | `coupons.service.ts`                   | ✅ KEEP   | Bulk operations                      |
+| `/coupons/validate-code`                         | `coupons.service.ts`                   | ✅ KEEP   | Code validation                      |
+| **Reviews Routes** (`/api/reviews/`)             |                                        |           |                                      |
+| `/reviews`                                       | `reviews.service.ts`                   | ✅ KEEP   | Reviews list                         |
+| `/reviews/[id]`                                  | `reviews.service.ts`                   | ✅ KEEP   | Single review                        |
+| `/reviews/bulk`                                  | `reviews.service.ts`                   | ✅ KEEP   | Bulk operations                      |
+| `/reviews/summary`                               | `reviews.service.ts`                   | ✅ KEEP   | Review summary                       |
+| **Returns Routes** (`/api/returns/`)             |                                        |           |                                      |
+| `/returns`                                       | `returns.service.ts`                   | ✅ KEEP   | Returns list                         |
+| `/returns/[id]`                                  | `returns.service.ts`                   | ✅ KEEP   | Single return                        |
+| `/returns/bulk`                                  | `returns.service.ts`                   | ✅ KEEP   | Bulk operations                      |
+| **Tickets Routes** (`/api/tickets/`)             |                                        |           |                                      |
+| `/tickets`                                       | `support.service.ts`                   | ✅ KEEP   | Tickets list                         |
+| `/tickets/[id]`                                  | `support.service.ts`                   | ✅ KEEP   | Single ticket                        |
+| `/tickets/bulk`                                  | `support.service.ts`                   | ✅ KEEP   | Bulk operations                      |
+| **Blog Routes** (`/api/blog/`)                   |                                        |           |                                      |
+| `/blog`                                          | `blog.service.ts`                      | ✅ KEEP   | Blog posts                           |
+| `/blog/[slug]`                                   | `blog.service.ts`                      | ✅ KEEP   | Single post                          |
+| **Favorites Routes** (`/api/favorites/`)         |                                        |           |                                      |
+| `/favorites`                                     | `favorites.service.ts`                 | ✅ KEEP   | Favorites operations                 |
+| `/favorites/[type]`                              | `favorites.service.ts`                 | ✅ KEEP   | By type                              |
+| `/favorites/list`                                | `favorites.service.ts`                 | ✅ KEEP   | List favorites                       |
+| `/favorites/count`                               | `favorites.service.ts`                 | ✅ KEEP   | Count                                |
+| **Hero Slides Routes** (`/api/hero-slides/`)     |                                        |           |                                      |
+| `/hero-slides`                                   | `hero-slides.service.ts`               | ✅ KEEP   | Hero slides                          |
+| `/hero-slides/[id]`                              | `hero-slides.service.ts`               | ✅ KEEP   | Single slide                         |
+| `/hero-slides/bulk`                              | `hero-slides.service.ts`               | ✅ KEEP   | Bulk operations                      |
+| **Homepage Routes** (`/api/homepage/`)           |                                        |           |                                      |
+| `/homepage`                                      | `homepage.service.ts`                  | ✅ KEEP   | Homepage data                        |
+| `/homepage/banner`                               | `homepage.service.ts`                  | ✅ KEEP   | Banner                               |
+| **Header Routes** (`/api/header/`)               |                                        |           |                                      |
+| `/header/stats`                                  | `useHeaderStats` hook (via apiService) | ✅ KEEP   | Header statistics                    |
+| **Search Routes** (`/api/search/`)               |                                        |           |                                      |
+| `/search`                                        | `search.service.ts`                    | ✅ KEEP   | Global search                        |
+| **Media Routes** (`/api/media/`)                 |                                        |           |                                      |
+| `/media/upload`                                  | `media.service.ts`                     | ✅ KEEP   | File upload                          |
+| `/media/delete`                                  | `media.service.ts`                     | ✅ KEEP   | File deletion                        |
+| **Location Routes** (`/api/location/`)           |                                        |           |                                      |
+| `/location/pincode`                              | `location.service.ts`                  | ✅ KEEP   | Pincode lookup                       |
+| **Messages Routes** (`/api/messages/`)           |                                        |           |                                      |
+| `/messages`                                      | `messages.service.ts`                  | ✅ KEEP   | Messages                             |
+| `/messages/[id]`                                 | `messages.service.ts`                  | ✅ KEEP   | Single message                       |
+| `/messages/unread-count`                         | `messages.service.ts`                  | ✅ KEEP   | Unread count                         |
+| **Notifications Routes** (`/api/notifications/`) |                                        |           |                                      |
+| `/notifications`                                 | `notification.service.ts`              | ✅ KEEP   | Notifications                        |
+| `/notifications/unread-count`                    | `notification.service.ts`              | ✅ KEEP   | Unread count                         |
+| **RipLimit Routes** (`/api/riplimit/`)           |                                        |           |                                      |
+| `/riplimit/balance`                              | `riplimit.service.ts`                  | ✅ KEEP   | User balance                         |
+| `/riplimit/transactions`                         | `riplimit.service.ts`                  | ✅ KEEP   | Transactions                         |
+| `/riplimit/purchase`                             | `riplimit.service.ts`                  | ✅ KEEP   | Purchase credits                     |
+| `/riplimit/refund`                               | `riplimit.service.ts`                  | ✅ KEEP   | Refund                               |
+| **Analytics Routes** (`/api/analytics/`)         |                                        |           |                                      |
+| `/analytics`                                     | `analytics.service.ts`                 | ✅ KEEP   | Analytics data                       |
+| **Health Routes** (`/api/health/`)               |                                        |           |                                      |
+| `/health`                                        | System monitoring                      | ✅ KEEP   | Health check                         |
+| **Users Routes** (`/api/users/`)                 |                                        |           |                                      |
+| `/users`                                         | `users.service.ts`                     | ✅ KEEP   | Users list (admin)                   |
+| `/users/[id]`                                    | `users.service.ts`                     | ✅ KEEP   | Single user                          |
+| `/users/bulk`                                    | `users.service.ts`                     | ✅ KEEP   | Bulk operations                      |
+
+### Routes to DELETE
+
+| Route Path                   | Reason                                        | Action                      |
+| ---------------------------- | --------------------------------------------- | --------------------------- |
+| `/api/protected/`            | No service uses it, only test route           | ❌ DELETE folder            |
+| `/api/temporary-categories/` | No service uses it, temporary migration route | ❌ DELETE folder            |
+| `/api/auctions/cron/`        | Empty folder - Firebase handles cron jobs     | ❌ DELETE folder            |
+| `/api/test-data/`            | Development only - no production service      | ⚠️ DEV ONLY - block in prod |
+| `/api/admin/debug/`          | Debug only - no production use                | ⚠️ DEV ONLY - block in prod |
+| `/api/admin/demo/`           | Demo data generation - no production use      | ⚠️ DEV ONLY - block in prod |
+
+### Routes to UNIFY with RBAC
+
+| Route Path            | Current State                       | Unified Route            | RBAC Behavior                                                                                                                                         |
+| --------------------- | ----------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/api/addresses/`     | Only tests, no route implementation | `/api/addresses`         | **User**: Own addresses only. **Seller**: Shop pickup addresses. **Admin**: Any user's addresses. Used by: checkout, orders, shops, auctions, returns |
+| `/api/user/addresses` | User-only implementation            | Merge → `/api/addresses` | Keep for backward compatibility, internally route to unified `/api/addresses`                                                                         |
+
+### Unified Address Route Design
+
+**Route**: `/api/addresses`
+
+| Method | Endpoint                     | User Role         | Behavior                                                      |
+| ------ | ---------------------------- | ----------------- | ------------------------------------------------------------- |
+| GET    | `/addresses`                 | User              | List own addresses                                            |
+| GET    | `/addresses`                 | Seller            | List own addresses + shop pickup addresses                    |
+| GET    | `/addresses`                 | Admin             | List all addresses (with filters: userId, shopId, type)       |
+| GET    | `/addresses/[id]`            | User              | Get own address by ID                                         |
+| GET    | `/addresses/[id]`            | Seller            | Get own or shop address                                       |
+| GET    | `/addresses/[id]`            | Admin             | Get any address                                               |
+| POST   | `/addresses`                 | User              | Create address for self                                       |
+| POST   | `/addresses`                 | Seller            | Create address for self or shop (shopId in body)              |
+| POST   | `/addresses`                 | Admin             | Create address for any user/shop (userId/shopId in body)      |
+| PATCH  | `/addresses/[id]`            | User              | Update own address                                            |
+| PATCH  | `/addresses/[id]`            | Seller            | Update own or shop address                                    |
+| PATCH  | `/addresses/[id]`            | Admin             | Update any address                                            |
+| DELETE | `/addresses/[id]`            | User              | Delete own address                                            |
+| DELETE | `/addresses/[id]`            | Seller            | Delete own or shop address                                    |
+| DELETE | `/addresses/[id]`            | Admin             | Delete any address                                            |
+| PATCH  | `/addresses/[id]/default`    | User              | Set as default for self                                       |
+| GET    | `/addresses/user/[userId]`   | Admin             | Get all addresses for a specific user                         |
+| GET    | `/addresses/shop/[shopId]`   | All               | Get shop pickup/return addresses (public for shipping info)   |
+| GET    | `/addresses/order/[orderId]` | User/Seller/Admin | Get shipping/billing address for order (with ownership check) |
+
+**Address Types**:
+
+- `shipping` - User shipping address
+- `billing` - User billing address
+- `pickup` - Shop pickup address
+- `return` - Shop return address
+- `warehouse` - Seller warehouse address
+
+**Used By**:
+
+- Checkout (shipping/billing selection)
+- Orders (order shipping address)
+- Shops (pickup/return addresses)
+- Auctions (winner shipping address)
+- Returns (return shipping address)
+- User profile (address management)
+
+### Admin Routes Analysis
+
+| Route Path                              | Service Using It                         | Status      | Notes                   |
+| --------------------------------------- | ---------------------------------------- | ----------- | ----------------------- |
+| `/api/admin/dashboard`                  | Direct fetch                             | ✅ KEEP     | Admin dashboard         |
+| `/api/admin/blog/`                      | `blog.service.ts`                        | ✅ KEEP     | Blog management         |
+| `/api/admin/categories/`                | `categories.service.ts`                  | ✅ KEEP     | Category management     |
+| `/api/admin/riplimit/`                  | Admin RipLimit page                      | ✅ KEEP     | RipLimit admin          |
+| `/api/admin/settings/`                  | `settings.service.ts`                    | ✅ KEEP     | Admin settings          |
+| `/api/admin/static-assets/`             | `static-assets-client.service.ts`        | ✅ KEEP     | Static asset management |
+| `/api/admin/debug/products-by-category` | None                                     | ⚠️ DEV ONLY | Debug route             |
+| `/api/admin/demo/*`                     | `demo-data.service.ts` (admin page only) | ⚠️ DEV ONLY | Demo data routes        |
+
+### Seller Routes Analysis
+
+| Route Path              | Service Using It             | Status  | Notes            |
+| ----------------------- | ---------------------------- | ------- | ---------------- |
+| `/api/seller/dashboard` | Direct fetch                 | ✅ KEEP | Seller dashboard |
+| `/api/seller/settings/` | `seller-settings.service.ts` | ✅ KEEP | Seller settings  |
+
+### Services Without API Route Constants (Hardcoded)
+
+These services use hardcoded routes instead of `API_ROUTES` constants:
+
+| Service                      | Hardcoded Routes                                     | Fix                       |
+| ---------------------------- | ---------------------------------------------------- | ------------------------- |
+| `address.service.ts`         | `/user/addresses`, `/user/addresses/${id}`           | Use `ADDRESS_ROUTES.*`    |
+| `media.service.ts`           | `/media/upload`, `/media/delete`                     | Use `MEDIA_ROUTES.*`      |
+| `checkout.service.ts`        | `/checkout/create-order`, `/checkout/verify-payment` | Use `CHECKOUT_ROUTES.*`   |
+| `hero-slides.service.ts`     | `BASE_PATH = "/api/hero-slides"`                     | Use `HERO_SLIDE_ROUTES.*` |
+| `settings.service.ts`        | `baseUrl = "/api/admin/settings"`                    | Use `ADMIN_ROUTES.*`      |
+| `seller-settings.service.ts` | `baseUrl = "/api/seller/settings"`                   | Use `SELLER_ROUTES.*`     |
+| `support.service.ts`         | Various ticket routes                                | Use `TICKET_ROUTES.*`     |
+| `returns.service.ts`         | `/api/returns/${id}/media`                           | Use `RETURNS_ROUTES.*`    |
+
+### API Routes Missing from Constants
+
+Add these to `src/constants/api-routes.ts`:
+
+```typescript
+// Address Routes (NEW - Unified RBAC)
+export const ADDRESS_ROUTES = {
+  LIST: "/addresses",
+  BY_ID: (id: string) => `/addresses/${id}`,
+  SET_DEFAULT: (id: string) => `/addresses/${id}/default`,
+  BY_USER: (userId: string) => `/addresses/user/${userId}`,
+  BY_SHOP: (shopId: string) => `/addresses/shop/${shopId}`,
+  BY_ORDER: (orderId: string) => `/addresses/order/${orderId}`,
+} as const;
+
+// Header Routes (missing)
+export const HEADER_ROUTES = {
+  STATS: "/header/stats",
+} as const;
+
+// Location Routes (missing)
+export const LOCATION_ROUTES = {
+  PINCODE: "/location/pincode",
+} as const;
+
+// Messages Routes (missing)
+export const MESSAGES_ROUTES = {
+  LIST: "/messages",
+  BY_ID: (id: string) => `/messages/${id}`,
+  UNREAD_COUNT: "/messages/unread-count",
+} as const;
+
+// Notifications Routes (missing)
+export const NOTIFICATIONS_ROUTES = {
+  LIST: "/notifications",
+  UNREAD_COUNT: "/notifications/unread-count",
+} as const;
+
+// Favorites Routes (missing - different from existing)
+export const FAVORITES_ROUTES = {
+  LIST: "/favorites",
+  BY_TYPE: (type: string) => `/favorites/${type}`,
+  COUNT: "/favorites/count",
+} as const;
+
+// Blog Routes (partially missing)
+export const BLOG_ROUTES = {
+  LIST: "/blog",
+  BY_SLUG: (slug: string) => `/blog/${slug}`,
+} as const;
+```
+
+### Route Cleanup Checklist
+
+- [ ] Delete `/api/addresses/` folder (use `/api/user/addresses`)
+- [ ] Delete `/api/protected/` folder
+- [ ] Delete `/api/temporary-categories/` folder
+- [ ] Delete `/api/auctions/cron/` empty folder
+- [ ] Add environment check to block `/api/test-data/*` in production
+- [ ] Add environment check to block `/api/admin/debug/*` in production
+- [ ] Add environment check to block `/api/admin/demo/*` in production
+- [ ] Update services to use API_ROUTES constants instead of hardcoded strings
+- [ ] Add missing route constants to `api-routes.ts`
+
+---
+
+## 9. Context-Aware RBAC for API Routes
+
+### Problem Statement
+
+An admin user who is also a seller faces data scope issues:
+
+- On `/admin/products` → Should see ALL products (admin view)
+- On `/seller/products` → Should see ONLY their shop's products (seller view)
+
+Currently, the API returns data based solely on role, not the calling context. This causes admins who are sellers to see all products even when editing their own shop.
+
+### Solution: Request Context Header
+
+Add `X-Caller-Context` header to all API requests to indicate the calling context:
+
+```typescript
+// In apiService (src/services/api.service.ts)
+interface ApiOptions {
+  context?: "admin" | "seller" | "user" | "public";
+  // ... other options
+}
+
+// Usage in service
+productsService.getAll({ context: "seller" }); // Only my shop's products
+productsService.getAll({ context: "admin" }); // All products
+```
+
+### Context Header Values
+
+| Context Value | Meaning                        | Data Scope                  |
+| ------------- | ------------------------------ | --------------------------- |
+| `public`      | Public page (no auth required) | Published/active items only |
+| `user`        | User dashboard                 | User's own data             |
+| `seller`      | Seller dashboard               | Seller's shop data only     |
+| `admin`       | Admin dashboard                | All data (with filters)     |
+
+### Routes Requiring Context-Aware RBAC
+
+| Route           | Admin Context | Seller Context                  | User Context    |
+| --------------- | ------------- | ------------------------------- | --------------- |
+| `/api/products` | All products  | Seller's shop products          | N/A (public)    |
+| `/api/auctions` | All auctions  | Seller's shop auctions          | N/A (public)    |
+| `/api/orders`   | All orders    | Seller's shop orders            | User's orders   |
+| `/api/coupons`  | All coupons   | Seller's shop coupons           | N/A             |
+| `/api/reviews`  | All reviews   | Reviews on seller's products    | User's reviews  |
+| `/api/returns`  | All returns   | Returns on seller's orders      | User's returns  |
+| `/api/tickets`  | All tickets   | Tickets from seller's customers | User's tickets  |
+| `/api/payouts`  | All payouts   | Seller's payouts                | N/A             |
+| `/api/messages` | All messages  | Seller's messages               | User's messages |
+
+### Backend Implementation
+
+```typescript
+// In API route handler
+import { getAuthFromRequest } from "@/lib/auth";
+
+export async function GET(request: Request) {
+  const auth = await getAuthFromRequest(request);
+  const context = request.headers.get("X-Caller-Context") || "public";
+
+  // Determine effective scope
+  let filters = {};
+
+  if (context === "seller" && auth.shopId) {
+    // Even if admin, only show seller's shop data
+    filters.shopId = auth.shopId;
+  } else if (context === "admin" && auth.role === "admin") {
+    // Full admin access - no automatic filters
+    // Can still apply manual filters from query params
+  } else if (context === "user" && auth.userId) {
+    filters.userId = auth.userId;
+  }
+
+  // Apply filters to query
+  // ...
+}
+```
+
+### Frontend Service Implementation
+
+```typescript
+// services/api.service.ts
+class ApiService {
+  private getContext(): string {
+    // Auto-detect from current path
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      if (path.startsWith("/admin")) return "admin";
+      if (path.startsWith("/seller")) return "seller";
+      if (path.startsWith("/user")) return "user";
+    }
+    return "public";
+  }
+
+  async get<T>(url: string, options?: ApiOptions): Promise<T> {
+    const context = options?.context || this.getContext();
+    const headers = {
+      ...this.getHeaders(),
+      "X-Caller-Context": context,
+    };
+    // ... rest of fetch
+  }
+}
+```
+
+### Files to Update
+
+| File                                 | Changes                                           |
+| ------------------------------------ | ------------------------------------------------- |
+| `src/services/api.service.ts`        | Add context header support, auto-detect from path |
+| `src/app/api/products/route.ts`      | Check context header, apply scope filters         |
+| `src/app/api/auctions/route.ts`      | Check context header, apply scope filters         |
+| `src/app/api/orders/route.ts`        | Check context header, apply scope filters         |
+| `src/app/api/coupons/route.ts`       | Check context header, apply scope filters         |
+| `src/app/api/reviews/route.ts`       | Check context header, apply scope filters         |
+| `src/app/api/returns/route.ts`       | Check context header, apply scope filters         |
+| `src/app/api/tickets/route.ts`       | Check context header, apply scope filters         |
+| `src/app/api/payouts/route.ts`       | Check context header, apply scope filters         |
+| `src/app/api/messages/route.ts`      | Check context header, apply scope filters         |
+| `src/app/api/lib/handler-factory.ts` | Add context extraction helper                     |
+
+---
+
+## 10. Sieve Pagination System
+
+### Current State
+
+Sieve is implemented in `src/app/api/lib/sieve/` with:
+
+- ✅ Parser for query params (`?page=1&pageSize=20&sorts=-createdAt&filters=status==published`)
+- ✅ 14 resource configurations (products, auctions, orders, users, shops, reviews, categories, coupons, returns, tickets, blog, hero-slides, payouts, favorites)
+- ✅ Firestore adapter for translating filters
+- ✅ Client-side filter fallback for unsupported operators
+- ❌ Frontend Pagination component NOT created yet
+- ❌ Services NOT using Sieve yet
+
+### Sieve Query Format
+
+```
+?page=1&pageSize=20&sorts=-createdAt,price&filters=status==published,price>100
+```
+
+| Param      | Format                               | Example                               |
+| ---------- | ------------------------------------ | ------------------------------------- |
+| `page`     | Number (1-indexed)                   | `page=1`                              |
+| `pageSize` | Number (max from config)             | `pageSize=20`                         |
+| `sorts`    | Comma-separated, `-` prefix for desc | `sorts=-createdAt,price`              |
+| `filters`  | Comma-separated `field{op}value`     | `filters=status==published,price>100` |
+
+### Filter Operators
+
+| Operator | Meaning                     | Example             |
+| -------- | --------------------------- | ------------------- |
+| `==`     | Equals                      | `status==published` |
+| `!=`     | Not equals                  | `status!=draft`     |
+| `>`      | Greater than                | `price>100`         |
+| `>=`     | Greater or equal            | `price>=100`        |
+| `<`      | Less than                   | `price<1000`        |
+| `<=`     | Less or equal               | `price<=1000`       |
+| `@=`     | Contains                    | `name@=phone`       |
+| `_=`     | Starts with                 | `name_=iPhone`      |
+| `@=*`    | Contains (case-insensitive) | `name@=*PHONE`      |
+| `==null` | Is null                     | `parentId==null`    |
+| `!=null` | Is not null                 | `parentId!=null`    |
+
+### Frontend Pagination Component (TO CREATE)
+
+```typescript
+// src/components/common/Pagination.tsx
+
+interface PaginationProps {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  pageSizeOptions?: number[];
+  showPageNumbers?: boolean; // Show 1, 2, 3... page numbers
+  showJumpTo?: boolean; // Show "Go to page" input
+  showInfo?: boolean; // Show "Showing 1-20 of 100"
+  compact?: boolean; // Mobile-friendly compact mode
+}
+
+// Features:
+// - Page numbers with ellipsis (1 2 3 ... 8 9 10)
+// - Previous/Next buttons with icons
+// - First/Last page buttons
+// - Jump to page input
+// - Page size selector (10, 20, 50, 100)
+// - "Showing X-Y of Z items" info text
+// - Mobile-responsive (hides extras in compact mode)
+// - Full dark mode support
+// - Disabled states for first/last page
+// - Keyboard navigation support
+```
+
+### useSievePagination Hook (TO CREATE)
+
+```typescript
+// src/hooks/useSievePagination.ts
+
+interface UseSievePaginationOptions<T> {
+  resource: string;
+  initialFilters?: Record<string, string>;
+  initialSorts?: string;
+  initialPageSize?: number;
+  service: {
+    getAll: (params: SieveParams) => Promise<SievePaginatedResponse<T>>;
+  };
+}
+
+interface UseSievePaginationReturn<T> {
+  // Data
+  data: T[];
+  isLoading: boolean;
+  error: Error | null;
+
+  // Pagination
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+
+  // Actions
+  setPage: (page: number) => void;
+  setPageSize: (size: number) => void;
+  nextPage: () => void;
+  previousPage: () => void;
+  goToPage: (page: number) => void;
+
+  // Filtering & Sorting
+  filters: FilterCondition[];
+  sorts: SortField[];
+  setFilter: (field: string, operator: FilterOperator, value: any) => void;
+  removeFilter: (field: string) => void;
+  clearFilters: () => void;
+  setSort: (field: string, direction: SortDirection) => void;
+
+  // URL sync
+  syncToURL: () => void;
+  loadFromURL: () => void;
+
+  // Refetch
+  refetch: () => Promise<void>;
+}
+
+// Usage:
+const {
+  data: products,
+  isLoading,
+  page,
+  totalPages,
+  setPage,
+  setFilter,
+  setSort,
+} = useSievePagination({
+  resource: "products",
+  service: productsService,
+  initialPageSize: 20,
+});
+```
+
+### Pages to Update with Sieve Pagination
+
+| Page                | Current State     | Update Needed                               |
+| ------------------- | ----------------- | ------------------------------------------- |
+| `/products`         | Custom pagination | Use `useSievePagination` + `<Pagination />` |
+| `/auctions`         | Custom pagination | Use `useSievePagination` + `<Pagination />` |
+| `/shops`            | Custom pagination | Use `useSievePagination` + `<Pagination />` |
+| `/categories`       | No pagination     | Add `useSievePagination` + `<Pagination />` |
+| `/reviews`          | Custom pagination | Use `useSievePagination` + `<Pagination />` |
+| `/blog`             | Custom pagination | Use `useSievePagination` + `<Pagination />` |
+| `/admin/products`   | Custom + filters  | Use `useSievePagination` + `<Pagination />` |
+| `/admin/auctions`   | Custom + filters  | Use `useSievePagination` + `<Pagination />` |
+| `/admin/orders`     | Custom + filters  | Use `useSievePagination` + `<Pagination />` |
+| `/admin/users`      | Custom + filters  | Use `useSievePagination` + `<Pagination />` |
+| `/admin/shops`      | Custom + filters  | Use `useSievePagination` + `<Pagination />` |
+| `/admin/reviews`    | Custom + filters  | Use `useSievePagination` + `<Pagination />` |
+| `/admin/categories` | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/admin/coupons`    | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/admin/returns`    | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/admin/tickets`    | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/admin/payouts`    | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/admin/blog`       | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/seller/products`  | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/seller/auctions`  | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/seller/orders`    | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/seller/coupons`   | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/seller/returns`   | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/user/orders`      | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/user/bids`        | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/user/favorites`   | Custom            | Use `useSievePagination` + `<Pagination />` |
+| `/user/watchlist`   | Custom            | Use `useSievePagination` + `<Pagination />` |
+
+### Service Updates for Sieve
+
+Each service needs to support Sieve query params:
+
+```typescript
+// services/products.service.ts
+interface SieveParams {
+  page?: number;
+  pageSize?: number;
+  sorts?: string;
+  filters?: string;
+  context?: "admin" | "seller" | "user" | "public";
+}
+
+class ProductsService {
+  async getAll(
+    params: SieveParams = {}
+  ): Promise<SievePaginatedResponse<Product>> {
+    const queryString = buildSieveQueryString(params);
+    return apiService.get(`/products${queryString}`, {
+      context: params.context,
+    });
+  }
+}
+```
+
+### Implementation Checklist
+
+#### Phase 1: Core Components
+
+- [ ] Create `src/components/common/Pagination.tsx`
+- [ ] Create `src/components/common/PaginationSimple.tsx`
+- [ ] Create `src/components/common/PaginationCompact.tsx`
+- [ ] Create `src/hooks/useSievePagination.ts`
+- [ ] Add context header to `api.service.ts`
+
+#### Phase 2: Backend Updates
+
+- [ ] Add context extraction to `handler-factory.ts`
+- [ ] Update `/api/products/route.ts` with context + sieve
+- [ ] Update `/api/auctions/route.ts` with context + sieve
+- [ ] Update `/api/orders/route.ts` with context + sieve
+- [ ] Update other routes...
+
+#### Phase 3: Service Updates
+
+- [ ] Update `products.service.ts` with SieveParams
+- [ ] Update `auctions.service.ts` with SieveParams
+- [ ] Update `orders.service.ts` with SieveParams
+- [ ] Update other services...
+
+#### Phase 4: Page Updates
+
+- [ ] Update `/products` page
+- [ ] Update `/auctions` page
+- [ ] Update `/admin/*` pages
+- [ ] Update `/seller/*` pages
+- [ ] Update `/user/*` pages
