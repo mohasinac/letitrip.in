@@ -469,6 +469,11 @@ export default function ShopPage({ params }: ShopPageProps) {
                               onClick={() =>
                                 router.push(`/products/${product.slug}`)
                               }
+                              onKeyDown={(e) =>
+                                e.key === "Enter" && router.push(`/products/${product.slug}`)
+                              }
+                              role="link"
+                              tabIndex={0}
                             >
                               {product.name}
                             </h3>

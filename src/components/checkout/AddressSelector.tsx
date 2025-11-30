@@ -112,6 +112,9 @@ export function AddressSelector({
             <div
               key={address.id}
               onClick={() => onSelect(address.id)}
+              onKeyDown={(e) => e.key === "Enter" && onSelect(address.id)}
+              role="button"
+              tabIndex={0}
               className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all ${
                 selectedId === address.id
                   ? "border-primary bg-primary/5 dark:bg-primary/10"

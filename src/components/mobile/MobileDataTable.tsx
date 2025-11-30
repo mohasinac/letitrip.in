@@ -107,6 +107,9 @@ export function MobileDataTable<T extends Record<string, any>>({
               <div
                 key={key}
                 onClick={() => onRowClick?.(item)}
+                onKeyDown={(e) => e.key === "Enter" && onRowClick?.(item)}
+                role={onRowClick ? "button" : undefined}
+                tabIndex={onRowClick ? 0 : undefined}
                 className={cn(onRowClick && "cursor-pointer active:bg-gray-50")}
               >
                 {renderMobileCard(item)}
@@ -123,6 +126,9 @@ export function MobileDataTable<T extends Record<string, any>>({
             <div
               key={key}
               onClick={() => onRowClick?.(item)}
+              onKeyDown={(e) => e.key === "Enter" && onRowClick?.(item)}
+              role={onRowClick ? "button" : undefined}
+              tabIndex={onRowClick ? 0 : undefined}
               className={cn(
                 "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4",
                 onRowClick &&

@@ -426,6 +426,10 @@ export function UnifiedFilterSidebar({
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={onClose}
+          onKeyDown={(e) => e.key === "Escape" && onClose()}
+          role="button"
+          tabIndex={-1}
+          aria-label="Close filters"
         />
       )}
 

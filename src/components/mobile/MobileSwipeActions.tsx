@@ -87,7 +87,7 @@ export function MobileSwipeActions({
       newTranslateX = Math.max(-maxLeft, Math.min(maxRight, newTranslateX));
       setTranslateX(newTranslateX);
     },
-    [isOpen, threshold, leftActions.length, rightActions.length],
+    [isOpen, threshold, leftActions.length, rightActions.length]
   );
 
   const handleTouchEnd = useCallback(() => {
@@ -143,7 +143,7 @@ export function MobileSwipeActions({
               onClick={() => handleActionClick(action)}
               className={cn(
                 "flex flex-col items-center justify-center px-4 min-w-[80px] touch-target",
-                action.bgColor,
+                action.bgColor
               )}
               aria-label={action.label}
             >
@@ -165,7 +165,7 @@ export function MobileSwipeActions({
               onClick={() => handleActionClick(action)}
               className={cn(
                 "flex flex-col items-center justify-center px-4 min-w-[80px] touch-target",
-                action.bgColor,
+                action.bgColor
               )}
               aria-label={action.label}
             >
@@ -190,6 +190,9 @@ export function MobileSwipeActions({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onClick={isOpen ? close : undefined}
+        onKeyDown={isOpen ? (e) => e.key === "Escape" && close() : undefined}
+        role={isOpen ? "button" : undefined}
+        tabIndex={isOpen ? 0 : undefined}
       >
         {children}
       </div>

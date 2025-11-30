@@ -96,6 +96,9 @@ export function InlineEditor({
     return (
       <div
         onClick={() => !disabled && setIsEditing(true)}
+        onKeyDown={(e) => e.key === "Enter" && !disabled && setIsEditing(true)}
+        role="button"
+        tabIndex={disabled ? -1 : 0}
         className={`inline-flex items-center gap-2 ${
           disabled
             ? "cursor-not-allowed opacity-50"

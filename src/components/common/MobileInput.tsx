@@ -115,6 +115,12 @@ export const MobileInput = forwardRef<HTMLInputElement, MobileInputProps>(
                 <div
                   className="fixed inset-0 z-10"
                   onClick={() => setShowCountryPicker(false)}
+                  onKeyDown={(e) =>
+                    e.key === "Escape" && setShowCountryPicker(false)
+                  }
+                  role="button"
+                  tabIndex={-1}
+                  aria-label="Close country picker"
                 />
                 <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg min-w-[200px] max-h-60 overflow-y-auto">
                   {COUNTRY_CODES.map((country) => (

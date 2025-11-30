@@ -582,7 +582,12 @@ function SearchableDropdownInner<T = string>(
         aria-selected={selected}
         aria-disabled={option.disabled}
         onClick={() => !option.disabled && handleSelect(option.value)}
+        onKeyDown={(e) =>
+          e.key === "Enter" && !option.disabled && handleSelect(option.value)
+        }
         onMouseEnter={() => setHighlightedIndex(index)}
+        onFocus={() => setHighlightedIndex(index)}
+        tabIndex={option.disabled ? -1 : 0}
         className={`
           flex items-center gap-3 px-3 py-2 cursor-pointer
           ${option.disabled ? "opacity-50 cursor-not-allowed" : ""}

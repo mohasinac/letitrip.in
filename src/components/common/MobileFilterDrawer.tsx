@@ -65,6 +65,10 @@ export default function MobileFilterDrawer({
           isOpen && isAnimating ? "opacity-100" : "opacity-0"
         }`}
         onClick={handleClose}
+        onKeyDown={(e) => e.key === "Escape" && handleClose()}
+        role="button"
+        tabIndex={-1}
+        aria-label="Close filters"
       />
 
       {/* Drawer */}

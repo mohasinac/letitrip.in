@@ -232,6 +232,9 @@ export default function UserTicketsPage() {
                 <div
                   key={ticket.id}
                   onClick={() => router.push(`/user/tickets/${ticket.id}`)}
+                  onKeyDown={(e) => e.key === "Enter" && router.push(`/user/tickets/${ticket.id}`)}
+                  role="button"
+                  tabIndex={0}
                   className="bg-white rounded-lg border p-4 hover:shadow-md transition-shadow cursor-pointer"
                 >
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">

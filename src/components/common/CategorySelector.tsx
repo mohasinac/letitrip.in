@@ -182,6 +182,10 @@ export default function CategorySelector({
           <div key={category.id}>
             <div
               onClick={() => handleSelect(category)}
+              onKeyDown={(e) => e.key === "Enter" && handleSelect(category)}
+              role="option"
+              tabIndex={canSelect ? 0 : -1}
+              aria-selected={isSelected}
               className={`
               flex items-center gap-2 py-2.5 transition-colors
               ${
@@ -277,6 +281,11 @@ export default function CategorySelector({
       {/* Selected value / Trigger */}
       <div
         onClick={() => !disabled && setIsOpen(!isOpen)}
+        onKeyDown={(e) => e.key === "Enter" && !disabled && setIsOpen(!isOpen)}
+        role="combobox"
+        tabIndex={disabled ? -1 : 0}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
         className={`
           flex items-center gap-2 px-3 lg:px-4 h-full cursor-pointer bg-transparent hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
           ${disabled ? "opacity-50 cursor-not-allowed" : ""}
@@ -319,6 +328,10 @@ export default function CategorySelector({
           <div
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
+            onKeyDown={(e) => e.key === "Escape" && setIsOpen(false)}
+            role="button"
+            tabIndex={-1}
+            aria-label="Close category selector"
           />
 
           {/* Dropdown content */}
@@ -348,6 +361,14 @@ export default function CategorySelector({
                       <div
                         key={category.id}
                         onClick={() => canSelect && handleSelect(category)}
+                        onKeyDown={(e) =>
+                          e.key === "Enter" &&
+                          canSelect &&
+                          handleSelect(category)
+                        }
+                        role="option"
+                        tabIndex={canSelect ? 0 : -1}
+                        aria-selected={isSelected}
                         className={`
                           px-4 py-2.5 transition-colors
                           ${

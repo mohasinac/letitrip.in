@@ -218,6 +218,10 @@ export default function MediaUploader({
         onDragOver={handleDrag}
         onDrop={handleDrop}
         onClick={handleClick}
+        onKeyDown={(e) => e.key === "Enter" && handleClick()}
+        role="button"
+        tabIndex={disabled || !canAddMore ? -1 : 0}
+        aria-label="Upload media files"
       >
         <input
           ref={fileInputRef}

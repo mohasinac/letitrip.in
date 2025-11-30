@@ -194,6 +194,10 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
               setIsLightboxOpen(false);
             }
           }}
+          onKeyDown={(e) => e.key === "Escape" && setIsLightboxOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          tabIndex={-1}
         >
           <button
             onClick={() => setIsLightboxOpen(false)}
