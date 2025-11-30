@@ -21,7 +21,7 @@ export function AdminPageHeader({
         <nav className="flex mb-3" aria-label="Breadcrumb">
           <ol className="flex items-center space-x-2 text-sm">
             {breadcrumbs.map((crumb, index) => (
-              <li key={index} className="flex items-center">
+              <li key={crumb.label} className="flex items-center">
                 {index > 0 && <span className="mx-2 text-gray-400">/</span>}
                 {crumb.href ? (
                   <a

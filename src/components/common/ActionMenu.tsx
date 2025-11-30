@@ -116,9 +116,9 @@ export function ActionMenu({
           }`}
         >
           <div className="py-1">
-            {items.map((item, index) => (
+            {items.map((item) => (
               <button
-                key={index}
+                key={item.label}
                 onClick={() => handleItemClick(item)}
                 disabled={item.disabled}
                 className={`w-full flex items-center gap-3 px-4 py-2 text-sm ${

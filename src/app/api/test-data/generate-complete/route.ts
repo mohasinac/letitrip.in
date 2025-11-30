@@ -93,11 +93,16 @@ export async function POST(req: NextRequest) {
     // Step 2: Generate Users
     const users = [];
     for (let i = 0; i < config.users; i++) {
+      const getUserRole = (index: number, total: number) => {
+        if (index === 0) return "admin";
+        if (index < total * 0.3) return "seller";
+        return "user";
+      };
       const userData = {
         email: `${PREFIX}user${i + 1}_${Date.now()}@example.com`,
         name: `${PREFIX}${faker.person.fullName()}`,
         phone: `+91${faker.number.int({ min: 6000000000, max: 9999999999 })}`,
-        role: i === 0 ? "admin" : i < config.users * 0.3 ? "seller" : "user",
+        role: getUserRole(i, config.users),
         is_banned: false,
         email_verified: true,
         created_at: new Date().toISOString(),

@@ -250,8 +250,12 @@ class ErrorTrackingService {
     interval: "minute" | "hour" | "day" = "hour",
     limit = 24,
   ): ErrorTrend[] {
-    const intervalMs =
-      interval === "minute" ? 60000 : interval === "hour" ? 3600000 : 86400000;
+    const intervalMsMap = {
+      minute: 60000,
+      hour: 3600000,
+      day: 86400000,
+    };
+    const intervalMs = intervalMsMap[interval];
     const buckets: Map<number, ErrorTrend> = new Map();
 
     this.errorTrends.forEach((trend) => {

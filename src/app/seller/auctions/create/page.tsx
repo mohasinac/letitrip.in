@@ -802,7 +802,7 @@ export default function CreateAuctionWizardPage() {
               {formData.images.length > 0 && (
                 <div className="mt-4 grid grid-cols-4 gap-4">
                   {formData.images.map((url, index) => (
-                    <div key={index} className="relative group">
+                    <div key={url} className="relative group">
                       <img
                         src={url}
                         alt={`Auction ${index + 1}`}

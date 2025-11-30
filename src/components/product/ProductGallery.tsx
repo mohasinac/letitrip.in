@@ -157,7 +157,7 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
           <div className="flex gap-2 overflow-x-auto pb-2">
             {media.map((item, index) => (
               <button
-                key={index}
+                key={`thumb-${item.url}-${index}`}
                 onClick={() => setActiveIndex(index)}
                 className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
                   index === activeIndex

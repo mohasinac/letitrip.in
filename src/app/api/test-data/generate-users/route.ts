@@ -15,7 +15,11 @@ export async function POST(req: NextRequest) {
         email: `${PREFIX}user${i + 1}_${Date.now()}@example.com`,
         name: `${PREFIX}${faker.person.fullName()}`,
         phone: `+91${faker.number.int({ min: 6000000000, max: 9999999999 })}`,
-        role: i === 0 ? "admin" : i < count * 0.3 ? "seller" : "user",
+        role: (() => {
+          if (i === 0) return "admin";
+          if (i < count * 0.3) return "seller";
+          return "user";
+        })(),
         is_banned: false,
         email_verified: true,
         created_at: new Date().toISOString(),
