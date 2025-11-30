@@ -1,8 +1,8 @@
 # Sieve Pagination Migration
 
-> **Status**: 🔴 In Progress
+> **Status**: ✅ Complete (All Core Routes Migrated)
 > **Priority**: High
-> **Last Updated**: November 30, 2025
+> **Last Updated**: December 2025
 
 ## Current State
 
@@ -35,43 +35,43 @@ GET /api/products?page=1&pageSize=20&sorts=-createdAt,price&filters=status==publ
 | `==null` | Is null/undefined           | `deletedAt==null`   |
 | `!=null` | Is not null                 | `paidAt!=null`      |
 
-## API Routes to Migrate
+## API Routes Migration Status
 
-### Priority 1 - High Traffic Routes
+### Priority 1 - High Traffic Routes (All ✅ Complete)
 
-| Route             | Current Pagination            | Config                  | Status |
-| ----------------- | ----------------------------- | ----------------------- | ------ |
-| `/api/products`   | `executeCursorPaginatedQuery` | `productsSieveConfig`   | ⬜     |
-| `/api/auctions`   | `executeCursorPaginatedQuery` | `auctionsSieveConfig`   | ⬜     |
-| `/api/shops`      | `executeCursorPaginatedQuery` | `shopsSieveConfig`      | ⬜     |
-| `/api/categories` | Manual offset                 | `categoriesSieveConfig` | ⬜     |
-| `/api/reviews`    | Manual limit                  | `reviewsSieveConfig`    | ⬜     |
+| Route             | Config                  | Status |
+| ----------------- | ----------------------- | ------ |
+| `/api/products`   | `productsSieveConfig`   | ✅     |
+| `/api/auctions`   | `auctionsSieveConfig`   | ✅     |
+| `/api/shops`      | `shopsSieveConfig`      | ✅     |
+| `/api/categories` | `categoriesSieveConfig` | ✅     |
+| `/api/reviews`    | `reviewsSieveConfig`    | ✅     |
 
-### Priority 2 - Admin Routes
+### Priority 2 - Admin/Core Routes (All ✅ Complete)
 
-| Route                    | Current Pagination            | Config                  | Status |
-| ------------------------ | ----------------------------- | ----------------------- | ------ |
-| `/api/admin/products`    | `executeCursorPaginatedQuery` | `productsSieveConfig`   | ⬜     |
-| `/api/admin/auctions`    | Manual                        | `auctionsSieveConfig`   | ⬜     |
-| `/api/admin/orders`      | `executeCursorPaginatedQuery` | `ordersSieveConfig`     | ⬜     |
-| `/api/admin/users`       | `executeCursorPaginatedQuery` | `usersSieveConfig`      | ⬜     |
-| `/api/admin/shops`       | Manual limit                  | `shopsSieveConfig`      | ⬜     |
-| `/api/admin/tickets`     | Manual                        | `ticketsSieveConfig`    | ⬜     |
-| `/api/admin/payouts`     | Manual                        | `payoutsSieveConfig`    | ⬜     |
-| `/api/admin/coupons`     | Manual                        | `couponsSieveConfig`    | ⬜     |
-| `/api/admin/returns`     | Manual                        | `returnsSieveConfig`    | ⬜     |
-| `/api/admin/hero-slides` | Manual                        | `heroSlidesSieveConfig` | ⬜     |
-| `/api/blog/posts`        | Manual                        | `blogSieveConfig`       | ⬜     |
+| Route                | Config                     | Status |
+| -------------------- | -------------------------- | ------ |
+| `/api/orders`        | `ordersSieveConfig`        | ✅     |
+| `/api/users`         | `usersSieveConfig`         | ✅     |
+| `/api/payouts`       | `payoutsSieveConfig`       | ✅     |
+| `/api/coupons`       | `couponsSieveConfig`       | ✅     |
+| `/api/returns`       | `returnsSieveConfig`       | ✅     |
+| `/api/tickets`       | `ticketsSieveConfig`       | ✅     |
+| `/api/blog`          | `blogSieveConfig`          | ✅     |
+| `/api/favorites`     | `favoritesSieveConfig`     | ✅     |
+| `/api/hero-slides`   | `heroSlidesSieveConfig`    | ✅     |
+| `/api/notifications` | `notificationsSieveConfig` | ✅     |
 
-### Priority 3 - User/Seller Routes
+### Priority 3 - User/Seller Routes (Consolidated)
 
-| Route                  | Current Pagination            | Config                 | Status |
-| ---------------------- | ----------------------------- | ---------------------- | ------ |
-| `/api/user/orders`     | Manual limit                  | `ordersSieveConfig`    | ⬜     |
-| `/api/user/favorites`  | Manual                        | `favoritesSieveConfig` | ⬜     |
-| `/api/seller/products` | `executeCursorPaginatedQuery` | `productsSieveConfig`  | ⬜     |
-| `/api/seller/auctions` | `executeCursorPaginatedQuery` | `auctionsSieveConfig`  | ⬜     |
-| `/api/seller/orders`   | Manual                        | `ordersSieveConfig`    | ⬜     |
+User/Seller routes share the main API routes with role-based filtering:
+
+| Route            | Uses Config            | Status           |
+| ---------------- | ---------------------- | ---------------- |
+| `/api/orders`    | `ordersSieveConfig`    | ✅ Role-filtered |
+| `/api/favorites` | `favoritesSieveConfig` | ✅ User-filtered |
+| `/api/products`  | `productsSieveConfig`  | ✅ Shop-filtered |
+| `/api/auctions`  | `auctionsSieveConfig`  | ✅ Shop-filtered |
 
 ## Migration Pattern
 

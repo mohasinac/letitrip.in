@@ -5,7 +5,31 @@
 
 ---
 
-## Session 3 Checklist (Current)
+## Session 4 Checklist (Current)
+
+### Priority 1: Remaining API Sieve Migrations
+
+- [x] 1. Migrate `/api/hero-slides` to Sieve pagination ✅
+- [x] 2. Migrate `/api/notifications` to Sieve pagination ✅
+
+### Priority 2: Code Quality - TypeScript Errors
+
+- [x] 3. Fix any TypeScript errors in migrated routes ✅ No errors
+- [x] 4. Fix any linting issues ✅ No errors
+
+### Priority 3: Documentation Updates
+
+- [x] 5. Update Sieve migration document status markers ✅
+- [x] 6. Update Dark Mode issues document status markers ✅
+
+### Priority 4: Git & Sonar
+
+- [ ] 7. Commit and push all changes to GitHub
+- [ ] 8. Run Sonar scan and document results
+
+---
+
+## Session 3 Checklist (Completed ✅)
 
 ### Priority 1: Dark Mode (Verify checkout components)
 
