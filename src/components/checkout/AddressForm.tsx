@@ -118,17 +118,17 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           />
         </div>
         <div className="hidden sm:block">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Full Name <span className="text-red-500">*</span>
           </label>
           <input
             {...register("fullName")}
             type="text"
-            className="input"
+            className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
             placeholder="John Doe"
           />
           {errors.fullName && (
-            <p className="text-sm text-red-600 mt-1">
+            <p className="text-sm text-red-600 dark:text-red-400 mt-1">
               {errors.fullName.message}
             </p>
           )}
@@ -146,17 +146,17 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           />
         </div>
         <div className="hidden sm:block">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Phone Number <span className="text-red-500">*</span>
           </label>
           <input
             {...register("phoneNumber")}
             type="tel"
-            className="input"
+            className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
             placeholder="9876543210"
           />
           {errors.phoneNumber && (
-            <p className="text-sm text-red-600 mt-1">
+            <p className="text-sm text-red-600 dark:text-red-400 mt-1">
               {errors.phoneNumber.message}
             </p>
           )}
@@ -174,17 +174,17 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
         />
       </div>
       <div className="hidden sm:block">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Address Line 1 <span className="text-red-500">*</span>
         </label>
         <input
           {...register("addressLine1")}
           type="text"
-          className="input"
+          className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
           placeholder="Flat, House no., Building, Company, Apartment"
         />
         {errors.addressLine1 && (
-          <p className="text-sm text-red-600 mt-1">
+          <p className="text-sm text-red-600 dark:text-red-400 mt-1">
             {errors.addressLine1.message}
           </p>
         )}
@@ -200,13 +200,13 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
         />
       </div>
       <div className="hidden sm:block">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Address Line 2 (Optional)
         </label>
         <input
           {...register("addressLine2")}
           type="text"
-          className="input"
+          className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
           placeholder="Area, Street, Sector, Village"
         />
       </div>
@@ -223,17 +223,19 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           />
         </div>
         <div className="hidden sm:block">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             City <span className="text-red-500">*</span>
           </label>
           <input
             {...register("city")}
             type="text"
-            className="input"
+            className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
             placeholder="Mumbai"
           />
           {errors.city && (
-            <p className="text-sm text-red-600 mt-1">{errors.city.message}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+              {errors.city.message}
+            </p>
           )}
         </div>
 
@@ -248,17 +250,19 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           />
         </div>
         <div className="hidden sm:block">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             State <span className="text-red-500">*</span>
           </label>
           <input
             {...register("state")}
             type="text"
-            className="input"
+            className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
             placeholder="Maharashtra"
           />
           {errors.state && (
-            <p className="text-sm text-red-600 mt-1">{errors.state.message}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+              {errors.state.message}
+            </p>
           )}
         </div>
 
@@ -275,18 +279,18 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           />
         </div>
         <div className="hidden sm:block">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Pincode <span className="text-red-500">*</span>
           </label>
           <input
             {...register("postalCode")}
             type="text"
-            className="input"
+            className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
             placeholder="400001"
             maxLength={6}
           />
           {errors.postalCode && (
-            <p className="text-sm text-red-600 mt-1">
+            <p className="text-sm text-red-600 dark:text-red-400 mt-1">
               {errors.postalCode.message}
             </p>
           )}
@@ -304,17 +308,19 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
         />
       </div>
       <div className="hidden sm:block">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Country <span className="text-red-500">*</span>
         </label>
         <input
           {...register("country")}
           type="text"
-          className="input"
+          className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
           placeholder="India"
         />
         {errors.country && (
-          <p className="text-sm text-red-600 mt-1">{errors.country.message}</p>
+          <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+            {errors.country.message}
+          </p>
         )}
       </div>
 
@@ -323,14 +329,17 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
           {...register("isDefault")}
           type="checkbox"
           id="isDefault"
-          className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary"
+          className="w-5 h-5 text-primary border-gray-300 dark:border-gray-600 rounded focus:ring-primary bg-white dark:bg-gray-800"
         />
-        <label htmlFor="isDefault" className="text-sm text-gray-700">
+        <label
+          htmlFor="isDefault"
+          className="text-sm text-gray-700 dark:text-gray-300"
+        >
           Set as default address
         </label>
       </div>
 
-      <div className="flex gap-3 pt-4 border-t">
+      <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           type="button"
           onClick={onClose}
@@ -374,14 +383,14 @@ export function AddressForm({ addressId, onClose }: AddressFormProps) {
       {/* Desktop: Modal */}
       <div className="hidden sm:block">
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 {addressId ? "Edit Address" : "Add New Address"}
               </h2>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>

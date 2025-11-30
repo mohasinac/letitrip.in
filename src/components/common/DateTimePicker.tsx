@@ -116,7 +116,7 @@ export default function DateTimePicker({
       if (maxDate && date > maxDate) return true;
       return false;
     },
-    [minDate, maxDate],
+    [minDate, maxDate]
   );
 
   // Check if date is selected
@@ -129,7 +129,7 @@ export default function DateTimePicker({
         date.getFullYear() === value.getFullYear()
       );
     },
-    [value],
+    [value]
   );
 
   // Check if date is today
@@ -162,7 +162,7 @@ export default function DateTimePicker({
         setIsOpen(false);
       }
     },
-    [value, mode, isDateDisabled, onChange],
+    [value, mode, isDateDisabled, onChange]
   );
 
   // Handle time change
@@ -172,7 +172,7 @@ export default function DateTimePicker({
       newDate.setHours(hours, minutes, 0, 0);
       onChange(newDate);
     },
-    [value, onChange],
+    [value, onChange]
   );
 
   // Navigate month
@@ -191,7 +191,7 @@ export default function DateTimePicker({
       onChange(null);
       setIsOpen(false);
     },
-    [onChange],
+    [onChange]
   );
 
   // Get time values
@@ -205,14 +205,18 @@ export default function DateTimePicker({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         className={`
           flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer
-          ${disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"}
-          ${error ? "border-red-500" : "border-gray-300"}
+          ${
+            disabled
+              ? "bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
+              : "bg-white dark:bg-gray-800"
+          }
+          ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
           ${isOpen ? "ring-2 ring-blue-500" : ""}
         `}
       >
         {/* Calendar icon */}
         <svg
-          className="w-5 h-5 text-gray-400"
+          className="w-5 h-5 text-gray-400 dark:text-gray-500"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -226,7 +230,13 @@ export default function DateTimePicker({
         </svg>
 
         {/* Display value */}
-        <span className={`flex-1 ${value ? "" : "text-gray-500"}`}>
+        <span
+          className={`flex-1 ${
+            value
+              ? "text-gray-900 dark:text-white"
+              : "text-gray-500 dark:text-gray-400"
+          }`}
+        >
           {displayValue || placeholder}
         </span>
 
@@ -235,10 +245,10 @@ export default function DateTimePicker({
           <button
             type="button"
             onClick={handleClear}
-            className="p-1 hover:bg-gray-200:bg-gray-700 rounded"
+            className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
           >
             <svg
-              className="w-4 h-4"
+              className="w-4 h-4 text-gray-500 dark:text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -264,7 +274,7 @@ export default function DateTimePicker({
           />
 
           {/* Picker content */}
-          <div className="absolute z-20 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 min-w-[300px]">
+          <div className="absolute z-20 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4 min-w-[300px]">
             {/* Calendar (for date/datetime modes) */}
             {(mode === "date" || mode === "datetime") && (
               <div className="mb-4">
@@ -273,7 +283,7 @@ export default function DateTimePicker({
                   <button
                     type="button"
                     onClick={() => navigateMonth("prev")}
-                    className="p-1 hover:bg-gray-200:bg-gray-700 rounded"
+                    className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-700 dark:text-gray-300"
                   >
                     <svg
                       className="w-5 h-5"
@@ -290,14 +300,14 @@ export default function DateTimePicker({
                     </svg>
                   </button>
 
-                  <span className="font-semibold">
+                  <span className="font-semibold text-gray-900 dark:text-white">
                     {MONTHS[viewDate.getMonth()]} {viewDate.getFullYear()}
                   </span>
 
                   <button
                     type="button"
                     onClick={() => navigateMonth("next")}
-                    className="p-1 hover:bg-gray-200:bg-gray-700 rounded"
+                    className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-700 dark:text-gray-300"
                   >
                     <svg
                       className="w-5 h-5"
@@ -320,7 +330,7 @@ export default function DateTimePicker({
                   {DAYS.map((day) => (
                     <div
                       key={day}
-                      className="text-center text-xs font-semibold text-gray-600"
+                      className="text-center text-xs font-semibold text-gray-600 dark:text-gray-400"
                     >
                       {day}
                     </div>
@@ -352,13 +362,15 @@ export default function DateTimePicker({
                           }
                           ${
                             today && !selected
-                              ? "bg-blue-100/30 text-blue-600"
+                              ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
                               : ""
                           }
                           ${
                             disabled
-                              ? "text-gray-400 cursor-not-allowed"
-                              : "hover:bg-gray-200:bg-gray-700"
+                              ? "text-gray-400 dark:text-gray-600 cursor-not-allowed"
+                              : !selected
+                              ? "text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
+                              : ""
                           }
                         `}
                       >
@@ -388,10 +400,12 @@ export default function DateTimePicker({
                       handleTimeChange(val, minutes);
                     }
                   }}
-                  className="w-16 px-2 py-1 text-center border border-gray-300 rounded bg-white"
+                  className="w-16 px-2 py-1 text-center border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
 
-                <span className="font-semibold">:</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  :
+                </span>
 
                 {/* Minutes */}
                 <input
@@ -402,7 +416,7 @@ export default function DateTimePicker({
                   onChange={(e) =>
                     handleTimeChange(hours, parseInt(e.target.value, 10))
                   }
-                  className="w-16 px-2 py-1 text-center border border-gray-300 rounded bg-white"
+                  className="w-16 px-2 py-1 text-center border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
 
                 {/* AM/PM */}
@@ -414,7 +428,7 @@ export default function DateTimePicker({
                       const newHours = isPM ? (hours % 12) + 12 : hours % 12;
                       handleTimeChange(newHours, minutes);
                     }}
-                    className="px-2 py-1 border border-gray-300 rounded bg-white"
+                    className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   >
                     <option value="AM">AM</option>
                     <option value="PM">PM</option>
@@ -427,7 +441,9 @@ export default function DateTimePicker({
       )}
 
       {/* Error message */}
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
+      )}
     </div>
   );
 }

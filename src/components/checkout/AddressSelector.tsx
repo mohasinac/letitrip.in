@@ -72,7 +72,10 @@ export function AddressSelector({
     return (
       <div className="animate-pulse space-y-3">
         {[1, 2].map((i) => (
-          <div key={i} className="h-24 bg-gray-100 rounded-lg" />
+          <div
+            key={i}
+            className="h-24 bg-gray-100 dark:bg-gray-700 rounded-lg"
+          />
         ))}
       </div>
     );
@@ -81,7 +84,7 @@ export function AddressSelector({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900">
+        <h3 className="font-semibold text-gray-900 dark:text-white">
           {type === "shipping" ? "Shipping" : "Billing"} Address
         </h3>
         <button
@@ -94,9 +97,11 @@ export function AddressSelector({
       </div>
 
       {addresses.length === 0 ? (
-        <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-          <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-600 mb-4">No addresses saved</p>
+        <div className="text-center py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
+          <MapPin className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            No addresses saved
+          </p>
           <button onClick={() => setShowForm(true)} className="btn-primary">
             Add Address
           </button>
@@ -109,8 +114,8 @@ export function AddressSelector({
               onClick={() => onSelect(address.id)}
               className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all ${
                 selectedId === address.id
-                  ? "border-primary bg-primary/5"
-                  : "border-gray-200 hover:border-gray-300"
+                  ? "border-primary bg-primary/5 dark:bg-primary/10"
+                  : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
               }`}
             >
               {selectedId === address.id && (
@@ -122,21 +127,21 @@ export function AddressSelector({
               <div className="pr-8">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <h4 className="font-semibold text-gray-900">
+                    <h4 className="font-semibold text-gray-900 dark:text-white">
                       {address.fullName}
                     </h4>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       {address.phoneNumber}
                     </p>
                   </div>
                   {address.isDefault && (
-                    <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                    <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-xs font-medium rounded">
                       Default
                     </span>
                   )}
                 </div>
 
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   {address.addressLine1}
                   {address.addressLine2 && `, ${address.addressLine2}`}
                   <br />
@@ -162,7 +167,7 @@ export function AddressSelector({
                       e.stopPropagation();
                       setDeleteId(address.id);
                     }}
-                    className="text-sm text-red-600 hover:text-red-700 flex items-center gap-1"
+                    className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 flex items-center gap-1"
                   >
                     <Trash2 className="w-3 h-3" />
                     Delete

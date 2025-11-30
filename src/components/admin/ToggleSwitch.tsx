@@ -42,12 +42,14 @@ export function ToggleSwitch({
       <div className="flex items-start justify-between">
         <div className="flex-1">
           {label && (
-            <label className="block text-sm font-medium text-gray-900">
+            <label className="block text-sm font-medium text-gray-900 dark:text-white">
               {label}
             </label>
           )}
           {description && (
-            <p className="text-sm text-gray-500 mt-0.5">{description}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+              {description}
+            </p>
           )}
         </div>
         <button
@@ -58,7 +60,7 @@ export function ToggleSwitch({
             sizeConfig.container
           } items-center rounded-full transition-colors ${
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-          } ${enabled ? "bg-blue-600" : "bg-gray-200"}`}
+          } ${enabled ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-600"}`}
           aria-pressed={enabled}
         >
           <span
@@ -78,7 +80,7 @@ export function ToggleSwitch({
         sizeConfig.container
       } items-center rounded-full transition-colors ${
         disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-      } ${enabled ? "bg-blue-600" : "bg-gray-200"}`}
+      } ${enabled ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-600"}`}
       aria-pressed={enabled}
     >
       <span
