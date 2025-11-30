@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -45,6 +46,40 @@ export function MobileNavRow({
   variant = "user",
 }: MobileNavRowProps) {
   const pathname = usePathname();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+
+  const checkScroll = useCallback(() => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftArrow(scrollLeft > 5);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkScroll();
+    const scrollElement = scrollRef.current;
+    if (scrollElement) {
+      scrollElement.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll);
+      return () => {
+        scrollElement.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+      };
+    }
+  }, [checkScroll, items]);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = 150;
+      const newScrollLeft =
+        scrollRef.current.scrollLeft +
+        (direction === "left" ? -scrollAmount : scrollAmount);
+      scrollRef.current.scrollTo({ left: newScrollLeft, behavior: "smooth" });
+    }
+  };
 
   const isActive = (href: string) => {
     const basePaths = ["/user", "/admin", "/seller"];
@@ -90,32 +125,61 @@ export function MobileNavRow({
         className
       )}
     >
-      <div className="overflow-x-auto scrollbar-hide">
-        <nav className="flex items-center gap-1 p-2 min-w-max">
-          {items.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.href);
+      <div className="relative flex items-center">
+        {/* Left scroll button */}
+        {showLeftArrow && (
+          <button
+            onClick={() => scroll("left")}
+            className="absolute left-0 z-10 h-full px-1 bg-gradient-to-r from-white via-white to-transparent dark:from-gray-900 dark:via-gray-900"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          </button>
+        )}
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap border-b-2",
-                  active ? colors.active : colors.inactive
-                )}
-              >
-                <Icon
+        {/* Scrollable content */}
+        <div
+          ref={scrollRef}
+          className="overflow-x-auto scrollbar-hide flex-1"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          <nav className="flex items-center gap-1 p-2 min-w-max">
+            {items.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
                   className={cn(
-                    "h-5 w-5",
-                    active ? colors.activeIcon : colors.inactiveIcon
+                    "flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap border-b-2",
+                    active ? colors.active : colors.inactive
                   )}
-                />
-                <span>{item.title}</span>
-              </Link>
-            );
-          })}
-        </nav>
+                >
+                  <Icon
+                    className={cn(
+                      "h-5 w-5",
+                      active ? colors.activeIcon : colors.inactiveIcon
+                    )}
+                  />
+                  <span>{item.title}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Right scroll button */}
+        {showRightArrow && (
+          <button
+            onClick={() => scroll("right")}
+            className="absolute right-0 z-10 h-full px-1 bg-gradient-to-l from-white via-white to-transparent dark:from-gray-900 dark:via-gray-900"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          </button>
+        )}
       </div>
     </div>
   );

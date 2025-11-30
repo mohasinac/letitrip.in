@@ -6,10 +6,54 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { getUserShops } from "../lib/auth-helpers";
+import {
+  parseSieveQuery,
+  couponsSieveConfig,
+  createPaginationMeta,
+} from "@/app/api/lib/sieve";
+
+// Extended Sieve config with field mappings for coupons
+const couponsConfig = {
+  ...couponsSieveConfig,
+  fieldMappings: {
+    shopId: "shop_id",
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    expiresAt: "end_date",
+    discountValue: "discount_value",
+    usageCount: "usage_count",
+    usageLimit: "usage_limit",
+    isActive: "is_active",
+    startDate: "start_date",
+    endDate: "end_date",
+  } as Record<string, string>,
+};
+
+/**
+ * Transform coupon document to API response format
+ */
+function transformCoupon(id: string, data: any) {
+  return {
+    id,
+    ...data,
+    shopId: data.shop_id,
+    discountValue: data.discount_value,
+    isActive: data.is_active,
+    usageLimit: data.usage_limit,
+    usageCount: data.usage_count,
+    startDate: data.start_date,
+    endDate: data.end_date,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
+}
 
 /**
  * GET /api/coupons
- * List coupons with role-based filtering
+ * List coupons with Sieve pagination
+ * Query Format: ?page=1&pageSize=20&sorts=-createdAt&filters=status==active
+ *
+ * Role-based filtering:
  * - Public: Active coupons only
  * - Seller: Own shop coupons (all statuses)
  * - Admin: All coupons
@@ -19,9 +63,26 @@ export async function GET(request: NextRequest) {
     const user = await getUserFromRequest(request);
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
-    let shopId = searchParams.get("shop_id");
+
+    // Parse Sieve query
+    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
+      searchParams,
+      couponsConfig
+    );
+
+    if (errors.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid query parameters",
+          details: errors,
+        },
+        { status: 400 }
+      );
+    }
 
     let query: FirebaseFirestore.Query = Collections.coupons();
+    let shopId = searchParams.get("shop_id") || searchParams.get("shopId");
 
     if (role === "guest" || role === "user") {
       query = query.where("is_active", "==", true);
@@ -30,7 +91,6 @@ export async function GET(request: NextRequest) {
       if (!shopId && user?.uid) {
         const userShops = await getUserShops(user.uid);
         if (userShops.length > 0) {
-          // Filter by user's shops
           shopId = userShops[0]; // Use primary shop
         }
       }
@@ -42,15 +102,61 @@ export async function GET(request: NextRequest) {
       query = query.where("shop_id", "==", shopId);
     }
 
-    const snapshot = await query.limit(200).get();
-    let coupons = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    // Apply Sieve filters
+    for (const filter of sieveQuery.filters) {
+      const dbField = couponsConfig.fieldMappings[filter.field] || filter.field;
+      if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
+        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+      }
+    }
 
-    return NextResponse.json({ success: true, data: coupons });
+    // Apply sorting
+    if (sieveQuery.sorts.length > 0) {
+      for (const sort of sieveQuery.sorts) {
+        const dbField = couponsConfig.fieldMappings[sort.field] || sort.field;
+        query = query.orderBy(dbField, sort.direction);
+      }
+    } else {
+      query = query.orderBy("created_at", "desc");
+    }
+
+    // Get total count
+    const countSnapshot = await query.count().get();
+    const totalCount = countSnapshot.data().count;
+
+    // Apply pagination
+    const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0) {
+      const skipSnapshot = await query.limit(offset).get();
+      if (skipSnapshot.docs.length > 0) {
+        const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+        query = query.startAfter(lastDoc);
+      }
+    }
+    query = query.limit(sieveQuery.pageSize);
+
+    // Execute query
+    const snapshot = await query.get();
+    const data = snapshot.docs.map((doc) => transformCoupon(doc.id, doc.data()));
+
+    // Build response with Sieve pagination meta
+    const pagination = createPaginationMeta(totalCount, sieveQuery);
+
+    return NextResponse.json({
+      success: true,
+      data,
+      pagination,
+      meta: {
+        appliedFilters: sieveQuery.filters,
+        appliedSorts: sieveQuery.sorts,
+        warnings: warnings.length > 0 ? warnings : undefined,
+      },
+    });
   } catch (error) {
     console.error("Error listing coupons:", error);
     return NextResponse.json(
       { success: false, error: "Failed to list coupons" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

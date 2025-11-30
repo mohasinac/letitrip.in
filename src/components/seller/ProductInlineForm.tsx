@@ -20,6 +20,7 @@ export function ProductInlineForm({
   onCancel,
 }: ProductInlineFormProps) {
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     name: product?.name || "",
     slug: product?.slug || "",
@@ -31,27 +32,48 @@ export function ProductInlineForm({
     status: product?.status || "draft",
   });
 
+  const clearError = (field: string) => {
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: Record<string, string> = {};
 
+    // Validation
     if (!formData.slug) {
-      alert("Slug is required");
+      newErrors.slug = "Slug is required";
+    }
+    if (!formData.name.trim()) {
+      newErrors.name = "Product name is required";
+    }
+    if (formData.price <= 0) {
+      newErrors.price = "Price must be greater than 0";
+    }
+    if (!product && !shopId) {
+      newErrors.form = "Shop ID is required";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
     try {
       setLoading(true);
+      setErrors({});
 
       if (product) {
         // Update existing product
         await productsService.update(product.slug, formData as any);
       } else {
         // Create new product
-        if (!shopId) {
-          alert("Shop ID is required");
-          return;
-        }
-
         await productsService.create({
           ...formData,
           shopId,
@@ -63,9 +85,9 @@ export function ProductInlineForm({
       }
 
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save product:", error);
-      alert("Failed to save product");
+      setErrors({ form: error.message || "Failed to save product" });
     } finally {
       setLoading(false);
     }
@@ -73,18 +95,39 @@ export function ProductInlineForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Form-level error */}
+      {errors.form && (
+        <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+          <p className="text-sm text-red-700 dark:text-red-400">
+            {errors.form}
+          </p>
+        </div>
+      )}
+
       {/* Name */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Product Name *
         </label>
         <input
           type="text"
           required
           value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          onChange={(e) => {
+            setFormData({ ...formData, name: e.target.value });
+            clearError("name");
+          }}
+          className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
+            errors.name
+              ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+              : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+          }`}
         />
+        {errors.name && (
+          <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+            {errors.name}
+          </p>
+        )}
       </div>
 
       {/* Slug */}
@@ -92,13 +135,21 @@ export function ProductInlineForm({
         <SlugInput
           value={formData.slug}
           sourceText={formData.name}
-          onChange={(slug: string) => setFormData({ ...formData, slug })}
+          onChange={(slug: string) => {
+            setFormData({ ...formData, slug });
+            clearError("slug");
+          }}
         />
+        {errors.slug && (
+          <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+            {errors.slug}
+          </p>
+        )}
       </div>
 
       {/* Price */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Price (₹) *
         </label>
         <input
@@ -107,16 +158,26 @@ export function ProductInlineForm({
           min="0"
           step="0.01"
           value={formData.price}
-          onChange={(e) =>
-            setFormData({ ...formData, price: parseFloat(e.target.value) })
-          }
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          onChange={(e) => {
+            setFormData({ ...formData, price: parseFloat(e.target.value) });
+            clearError("price");
+          }}
+          className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
+            errors.price
+              ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+              : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+          }`}
         />
+        {errors.price && (
+          <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+            {errors.price}
+          </p>
+        )}
       </div>
 
       {/* Stock */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Stock Count *
         </label>
         <input
@@ -127,13 +188,13 @@ export function ProductInlineForm({
           onChange={(e) =>
             setFormData({ ...formData, stockCount: parseInt(e.target.value) })
           }
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         />
       </div>
 
       {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Category ID *
         </label>
         <input
@@ -143,14 +204,14 @@ export function ProductInlineForm({
           onChange={(e) =>
             setFormData({ ...formData, categoryId: e.target.value })
           }
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           placeholder="e.g., electronics"
         />
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Description
         </label>
         <textarea
@@ -159,17 +220,17 @@ export function ProductInlineForm({
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
           }
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         />
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           type="button"
           onClick={onCancel}
           disabled={loading}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          className="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
         >
           Cancel
         </button>

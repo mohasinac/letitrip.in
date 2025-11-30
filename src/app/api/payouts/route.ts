@@ -2,16 +2,58 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   getUserFromRequest,
   requireAuth,
-  requireAdmin,
 } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import {
+  parseSieveQuery,
+  payoutsSieveConfig,
+  createPaginationMeta,
+} from "@/app/api/lib/sieve";
+
+// Extended Sieve config with field mappings for payouts
+const payoutsConfig = {
+  ...payoutsSieveConfig,
+  fieldMappings: {
+    sellerId: "seller_id",
+    shopId: "shop_id",
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    paymentMethod: "payment_method",
+    netAmount: "net_amount",
+    platformFee: "platform_fee",
+    totalSales: "total_sales",
+    orderCount: "order_count",
+  } as Record<string, string>,
+};
 
 /**
- * Unified Payouts API with RBAC
- * GET: List payouts (seller: own, admin: all)
- * POST: Create payout request (seller only)
+ * Transform payout document to API response format
  */
+function transformPayout(id: string, data: any) {
+  return {
+    id,
+    ...data,
+    sellerId: data.seller_id,
+    shopId: data.shop_id,
+    paymentMethod: data.payment_method,
+    netAmount: data.net_amount,
+    platformFee: data.platform_fee,
+    totalSales: data.total_sales,
+    orderCount: data.order_count,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
+}
 
+/**
+ * GET /api/payouts
+ * List payouts with Sieve pagination
+ * Query Format: ?page=1&pageSize=20&sorts=-createdAt&filters=status==pending
+ *
+ * Role-based filtering:
+ * - Seller: Own payouts only
+ * - Admin: All payouts
+ */
 export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
@@ -19,27 +61,42 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get("status");
-    const startDate = searchParams.get("startDate");
-    const endDate = searchParams.get("endDate");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "20");
 
-    let query: any = Collections.payouts();
+    // Parse Sieve query
+    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
+      searchParams,
+      payoutsConfig
+    );
+
+    if (errors.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid query parameters",
+          details: errors,
+        },
+        { status: 400 }
+      );
+    }
+
+    let query: FirebaseFirestore.Query = Collections.payouts();
 
     // Role-based filtering
     if (user.role === "seller") {
-      // Sellers only see their own payouts
       query = query.where("seller_id", "==", user.uid);
     }
     // Admin sees all payouts (no filter)
 
-    // Apply additional filters
+    // Legacy query params support (for backward compatibility)
+    const status = searchParams.get("status");
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+
     if (status) {
       query = query.where("status", "==", status);
     }
@@ -50,30 +107,54 @@ export async function GET(request: NextRequest) {
       query = query.where("created_at", "<=", new Date(endDate));
     }
 
-    // Add ordering
-    query = query.orderBy("created_at", "desc");
+    // Apply Sieve filters
+    for (const filter of sieveQuery.filters) {
+      const dbField = payoutsConfig.fieldMappings[filter.field] || filter.field;
+      if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
+        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+      }
+    }
+
+    // Apply sorting
+    if (sieveQuery.sorts.length > 0) {
+      for (const sort of sieveQuery.sorts) {
+        const dbField = payoutsConfig.fieldMappings[sort.field] || sort.field;
+        query = query.orderBy(dbField, sort.direction);
+      }
+    } else {
+      query = query.orderBy("created_at", "desc");
+    }
 
     // Get total count
-    const countSnapshot = await query.get();
-    const total = countSnapshot.size;
+    const countSnapshot = await query.count().get();
+    const totalCount = countSnapshot.data().count;
 
     // Apply pagination
-    const offset = (page - 1) * limit;
-    const snapshot = await query.limit(limit).offset(offset).get();
+    const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0) {
+      const skipSnapshot = await query.limit(offset).get();
+      if (skipSnapshot.docs.length > 0) {
+        const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+        query = query.startAfter(lastDoc);
+      }
+    }
+    query = query.limit(sieveQuery.pageSize);
 
-    const payouts = snapshot.docs.map((doc: any) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    // Execute query
+    const snapshot = await query.get();
+    const data = snapshot.docs.map((doc) => transformPayout(doc.id, doc.data()));
+
+    // Build response with Sieve pagination meta
+    const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
       success: true,
-      data: payouts,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+      data,
+      pagination,
+      meta: {
+        appliedFilters: sieveQuery.filters,
+        appliedSorts: sieveQuery.sorts,
+        warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
   } catch (error: any) {
@@ -83,7 +164,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: error.message || "Failed to fetch payouts",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
