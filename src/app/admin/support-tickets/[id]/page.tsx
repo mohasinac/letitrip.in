@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
@@ -127,7 +128,7 @@ function TicketDetailContent() {
       await loadMessages();
       await loadTicket();
     } catch (err: any) {
-      alert(err.message || "Failed to send reply");
+      toast.error(err.message || "Failed to send reply");
     } finally {
       setReplying(false);
     }
@@ -135,7 +136,7 @@ function TicketDetailContent() {
 
   const handleAssign = async () => {
     if (!assignedTo.trim()) {
-      alert("Please enter an agent ID to assign");
+      toast.error("Please enter an agent ID to assign");
       return;
     }
 
@@ -150,7 +151,7 @@ function TicketDetailContent() {
       await loadTicket();
       await loadMessages();
     } catch (err: any) {
-      alert(err.message || "Failed to assign ticket");
+      toast.error(err.message || "Failed to assign ticket");
     } finally {
       setAssigning(false);
     }
@@ -158,7 +159,7 @@ function TicketDetailContent() {
 
   const handleEscalate = async () => {
     if (!escalateReason.trim()) {
-      alert("Please provide a reason for escalation");
+      toast.error("Please provide a reason for escalation");
       return;
     }
 
@@ -171,7 +172,7 @@ function TicketDetailContent() {
       await loadTicket();
       await loadMessages();
     } catch (err: any) {
-      alert(err.message || "Failed to escalate ticket");
+      toast.error(err.message || "Failed to escalate ticket");
     } finally {
       setEscalating(false);
     }
@@ -184,7 +185,7 @@ function TicketDetailContent() {
       await loadTicket();
       await loadMessages();
     } catch (err: any) {
-      alert(err.message || "Failed to update status");
+      toast.error(err.message || "Failed to update status");
     } finally {
       setUpdating(false);
     }
@@ -199,7 +200,7 @@ function TicketDetailContent() {
       await loadTicket();
       await loadMessages();
     } catch (err: any) {
-      alert(err.message || "Failed to close ticket");
+      toast.error(err.message || "Failed to close ticket");
     } finally {
       setClosing(false);
     }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import { ordersService } from "@/services/orders.service";
 import type { OrderFE } from "@/types/frontend/order.types";
 import { OrderStatus } from "@/types/shared/common.types";
@@ -65,7 +66,7 @@ export default function OrderDetailPage() {
       setNewStatus(OrderStatus.PENDING);
       setInternalNotes("");
     } catch (err: any) {
-      alert(err.message || "Failed to update status");
+      toast.error(err.message || "Failed to update status");
     } finally {
       setSaving(false);
     }
@@ -75,7 +76,7 @@ export default function OrderDetailPage() {
     if (!order) return;
 
     if (!trackingNumber.trim() || !shippingProvider.trim()) {
-      alert("Please provide tracking number and shipping provider");
+      toast.error("Please provide tracking number and shipping provider");
       return;
     }
 
@@ -93,7 +94,7 @@ export default function OrderDetailPage() {
       setShippingProvider("");
       setEstimatedDelivery("");
     } catch (err: any) {
-      alert(err.message || "Failed to create shipment");
+      toast.error(err.message || "Failed to create shipment");
     } finally {
       setSaving(false);
     }
@@ -103,7 +104,7 @@ export default function OrderDetailPage() {
     if (!order) return;
 
     if (!cancelReason.trim()) {
-      alert("Please provide cancellation reason");
+      toast.error("Please provide cancellation reason");
       return;
     }
 
@@ -114,7 +115,7 @@ export default function OrderDetailPage() {
       setShowCancelDialog(false);
       setCancelReason("");
     } catch (err: any) {
-      alert(err.message || "Failed to cancel order");
+      toast.error(err.message || "Failed to cancel order");
     } finally {
       setSaving(false);
     }
@@ -134,7 +135,7 @@ export default function OrderDetailPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (err: any) {
-      alert(err.message || "Failed to download invoice");
+      toast.error(err.message || "Failed to download invoice");
     }
   };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { toast } from "sonner";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
@@ -174,7 +175,7 @@ export default function AdminShopsPage() {
       setSelectedIds([]);
     } catch (error) {
       console.error("Bulk action failed:", error);
-      alert("Failed to perform bulk action");
+      toast.error("Failed to perform bulk action");
     } finally {
       setActionLoading(false);
     }
@@ -187,7 +188,7 @@ export default function AdminShopsPage() {
       setDeleteSlug(null);
     } catch (error) {
       console.error("Failed to delete shop:", error);
-      alert("Failed to delete shop. It may have active products or orders.");
+      toast.error("Failed to delete shop. It may have active products or orders.");
     }
   };
 

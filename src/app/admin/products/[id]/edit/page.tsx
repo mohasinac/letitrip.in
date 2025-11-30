@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   Save,
@@ -235,7 +236,7 @@ export default function AdminEditProductPage() {
       router.push("/admin/products");
     } catch (error) {
       console.error("Failed to update product:", error);
-      alert("Failed to update product");
+      toast.error("Failed to update product");
     } finally {
       setSaving(false);
     }
@@ -248,7 +249,7 @@ export default function AdminEditProductPage() {
       router.push("/admin/products");
     } catch (error) {
       console.error("Failed to delete product:", error);
-      alert("Failed to delete product");
+      toast.error("Failed to delete product");
       setShowDeleteDialog(false);
     } finally {
       setDeleting(false);
