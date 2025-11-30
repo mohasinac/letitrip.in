@@ -447,7 +447,13 @@ function AuctionsContent() {
                     </div>
 
                     {/* CTA - Mobile Optimized */}
-                    <button className="mt-4 w-full rounded-lg bg-primary px-4 py-3 min-h-[48px] text-sm font-medium text-white hover:bg-primary/90 active:bg-primary/80 transition-colors touch-manipulation">
+                    <button
+                      className={`mt-4 w-full rounded-lg px-4 py-3 min-h-[48px] text-sm font-medium transition-colors touch-manipulation ${
+                        auction.status === AuctionStatus.ACTIVE
+                          ? "bg-primary text-white hover:bg-primary/90 active:bg-primary/80"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      }`}
+                    >
                       {auction.status === AuctionStatus.ACTIVE
                         ? "Place Bid"
                         : "View Details"}
@@ -542,7 +548,13 @@ function AuctionsContent() {
                       </div>
                     </div>
 
-                    <button className="mt-4 sm:mt-0 sm:self-end rounded-lg bg-primary px-6 py-3 min-h-[48px] text-sm font-medium text-white hover:bg-primary/90 active:bg-primary/80 transition-colors touch-manipulation">
+                    <button
+                      className={`mt-4 sm:mt-0 sm:self-end rounded-lg px-6 py-3 min-h-[48px] text-sm font-medium transition-colors touch-manipulation ${
+                        auction.status === AuctionStatus.ACTIVE
+                          ? "bg-primary text-white hover:bg-primary/90 active:bg-primary/80"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      }`}
+                    >
                       {auction.status === AuctionStatus.ACTIVE
                         ? "Place Bid"
                         : "View Details"}

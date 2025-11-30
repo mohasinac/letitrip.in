@@ -267,6 +267,13 @@ export const ADMIN_ROUTES = {
 
   // Special Banners
   BANNERS: "/admin/banners",
+
+  // Demo Data (uses DEMO_ prefix for all generated data)
+  DEMO: {
+    STATS: "/admin/demo/stats",
+    GENERATE_STEP: (step: string) => `/admin/demo/generate/${step}`,
+    CLEANUP_ALL: "/admin/demo/cleanup-all",
+  },
 } as const;
 
 // Seller Routes
