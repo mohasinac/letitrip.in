@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Loader2, Plus, X } from "lucide-react";
+import { toast } from "sonner";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import TagInput from "@/components/common/TagInput";
 import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";
@@ -143,17 +144,17 @@ export default function CouponForm({
     e.preventDefault();
 
     if (codeError) {
-      alert("Please fix validation errors");
+      toast.error("Please fix validation errors");
       return;
     }
 
     if (!formData.shopId) {
-      alert("Shop ID is required");
+      toast.error("Shop ID is required");
       return;
     }
 
     if (!formData.code) {
-      alert("Coupon code is required");
+      toast.error("Coupon code is required");
       return;
     }
 

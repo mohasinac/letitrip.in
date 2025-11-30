@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import { ArrowLeft, Trash2, Eye, Loader2 } from "lucide-react";
 import Link from "next/link";
 import ShopForm from "@/components/seller/ShopForm";
@@ -35,7 +36,7 @@ export default function EditShopPage() {
       setShop(data);
     } catch (error) {
       console.error("Failed to load shop:", error);
-      alert("Shop not found");
+      toast.error("Shop not found");
       router.push("/seller/my-shops");
     } finally {
       setLoading(false);
@@ -50,10 +51,10 @@ export default function EditShopPage() {
       const updatedShop = await shopsService.update(slug, data);
       setShop(updatedShop);
 
-      alert("Shop updated successfully!");
+      toast.success("Shop updated successfully!");
     } catch (error: any) {
       console.error("Failed to update shop:", error);
-      alert(error.message || "Failed to update shop. Please try again.");
+      toast.error(error.message || "Failed to update shop. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -65,11 +66,11 @@ export default function EditShopPage() {
 
       await shopsService.delete(slug);
 
-      alert("Shop deleted successfully");
+      toast.success("Shop deleted successfully");
       router.push("/seller/my-shops");
     } catch (error: any) {
       console.error("Failed to delete shop:", error);
-      alert(error.message || "Failed to delete shop. Please try again.");
+      toast.error(error.message || "Failed to delete shop. Please try again.");
       setShowDeleteDialog(false);
       setIsDeleting(false);
     }

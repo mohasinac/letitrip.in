@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   Star,
   Heart,
@@ -47,7 +48,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
       ? Math.round(
           ((product.originalPrice - product.salePrice) /
             product.originalPrice) *
-            100,
+            100
         )
       : 0;
 
@@ -64,10 +65,10 @@ export function ProductInfo({ product }: ProductInfoProps) {
         shopId: product.shop_id,
         shopName: product.shop_name,
       });
-      alert("Added to cart!");
+      toast.success("Added to cart!");
     } catch (error) {
       console.error("Failed to add to cart:", error);
-      alert("Failed to add to cart");
+      toast.error("Failed to add to cart");
     }
   };
 
@@ -89,7 +90,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
-      alert("Link copied to clipboard!");
+      toast.success("Link copied to clipboard!");
     }
   };
 
@@ -187,8 +188,8 @@ export function ProductInfo({ product }: ProductInfoProps) {
                 setQuantity(
                   Math.min(
                     Math.max(1, parseInt(e.target.value) || 1),
-                    product.stock,
-                  ),
+                    product.stock
+                  )
                 )
               }
               className="w-20 text-center border border-gray-300 rounded-lg py-2"

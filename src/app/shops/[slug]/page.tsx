@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import {
   Loader2,
@@ -248,9 +249,9 @@ export default function ShopPage({ params }: ShopPageProps) {
         };
       }
       await addItem(productId, 1, undefined, productDetails);
-      alert("Added to cart!");
+      toast.success("Added to cart!");
     } catch (error: any) {
-      alert(error.message || "Failed to add to cart");
+      toast.error(error.message || "Failed to add to cart");
     }
   };
 

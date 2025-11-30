@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   Gavel,
   Clock,
@@ -81,7 +82,7 @@ export default function AuctionDetailPage() {
             limit: 6,
           });
           setShopAuctions(
-            (shopAuctionsData.data || []).filter((a) => a.id !== data.id),
+            (shopAuctionsData.data || []).filter((a) => a.id !== data.id)
           );
         } catch (error) {
           console.error("Failed to load shop:", error);
@@ -96,7 +97,7 @@ export default function AuctionDetailPage() {
           limit: 6,
         });
         setSimilarAuctions(
-          (similarData.data || []).filter((a) => a.id !== data.id),
+          (similarData.data || []).filter((a) => a.id !== data.id)
         );
       } catch (error) {
         console.error("Failed to load similar auctions:", error);
@@ -140,15 +141,15 @@ export default function AuctionDetailPage() {
       await loadAuction();
 
       // Show success message
-      alert("Bid placed successfully!");
+      toast.success("Bid placed successfully!");
     } catch (error: any) {
       console.error("Failed to place bid:", error);
       const errorMessage =
         error.message || "Failed to place bid. Please try again.";
       setBidError(errorMessage);
 
-      // Also show as alert for better visibility
-      alert(`Error: ${errorMessage}`);
+      // Also show as toast for better visibility
+      toast.error(`Error: ${errorMessage}`);
     } finally {
       setIsPlacingBid(false);
     }
@@ -184,7 +185,7 @@ export default function AuctionDetailPage() {
       }
     } else {
       navigator.clipboard.writeText(url);
-      alert("Link copied to clipboard!");
+      toast.success("Link copied to clipboard!");
     }
   };
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import SlugInput from "@/components/common/SlugInput";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import { productsService } from "@/services/products.service";
@@ -103,7 +104,7 @@ export default function CreateProductPage() {
       }
     } catch (error) {
       console.error("Failed to create product:", error);
-      alert("Failed to create product");
+      toast.error("Failed to create product. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -150,8 +151,8 @@ export default function CreateProductPage() {
                     currentStep > step.id
                       ? "border-blue-600 bg-blue-600 text-white"
                       : currentStep === step.id
-                        ? "border-blue-600 bg-white text-blue-600"
-                        : "border-gray-300 bg-white text-gray-400"
+                      ? "border-blue-600 bg-white text-blue-600"
+                      : "border-gray-300 bg-white text-gray-400"
                   }`}
                 >
                   {currentStep > step.id ? (
@@ -474,7 +475,7 @@ export default function CreateProductPage() {
                             setFormData({
                               ...formData,
                               features: formData.features.filter(
-                                (_, i) => i !== index,
+                                (_, i) => i !== index
                               ),
                             });
                           }}
@@ -581,7 +582,7 @@ export default function CreateProductPage() {
                                 </button>
                               </td>
                             </tr>
-                          ),
+                          )
                         )}
                       </tbody>
                     </table>
@@ -654,7 +655,7 @@ export default function CreateProductPage() {
                       }));
                     } catch (error) {
                       console.error("Image upload failed:", error);
-                      alert("Failed to upload images. Please try again.");
+                      toast.error("Failed to upload images. Please try again.");
                     } finally {
                       setUploadingImages(false);
                       setUploadProgress({});
@@ -792,7 +793,7 @@ export default function CreateProductPage() {
                       }));
                     } catch (error) {
                       console.error("Video upload failed:", error);
-                      alert("Failed to upload videos. Please try again.");
+                      toast.error("Failed to upload videos. Please try again.");
                     } finally {
                       setUploadingVideos(false);
                       setUploadProgress({});

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
@@ -91,7 +92,7 @@ function SupportTicketsContent() {
       await loadTickets();
       await loadStats();
     } catch (err: any) {
-      alert(err.message || "Failed to close ticket");
+      toast.error(err.message || "Failed to close ticket");
     } finally {
       setClosingTicket(null);
     }

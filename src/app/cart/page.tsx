@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, ArrowLeft, Trash2, Loader2 } from "lucide-react";
@@ -34,7 +35,7 @@ export default function CartPage() {
       await clearCart();
       setShowClearDialog(false);
     } catch (error) {
-      alert("Failed to clear cart. Please try again.");
+      toast.error("Failed to clear cart. Please try again.");
     }
   };
 

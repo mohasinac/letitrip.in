@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
 import SlugInput from "@/components/common/SlugInput";
@@ -60,7 +61,7 @@ export default function EditProductPage() {
       });
     } catch (error) {
       console.error("Failed to load product:", error);
-      alert("Failed to load product");
+      toast.error("Failed to load product");
     } finally {
       setLoading(false);
     }
@@ -85,7 +86,7 @@ export default function EditProductPage() {
       router.push("/seller/products");
     } catch (error) {
       console.error("Failed to update product:", error);
-      alert("Failed to update product");
+      toast.error("Failed to update product");
     } finally {
       setSaving(false);
     }
@@ -141,8 +142,8 @@ export default function EditProductPage() {
                     currentStep > step.id
                       ? "border-blue-600 bg-blue-600 text-white"
                       : currentStep === step.id
-                        ? "border-blue-600 bg-white text-blue-600"
-                        : "border-gray-300 bg-white text-gray-400"
+                      ? "border-blue-600 bg-white text-blue-600"
+                      : "border-gray-300 bg-white text-gray-400"
                   }`}
                 >
                   {currentStep > step.id ? (

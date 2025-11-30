@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
@@ -70,7 +71,7 @@ export default function TicketDetailsPage() {
       await fetchTicket(); // Refresh ticket with new message
     } catch (err: any) {
       console.error("Error posting reply:", err);
-      alert(err.message || "Failed to post reply");
+      toast.error(err.message || "Failed to post reply");
     } finally {
       setIsSubmitting(false);
     }

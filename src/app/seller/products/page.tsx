@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import Link from "next/link";
 import {
   Plus,
@@ -125,7 +126,7 @@ export default function ProductsPage() {
       }
     } catch (error) {
       console.error("Bulk action failed:", error);
-      alert("Failed to perform bulk action");
+      toast.error("Failed to perform bulk action");
     } finally {
       setActionLoading(false);
     }
@@ -141,7 +142,7 @@ export default function ProductsPage() {
       setDeleteId(null);
     } catch (error) {
       console.error("Failed to delete product:", error);
-      alert("Failed to delete product");
+      toast.error("Failed to delete product");
     }
   };
 

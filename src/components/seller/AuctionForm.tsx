@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
@@ -91,32 +92,34 @@ export default function AuctionForm({
     e.preventDefault();
 
     if (slugError) {
-      alert("Please fix the errors before submitting");
+      toast.error("Please fix the errors before submitting");
       return;
     }
 
     if (!formData.shopId) {
-      alert("Please select a shop");
+      toast.error("Please select a shop");
       return;
     }
 
     if (!formData.name || !formData.slug) {
-      alert("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
 
     if (formData.startingBid <= 0) {
-      alert("Starting bid must be greater than 0");
+      toast.error("Starting bid must be greater than 0");
       return;
     }
 
     if (formData.reservePrice && formData.reservePrice < formData.startingBid) {
-      alert("Reserve price must be greater than or equal to starting bid");
+      toast.error(
+        "Reserve price must be greater than or equal to starting bid"
+      );
       return;
     }
 
     if (new Date(formData.endTime) <= new Date(formData.startTime)) {
-      alert("End time must be after start time");
+      toast.error("End time must be after start time");
       return;
     }
 
@@ -263,7 +266,7 @@ export default function AuctionForm({
                 e.target.value
                   .split(",")
                   .map((s) => s.trim())
-                  .filter(Boolean),
+                  .filter(Boolean)
               )
             }
             rows={3}
@@ -281,7 +284,7 @@ export default function AuctionForm({
                 e.target.value
                   .split(",")
                   .map((s) => s.trim())
-                  .filter(Boolean),
+                  .filter(Boolean)
               )
             }
             rows={2}
@@ -306,12 +309,12 @@ export default function AuctionForm({
             formData.status === AuctionStatus.DRAFT
               ? "Draft auctions are not visible to buyers"
               : formData.status === AuctionStatus.SCHEDULED
-                ? "Auction will go live at the scheduled start time"
-                : formData.status === AuctionStatus.ACTIVE
-                  ? "Auction is currently accepting bids"
-                  : formData.status === AuctionStatus.ENDED
-                    ? "Auction has ended"
-                    : "Auction has been cancelled"
+              ? "Auction will go live at the scheduled start time"
+              : formData.status === AuctionStatus.ACTIVE
+              ? "Auction is currently accepting bids"
+              : formData.status === AuctionStatus.ENDED
+              ? "Auction has ended"
+              : "Auction has been cancelled"
           }
         />
       </Card>

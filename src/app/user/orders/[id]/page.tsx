@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import {
   ChevronLeft,
   Loader2,
@@ -79,10 +80,10 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
     try {
       await ordersService.cancel(orderId, "Customer requested cancellation");
       await loadOrder();
-      alert("Order cancelled successfully");
+      toast.success("Order cancelled successfully");
     } catch (error) {
       console.error("Failed to cancel order:", error);
-      alert("Failed to cancel order");
+      toast.error("Failed to cancel order");
     }
   };
 
@@ -346,8 +347,8 @@ function OrderTimeline({ status }: { status: string }) {
                   isCurrent
                     ? "text-primary"
                     : isCompleted
-                      ? "text-gray-900"
-                      : "text-gray-400"
+                    ? "text-gray-900"
+                    : "text-gray-400"
                 }`}
               >
                 {step.label}
