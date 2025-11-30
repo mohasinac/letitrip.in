@@ -41,6 +41,7 @@ import { formatDistanceToNow } from "date-fns";
 interface Review {
   id: string;
   productId: string;
+  productSlug: string;
   productName: string;
   productImage?: string;
   userId: string;
@@ -159,6 +160,7 @@ export default function SellerReviewsPage() {
       const reviewData: Review[] = (response.data || []).map((r) => ({
         id: r.id,
         productId: r.productId || "",
+        productSlug: r.productSlug || r.productId || "", // Use productSlug if available, fallback to productId
         productName: "Product", // Will be fetched separately if needed
         productImage: undefined,
         userId: r.userId,
@@ -549,7 +551,7 @@ export default function SellerReviewsPage() {
 
                   <div>
                     <Link
-                      href={`/seller/products/${review.productId}`}
+                      href={`/products/${review.productSlug}`}
                       className="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
                     >
                       {review.productName}

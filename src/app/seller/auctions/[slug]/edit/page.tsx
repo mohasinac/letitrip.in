@@ -12,7 +12,7 @@ import { notFound } from "@/lib/error-redirects";
 export default function EditAuctionPage() {
   const router = useRouter();
   const params = useParams();
-  const id = params.id as string;
+  const slug = params.slug as string;
 
   const [auction, setAuction] = useState<AuctionFE | null>(null);
   const [loading, setLoading] = useState(true);
@@ -20,19 +20,19 @@ export default function EditAuctionPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (id) {
+    if (slug) {
       loadAuction();
     }
-  }, [id]);
+  }, [slug]);
 
   const loadAuction = async () => {
     try {
       setLoading(true);
-      const data = await auctionsService.getById(id);
+      const data = await auctionsService.getBySlug(slug);
       setAuction(data);
     } catch (err: any) {
       console.error("Error loading auction:", err);
-      router.push(notFound.auction(id, err));
+      router.push(notFound.auction(slug, err));
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,8 @@ export default function EditAuctionPage() {
         updateData.videos = data.videos;
       }
 
-      await auctionsService.update(id, updateData);
+      // Use the auction's ID for the update API call
+      await auctionsService.update(auction!.id, updateData);
       router.push("/seller/auctions");
     } catch (err: any) {
       console.error("Error updating auction:", err);
