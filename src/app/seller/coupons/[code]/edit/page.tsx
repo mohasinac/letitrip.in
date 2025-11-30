@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import { ArrowLeft, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import CouponForm from "@/components/seller/CouponForm";
@@ -36,7 +37,7 @@ export default function EditCouponPage() {
       setCoupon(couponData);
     } catch (error) {
       console.error("Failed to load coupon:", error);
-      alert("Coupon not found");
+      toast.error("Coupon not found");
       router.push("/seller/coupons");
     } finally {
       setLoading(false);
@@ -47,11 +48,13 @@ export default function EditCouponPage() {
     try {
       setIsSubmitting(true);
       await couponsService.update(code, data);
-      alert("Coupon updated successfully!");
+      toast.success("Coupon updated successfully!");
       loadCoupon(); // Reload to show updated data
     } catch (error: any) {
       console.error("Failed to update coupon:", error);
-      alert(error.message || "Failed to update coupon. Please try again.");
+      toast.error(
+        error.message || "Failed to update coupon. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -61,11 +64,11 @@ export default function EditCouponPage() {
     try {
       setIsDeleting(true);
       await couponsService.delete(code);
-      alert("Coupon deleted successfully");
+      toast.success("Coupon deleted successfully");
       router.push("/seller/coupons");
     } catch (error) {
       console.error("Failed to delete coupon:", error);
-      alert("Failed to delete coupon. Please try again.");
+      toast.error("Failed to delete coupon. Please try again.");
       setIsDeleting(false);
     }
   };
@@ -178,7 +181,7 @@ export default function EditCouponPage() {
                     style={{
                       width: `${Math.min(
                         (coupon.usageCount / coupon.usageLimit) * 100,
-                        100,
+                        100
                       )}%`,
                     }}
                   />

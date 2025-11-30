@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import CouponForm from "@/components/seller/CouponForm";
@@ -23,7 +24,9 @@ export default function CreateCouponPage() {
       router.push(`/seller/coupons/${newCoupon.code}/edit`);
     } catch (error: any) {
       console.error("Failed to create coupon:", error);
-      alert(error.message || "Failed to create coupon. Please try again.");
+      toast.error(
+        error.message || "Failed to create coupon. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }

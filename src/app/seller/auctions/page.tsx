@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import {
   Gavel,
   Plus,
@@ -100,7 +101,7 @@ export default function SellerAuctionsPage() {
       }
     } catch (error) {
       console.error("Bulk action failed:", error);
-      alert("Failed to perform bulk action");
+      toast.error("Failed to perform bulk action");
     } finally {
       setActionLoading(false);
     }
@@ -114,7 +115,7 @@ export default function SellerAuctionsPage() {
       loadAuctions();
     } catch (error) {
       console.error("Failed to delete auction:", error);
-      alert("Failed to delete auction");
+      toast.error("Failed to delete auction");
     }
   };
 

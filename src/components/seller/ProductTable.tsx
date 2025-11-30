@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Eye, Edit, Trash2, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { DataTable, Column } from "@/components/common/DataTable";
@@ -40,7 +41,7 @@ export default function ProductTable({
       onRefresh?.();
     } catch (error) {
       console.error("Failed to delete ProductCardFE:", error);
-      alert("Failed to delete ProductCardFE. Please try again.");
+      toast.error("Failed to delete product. Please try again.");
     } finally {
       setIsDeleting(false);
     }

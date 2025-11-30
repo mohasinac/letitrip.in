@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import SlugInput from "@/components/common/SlugInput";
 import { shopsService } from "@/services/shops.service";
 import type { ShopFE } from "@/types/frontend/shop.types";
@@ -30,7 +31,7 @@ export function ShopInlineForm({
     e.preventDefault();
 
     if (!formData.slug) {
-      alert("Slug is required");
+      toast.error("Slug is required");
       return;
     }
 
@@ -48,7 +49,7 @@ export function ShopInlineForm({
       onSuccess();
     } catch (error) {
       console.error("Failed to save shop:", error);
-      alert("Failed to save shop");
+      toast.error("Failed to save shop");
     } finally {
       setLoading(false);
     }

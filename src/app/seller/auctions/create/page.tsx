@@ -15,6 +15,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import SlugInput from "@/components/common/SlugInput";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import { auctionsService } from "@/services/auctions.service";
@@ -75,7 +76,7 @@ export default function CreateAuctionWizardPage() {
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingVideos, setUploadingVideos] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
-    {},
+    {}
   );
 
   // Form data
@@ -183,7 +184,7 @@ export default function CreateAuctionWizardPage() {
           parseFloat(formData.reservePrice) < parseFloat(formData.startingBid)
         ) {
           setError(
-            "Reserve price must be greater than or equal to starting bid",
+            "Reserve price must be greater than or equal to starting bid"
           );
           return false;
         }
@@ -273,7 +274,7 @@ export default function CreateAuctionWizardPage() {
       ? Math.round(
           ((formData.endTime.getTime() - formData.startTime.getTime()) /
             (1000 * 60 * 60 * 24)) *
-            10,
+            10
         ) / 10
       : 0;
 
@@ -307,8 +308,8 @@ export default function CreateAuctionWizardPage() {
                     currentStep > step.id
                       ? "border-green-500 bg-green-500 text-white"
                       : currentStep === step.id
-                        ? "border-primary bg-primary text-white"
-                        : "border-gray-300 bg-white text-gray-400"
+                      ? "border-primary bg-primary text-white"
+                      : "border-gray-300 bg-white text-gray-400"
                   }`}
                 >
                   {currentStep > step.id ? (
@@ -731,7 +732,7 @@ export default function CreateAuctionWizardPage() {
                   if (e.target.files) {
                     const files = Array.from(e.target.files);
                     if (files.length + formData.images.length > 10) {
-                      alert("Maximum 10 images allowed");
+                      toast.error("Maximum 10 images allowed");
                       return;
                     }
                     setUploadingImages(true);
@@ -757,7 +758,7 @@ export default function CreateAuctionWizardPage() {
                       }));
                     } catch (error) {
                       console.error("Image upload failed:", error);
-                      alert("Failed to upload images. Please try again.");
+                      toast.error("Failed to upload images. Please try again.");
                     } finally {
                       setUploadingImages(false);
                       setUploadProgress({});
@@ -876,7 +877,7 @@ export default function CreateAuctionWizardPage() {
                   if (e.target.files) {
                     const files = Array.from(e.target.files);
                     if (files.length + formData.videos.length > 3) {
-                      alert("Maximum 3 videos allowed");
+                      toast.error("Maximum 3 videos allowed");
                       return;
                     }
                     setUploadingVideos(true);
@@ -902,7 +903,7 @@ export default function CreateAuctionWizardPage() {
                       }));
                     } catch (error) {
                       console.error("Video upload failed:", error);
-                      alert("Failed to upload videos. Please try again.");
+                      toast.error("Failed to upload videos. Please try again.");
                     } finally {
                       setUploadingVideos(false);
                       setUploadProgress({});

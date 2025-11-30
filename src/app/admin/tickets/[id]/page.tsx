@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
@@ -73,7 +74,7 @@ export default function AdminTicketDetailsPage() {
       await fetchTicket();
     } catch (err: any) {
       console.error("Error posting reply:", err);
-      alert(err.message || "Failed to post reply");
+      toast.error(err.message || "Failed to post reply");
     } finally {
       setIsSubmitting(false);
     }
@@ -88,7 +89,7 @@ export default function AdminTicketDetailsPage() {
       await fetchTicket();
     } catch (err: any) {
       console.error("Error updating status:", err);
-      alert(err.message || "Failed to update status");
+      toast.error(err.message || "Failed to update status");
     } finally {
       setIsUpdating(false);
     }
@@ -103,7 +104,7 @@ export default function AdminTicketDetailsPage() {
       await fetchTicket();
     } catch (err: any) {
       console.error("Error updating priority:", err);
-      alert(err.message || "Failed to update priority");
+      toast.error(err.message || "Failed to update priority");
     } finally {
       setIsUpdating(false);
     }

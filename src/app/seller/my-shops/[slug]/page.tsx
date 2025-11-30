@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   Eye,
@@ -48,7 +49,7 @@ export default function ShopDashboardPage() {
       }
     } catch (error) {
       console.error("Failed to load shop:", error);
-      alert("Shop not found");
+      toast.error("Shop not found");
       router.push("/seller/my-shops");
     } finally {
       setLoading(false);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { Star, MapPin, Heart, Share2 } from "lucide-react";
 import type { ShopFE, ShopCardFE } from "@/types/frontend/shop.types";
 import { shopsService } from "@/services/shops.service";
@@ -43,7 +44,7 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
       }
     } catch (error: any) {
       console.error("Failed to follow/unfollow shop:", error);
-      alert(error.message || "Please login to follow shops");
+      toast.error(error.message || "Please login to follow shops");
     } finally {
       setFollowLoading(false);
     }
@@ -61,7 +62,7 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert("Link copied to clipboard!");
+      toast.success("Link copied to clipboard!");
     }
   };
 

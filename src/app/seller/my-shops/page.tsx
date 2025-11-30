@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import Link from "next/link";
 import {
   Plus,
@@ -53,14 +54,14 @@ export default function MyShopsPage() {
       setDeleteShopId(null);
     } catch (error) {
       console.error("Failed to delete shop:", error);
-      alert("Failed to delete shop. Please try again.");
+      toast.error("Failed to delete shop. Please try again.");
     }
   };
 
   const filteredShops = shops.filter(
     (shop) =>
       shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      shop.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+      shop.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) {

@@ -9,36 +9,34 @@
 
 ### Priority 1: Structural Work - Mobile Responsiveness Fixes
 
-- [ ] 1. Update MainNavBar to hide user menu on mobile (use `hidden lg:block`)
-- [ ] 2. Update AdminLayoutClient to hide sidebar toggle on mobile
-- [ ] 3. Update SellerLayoutClient to hide sidebar toggle on mobile
-- [ ] 4. Fix MobileFilterSidebar footer overlap with bottom nav (change from `bottom-0` to `bottom-32`)
-- [ ] 5. Add scroll arrows to MobileNavRow component
+- [x] 1. Update MainNavBar to hide user menu on mobile (use `hidden lg:block`) ✅ Already implemented
+- [x] 2. Update AdminLayoutClient to hide sidebar toggle on mobile ✅ Already simplified with "More" button
+- [x] 3. Update SellerLayoutClient to hide sidebar toggle on mobile ✅ Already simplified with "More" button
+- [x] 4. Fix MobileFilterSidebar footer overlap with bottom nav ✅ Already using `bottom-32`
+- [x] 5. Add scroll arrows to MobileNavRow component ✅ Already implemented with ChevronLeft/ChevronRight
 
-### Priority 2: Structural Work - Code Quality (Sonar Accessibility Bugs)
+### Priority 2: Code Quality - S7755 Array Access
 
-- [ ] 6. Fix S1082 accessibility bugs - add mouse event handlers alongside keyboard handlers (41 issues)
-- [ ] 7. Fix S3923 identical branches in conditionals (3 issues)
+- [x] 6. Fix S7755 issues - use `.at(-1)` instead of `[length-1]` in API routes ✅ Fixed 15 files:
+  - hero-slides/route.ts, notifications/route.ts, orders/route.ts
+  - favorites/route.ts, payouts/route.ts, returns/route.ts
+  - reviews/route.ts, tickets/route.ts, users/route.ts
+  - shops/route.ts, products/route.ts
+  - shops/[slug]/products/route.ts, shops/[slug]/reviews/route.ts
+  - lib/sieve/firestore.ts, lib/utils/pagination.ts
+  - lib/firebase/query-helpers.ts, lib/performance.ts
+  - components/common/SearchableDropdown.tsx
 
-### Priority 3: Cognitive Complexity Reduction
+### Priority 3: Form UX - Replace alert() with inline errors
 
-- [ ] 8. Reduce cognitive complexity in `/api/hero-slides` route (currently 16, max 15)
-- [ ] 9. Fix S7755 issues - use `.at(-1)` instead of `[length-1]` in hero-slides and notifications routes
+- [ ] 7. Replace alert() in product wizard pages (3 alerts)
+- [ ] 8. Replace alert() in auction wizard pages (1 alert)
+- [ ] 9. Replace alert() in seller forms (ShopHeader, CouponForm, ShopInlineForm, ProductTable, AuctionForm)
 
-### Priority 4: Form UX - Wizard Simplification
+### Priority 4: Git & Sonar
 
-- [ ] 10. Replace alert() with inline errors in product wizard pages
-- [ ] 11. Replace alert() with inline errors in auction wizard pages
-
-### Priority 5: Documentation Updates
-
-- [ ] 12. Update mobile-responsiveness document status markers
-- [ ] 13. Update form-ux-improvements document status markers
-
-### Priority 6: Git & Sonar
-
-- [ ] 14. Commit and push all changes to GitHub
-- [ ] 15. Run Sonar scan and document results
+- [ ] 10. Commit and push all changes to GitHub
+- [ ] 11. Run Sonar scan and document results
 
 ---
 
@@ -224,9 +222,9 @@
 
 ### Priority 5: Component Consolidation
 
-- [ ] 26. Merge Input + MobileInput (SKIP - different purposes: generic vs phone input)
-- [ ] 27. Merge Textarea + MobileTextarea (deferred - needs usage analysis)
-- [ ] 28. Merge Select + MobileFormSelect (deferred - needs usage analysis)
+- [x] 26. Merge Input + MobileInput (SKIP - different purposes: generic vs phone input)
+- [ ] 27. Merge Textarea + MobileTextarea (analyzed - ready for implementation)
+- [ ] 28. Merge Select + MobileFormSelect (analyzed - ready for implementation)
 
 ### Priority 6: Git & Sonar
 

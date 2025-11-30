@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { MapPin, Plus, Edit, Trash2, CheckCircle, Loader2 } from "lucide-react";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { addressService } from "@/services/address.service";
@@ -55,7 +56,7 @@ function AddressesContent() {
       loadAddresses();
     } catch (error) {
       console.error("Failed to delete address:", error);
-      alert("Failed to delete address. Please try again.");
+      toast.error("Failed to delete address. Please try again.");
     }
   };
 

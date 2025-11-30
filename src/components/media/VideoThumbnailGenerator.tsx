@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { X, Check } from "lucide-react";
 import { MediaFile } from "@/types/media";
 import { extractMultipleThumbnails } from "@/lib/media/video-processor";
@@ -36,7 +37,7 @@ export default function VideoThumbnailGenerator({
     try {
       const generated = await extractMultipleThumbnails(
         media.file,
-        thumbnailCount,
+        thumbnailCount
       );
       setThumbnails(generated);
 
@@ -56,17 +57,18 @@ export default function VideoThumbnailGenerator({
   const handleCustomTimestamp = async () => {
     const timestamp = parseFloat(customTimestamp);
     if (isNaN(timestamp) || timestamp < 0 || timestamp > duration) {
-      alert("Invalid timestamp");
+      toast.error("Invalid timestamp");
       return;
     }
 
     setIsGenerating(true);
     try {
-      const { extractVideoThumbnail } =
-        await import("@/lib/media/video-processor");
+      const { extractVideoThumbnail } = await import(
+        "@/lib/media/video-processor"
+      );
       const thumbnailDataUrl = await extractVideoThumbnail(
         media.file,
-        timestamp,
+        timestamp
       );
 
       // Add to thumbnails
