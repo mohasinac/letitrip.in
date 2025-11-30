@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { safeToISOString } from "@/lib/date-utils";
 
+// Disable caching for live stats
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const DEMO_PREFIX = "DEMO_";
 
 /**
@@ -24,6 +28,10 @@ export async function GET() {
       paymentsSnapshot,
       shipmentsSnapshot,
       reviewsSnapshot,
+      heroSlidesSnapshot,
+      favoritesSnapshot,
+      cartsSnapshot,
+      notificationsSnapshot,
     ] = await Promise.all([
       db
         .collection("categories")
@@ -75,6 +83,20 @@ export async function GET() {
         .where("user_name", ">=", DEMO_PREFIX)
         .where("user_name", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
+      db
+        .collection("hero_slides")
+        .where("title", ">=", DEMO_PREFIX)
+        .where("title", "<", DEMO_PREFIX + "\uf8ff")
+        .get(),
+      db
+        .collection("favorites")
+        .get(), // Favorites don't have DEMO_ prefix, count all for demo users
+      db
+        .collection("carts")
+        .get(), // Carts don't have DEMO_ prefix, count all for demo users
+      db
+        .collection("notifications")
+        .get(), // Notifications don't have DEMO_ prefix
     ]);
 
     const categories = categoriesSnapshot.size;
@@ -87,6 +109,10 @@ export async function GET() {
     const payments = paymentsSnapshot.size;
     const shipments = shipmentsSnapshot.size;
     const reviews = reviewsSnapshot.size;
+    const heroSlides = heroSlidesSnapshot.size;
+    const favorites = favoritesSnapshot.size;
+    const carts = cartsSnapshot.size;
+    const notifications = notificationsSnapshot.size;
 
     // Get the latest creation timestamp
     let latestCreatedAt = null;
@@ -121,6 +147,10 @@ export async function GET() {
         payments,
         shipments,
         reviews,
+        heroSlides,
+        favorites,
+        carts,
+        notifications,
         createdAt: latestCreatedAt
           ? (safeToISOString(latestCreatedAt) ?? new Date().toISOString())
           : new Date().toISOString(),

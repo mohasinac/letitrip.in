@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         await orderRef.set({
           orderNumber: `${DEMO_PREFIX}ORD-${String(orderCount + 1).padStart(6, "0")}`,
           buyerId: buyer.id,
-          buyerName: buyer.name,
+          buyerName: `${DEMO_PREFIX}${buyer.name}`,
           buyerEmail: `${buyer.name.toLowerCase().replace(/\s/g, ".")}@demo.justforview.in`,
           buyerPhone: `+91-${9000000000 + orderCount}`,
           shopId: shop.id,
@@ -140,6 +140,7 @@ export async function POST(request: NextRequest) {
           
           await db.collection(COLLECTIONS.PAYMENTS).doc().set({
             orderId: orderRef.id,
+            transactionId: `${DEMO_PREFIX}pay_${nanoid(14)}`,
             razorpay_order_id: razorpayOrderId,
             razorpay_payment_id: razorpayPaymentId,
             razorpay_signature: `sig_${nanoid(32)}`,
@@ -184,7 +185,7 @@ export async function POST(request: NextRequest) {
             shiprocket_order_id: shiprocketOrderId,
             shiprocket_shipment_id: `SHP${200000 + shipmentCount}`,
             awb_code: awbCode,
-            tracking_number: awbCode,
+            trackingNumber: `${DEMO_PREFIX}${awbCode}`,
             courier_name: courier.name,
             courier_code: courier.code,
             courier_company_id: Math.floor(Math.random() * 50) + 1,

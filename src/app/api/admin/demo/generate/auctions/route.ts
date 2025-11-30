@@ -188,6 +188,7 @@ export async function POST(request: NextRequest) {
         status,
         condition,
         is_featured: i % 5 < 2,
+        bid_count: totalBids,
         total_bids: totalBids,
         unique_bidders: Math.floor(totalBids * 0.6) + 1,
         watchers: Math.floor(Math.random() * 50) + 5,

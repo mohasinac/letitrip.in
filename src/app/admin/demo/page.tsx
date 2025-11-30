@@ -44,11 +44,12 @@ import {
   DemoStep,
   GenerationState,
   StepResult,
+  CLEANUP_STEPS,
 } from "@/services/demo-data.service";
 
 const DEMO_PREFIX = "DEMO_";
 
-// Step configuration
+// Step configuration for generation
 const GENERATION_STEPS: {
   id: DemoStep;
   label: string;
@@ -103,6 +104,59 @@ const GENERATION_STEPS: {
     label: "Extras",
     icon: Settings,
     description: "Hero slides, carts, etc.",
+  },
+];
+
+// Cleanup steps configuration (reverse order for dependencies)
+const CLEANUP_STEP_CONFIG: {
+  id: DemoStep;
+  label: string;
+  icon: typeof Package;
+  description: string;
+}[] = [
+  {
+    id: "extras",
+    label: "Extras",
+    icon: Settings,
+    description: "Hero slides, carts, notifications",
+  },
+  {
+    id: "orders",
+    label: "Orders",
+    icon: ShoppingCart,
+    description: "Orders, payments, shipments",
+  },
+  {
+    id: "reviews",
+    label: "Reviews",
+    icon: Star,
+    description: "Product reviews",
+  },
+  {
+    id: "bids",
+    label: "Bids",
+    icon: DollarSign,
+    description: "Auction bids",
+  },
+  {
+    id: "auctions",
+    label: "Auctions",
+    icon: Gavel,
+    description: "Auctions",
+  },
+  {
+    id: "products",
+    label: "Products",
+    icon: Package,
+    description: "Products",
+  },
+  { id: "shops", label: "Shops", icon: Store, description: "Shops" },
+  { id: "users", label: "Users", icon: Users, description: "Users" },
+  {
+    id: "categories",
+    label: "Categories",
+    icon: Tag,
+    description: "Categories",
   },
 ];
 
@@ -167,6 +221,9 @@ export default function AdminDemoPage() {
   const [generating, setGenerating] = useState(false);
   const [cleaning, setCleaning] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [cleanupPaused, setCleanupPaused] = useState(false);
+  const [cancelled, setCancelled] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [summary, setSummary] = useState<ExtendedSummary | null>(null);
   const [credentials, setCredentials] = useState<CredentialsData | null>(null);
   const [deletionResult, setDeletionResult] = useState<{
@@ -191,7 +248,55 @@ export default function AdminDemoPage() {
   });
   const [generationState, setGenerationState] = useState<GenerationState>({});
 
-  // Fetch existing demo data on mount
+  // Step-by-step cleanup state
+  const [currentCleanupStep, setCurrentCleanupStep] = useState<DemoStep | null>(
+    null
+  );
+  const [cleanupStepStatuses, setCleanupStepStatuses] = useState<
+    Record<DemoStep, StepStatus>
+  >({
+    categories: { status: "pending" },
+    users: { status: "pending" },
+    shops: { status: "pending" },
+    products: { status: "pending" },
+    auctions: { status: "pending" },
+    bids: { status: "pending" },
+    reviews: { status: "pending" },
+    orders: { status: "pending" },
+    extras: { status: "pending" },
+  });
+
+  // Refresh stats function
+  const refreshStats = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      const data = await demoDataService.getStats();
+      setSummary(
+        data.exists && data.summary
+          ? (data.summary as ExtendedSummary)
+          : {
+              categories: 0,
+              users: 0,
+              shops: 0,
+              products: 0,
+              auctions: 0,
+              bids: 0,
+              orders: 0,
+              payments: 0,
+              shipments: 0,
+              reviews: 0,
+              prefix: "DEMO_",
+              createdAt: new Date().toISOString(),
+            }
+      );
+    } catch {
+      // Keep existing summary on error
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
+  // Fetch existing demo data on mount and poll during generation
   useEffect(() => {
     const fetchExistingData = async () => {
       try {
@@ -238,6 +343,17 @@ export default function AdminDemoPage() {
 
     fetchExistingData();
   }, []);
+
+  // Poll stats during generation
+  useEffect(() => {
+    if (!generating) return;
+
+    const interval = setInterval(() => {
+      refreshStats();
+    }, 2000); // Poll every 2 seconds during generation
+
+    return () => clearInterval(interval);
+  }, [generating, refreshStats]);
 
   const updateStepStatus = useCallback((step: DemoStep, status: StepStatus) => {
     setStepStatuses((prev) => ({ ...prev, [step]: status }));
@@ -482,6 +598,7 @@ export default function AdminDemoPage() {
   const handleGenerateSingleStep = async (step: DemoStep) => {
     try {
       setGenerating(true);
+      setCancelled(false);
       toast.info(`Generating ${step}...`);
 
       const { success, state } = await runStep(step, generationState);
@@ -507,6 +624,172 @@ export default function AdminDemoPage() {
     } finally {
       setGenerating(false);
       setCurrentStep(null);
+    }
+  };
+
+  // Update cleanup step status
+  const updateCleanupStepStatus = useCallback(
+    (step: DemoStep, status: StepStatus) => {
+      setCleanupStepStatuses((prev) => ({ ...prev, [step]: status }));
+    },
+    []
+  );
+
+  // Run a single cleanup step
+  const runCleanupStep = useCallback(
+    async (step: DemoStep): Promise<boolean> => {
+      setCurrentCleanupStep(step);
+      updateCleanupStepStatus(step, { status: "running" });
+
+      try {
+        const result = await demoDataService.cleanupStep(step);
+        if (result.success && result.data) {
+          updateCleanupStepStatus(step, {
+            status: "completed",
+            count: result.data.count,
+          });
+          return true;
+        } else {
+          updateCleanupStepStatus(step, {
+            status: "error",
+            error: result.error || "Unknown error",
+          });
+          return false;
+        }
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Unknown error";
+        updateCleanupStepStatus(step, { status: "error", error: message });
+        return false;
+      }
+    },
+    [updateCleanupStepStatus]
+  );
+
+  // Step-by-step cleanup with pause/cancel support
+  const handleStepByStepCleanup = async () => {
+    if (
+      !confirm(
+        `Are you sure you want to delete ALL demo data with ${DEMO_PREFIX} prefix? This will delete data step by step.`
+      )
+    ) {
+      return;
+    }
+
+    setCleaning(true);
+    setCancelled(false);
+    setCleanupPaused(false);
+    setDeletionResult(null);
+
+    // Reset cleanup statuses
+    setCleanupStepStatuses({
+      categories: { status: "pending" },
+      users: { status: "pending" },
+      shops: { status: "pending" },
+      products: { status: "pending" },
+      auctions: { status: "pending" },
+      bids: { status: "pending" },
+      reviews: { status: "pending" },
+      orders: { status: "pending" },
+      extras: { status: "pending" },
+    });
+
+    toast.info("Starting step-by-step cleanup...");
+
+    let totalDeleted = 0;
+    const breakdown: DeletionBreakdown[] = [];
+
+    for (const step of CLEANUP_STEPS) {
+      // Check for cancel
+      if (cancelled) {
+        toast.warning("Cleanup cancelled by user");
+        break;
+      }
+
+      // Wait while paused
+      while (cleanupPaused && !cancelled) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+
+      if (cancelled) {
+        toast.warning("Cleanup cancelled by user");
+        break;
+      }
+
+      const success = await runCleanupStep(step);
+
+      if (success) {
+        const status = cleanupStepStatuses[step];
+        if (status?.count) {
+          totalDeleted += status.count;
+          breakdown.push({ collection: step, count: status.count });
+        }
+      }
+
+      // Refresh stats after each step
+      await refreshStats();
+    }
+
+    setDeletionResult({ total: totalDeleted, breakdown });
+
+    if (!cancelled) {
+      // Reset states after completion
+      setSummary({
+        categories: 0,
+        users: 0,
+        shops: 0,
+        products: 0,
+        auctions: 0,
+        bids: 0,
+        orders: 0,
+        payments: 0,
+        shipments: 0,
+        reviews: 0,
+        prefix: "DEMO_",
+        createdAt: new Date().toISOString(),
+      });
+      setCredentials(null);
+      setGenerationState({});
+      setStepStatuses({
+        categories: { status: "pending" },
+        users: { status: "pending" },
+        shops: { status: "pending" },
+        products: { status: "pending" },
+        auctions: { status: "pending" },
+        bids: { status: "pending" },
+        reviews: { status: "pending" },
+        orders: { status: "pending" },
+        extras: { status: "pending" },
+      });
+      toast.success(`Cleanup complete! Deleted ${totalDeleted} documents.`);
+    }
+
+    setCleaning(false);
+    setCurrentCleanupStep(null);
+    setCleanupPaused(false);
+  };
+
+  // Single step cleanup
+  const handleCleanupSingleStep = async (step: DemoStep) => {
+    try {
+      setCleaning(true);
+      setCancelled(false);
+      toast.info(`Cleaning ${step}...`);
+
+      const success = await runCleanupStep(step);
+
+      if (success) {
+        toast.success(`${step} cleaned successfully!`);
+        await refreshStats();
+      } else {
+        toast.error(`Failed to clean ${step}`);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Failed: ${message}`);
+    } finally {
+      setCleaning(false);
+      setCurrentCleanupStep(null);
     }
   };
 
@@ -573,12 +856,28 @@ export default function AdminDemoPage() {
     }
   };
 
+  // Handle cancel for both generation and cleanup
+  const handleCancel = () => {
+    setCancelled(true);
+    setPaused(false);
+    setCleanupPaused(false);
+    toast.info("Cancelling operation...");
+  };
+
   // Calculate progress
   const completedSteps = Object.values(stepStatuses).filter(
     (s) => s.status === "completed"
   ).length;
   const totalSteps = GENERATION_STEPS.length;
   const progressPercent = Math.round((completedSteps / totalSteps) * 100);
+
+  // Calculate cleanup progress
+  const completedCleanupSteps = Object.values(cleanupStepStatuses).filter(
+    (s) => s.status === "completed"
+  ).length;
+  const cleanupProgressPercent = Math.round(
+    (completedCleanupSteps / CLEANUP_STEP_CONFIG.length) * 100
+  );
 
   // Show loading state while fetching existing data
   if (loading) {
@@ -716,7 +1015,7 @@ export default function AdminDemoPage() {
           )}
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <button
               onClick={handleGenerateAll}
               disabled={generating || cleaning}
@@ -729,20 +1028,35 @@ export default function AdminDemoPage() {
             </button>
 
             <button
-              onClick={() => setPaused(!paused)}
-              disabled={!generating || cleaning}
+              onClick={() =>
+                generating
+                  ? setPaused(!paused)
+                  : setCleanupPaused(!cleanupPaused)
+              }
+              disabled={!generating && !cleaning}
               className="flex items-center justify-center gap-3 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-400 text-white font-medium py-4 px-6 rounded-lg transition-colors"
             >
-              {paused ? (
+              {(generating && paused) || (cleaning && cleanupPaused) ? (
                 <Play className="w-5 h-5" />
               ) : (
                 <Pause className="w-5 h-5" />
               )}
-              {paused ? "Resume" : "Pause"}
+              {(generating && paused) || (cleaning && cleanupPaused)
+                ? "Resume"
+                : "Pause"}
             </button>
 
             <button
-              onClick={handleCleanupAll}
+              onClick={handleCancel}
+              disabled={!generating && !cleaning}
+              className="flex items-center justify-center gap-3 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white font-medium py-4 px-6 rounded-lg transition-colors"
+            >
+              <XCircle className="w-5 h-5" />
+              Cancel
+            </button>
+
+            <button
+              onClick={handleStepByStepCleanup}
               disabled={generating || cleaning}
               className="flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white font-medium py-4 px-6 rounded-lg transition-colors"
             >
@@ -841,6 +1155,111 @@ export default function AdminDemoPage() {
               })}
             </div>
           </div>
+
+          {/* Cleanup Steps */}
+          {cleaning && (
+            <div className="bg-white dark:bg-gray-800 border border-red-200 dark:border-red-700 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  🗑️ Cleanup Steps
+                </h2>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {completedCleanupSteps} / {CLEANUP_STEP_CONFIG.length} steps (
+                  {cleanupProgressPercent}%)
+                </span>
+              </div>
+
+              {/* Cleanup Progress Bar */}
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-4">
+                <div
+                  className="bg-red-600 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${cleanupProgressPercent}%` }}
+                />
+              </div>
+
+              <div className="space-y-3">
+                {CLEANUP_STEP_CONFIG.map((stepConfig, index) => {
+                  const status = cleanupStepStatuses[stepConfig.id];
+                  const Icon = stepConfig.icon;
+                  const isActive = currentCleanupStep === stepConfig.id;
+
+                  return (
+                    <div
+                      key={stepConfig.id}
+                      className={`flex items-center justify-between p-3 rounded-lg border ${
+                        isActive
+                          ? "border-red-500 bg-red-50 dark:bg-red-900/20"
+                          : status.status === "completed"
+                          ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+                          : status.status === "error"
+                          ? "border-red-500 bg-red-50 dark:bg-red-900/20"
+                          : "border-gray-200 dark:border-gray-700"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            status.status === "completed"
+                              ? "bg-green-500"
+                              : status.status === "error"
+                              ? "bg-red-500"
+                              : status.status === "running"
+                              ? "bg-red-500"
+                              : "bg-gray-300 dark:bg-gray-600"
+                          }`}
+                        >
+                          {status.status === "completed" ? (
+                            <CheckCircle className="w-5 h-5 text-white" />
+                          ) : status.status === "error" ? (
+                            <XCircle className="w-5 h-5 text-white" />
+                          ) : status.status === "running" ? (
+                            <Loader2 className="w-5 h-5 text-white animate-spin" />
+                          ) : (
+                            <Icon className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {stepConfig.label}
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {status.status === "error"
+                              ? status.error
+                              : status.status === "completed" && status.count
+                              ? `Deleted ${status.count.toLocaleString()} items`
+                              : stepConfig.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {status.status !== "completed" &&
+                          status.status !== "running" && (
+                            <button
+                              onClick={() =>
+                                handleCleanupSingleStep(stepConfig.id)
+                              }
+                              disabled={
+                                generating ||
+                                (cleaning && currentCleanupStep !== null)
+                              }
+                              className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-md hover:bg-red-200 dark:hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {status.status === "error" ? (
+                                <RefreshCw className="w-4 h-4" />
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
+                              )}
+                              {status.status === "error" ? "Retry" : "Delete"}
+                            </button>
+                          )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Deletion Result */}
           {deletionResult && (
@@ -979,12 +1398,26 @@ export default function AdminDemoPage() {
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">
                 📊 Live Data Stats
               </h2>
-              {generating && (
-                <span className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  Updating...
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {(generating || refreshing) && (
+                  <span className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Updating...
+                  </span>
+                )}
+                <button
+                  onClick={refreshStats}
+                  disabled={refreshing || generating}
+                  className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                  title="Refresh stats"
+                >
+                  <RefreshCw
+                    className={`w-4 h-4 text-gray-500 dark:text-gray-400 ${
+                      refreshing ? "animate-spin" : ""
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
 
             {/* Stats Grid */}

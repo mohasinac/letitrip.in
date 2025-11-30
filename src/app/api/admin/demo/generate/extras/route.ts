@@ -111,28 +111,28 @@ export async function POST(request: NextRequest) {
         title: `${DEMO_PREFIX}${heroSlideData[i].title}`,
         subtitle: heroSlideData[i].subtitle,
         description: `Experience the best ${heroSlideData[i].title.toLowerCase()} at JustForView`,
-        imageUrl: HERO_IMAGES[i % HERO_IMAGES.length],
-        mobileImageUrl: HERO_MOBILE_IMAGES[i % HERO_MOBILE_IMAGES.length],
-        videoUrl: hasVideo ? HERO_VIDEOS[i % HERO_VIDEOS.length] : null,
-        ctaText: heroSlideData[i].cta,
-        ctaLink: heroSlideData[i].ctaLink,
-        secondaryCtaText: i % 2 === 0 ? "Learn More" : null,
-        secondaryCtaLink: i % 2 === 0 ? "/about" : null,
-        backgroundColor: ["#1a1a2e", "#16213e", "#0f3460", "#533483", "#e94560"][i % 5],
-        textColor: "#ffffff",
+        image_url: HERO_IMAGES[i % HERO_IMAGES.length],
+        mobile_image_url: HERO_MOBILE_IMAGES[i % HERO_MOBILE_IMAGES.length],
+        video_url: hasVideo ? HERO_VIDEOS[i % HERO_VIDEOS.length] : null,
+        cta_text: heroSlideData[i].cta,
+        link_url: heroSlideData[i].ctaLink,
+        secondary_cta_text: i % 2 === 0 ? "Learn More" : null,
+        secondary_cta_link: i % 2 === 0 ? "/about" : null,
+        background_color: ["#1a1a2e", "#16213e", "#0f3460", "#533483", "#e94560"][i % 5],
+        text_color: "#ffffff",
         overlay: true,
-        overlayOpacity: 0.4,
-        order: i + 1,
-        isActive: i < 8,
-        startDate: timestamp,
-        endDate: new Date(timestamp.getTime() + 30 * 24 * 60 * 60 * 1000),
+        overlay_opacity: 0.4,
+        position: i + 1,
+        is_active: i < 8,
+        start_date: timestamp,
+        end_date: new Date(timestamp.getTime() + 30 * 24 * 60 * 60 * 1000),
         analytics: {
           views: Math.floor(Math.random() * 10000) + 1000,
           clicks: Math.floor(Math.random() * 500) + 50,
           ctr: (Math.random() * 5 + 1).toFixed(2),
         },
-        createdAt: timestamp,
-        updatedAt: timestamp,
+        created_at: timestamp,
+        updated_at: timestamp,
       });
       counts.heroSlides++;
     }
@@ -154,18 +154,18 @@ export async function POST(request: NextRequest) {
         type: sectionTypes[i].type,
         title: `${DEMO_PREFIX}${sectionTypes[i].title}`,
         subtitle: sectionTypes[i].subtitle,
-        backgroundImage: i % 2 === 0 ? HERO_IMAGES[i % HERO_IMAGES.length] : null,
-        backgroundColor: i % 2 !== 0 ? "#f8f9fa" : null,
-        order: i + 1,
-        isActive: true,
-        displayCount: [8, 12, 6, 10][i % 4],
+        background_image: i % 2 === 0 ? HERO_IMAGES[i % HERO_IMAGES.length] : null,
+        background_color: i % 2 !== 0 ? "#f8f9fa" : null,
+        sort_order: i + 1,
+        is_active: true,
+        display_count: [8, 12, 6, 10][i % 4],
         layout: ["grid", "carousel", "list"][i % 3],
-        showViewAll: true,
-        viewAllLink: `/products?section=${sectionTypes[i].type}`,
-        productIds: products ? products.slice(i * 5, (i + 1) * 5) : [],
-        shopIds: shops ? shops.slice(0, 6).map((s: any) => s.id) : [],
-        createdAt: timestamp,
-        updatedAt: timestamp,
+        show_view_all: true,
+        view_all_link: `/products?section=${sectionTypes[i].type}`,
+        product_ids: products ? products.slice(i * 5, (i + 1) * 5) : [],
+        shop_ids: shops ? shops.slice(0, 6).map((s: any) => s.id) : [],
+        created_at: timestamp,
+        updated_at: timestamp,
       });
       counts.featuredSections++;
     }
@@ -208,7 +208,7 @@ export async function POST(request: NextRequest) {
         banner_image: HERO_IMAGES[couponData.indexOf(coupon) % HERO_IMAGES.length],
         applicable_categories: [],
         applicable_products: [],
-        createdAt: timestamp,
+        created_at: timestamp,
       });
       counts.coupons++;
     }
@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
         for (let i = 0; i < numItems; i++) {
           const price = 500 + Math.random() * 5000;
           cartItems.push({
-            productId: products[(buyers.indexOf(buyer) + i) % products.length],
+            product_id: products[(buyers.indexOf(buyer) + i) % products.length],
             quantity: 1 + Math.floor(Math.random() * 2),
             price: Math.round(price),
             image: PRODUCT_IMAGES[i % PRODUCT_IMAGES.length],
@@ -232,12 +232,12 @@ export async function POST(request: NextRequest) {
         }
 
         await db.collection(COLLECTIONS.CARTS).doc().set({
-          userId: buyer.id,
+          user_id: buyer.id,
           items: cartItems,
-          itemCount: cartItems.length,
+          item_count: cartItems.length,
           subtotal: Math.round(subtotal),
-          updatedAt: timestamp,
-          createdAt: timestamp,
+          updated_at: timestamp,
+          created_at: timestamp,
         });
         counts.carts++;
       }
@@ -249,19 +249,19 @@ export async function POST(request: NextRequest) {
         const numFavorites = 2 + Math.floor(Math.random() * 4);
         for (let f = 0; f < numFavorites; f++) {
           await db.collection(COLLECTIONS.FAVORITES).doc().set({
-            userId: buyer.id,
-            itemId: products[(buyers.indexOf(buyer) * 3 + f) % products.length],
-            itemType: "product",
-            createdAt: timestamp,
+            user_id: buyer.id,
+            item_id: products[(buyers.indexOf(buyer) * 3 + f) % products.length],
+            item_type: "product",
+            created_at: timestamp,
           });
           counts.favorites++;
         }
         // Also add some auction favorites
         await db.collection(COLLECTIONS.FAVORITES).doc().set({
-          userId: buyer.id,
-          itemId: `auction_${buyer.id}_fav`,
-          itemType: "auction",
-          createdAt: timestamp,
+          user_id: buyer.id,
+          item_id: `auction_${buyer.id}_fav`,
+          item_type: "auction",
+          created_at: timestamp,
         });
         counts.favorites++;
       }
@@ -356,26 +356,26 @@ export async function POST(request: NextRequest) {
         const hasImages = Math.random() > 0.3;
 
         await db.collection(COLLECTIONS.RETURNS).doc().set({
-          returnNumber: `${DEMO_PREFIX}RET-${String(r + 1).padStart(5, "0")}`,
-          orderId: `order_${r}`,
-          orderNumber: `${DEMO_PREFIX}ORD-${String(r + 1).padStart(6, "0")}`,
-          userId: buyer.id,
-          userName: buyer.name,
-          shopId: shop.id,
-          productId: products[r % products.length],
+          return_number: `${DEMO_PREFIX}RET-${String(r + 1).padStart(5, "0")}`,
+          order_id: `order_${r}`,
+          order_number: `${DEMO_PREFIX}ORD-${String(r + 1).padStart(6, "0")}`,
+          user_id: buyer.id,
+          user_name: buyer.name,
+          shop_id: shop.id,
+          product_id: products[r % products.length],
           reason: returnReasons[r % returnReasons.length],
           description: `${returnReasons[r % returnReasons.length]}. Please process my return request.`,
-          status: ["requested", "approved", "shipped", "received", "refunded", "rejected"][r % 6],
-          images: hasImages ? [
+          status: ["pending", "approved", "rejected", "completed"][r % 4],
+          media: hasImages ? [
             RETURN_IMAGES[r % RETURN_IMAGES.length],
             RETURN_IMAGES[(r + 1) % RETURN_IMAGES.length],
           ] : [],
-          refundAmount: Math.round(500 + Math.random() * 5000),
-          refundMethod: ["original_payment", "wallet", "bank_transfer"][r % 3],
-          pickupScheduled: r % 3 === 0,
-          pickupDate: r % 3 === 0 ? new Date(timestamp.getTime() + 2 * 24 * 60 * 60 * 1000) : null,
-          createdAt: new Date(timestamp.getTime() - Math.floor(Math.random() * 14) * 24 * 60 * 60 * 1000),
-          updatedAt: timestamp,
+          refund_amount: Math.round(500 + Math.random() * 5000),
+          refund_method: ["original_payment", "wallet", "bank_transfer"][r % 3],
+          pickup_scheduled: r % 3 === 0,
+          pickup_date: r % 3 === 0 ? new Date(timestamp.getTime() + 2 * 24 * 60 * 60 * 1000) : null,
+          created_at: new Date(timestamp.getTime() - Math.floor(Math.random() * 14) * 24 * 60 * 60 * 1000),
+          updated_at: timestamp,
         });
         counts.returns++;
       }

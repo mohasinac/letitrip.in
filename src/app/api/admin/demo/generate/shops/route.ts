@@ -81,9 +81,11 @@ export async function POST(request: NextRequest) {
         address: `${100 + i} ${STREETS[i % STREETS.length]}, ${city.city}, ${city.state} ${city.pincode}`,
         owner_id: seller.id,
         is_active: true,
+        is_banned: false,
+        is_verified: true,
+        is_featured: i < 10,
+        show_on_homepage: i < 5,
         status: "active",
-        verified: true,
-        featured: i < 10,
         logo: SHOP_LOGOS[i % SHOP_LOGOS.length],
         banner: SHOP_BANNERS[i % SHOP_BANNERS.length],
         cover_images: [

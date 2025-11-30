@@ -21,6 +21,31 @@ export type DemoStep =
   | "orders"
   | "extras";
 
+// Cleanup steps are in reverse order (to handle dependencies)
+export const CLEANUP_STEPS: DemoStep[] = [
+  "extras",
+  "orders",
+  "reviews",
+  "bids",
+  "auctions",
+  "products",
+  "shops",
+  "users",
+  "categories",
+];
+
+export const GENERATION_STEPS: DemoStep[] = [
+  "categories",
+  "users",
+  "shops",
+  "products",
+  "auctions",
+  "bids",
+  "reviews",
+  "orders",
+  "extras",
+];
+
 export interface DemoDataSummary {
   categories: number;
   users: number;
@@ -145,6 +170,13 @@ class DemoDataService {
       prefix: string;
       breakdown?: Array<{ collection: string; count: number }>;
     }>(this.ROUTES.CLEANUP_ALL);
+  }
+
+  /**
+   * Step-by-step cleanup methods
+   */
+  async cleanupStep(step: DemoStep): Promise<StepResult> {
+    return apiService.delete<StepResult>(`/api/admin/demo/cleanup/${step}`);
   }
 }
 

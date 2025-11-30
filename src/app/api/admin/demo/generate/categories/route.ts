@@ -206,6 +206,7 @@ export async function POST() {
           is_leaf: catData.isLeaf || false,
           is_active: true,
           is_featured: Math.random() > 0.6,
+          sort_order: categoryCount,
           product_count: 0,
           in_stock_count: 0,
           out_of_stock_count: 0,

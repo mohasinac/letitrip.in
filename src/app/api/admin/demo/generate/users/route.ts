@@ -83,10 +83,10 @@ export async function POST() {
 
         const userRef = db.collection(COLLECTIONS.USERS).doc();
         
-        // Generate Beyblade-themed display name for sellers
+        // Generate Beyblade-themed display name for sellers, use full name for others
         const displayName = role === "seller" 
           ? `${BLADER_PREFIXES[userIndex % BLADER_PREFIXES.length]}_${firstName}`
-          : undefined;
+          : fullName;
         
         // Beyblade-themed bio based on role
         const bioOptions = [
