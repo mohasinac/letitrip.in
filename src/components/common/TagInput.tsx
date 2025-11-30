@@ -89,7 +89,7 @@ export default function TagInput({
       caseSensitive,
       allowDuplicates,
       onChange,
-    ],
+    ]
   );
 
   // Remove a tag
@@ -98,7 +98,7 @@ export default function TagInput({
       if (disabled) return;
       onChange(value.filter((_, i) => i !== index));
     },
-    [disabled, value, onChange],
+    [disabled, value, onChange]
   );
 
   // Handle input change
@@ -127,7 +127,7 @@ export default function TagInput({
       setShowSuggestions(newValue.length > 0 && filteredSuggestions.length > 0);
       setSelectedSuggestionIndex(0);
     },
-    [delimiter, addTag, filteredSuggestions.length],
+    [delimiter, addTag, filteredSuggestions.length]
   );
 
   // Handle key down
@@ -147,7 +147,7 @@ export default function TagInput({
       } else if (e.key === "ArrowDown" && showSuggestions) {
         e.preventDefault();
         setSelectedSuggestionIndex((prev) =>
-          prev < filteredSuggestions.length - 1 ? prev + 1 : prev,
+          prev < filteredSuggestions.length - 1 ? prev + 1 : prev
         );
       } else if (e.key === "ArrowUp" && showSuggestions) {
         e.preventDefault();
@@ -165,7 +165,7 @@ export default function TagInput({
       selectedSuggestionIndex,
       addTag,
       removeTag,
-    ],
+    ]
   );
 
   // Handle suggestion click
@@ -174,7 +174,7 @@ export default function TagInput({
       addTag(suggestion);
       inputRef.current?.focus();
     },
-    [addTag],
+    [addTag]
   );
 
   // Check if at max tags
@@ -187,16 +187,24 @@ export default function TagInput({
         onClick={() => inputRef.current?.focus()}
         className={`
           flex flex-wrap gap-2 p-3 border rounded-lg min-h-[42px] cursor-text
-          ${disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"}
-          ${error ? "border-red-500" : "border-gray-300"}
-          focus-within:ring-2 focus-within:ring-blue-500:ring-blue-400
+          ${
+            disabled
+              ? "bg-gray-100 dark:bg-gray-900 cursor-not-allowed"
+              : "bg-white dark:bg-gray-800"
+          }
+          ${
+            error
+              ? "border-red-500 dark:border-red-400"
+              : "border-gray-300 dark:border-gray-600"
+          }
+          focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-400
         `}
       >
         {/* Existing tags */}
         {value.map((tag, index) => (
           <span
             key={index}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100/30 text-blue-700 rounded-md text-sm"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100/30 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md text-sm"
           >
             {tag}
             {!disabled && (
@@ -206,7 +214,7 @@ export default function TagInput({
                   e.stopPropagation();
                   removeTag(index);
                 }}
-                className="hover:bg-blue-200:bg-blue-800 rounded p-0.5"
+                className="hover:bg-blue-200 dark:hover:bg-blue-800 rounded p-0.5"
                 aria-label={`Remove ${tag}`}
               >
                 <svg
@@ -237,14 +245,14 @@ export default function TagInput({
             onKeyDown={handleKeyDown}
             onFocus={() =>
               setShowSuggestions(
-                inputValue.length > 0 && filteredSuggestions.length > 0,
+                inputValue.length > 0 && filteredSuggestions.length > 0
               )
             }
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             placeholder={value.length === 0 ? placeholder : ""}
             disabled={disabled}
             maxLength={maxTagLength}
-            className="flex-1 min-w-[120px] outline-none bg-transparent disabled:cursor-not-allowed"
+            className="flex-1 min-w-[120px] outline-none bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 disabled:cursor-not-allowed"
           />
         )}
       </div>
@@ -252,7 +260,7 @@ export default function TagInput({
       {/* Suggestions dropdown */}
       {showSuggestions && filteredSuggestions.length > 0 && (
         <div className="relative">
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+          <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto">
             {filteredSuggestions.map((suggestion, index) => (
               <div
                 key={index}
@@ -261,8 +269,8 @@ export default function TagInput({
                   px-3 py-2 cursor-pointer
                   ${
                     index === selectedSuggestionIndex
-                      ? "bg-blue-50/20 text-blue-600"
-                      : "hover:bg-gray-100:bg-gray-800"
+                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                      : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-900 dark:text-gray-100"
                   }
                 `}
               >
@@ -276,9 +284,9 @@ export default function TagInput({
       {/* Helper text / Error */}
       <div className="flex justify-between items-center mt-1 text-sm">
         {error ? (
-          <span className="text-red-600">{error}</span>
+          <span className="text-red-600 dark:text-red-400">{error}</span>
         ) : (
-          <span className="text-gray-500">
+          <span className="text-gray-500 dark:text-gray-400">
             {minTagLength > 1 && `Min ${minTagLength} characters. `}
             Press Enter or{" "}
             {typeof delimiter === "string"
@@ -291,7 +299,11 @@ export default function TagInput({
         {maxTags && (
           <span
             className={`
-            ${isAtMaxTags ? "text-orange-600 font-semibold" : "text-gray-500"}
+            ${
+              isAtMaxTags
+                ? "text-orange-600 dark:text-orange-400 font-semibold"
+                : "text-gray-500 dark:text-gray-400"
+            }
           `}
           >
             {value.length} / {maxTags}

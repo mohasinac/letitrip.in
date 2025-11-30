@@ -104,7 +104,8 @@ export function withSieve<T = unknown>(
       const searchParams = request.nextUrl.searchParams;
 
       // Parse the sieve query from URL parameters
-      let sieveQuery = parseSieveQuery(searchParams, config);
+      const parseResult = parseSieveQuery(searchParams, config);
+      let sieveQuery = parseResult.query;
 
       // Add mandatory filters
       if (options.mandatoryFilters && options.mandatoryFilters.length > 0) {
@@ -145,10 +146,7 @@ export function withSieve<T = unknown>(
         result = await options.afterQuery(result, request);
       }
 
-      return NextResponse.json({
-        success: true,
-        ...result,
-      });
+      return NextResponse.json(result);
     } catch (error) {
       console.error(`Sieve middleware error for ${options.collection}:`, error);
       const message =

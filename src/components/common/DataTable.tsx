@@ -39,7 +39,7 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   const [localSortKey, setLocalSortKey] = useState<string | null>(null);
   const [localSortDirection, setLocalSortDirection] = useState<"asc" | "desc">(
-    "asc",
+    "asc"
   );
 
   const activeSortKey = sortKey || localSortKey;
@@ -75,12 +75,12 @@ export function DataTable<T>({
     return (
       <div className="w-full overflow-x-auto">
         <table className={`w-full ${className}`}>
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                   style={{ width: column.width }}
                 >
                   {column.label}
@@ -88,12 +88,12 @@ export function DataTable<T>({
               ))}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
             {[...Array(5)].map((_, i) => (
               <tr key={i}>
                 {columns.map((column) => (
                   <td key={column.key} className="px-6 py-4 whitespace-nowrap">
-                    <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                   </td>
                 ))}
               </tr>
@@ -107,7 +107,7 @@ export function DataTable<T>({
   if (data.length === 0) {
     return (
       <div className="w-full text-center py-12">
-        <p className="text-gray-500">{emptyMessage}</p>
+        <p className="text-gray-500 dark:text-gray-400">{emptyMessage}</p>
       </div>
     );
   }
@@ -115,14 +115,14 @@ export function DataTable<T>({
   return (
     <div className="w-full overflow-x-auto">
       <table className={`w-full ${className}`}>
-        <thead className="bg-gray-50">
+        <thead className="bg-gray-50 dark:bg-gray-800">
           <tr>
             {columns.map((column) => (
               <th
                 key={column.key}
-                className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                className={`px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider ${
                   column.sortable
-                    ? "cursor-pointer hover:bg-gray-100:bg-gray-700"
+                    ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                     : ""
                 }`}
                 style={{ width: column.width }}
@@ -131,7 +131,7 @@ export function DataTable<T>({
                 <div className="flex items-center gap-2">
                   <span>{column.label}</span>
                   {column.sortable && (
-                    <span className="text-gray-400">
+                    <span className="text-gray-400 dark:text-gray-500">
                       {activeSortKey === column.key
                         ? activeSortDirection === "asc"
                           ? "↑"
@@ -144,19 +144,21 @@ export function DataTable<T>({
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
           {sortedData.map((row) => (
             <tr
               key={keyExtractor(row)}
               className={`${
-                onRowClick ? "cursor-pointer hover:bg-gray-50:bg-gray-800" : ""
+                onRowClick
+                  ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                  : ""
               } ${rowClassName ? rowClassName(row) : ""}`}
               onClick={() => onRowClick?.(row)}
             >
               {columns.map((column) => (
                 <td
                   key={column.key}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
                 >
                   {column.render
                     ? column.render((row as any)[column.key], row)

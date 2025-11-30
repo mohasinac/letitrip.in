@@ -145,7 +145,6 @@ export async function POST(request: NextRequest) {
             razorpay_signature: `sig_${nanoid(32)}`,
             amount: Math.round(total * 100), // in paise
             currency: "INR",
-            method: paymentMethodData.method,
             ...paymentMethodData,
             status: "captured",
             fee: Math.round(total * 0.02 * 100), // 2% fee in paise

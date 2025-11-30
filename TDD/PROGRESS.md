@@ -13,14 +13,47 @@ Before implementing ANY feature, read **[AI Agent Development Guide](/docs/ai/AI
 
 ---
 
-## Current Session: 15
+## Current Session: 16
 
-**Date**: November 2025
-**Status**: ✅ Complete
+**Date**: November 30, 2025
+**Status**: 🔄 In Progress
+
+---
+
+## Session 16 Checklist
+
+### Priority 1 - Critical CSS Fixes
+
+- [ ] **Fix malformed CSS classes** - DataTable.tsx, ActionMenu.tsx, InlineEditor.tsx, TagInput.tsx
+  - `hover:bg-gray-100:bg-gray-700` → `hover:bg-gray-100 dark:hover:bg-gray-700`
+
+### Priority 2 - Dark Mode Support
+
+- [ ] **Add dark mode to DataTable** - Full dark theme support for headers, rows, loading states
+- [ ] **Add dark mode to MobileDataTable** - Mobile cards and desktop table dark theme
+
+### Priority 3 - Mobile Navigation Fixes
+
+- [ ] **Fix back-to-top button position** - Footer.tsx: Change `bottom-20` to `bottom-36 lg:bottom-8`
+
+### Priority 4 - Code Quality
+
+- [ ] **Run SonarQube analysis** - Check for improvements after fixes
 
 ---
 
 ## Session Log
+
+### Session 16 - November 30, 2025
+
+**Completed - Dark Mode & CSS Fixes**:
+
+- 🔄 Fix malformed CSS in DataTable.tsx, ActionMenu.tsx, InlineEditor.tsx, TagInput.tsx
+- 🔄 Add dark mode to DataTable component
+- 🔄 Add dark mode to MobileDataTable component
+- 🔄 Fix back-to-top button position in Footer.tsx
+
+---
 
 ### Session 15 - November 2025
 
