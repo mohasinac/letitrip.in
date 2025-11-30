@@ -51,6 +51,7 @@ const AuctionCardComponent = ({
 }: AuctionCardProps) => {
   const [isHovered, setIsHovered] = React.useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = React.useState(0);
+  const [isPlayingVideo, setIsPlayingVideo] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -72,50 +73,53 @@ const AuctionCardComponent = ({
   const timeRemaining = getTimeRemaining(endTime);
   const currentBid = auction.currentBid || auction.startingBid;
 
-  // Combine all media (video first if available, then images)
-  const allMedia = React.useMemo(() => {
-    const media: Array<{ type: "video" | "image"; url: string }> = [];
+  // Check if videos are available
+  const hasVideos = auction.videos && auction.videos.length > 0;
 
-    if (auction.videos && auction.videos.length > 0) {
-      media.push(
-        ...auction.videos.map((url) => ({ type: "video" as const, url }))
-      );
-    }
+  // Get all images
+  const allImages = React.useMemo(() => {
+    return auction.images && auction.images.length > 0 ? auction.images : [];
+  }, [auction.images]);
 
-    if (auction.images && auction.images.length > 0) {
-      media.push(
-        ...auction.images.map((url) => ({ type: "image" as const, url }))
-      );
-    }
-
-    return media;
-  }, [auction.images, auction.videos]);
-
-  // Auto-rotate media on hover
+  // Auto-rotate on hover: video takes priority, otherwise rotate images
   React.useEffect(() => {
-    if (isHovered && allMedia.length > 1) {
-      const currentMedia = allMedia[currentMediaIndex];
-
-      // If current media is video, play it
-      if (currentMedia.type === "video") {
+    if (isHovered) {
+      if (hasVideos) {
+        // Play video immediately on hover
+        setIsPlayingVideo(true);
         if (videoRef.current) {
+          videoRef.current.currentTime = 0;
           videoRef.current.play().catch(() => {
-            // Autoplay failed, move to next media
-            setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
+            // Video autoplay failed, fall back to image rotation
+            setIsPlayingVideo(false);
+            startImageRotation();
           });
         }
-      } else {
-        // For images, rotate every 3 seconds
-        intervalRef.current = setInterval(() => {
-          setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
-        }, 3000);
+      } else if (allImages.length > 1) {
+        // No video, rotate images with 1 second interval
+        startImageRotation();
       }
     } else {
+      // Reset when not hovering
+      setIsPlayingVideo(false);
       setCurrentMediaIndex(0);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      }
+    }
+
+    function startImageRotation() {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      intervalRef.current = setInterval(() => {
+        setCurrentMediaIndex((prev) => (prev + 1) % allImages.length);
+      }, 1000);
     }
 
     return () => {
@@ -123,18 +127,10 @@ const AuctionCardComponent = ({
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
     };
-  }, [isHovered, currentMediaIndex, allMedia]);
+  }, [isHovered, hasVideos, allImages.length]);
 
-  const currentMedia =
-    allMedia[currentMediaIndex] ||
-    allMedia[0] ||
-    (auction.images && auction.images[0]
-      ? { type: "image" as const, url: auction.images[0] }
-      : null);
+  const currentImage = allImages[currentMediaIndex] || allImages[0] || "";
 
   // Determine urgency level for styling
   const isEndingSoon =
@@ -150,35 +146,34 @@ const AuctionCardComponent = ({
     >
       {/* Image/Video Section */}
       <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
-        {currentMedia && allMedia.length > 0 ? (
-          currentMedia.type === "video" && isHovered ? (
-            <video
-              ref={videoRef}
-              src={currentMedia.url}
-              className="w-full h-full object-cover"
-              muted
-              loop
-              playsInline
-              onEnded={() => {
-                setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
-              }}
-            />
-          ) : (
-            <OptimizedImage
-              src={currentMedia.url}
-              alt={auction.name}
-              fill
-              quality={85}
-              objectFit="cover"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className={
-                isHovered
-                  ? "scale-105 transition-transform duration-300"
-                  : "transition-transform duration-300"
-              }
-              priority={priority}
-            />
-          )
+        {/* Video layer - shown when playing video */}
+        {hasVideos && (
+          <video
+            ref={videoRef}
+            src={auction.videos![0]}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${
+              isPlayingVideo ? "opacity-100 z-10" : "opacity-0 z-0"
+            }`}
+            muted
+            loop
+            playsInline
+          />
+        )}
+
+        {/* Image layer */}
+        {currentImage ? (
+          <OptimizedImage
+            src={currentImage}
+            alt={auction.name}
+            fill
+            quality={85}
+            objectFit="cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className={`transition-all duration-300 ${
+              isHovered && !isPlayingVideo ? "scale-105" : ""
+            } ${isPlayingVideo ? "opacity-0" : "opacity-100"}`}
+            priority={priority}
+          />
         ) : (
           <div className="flex items-center justify-center h-full text-gray-400">
             <Gavel size={48} />
@@ -186,7 +181,7 @@ const AuctionCardComponent = ({
         )}
 
         {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        <div className="absolute top-2 left-2 flex flex-col gap-1 z-20">
           {auction.featured && (
             <span className="bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded">
               Featured
@@ -209,10 +204,10 @@ const AuctionCardComponent = ({
           )}
         </div>
 
-        {/* Media Indicators */}
-        {allMedia.length > 1 && isHovered && (
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
-            {allMedia.map((_, index) => (
+        {/* Media Indicators - show image dots when rotating images */}
+        {allImages.length > 1 && isHovered && !isPlayingVideo && (
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1 z-20">
+            {allImages.map((_, index) => (
               <div
                 key={index}
                 className={`h-1.5 rounded-full transition-all ${
@@ -226,9 +221,9 @@ const AuctionCardComponent = ({
         )}
 
         {/* Media Count Badge */}
-        {allMedia.length > 1 && (
-          <div className="absolute bottom-2 right-2 flex gap-1">
-            {auction.images && auction.images.length > 0 && (
+        {(allImages.length > 1 || hasVideos) && (
+          <div className="absolute bottom-2 right-2 flex gap-1 z-20">
+            {allImages.length > 1 && (
               <span className="bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
                 <svg
                   className="w-3 h-3"
@@ -241,10 +236,10 @@ const AuctionCardComponent = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                {auction.images.length}
+                {allImages.length}
               </span>
             )}
-            {auction.videos && auction.videos.length > 0 && (
+            {hasVideos && (
               <span className="bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
                 <svg
                   className="w-3 h-3"
@@ -253,7 +248,7 @@ const AuctionCardComponent = ({
                 >
                   <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
                 </svg>
-                {auction.videos.length}
+                {auction.videos!.length}
               </span>
             )}
           </div>

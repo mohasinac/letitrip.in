@@ -79,28 +79,32 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
     ? formatDiscount(originalPrice, price)
     : "";
 
-  // Combine all media (images first, then videos - first image is cover)
-  const allMedia = React.useMemo(() => {
-    const media: Array<{ type: "video" | "image"; url: string }> = [];
+  // Check if videos are available
+  const hasVideos = videos && videos.length > 0;
 
-    // Use images array if provided, otherwise use single image
-    const imageUrls = images.length > 0 ? images : [image];
-    media.push(...imageUrls.map((url) => ({ type: "image" as const, url })));
+  // Get all images (use images array if provided, otherwise use single image)
+  const allImages = React.useMemo(() => {
+    return images.length > 0 ? images : [image];
+  }, [image, images]);
 
-    if (videos && videos.length > 0) {
-      media.push(...videos.map((url) => ({ type: "video" as const, url })));
-    }
-
-    return media;
-  }, [image, images, videos]);
-
-  // Auto-rotate images on hover
+  // Auto-rotate on hover: video takes priority, otherwise rotate images
   React.useEffect(() => {
-    if (isHovered && allMedia.length > 1) {
-      // Start rotating through all media
-      intervalRef.current = setInterval(() => {
-        setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
-      }, 2000);
+    if (isHovered) {
+      if (hasVideos) {
+        // Play video immediately on hover
+        setIsPlayingVideo(true);
+        if (videoRef.current) {
+          videoRef.current.currentTime = 0;
+          videoRef.current.play().catch(() => {
+            // Video autoplay failed, fall back to image rotation
+            setIsPlayingVideo(false);
+            startImageRotation();
+          });
+        }
+      } else if (allImages.length > 1) {
+        // No video, rotate images with 1 second interval
+        startImageRotation();
+      }
     } else {
       // Reset when not hovering
       setIsPlayingVideo(false);
@@ -109,6 +113,19 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      }
+    }
+
+    function startImageRotation() {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      intervalRef.current = setInterval(() => {
+        setCurrentMediaIndex((prev) => (prev + 1) % allImages.length);
+      }, 1000);
     }
 
     return () => {
@@ -117,29 +134,9 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
         intervalRef.current = null;
       }
     };
-  }, [isHovered, allMedia.length]);
+  }, [isHovered, hasVideos, allImages.length]);
 
-  // Handle video playback separately
-  React.useEffect(() => {
-    const currentMedia = allMedia[currentMediaIndex];
-
-    if (isHovered && currentMedia?.type === "video") {
-      setIsPlayingVideo(true);
-      if (videoRef.current) {
-        videoRef.current.play().catch(() => {
-          console.log("Video autoplay failed");
-        });
-      }
-    } else {
-      setIsPlayingVideo(false);
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
-    }
-  }, [currentMediaIndex, isHovered, allMedia]);
-
-  const currentMedia = allMedia[currentMediaIndex] ||
-    allMedia[0] || { type: "image", url: image };
+  const currentImage = allImages[currentMediaIndex] || allImages[0] || image;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -180,38 +177,37 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
     >
       {/* Image/Video Container */}
       <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
-        {currentMedia.type === "video" && isHovered ? (
+        {/* Video layer - shown when playing video */}
+        {hasVideos && (
           <video
             ref={videoRef}
-            src={currentMedia.url}
-            className="w-full h-full object-cover"
+            src={videos[0]}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${
+              isPlayingVideo ? "opacity-100 z-10" : "opacity-0 z-0"
+            }`}
             muted
             loop
             playsInline
-            onEnded={() => {
-              setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
-            }}
-          />
-        ) : (
-          <OptimizedImage
-            src={currentMedia.url}
-            alt={name}
-            fill
-            quality={85}
-            objectFit="cover"
-            className={
-              isHovered
-                ? "scale-105 transition-transform duration-300"
-                : "transition-transform duration-300"
-            }
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         )}
 
-        {/* Media Indicators */}
-        {allMedia.length > 1 && isHovered && (
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
-            {allMedia.map((_, index) => (
+        {/* Image layer */}
+        <OptimizedImage
+          src={currentImage}
+          alt={name}
+          fill
+          quality={85}
+          objectFit="cover"
+          className={`transition-all duration-300 ${
+            isHovered && !isPlayingVideo ? "scale-105" : ""
+          } ${isPlayingVideo ? "opacity-0" : "opacity-100"}`}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+        />
+
+        {/* Media Indicators - show image dots when rotating images */}
+        {allImages.length > 1 && isHovered && !isPlayingVideo && (
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1 z-20">
+            {allImages.map((_, index) => (
               <div
                 key={index}
                 className={`h-1.5 rounded-full transition-all ${
@@ -249,9 +245,9 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Media Count Badge */}
-        {allMedia.length > 1 && (
-          <div className="absolute bottom-2 right-2 flex gap-1">
-            {images.length > 0 && (
+        {(allImages.length > 1 || hasVideos) && (
+          <div className="absolute bottom-2 right-2 flex gap-1 z-20">
+            {allImages.length > 1 && (
               <span className="bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
                 <svg
                   className="w-3 h-3"
@@ -264,10 +260,10 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                {images.length}
+                {allImages.length}
               </span>
             )}
-            {videos && videos.length > 0 && (
+            {hasVideos && (
               <span className="bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
                 <svg
                   className="w-3 h-3"

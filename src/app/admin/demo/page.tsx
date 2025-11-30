@@ -658,7 +658,7 @@ export default function AdminDemoPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-[1800px] mx-auto">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -674,369 +674,421 @@ export default function AdminDemoPage() {
         </p>
       </div>
 
-      {/* Warning Alert */}
-      <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 mb-6">
-        <div className="flex">
-          <AlertTriangle className="h-5 w-5 text-yellow-400 mr-3 flex-shrink-0 mt-0.5" />
-          <div>
-            <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-              Step-by-Step Generation
-            </h3>
-            <p className="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
-              Generate data incrementally. If something breaks, you can rollback
-              and retry from any step. Each step depends on previous ones.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Progress Bar */}
-      {generating && (
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Generation Progress
-            </span>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {completedSteps} / {totalSteps} steps ({progressPercent}%)
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-            <div
-              className="bg-blue-600 h-3 rounded-full transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Action Buttons */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <button
-          onClick={handleGenerateAll}
-          disabled={generating || cleaning}
-          className="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium py-4 px-6 rounded-lg transition-colors"
-        >
-          <Play className={`w-5 h-5 ${generating ? "animate-pulse" : ""}`} />
-          {generating ? "Generating..." : "Generate All"}
-        </button>
-
-        <button
-          onClick={() => setPaused(!paused)}
-          disabled={!generating || cleaning}
-          className="flex items-center justify-center gap-3 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-400 text-white font-medium py-4 px-6 rounded-lg transition-colors"
-        >
-          {paused ? (
-            <Play className="w-5 h-5" />
-          ) : (
-            <Pause className="w-5 h-5" />
-          )}
-          {paused ? "Resume" : "Pause"}
-        </button>
-
-        <button
-          onClick={handleCleanupAll}
-          disabled={generating || cleaning}
-          className="flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white font-medium py-4 px-6 rounded-lg transition-colors"
-        >
-          <Trash2 className={`w-5 h-5 ${cleaning ? "animate-pulse" : ""}`} />
-          {cleaning ? "Cleaning..." : "Delete All Demo Data"}
-        </button>
-      </div>
-
-      {/* Step-by-Step Progress */}
-      <div className="mb-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Generation Steps
-        </h2>
-        <div className="space-y-3">
-          {GENERATION_STEPS.map((stepConfig, index) => {
-            const status = stepStatuses[stepConfig.id];
-            const Icon = stepConfig.icon;
-            const isActive = currentStep === stepConfig.id;
-            const canRun =
-              index === 0 ||
-              stepStatuses[GENERATION_STEPS[index - 1].id].status ===
-                "completed";
-
-            return (
-              <div
-                key={stepConfig.id}
-                className={`flex items-center justify-between p-3 rounded-lg border ${
-                  isActive
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                    : status.status === "completed"
-                    ? "border-green-500 bg-green-50 dark:bg-green-900/20"
-                    : status.status === "error"
-                    ? "border-red-500 bg-red-50 dark:bg-red-900/20"
-                    : "border-gray-200 dark:border-gray-700"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      status.status === "completed"
-                        ? "bg-green-500"
-                        : status.status === "error"
-                        ? "bg-red-500"
-                        : status.status === "running"
-                        ? "bg-blue-500"
-                        : "bg-gray-300 dark:bg-gray-600"
-                    }`}
-                  >
-                    {status.status === "completed" ? (
-                      <CheckCircle className="w-5 h-5 text-white" />
-                    ) : status.status === "error" ? (
-                      <XCircle className="w-5 h-5 text-white" />
-                    ) : status.status === "running" ? (
-                      <Loader2 className="w-5 h-5 text-white animate-spin" />
-                    ) : (
-                      <Icon className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {stepConfig.label}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {status.status === "error"
-                        ? status.error
-                        : status.status === "completed" && status.count
-                        ? `Created ${status.count.toLocaleString()} items`
-                        : stepConfig.description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {status.status !== "completed" &&
-                    status.status !== "running" && (
-                      <button
-                        onClick={() => handleGenerateSingleStep(stepConfig.id)}
-                        disabled={generating || cleaning || !canRun}
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {status.status === "error" ? (
-                          <RefreshCw className="w-4 h-4" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4" />
-                        )}
-                        {status.status === "error" ? "Retry" : "Run"}
-                      </button>
-                    )}
-                </div>
+      {/* Two Column Layout - Controls on Left, Stats on Right */}
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-8">
+        {/* Left Column - Controls */}
+        <div className="space-y-6">
+          {/* Warning Alert */}
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4">
+            <div className="flex">
+              <AlertTriangle className="h-5 w-5 text-yellow-400 mr-3 flex-shrink-0 mt-0.5" />
+              <div>
+                <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                  Step-by-Step Generation
+                </h3>
+                <p className="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
+                  Generate data incrementally. If something breaks, you can
+                  rollback and retry from any step. Each step depends on
+                  previous ones.
+                </p>
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Deletion Result */}
-      {deletionResult && (
-        <div className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <CheckCircle className="w-6 h-6 text-green-600" />
-            <h2 className="text-xl font-bold text-green-800 dark:text-green-200">
-              Deletion Complete - {deletionResult.total} Documents Deleted
-            </h2>
+            </div>
           </div>
 
-          {deletionResult.breakdown.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-              {deletionResult.breakdown.map((item) => {
-                const config = collectionConfig[item.collection] || {
-                  icon: Package,
-                  color: "text-gray-600",
-                  label: item.collection,
-                };
-                const CollIcon = config.icon;
+          {/* Progress Bar */}
+          {generating && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Generation Progress
+                </span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {completedSteps} / {totalSteps} steps ({progressPercent}%)
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                <div
+                  className="bg-blue-600 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button
+              onClick={handleGenerateAll}
+              disabled={generating || cleaning}
+              className="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium py-4 px-6 rounded-lg transition-colors"
+            >
+              <Play
+                className={`w-5 h-5 ${generating ? "animate-pulse" : ""}`}
+              />
+              {generating ? "Generating..." : "Generate All"}
+            </button>
+
+            <button
+              onClick={() => setPaused(!paused)}
+              disabled={!generating || cleaning}
+              className="flex items-center justify-center gap-3 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-400 text-white font-medium py-4 px-6 rounded-lg transition-colors"
+            >
+              {paused ? (
+                <Play className="w-5 h-5" />
+              ) : (
+                <Pause className="w-5 h-5" />
+              )}
+              {paused ? "Resume" : "Pause"}
+            </button>
+
+            <button
+              onClick={handleCleanupAll}
+              disabled={generating || cleaning}
+              className="flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white font-medium py-4 px-6 rounded-lg transition-colors"
+            >
+              <Trash2
+                className={`w-5 h-5 ${cleaning ? "animate-pulse" : ""}`}
+              />
+              {cleaning ? "Cleaning..." : "Delete All Demo Data"}
+            </button>
+          </div>
+
+          {/* Step-by-Step Progress */}
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Generation Steps
+            </h2>
+            <div className="space-y-3">
+              {GENERATION_STEPS.map((stepConfig, index) => {
+                const status = stepStatuses[stepConfig.id];
+                const Icon = stepConfig.icon;
+                const isActive = currentStep === stepConfig.id;
+                const canRun =
+                  index === 0 ||
+                  stepStatuses[GENERATION_STEPS[index - 1].id].status ===
+                    "completed";
+
                 return (
                   <div
-                    key={item.collection}
-                    className="bg-white dark:bg-gray-800 border border-green-200 dark:border-green-700 rounded-lg p-3 flex items-center gap-2"
+                    key={stepConfig.id}
+                    className={`flex items-center justify-between p-3 rounded-lg border ${
+                      isActive
+                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                        : status.status === "completed"
+                        ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+                        : status.status === "error"
+                        ? "border-red-500 bg-red-50 dark:bg-red-900/20"
+                        : "border-gray-200 dark:border-gray-700"
+                    }`}
                   >
-                    <CollIcon className={`w-4 h-4 ${config.color}`} />
-                    <div>
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">
-                        {item.count}
-                      </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                        {config.label}
-                      </p>
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          status.status === "completed"
+                            ? "bg-green-500"
+                            : status.status === "error"
+                            ? "bg-red-500"
+                            : status.status === "running"
+                            ? "bg-blue-500"
+                            : "bg-gray-300 dark:bg-gray-600"
+                        }`}
+                      >
+                        {status.status === "completed" ? (
+                          <CheckCircle className="w-5 h-5 text-white" />
+                        ) : status.status === "error" ? (
+                          <XCircle className="w-5 h-5 text-white" />
+                        ) : status.status === "running" ? (
+                          <Loader2 className="w-5 h-5 text-white animate-spin" />
+                        ) : (
+                          <Icon className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-white">
+                          {stepConfig.label}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {status.status === "error"
+                            ? status.error
+                            : status.status === "completed" && status.count
+                            ? `Created ${status.count.toLocaleString()} items`
+                            : stepConfig.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {status.status !== "completed" &&
+                        status.status !== "running" && (
+                          <button
+                            onClick={() =>
+                              handleGenerateSingleStep(stepConfig.id)
+                            }
+                            disabled={generating || cleaning || !canRun}
+                            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {status.status === "error" ? (
+                              <RefreshCw className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
+                            )}
+                            {status.status === "error" ? "Retry" : "Run"}
+                          </button>
+                        )}
                     </div>
                   </div>
                 );
               })}
             </div>
+          </div>
+
+          {/* Deletion Result */}
+          {deletionResult && (
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+                <h2 className="text-xl font-bold text-green-800 dark:text-green-200">
+                  Deletion Complete - {deletionResult.total} Documents Deleted
+                </h2>
+              </div>
+
+              {deletionResult.breakdown.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                  {deletionResult.breakdown.map((item) => {
+                    const config = collectionConfig[item.collection] || {
+                      icon: Package,
+                      color: "text-gray-600",
+                      label: item.collection,
+                    };
+                    const CollIcon = config.icon;
+                    return (
+                      <div
+                        key={item.collection}
+                        className="bg-white dark:bg-gray-800 border border-green-200 dark:border-green-700 rounded-lg p-3 flex items-center gap-2"
+                      >
+                        <CollIcon className={`w-4 h-4 ${config.color}`} />
+                        <div>
+                          <p className="text-lg font-bold text-gray-900 dark:text-white">
+                            {item.count}
+                          </p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {config.label}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           )}
-        </div>
-      )}
 
-      {/* Summary Cards - Always visible */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Current Demo Data
-        </h2>
+          {/* Test Credentials Section */}
+          {credentials && (
+            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Key className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-200">
+                  Test User Credentials
+                </h3>
+              </div>
+              <p className="text-sm text-purple-700 dark:text-purple-300 mb-4">
+                All demo users use the password:{" "}
+                <code className="bg-purple-100 dark:bg-purple-800 px-2 py-0.5 rounded font-mono">
+                  Demo@123
+                </code>
+              </p>
 
-        {/* Main Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          <StatCard
-            icon={Tag}
-            color="text-purple-600"
-            label="Categories"
-            value={summary?.categories || 0}
-          />
-          <StatCard
-            icon={Users}
-            color="text-green-600"
-            label="Users"
-            value={summary?.users || 0}
-          />
-          <StatCard
-            icon={Store}
-            color="text-blue-600"
-            label="Shops"
-            value={summary?.shops || 0}
-          />
-          <StatCard
-            icon={Package}
-            color="text-orange-600"
-            label="Products"
-            value={summary?.products || 0}
-          />
-          <StatCard
-            icon={Gavel}
-            color="text-red-600"
-            label="Auctions"
-            value={summary?.auctions || 0}
-          />
-          <StatCard
-            icon={DollarSign}
-            color="text-yellow-600"
-            label="Bids"
-            value={summary?.bids || 0}
-          />
-          <StatCard
-            icon={ShoppingCart}
-            color="text-indigo-600"
-            label="Orders"
-            value={summary?.orders || 0}
-          />
-          <StatCard
-            icon={CreditCard}
-            color="text-emerald-600"
-            label="Payments"
-            value={summary?.payments || 0}
-          />
-          <StatCard
-            icon={Truck}
-            color="text-cyan-600"
-            label="Shipments"
-            value={summary?.shipments || 0}
-          />
-          <StatCard
-            icon={Star}
-            color="text-amber-600"
-            label="Reviews"
-            value={summary?.reviews || 0}
-          />
-        </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <CredentialCard
+                  title="Admin Accounts"
+                  icon={Shield}
+                  iconColor="text-red-500"
+                  users={credentials.admins}
+                />
+                <CredentialCard
+                  title="Moderators"
+                  icon={UserCog}
+                  iconColor="text-orange-500"
+                  users={credentials.moderators}
+                />
+                <CredentialCard
+                  title="Support Staff"
+                  icon={Headphones}
+                  iconColor="text-blue-500"
+                  users={credentials.support}
+                />
+                <CredentialCard
+                  title="Sellers (sample)"
+                  icon={Store}
+                  iconColor="text-green-500"
+                  users={credentials.sellers.slice(0, 5)}
+                />
+                <CredentialCard
+                  title="Buyers (sample)"
+                  icon={Users}
+                  iconColor="text-purple-500"
+                  users={credentials.buyers.slice(0, 5)}
+                />
+              </div>
+            </div>
+          )}
 
-        {summary && summary.categories > 0 && (
-          <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              Generated At
+          {/* Info Section */}
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-3">
+              What gets generated? (Stress Test Scale)
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {new Date(summary.createdAt).toLocaleString()}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-blue-800 dark:text-blue-300">
+              <div>
+                <h4 className="font-medium mb-2">Users & Shops:</h4>
+                <ul className="space-y-1">
+                  <li>• 100 users with diverse roles</li>
+                  <li>• 2 admins, 3 moderators, 5 support</li>
+                  <li>• 50 sellers, 40 buyers</li>
+                  <li>• 50 shops (1 per seller)</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">Products & Auctions:</h4>
+                <ul className="space-y-1">
+                  <li>• 1,000 products (20 per shop)</li>
+                  <li>• 250 auctions (5 per shop)</li>
+                  <li>• 2,500+ bids across auctions</li>
+                  <li>• 1,500+ product reviews</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">Extended Data:</h4>
+                <ul className="space-y-1">
+                  <li>• 200+ orders with payments</li>
+                  <li>• 10 hero slides</li>
+                  <li>• 30+ support tickets</li>
+                  <li>• Carts, favorites, notifications</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column - Real-time Stats (sticky on desktop) */}
+        <div className="xl:sticky xl:top-6 xl:self-start space-y-6">
+          {/* Current Demo Data Stats */}
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                📊 Live Data Stats
+              </h2>
+              {generating && (
+                <span className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Updating...
+                </span>
+              )}
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <MiniStatCard
+                icon={Tag}
+                color="text-purple-600"
+                bgColor="bg-purple-50 dark:bg-purple-900/20"
+                label="Categories"
+                value={summary?.categories || 0}
+              />
+              <MiniStatCard
+                icon={Users}
+                color="text-green-600"
+                bgColor="bg-green-50 dark:bg-green-900/20"
+                label="Users"
+                value={summary?.users || 0}
+              />
+              <MiniStatCard
+                icon={Store}
+                color="text-blue-600"
+                bgColor="bg-blue-50 dark:bg-blue-900/20"
+                label="Shops"
+                value={summary?.shops || 0}
+              />
+              <MiniStatCard
+                icon={Package}
+                color="text-orange-600"
+                bgColor="bg-orange-50 dark:bg-orange-900/20"
+                label="Products"
+                value={summary?.products || 0}
+              />
+              <MiniStatCard
+                icon={Gavel}
+                color="text-red-600"
+                bgColor="bg-red-50 dark:bg-red-900/20"
+                label="Auctions"
+                value={summary?.auctions || 0}
+              />
+              <MiniStatCard
+                icon={DollarSign}
+                color="text-yellow-600"
+                bgColor="bg-yellow-50 dark:bg-yellow-900/20"
+                label="Bids"
+                value={summary?.bids || 0}
+              />
+              <MiniStatCard
+                icon={ShoppingCart}
+                color="text-indigo-600"
+                bgColor="bg-indigo-50 dark:bg-indigo-900/20"
+                label="Orders"
+                value={summary?.orders || 0}
+              />
+              <MiniStatCard
+                icon={CreditCard}
+                color="text-emerald-600"
+                bgColor="bg-emerald-50 dark:bg-emerald-900/20"
+                label="Payments"
+                value={summary?.payments || 0}
+              />
+              <MiniStatCard
+                icon={Truck}
+                color="text-cyan-600"
+                bgColor="bg-cyan-50 dark:bg-cyan-900/20"
+                label="Shipments"
+                value={summary?.shipments || 0}
+              />
+              <MiniStatCard
+                icon={Star}
+                color="text-amber-600"
+                bgColor="bg-amber-50 dark:bg-amber-900/20"
+                label="Reviews"
+                value={summary?.reviews || 0}
+              />
+            </div>
+
+            {/* Generated At */}
+            {summary && summary.categories > 0 && (
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Generated: {new Date(summary.createdAt).toLocaleString()}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Quick Stats Summary */}
+          <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg p-6 text-white">
+            <h3 className="font-semibold mb-3">Total Records</h3>
+            <p className="text-4xl font-bold mb-2">
+              {(
+                (summary?.categories || 0) +
+                (summary?.users || 0) +
+                (summary?.shops || 0) +
+                (summary?.products || 0) +
+                (summary?.auctions || 0) +
+                (summary?.bids || 0) +
+                (summary?.orders || 0) +
+                (summary?.payments || 0) +
+                (summary?.shipments || 0) +
+                (summary?.reviews || 0)
+              ).toLocaleString()}
             </p>
-          </div>
-        )}
-      </div>
-
-      {/* Test Credentials Section */}
-      {credentials && (
-        <div className="mt-8 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Key className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-            <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-200">
-              Test User Credentials
-            </h3>
-          </div>
-          <p className="text-sm text-purple-700 dark:text-purple-300 mb-4">
-            All demo users use the password:{" "}
-            <code className="bg-purple-100 dark:bg-purple-800 px-2 py-0.5 rounded font-mono">
-              Demo@123
-            </code>
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <CredentialCard
-              title="Admin Accounts"
-              icon={Shield}
-              iconColor="text-red-500"
-              users={credentials.admins}
-            />
-            <CredentialCard
-              title="Moderators"
-              icon={UserCog}
-              iconColor="text-orange-500"
-              users={credentials.moderators}
-            />
-            <CredentialCard
-              title="Support Staff"
-              icon={Headphones}
-              iconColor="text-blue-500"
-              users={credentials.support}
-            />
-            <CredentialCard
-              title="Sellers (sample)"
-              icon={Store}
-              iconColor="text-green-500"
-              users={credentials.sellers.slice(0, 5)}
-            />
-            <CredentialCard
-              title="Buyers (sample)"
-              icon={Users}
-              iconColor="text-purple-500"
-              users={credentials.buyers.slice(0, 5)}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Info Section */}
-      <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-3">
-          What gets generated? (Stress Test Scale)
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-blue-800 dark:text-blue-300">
-          <div>
-            <h4 className="font-medium mb-2">Users & Shops:</h4>
-            <ul className="space-y-1">
-              <li>• 100 users with diverse roles</li>
-              <li>• 2 admins, 3 moderators, 5 support</li>
-              <li>• 50 sellers, 40 buyers</li>
-              <li>• 50 shops (1 per seller)</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-medium mb-2">Products & Auctions:</h4>
-            <ul className="space-y-1">
-              <li>• 1,000 products (20 per shop)</li>
-              <li>• 250 auctions (5 per shop)</li>
-              <li>• 2,500+ bids across auctions</li>
-              <li>• 1,500+ product reviews</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-medium mb-2">Extended Data:</h4>
-            <ul className="space-y-1">
-              <li>• 200+ orders with payments</li>
-              <li>• 10 hero slides</li>
-              <li>• 30+ support tickets</li>
-              <li>• Carts, favorites, notifications</li>
-            </ul>
+            <p className="text-sm opacity-80">Across all collections</p>
           </div>
         </div>
       </div>
@@ -1099,7 +1151,36 @@ function CredentialCard({
   );
 }
 
-// Stat Card Component
+// Mini Stat Card for sidebar
+function MiniStatCard({
+  icon: Icon,
+  color,
+  bgColor,
+  label,
+  value,
+}: {
+  icon: typeof Package;
+  color: string;
+  bgColor: string;
+  label: string;
+  value: number;
+}) {
+  return (
+    <div className={`${bgColor} rounded-lg p-3`}>
+      <div className="flex items-center gap-2 mb-1">
+        <Icon className={`w-4 h-4 ${color}`} />
+        <span className="text-xs text-gray-600 dark:text-gray-400">
+          {label}
+        </span>
+      </div>
+      <span className="text-xl font-bold text-gray-900 dark:text-white">
+        {value.toLocaleString()}
+      </span>
+    </div>
+  );
+}
+
+// Stat Card Component (kept for potential future use)
 function StatCard({
   icon: Icon,
   color,
