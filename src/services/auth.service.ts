@@ -128,6 +128,19 @@ interface RegisterData {
   role?: string;
 }
 
+interface GoogleAuthData {
+  idToken: string;
+  userData?: {
+    displayName?: string;
+    email?: string;
+    photoURL?: string;
+  };
+}
+
+interface GoogleAuthResponse extends AuthResponse {
+  isNewUser: boolean;
+}
+
 class AuthService {
   private readonly STORAGE_KEY = "user";
   private readonly SESSION_COOKIE_NAME = "session";
@@ -172,6 +185,31 @@ class AuthService {
         message: response.message,
         user: userFE,
         sessionId: response.sessionId,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Google Sign-In
+  async loginWithGoogle(data: GoogleAuthData): Promise<GoogleAuthResponse> {
+    try {
+      const response = await apiService.post<{
+        message: string;
+        user: AuthUserBE;
+        sessionId: string;
+        isNewUser: boolean;
+      }>("/auth/google", data);
+
+      // Transform and store user
+      const userFE = toFEAuthUser(response.user);
+      this.setUser(userFE);
+
+      return {
+        message: response.message,
+        user: userFE,
+        sessionId: response.sessionId,
+        isNewUser: response.isNewUser,
       };
     } catch (error) {
       throw error;

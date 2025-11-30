@@ -1059,6 +1059,34 @@ export default function AdminDemoPage() {
                 label="Reviews"
                 value={summary?.reviews || 0}
               />
+              <MiniStatCard
+                icon={Image}
+                color="text-sky-600"
+                bgColor="bg-sky-50 dark:bg-sky-900/20"
+                label="Hero Slides"
+                value={summary?.heroSlides || 0}
+              />
+              <MiniStatCard
+                icon={Heart}
+                color="text-rose-600"
+                bgColor="bg-rose-50 dark:bg-rose-900/20"
+                label="Favorites"
+                value={summary?.favorites || 0}
+              />
+              <MiniStatCard
+                icon={ShoppingCart}
+                color="text-orange-500"
+                bgColor="bg-orange-50 dark:bg-orange-900/20"
+                label="Carts"
+                value={summary?.carts || 0}
+              />
+              <MiniStatCard
+                icon={Bell}
+                color="text-yellow-500"
+                bgColor="bg-yellow-50 dark:bg-yellow-900/20"
+                label="Notifications"
+                value={summary?.notifications || 0}
+              />
             </div>
 
             {/* Generated At */}
@@ -1085,7 +1113,11 @@ export default function AdminDemoPage() {
                 (summary?.orders || 0) +
                 (summary?.payments || 0) +
                 (summary?.shipments || 0) +
-                (summary?.reviews || 0)
+                (summary?.reviews || 0) +
+                (summary?.heroSlides || 0) +
+                (summary?.favorites || 0) +
+                (summary?.carts || 0) +
+                (summary?.notifications || 0)
               ).toLocaleString()}
             </p>
             <p className="text-sm opacity-80">Across all collections</p>
