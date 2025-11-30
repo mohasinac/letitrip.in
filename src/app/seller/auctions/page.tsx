@@ -566,7 +566,7 @@ export default function SellerAuctionsPage() {
                                   <Eye className="h-4 w-4" />
                                 </Link>
                                 <Link
-                                  href={`/seller/auctions/${auction.id}/edit`}
+                                  href={`/seller/auctions/${auction.slug}/edit`}
                                   className="rounded p-1.5 text-blue-600 hover:bg-blue-50"
                                   title="Full Edit"
                                 >
@@ -658,7 +658,7 @@ export default function SellerAuctionsPage() {
                           View
                         </Link>
                         <Link
-                          href={`/seller/auctions/${auction.id}/edit`}
+                          href={`/seller/auctions/${auction.slug}/edit`}
                           className="flex-1 flex items-center justify-center gap-1 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary/90"
                         >
                           <Edit className="h-4 w-4" />

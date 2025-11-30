@@ -6,7 +6,7 @@ import {
   fireEvent,
   act,
 } from "@testing-library/react";
-import EditAuctionPage from "@/app/seller/auctions/[id]/edit/page";
+import EditAuctionPage from "@/app/seller/auctions/[slug]/edit/page";
 import type { AuctionFE } from "@/types/frontend/auction.types";
 import { AuctionType, AuctionStatus } from "@/types/shared/common.types";
 
@@ -21,7 +21,7 @@ jest.mock("@/app/api/lib/firebase/app", () => ({
 jest.mock("@/services/auctions.service");
 jest.mock("@/lib/error-redirects", () => ({
   notFound: {
-    auction: jest.fn((id, err) => `/auctions/${id}/not-found`),
+    auction: jest.fn((slug, err) => `/auctions/${slug}/not-found`),
   },
 }));
 
@@ -52,9 +52,9 @@ jest.mock("@/components/seller/AuctionForm", () => {
       return React.createElement(
         "div",
         { "data-testid": "auction-form" },
-        "AuctionForm",
+        "AuctionForm"
       );
-    },
+    }
   );
   return {
     __esModule: true,
@@ -78,7 +78,7 @@ jest.mock("next/link", () => {
 
 // Mock next/navigation
 const mockPush = jest.fn();
-const mockParams = { id: "test-auction-id" };
+const mockParams = { slug: "test-auction-slug" };
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -222,15 +222,15 @@ describe("EditAuctionPage", () => {
   it("loads auction data on mount", async () => {
     const mockAuction = createMockAuction();
 
-    mockAuctionsService.getById.mockResolvedValueOnce(mockAuction);
+    mockAuctionsService.getBySlug.mockResolvedValueOnce(mockAuction);
 
     await act(async () => {
       render(<EditAuctionPage />);
     });
 
     await waitFor(() => {
-      expect(mockAuctionsService.getById).toHaveBeenCalledWith(
-        "test-auction-id",
+      expect(mockAuctionsService.getBySlug).toHaveBeenCalledWith(
+        "test-auction-slug"
       );
     });
   });
@@ -238,7 +238,7 @@ describe("EditAuctionPage", () => {
   it("renders auction form when data is loaded", async () => {
     const mockAuction = createMockAuction();
 
-    mockAuctionsService.getById.mockResolvedValueOnce(mockAuction);
+    mockAuctionsService.getBySlug.mockResolvedValueOnce(mockAuction);
 
     await act(async () => {
       render(<EditAuctionPage />);
@@ -254,7 +254,7 @@ describe("EditAuctionPage", () => {
 
   it("handles auction load error", async () => {
     const error = new Error("Auction not found");
-    mockAuctionsService.getById.mockRejectedValueOnce(error);
+    mockAuctionsService.getBySlug.mockRejectedValueOnce(error);
 
     await act(async () => {
       render(<EditAuctionPage />);
@@ -262,13 +262,13 @@ describe("EditAuctionPage", () => {
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
-        "/auctions/test-auction-id/not-found",
+        "/auctions/test-auction-slug/not-found"
       );
     });
   });
 
   it("shows auction not found when auction is null", async () => {
-    mockAuctionsService.getById.mockResolvedValueOnce(null as any);
+    mockAuctionsService.getBySlug.mockResolvedValueOnce(null as any);
 
     await act(async () => {
       render(<EditAuctionPage />);
@@ -295,7 +295,7 @@ describe("EditAuctionPage", () => {
       status: "active",
     };
 
-    mockAuctionsService.getById.mockResolvedValueOnce(mockAuction);
+    mockAuctionsService.getBySlug.mockResolvedValueOnce(mockAuction);
     mockAuctionsService.update.mockResolvedValueOnce({} as any);
 
     await act(async () => {
@@ -310,6 +310,7 @@ describe("EditAuctionPage", () => {
     const { onSubmit } = (global as any).auctionFormProps;
     await onSubmit(formData);
 
+    // Update uses the auction's id, not slug
     expect(mockAuctionsService.update).toHaveBeenCalledWith("test-auction-id", {
       name: "Updated Auction",
       slug: "updated-auction",
@@ -339,7 +340,7 @@ describe("EditAuctionPage", () => {
     };
 
     const error = new Error("Update failed");
-    mockAuctionsService.getById.mockResolvedValueOnce(mockAuction);
+    mockAuctionsService.getBySlug.mockResolvedValueOnce(mockAuction);
     mockAuctionsService.update.mockRejectedValueOnce(error);
 
     await act(async () => {
@@ -362,7 +363,7 @@ describe("EditAuctionPage", () => {
   it("navigates back to auctions list", async () => {
     const mockAuction = createMockAuction();
 
-    mockAuctionsService.getById.mockResolvedValueOnce(mockAuction);
+    mockAuctionsService.getBySlug.mockResolvedValueOnce(mockAuction);
 
     await act(async () => {
       render(<EditAuctionPage />);

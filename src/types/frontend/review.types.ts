@@ -5,7 +5,9 @@
 export interface ReviewFE {
   id: string;
   productId: string | null;
+  productSlug: string | null;
   shopId: string | null;
+  shopSlug: string | null;
   userId: string;
   userName: string;
   userEmail: string;
