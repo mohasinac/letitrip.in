@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Play,
   Trash2,
@@ -230,6 +230,11 @@ export default function AdminDemoPage() {
     total: number;
     breakdown: DeletionBreakdown[];
   } | null>(null);
+
+  // Refs for async loop control (state values won't work correctly in async loops)
+  const cancelledRef = useRef(false);
+  const pausedRef = useRef(false);
+  const cleanupPausedRef = useRef(false);
 
   // Step-by-step generation state
   const [currentStep, setCurrentStep] = useState<DemoStep | null>(null);
@@ -533,6 +538,9 @@ export default function AdminDemoPage() {
     try {
       setGenerating(true);
       setPaused(false);
+      setCancelled(false);
+      pausedRef.current = false;
+      cancelledRef.current = false;
       setDeletionResult(null);
       setCredentials(null);
 
@@ -554,9 +562,20 @@ export default function AdminDemoPage() {
       let state: GenerationState = {};
 
       for (const stepConfig of GENERATION_STEPS) {
-        // Check if paused
-        if (paused) {
-          toast.info("Generation paused. Resume to continue.");
+        // Check if cancelled
+        if (cancelledRef.current) {
+          toast.warning("Generation cancelled.");
+          return;
+        }
+
+        // Wait while paused
+        while (pausedRef.current && !cancelledRef.current) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+
+        // Check again after resuming
+        if (cancelledRef.current) {
+          toast.warning("Generation cancelled.");
           return;
         }
 
@@ -679,6 +698,8 @@ export default function AdminDemoPage() {
     setCleaning(true);
     setCancelled(false);
     setCleanupPaused(false);
+    cancelledRef.current = false;
+    cleanupPausedRef.current = false;
     setDeletionResult(null);
 
     // Reset cleanup statuses
@@ -701,17 +722,17 @@ export default function AdminDemoPage() {
 
     for (const step of CLEANUP_STEPS) {
       // Check for cancel
-      if (cancelled) {
+      if (cancelledRef.current) {
         toast.warning("Cleanup cancelled by user");
         break;
       }
 
       // Wait while paused
-      while (cleanupPaused && !cancelled) {
+      while (cleanupPausedRef.current && !cancelledRef.current) {
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
-      if (cancelled) {
+      if (cancelledRef.current) {
         toast.warning("Cleanup cancelled by user");
         break;
       }
@@ -773,10 +794,12 @@ export default function AdminDemoPage() {
       setCancelled(false);
       toast.info(`Cleaning ${step}...`);
 
-      const success = await runCleanupStep(step);
+      const result = await runCleanupStep(step);
 
-      if (success) {
-        toast.success(`${step} cleaned successfully!`);
+      if (result.success) {
+        toast.success(
+          `${step} cleaned successfully! Deleted ${result.count} items.`
+        );
         await refreshStats();
       } else {
         toast.error(`Failed to clean ${step}`);
@@ -853,11 +876,29 @@ export default function AdminDemoPage() {
     }
   };
 
+  // Handle pause toggle for generation
+  const handlePauseToggle = () => {
+    if (generating) {
+      const newPaused = !paused;
+      setPaused(newPaused);
+      pausedRef.current = newPaused;
+      toast.info(newPaused ? "Generation paused" : "Generation resuming...");
+    } else if (cleaning) {
+      const newPaused = !cleanupPaused;
+      setCleanupPaused(newPaused);
+      cleanupPausedRef.current = newPaused;
+      toast.info(newPaused ? "Cleanup paused" : "Cleanup resuming...");
+    }
+  };
+
   // Handle cancel for both generation and cleanup
   const handleCancel = () => {
     setCancelled(true);
+    cancelledRef.current = true;
     setPaused(false);
+    pausedRef.current = false;
     setCleanupPaused(false);
+    cleanupPausedRef.current = false;
     toast.info("Cancelling operation...");
   };
 
@@ -1025,11 +1066,7 @@ export default function AdminDemoPage() {
             </button>
 
             <button
-              onClick={() =>
-                generating
-                  ? setPaused(!paused)
-                  : setCleanupPaused(!cleanupPaused)
-              }
+              onClick={handlePauseToggle}
               disabled={!generating && !cleaning}
               className="flex items-center justify-center gap-3 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-400 text-white font-medium py-4 px-6 rounded-lg transition-colors"
             >

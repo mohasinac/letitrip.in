@@ -19,19 +19,6 @@ type CleanupStep =
   | "orders"
   | "extras";
 
-// Define cleanup order (reverse of generation to handle dependencies)
-const CLEANUP_STEPS: CleanupStep[] = [
-  "extras",
-  "orders",
-  "reviews",
-  "bids",
-  "auctions",
-  "products",
-  "shops",
-  "users",
-  "categories",
-];
-
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ step: string }> }
@@ -252,6 +239,11 @@ export async function DELETE(
         if (msgCount > 0) {
           breakdown.push({ collection: "messages", count: msgCount });
           deletedCount += msgCount;
+        }
+        
+        // Delete payouts by shop
+        if (shopIds.length > 0) {
+          deletedCount += await deleteByRelatedIds("payouts", "shopId", shopIds);
         }
         break;
       }
