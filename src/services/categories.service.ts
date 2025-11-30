@@ -330,6 +330,21 @@ class CategoriesService {
       updates,
     });
   }
+
+  /**
+   * Batch fetch categories by IDs
+   * Used for admin-curated featured sections
+   */
+  async getByIds(ids: string[]): Promise<CategoryFE[]> {
+    if (!ids || ids.length === 0) return [];
+    try {
+      const response: any = await apiService.post("/categories/batch", { ids });
+      return toFECategories(response.data || []);
+    } catch (error) {
+      console.error("Failed to batch fetch categories:", error);
+      return [];
+    }
+  }
 }
 
 export const categoriesService = new CategoriesService();

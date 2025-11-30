@@ -366,6 +366,20 @@ class ProductsService {
     );
     return toFEProduct(productBE);
   }
+
+  /**
+   * Batch fetch products by IDs
+   * Used for admin-curated featured sections
+   */
+  async getByIds(ids: string[]): Promise<ProductCardFE[]> {
+    if (!ids || ids.length === 0) return [];
+    try {
+      const response: any = await apiService.post("/products/batch", { ids });
+      return toFEProductCards(response.data || []);
+    } catch (error) {
+      this.handleError(error, "getByIds");
+    }
+  }
 }
 
 export const productsService = new ProductsService();

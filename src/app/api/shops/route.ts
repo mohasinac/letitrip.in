@@ -299,12 +299,12 @@ export async function POST(request: NextRequest) {
       updated_at: new Date(),
     };
 
-    // Save to Firestore
+    // Save to Firestore - Use slug as document ID for SEO
     const shopsRef = Collections.shops();
-    const docRef = await shopsRef.add(shopData);
+    await shopsRef.doc(data.slug).set(shopData);
 
     const shop = {
-      id: docRef.id,
+      id: data.slug, // id === slug
       ...shopData,
     };
 

@@ -39,21 +39,35 @@ export async function GET(
       | "admin";
     const userId = user?.uid;
 
-    // Fetch shop by slug from Firestore
-    const shopSnapshot = await Collections.shops()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
-    if (shopSnapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: "Shop not found" },
-        { status: 404 },
-      );
+    // Fetch shop directly by slug (slug === document ID)
+    const shopDoc = await Collections.shops().doc(slug).get();
+    
+    // Fallback: Try querying by slug field for backward compatibility
+    let data: any;
+    let docId: string;
+    
+    if (!shopDoc.exists) {
+      // Legacy data: slug stored as field, not as document ID
+      const shopSnapshot = await Collections.shops()
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
+      if (shopSnapshot.empty) {
+        return NextResponse.json(
+          { success: false, error: "Shop not found" },
+          { status: 404 },
+        );
+      }
+      const legacyDoc = shopSnapshot.docs[0];
+      data = legacyDoc.data();
+      docId = legacyDoc.id;
+    } else {
+      data = shopDoc.data();
+      docId = shopDoc.id;
     }
-    const shopDoc = shopSnapshot.docs[0];
-    const data: any = shopDoc.data();
+    
     const shop: any = {
-      id: shopDoc.id,
+      id: docId,
       ...data,
       // Add camelCase aliases
       ownerId: data.owner_id,
@@ -118,19 +132,30 @@ export async function PATCH(
     const userId = user.uid;
     const body = await request.json();
 
-    // Resolve slug → shop document
-    const shopSnapshot = await Collections.shops()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
-    if (shopSnapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: "Shop not found" },
-        { status: 404 },
-      );
+    // Try direct document access first (slug === doc ID)
+    let shopDoc = await Collections.shops().doc(slug).get();
+    let shop: any;
+    let docId: string;
+    
+    if (!shopDoc.exists) {
+      // Fallback: Legacy data with random ID
+      const shopSnapshot = await Collections.shops()
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
+      if (shopSnapshot.empty) {
+        return NextResponse.json(
+          { success: false, error: "Shop not found" },
+          { status: 404 },
+        );
+      }
+      const legacyDoc = shopSnapshot.docs[0];
+      shop = { id: legacyDoc.id, ...legacyDoc.data() };
+      docId = legacyDoc.id;
+    } else {
+      shop = { id: shopDoc.id, ...shopDoc.data() };
+      docId = shopDoc.id;
     }
-    const shopDoc = shopSnapshot.docs[0];
-    const shop: any = { id: shopDoc.id, ...shopDoc.data() };
 
     const isOwner = shop.owner_id === userId;
     const isAdmin = role === "admin";
@@ -180,13 +205,13 @@ export async function PATCH(
     }
 
     await Collections.shops()
-      .doc(shop.id)
+      .doc(docId)
       .update({
         ...updates,
         updated_at: new Date(),
       });
 
-    const updated = await Collections.shops().doc(shop.id).get();
+    const updated = await Collections.shops().doc(docId).get();
     return NextResponse.json({
       success: true,
       shop: { id: updated.id, ...updated.data() },
@@ -216,18 +241,30 @@ export async function DELETE(
     const role = user.role as "seller" | "admin" | "user" | "guest";
     const userId = user.uid;
 
-    const shopSnapshot = await Collections.shops()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
-    if (shopSnapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: "Shop not found" },
-        { status: 404 },
-      );
+    // Try direct document access first (slug === doc ID)
+    let shopDoc = await Collections.shops().doc(slug).get();
+    let shop: any;
+    let docId: string;
+    
+    if (!shopDoc.exists) {
+      // Fallback: Legacy data with random ID
+      const shopSnapshot = await Collections.shops()
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
+      if (shopSnapshot.empty) {
+        return NextResponse.json(
+          { success: false, error: "Shop not found" },
+          { status: 404 },
+        );
+      }
+      const legacyDoc = shopSnapshot.docs[0];
+      shop = { id: legacyDoc.id, ...legacyDoc.data() };
+      docId = legacyDoc.id;
+    } else {
+      shop = { id: shopDoc.id, ...shopDoc.data() };
+      docId = shopDoc.id;
     }
-    const shopDoc = shopSnapshot.docs[0];
-    const shop: any = { id: shopDoc.id, ...shopDoc.data() };
 
     const isOwner = shop.owner_id === userId;
     const isAdmin = role === "admin";
@@ -240,7 +277,7 @@ export async function DELETE(
 
     // Guard rails: prevent deletion if active products or pending orders exist
     const productsSnapshot = await Collections.products()
-      .where("shop_id", "==", shop.id)
+      .where("shop_id", "==", docId)
       .where("status", "==", "active")
       .limit(1)
       .get();
@@ -256,7 +293,7 @@ export async function DELETE(
     }
 
     const ordersSnapshot = (await Collections.orders()
-      .where("shop_id", "==", shop.id)
+      .where("shop_id", "==", docId)
       .where("status", "in", [
         "pending",
         "confirmed",
@@ -271,7 +308,7 @@ export async function DELETE(
       );
     }
 
-    await Collections.shops().doc(shop.id).delete();
+    await Collections.shops().doc(docId).delete();
 
     return NextResponse.json({
       success: true,

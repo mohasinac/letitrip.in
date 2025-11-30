@@ -6,15 +6,34 @@ import { ProductCard } from "@/components/cards/ProductCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { shopsService } from "@/services/shops.service";
 import { productsService } from "@/services/products.service";
+import { apiService } from "@/services/api.service";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+
+interface FeaturedItem {
+  id: string;
+  type: string;
+  itemId: string;
+  name: string;
+  image?: string;
+  position: number;
+  active: boolean;
+}
 
 interface ShopWithProducts {
   shop: ShopCardFE;
   products: ProductCardFE[];
 }
 
-export default function FeaturedShopsSection() {
+interface Props {
+  maxShops?: number;
+  productsPerShop?: number;
+}
+
+export default function FeaturedShopsSection({
+  maxShops = 3,
+  productsPerShop = 5,
+}: Props) {
   const [shopsWithProducts, setShopsWithProducts] = useState<
     ShopWithProducts[]
   >([]);
@@ -22,23 +41,53 @@ export default function FeaturedShopsSection() {
 
   useEffect(() => {
     fetchFeaturedShops();
-  }, []);
+  }, [maxShops, productsPerShop]);
 
   const fetchFeaturedShops = async () => {
     try {
       setLoading(true);
-      const shopsData = await shopsService.list({
-        featured: true,
-        limit: 3, // Reduced from 5 to 3
-      });
-      const shops = shopsData.data;
 
+      // First, try to get admin-curated featured shops
+      let curatedShops: ShopCardFE[] = [];
+
+      try {
+        const response: any = await apiService.get("/homepage");
+        const featuredItems: FeaturedItem[] =
+          response.data?.featuredItems?.shops || [];
+
+        // Filter active items and sort by position
+        const activeItems = featuredItems
+          .filter((item) => item.active)
+          .sort((a, b) => a.position - b.position)
+          .slice(0, maxShops);
+
+        if (activeItems.length > 0) {
+          const shopIds = activeItems.map((item) => item.itemId);
+          curatedShops = await shopsService.getByIds(shopIds);
+        }
+      } catch (err) {
+        console.log("No curated shops, falling back to featured flag");
+      }
+
+      // Use curated shops or fallback to featured query
+      let shops: ShopCardFE[];
+      if (curatedShops.length > 0) {
+        shops = curatedShops;
+      } else {
+        const shopsData = await shopsService.list({
+          featured: true,
+          limit: maxShops,
+        });
+        shops = shopsData.data;
+      }
+
+      // Fetch products for each shop
       const shopsData2 = await Promise.all(
         shops.map(async (shop: ShopCardFE) => {
           try {
             const productsData = await productsService.list({
               shopId: shop.id,
-              limit: 5, // Reduced from 10 to 5
+              limit: productsPerShop,
             } as any);
             return {
               shop,

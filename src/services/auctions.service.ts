@@ -382,6 +382,20 @@ class AuctionsService {
     );
     return toFEAuction(auctionBE);
   }
+
+  /**
+   * Batch fetch auctions by IDs
+   * Used for admin-curated featured sections
+   */
+  async getByIds(ids: string[]): Promise<AuctionCardFE[]> {
+    if (!ids || ids.length === 0) return [];
+    try {
+      const response: any = await apiService.post("/auctions/batch", { ids });
+      return (response.data || []).map(toFEAuctionCard);
+    } catch (error) {
+      this.handleError(error, "getByIds");
+    }
+  }
 }
 
 export const auctionsService = new AuctionsService();

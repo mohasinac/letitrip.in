@@ -274,12 +274,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Slug uniqueness (may become slug-based detail later)
-    const existingSlug = await Collections.auctions()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
-    if (!existingSlug.empty) {
+    // Check if slug/ID already exists (slug is used as document ID)
+    const existingDoc = await Collections.auctions().doc(slug).get();
+    if (existingDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Auction slug already exists" },
         { status: 400 },
@@ -287,7 +284,7 @@ export async function POST(request: NextRequest) {
     }
 
     const now = new Date().toISOString();
-    const docRef = await Collections.auctions().add({
+    const auctionData = {
       shop_id,
       name,
       slug,
@@ -301,8 +298,10 @@ export async function POST(request: NextRequest) {
       end_time,
       created_at: now,
       updated_at: now,
-    });
-    const created = await docRef.get();
+    };
+    
+    // Use slug as document ID for SEO-friendly URLs
+    await Collections.auctions().doc(slug).set(auctionData);
     
     // Update category auction counts if category is provided
     if (category_id) {
@@ -314,7 +313,7 @@ export async function POST(request: NextRequest) {
     }
     
     return NextResponse.json(
-      { success: true, data: { id: created.id, ...created.data() } },
+      { success: true, data: { id: slug, ...auctionData } },
       { status: 201 },
     );
   } catch (error) {

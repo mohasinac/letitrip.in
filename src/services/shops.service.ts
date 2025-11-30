@@ -74,13 +74,13 @@ class ShopsService {
   // Get shop by slug
   async getBySlug(slug: string): Promise<ShopFE> {
     const response: any = await apiService.get(SHOP_ROUTES.BY_SLUG(slug));
-    return toFEShop(response.data);
+    return toFEShop(response.shop);
   }
 
   // Get shop by ID
   async getById(id: string): Promise<ShopFE> {
     const response: any = await apiService.get(SHOP_ROUTES.BY_ID(id));
-    return toFEShop(response.data);
+    return toFEShop(response.shop);
   }
 
   // Create shop (seller/admin)
@@ -281,6 +281,21 @@ class ShopsService {
 
   async bulkUpdate(ids: string[], updates: Record<string, any>): Promise<any> {
     return this.bulkAction("update", ids, updates);
+  }
+
+  /**
+   * Batch fetch shops by IDs
+   * Used for admin-curated featured sections
+   */
+  async getByIds(ids: string[]): Promise<ShopCardFE[]> {
+    if (!ids || ids.length === 0) return [];
+    try {
+      const response: any = await apiService.post("/shops/batch", { ids });
+      return (response.data || []).map(toFEShopCard);
+    } catch (error) {
+      console.error("Failed to batch fetch shops:", error);
+      return [];
+    }
   }
 }
 

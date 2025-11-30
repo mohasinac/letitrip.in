@@ -4,41 +4,72 @@ import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { productsService } from "@/services/products.service";
+import { homepageSettingsService } from "@/services/homepage-settings.service";
+import { apiService } from "@/services/api.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import { ShoppingBag } from "lucide-react";
 
-export default function FeaturedProductsSection() {
+interface FeaturedItem {
+  id: string;
+  type: string;
+  itemId: string;
+  name: string;
+  image?: string;
+  position: number;
+  active: boolean;
+}
+
+interface Props {
+  maxProducts?: number;
+}
+
+export default function FeaturedProductsSection({ maxProducts = 10 }: Props) {
   const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchFeaturedProducts();
-  }, []);
+  }, [maxProducts]);
 
   const fetchFeaturedProducts = async () => {
     try {
       setLoading(true);
-      // Try to get homepage products first
-      let response = await productsService.list({
+
+      // First, try to get admin-curated featured items
+      let curatedProducts: ProductCardFE[] = [];
+
+      try {
+        const response: any = await apiService.get("/homepage");
+        const featuredItems: FeaturedItem[] =
+          response.data?.featuredItems?.products || [];
+
+        // Filter active items and sort by position
+        const activeItems = featuredItems
+          .filter((item) => item.active)
+          .sort((a, b) => a.position - b.position)
+          .slice(0, maxProducts);
+
+        if (activeItems.length > 0) {
+          const productIds = activeItems.map((item) => item.itemId);
+          curatedProducts = await productsService.getByIds(productIds);
+        }
+      } catch (err) {
+        console.log("No curated products, falling back to featured flag");
+      }
+
+      // If we have curated products, use them
+      if (curatedProducts.length > 0) {
+        setProducts(curatedProducts);
+        return;
+      }
+
+      // Fallback: Query products with featured=true flag
+      const response = await productsService.list({
         featured: true,
-        limit: 10,
+        limit: maxProducts,
       });
 
-      const productsList = response.data || [];
-
-      // If less than 10, try to fill with featured products
-      if (productsList.length < 10) {
-        const additionalResponse = await productsService.list({
-          featured: true,
-          limit: 10 - productsList.length,
-        });
-
-        const additionalProducts = additionalResponse.data || [];
-
-        setProducts([...productsList, ...additionalProducts].slice(0, 10));
-      } else {
-        setProducts(productsList);
-      }
+      setProducts(response.data || []);
     } catch (error) {
       console.error("Error fetching featured products:", error);
       setProducts([]);
@@ -89,7 +120,7 @@ export default function FeaturedProductsSection() {
             image={product.images[0] || "/placeholder-product.jpg"}
             rating={product.rating}
             reviewCount={product.reviewCount}
-            shopName="Shop" // Would come from shop data
+            shopName="Shop"
             shopSlug={product.shopId}
             inStock={product.stockCount > 0}
             featured={product.featured}
