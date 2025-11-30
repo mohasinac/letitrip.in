@@ -5,6 +5,61 @@
 
 ---
 
+## Session 3 Checklist (Current)
+
+### Priority 1: Dark Mode (Verify checkout components)
+
+- [ ] 1. Verify dark mode in `AddressForm.tsx`
+- [ ] 2. Verify dark mode in `AddressSelector.tsx`
+- [ ] 3. Verify dark mode in `PaymentMethod.tsx`
+- [ ] 4. Verify dark mode in `ShopOrderSummary.tsx`
+
+### Priority 2: Sieve Migration (Admin Routes)
+
+- [ ] 5. Migrate `/api/admin/products` to Sieve pagination
+- [ ] 6. Migrate `/api/admin/auctions` to Sieve pagination
+- [ ] 7. Migrate `/api/admin/orders` to Sieve pagination
+- [ ] 8. Migrate `/api/admin/users` to Sieve pagination
+- [ ] 9. Migrate `/api/admin/shops` to Sieve pagination
+- [ ] 10. Migrate `/api/admin/tickets` to Sieve pagination
+- [ ] 11. Migrate `/api/admin/payouts` to Sieve pagination
+- [ ] 12. Migrate `/api/admin/coupons` to Sieve pagination
+- [ ] 13. Migrate `/api/admin/returns` to Sieve pagination
+- [ ] 14. Migrate `/api/admin/hero-slides` to Sieve pagination
+- [ ] 15. Migrate `/api/blog/posts` to Sieve pagination
+
+### Priority 3: Sieve Migration (User/Seller Routes)
+
+- [ ] 16. Migrate `/api/user/orders` to Sieve pagination
+- [ ] 17. Migrate `/api/user/favorites` to Sieve pagination
+- [ ] 18. Migrate `/api/seller/products` to Sieve pagination
+- [ ] 19. Migrate `/api/seller/auctions` to Sieve pagination
+- [ ] 20. Migrate `/api/seller/orders` to Sieve pagination
+
+### Priority 4: Mobile Responsiveness
+
+- [ ] 21. Hide sidebar toggle on mobile in AdminLayoutClient
+- [ ] 22. Hide sidebar toggle on mobile in SellerLayoutClient
+- [ ] 23. Add scroll arrows to MobileNavRow
+
+### Priority 5: Form UX
+
+- [ ] 24. Replace alert() with inline errors in ProductInlineForm
+- [ ] 25. Replace alert() with inline errors in CouponInlineForm
+
+### Priority 6: Component Consolidation
+
+- [ ] 26. Merge Input + MobileInput
+- [ ] 27. Merge Textarea + MobileTextarea
+- [ ] 28. Merge Select + MobileFormSelect
+
+### Priority 7: Git & Sonar
+
+- [ ] 29. Commit and push to GitHub
+- [ ] 30. Run Sonar scan and document results
+
+---
+
 ## Session 2 Checklist (Completed ✅)
 
 ### Priority 1: Sieve Pagination Migration (Core Routes)
