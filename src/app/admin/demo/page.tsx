@@ -637,7 +637,7 @@ export default function AdminDemoPage() {
 
   // Run a single cleanup step
   const runCleanupStep = useCallback(
-    async (step: DemoStep): Promise<boolean> => {
+    async (step: DemoStep): Promise<{ success: boolean; count: number }> => {
       setCurrentCleanupStep(step);
       updateCleanupStepStatus(step, { status: "running" });
 
@@ -648,19 +648,19 @@ export default function AdminDemoPage() {
             status: "completed",
             count: result.data.count,
           });
-          return true;
+          return { success: true, count: result.data.count };
         } else {
           updateCleanupStepStatus(step, {
             status: "error",
             error: result.error || "Unknown error",
           });
-          return false;
+          return { success: false, count: 0 };
         }
       } catch (error) {
         const message =
           error instanceof Error ? error.message : "Unknown error";
         updateCleanupStepStatus(step, { status: "error", error: message });
-        return false;
+        return { success: false, count: 0 };
       }
     },
     [updateCleanupStepStatus]
