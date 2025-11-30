@@ -204,6 +204,7 @@ function DropdownVariant({
   onChange,
   size,
   disabled,
+  className,
 }: ContentTypeFilterProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -234,25 +235,27 @@ function DropdownVariant({
   };
 
   return (
-    <div ref={dropdownRef} className="relative">
+    <div ref={dropdownRef} className={`relative ${className || ""}`}>
       <button
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={`
-          inline-flex items-center gap-2 rounded-lg
-          bg-gray-100 hover:bg-gray-200
-          dark:bg-gray-700 dark:hover:bg-gray-600
-          border border-gray-300 dark:border-gray-600
+          h-full w-full inline-flex items-center justify-between gap-2
+          bg-transparent hover:bg-gray-100
+          dark:hover:bg-gray-600
           ${sizeClasses[size || "md"]}
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-          focus:outline-none focus:ring-2 focus:ring-primary/50
+          focus:outline-none
+          text-gray-700 dark:text-gray-300
         `}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        {selectedOption.icon}
-        <span className="hidden sm:inline">{selectedOption.label}</span>
+        <div className="flex items-center gap-2">
+          {selectedOption.icon}
+          <span className="hidden sm:inline">{selectedOption.label}</span>
+        </div>
         <svg
           className={`w-4 h-4 transition-transform ${
             isOpen ? "rotate-180" : ""
