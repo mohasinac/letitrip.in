@@ -716,14 +716,11 @@ export default function AdminDemoPage() {
         break;
       }
 
-      const success = await runCleanupStep(step);
+      const result = await runCleanupStep(step);
 
-      if (success) {
-        const status = cleanupStepStatuses[step];
-        if (status?.count) {
-          totalDeleted += status.count;
-          breakdown.push({ collection: step, count: status.count });
-        }
+      if (result.success && result.count > 0) {
+        totalDeleted += result.count;
+        breakdown.push({ collection: step, count: result.count });
       }
 
       // Refresh stats after each step
