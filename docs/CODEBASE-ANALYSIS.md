@@ -1,6 +1,30 @@
 # Codebase Analysis & Refactoring Plan
 
-> **Last Updated**: Analysis with verified dark mode support status
+> **Last Updated**: November 30, 2025 - Updated with slug-based routing, ContentTypeFilter, and route constants
+
+## Recent Changes (November 2025)
+
+### Slug-Based Routing Migration ✅
+
+- **Seller Auctions**: Changed from `[id]` to `[slug]` based routing
+  - Route: `/seller/auctions/[slug]/edit`
+  - Uses `auctionsService.getBySlug()` instead of `getById()`
+  - All auction links now use `auction.slug` instead of `auction.id`
+  - Updated in: admin/auctions, seller/auctions, seller/reviews
+
+### SearchBar Refactoring ✅
+
+- **Removed**: Category dropdown from SearchBar (no longer fetches categories)
+- **Added**: ContentTypeFilter component for content type selection
+- **Content Types**: All, Products, Auctions, Shops, Categories, Blog
+- **Location**: `src/components/layout/SearchBar.tsx`
+- **Filter Component**: `src/components/common/ContentTypeFilter.tsx`
+
+### Route Constants Updated ✅
+
+- **SELLER_ROUTES.AUCTION_EDIT**: Now uses slug: `(slug: string) => /seller/auctions/${slug}/edit`
+- **All services**: Use API_ROUTES constants from `src/constants/api-routes.ts`
+- **All pages**: Use PAGE_ROUTES constants from `src/constants/routes.ts`
 
 ## Executive Summary
 
@@ -152,7 +176,7 @@ These items should be added to `MobileSidebar` along with role-based links (Admi
 | `/shops/[slug]`      | ShopHeader, ProductCard, CardGrid                                                                                                         | ✅ Yes       | ✅ Yes    | Dynamic                    | None                                              |
 | `/categories`        | CategoryCard                                                                                                                              | ⚠️ Partial   | ✅ Yes    | `PUBLIC_ROUTES.CATEGORIES` | None                                              |
 | `/categories/[slug]` | ProductCard, CategoryFilters                                                                                                              | ✅ Yes       | ✅ Yes    | Dynamic                    | None                                              |
-| `/search`            | ProductCard, ShopCard, CategoryCard, CardGrid                                                                                             | ✅ Yes       | ✅ Yes    | `PUBLIC_ROUTES.SEARCH`     | Tab configuration                                 |
+| `/search`            | ProductCard, ShopCard, CategoryCard, CardGrid, **ContentTypeFilter**                                                                      | ✅ Yes       | ✅ Yes    | `PUBLIC_ROUTES.SEARCH`     | **Uses ContentTypeFilter tabs for result types**  |
 | `/cart`              | CartItem, CartSummary                                                                                                                     | ✅ Yes       | ✅ Yes    | `PUBLIC_ROUTES.CART`       | None                                              |
 | `/checkout`          | AddressForm, AddressSelector, PaymentMethod, ShopOrderSummary                                                                             | ✅ Yes       | ❌ No     | `PUBLIC_ROUTES.CHECKOUT`   | None - **All checkout components lack dark mode** |
 | `/blog`              | BlogCard                                                                                                                                  | ✅ Yes       | ✅ Yes    | `PUBLIC_ROUTES.BLOG`       | None                                              |
@@ -246,29 +270,31 @@ These items should be added to `MobileSidebar` along with role-based links (Admi
 
 ### Common Components (`/src/components/common/`)
 
-| Component              | Used In            | Safe to Delete | Mobile Ready | Dark Mode  | Similar To           | Hardcoding                                               |
-| ---------------------- | ------------------ | -------------- | ------------ | ---------- | -------------------- | -------------------------------------------------------- |
-| `FilterSidebar`        | Old pages          | ⚠️ Check       | ⚠️ Partial   | ⚠️ Partial | UnifiedFilterSidebar | None                                                     |
-| `UnifiedFilterSidebar` | Products, Auctions | ❌ No          | ✅ Yes       | ✅ Yes     | MobileFilterDrawer   | None                                                     |
-| `MobileFilterSidebar`  | Old mobile         | ⚠️ Check       | ✅ Yes       | ⚠️ Partial | UnifiedFilterSidebar | None                                                     |
-| `MobileFilterDrawer`   | Old mobile         | ⚠️ Check       | ✅ Yes       | ⚠️ Partial | UnifiedFilterSidebar | None                                                     |
-| `DataTable`            | Tables             | ❌ No          | ✅ Yes       | ❌ No      | ResponsiveTable      | ✅ Consider - **CRITICAL: No dark mode + malformed CSS** |
-| `ResponsiveTable`      | Tables             | ⚠️ Check       | ✅ Yes       | ⚠️ Partial | DataTable            | ✅ Consider                                              |
-| `LoadingSkeleton`      | Loading            | ❌ No          | ✅ Yes       | ✅ Yes     | Skeleton             | ✅ Consider                                              |
-| `Skeleton`             | Loading            | ❌ No          | ✅ Yes       | ✅ Yes     | LoadingSkeleton      | ✅ Consider                                              |
-| `EmptyState`           | No data            | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | None                                                     |
-| `ErrorBoundary`        | Error handling     | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | None                                                     |
-| `ErrorState`           | Errors             | ❌ No          | ✅ Yes       | ⚠️ Partial | ErrorMessage         | ✅ Consider                                              |
-| `ErrorMessage`         | Forms              | ❌ No          | ✅ Yes       | ⚠️ Partial | ErrorState           | ✅ Consider                                              |
-| `Toast`                | Notifications      | ❌ No          | ✅ Yes       | ✅ Yes     | Admin/Toast          | ✅ Merge                                                 |
-| `SearchBar`            | Search             | ❌ No          | ✅ Yes       | ✅ Yes     | Layout/SearchBar     | ✅ Merge                                                 |
-| `FavoriteButton`       | Products, Auctions | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | None                                                     |
-| `OptimizedImage`       | Images             | ❌ No          | ✅ Yes       | N/A        | -                    | None                                                     |
-| `ThemeToggle`          | Header             | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | None                                                     |
-| `StatusBadge`          | Status display     | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | Colors hardcoded                                         |
-| `ConfirmDialog`        | Delete confirm     | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | None                                                     |
-| `DateTimePicker`       | Forms              | ❌ No          | ⚠️ Partial   | ❌ No      | -                    | None                                                     |
-| `RichTextEditor`       | Blog, Products     | ❌ No          | ⚠️ Partial   | ❌ No      | -                    | None                                                     |
+| Component              | Used In            | Safe to Delete | Mobile Ready | Dark Mode  | Similar To           | Hardcoding                                                      |
+| ---------------------- | ------------------ | -------------- | ------------ | ---------- | -------------------- | --------------------------------------------------------------- |
+| `FilterSidebar`        | Old pages          | ⚠️ Check       | ⚠️ Partial   | ⚠️ Partial | UnifiedFilterSidebar | None                                                            |
+| `UnifiedFilterSidebar` | Products, Auctions | ❌ No          | ✅ Yes       | ✅ Yes     | MobileFilterDrawer   | None                                                            |
+| `MobileFilterSidebar`  | Old mobile         | ⚠️ Check       | ✅ Yes       | ⚠️ Partial | UnifiedFilterSidebar | None                                                            |
+| `MobileFilterDrawer`   | Old mobile         | ⚠️ Check       | ✅ Yes       | ⚠️ Partial | UnifiedFilterSidebar | None                                                            |
+| `DataTable`            | Tables             | ❌ No          | ✅ Yes       | ❌ No      | ResponsiveTable      | ✅ Consider - **CRITICAL: No dark mode + malformed CSS**        |
+| `ResponsiveTable`      | Tables             | ⚠️ Check       | ✅ Yes       | ⚠️ Partial | DataTable            | ✅ Consider                                                     |
+| `LoadingSkeleton`      | Loading            | ❌ No          | ✅ Yes       | ✅ Yes     | Skeleton             | ✅ Consider                                                     |
+| `Skeleton`             | Loading            | ❌ No          | ✅ Yes       | ✅ Yes     | LoadingSkeleton      | ✅ Consider                                                     |
+| `EmptyState`           | No data            | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | None                                                            |
+| `ErrorBoundary`        | Error handling     | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | None                                                            |
+| `ErrorState`           | Errors             | ❌ No          | ✅ Yes       | ⚠️ Partial | ErrorMessage         | ✅ Consider                                                     |
+| `ErrorMessage`         | Forms              | ❌ No          | ✅ Yes       | ⚠️ Partial | ErrorState           | ✅ Consider                                                     |
+| `Toast`                | Notifications      | ❌ No          | ✅ Yes       | ✅ Yes     | Admin/Toast          | ✅ Merge                                                        |
+| `SearchBar`            | Search             | ❌ No          | ✅ Yes       | ✅ Yes     | Layout/SearchBar     | ✅ Merge                                                        |
+| `FavoriteButton`       | Products, Auctions | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | None                                                            |
+| `OptimizedImage`       | Images             | ❌ No          | ✅ Yes       | N/A        | -                    | None                                                            |
+| `ThemeToggle`          | Header             | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | None                                                            |
+| `StatusBadge`          | Status display     | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | Colors hardcoded                                                |
+| `ConfirmDialog`        | Delete confirm     | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | None                                                            |
+| `DateTimePicker`       | Forms              | ❌ No          | ⚠️ Partial   | ❌ No      | -                    | None                                                            |
+| `RichTextEditor`       | Blog, Products     | ❌ No          | ⚠️ Partial   | ❌ No      | -                    | None                                                            |
+| `ContentTypeFilter`    | SearchBar, Search  | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | Content types: all, products, auctions, shops, categories, blog |
+| `CategorySelector`     | Admin, Forms       | ❌ No          | ✅ Yes       | ✅ Yes     | -                    | **No longer used in SearchBar (replaced by ContentTypeFilter)** |
 
 ### Mobile Components (`/src/components/mobile/`)
 
@@ -291,22 +317,22 @@ These items should be added to `MobileSidebar` along with role-based links (Admi
 
 ### Layout Components (`/src/components/layout/`)
 
-| Component            | Used In     | Safe to Delete | Mobile Ready    | Dark Mode  | Similar To       | Hardcoding   |
-| -------------------- | ----------- | -------------- | --------------- | ---------- | ---------------- | ------------ |
-| `Header`             | App layout  | ❌ No          | ✅ Yes          | ✅ Yes     | -                | None         |
-| `Footer`             | App layout  | ❌ No          | ✅ Yes          | ✅ Yes     | -                | Footer links |
-| `BottomNav`          | Mobile nav  | ❌ No          | ✅ Yes          | ✅ Yes     | -                | Nav items    |
-| `Breadcrumb`         | Navigation  | ❌ No          | ✅ Yes          | ✅ Yes     | -                | None         |
-| `MainNavBar`         | Desktop nav | ❌ No          | ❌ Desktop only | ✅ Yes     | -                | None         |
-| `MobileSidebar`      | Mobile nav  | ❌ No          | ✅ Yes          | ✅ Yes     | -                | None         |
-| `SubNavbar`          | Sub nav     | ❌ No          | ✅ Yes          | ✅ Yes     | -                | None         |
-| `HeroCarousel`       | Home        | ❌ No          | ✅ Yes          | ✅ Yes     | -                | None         |
-| `FeaturedCategories` | Home        | ❌ No          | ✅ Yes          | ✅ Yes     | -                | None         |
-| `FeaturedProducts`   | Home        | ❌ No          | ✅ Yes          | ✅ Yes     | -                | None         |
-| `FeaturedAuctions`   | Home        | ❌ No          | ✅ Yes          | ✅ Yes     | -                | None         |
-| `ShopsNav`           | Home        | ❌ No          | ✅ Yes          | ✅ Yes     | -                | None         |
-| `SearchBar`          | Header      | ❌ No          | ✅ Yes          | ✅ Yes     | Common/SearchBar | ✅ Merge     |
-| `SpecialEventBanner` | Promotions  | ⚠️ Check       | ✅ Yes          | ⚠️ Partial | -                | None         |
+| Component            | Used In     | Safe to Delete | Mobile Ready    | Dark Mode  | Similar To | Hardcoding                            |
+| -------------------- | ----------- | -------------- | --------------- | ---------- | ---------- | ------------------------------------- |
+| `Header`             | App layout  | ❌ No          | ✅ Yes          | ✅ Yes     | -          | None                                  |
+| `Footer`             | App layout  | ❌ No          | ✅ Yes          | ✅ Yes     | -          | Footer links                          |
+| `BottomNav`          | Mobile nav  | ❌ No          | ✅ Yes          | ✅ Yes     | -          | Nav items                             |
+| `Breadcrumb`         | Navigation  | ❌ No          | ✅ Yes          | ✅ Yes     | -          | None                                  |
+| `MainNavBar`         | Desktop nav | ❌ No          | ❌ Desktop only | ✅ Yes     | -          | None                                  |
+| `MobileSidebar`      | Mobile nav  | ❌ No          | ✅ Yes          | ✅ Yes     | -          | None                                  |
+| `SubNavbar`          | Sub nav     | ❌ No          | ✅ Yes          | ✅ Yes     | -          | None                                  |
+| `HeroCarousel`       | Home        | ❌ No          | ✅ Yes          | ✅ Yes     | -          | None                                  |
+| `FeaturedCategories` | Home        | ❌ No          | ✅ Yes          | ✅ Yes     | -          | None                                  |
+| `FeaturedProducts`   | Home        | ❌ No          | ✅ Yes          | ✅ Yes     | -          | None                                  |
+| `FeaturedAuctions`   | Home        | ❌ No          | ✅ Yes          | ✅ Yes     | -          | None                                  |
+| `ShopsNav`           | Home        | ❌ No          | ✅ Yes          | ✅ Yes     | -          | None                                  |
+| `SearchBar`          | Header      | ❌ No          | ✅ Yes          | ✅ Yes     | -          | **Uses ContentTypeFilter (Nov 2025)** |
+| `SpecialEventBanner` | Promotions  | ⚠️ Check       | ✅ Yes          | ⚠️ Partial | -          | None                                  |
 
 ### Admin Components (`/src/components/admin/`)
 
@@ -1242,3 +1268,53 @@ import { FormSection, FormRow, FormActions } from "@/components/forms";
 | `src/components/seller/ProductInlineForm.tsx` | Use FormInput, FormSelect                  |
 | `src/components/seller/CouponInlineForm.tsx`  | Use FormInput, FormSelect, FormNumberInput |
 | `src/components/seller/ShopInlineForm.tsx`    | Use FormInput, FormTextarea                |
+
+---
+
+## Route Parameter Strategy (November 2025)
+
+### Slug-Based Routes (User-Friendly URLs) ✅
+
+All public-facing and seller-facing resource URLs use slugs for SEO and readability:
+
+| Route Pattern                  | Example                               | Service Method                  |
+| ------------------------------ | ------------------------------------- | ------------------------------- |
+| `/products/[slug]`             | `/products/iphone-15-pro`             | `productsService.getBySlug()`   |
+| `/auctions/[slug]`             | `/auctions/vintage-watch-auction`     | `auctionsService.getBySlug()`   |
+| `/shops/[slug]`                | `/shops/tech-paradise`                | `shopsService.getBySlug()`      |
+| `/categories/[slug]`           | `/categories/electronics`             | `categoriesService.getBySlug()` |
+| `/blog/[slug]`                 | `/blog/top-10-auction-tips`           | `blogService.getBySlug()`       |
+| `/seller/products/[slug]/edit` | `/seller/products/iphone-15-pro/edit` | `productsService.getBySlug()`   |
+| `/seller/auctions/[slug]/edit` | `/seller/auctions/vintage-watch/edit` | `auctionsService.getBySlug()`   |
+| `/seller/my-shops/[slug]`      | `/seller/my-shops/my-tech-store`      | `shopsService.getBySlug()`      |
+
+### ID-Based Routes (Internal/Order References)
+
+Some routes still use IDs where they represent user-visible identifiers (like order numbers):
+
+| Route Pattern         | Example                          | Reason                                      |
+| --------------------- | -------------------------------- | ------------------------------------------- |
+| `/user/orders/[id]`   | `/user/orders/ORD-2024-001234`   | Order numbers are user-friendly identifiers |
+| `/seller/orders/[id]` | `/seller/orders/ORD-2024-001234` | Consistent with user orders                 |
+| `/admin/orders/[id]`  | `/admin/orders/ORD-2024-001234`  | Internal reference                          |
+| `/user/tickets/[id]`  | `/user/tickets/TKT-2024-000567`  | Ticket numbers are user-friendly            |
+
+### Admin Routes (Internal, Not SEO-Critical)
+
+Admin routes may use IDs since they're not public-facing:
+
+| Route Pattern                  | Uses | Notes                    |
+| ------------------------------ | ---- | ------------------------ |
+| `/admin/products/[id]`         | ID   | Internal admin reference |
+| `/admin/auctions/[id]`         | ID   | Internal admin reference |
+| `/admin/users/[id]`            | ID   | Internal admin reference |
+| `/admin/hero-slides/[id]/edit` | ID   | Internal admin reference |
+
+### Key Guidelines
+
+1. **Public URLs**: Always use slugs for SEO and shareability
+2. **Seller URLs**: Use slugs for resources (products, auctions, shops)
+3. **Order/Ticket References**: Keep IDs since they're user-visible reference numbers
+4. **Admin Internal URLs**: Can use IDs since not public-facing
+5. **API Calls**: Services support both `getById()` and `getBySlug()` methods
+6. **Route Constants**: Defined in `src/constants/routes.ts`

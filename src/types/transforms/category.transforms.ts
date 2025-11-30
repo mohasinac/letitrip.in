@@ -33,7 +33,8 @@ export function toFECategory(data: CategoryBE | any): CategoryFE {
   const parentIds = data.parentIds || data.parent_ids || (data.parent_id ? [data.parent_id] : []);
   const productCount = data.productCount ?? data.product_count ?? 0;
   const level = data.level ?? 0;
-  const isLeaf = data.isLeaf ?? data.is_leaf ?? !data.hasChildren ?? !data.has_children ?? true;
+  const hasChildrenValue = data.hasChildren ?? data.has_children ?? false;
+  const isLeaf = data.isLeaf ?? data.is_leaf ?? !hasChildrenValue;
   const order = data.order ?? data.sortOrder ?? data.sort_order ?? 0;
   
   // Determine status/isActive
