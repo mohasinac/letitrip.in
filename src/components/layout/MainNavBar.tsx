@@ -388,7 +388,11 @@ export default function MainNavBar({
           </div>
 
           {/* User Menu or Sign In */}
-          <div className="relative" ref={userMenuRef}>
+          {/* Hidden on mobile for authenticated users (use bottom nav Account instead) */}
+          <div
+            className={`relative ${isAuthenticated ? "hidden lg:block" : ""}`}
+            ref={userMenuRef}
+          >
             {isAuthenticated && user ? (
               // Logged in - Show user profile with dropdown
               <>

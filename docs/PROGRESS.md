@@ -3,11 +3,38 @@
 > **Created**: November 30, 2025
 > **Last Updated**: November 30, 2025
 
-## Session Checklist
+---
 
-Based on the CODEBASE-ANALYSIS documents, the following tasks are identified for this session:
+## Session 2 Checklist (Current)
 
-### Dark Mode Fixes (Priority 1 - Critical)
+### Priority 1: Sieve Pagination Migration (Core Routes)
+
+- [ ] 1. Migrate `/api/products` to Sieve pagination
+- [ ] 2. Migrate `/api/auctions` to Sieve pagination
+- [ ] 3. Migrate `/api/shops` to Sieve pagination
+- [ ] 4. Migrate `/api/categories` to Sieve pagination
+- [ ] 5. Migrate `/api/reviews` to Sieve pagination
+
+### Priority 2: Component Dark Mode (Remaining)
+
+- [ ] 6. Add dark mode to `LoadingSkeleton.tsx`
+- [ ] 7. Add dark mode to `ErrorState.tsx`
+- [ ] 8. Fix AdminSidebar search highlight visibility for dark mode
+
+### Priority 3: Mobile Responsiveness Fixes
+
+- [ ] 9. Hide user menu on mobile in MainNavBar (use bottom nav instead)
+- [ ] 10. Fix MobileFilterSidebar overlap with bottom nav
+
+### Priority 4: Code Quality
+
+- [ ] 11. Run local Sonar scan and report metrics
+
+---
+
+## Session 1 (Completed - November 30, 2025)
+
+### Dark Mode Fixes
 
 - [x] 1. Add dark mode to `AddressForm.tsx` (checkout component)
 - [x] 2. Add dark mode to `AddressSelector.tsx` (checkout component)
@@ -22,19 +49,9 @@ Based on the CODEBASE-ANALYSIS documents, the following tasks are identified for
 
 ### Code Quality (Bug Fixes)
 
-- [x] 11. Fix malformed CSS in `DateTimePicker.tsx` (hover:bg-gray-200:bg-gray-700 pattern)
+- [x] 11. Fix malformed CSS in `DateTimePicker.tsx`
 
-### Sonar Analysis
-
-- [ ] 12. Run local Sonar scan (requires SONAR_TOKEN env variable)
-
----
-
-## Completed Tasks
-
-All 11 dark mode + code quality tasks completed.
-
-### Summary of Changes
+### Summary of Session 1 Changes
 
 | File                                           | Changes                                                                                                                  |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
@@ -48,13 +65,3 @@ All 11 dark mode + code quality tasks completed.
 | `src/app/admin/returns/page.tsx`               | Full dark mode: stats cards, table, pagination, status badges                                                            |
 | `src/app/admin/support-tickets/page.tsx`       | Full dark mode: stats cards, table, pagination, status badges                                                            |
 | `src/app/admin/payouts/page.tsx`               | Full dark mode: stats cards, table, pagination, action buttons                                                           |
-
----
-
-## Session Notes
-
-- Session started: November 30, 2025
-- Session completed: November 30, 2025
-- Focus: Dark mode implementation for checkout and admin components
-- Reference: `docs/01-dark-mode-issues.md`
-- Sonar scan not run: requires `SONAR_TOKEN` environment variable to authenticate with SonarCloud

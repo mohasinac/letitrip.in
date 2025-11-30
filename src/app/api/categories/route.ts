@@ -6,10 +6,64 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { withCache } from "@/app/api/middleware/cache";
 import { ValidationError } from "@/lib/api-errors";
+import {
+  parseSieveQuery,
+  categoriesSieveConfig,
+  createPaginationMeta,
+} from "@/app/api/lib/sieve";
+
+// Extended Sieve config with field mappings for categories
+const categoriesConfig = {
+  ...categoriesSieveConfig,
+  fieldMappings: {
+    parentId: "parent_id",
+    parentIds: "parent_ids",
+    sortOrder: "sort_order",
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    productCount: "product_count",
+    featured: "is_featured",
+    showOnHomepage: "show_on_homepage",
+    isActive: "is_active",
+  },
+};
+
+/**
+ * Transform category document to API response format
+ */
+function transformCategory(id: string, data: any) {
+  return {
+    id,
+    ...data,
+    // Add camelCase aliases for frontend compatibility
+    parentIds: data.parent_ids || (data.parent_id ? [data.parent_id] : []),
+    childrenIds: data.children_ids || [],
+    parentId: data.parent_id,
+    featured: data.is_featured,
+    showOnHomepage: data.show_on_homepage,
+    isActive: data.is_active,
+    productCount: data.product_count || 0,
+    inStockCount: data.in_stock_count || 0,
+    outOfStockCount: data.out_of_stock_count || 0,
+    liveAuctionCount: data.live_auction_count || 0,
+    endedAuctionCount: data.ended_auction_count || 0,
+    childCount: data.child_count || 0,
+    hasChildren: data.has_children || false,
+    sortOrder: data.sort_order || 0,
+    metaTitle: data.meta_title,
+    metaDescription: data.meta_description,
+    commissionRate: data.commission_rate || 0,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
+}
 
 /**
  * GET /api/categories
- * List categories with role-based filtering
+ * List categories with Sieve pagination
+ * Query Format: ?page=1&pageSize=50&sorts=sortOrder&filters=featured==true
+ *
+ * Role-based filtering:
  * - Public: Active categories only
  * - Admin: All categories including inactive
  */
@@ -21,20 +75,27 @@ export async function GET(request: NextRequest) {
         const user = await getUserFromRequest(req);
         const { searchParams } = new URL(req.url);
 
-        // Pagination params
-        const startAfter = searchParams.get("startAfter");
-        const limit = parseInt(searchParams.get("limit") || "200");
+        // Parse Sieve query
+        const { query: sieveQuery, errors, warnings } = parseSieveQuery(
+          searchParams,
+          categoriesConfig
+        );
 
-        // Filter params
+        if (errors.length > 0) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Invalid query parameters",
+              details: errors,
+            },
+            { status: 400 }
+          );
+        }
+
+        // Legacy filter params (backward compatibility)
         const featured = searchParams.get("featured");
         const showOnHomepage = searchParams.get("showOnHomepage");
         const parentId = searchParams.get("parentId");
-
-        // Sort params
-        const sortBy = searchParams.get("sortBy") || "sort_order";
-        const sortOrder = (searchParams.get("sortOrder") || "asc") as
-          | "asc"
-          | "desc";
 
         let query: FirebaseFirestore.Query = Collections.categories();
 
@@ -43,109 +104,78 @@ export async function GET(request: NextRequest) {
           query = query.where("is_active", "==", true);
         }
 
+        // Apply legacy filters (backward compatibility)
         if (featured !== null) {
           query = query.where("is_featured", "==", featured === "true");
         }
         if (showOnHomepage !== null) {
-          query = query.where(
-            "show_on_homepage",
-            "==",
-            showOnHomepage === "true",
-          );
+          query = query.where("show_on_homepage", "==", showOnHomepage === "true");
         }
         if (parentId !== null) {
-          query = query.where(
-            "parent_id",
-            "==",
-            parentId === "null" ? null : parentId,
-          );
+          query = query.where("parent_id", "==", parentId === "null" ? null : parentId);
         }
 
-        // Add sorting
-        const validSortFields = [
-          "sort_order",
-          "name",
-          "product_count",
-          "created_at",
-        ];
-        const sortField = validSortFields.includes(sortBy)
-          ? sortBy
-          : "sort_order";
-        query = query.orderBy(sortField, sortOrder);
-
-        // Apply cursor pagination
-        if (startAfter) {
-          const startDoc = await Collections.categories().doc(startAfter).get();
-          if (startDoc.exists) {
-            query = query.startAfter(startDoc);
+        // Apply Sieve filters
+        for (const filter of sieveQuery.filters) {
+          const dbField = categoriesConfig.fieldMappings[filter.field] || filter.field;
+          if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
+            query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
           }
         }
 
-        // Fetch limit + 1 to check if there's a next page
-        query = query.limit(limit + 1);
+        // Apply sorting
+        if (sieveQuery.sorts.length > 0) {
+          for (const sort of sieveQuery.sorts) {
+            const dbField = categoriesConfig.fieldMappings[sort.field] || sort.field;
+            query = query.orderBy(dbField, sort.direction);
+          }
+        } else {
+          // Default sort by sort_order
+          query = query.orderBy("sort_order", "asc");
+        }
+
+        // Get total count
+        const countSnapshot = await query.count().get();
+        const totalCount = countSnapshot.data().count;
+
+        // Apply pagination
+        const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
+        if (offset > 0) {
+          const skipSnapshot = await query.limit(offset).get();
+          if (skipSnapshot.docs.length > 0) {
+            const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+            query = query.startAfter(lastDoc);
+          }
+        }
+        query = query.limit(sieveQuery.pageSize);
+
+        // Execute query
         const snapshot = await query.get();
-        const docs = snapshot.docs;
+        const categories = snapshot.docs.map((doc) => transformCategory(doc.id, doc.data()));
 
-        // Check if there's a next page
-        const hasNextPage = docs.length > limit;
-        const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
-
-        const categories = resultDocs.map((d) => {
-          const data: any = d.data();
-          return {
-            id: d.id,
-            ...data,
-            // Add camelCase aliases for frontend compatibility with multi-parent support
-            parentIds:
-              data.parent_ids || (data.parent_id ? [data.parent_id] : []),
-            childrenIds: data.children_ids || [],
-            parentId: data.parent_id, // Backward compatibility
-            featured: data.is_featured,
-            showOnHomepage: data.show_on_homepage,
-            isActive: data.is_active,
-            productCount: data.product_count || 0,
-            inStockCount: data.in_stock_count || 0,
-            outOfStockCount: data.out_of_stock_count || 0,
-            liveAuctionCount: data.live_auction_count || 0,
-            endedAuctionCount: data.ended_auction_count || 0,
-            childCount: data.child_count || 0,
-            hasChildren: data.has_children || false,
-            sortOrder: data.sort_order || 0,
-            metaTitle: data.meta_title,
-            metaDescription: data.meta_description,
-            commissionRate: data.commission_rate || 0,
-            createdAt: data.created_at,
-            updatedAt: data.updated_at,
-          };
-        });
-
-        // Get next cursor
-        const nextCursor =
-          hasNextPage && resultDocs.length > 0
-            ? resultDocs[resultDocs.length - 1].id
-            : null;
+        // Build Sieve pagination meta
+        const pagination = createPaginationMeta(totalCount, sieveQuery);
 
         return NextResponse.json({
           success: true,
           data: categories,
           count: categories.length,
-          pagination: {
-            limit,
-            hasNextPage,
-            nextCursor,
+          pagination,
+          meta: {
+            appliedFilters: sieveQuery.filters,
+            appliedSorts: sieveQuery.sorts,
+            warnings: warnings.length > 0 ? warnings : undefined,
           },
         });
       } catch (error) {
         console.error("Error listing categories:", error);
         return NextResponse.json(
           { success: false, error: "Failed to list categories" },
-          { status: 500 },
+          { status: 500 }
         );
       }
     },
-    {
-      ttl: 300,
-    },
+    { ttl: 300 }
   );
 }
 

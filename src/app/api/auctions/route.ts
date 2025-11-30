@@ -5,12 +5,56 @@ import {
   requireAuth,
 } from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
-import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
 import { updateCategoryAuctionCounts } from "@/lib/category-hierarchy";
+import {
+  parseSieveQuery,
+  auctionsSieveConfig,
+  createPaginationMeta,
+} from "@/app/api/lib/sieve";
+
+// Extended Sieve config with field mappings for auctions
+const auctionsConfig = {
+  ...auctionsSieveConfig,
+  fieldMappings: {
+    categoryId: "category_id",
+    shopId: "shop_id",
+    createdAt: "created_at",
+    startTime: "start_time",
+    endTime: "end_time",
+    currentBid: "current_bid",
+    startingPrice: "starting_bid",
+    bidCount: "bid_count",
+    featured: "is_featured",
+  },
+};
+
+/**
+ * Transform auction document to API response format
+ */
+function transformAuction(id: string, data: any) {
+  return {
+    id,
+    ...data,
+    // Add camelCase aliases
+    shopId: data.shop_id,
+    categoryId: data.category_id,
+    currentBid: data.current_bid,
+    startingBid: data.starting_bid,
+    bidCount: data.bid_count,
+    startTime: data.start_time,
+    endTime: data.end_time,
+    featured: data.is_featured,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
+}
 
 /**
  * GET /api/auctions
- * List auctions with role-based filtering
+ * List auctions with Sieve pagination
+ * Query Format: ?page=1&pageSize=20&sorts=-endTime&filters=status==active
+ *
+ * Role-based filtering:
  * - Public: Active auctions only
  * - Seller: Own auctions (all statuses)
  * - Admin: All auctions
@@ -21,21 +65,32 @@ export async function GET(request: NextRequest) {
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
 
-    // Filter params
-    const shopId = searchParams.get("shop_id");
+    // Parse Sieve query
+    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
+      searchParams,
+      auctionsConfig
+    );
+
+    if (errors.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid query parameters",
+          details: errors,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Legacy filter params (backward compatibility)
+    const shopId = searchParams.get("shop_id") || searchParams.get("shopId");
     const status = searchParams.get("status");
-    const categoryId = searchParams.get("categoryId");
+    const categoryId = searchParams.get("categoryId") || searchParams.get("category_id");
     const minBid = searchParams.get("minBid");
     const maxBid = searchParams.get("maxBid");
     const featured = searchParams.get("featured");
 
-    // Sort params
-    const sortBy = searchParams.get("sortBy") || "created_at";
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as
-      | "asc"
-      | "desc";
-
-    // Build base query with role-based filtering
+    // Build base query
     let query: FirebaseFirestore.Query = Collections.auctions();
 
     // Role-based access control
@@ -43,30 +98,29 @@ export async function GET(request: NextRequest) {
       query = query.where("status", "==", "active");
     } else if (role === "seller") {
       if (!shopId) {
-        // Seller must provide shop_id
         return NextResponse.json({
           success: true,
           data: [],
-          count: 0,
           pagination: {
-            limit: 50,
+            page: 1,
+            pageSize: sieveQuery.pageSize,
+            totalCount: 0,
+            totalPages: 0,
             hasNextPage: false,
-            nextCursor: null,
-            count: 0,
+            hasPreviousPage: false,
           },
         });
       }
       query = query.where("shop_id", "==", shopId);
     }
-    // Admin sees all auctions (no additional filter)
+    // Admin sees all auctions
 
-    // Apply additional filters
+    // Apply legacy filters (backward compatibility)
     if (shopId && (role === "admin" || role === "user" || role === "guest")) {
       query = query.where("shop_id", "==", shopId);
     }
 
     if (status && role !== "guest" && role !== "user") {
-      // Only admin/seller can filter by status other than active
       query = query.where("status", "==", status);
     }
 
@@ -78,56 +132,78 @@ export async function GET(request: NextRequest) {
       query = query.where("is_featured", "==", true);
     }
 
-    // Price range filters (only if sorting by current_bid or no price sort)
-    const validSortFields = [
-      "created_at",
-      "end_time",
-      "current_bid",
-      "bid_count",
-    ];
-    const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
-
-    if (sortField === "current_bid") {
-      if (minBid) {
-        const minBidNum = parseFloat(minBid);
-        if (!isNaN(minBidNum)) {
-          query = query.where("current_bid", ">=", minBidNum);
-        }
-      }
-      if (maxBid) {
-        const maxBidNum = parseFloat(maxBid);
-        if (!isNaN(maxBidNum)) {
-          query = query.where("current_bid", "<=", maxBidNum);
-        }
+    // Apply Sieve filters
+    for (const filter of sieveQuery.filters) {
+      const dbField = auctionsConfig.fieldMappings[filter.field] || filter.field;
+      if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
+        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
       }
     }
 
-    // Add sorting
-    query = query.orderBy(sortField, sortOrder);
+    // Price range (legacy support)
+    if (minBid) {
+      const minBidNum = parseFloat(minBid);
+      if (!isNaN(minBidNum)) {
+        query = query.where("current_bid", ">=", minBidNum);
+      }
+    }
+    if (maxBid) {
+      const maxBidNum = parseFloat(maxBid);
+      if (!isNaN(maxBidNum)) {
+        query = query.where("current_bid", "<=", maxBidNum);
+      }
+    }
 
-    // Execute paginated query
-    const response = await executeCursorPaginatedQuery(
-      query,
-      searchParams,
-      (id) => Collections.auctions().doc(id).get(),
-      (doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }),
-      50, // defaultLimit
-      200, // maxLimit
-    );
+    // Apply sorting
+    if (sieveQuery.sorts.length > 0) {
+      for (const sort of sieveQuery.sorts) {
+        const dbField = auctionsConfig.fieldMappings[sort.field] || sort.field;
+        query = query.orderBy(dbField, sort.direction);
+      }
+    } else {
+      // Default sort by end_time (ending soon first)
+      query = query.orderBy("end_time", "asc");
+    }
 
-    return NextResponse.json(response);
+    // Get total count
+    const countSnapshot = await query.count().get();
+    const totalCount = countSnapshot.data().count;
+
+    // Apply pagination
+    const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0) {
+      const skipSnapshot = await query.limit(offset).get();
+      if (skipSnapshot.docs.length > 0) {
+        const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+        query = query.startAfter(lastDoc);
+      }
+    }
+    query = query.limit(sieveQuery.pageSize);
+
+    // Execute query
+    const snapshot = await query.get();
+    const data = snapshot.docs.map((doc) => transformAuction(doc.id, doc.data()));
+
+    // Build response with Sieve pagination meta
+    const pagination = createPaginationMeta(totalCount, sieveQuery);
+
+    return NextResponse.json({
+      success: true,
+      data,
+      pagination,
+      meta: {
+        appliedFilters: sieveQuery.filters,
+        appliedSorts: sieveQuery.sorts,
+        warnings: warnings.length > 0 ? warnings : undefined,
+      },
+    });
   } catch (error) {
     console.error("Error listing auctions:", error);
 
-    // Log more detailed error info in development
     if (process.env.NODE_ENV === "development") {
       console.error("Error details:", {
         message: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
-        name: error instanceof Error ? error.name : undefined,
       });
     }
 
@@ -139,7 +215,7 @@ export async function GET(request: NextRequest) {
           details: error instanceof Error ? error.message : String(error),
         }),
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
