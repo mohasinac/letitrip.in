@@ -149,11 +149,11 @@ export async function POST(request: NextRequest) {
 
       const title = `${DEMO_PREFIX}${auctionItem.name}`;
       
-      // Generate 4-6 images per auction
+      // Generate 4-6 images per auction - use shuffled selection for variety
       const imageCount = 4 + Math.floor(Math.random() * 3);
-      const auctionImages = Array.from({ length: imageCount }, (_, idx) => 
-        PRODUCT_IMAGES[(i * 4 + idx) % PRODUCT_IMAGES.length]
-      );
+      // Shuffle and pick unique images for this auction
+      const shuffledImages = [...PRODUCT_IMAGES].sort(() => Math.random() - 0.5);
+      const auctionImages = shuffledImages.slice(0, imageCount);
       
       // 35% of auctions have videos
       const hasVideo = Math.random() < 0.35;

@@ -19,6 +19,7 @@ const categoriesConfig = {
     parentId: "parent_id",
     parentIds: "parent_ids",
     sortOrder: "sort_order",
+    order: "sort_order", // Map 'order' from config to 'sort_order' in DB
     createdAt: "created_at",
     updatedAt: "updated_at",
     productCount: "product_count",

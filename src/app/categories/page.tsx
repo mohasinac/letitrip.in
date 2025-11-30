@@ -1,92 +1,128 @@
 "use client";
 
-import { Suspense, useState, useEffect, useMemo } from "react";
+import { Suspense, useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ChevronRight,
   Tag,
   Loader2,
-  Search,
   List,
   ChevronLeft,
+  Filter,
+  Grid,
 } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { CATEGORY_FILTERS } from "@/constants/filters";
 import { categoriesService } from "@/services/categories.service";
+import { useIsMobile } from "@/hooks/useMobile";
 import type { CategoryFE } from "@/types/frontend/category.types";
 
 function CategoriesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isMobile = useIsMobile();
 
   const [categories, setCategories] = useState<CategoryFE[]>([]);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<"grid" | "list">("grid");
+  const [showFilters, setShowFilters] = useState(false);
 
-  // Cursor pagination state
-  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
 
-  // Filters from URL
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || ""
-  );
+  // Filter state
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [filterOptions, setFilterOptions] = useState(CATEGORY_FILTERS);
   const [sortBy, setSortBy] = useState<string>(
     searchParams.get("sortBy") || "sort_order"
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
     (searchParams.get("sortOrder") as "asc" | "desc") || "asc"
   );
-  const [featured, setFeatured] = useState(
-    searchParams.get("featured") === "true"
-  );
 
+  // Initialize filters from URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const initialFilters: Record<string, any> = {};
+
+    if (params.get("featured") === "true") initialFilters.is_featured = true;
+    if (params.get("is_homepage") === "true") initialFilters.is_homepage = true;
+    if (params.get("is_leaf") === "true") initialFilters.is_leaf = true;
+    if (params.get("parent_id"))
+      initialFilters.parent_id = params.get("parent_id");
+    if (params.get("sortBy")) setSortBy(params.get("sortBy") || "sort_order");
+    if (params.get("sortOrder"))
+      setSortOrder((params.get("sortOrder") as "asc" | "desc") || "asc");
+
+    if (Object.keys(initialFilters).length > 0) {
+      setFilterValues(initialFilters);
+    }
+
+    loadFilterOptions();
+  }, []);
+
+  // Load categories when filters change
   useEffect(() => {
     loadCategories();
-  }, [currentPage, sortBy, sortOrder, featured]);
+  }, [currentPage, sortBy, sortOrder]);
 
-  // Update URL when filters change
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (searchQuery) params.set("search", searchQuery);
-    if (sortBy) params.set("sortBy", sortBy);
-    if (sortOrder) params.set("sortOrder", sortOrder);
-    if (featured) params.set("featured", "true");
+  const loadFilterOptions = async () => {
+    try {
+      const categoriesData = await categoriesService.list({ limit: 100 });
 
-    router.push(`/categories?${params.toString()}`, { scroll: false });
-  }, [searchQuery, sortBy, sortOrder, featured]);
+      // Update parent category options dynamically
+      const updatedFilters = CATEGORY_FILTERS.map((section) => {
+        if (section.title === "Category Level") {
+          return {
+            ...section,
+            fields: section.fields.map((field) => {
+              if (field.key === "parent_id") {
+                return {
+                  ...field,
+                  options: [
+                    { label: "Root Categories", value: "null" },
+                    ...(categoriesData?.data || [])
+                      .filter((cat) => !cat.isLeaf)
+                      .map((cat) => ({
+                        label: cat.name,
+                        value: cat.id,
+                      })),
+                  ],
+                };
+              }
+              return field;
+            }),
+          };
+        }
+        return section;
+      });
+
+      setFilterOptions(updatedFilters);
+    } catch (error) {
+      console.error("Failed to load filter options:", error);
+    }
+  };
 
   const loadCategories = async () => {
     setLoading(true);
     try {
-      const startAfter = cursors[currentPage - 1];
       const response = await categoriesService.list({
-        startAfter,
+        page: currentPage,
         limit: 50,
         sortBy,
         sortOrder,
-        featured: featured || undefined,
-        search: searchQuery || undefined,
+        featured: filterValues.is_featured || undefined,
+        showOnHomepage: filterValues.is_homepage || undefined,
+        parentId: filterValues.parent_id || undefined,
       });
 
       setCategories(response.data || []);
-
-      // Check if it's cursor pagination
-      if ("hasNextPage" in response.pagination) {
-        setHasNextPage(response.pagination.hasNextPage || false);
-
-        // Store next cursor
-        if ("nextCursor" in response.pagination) {
-          const cursorPagination = response.pagination as any;
-          if (cursorPagination.nextCursor) {
-            setCursors((prev) => {
-              const newCursors = [...prev];
-              newCursors[currentPage] = cursorPagination.nextCursor || null;
-              return newCursors;
-            });
-          }
-        }
-      }
+      setTotalCount(response.count || response.data?.length || 0);
+      setHasNextPage(response.pagination?.hasNextPage || false);
     } catch (error) {
       console.error("Failed to load categories:", error);
       setCategories([]);
@@ -95,21 +131,31 @@ function CategoriesContent() {
     }
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCurrentPage(1);
-    setCursors([null]);
+  const updateUrlAndLoad = useCallback(() => {
+    const params = new URLSearchParams();
+
+    if (filterValues.is_featured) params.set("featured", "true");
+    if (filterValues.is_homepage) params.set("is_homepage", "true");
+    if (filterValues.is_leaf) params.set("is_leaf", "true");
+    if (filterValues.parent_id) params.set("parent_id", filterValues.parent_id);
+    if (sortBy !== "sort_order") params.set("sortBy", sortBy);
+    if (sortOrder !== "asc") params.set("sortOrder", sortOrder);
+    if (currentPage > 1) params.set("page", String(currentPage));
+
+    router.push(
+      `/categories${params.toString() ? `?${params.toString()}` : ""}`,
+      { scroll: false }
+    );
     loadCategories();
-  };
+  }, [filterValues, sortBy, sortOrder, currentPage]);
 
-  const handleFilterChange = (key: string, value: any) => {
-    if (key === "sortBy") setSortBy(value);
-    else if (key === "sortOrder") setSortOrder(value);
-    else if (key === "featured") setFeatured(value);
-
+  const handleResetFilters = useCallback(() => {
+    setFilterValues({});
+    setSortBy("sort_order");
+    setSortOrder("asc");
     setCurrentPage(1);
-    setCursors([null]);
-  };
+    router.push("/categories", { scroll: false });
+  }, [router]);
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -140,7 +186,7 @@ function CategoriesContent() {
     return Array.from(grouped.entries()).sort((a, b) => a[0] - b[0]);
   }, [categories]);
 
-  if (loading) {
+  if (loading && categories.length === 0) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
@@ -148,16 +194,26 @@ function CategoriesContent() {
     );
   }
 
-  if (categories.length === 0) {
+  if (!loading && categories.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
         <div className="max-w-7xl mx-auto px-4">
           <EmptyState
             title="No categories available"
-            description="Categories will appear here once they are added."
+            description={
+              Object.keys(filterValues).length > 0
+                ? "No categories match your filters. Try adjusting your search criteria."
+                : "Categories will appear here once they are added."
+            }
             action={{
-              label: "Go to Home",
-              onClick: () => (window.location.href = "/"),
+              label:
+                Object.keys(filterValues).length > 0
+                  ? "Clear Filters"
+                  : "Go to Home",
+              onClick:
+                Object.keys(filterValues).length > 0
+                  ? handleResetFilters
+                  : () => (window.location.href = "/"),
             }}
           />
         </div>
@@ -169,165 +225,222 @@ function CategoriesContent() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Browse Categories
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Discover {categories.length} categories and thousands of products
-            </p>
-          </div>
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Browse Categories
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Discover {totalCount} categories and thousands of products
+          </p>
+        </div>
 
-          {/* Sort Controls */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col sm:flex-row gap-4">
-                {/* Sort */}
-                <div className="flex-1 sm:max-w-64">
-                  <select
-                    value={sortBy}
-                    onChange={(e) =>
-                      handleFilterChange("sortBy", e.target.value)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="sort_order">Default Order</option>
-                    <option value="name">Alphabetically</option>
-                    <option value="product_count">By Product Count</option>
-                    <option value="created_at">Recently Added</option>
-                  </select>
-                </div>
-              </div>
+        {/* Controls */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex gap-2 flex-wrap sm:flex-nowrap flex-1">
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
+              >
+                <option value="sort_order">Default Order</option>
+                <option value="name">Alphabetically</option>
+                <option value="product_count">By Product Count</option>
+                <option value="created_at">Recently Added</option>
+              </select>
 
-              {/* Filter Tags */}
-              <div className="flex items-center gap-2 flex-wrap">
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
+                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
+              >
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+
+              {/* View Toggle - Hidden on mobile */}
+              <div className="hidden sm:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
                 <button
-                  onClick={() => handleFilterChange("featured", !featured)}
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                    featured
+                  onClick={() => setView("grid")}
+                  className={`px-4 py-3 min-h-[48px] touch-manipulation ${
+                    view === "grid"
                       ? "bg-blue-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                   }`}
                 >
-                  ⭐ Featured Only
+                  <Grid className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setView("list")}
+                  className={`px-4 py-3 min-h-[48px] touch-manipulation ${
+                    view === "list"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                  }`}
+                >
+                  <List className="w-5 h-5" />
                 </button>
               </div>
+
+              {/* Filter Toggle Button */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="px-4 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+              >
+                <Filter className="w-4 h-4" />
+                <span>{showFilters ? "Hide" : "Show"} Filters</span>
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Categories by Level */}
-        <div className="space-y-8">
-          {categoriesByLevel.map(([level, levelCategories]) => (
-            <div key={level} className="space-y-4">
-              {/* Level Header */}
-              <div className="flex items-center gap-3 pb-2 border-b-2 border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <List className="w-5 h-5 text-blue-600" />
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    {level === 0
-                      ? "Root Categories"
-                      : `Level ${level} Categories`}
-                  </h2>
-                </div>
-                <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                  ({levelCategories.length}{" "}
-                  {levelCategories.length === 1 ? "category" : "categories"})
-                </span>
+        {/* Main Content */}
+        <div className="flex gap-6 relative">
+          {/* Filter Sidebar */}
+          <UnifiedFilterSidebar
+            sections={filterOptions}
+            values={filterValues}
+            onChange={(key, value) => {
+              setFilterValues((prev) => ({ ...prev, [key]: value }));
+            }}
+            onApply={(pendingValues) => {
+              if (pendingValues) setFilterValues(pendingValues);
+              setCurrentPage(1);
+              if (isMobile) setShowFilters(false);
+              setTimeout(() => updateUrlAndLoad(), 0);
+            }}
+            onReset={handleResetFilters}
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
+            searchable={false}
+            mobile={isMobile}
+            resultCount={categories.length}
+            isLoading={loading}
+          />
+
+          {/* Categories Content */}
+          <div className="flex-1">
+            {/* Results Count */}
+            {!loading && categories.length > 0 && (
+              <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                Showing {categories.length} of {totalCount} categories (Page{" "}
+                {currentPage})
               </div>
+            )}
 
-              {/* Categories Grid for this level */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {levelCategories.map((category) => (
-                  <Link
-                    key={category.id}
-                    href={`/categories/${category.slug}`}
-                    className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all overflow-hidden group"
-                  >
-                    {/* Category Image */}
-                    {category.image && (
-                      <div className="w-full h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden">
-                        <img
-                          src={category.image}
-                          alt={category.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                      </div>
-                    )}
-
-                    {/* Category Info */}
-                    <div className="p-4">
-                      <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2 line-clamp-2">
-                        {category.name}
-                      </h3>
-
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
-                          <Tag className="w-3 h-3" />
-                          <span>{category.productCount} products</span>
-                        </div>
-                        {category.featured && (
-                          <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-medium rounded">
-                            Featured
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Parent indicator if not root */}
-                      {level > 0 && category.hasParents && (
-                        <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
-                          <ChevronRight className="w-3 h-3" />
-                          <span className="truncate">Subcategory</span>
-                        </div>
-                      )}
+            {/* Categories by Level */}
+            <div className="space-y-8">
+              {categoriesByLevel.map(([level, levelCategories]) => (
+                <div key={level} className="space-y-4">
+                  {/* Level Header */}
+                  <div className="flex items-center gap-3 pb-2 border-b-2 border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-2">
+                      <List className="w-5 h-5 text-blue-600" />
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                        {level === 0
+                          ? "Root Categories"
+                          : `Level ${level} Categories`}
+                      </h2>
                     </div>
-                  </Link>
-                ))}
+                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                      ({levelCategories.length}{" "}
+                      {levelCategories.length === 1 ? "category" : "categories"}
+                      )
+                    </span>
+                  </div>
+
+                  {/* Categories Grid for this level */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {levelCategories.map((category) => (
+                      <Link
+                        key={category.id}
+                        href={`/categories/${category.slug}`}
+                        className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all overflow-hidden group"
+                      >
+                        {/* Category Image */}
+                        {category.image && (
+                          <div className="w-full h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                            <img
+                              src={category.image}
+                              alt={category.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                          </div>
+                        )}
+
+                        {/* Category Info */}
+                        <div className="p-4">
+                          <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2 line-clamp-2">
+                            {category.name}
+                          </h3>
+
+                          <div className="flex items-center justify-between text-sm mb-2">
+                            <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                              <Tag className="w-3 h-3" />
+                              <span>{category.productCount} products</span>
+                            </div>
+                            {category.featured && (
+                              <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-medium rounded">
+                                Featured
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Parent indicator if not root */}
+                          {level > 0 && category.hasParents && (
+                            <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+                              <ChevronRight className="w-3 h-3" />
+                              <span className="truncate">Subcategory</span>
+                            </div>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {/* Empty state for filtered results */}
+              {categoriesByLevel.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No categories found with current filters
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Pagination Controls */}
+            {categories.length > 0 && (currentPage > 1 || hasNextPage) && (
+              <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1 || loading}
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </button>
+
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Page {currentPage} • {categories.length} categories
+                  </div>
+
+                  <button
+                    onClick={handleNextPage}
+                    disabled={!hasNextPage || loading}
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-
-          {/* Empty state for search */}
-          {categoriesByLevel.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 dark:text-gray-400">
-                {searchQuery
-                  ? `No categories found matching "${searchQuery}"`
-                  : "No categories found"}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Pagination Controls */}
-        {categories.length > 0 && (
-          <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-            <div className="flex items-center justify-between">
-              <button
-                onClick={handlePrevPage}
-                disabled={currentPage === 1 || loading}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Previous
-              </button>
-
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Page {currentPage} • {categories.length} categories
-              </div>
-
-              <button
-                onClick={handleNextPage}
-                disabled={!hasNextPage || loading}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Next
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
