@@ -139,7 +139,7 @@ export default function RichTextEditor({
   // Filter buttons based on enabled tools
   const visibleButtons = useMemo(
     () => EDITOR_BUTTONS.filter((btn) => tools.includes(btn.tool)),
-    [tools],
+    [tools]
   );
 
   // Initialize editor content only once
@@ -172,7 +172,7 @@ export default function RichTextEditor({
       // Refocus editor
       editorRef.current?.focus();
     },
-    [disabled, onChange],
+    [disabled, onChange]
   );
 
   // Handle content change
@@ -201,7 +201,7 @@ export default function RichTextEditor({
       const text = e.clipboardData.getData("text/plain");
       document.execCommand("insertText", false, text);
     },
-    [disabled],
+    [disabled]
   );
 
   // Get character count
@@ -220,7 +220,7 @@ export default function RichTextEditor({
       {/* Toolbar */}
       <div
         className={`
-        flex flex-wrap gap-1 p-2 border-b border-gray-200 text-gray-700 bg-white
+        flex flex-wrap gap-1 p-2 border-b border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800
         rounded-t-lg
         ${disabled ? "opacity-50 cursor-not-allowed" : ""}
       `}
@@ -229,7 +229,7 @@ export default function RichTextEditor({
           <React.Fragment key={btn.tool}>
             {/* Add separator before undo/redo and clear */}
             {(btn.tool === "undo" || btn.tool === "clear") && idx > 0 && (
-              <div className="w-px h-6 bg-gray-300 mx-1" />
+              <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
             )}
 
             <button
@@ -238,9 +238,9 @@ export default function RichTextEditor({
               disabled={disabled}
               className={`
                 px-2 py-1 text-sm rounded
-                text-gray-700
-                hover:bg-gray-200
-                active:bg-gray-300
+                text-gray-700 dark:text-gray-300
+                hover:bg-gray-200 dark:hover:bg-gray-700
+                active:bg-gray-300 dark:active:bg-gray-600
                 disabled:cursor-not-allowed disabled:opacity-50
                 transition-colors
               `}
@@ -263,10 +263,14 @@ export default function RichTextEditor({
         suppressContentEditableWarning
         className={`
           px-4 py-3 outline-none overflow-y-auto
-          prose prose-sm max-w-none
-          text-gray-900 text-left
-          ${disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"}
-          ${error ? "border-red-500" : "border-gray-300"}
+          prose prose-sm max-w-none dark:prose-invert
+          text-gray-900 dark:text-white text-left
+          ${
+            disabled
+              ? "bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
+              : "bg-white dark:bg-gray-800"
+          }
+          ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
           border-x border-b rounded-b-lg
           focus:ring-2 focus:ring-blue-500
         `}
@@ -282,14 +286,20 @@ export default function RichTextEditor({
       {/* Footer */}
       <div className="flex justify-between items-center mt-2 text-sm">
         {/* Error message */}
-        {error && <span className="text-red-600">{error}</span>}
+        {error && (
+          <span className="text-red-600 dark:text-red-400">{error}</span>
+        )}
 
         {/* Character count */}
         {showCharCount && (
           <span
             className={`
             ml-auto
-            ${isOverLimit ? "text-red-600 font-semibold" : "text-gray-600"}
+            ${
+              isOverLimit
+                ? "text-red-600 dark:text-red-400 font-semibold"
+                : "text-gray-600 dark:text-gray-400"
+            }
           `}
           >
             {charCount}
