@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
+const DEMO_PREFIX = "DEMO_";
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -35,7 +37,7 @@ export async function POST(request: NextRequest) {
         await bidRef.set({
           auctionId,
           bidderId: bidder.id,
-          bidderName: bidder.name,
+          bidderName: `${DEMO_PREFIX}${bidder.name}`,
           amount: currentBid,
           timestamp: new Date(timestamp.getTime() + totalBids * 60000),
           status: "active",

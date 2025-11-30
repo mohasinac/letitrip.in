@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
+const DEMO_PREFIX = "DEMO_";
+
 // Review images for product photos uploaded by customers
 const REVIEW_IMAGES = [
   "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&h=400&fit=crop",
@@ -52,7 +54,22 @@ export async function POST(request: NextRequest) {
       "Absolutely love it! Great communication and fast delivery.",
     ];
 
+    // Pre-fetch product data to get shop_id
+    const productDocs = await Promise.all(
+      products.map((productId: string) => 
+        db.collection(COLLECTIONS.PRODUCTS).doc(productId).get()
+      )
+    );
+    const productShopMap: Record<string, string> = {};
+    for (const doc of productDocs) {
+      if (doc.exists) {
+        const data = doc.data();
+        productShopMap[doc.id] = data?.shop_id || "";
+      }
+    }
+
     for (const productId of products) {
+      const shopId = productShopMap[productId] || "";
       const numReviews = 1 + Math.floor(Math.random() * 3);
       const ratings: number[] = [];
 
@@ -73,8 +90,9 @@ export async function POST(request: NextRequest) {
         const reviewRef = db.collection(COLLECTIONS.REVIEWS).doc();
         await reviewRef.set({
           product_id: productId,
+          shop_id: shopId,
           user_id: reviewer.id,
-          user_name: reviewer.name,
+          user_name: `${DEMO_PREFIX}${reviewer.name}`,
           user_avatar: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop`,
           rating,
           title: REVIEW_TITLES[r % REVIEW_TITLES.length],
@@ -83,7 +101,11 @@ export async function POST(request: NextRequest) {
           cons: rating < 4 ? ["Packaging could be better"] : [],
           images: reviewImages,
           video: reviewVideo,
+          status: "published",
+          isApproved: true,
+          verifiedPurchase: Math.random() > 0.2,
           is_verified: Math.random() > 0.2,
+          is_featured: Math.random() > 0.9,
           helpful_count: Math.floor(Math.random() * 50),
           not_helpful_count: Math.floor(Math.random() * 5),
           seller_response: Math.random() > 0.7 ? {
