@@ -355,17 +355,25 @@ const AuctionCardComponent = ({
         <button
           onClick={(e) => {
             e.preventDefault();
-            // This would typically open a quick bid modal
+            // This would typically open a quick bid modal or navigate to details
           }}
           className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2 ${
             isEnded
-              ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+              ? "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
               : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
           }`}
-          disabled={isEnded}
         >
-          <Gavel size={16} />
-          {isEnded ? "Auction Ended" : "Place Bid"}
+          {isEnded ? (
+            <>
+              <Eye size={16} />
+              View Details
+            </>
+          ) : (
+            <>
+              <Gavel size={16} />
+              Place Bid
+            </>
+          )}
         </button>
       </div>
     </Link>

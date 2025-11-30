@@ -455,12 +455,12 @@ export const AUCTION_FILTERS: FilterSection[] = [
       {
         key: "status",
         label: "Status",
-        type: "multiselect",
+        type: "select",
         options: [
-          { label: "Live", value: "live" },
-          { label: "Upcoming", value: "upcoming" },
+          { label: "Live Auctions", value: "active" },
+          { label: "Upcoming", value: "scheduled" },
           { label: "Ended", value: "ended" },
-          { label: "Cancelled", value: "cancelled" },
+          { label: "All", value: "" },
         ],
       },
     ],
