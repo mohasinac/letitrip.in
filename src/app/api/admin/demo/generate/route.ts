@@ -1106,10 +1106,299 @@ export async function POST() {
       }
     }
 
-    // Response
+    // Step 10: Create more diverse and numerous demo data for all resource types from TDD
+    // Carts & Cart Items
+    for (const buyer of buyers) {
+      for (let c = 0; c < 2; c++) {
+        const cartRef = db.collection("carts").doc();
+        const cartItems = [];
+        for (let ci = 0; ci < 2; ci++) {
+          cartItems.push({
+            id: `cart_item_${cartRef.id}_${ci}`,
+            productId: productIds[(c * 2 + ci) % productIds.length],
+            quantity: 1 + ci,
+            price: 10000 + ci * 5000,
+            addedAt: timestamp,
+          });
+        }
+        await cartRef.set({
+          id: cartRef.id,
+          userId: buyer.id,
+          items: cartItems,
+          subtotal: cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+          itemCount: cartItems.length,
+          updatedAt: timestamp,
+        });
+      }
+    }
+
+    // Favorites
+    for (const buyer of buyers) {
+      for (let f = 0; f < 2; f++) {
+        const favRef = db.collection("favorites").doc();
+        await favRef.set({
+          id: favRef.id,
+          userId: buyer.id,
+          itemId: productIds[f % productIds.length],
+          itemType: f % 2 === 0 ? "product" : "auction",
+          itemSnapshot: {
+            title: f % 2 === 0 ? "Demo Favorite Product" : "Demo Favorite Auction",
+            image: PRODUCT_IMAGES[f],
+            price: 10000 + f * 5000,
+          },
+          notifications: { priceDrop: f % 2 === 0, reminder: f % 2 !== 0 },
+          createdAt: timestamp,
+        });
+      }
+    }
+
+    // Conversations & Messages
+    for (let i = 0; i < buyers.length; i++) {
+      for (let c = 0; c < 2; c++) {
+        const convRef = db.collection("conversations").doc();
+        await convRef.set({
+          id: convRef.id,
+          type: c % 2 === 0 ? "buyer_seller" : "order",
+          senderId: buyers[i].id,
+          senderName: buyers[i].name,
+          senderType: "user",
+          recipientId: sellers[c % sellers.length].id,
+          recipientName: sellers[c % sellers.length].name,
+          recipientType: "seller",
+          subject: c % 2 === 0 ? "Product Question" : "Order Status",
+          contextOrderId: c % 2 === 0 ? null : `order-${i}`,
+          contextProductId: productIds[i % productIds.length],
+          status: "active",
+          createdAt: timestamp,
+        });
+        for (let m = 0; m < 2; m++) {
+          const msgRef = db.collection("messages").doc();
+          await msgRef.set({
+            id: msgRef.id,
+            conversationId: convRef.id,
+            senderId: buyers[i].id,
+            senderName: buyers[i].name,
+            senderType: "user",
+            content: m % 2 === 0 ? "Is this available?" : "Where is my order?",
+            attachments: [],
+            readBy: {},
+            isDeleted: false,
+            createdAt: timestamp,
+          });
+        }
+      }
+    }
+
+    // Media
+    for (let i = 0; i < 6; i++) {
+      const mediaRef = db.collection("media").doc();
+      await mediaRef.set({
+        id: mediaRef.id,
+        type: "image",
+        url: PRODUCT_IMAGES[i % PRODUCT_IMAGES.length],
+        thumbnailUrl: PRODUCT_IMAGES[i % PRODUCT_IMAGES.length] + "?thumb=1",
+        filename: `demo-media-${i}.jpg`,
+        size: 100000 + i * 10000,
+        mimeType: "image/jpeg",
+        width: 800,
+        height: 800,
+        uploadedBy: sellers[i % sellers.length].id,
+        createdAt: timestamp,
+      });
+    }
+
+    // Blog Posts, Categories, Tags
+    for (let b = 0; b < 2; b++) {
+      const blogCatRef = db.collection("blog_categories").doc();
+      await blogCatRef.set({
+        id: blogCatRef.id,
+        name: b === 0 ? "Guides" : "News",
+        slug: b === 0 ? "guides" : "news",
+        description: b === 0 ? "How-to guides..." : "Latest news...",
+        parentId: null,
+        displayOrder: b + 1,
+        postCount: 1,
+        createdAt: timestamp,
+      });
+      const blogTagRef = db.collection("blog_tags").doc();
+      await blogTagRef.set({
+        id: blogTagRef.id,
+        name: b === 0 ? "Beginner" : "Feature",
+        slug: b === 0 ? "beginner" : "feature",
+        postCount: 1,
+        createdAt: timestamp,
+      });
+      const blogPostRef = db.collection("blog_posts").doc();
+      await blogPostRef.set({
+        id: blogPostRef.id,
+        title: b === 0 ? "Getting Started Guide" : "Upcoming Feature",
+        slug: b === 0 ? "getting-started" : "upcoming-feature",
+        content: b === 0 ? "Full article content..." : "Feature preview...",
+        excerpt: b === 0 ? "Learn how to get..." : "Coming soon...",
+        featuredImage: PRODUCT_IMAGES[b],
+        categoryId: blogCatRef.id,
+        tags: [blogTagRef.id],
+        authorId: sellers[b % sellers.length].id,
+        authorName: sellers[b % sellers.length].name,
+        status: b === 0 ? "published" : "scheduled",
+        publishedAt: b === 0 ? timestamp : null,
+        scheduledAt: b === 1 ? timestamp : null,
+        viewCount: 100 + b * 50,
+        createdAt: timestamp,
+      });
+    }
+
+    // Hero Slides
+    for (let i = 0; i < 4; i++) {
+      const slideRef = db.collection("hero_slides").doc();
+      await slideRef.set({
+        id: slideRef.id,
+        title: ["Black Friday Sale", "New Arrivals", "Old Promotion", "Special Event"][i],
+        subtitle: ["Up to 70% off", "Check out latest", "Expired offer", "Limited time only"][i],
+        imageUrl: PRODUCT_IMAGES[i],
+        linkUrl: ["/sale/black-friday", "/new-arrivals", "/old-promo", "/event"][i],
+        order: i + 1,
+        isActive: i < 3,
+        startDate: timestamp,
+        endDate: timestamp,
+      });
+    }
+
+    // Returns
+    for (let i = 0; i < 4; i++) {
+      const returnRef = db.collection("returns").doc();
+      await returnRef.set({
+        id: returnRef.id,
+        orderId: `order-${i}`,
+        orderItemId: `item-${i}`,
+        userId: buyers[i % buyers.length].id,
+        shopId: shopIds[i % shopIds.length],
+        reason: ["defective", "wrong_item", "changed_mind", "other"][i],
+        description: ["Product not working", "Received wrong color", "Don't need anymore", "Other reason"][i],
+        status: ["pending", "approved", "rejected", "pending"][i],
+        refundAmount: 10000 + i * 5000,
+        refundStatus: ["pending", "processed", "na", "pending"][i],
+        adminNotes: i === 1 ? "Approved by admin" : i === 2 ? "Policy violation" : null,
+        createdAt: timestamp,
+      });
+    }
+
+    // Support Tickets
+    for (let i = 0; i < 4; i++) {
+      const ticketRef = db.collection("tickets").doc();
+      await ticketRef.set({
+        id: ticketRef.id,
+        ticketNumber: `TKT-2024-00${i + 1}`,
+        userId: buyers[i % buyers.length].id,
+        category: ["order_issue", "payment", "product_inquiry", "other"][i],
+        subject: ["Order not delivered", "Payment failed", "Product question", "Other issue"][i],
+        description: ["I ordered 5 days...", "My payment was...", "Is this compatible...", "Other description"][i],
+        priority: ["high", "medium", "low", "medium"][i],
+        status: ["open", "in_progress", "resolved", "open"][i],
+        assignedTo: sellers[i % sellers.length].id,
+        orderId: `order-${i}`,
+        createdAt: timestamp,
+        resolvedAt: i === 2 ? timestamp : null,
+      });
+    }
+
+    // Payouts
+    for (let i = 0; i < 4; i++) {
+      const payoutRef = db.collection("payouts").doc();
+      await payoutRef.set({
+        id: payoutRef.id,
+        shopId: shopIds[i % shopIds.length],
+        sellerId: sellers[i % sellers.length].id,
+        amount: 50000 + i * 10000,
+        status: ["pending", "processed", "failed", "pending"][i],
+        bankAccount: i < 2 ? "xxxx1234" : "xxxx5678",
+        transactionId: i === 1 ? "TXN123456789" : null,
+        failureReason: i === 2 ? "Invalid account" : null,
+        requestedAt: timestamp,
+        processedAt: i === 1 ? timestamp : null,
+      });
+    }
+
+    // Addresses
+    for (const buyer of buyers) {
+      for (let a = 0; a < 2; a++) {
+        const addrRef = db.collection("addresses").doc();
+        await addrRef.set({
+          id: addrRef.id,
+          userId: buyer.id,
+          type: a === 0 ? "home" : "office",
+          name: buyer.name,
+          phone: buyer.id,
+          addressLine1: a === 0 ? "123 Main Street" : "Tech Park, Tower B",
+          addressLine2: a === 0 ? "Apartment 4B" : "5th Floor",
+          city: a === 0 ? "Mumbai" : "Bangalore",
+          state: a === 0 ? "Maharashtra" : "Karnataka",
+          pincode: a === 0 ? "400001" : "560001",
+          country: "India",
+          isDefault: a === 0,
+        });
+      }
+    }
+
+    // Settings
+    for (let s = 0; s < 2; s++) {
+      const settingsRef = db.collection("settings").doc();
+      await settingsRef.set({
+        id: s === 0 ? "site_settings" : `site_settings_${s}`,
+        general: {
+          siteName: s === 0 ? "LET IT RIP" : "COLLECTOR'S HAVEN",
+          siteDescription: s === 0 ? "Your Gateway to Authentic Collectibles" : "Best place for rare finds",
+          contactEmail: s === 0 ? "contact@test.jfv.in" : "info@test.jfv.in",
+          contactPhone: s === 0 ? "+919876543210" : "+919876543211",
+          currency: "INR",
+          timezone: "Asia/Kolkata",
+        },
+        seo: {
+          defaultTitle: s === 0 ? "LET IT RIP - Buy Collectibles in India" : "COLLECTOR'S HAVEN - Rare Finds",
+          googleAnalyticsId: s === 0 ? "GA-TEST-123" : "GA-TEST-456",
+        },
+        maintenance: {
+          enabled: false,
+          message: "Site under maintenance",
+        },
+        updatedAt: timestamp,
+        updatedBy: sellers[s % sellers.length].id,
+      });
+    }
+
+    // Feature Flags
+    for (let f = 0; f < 2; f++) {
+      const featureFlagsRef = db.collection("feature_flags").doc();
+      await featureFlagsRef.set({
+        auctions: true,
+        reviews: true,
+        cod: true,
+        guestCheckout: f === 0 ? false : true,
+        wishlist: true,
+        blog: true,
+        sellerRegistration: true,
+        maintenanceMode: false,
+      });
+    }
+
+    // Notifications
+    for (const buyer of buyers) {
+      for (let n = 0; n < 2; n++) {
+        const notifRef = db.collection("notifications").doc();
+        await notifRef.set({
+          id: notifRef.id,
+          userId: buyer.id,
+          type: n === 0 ? "order" : "promotion",
+          message: n === 0 ? "Your order has been shipped!" : "Special offer just for you!",
+          createdAt: timestamp,
+          read: false,
+        });
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      message: `Demo data created with ${DEMO_PREFIX} prefix - 2 shops, 100 products, 10 auctions with FUTURE end dates`,
+      message: `Demo data created with ${DEMO_PREFIX} prefix - all resource types from TDD included, with increased quantity and diversity`,
       summary: {
         prefix: DEMO_PREFIX,
         categories: categoryCount,
@@ -1122,13 +1411,30 @@ export async function POST() {
         productsPerShop: 50,
         auctions: auctionIds.length,
         auctionsPerShop: 5,
-        featuredAuctions: 4, // 2 per shop
+        featuredAuctions: 4,
         bids: bidCount,
         orders: orderCount,
         orderItems: orderItemCount,
         payments: orderCount,
         shipments: Math.floor(orderCount * 0.5),
         reviews: reviewCount,
+        carts: buyers.length * 2,
+        cartItems: buyers.length * 4,
+        favorites: buyers.length * 2,
+        conversations: buyers.length * 2,
+        messages: buyers.length * 4,
+        media: 6,
+        blogPosts: 2,
+        blogCategories: 2,
+        blogTags: 2,
+        heroSlides: 4,
+        returns: 4,
+        tickets: 4,
+        payouts: 4,
+        addresses: buyers.length * 2,
+        settings: 2,
+        featureFlags: 2,
+        notifications: buyers.length * 2,
         createdAt: timestamp.toISOString(),
       },
     });
