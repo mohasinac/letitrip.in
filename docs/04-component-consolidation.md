@@ -1,25 +1,25 @@
 # Component Consolidation Plan
 
-> **Status**: 🟡 Ready for Implementation
+> **Status**: 🟡 Phase 1 Complete
 > **Priority**: Medium
-> **Last Updated**: November 30, 2025
+> **Last Updated**: January 2025
 
 ## Duplicate Components to Merge
 
 ### UI Components
 
-| Keep               | Remove/Merge       | Reason                          |
-| ------------------ | ------------------ | ------------------------------- |
-| `Input`            | `MobileInput`      | Use responsive design instead   |
-| `Textarea`         | `MobileTextarea`   | Use responsive design instead   |
-| `Select`           | `MobileFormSelect` | Use responsive design instead   |
-| `BaseCard`         | `Card`             | Consolidate to single component |
-| `DataTable`        | `ResponsiveTable`  | Keep DataTable, add responsive  |
-| `LoadingSkeleton`  | `Skeleton`         | Keep one skeleton component     |
-| `ErrorState`       | `ErrorMessage`     | Consolidate error display       |
-| `Toast`            | `Admin/Toast`      | Use single toast system         |
-| `SearchBar`        | `Layout/SearchBar` | Consolidate search components   |
-| `ProductQuickView` | `AuctionQuickView` | Create generic QuickView        |
+| Keep               | Remove/Merge       | Reason                          | Status  |
+| ------------------ | ------------------ | ------------------------------- | ------- |
+| `Input`            | `MobileInput`      | Use responsive design instead   | ✅ Done |
+| `Textarea`         | `MobileTextarea`   | Use responsive design instead   | ✅ Done |
+| `Select`           | `MobileFormSelect` | Use responsive design instead   | ✅ Done |
+| `BaseCard`         | `Card`             | Consolidate to single component | ⬜      |
+| `DataTable`        | `ResponsiveTable`  | Keep DataTable, add responsive  | ⬜      |
+| `LoadingSkeleton`  | `Skeleton`         | Keep one skeleton component     | ⬜      |
+| `ErrorState`       | `ErrorMessage`     | Consolidate error display       | ⬜      |
+| `Toast`            | `Admin/Toast`      | Use single toast system         | ⬜      |
+| `SearchBar`        | `Layout/SearchBar` | Consolidate search components   | ⬜      |
+| `ProductQuickView` | `AuctionQuickView` | Create generic QuickView        | ⬜      |
 
 ### Filter Components
 
@@ -58,12 +58,12 @@ interface BaseCardProps {
 
 ## Fix Checklist
 
-### Phase 1: Form Components
+### Phase 1: Form Components ✅ COMPLETE
 
-- [ ] Merge Input + MobileInput
-- [ ] Merge Textarea + MobileTextarea
-- [ ] Merge Select + MobileFormSelect
-- [ ] Update all usages
+- [x] Merge Input + MobileInput (Input now has `size="lg"` for mobile)
+- [x] Merge Textarea + MobileTextarea (Textarea now has `size="lg"` for mobile)
+- [x] Merge Select + MobileFormSelect (Select now has `size="lg"` for mobile)
+- [x] Update usages in: login, register, contact, user/settings, checkout pages
 
 ### Phase 2: Card Components
 

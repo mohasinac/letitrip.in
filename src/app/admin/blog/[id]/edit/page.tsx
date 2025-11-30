@@ -308,10 +308,14 @@ export default function EditBlogPostPage() {
       <div className="rounded-lg border border-gray-200 bg-white p-6 space-y-6">
         {/* Title */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="blog-title"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Title <span className="text-red-500">*</span>
           </label>
           <input
+            id="blog-title"
             type="text"
             name="title"
             value={formData.title}
@@ -328,10 +332,14 @@ export default function EditBlogPostPage() {
 
         {/* Slug */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="blog-slug"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Slug <span className="text-red-500">*</span>
           </label>
           <input
+            id="blog-slug"
             type="text"
             name="slug"
             value={formData.slug}
@@ -350,10 +358,14 @@ export default function EditBlogPostPage() {
 
         {/* Excerpt */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="blog-excerpt"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Excerpt <span className="text-red-500">*</span>
           </label>
           <textarea
+            id="blog-excerpt"
             name="excerpt"
             value={formData.excerpt}
             onChange={handleInputChange}
@@ -428,11 +440,15 @@ export default function EditBlogPostPage() {
 
         {/* Category */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="blog-category"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Category <span className="text-red-500">*</span>
           </label>
           <div className="flex gap-2">
             <select
+              id="blog-category"
               name="category"
               value={formData.category}
               onChange={handleInputChange}

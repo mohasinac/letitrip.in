@@ -12,6 +12,11 @@ service firebase.storage {
              request.auth.token.role == 'admin';
     }
     
+    function isModerator() {
+      return isAuthenticated() && 
+             (request.auth.token.role == 'moderator' || request.auth.token.role == 'admin');
+    }
+    
     function isSeller() {
       return isAuthenticated() && 
              (request.auth.token.role == 'seller' || request.auth.token.role == 'admin');
@@ -36,6 +41,34 @@ service firebase.storage {
     
     function isAllowedFileType(contentType) {
       return isImage(contentType) || isVideo(contentType) || isDocument(contentType);
+    }
+    
+    // User avatars - users can upload their own avatars
+    match /avatars/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() 
+        && request.auth.uid == userId
+        && isImage(request.resource.contentType)
+        && request.resource.size < 5 * 1024 * 1024; // 5MB limit
+      allow delete: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+    
+    // Category images - admin/moderator only
+    match /categories/{categoryId}/{fileName} {
+      allow read: if true;
+      allow write: if isModerator()
+        && isImage(request.resource.contentType)
+        && request.resource.size < 5 * 1024 * 1024; // 5MB limit
+      allow delete: if isModerator();
+    }
+    
+    // Hero slides - admin only
+    match /hero-slides/{slideId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && isImage(request.resource.contentType)
+        && request.resource.size < 10 * 1024 * 1024; // 10MB limit
+      allow delete: if isAdmin();
     }
     
     // Public read paths (CDN-backed)

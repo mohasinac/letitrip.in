@@ -489,10 +489,14 @@ export default function SellerOrderDetailPage() {
                   </h2>
                   <form onSubmit={handleAddShipping} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="order-tracking-number"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Tracking Number *
                       </label>
                       <input
+                        id="order-tracking-number"
                         type="text"
                         value={shippingData.trackingNumber}
                         onChange={(e) =>
@@ -507,10 +511,14 @@ export default function SellerOrderDetailPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="order-shipping-provider"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Shipping Provider *
                       </label>
                       <select
+                        id="order-shipping-provider"
                         value={shippingData.shippingProvider}
                         onChange={(e) =>
                           setShippingData((prev) => ({
@@ -535,10 +543,14 @@ export default function SellerOrderDetailPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="order-estimated-delivery"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Estimated Delivery
                       </label>
                       <input
+                        id="order-estimated-delivery"
                         type="date"
                         value={shippingData.estimatedDelivery}
                         onChange={(e) =>

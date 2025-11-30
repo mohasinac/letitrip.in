@@ -59,10 +59,14 @@ export default function CreateCouponPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="admin-coupon-code"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Coupon Code *
                   </label>
                   <input
+                    id="admin-coupon-code"
                     type="text"
                     required
                     value={formData.code}
@@ -78,10 +82,14 @@ export default function CreateCouponPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="admin-coupon-type"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Discount Type *
                   </label>
                   <select
+                    id="admin-coupon-type"
                     value={formData.type}
                     onChange={(e) =>
                       setFormData({ ...formData, type: e.target.value })
@@ -96,10 +104,14 @@ export default function CreateCouponPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="admin-coupon-description"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Description
                 </label>
                 <textarea
+                  id="admin-coupon-description"
                   value={formData.description}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
@@ -112,10 +124,14 @@ export default function CreateCouponPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="admin-coupon-value"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Discount Value *
                   </label>
                   <input
+                    id="admin-coupon-value"
                     type="number"
                     required
                     min="0"
@@ -131,10 +147,14 @@ export default function CreateCouponPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="admin-coupon-min-order"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Min Order Value
                   </label>
                   <input
+                    id="admin-coupon-min-order"
                     type="number"
                     min="0"
                     value={formData.minOrderValue}
@@ -151,10 +171,14 @@ export default function CreateCouponPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="admin-coupon-valid-from"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Valid From *
                   </label>
                   <input
+                    id="admin-coupon-valid-from"
                     type="date"
                     required
                     value={formData.validFrom}
@@ -166,10 +190,14 @@ export default function CreateCouponPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="admin-coupon-valid-to"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Valid Until *
                   </label>
                   <input
+                    id="admin-coupon-valid-to"
                     type="date"
                     required
                     value={formData.validTo}

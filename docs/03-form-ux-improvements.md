@@ -1,18 +1,18 @@
 # Form UX Improvements
 
-> **Status**: 🟡 Needs Improvement
+> **Status**: ✅ Phase 1 Complete
 > **Priority**: Medium
-> **Last Updated**: November 30, 2025
+> **Last Updated**: January 2025
 
 ## Current Issues
 
-| Issue                          | Files Affected                                       | Impact                                 |
-| ------------------------------ | ---------------------------------------------------- | -------------------------------------- |
-| **Errors via alert()**         | ProductInlineForm, CouponInlineForm, wizard pages    | Blocks user, poor UX                   |
-| **Submit only on last step**   | `/seller/products/create`, `/seller/auctions/create` | User must complete all steps first     |
-| **Mandatory fields scattered** | 6-step product wizard, 5-step auction wizard         | User confusion, incomplete submissions |
-| **Unnecessary flags in forms** | Status dropdowns, featured checkboxes                | Adds clutter, should default to draft  |
-| **Too many wizard steps**      | Product (6 steps), Auction (5 steps)                 | Slow task completion                   |
+| Issue                          | Files Affected                                       | Impact                                 | Status                        |
+| ------------------------------ | ---------------------------------------------------- | -------------------------------------- | ----------------------------- |
+| **Errors via alert()**         | ProductInlineForm, CouponInlineForm, wizard pages    | Blocks user, poor UX                   | ✅ Fixed - uses inline errors |
+| **Submit only on last step**   | `/seller/products/create`, `/seller/auctions/create` | User must complete all steps first     | 🟡                            |
+| **Mandatory fields scattered** | 6-step product wizard, 5-step auction wizard         | User confusion, incomplete submissions | 🟡                            |
+| **Unnecessary flags in forms** | Status dropdowns, featured checkboxes                | Adds clutter, should default to draft  | ✅ Defaults to draft          |
+| **Too many wizard steps**      | Product (6 steps), Auction (5 steps)                 | Slow task completion                   | 🟡                            |
 
 ## Solution
 
@@ -86,11 +86,11 @@ Forms should default to sensible values:
 
 ## Fix Checklist
 
-### Phase 1: Error Handling
+### Phase 1: Error Handling ✅ COMPLETE
 
-- [ ] Replace alert() with inline errors in ProductInlineForm
-- [ ] Replace alert() with inline errors in CouponInlineForm
-- [ ] Replace alert() with inline errors in wizard pages
+- [x] Replace alert() with inline errors in ProductInlineForm (uses `errors` state + inline error messages)
+- [x] Replace alert() with inline errors in CouponInlineForm (uses `errors` state + inline error messages)
+- [x] Replace alert() with inline errors in wizard pages (forms use inline validation)
 
 ### Phase 2: Wizard Simplification
 
@@ -99,11 +99,11 @@ Forms should default to sensible values:
 - [ ] Add always-visible submit button
 - [ ] Move optional fields to expandable sections
 
-### Phase 3: Form Defaults
+### Phase 3: Form Defaults ✅ COMPLETE
 
-- [ ] Set default status to "draft" in all forms
-- [ ] Hide "featured" field from seller forms
-- [ ] Add separate "Publish" button for draft items
+- [x] Set default status to "draft" in all forms (ProductInlineForm, CouponInlineForm default to "draft")
+- [x] Hide "featured" field from seller forms (admin-only)
+- [x] Add separate "Publish" button for draft items
 
 ## Form Validation Pattern
 

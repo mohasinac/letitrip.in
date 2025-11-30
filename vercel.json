@@ -17,6 +17,14 @@
     "src/app/api/**": {
       "memory": 1024,
       "maxDuration": 10
+    },
+    "src/app/api/admin/demo/**": {
+      "memory": 1024,
+      "maxDuration": 300
+    },
+    "src/app/api/webhooks/**": {
+      "memory": 1024,
+      "maxDuration": 60
     }
   },
   "headers": [
@@ -42,7 +50,16 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "s-maxage=60, stale-while-revalidate=300"
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     }

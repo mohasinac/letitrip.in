@@ -25,7 +25,7 @@ const shopsConfig = {
     isBanned: "is_banned",
     featured: "is_featured",
     showOnHomepage: "show_on_homepage",
-  },
+  } as Record<string, string>,
 };
 
 /**

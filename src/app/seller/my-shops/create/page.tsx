@@ -101,7 +101,7 @@ export default function CreateShopWizardPage() {
 
     if (!/^[a-z0-9-]+$/.test(slug)) {
       setSlugError(
-        "Slug can only contain lowercase letters, numbers, and hyphens",
+        "Slug can only contain lowercase letters, numbers, and hyphens"
       );
     } else {
       setSlugError("");
@@ -235,8 +235,8 @@ export default function CreateShopWizardPage() {
                       currentStep > step.id
                         ? "border-green-500 bg-green-500 text-white"
                         : currentStep === step.id
-                          ? "border-primary bg-primary text-white"
-                          : "border-gray-300 bg-white text-gray-400"
+                        ? "border-primary bg-primary text-white"
+                        : "border-gray-300 bg-white text-gray-400"
                     }`}
                   >
                     {currentStep > step.id ? (
@@ -287,10 +287,14 @@ export default function CreateShopWizardPage() {
 
               {/* Shop Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="shop-name"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Shop Name <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="shop-name"
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleChange("name", e.target.value)}
@@ -304,10 +308,14 @@ export default function CreateShopWizardPage() {
 
               {/* Slug */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="shop-slug"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Shop URL <span className="text-red-500">*</span>
                 </label>
                 <SlugInput
+                  id="shop-slug"
                   sourceText={formData.name}
                   value={formData.slug}
                   onChange={(slug: string) => {
@@ -321,10 +329,14 @@ export default function CreateShopWizardPage() {
 
               {/* Category */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="shop-category"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Primary Category
                 </label>
                 <select
+                  id="shop-category"
                   value={formData.category}
                   onChange={(e) => handleChange("category", e.target.value)}
                   className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -345,10 +357,14 @@ export default function CreateShopWizardPage() {
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="shop-description"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Shop Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
+                  id="shop-description"
                   value={formData.description}
                   onChange={(e) => handleChange("description", e.target.value)}
                   rows={5}
@@ -376,10 +392,14 @@ export default function CreateShopWizardPage() {
 
               {/* Logo */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="shop-logo-url"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Shop Logo URL
                 </label>
                 <input
+                  id="shop-logo-url"
                   type="url"
                   value={formData.logoUrl}
                   onChange={(e) => handleChange("logoUrl", e.target.value)}
@@ -416,10 +436,14 @@ export default function CreateShopWizardPage() {
 
               {/* Banner */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="shop-banner-url"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Shop Banner URL
                 </label>
                 <input
+                  id="shop-banner-url"
                   type="url"
                   value={formData.bannerUrl}
                   onChange={(e) => handleChange("bannerUrl", e.target.value)}
@@ -452,11 +476,15 @@ export default function CreateShopWizardPage() {
               {/* Theme Colors */}
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="shop-theme-color"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Primary Theme Color
                   </label>
                   <div className="flex gap-2">
                     <input
+                      id="shop-theme-color"
                       type="color"
                       value={formData.themeColor}
                       onChange={(e) =>
@@ -480,11 +508,15 @@ export default function CreateShopWizardPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="shop-accent-color"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Accent Color
                   </label>
                   <div className="flex gap-2">
                     <input
+                      id="shop-accent-color"
                       type="color"
                       value={formData.accentColor}
                       onChange={(e) =>
@@ -548,10 +580,14 @@ export default function CreateShopWizardPage() {
               <div className="grid gap-6 sm:grid-cols-2">
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="shop-email"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Shop Email <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id="shop-email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleChange("email", e.target.value)}
@@ -562,10 +598,14 @@ export default function CreateShopWizardPage() {
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="shop-phone"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Phone Number <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id="shop-phone"
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
@@ -577,10 +617,14 @@ export default function CreateShopWizardPage() {
 
               {/* Location */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="shop-location"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Location <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="shop-location"
                   type="text"
                   value={formData.location}
                   onChange={(e) => handleChange("location", e.target.value)}
@@ -594,10 +638,14 @@ export default function CreateShopWizardPage() {
 
               {/* Address */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="shop-address"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Business Address
                 </label>
                 <textarea
+                  id="shop-address"
                   value={formData.address}
                   onChange={(e) => handleChange("address", e.target.value)}
                   rows={3}
@@ -613,10 +661,14 @@ export default function CreateShopWizardPage() {
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-blue-900 mb-2">
+                    <label
+                      htmlFor="shop-business-registration"
+                      className="block text-sm font-medium text-blue-900 mb-2"
+                    >
                       Business Registration Number
                     </label>
                     <input
+                      id="shop-business-registration"
                       type="text"
                       value={formData.businessRegistration}
                       onChange={(e) =>
@@ -628,10 +680,14 @@ export default function CreateShopWizardPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-blue-900 mb-2">
+                    <label
+                      htmlFor="shop-tax-id"
+                      className="block text-sm font-medium text-blue-900 mb-2"
+                    >
                       GST/Tax ID
                     </label>
                     <input
+                      id="shop-tax-id"
                       type="text"
                       value={formData.taxId}
                       onChange={(e) => handleChange("taxId", e.target.value)}
@@ -662,10 +718,14 @@ export default function CreateShopWizardPage() {
 
               {/* Shipping Policy */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="shop-shipping-policy"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Shipping Policy
                 </label>
                 <textarea
+                  id="shop-shipping-policy"
                   value={formData.shippingPolicy}
                   onChange={(e) =>
                     handleChange("shippingPolicy", e.target.value)
@@ -681,10 +741,14 @@ export default function CreateShopWizardPage() {
 
               {/* Return Policy */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="shop-return-policy"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Return Policy
                 </label>
                 <select
+                  id="shop-return-policy"
                   value={formData.returnPolicy}
                   onChange={(e) => handleChange("returnPolicy", e.target.value)}
                   className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -702,10 +766,14 @@ export default function CreateShopWizardPage() {
 
               {/* Terms and Conditions */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="shop-terms"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Terms and Conditions
                 </label>
                 <textarea
+                  id="shop-terms"
                   value={formData.termsAndConditions}
                   onChange={(e) =>
                     handleChange("termsAndConditions", e.target.value)

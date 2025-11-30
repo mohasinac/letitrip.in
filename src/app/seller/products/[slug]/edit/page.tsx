@@ -180,10 +180,14 @@ export default function EditProductPage() {
         {currentStep === 1 && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="edit-product-name"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Product Name *
               </label>
               <input
+                id="edit-product-name"
                 type="text"
                 required
                 value={formData.name}
@@ -203,10 +207,14 @@ export default function EditProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="edit-product-price"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Price (₹) *
               </label>
               <input
+                id="edit-product-price"
                 type="number"
                 required
                 min="0"
@@ -222,8 +230,11 @@ export default function EditProductPage() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div id="edit-product-category-wrapper">
+              <label
+                htmlFor="edit-product-category-wrapper"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Category *
               </label>
               <CategorySelectorWithCreate
@@ -242,10 +253,14 @@ export default function EditProductPage() {
         {currentStep === 2 && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="edit-product-description"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Description
               </label>
               <textarea
+                id="edit-product-description"
                 rows={6}
                 value={formData.description}
                 onChange={(e) =>
@@ -256,10 +271,14 @@ export default function EditProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="edit-product-condition"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Condition *
               </label>
               <select
+                id="edit-product-condition"
                 value={formData.condition}
                 onChange={(e) =>
                   setFormData({
@@ -281,10 +300,14 @@ export default function EditProductPage() {
         {currentStep === 3 && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="edit-product-stock"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Stock Count *
               </label>
               <input
+                id="edit-product-stock"
                 type="number"
                 required
                 min="0"
@@ -300,10 +323,14 @@ export default function EditProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="edit-product-sku"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 SKU (Optional)
               </label>
               <input
+                id="edit-product-sku"
                 type="text"
                 value={formData.sku}
                 onChange={(e) =>
@@ -314,10 +341,14 @@ export default function EditProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="edit-product-status"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Status *
               </label>
               <select
+                id="edit-product-status"
                 value={formData.status}
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value as any })

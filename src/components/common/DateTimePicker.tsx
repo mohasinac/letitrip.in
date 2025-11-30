@@ -11,6 +11,7 @@ import React, { useState, useMemo, useCallback } from "react";
 type DateTimeMode = "date" | "time" | "datetime";
 
 interface DateTimePickerProps {
+  id?: string;
   value: Date | null;
   onChange: (date: Date | null) => void;
   mode?: DateTimeMode;

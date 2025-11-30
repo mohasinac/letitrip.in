@@ -363,10 +363,14 @@ export default function AdminEditProductPage() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="product-name"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Product Name *
                 </label>
                 <input
+                  id="product-name"
                   type="text"
                   required
                   value={formData.name}
@@ -386,10 +390,14 @@ export default function AdminEditProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="short-description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Short Description
                 </label>
                 <textarea
+                  id="short-description"
                   rows={2}
                   value={formData.shortDescription}
                   onChange={(e) =>
@@ -404,10 +412,14 @@ export default function AdminEditProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Description *
                 </label>
                 <textarea
+                  id="description"
                   rows={6}
                   required
                   value={formData.description}
@@ -428,7 +440,10 @@ export default function AdminEditProductPage() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="product-images"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Product Images
                 </label>
                 {product.images && product.images.length > 0 && (
@@ -468,10 +483,14 @@ export default function AdminEditProductPage() {
             </h2>
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="selling-price"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Selling Price (₹) *
                 </label>
                 <input
+                  id="selling-price"
                   type="number"
                   required
                   min="0"
@@ -487,10 +506,14 @@ export default function AdminEditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="original-price"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Original Price (₹)
                 </label>
                 <input
+                  id="original-price"
                   type="number"
                   min="0"
                   step="0.01"
@@ -505,10 +528,14 @@ export default function AdminEditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="cost-price"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Cost Price (₹)
                 </label>
                 <input
+                  id="cost-price"
                   type="number"
                   min="0"
                   step="0.01"
@@ -532,10 +559,14 @@ export default function AdminEditProductPage() {
             </h2>
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="stock-count"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Stock Count *
                 </label>
                 <input
+                  id="stock-count"
                   type="number"
                   required
                   min="0"
@@ -550,10 +581,14 @@ export default function AdminEditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="low-stock-threshold"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Low Stock Threshold
                 </label>
                 <input
+                  id="low-stock-threshold"
                   type="number"
                   min="0"
                   value={formData.lowStockThreshold}
@@ -567,10 +602,14 @@ export default function AdminEditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="sku"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   SKU
                 </label>
                 <input
+                  id="sku"
                   type="text"
                   value={formData.sku}
                   onChange={(e) =>

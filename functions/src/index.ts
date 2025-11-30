@@ -806,3 +806,732 @@ async function buildAndSaveCategoryTree(): Promise<{
     maxDepth,
   };
 }
+
+// ============================================================================
+// ORDER STATUS TRIGGER FUNCTIONS
+// ============================================================================
+
+/**
+ * Firestore trigger for order status changes
+ * Sends notifications when order status changes
+ */
+export const onOrderStatusChange = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "256MB",
+  })
+  .firestore.document("orders/{orderId}")
+  .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    const { orderId } = context.params;
+
+    // Skip if status hasn't changed
+    if (before.status === after.status && before.order_status === after.order_status) {
+      return;
+    }
+
+    const newStatus = after.status || after.order_status;
+    const oldStatus = before.status || before.order_status;
+
+    console.log(`[Order Trigger] Order ${orderId} status changed: ${oldStatus} -> ${newStatus}`);
+
+    try {
+      // Create notification for the user
+      const notificationData = {
+        userId: after.user_id,
+        type: "order_status",
+        title: getOrderStatusTitle(newStatus),
+        message: getOrderStatusMessage(newStatus, after.order_id || orderId),
+        orderId: orderId,
+        read: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      await db.collection("notifications").add(notificationData);
+      console.log(`[Order Trigger] Created notification for user ${after.user_id}`);
+
+      // If order is confirmed, notify seller
+      if (newStatus === "confirmed" && after.shop_id) {
+        const shopDoc = await db.collection("shops").doc(after.shop_id).get();
+        const shop = shopDoc.data();
+        if (shop?.owner_id) {
+          await db.collection("notifications").add({
+            userId: shop.owner_id,
+            type: "new_order",
+            title: "New Order Received",
+            message: `You have a new order #${after.order_id || orderId} to fulfill.`,
+            orderId: orderId,
+            read: false,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          console.log(`[Order Trigger] Notified seller ${shop.owner_id} of new order`);
+        }
+      }
+
+      // If order is delivered, schedule review request
+      if (newStatus === "delivered") {
+        // Create a delayed notification for review request (could be enhanced with scheduled functions)
+        await db.collection("notifications").add({
+          userId: after.user_id,
+          type: "review_request",
+          title: "How was your order?",
+          message: "Your order has been delivered. Would you like to leave a review?",
+          orderId: orderId,
+          read: false,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        console.log(`[Order Trigger] Created review request notification for order ${orderId}`);
+      }
+    } catch (error) {
+      console.error(`[Order Trigger] Error processing order ${orderId}:`, error);
+    }
+  });
+
+/**
+ * Get human-readable title for order status
+ */
+function getOrderStatusTitle(status: string): string {
+  const titles: Record<string, string> = {
+    pending: "Order Pending",
+    confirmed: "Order Confirmed",
+    processing: "Order Processing",
+    shipped: "Order Shipped",
+    delivered: "Order Delivered",
+    cancelled: "Order Cancelled",
+    refunded: "Order Refunded",
+  };
+  return titles[status] || `Order ${status}`;
+}
+
+/**
+ * Get human-readable message for order status
+ */
+function getOrderStatusMessage(status: string, orderId: string): string {
+  const messages: Record<string, string> = {
+    pending: `Your order #${orderId} is pending confirmation.`,
+    confirmed: `Great news! Your order #${orderId} has been confirmed and is being prepared.`,
+    processing: `Your order #${orderId} is being processed.`,
+    shipped: `Your order #${orderId} has been shipped and is on its way!`,
+    delivered: `Your order #${orderId} has been delivered. Enjoy!`,
+    cancelled: `Your order #${orderId} has been cancelled.`,
+    refunded: `Your order #${orderId} has been refunded.`,
+  };
+  return messages[status] || `Your order #${orderId} status has been updated to ${status}.`;
+}
+
+// ============================================================================
+// PAYMENT STATUS TRIGGER FUNCTIONS
+// ============================================================================
+
+/**
+ * Firestore trigger for payment status changes
+ * Auto-confirms orders when payment succeeds
+ */
+export const onPaymentStatusChange = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "256MB",
+  })
+  .firestore.document("payments/{paymentId}")
+  .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    const { paymentId } = context.params;
+
+    // Skip if payment status hasn't changed
+    if (before.status === after.status) {
+      return;
+    }
+
+    console.log(`[Payment Trigger] Payment ${paymentId} status changed: ${before.status} -> ${after.status}`);
+
+    try {
+      // If payment is successful, update order status to confirmed
+      if (after.status === "completed" || after.status === "success" || after.status === "paid") {
+        if (after.order_id) {
+          const orderRef = db.collection("orders").doc(after.order_id);
+          const orderDoc = await orderRef.get();
+          
+          if (orderDoc.exists) {
+            const order = orderDoc.data();
+            // Only update if order is still pending
+            if (order?.status === "pending" || order?.order_status === "pending") {
+              await orderRef.update({
+                status: "confirmed",
+                order_status: "confirmed",
+                payment_status: "paid",
+                paid_at: admin.firestore.FieldValue.serverTimestamp(),
+                updated_at: admin.firestore.FieldValue.serverTimestamp(),
+              });
+              console.log(`[Payment Trigger] Auto-confirmed order ${after.order_id}`);
+            }
+          }
+        }
+      }
+
+      // If payment failed, notify user
+      if (after.status === "failed") {
+        if (after.user_id) {
+          await db.collection("notifications").add({
+            userId: after.user_id,
+            type: "payment_failed",
+            title: "Payment Failed",
+            message: "Your payment could not be processed. Please try again.",
+            paymentId: paymentId,
+            orderId: after.order_id,
+            read: false,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          console.log(`[Payment Trigger] Notified user ${after.user_id} of payment failure`);
+        }
+      }
+    } catch (error) {
+      console.error(`[Payment Trigger] Error processing payment ${paymentId}:`, error);
+    }
+  });
+
+// ============================================================================
+// RETURN STATUS TRIGGER FUNCTIONS
+// ============================================================================
+
+/**
+ * Firestore trigger for return request status changes
+ * Handles notifications and refund processing
+ */
+export const onReturnStatusChange = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "256MB",
+  })
+  .firestore.document("returns/{returnId}")
+  .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    const { returnId } = context.params;
+
+    // Skip if status hasn't changed
+    if (before.status === after.status) {
+      return;
+    }
+
+    console.log(`[Return Trigger] Return ${returnId} status changed: ${before.status} -> ${after.status}`);
+
+    try {
+      // Create notification for the user
+      const notificationData = {
+        userId: after.user_id,
+        type: "return_status",
+        title: getReturnStatusTitle(after.status),
+        message: getReturnStatusMessage(after.status, returnId),
+        returnId: returnId,
+        orderId: after.order_id,
+        read: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      await db.collection("notifications").add(notificationData);
+      console.log(`[Return Trigger] Created notification for user ${after.user_id}`);
+
+      // If return is approved, notify seller
+      if (after.status === "approved" && after.shop_id) {
+        const shopDoc = await db.collection("shops").doc(after.shop_id).get();
+        const shop = shopDoc.data();
+        if (shop?.owner_id) {
+          await db.collection("notifications").add({
+            userId: shop.owner_id,
+            type: "return_approved",
+            title: "Return Request Approved",
+            message: `Return request #${returnId} has been approved. Please process the return.`,
+            returnId: returnId,
+            read: false,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          console.log(`[Return Trigger] Notified seller ${shop.owner_id} of approved return`);
+        }
+      }
+
+      // If return is completed/refunded, update inventory
+      if (after.status === "refunded" || after.status === "completed") {
+        // Restore inventory for returned items
+        if (after.items && Array.isArray(after.items)) {
+          for (const item of after.items) {
+            if (item.product_id) {
+              const productRef = db.collection("products").doc(item.product_id);
+              await productRef.update({
+                stock: admin.firestore.FieldValue.increment(item.quantity || 1),
+                updated_at: admin.firestore.FieldValue.serverTimestamp(),
+              });
+              console.log(`[Return Trigger] Restored ${item.quantity || 1} units to product ${item.product_id}`);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`[Return Trigger] Error processing return ${returnId}:`, error);
+    }
+  });
+
+/**
+ * Get human-readable title for return status
+ */
+function getReturnStatusTitle(status: string): string {
+  const titles: Record<string, string> = {
+    pending: "Return Request Received",
+    approved: "Return Approved",
+    rejected: "Return Rejected",
+    processing: "Return Processing",
+    shipped: "Return Shipped",
+    received: "Return Received",
+    refunded: "Refund Completed",
+    completed: "Return Completed",
+  };
+  return titles[status] || `Return ${status}`;
+}
+
+/**
+ * Get human-readable message for return status
+ */
+function getReturnStatusMessage(status: string, returnId: string): string {
+  const messages: Record<string, string> = {
+    pending: `Your return request #${returnId} has been received and is pending review.`,
+    approved: `Your return request #${returnId} has been approved. Please ship the item back.`,
+    rejected: `Your return request #${returnId} has been rejected. Please contact support for more information.`,
+    processing: `Your return #${returnId} is being processed.`,
+    shipped: `Your return #${returnId} shipment has been recorded.`,
+    received: `We have received your returned item for #${returnId}.`,
+    refunded: `Your refund for return #${returnId} has been processed.`,
+    completed: `Your return #${returnId} has been completed.`,
+  };
+  return messages[status] || `Your return #${returnId} status has been updated to ${status}.`;
+}
+
+// ============================================================================
+// TICKET STATUS TRIGGER FUNCTIONS
+// ============================================================================
+
+/**
+ * Firestore trigger for support ticket status changes
+ */
+export const onTicketStatusChange = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "256MB",
+  })
+  .firestore.document("support_tickets/{ticketId}")
+  .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    const { ticketId } = context.params;
+
+    // Skip if status hasn't changed
+    if (before.status === after.status) {
+      return;
+    }
+
+    console.log(`[Ticket Trigger] Ticket ${ticketId} status changed: ${before.status} -> ${after.status}`);
+
+    try {
+      const userId = after.userId || after.user_id;
+      if (!userId) {
+        console.warn(`[Ticket Trigger] No user ID found for ticket ${ticketId}`);
+        return;
+      }
+
+      // Create notification for the user
+      await db.collection("notifications").add({
+        userId: userId,
+        type: "ticket_status",
+        title: getTicketStatusTitle(after.status),
+        message: getTicketStatusMessage(after.status, ticketId),
+        ticketId: ticketId,
+        read: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      console.log(`[Ticket Trigger] Created notification for user ${userId}`);
+    } catch (error) {
+      console.error(`[Ticket Trigger] Error processing ticket ${ticketId}:`, error);
+    }
+  });
+
+/**
+ * Get human-readable title for ticket status
+ */
+function getTicketStatusTitle(status: string): string {
+  const titles: Record<string, string> = {
+    open: "Ticket Opened",
+    in_progress: "Ticket In Progress",
+    waiting_on_customer: "Response Needed",
+    resolved: "Ticket Resolved",
+    closed: "Ticket Closed",
+  };
+  return titles[status] || `Ticket ${status}`;
+}
+
+/**
+ * Get human-readable message for ticket status
+ */
+function getTicketStatusMessage(status: string, ticketId: string): string {
+  const messages: Record<string, string> = {
+    open: `Your support ticket #${ticketId} has been opened.`,
+    in_progress: `Your support ticket #${ticketId} is now being worked on by our team.`,
+    waiting_on_customer: `We need more information for ticket #${ticketId}. Please check and respond.`,
+    resolved: `Your support ticket #${ticketId} has been resolved.`,
+    closed: `Your support ticket #${ticketId} has been closed.`,
+  };
+  return messages[status] || `Your ticket #${ticketId} status has been updated to ${status}.`;
+}
+
+// ============================================================================
+// NEW BID TRIGGER FUNCTIONS
+// ============================================================================
+
+/**
+ * Firestore trigger for new bids
+ * Sends outbid notifications to previous highest bidder
+ */
+export const onNewBid = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "256MB",
+  })
+  .firestore.document("bids/{bidId}")
+  .onCreate(async (snapshot, context) => {
+    const bid = snapshot.data();
+    const { bidId } = context.params;
+
+    console.log(`[Bid Trigger] New bid ${bidId} on auction ${bid.auction_id}`);
+
+    try {
+      // Get auction details
+      const auctionRef = db.collection("auctions").doc(bid.auction_id);
+      const auctionDoc = await auctionRef.get();
+
+      if (!auctionDoc.exists) {
+        console.warn(`[Bid Trigger] Auction ${bid.auction_id} not found`);
+        return;
+      }
+
+      const auction = auctionDoc.data() as Record<string, unknown>;
+      const previousHighestBidderId = auction.highest_bidder_id as string | undefined;
+
+      // Update auction with new highest bid
+      await auctionRef.update({
+        current_bid: bid.amount,
+        highest_bidder_id: bid.user_id,
+        bid_count: admin.firestore.FieldValue.increment(1),
+        updated_at: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // Notify previous highest bidder if they were outbid
+      if (previousHighestBidderId && previousHighestBidderId !== bid.user_id) {
+        await db.collection("notifications").add({
+          userId: previousHighestBidderId,
+          type: "outbid",
+          title: "You've Been Outbid!",
+          message: `Someone placed a higher bid of ₹${bid.amount.toLocaleString("en-IN")} on "${auction.name}".`,
+          auctionId: bid.auction_id,
+          read: false,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        console.log(`[Bid Trigger] Notified previous bidder ${previousHighestBidderId} of outbid`);
+      }
+
+      // Notify seller of new bid
+      const sellerId = auction.seller_id as string | undefined;
+      if (sellerId) {
+        await db.collection("notifications").add({
+          userId: sellerId,
+          type: "new_bid",
+          title: "New Bid Received",
+          message: `A new bid of ₹${bid.amount.toLocaleString("en-IN")} was placed on "${auction.name}".`,
+          auctionId: bid.auction_id,
+          read: false,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        console.log(`[Bid Trigger] Notified seller ${sellerId} of new bid`);
+      }
+    } catch (error) {
+      console.error(`[Bid Trigger] Error processing bid ${bidId}:`, error);
+    }
+  });
+
+// ============================================================================
+// NEW REVIEW TRIGGER FUNCTIONS
+// ============================================================================
+
+/**
+ * Firestore trigger for new reviews
+ * Updates shop/product ratings
+ */
+export const onNewReview = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "256MB",
+  })
+  .firestore.document("reviews/{reviewId}")
+  .onCreate(async (snapshot, context) => {
+    const review = snapshot.data();
+    const { reviewId } = context.params;
+
+    console.log(`[Review Trigger] New review ${reviewId} for ${review.type || "product"}`);
+
+    try {
+      // Update shop rating if shop_id is provided
+      if (review.shop_id) {
+        await updateShopRating(review.shop_id);
+      }
+
+      // Update product rating if product_id is provided
+      if (review.product_id) {
+        await updateProductRating(review.product_id);
+      }
+
+      // Notify seller of new review
+      if (review.shop_id) {
+        const shopDoc = await db.collection("shops").doc(review.shop_id).get();
+        const shop = shopDoc.data();
+        if (shop?.owner_id) {
+          await db.collection("notifications").add({
+            userId: shop.owner_id,
+            type: "new_review",
+            title: "New Review",
+            message: `You received a ${review.rating}-star review${review.product_id ? " for a product" : ""}.`,
+            reviewId: reviewId,
+            shopId: review.shop_id,
+            productId: review.product_id,
+            read: false,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          console.log(`[Review Trigger] Notified seller ${shop.owner_id} of new review`);
+        }
+      }
+    } catch (error) {
+      console.error(`[Review Trigger] Error processing review ${reviewId}:`, error);
+    }
+  });
+
+/**
+ * Update shop average rating
+ */
+async function updateShopRating(shopId: string): Promise<void> {
+  try {
+    const reviewsSnapshot = await db
+      .collection("reviews")
+      .where("shop_id", "==", shopId)
+      .where("isApproved", "==", true)
+      .get();
+
+    if (reviewsSnapshot.empty) {
+      return;
+    }
+
+    let totalRating = 0;
+    reviewsSnapshot.docs.forEach((doc) => {
+      totalRating += doc.data().rating || 0;
+    });
+
+    const averageRating = totalRating / reviewsSnapshot.size;
+
+    await db.collection("shops").doc(shopId).update({
+      rating: Math.round(averageRating * 10) / 10,
+      review_count: reviewsSnapshot.size,
+      updated_at: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log(`[Review Trigger] Updated shop ${shopId} rating to ${averageRating.toFixed(1)}`);
+  } catch (error) {
+    console.error(`[Review Trigger] Error updating shop rating:`, error);
+  }
+}
+
+/**
+ * Update product average rating
+ */
+async function updateProductRating(productId: string): Promise<void> {
+  try {
+    const reviewsSnapshot = await db
+      .collection("reviews")
+      .where("product_id", "==", productId)
+      .where("isApproved", "==", true)
+      .get();
+
+    if (reviewsSnapshot.empty) {
+      return;
+    }
+
+    let totalRating = 0;
+    reviewsSnapshot.docs.forEach((doc) => {
+      totalRating += doc.data().rating || 0;
+    });
+
+    const averageRating = totalRating / reviewsSnapshot.size;
+
+    await db.collection("products").doc(productId).update({
+      rating: Math.round(averageRating * 10) / 10,
+      review_count: reviewsSnapshot.size,
+      updated_at: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log(`[Review Trigger] Updated product ${productId} rating to ${averageRating.toFixed(1)}`);
+  } catch (error) {
+    console.error(`[Review Trigger] Error updating product rating:`, error);
+  }
+}
+
+// ============================================================================
+// SCHEDULED CLEANUP FUNCTIONS
+// ============================================================================
+
+/**
+ * Scheduled function to clean up expired sessions
+ * Runs every hour
+ */
+export const cleanupExpiredSessions = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 120,
+    memory: "256MB",
+    minInstances: 0,
+    maxInstances: 1,
+    serviceAccount,
+  })
+  .pubsub.schedule("every 60 minutes")
+  .timeZone("Asia/Kolkata")
+  .onRun(async () => {
+    console.log("[Cleanup] Starting expired sessions cleanup...");
+
+    try {
+      const now = admin.firestore.Timestamp.now();
+      const sessionsSnapshot = await db
+        .collection("sessions")
+        .where("expiresAt", "<", now)
+        .limit(500)
+        .get();
+
+      if (sessionsSnapshot.empty) {
+        console.log("[Cleanup] No expired sessions found");
+        return { cleaned: 0 };
+      }
+
+      const batch = db.batch();
+      sessionsSnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+      console.log(`[Cleanup] Deleted ${sessionsSnapshot.size} expired sessions`);
+
+      return { cleaned: sessionsSnapshot.size };
+    } catch (error) {
+      console.error("[Cleanup] Error cleaning sessions:", error);
+      return { error: String(error) };
+    }
+  });
+
+/**
+ * Scheduled function to clean up abandoned carts
+ * Runs every 6 hours
+ */
+export const cleanupAbandonedCarts = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 120,
+    memory: "256MB",
+    minInstances: 0,
+    maxInstances: 1,
+    serviceAccount,
+  })
+  .pubsub.schedule("every 6 hours")
+  .timeZone("Asia/Kolkata")
+  .onRun(async () => {
+    console.log("[Cleanup] Starting abandoned carts cleanup...");
+
+    try {
+      // Delete carts older than 30 days
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - 30);
+      const cutoffTimestamp = admin.firestore.Timestamp.fromDate(cutoffDate);
+
+      const cartsSnapshot = await db
+        .collection("carts")
+        .where("updated_at", "<", cutoffTimestamp)
+        .limit(500)
+        .get();
+
+      if (cartsSnapshot.empty) {
+        console.log("[Cleanup] No abandoned carts found");
+        return { cleaned: 0 };
+      }
+
+      const batch = db.batch();
+      cartsSnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+      console.log(`[Cleanup] Deleted ${cartsSnapshot.size} abandoned carts`);
+
+      return { cleaned: cartsSnapshot.size };
+    } catch (error) {
+      console.error("[Cleanup] Error cleaning carts:", error);
+      return { error: String(error) };
+    }
+  });
+
+/**
+ * Scheduled function to expire coupons
+ * Runs every hour
+ */
+export const expireCoupons = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "256MB",
+    minInstances: 0,
+    maxInstances: 1,
+    serviceAccount,
+  })
+  .pubsub.schedule("every 60 minutes")
+  .timeZone("Asia/Kolkata")
+  .onRun(async () => {
+    console.log("[Cleanup] Starting coupon expiry check...");
+
+    try {
+      const now = admin.firestore.Timestamp.now();
+      const couponsSnapshot = await db
+        .collection("coupons")
+        .where("is_active", "==", true)
+        .where("end_date", "<", now)
+        .limit(100)
+        .get();
+
+      if (couponsSnapshot.empty) {
+        console.log("[Cleanup] No coupons to expire");
+        return { expired: 0 };
+      }
+
+      const batch = db.batch();
+      couponsSnapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, {
+          is_active: false,
+          updated_at: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      });
+
+      await batch.commit();
+      console.log(`[Cleanup] Expired ${couponsSnapshot.size} coupons`);
+
+      return { expired: couponsSnapshot.size };
+    } catch (error) {
+      console.error("[Cleanup] Error expiring coupons:", error);
+      return { error: String(error) };
+    }
+  });

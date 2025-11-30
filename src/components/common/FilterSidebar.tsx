@@ -289,7 +289,7 @@ export function FilterSidebar({
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={onClose}
-          onKeyDown={(e) => e.key === "Escape" && onClose()}
+          onKeyDown={(e) => e.key === "Escape" && onClose?.()}
           role="button"
           tabIndex={-1}
           aria-label="Close filters"

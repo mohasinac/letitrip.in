@@ -8,6 +8,7 @@ import {
   HomepageSettings,
 } from "@/services/homepage-settings.service";
 import { useIsMobile } from "@/hooks/useMobile";
+import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
 
 // Dynamically import heavy components with SEO-friendly loading states
 const FeaturedCategories = dynamic(
@@ -400,6 +401,9 @@ export default function Home() {
 
         {/* Featured Categories Icon Grid - Always shown */}
         <FeaturedCategories />
+
+        {/* Recently Viewed Products - Client-side only */}
+        <RecentlyViewedWidget title="Continue Browsing" />
 
         {/* Featured Categories Section - Conditional */}
         {(!settings || settings.sections.featuredCategories.enabled) && (

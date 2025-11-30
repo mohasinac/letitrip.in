@@ -3,6 +3,22 @@
     ".read": "auth != null",
     ".write": "auth != null",
 
+    "presence": {
+      "$userId": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid == $userId"
+      }
+    },
+
+    "typing": {
+      "$conversationId": {
+        "$userId": {
+          ".read": "auth != null",
+          ".write": "auth != null && auth.uid == $userId"
+        }
+      }
+    },
+
     "auctions": {
       "$auctionId": {
         ".read": true,

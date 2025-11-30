@@ -5,6 +5,7 @@ import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { Star, ShoppingCart, Eye } from "lucide-react";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
+import { CompareButton } from "@/components/products/CompareButton";
 import {
   formatCurrency,
   formatDiscount,
@@ -285,6 +286,23 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
             itemType="product"
             initialIsFavorite={isFavorite}
             onToggle={() => onToggleFavorite?.(id)}
+            size="md"
+          />
+          <CompareButton
+            product={{
+              id,
+              name,
+              slug,
+              price,
+              originalPrice,
+              image,
+              rating,
+              reviewCount,
+              shopName,
+              shopSlug,
+              inStock,
+              condition,
+            }}
             size="md"
           />
           {onQuickView && (

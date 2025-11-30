@@ -533,10 +533,14 @@ export default function AdminEditShopPage() {
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-name"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Shop Name *
                     </label>
                     <input
+                      id="admin-shop-name"
                       type="text"
                       required
                       value={formData.name}
@@ -556,10 +560,14 @@ export default function AdminEditShopPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-description"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Description
                     </label>
                     <textarea
+                      id="admin-shop-description"
                       rows={4}
                       value={formData.description}
                       onChange={(e) =>
@@ -582,10 +590,14 @@ export default function AdminEditShopPage() {
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-email"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Email
                     </label>
                     <input
+                      id="admin-shop-email"
                       type="email"
                       value={formData.email}
                       onChange={(e) =>
@@ -595,10 +607,14 @@ export default function AdminEditShopPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-phone"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Phone
                     </label>
                     <input
+                      id="admin-shop-phone"
                       type="tel"
                       value={formData.phone}
                       onChange={(e) =>
@@ -608,10 +624,14 @@ export default function AdminEditShopPage() {
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-location"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Location
                     </label>
                     <input
+                      id="admin-shop-location"
                       type="text"
                       value={formData.location}
                       onChange={(e) =>
@@ -631,10 +651,14 @@ export default function AdminEditShopPage() {
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-address1"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Address Line 1
                     </label>
                     <input
+                      id="admin-shop-address1"
                       type="text"
                       value={formData.address.line1}
                       onChange={(e) =>
@@ -650,10 +674,14 @@ export default function AdminEditShopPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-address2"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Address Line 2
                     </label>
                     <input
+                      id="admin-shop-address2"
                       type="text"
                       value={formData.address.line2}
                       onChange={(e) =>
@@ -670,10 +698,14 @@ export default function AdminEditShopPage() {
                   </div>
                   <div className="grid gap-4 sm:grid-cols-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="admin-shop-city"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         City
                       </label>
                       <input
+                        id="admin-shop-city"
                         type="text"
                         value={formData.address.city}
                         onChange={(e) =>
@@ -689,10 +721,14 @@ export default function AdminEditShopPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="admin-shop-state"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         State
                       </label>
                       <input
+                        id="admin-shop-state"
                         type="text"
                         value={formData.address.state}
                         onChange={(e) =>
@@ -708,10 +744,14 @@ export default function AdminEditShopPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="admin-shop-pincode"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Pincode
                       </label>
                       <input
+                        id="admin-shop-pincode"
                         type="text"
                         value={formData.address.pincode}
                         onChange={(e) =>
@@ -737,10 +777,14 @@ export default function AdminEditShopPage() {
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-website"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Website
                     </label>
                     <input
+                      id="admin-shop-website"
                       type="url"
                       value={formData.website}
                       onChange={(e) =>
@@ -751,10 +795,14 @@ export default function AdminEditShopPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-facebook"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Facebook
                     </label>
                     <input
+                      id="admin-shop-facebook"
                       type="url"
                       value={formData.facebook}
                       onChange={(e) =>
@@ -765,10 +813,14 @@ export default function AdminEditShopPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-instagram"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Instagram
                     </label>
                     <input
+                      id="admin-shop-instagram"
                       type="url"
                       value={formData.instagram}
                       onChange={(e) =>
@@ -779,10 +831,14 @@ export default function AdminEditShopPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-twitter"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Twitter
                     </label>
                     <input
+                      id="admin-shop-twitter"
                       type="url"
                       value={formData.twitter}
                       onChange={(e) =>
@@ -802,10 +858,14 @@ export default function AdminEditShopPage() {
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-gst"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       GST Number
                     </label>
                     <input
+                      id="admin-shop-gst"
                       type="text"
                       value={formData.gst}
                       onChange={(e) =>
@@ -815,10 +875,14 @@ export default function AdminEditShopPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-pan"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       PAN Number
                     </label>
                     <input
+                      id="admin-shop-pan"
                       type="text"
                       value={formData.pan}
                       onChange={(e) =>
@@ -837,10 +901,14 @@ export default function AdminEditShopPage() {
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-holder"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Account Holder Name
                     </label>
                     <input
+                      id="admin-shop-holder"
                       type="text"
                       value={formData.bankDetails.accountHolderName}
                       onChange={(e) =>
@@ -857,10 +925,14 @@ export default function AdminEditShopPage() {
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="admin-shop-account"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Account Number
                       </label>
                       <input
+                        id="admin-shop-account"
                         type="text"
                         value={formData.bankDetails.accountNumber}
                         onChange={(e) =>
@@ -876,10 +948,14 @@ export default function AdminEditShopPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="admin-shop-ifsc"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         IFSC Code
                       </label>
                       <input
+                        id="admin-shop-ifsc"
                         type="text"
                         value={formData.bankDetails.ifscCode}
                         onChange={(e) =>
@@ -897,10 +973,14 @@ export default function AdminEditShopPage() {
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="admin-shop-bank"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Bank Name
                       </label>
                       <input
+                        id="admin-shop-bank"
                         type="text"
                         value={formData.bankDetails.bankName}
                         onChange={(e) =>
@@ -916,10 +996,14 @@ export default function AdminEditShopPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="admin-shop-branch"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Branch Name
                       </label>
                       <input
+                        id="admin-shop-branch"
                         type="text"
                         value={formData.bankDetails.branchName}
                         onChange={(e) =>
@@ -936,10 +1020,14 @@ export default function AdminEditShopPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-upi"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       UPI ID
                     </label>
                     <input
+                      id="admin-shop-upi"
                       type="text"
                       value={formData.upiId}
                       onChange={(e) =>
@@ -959,10 +1047,14 @@ export default function AdminEditShopPage() {
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-return-policy"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Return Policy
                     </label>
                     <textarea
+                      id="admin-shop-return-policy"
                       rows={4}
                       value={formData.returnPolicy}
                       onChange={(e) =>
@@ -976,10 +1068,14 @@ export default function AdminEditShopPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="admin-shop-shipping-policy"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Shipping Policy
                     </label>
                     <textarea
+                      id="admin-shop-shipping-policy"
                       rows={4}
                       value={formData.shippingPolicy}
                       onChange={(e) =>
@@ -1238,10 +1334,14 @@ export default function AdminEditShopPage() {
       >
         {!shop.isBanned && (
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="admin-shop-ban-reason"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Ban Reason (Optional)
             </label>
             <textarea
+              id="admin-shop-ban-reason"
               rows={3}
               value={banReason}
               onChange={(e) => setBanReason(e.target.value)}

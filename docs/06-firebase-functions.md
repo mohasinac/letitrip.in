@@ -1,55 +1,68 @@
 # Firebase Functions & Background Jobs
 
-> **Status**: 🟡 Planned
+> **Status**: ✅ Complete
 > **Priority**: Medium
-> **Last Updated**: November 30, 2025
+> **Last Updated**: January 2025
 
 ## Current Firebase Functions
 
-| Function                   | Trigger        | Schedule       | Purpose                                      |
-| -------------------------- | -------------- | -------------- | -------------------------------------------- |
-| `processAuctions`          | Pub/Sub Cron   | Every 1 minute | Close ended auctions, notify winners/sellers |
-| `triggerAuctionProcessing` | HTTPS Callable | Manual (admin) | Manual trigger for auction processing        |
+All functions are implemented in `functions/src/index.ts`:
 
-## Jobs Currently Done via API Routes (Should Move to Firebase Functions)
+### Scheduled Functions
 
-### High Priority - Status Change Triggers
+| Function                 | Schedule         | Purpose                                      |
+| ------------------------ | ---------------- | -------------------------------------------- |
+| `processAuctions`        | Every 1 minute   | Close ended auctions, notify winners/sellers |
+| `rebuildCategoryTree`    | Every 60 minutes | Rebuild category tree cache                  |
+| `cleanupExpiredSessions` | Every 60 minutes | Remove expired sessions                      |
+| `cleanupAbandonedCarts`  | Every 6 hours    | Clean up carts older than 30 days            |
+| `expireCoupons`          | Every 60 minutes | Mark expired coupons as inactive             |
 
-| Current Implementation                    | Proposed Firebase Function | Trigger Type         | Benefits                                      |
-| ----------------------------------------- | -------------------------- | -------------------- | --------------------------------------------- |
-| Order status updates → notifications      | `onOrderStatusChange`      | Firestore `onUpdate` | Real-time notifications, decouple from API    |
-| Payment status updates → order status     | `onPaymentStatusChange`    | Firestore `onUpdate` | Auto-confirm orders when payment succeeds     |
-| Return status updates → refund processing | `onReturnStatusChange`     | Firestore `onUpdate` | Auto-process refunds, update inventory        |
-| Ticket status updates → notifications     | `onTicketStatusChange`     | Firestore `onUpdate` | Notify users of ticket updates                |
-| Shop verification → seller notifications  | `onShopVerificationChange` | Firestore `onUpdate` | Notify sellers when shop is verified/rejected |
-| Product publish → category counts update  | `onProductStatusChange`    | Firestore `onUpdate` | Keep category product counts accurate         |
-| Auction status → category auction counts  | `onAuctionStatusChange`    | Firestore `onUpdate` | Keep category auction counts accurate         |
+### Firestore Trigger Functions
 
-### Medium Priority - Scheduled Jobs
+| Function                | Trigger              | Purpose                                    |
+| ----------------------- | -------------------- | ------------------------------------------ |
+| `onOrderStatusChange`   | orders/{orderId}     | Send notifications on status change        |
+| `onPaymentStatusChange` | payments/{paymentId} | Auto-confirm orders when payment succeeds  |
+| `onReturnStatusChange`  | returns/{returnId}   | Handle return notifications and inventory  |
+| `onTicketStatusChange`  | support_tickets/{id} | Notify users of ticket updates             |
+| `onCategoryWrite`       | categories/{id}      | Rebuild tree when categories change        |
+| `onNewBid`              | bids/{bidId}         | Outbid notifications, update auction stats |
+| `onNewReview`           | reviews/{reviewId}   | Update shop/product ratings                |
 
-| Current Implementation                         | Proposed Firebase Function   | Schedule          | Benefits                                    |
-| ---------------------------------------------- | ---------------------------- | ----------------- | ------------------------------------------- |
-| Rebuild category counts (manual admin trigger) | `rebuildCategoryCounts`      | Every 6 hours     | Ensure data consistency automatically       |
-| Session cleanup (none currently)               | `cleanupExpiredSessions`     | Every hour        | Remove expired sessions, save storage costs |
-| Cart cleanup (none currently)                  | `cleanupAbandonedCarts`      | Every 6 hours     | Clean up old abandoned carts                |
-| Coupon expiry check (client-side only)         | `expireCoupons`              | Every hour        | Mark expired coupons as inactive            |
-| Analytics aggregation (none currently)         | `aggregateAnalytics`         | Daily at midnight | Pre-compute analytics for dashboard         |
-| Review moderation queue (manual)               | `processReviewQueue`         | Every 30 minutes  | Auto-moderate reviews, notify admins        |
-| Low stock alerts (none currently)              | `checkLowStockAlerts`        | Every 2 hours     | Notify sellers of low stock products        |
-| Auction reminders (none currently)             | `sendAuctionReminders`       | Every 15 minutes  | Notify watchers when auction ending soon    |
-| Winner payment reminder (none currently)       | `sendWinnerPaymentReminders` | Every 2 hours     | Remind auction winners to pay               |
+### HTTP Callable Functions
 
-### Low Priority - Event-Driven Jobs
+| Function                     | Purpose                                       |
+| ---------------------------- | --------------------------------------------- |
+| `triggerAuctionProcessing`   | Manual trigger for auction processing (admin) |
+| `triggerCategoryTreeRebuild` | Manual trigger for category tree rebuild      |
 
-| Current Implementation                 | Proposed Firebase Function | Trigger Type         | Benefits                       |
-| -------------------------------------- | -------------------------- | -------------------- | ------------------------------ |
-| New bid → outbid notifications         | `onNewBid`                 | Firestore `onCreate` | Real-time outbid notifications |
-| New review → shop rating recalculation | `onNewReview`              | Firestore `onCreate` | Keep shop ratings updated      |
-| New order → inventory update           | `onNewOrder`               | Firestore `onCreate` | Decrement stock counts         |
-| User registration → welcome email      | `onUserCreate`             | Firestore `onCreate` | Automated welcome flow         |
-| Shop creation → admin notification     | `onShopCreate`             | Firestore `onCreate` | Alert admins for verification  |
-| Media upload → thumbnail generation    | `onMediaUpload`            | Storage `onFinalize` | Auto-generate thumbnails       |
-| Order delivery → review request        | `onOrderDelivered`         | Firestore `onUpdate` | Request reviews after delivery |
+## Jobs Completed (Previously Planned)
+
+### High Priority - Status Change Triggers ✅
+
+| Proposed Function       | Status | Implementation                             |
+| ----------------------- | ------ | ------------------------------------------ |
+| `onOrderStatusChange`   | ✅     | Sends notifications, notifies sellers      |
+| `onPaymentStatusChange` | ✅     | Auto-confirms orders on successful payment |
+| `onReturnStatusChange`  | ✅     | Notifications + inventory restoration      |
+| `onTicketStatusChange`  | ✅     | User notifications for ticket updates      |
+
+### Medium Priority - Scheduled Jobs ✅
+
+| Proposed Function        | Status | Schedule         |
+| ------------------------ | ------ | ---------------- |
+| `rebuildCategoryTree`    | ✅     | Every 60 minutes |
+| `cleanupExpiredSessions` | ✅     | Every 60 minutes |
+| `cleanupAbandonedCarts`  | ✅     | Every 6 hours    |
+| `expireCoupons`          | ✅     | Every 60 minutes |
+
+### Low Priority - Event-Driven Jobs ✅
+
+| Proposed Function | Status | Trigger                                   |
+| ----------------- | ------ | ----------------------------------------- |
+| `onNewBid`        | ✅     | Firestore onCreate - outbid notifications |
+| `onNewReview`     | ✅     | Firestore onCreate - rating recalculation |
 
 ## Implementation Examples
 
