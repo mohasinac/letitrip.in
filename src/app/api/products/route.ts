@@ -24,7 +24,7 @@ const productsConfig = {
     updatedAt: "updated_at",
     stockCount: "stock_count",
     featured: "is_featured",
-  },
+  } as Record<string, string>,
 };
 
 /**

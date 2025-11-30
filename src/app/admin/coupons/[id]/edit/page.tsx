@@ -91,7 +91,7 @@ export default function EditCouponPage() {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value, type } = e.target;
 
@@ -142,10 +142,14 @@ export default function EditCouponPage() {
           >
             {/* Coupon Code */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="edit-coupon-code"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Coupon Code *
               </label>
               <input
+                id="edit-coupon-code"
                 type="text"
                 name="code"
                 value={formData.code}
@@ -163,10 +167,14 @@ export default function EditCouponPage() {
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="edit-coupon-description"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Description
               </label>
               <textarea
+                id="edit-coupon-description"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
@@ -179,10 +187,14 @@ export default function EditCouponPage() {
             {/* Discount Type & Value */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="edit-coupon-type"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Discount Type *
                 </label>
                 <select
+                  id="edit-coupon-type"
                   name="type"
                   value={formData.type}
                   onChange={handleChange}
@@ -197,11 +209,15 @@ export default function EditCouponPage() {
 
               {formData.type !== "free-shipping" && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="edit-coupon-value"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Discount Value *
                   </label>
                   <div className="relative">
                     <input
+                      id="edit-coupon-value"
                       type="number"
                       name="value"
                       value={formData.value}
@@ -221,10 +237,14 @@ export default function EditCouponPage() {
 
             {/* Minimum Order Value */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="edit-coupon-min-order"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Minimum Order Value (₹)
               </label>
               <input
+                id="edit-coupon-min-order"
                 type="number"
                 name="minOrderValue"
                 value={formData.minOrderValue}
@@ -238,10 +258,14 @@ export default function EditCouponPage() {
             {/* Usage Limits */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="edit-coupon-max-uses"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Total Usage Limit
                 </label>
                 <input
+                  id="edit-coupon-max-uses"
                   type="number"
                   name="maxUses"
                   value={formData.maxUses || ""}
@@ -262,10 +286,14 @@ export default function EditCouponPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="edit-coupon-per-user"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Uses Per User *
                 </label>
                 <input
+                  id="edit-coupon-per-user"
                   type="number"
                   name="maxUsesPerUser"
                   value={formData.maxUsesPerUser}
@@ -280,10 +308,14 @@ export default function EditCouponPage() {
             {/* Valid Date Range */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="edit-coupon-valid-from"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Valid From *
                 </label>
                 <input
+                  id="edit-coupon-valid-from"
                   type="date"
                   name="validFrom"
                   value={formData.validFrom}
@@ -294,10 +326,14 @@ export default function EditCouponPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="edit-coupon-valid-to"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Valid Until *
                 </label>
                 <input
+                  id="edit-coupon-valid-to"
                   type="date"
                   name="validTo"
                   value={formData.validTo}
@@ -311,10 +347,14 @@ export default function EditCouponPage() {
 
             {/* Applicable To */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="edit-coupon-applicable"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Applicable To
               </label>
               <select
+                id="edit-coupon-applicable"
                 name="applicableTo"
                 value={formData.applicableTo}
                 onChange={handleChange}

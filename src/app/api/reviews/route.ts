@@ -23,7 +23,7 @@ const reviewsConfig = {
     updatedAt: "updated_at",
     helpfulCount: "helpful_count",
     verifiedPurchase: "verified_purchase",
-  },
+  } as Record<string, string>,
 };
 
 /**

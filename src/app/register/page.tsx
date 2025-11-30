@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { COMPANY_NAME } from "@/constants/navigation";
-import { MobileFormInput } from "@/components/mobile/MobileFormInput";
+import { Input } from "@/components/ui/Input";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 
@@ -102,8 +102,8 @@ export default function RegisterPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Name - Mobile Optimized */}
-            <MobileFormInput
+            {/* Name */}
+            <Input
               label="Full Name"
               type="text"
               id="name"
@@ -114,10 +114,11 @@ export default function RegisterPage() {
               placeholder="John Doe"
               leftIcon={<User className="w-5 h-5" />}
               autoComplete="name"
+              size="lg"
             />
 
-            {/* Email - Mobile Optimized */}
-            <MobileFormInput
+            {/* Email */}
+            <Input
               label="Email Address"
               type="email"
               id="email"
@@ -128,10 +129,11 @@ export default function RegisterPage() {
               placeholder="you@example.com"
               leftIcon={<Mail className="w-5 h-5" />}
               autoComplete="email"
+              size="lg"
             />
 
-            {/* Password - Mobile Optimized with show/hide */}
-            <MobileFormInput
+            {/* Password with show/hide */}
+            <Input
               label="Password"
               type={showPassword ? "text" : "password"}
               id="password"
@@ -146,7 +148,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors touch-target"
+                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors touch-target"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
@@ -157,10 +159,11 @@ export default function RegisterPage() {
                 </button>
               }
               autoComplete="new-password"
+              size="lg"
             />
 
-            {/* Confirm Password - Mobile Optimized with show/hide */}
-            <MobileFormInput
+            {/* Confirm Password with show/hide */}
+            <Input
               label="Confirm Password"
               type={showConfirmPassword ? "text" : "password"}
               id="confirmPassword"
@@ -174,7 +177,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors touch-target"
+                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors touch-target"
                   aria-label={
                     showConfirmPassword ? "Hide password" : "Show password"
                   }
@@ -187,6 +190,7 @@ export default function RegisterPage() {
                 </button>
               }
               autoComplete="new-password"
+              size="lg"
             />
 
             {/* Terms Checkbox */}

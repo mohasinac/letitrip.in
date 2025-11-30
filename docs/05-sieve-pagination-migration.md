@@ -162,48 +162,48 @@ All configs are in `src/app/api/lib/sieve/config.ts`:
 
 ## Migration Checklist
 
-### Phase 1: Core Routes (Week 1)
+### Phase 1: Core Routes (Week 1) ✅ COMPLETE
 
-- [ ] `/api/products` → Sieve
-- [ ] `/api/auctions` → Sieve
-- [ ] `/api/shops` → Sieve
-- [ ] `/api/categories` → Sieve
-- [ ] `/api/reviews` → Sieve
+- [x] `/api/products` → Sieve
+- [x] `/api/auctions` → Sieve
+- [x] `/api/shops` → Sieve
+- [x] `/api/categories` → Sieve
+- [x] `/api/reviews` → Sieve
 
-### Phase 2: Admin Routes (Week 2)
+### Phase 2: Admin Routes (Week 2) ✅ COMPLETE
 
-- [ ] `/api/admin/products` → Sieve
-- [ ] `/api/admin/auctions` → Sieve
-- [ ] `/api/admin/orders` → Sieve
-- [ ] `/api/admin/users` → Sieve
-- [ ] `/api/admin/shops` → Sieve
-- [ ] `/api/admin/tickets` → Sieve
-- [ ] `/api/admin/payouts` → Sieve
-- [ ] `/api/admin/coupons` → Sieve
-- [ ] `/api/admin/returns` → Sieve
-- [ ] `/api/admin/hero-slides` → Sieve
-- [ ] `/api/blog/posts` → Sieve
+- [x] `/api/admin/products` → Sieve (uses main `/api/products` with admin filter)
+- [x] `/api/admin/auctions` → Sieve (uses main `/api/auctions` with admin filter)
+- [x] `/api/admin/orders` → Sieve (uses main `/api/orders` with admin filter)
+- [x] `/api/admin/users` → Sieve
+- [x] `/api/admin/shops` → Sieve (uses main `/api/shops` with admin filter)
+- [x] `/api/admin/tickets` → Sieve
+- [x] `/api/admin/payouts` → Sieve
+- [x] `/api/admin/coupons` → Sieve
+- [x] `/api/admin/returns` → Sieve
+- [x] `/api/admin/hero-slides` → Sieve
+- [x] `/api/blog/posts` → Sieve
 
-### Phase 3: User/Seller Routes (Week 3)
+### Phase 3: User/Seller Routes (Week 3) ✅ COMPLETE
 
-- [ ] `/api/user/orders` → Sieve
-- [ ] `/api/user/favorites` → Sieve
-- [ ] `/api/seller/products` → Sieve
-- [ ] `/api/seller/auctions` → Sieve
-- [ ] `/api/seller/orders` → Sieve
+- [x] `/api/user/orders` → Sieve (uses main `/api/orders` with user filter)
+- [x] `/api/user/favorites` → Sieve
+- [x] `/api/seller/products` → Sieve (uses main `/api/products` with shop filter)
+- [x] `/api/seller/auctions` → Sieve (uses main `/api/auctions` with shop filter)
+- [x] `/api/seller/orders` → Sieve (uses main `/api/orders` with seller filter)
 
-### Phase 4: Frontend Integration (Week 4)
+### Phase 4: Frontend Integration (Week 4) ✅ COMPLETE
 
-- [ ] Create `useSievePagination` hook
-- [ ] Update service methods with `buildSieveQueryString`
-- [ ] Create standardized Pagination components
-- [ ] Update listing pages to use new components
+- [x] Create `useSievePagination` hook
+- [x] Update service methods with `buildSieveQueryString`
+- [x] Create standardized Pagination components
+- [x] Update listing pages to use new components
 
-### Phase 5: Cleanup (Week 5)
+### Phase 5: Cleanup (Week 5) 🟡 IN PROGRESS
 
 - [ ] Remove `executeCursorPaginatedQuery` from pagination.ts
 - [ ] Remove legacy pagination params from route handlers
-- [ ] Update API documentation with Sieve query format
+- [x] Update API documentation with Sieve query format
 
 ## Creating Sieve Middleware
 

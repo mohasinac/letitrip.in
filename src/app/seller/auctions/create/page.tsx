@@ -360,10 +360,14 @@ export default function CreateAuctionWizardPage() {
 
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="auction-title"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Auction Title <span className="text-red-500">*</span>
               </label>
               <input
+                id="auction-title"
                 type="text"
                 value={formData.title}
                 onChange={(e) => handleChange("title", e.target.value)}
@@ -377,10 +381,14 @@ export default function CreateAuctionWizardPage() {
 
             {/* Slug */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="auction-slug"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Auction URL <span className="text-red-500">*</span>
               </label>
               <SlugInput
+                id="auction-slug"
                 sourceText={formData.title}
                 value={formData.slug}
                 onChange={(slug: string) => {
@@ -394,10 +402,14 @@ export default function CreateAuctionWizardPage() {
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="auction-category"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Category <span className="text-red-500">*</span>
               </label>
               <select
+                id="auction-category"
                 value={formData.category}
                 onChange={(e) => handleChange("category", e.target.value)}
                 className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -441,10 +453,14 @@ export default function CreateAuctionWizardPage() {
 
             {/* Condition */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="auction-condition"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Item Condition <span className="text-red-500">*</span>
               </label>
               <select
+                id="auction-condition"
                 value={formData.condition}
                 onChange={(e) => handleChange("condition", e.target.value)}
                 className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -460,10 +476,14 @@ export default function CreateAuctionWizardPage() {
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="auction-description"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Description
               </label>
               <textarea
+                id="auction-description"
                 value={formData.description}
                 onChange={(e) => handleChange("description", e.target.value)}
                 rows={6}
@@ -492,10 +512,14 @@ export default function CreateAuctionWizardPage() {
             <div className="grid gap-6 sm:grid-cols-2">
               {/* Starting Bid */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="auction-starting-bid"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Starting Bid (₹) <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="auction-starting-bid"
                   type="number"
                   value={formData.startingBid}
                   onChange={(e) => handleChange("startingBid", e.target.value)}
@@ -511,10 +535,14 @@ export default function CreateAuctionWizardPage() {
 
               {/* Bid Increment */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="auction-bid-increment"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Bid Increment (₹) <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="auction-bid-increment"
                   type="number"
                   value={formData.bidIncrement}
                   onChange={(e) => handleChange("bidIncrement", e.target.value)}
@@ -531,10 +559,14 @@ export default function CreateAuctionWizardPage() {
               {/* Reserve Price */}
               {formData.auctionType === "reserve" && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="auction-reserve-price"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Reserve Price (₹)
                   </label>
                   <input
+                    id="auction-reserve-price"
                     type="number"
                     value={formData.reservePrice}
                     onChange={(e) =>
@@ -554,10 +586,14 @@ export default function CreateAuctionWizardPage() {
               {/* Buy Now Price */}
               {formData.auctionType === "buyNow" && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="auction-buy-now-price"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Buy Now Price (₹)
                   </label>
                   <input
+                    id="auction-buy-now-price"
                     type="number"
                     value={formData.buyNowPrice}
                     onChange={(e) =>
@@ -623,10 +659,14 @@ export default function CreateAuctionWizardPage() {
             <div className="grid gap-6 sm:grid-cols-2">
               {/* Start Time */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="auction-start-time"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Start Time <span className="text-red-500">*</span>
                 </label>
                 <DateTimePicker
+                  id="auction-start-time"
                   value={formData.startTime}
                   onChange={(date) => handleChange("startTime", date)}
                   minDate={new Date()}
@@ -638,10 +678,14 @@ export default function CreateAuctionWizardPage() {
 
               {/* End Time */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="auction-end-time"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   End Time <span className="text-red-500">*</span>
                 </label>
                 <DateTimePicker
+                  id="auction-end-time"
                   value={formData.endTime}
                   onChange={(date) => handleChange("endTime", date)}
                   minDate={formData.startTime}
@@ -654,10 +698,14 @@ export default function CreateAuctionWizardPage() {
 
             {/* Auto Extend */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="auction-auto-extend"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Auto-Extend Time (minutes)
               </label>
               <input
+                id="auction-auto-extend"
                 type="number"
                 value={formData.autoExtendMinutes}
                 onChange={(e) =>
@@ -1044,10 +1092,14 @@ export default function CreateAuctionWizardPage() {
 
             {/* Shipping Terms */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="auction-shipping-terms"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Shipping Terms
               </label>
               <textarea
+                id="auction-shipping-terms"
                 value={formData.shippingTerms}
                 onChange={(e) => handleChange("shippingTerms", e.target.value)}
                 rows={3}
@@ -1058,10 +1110,14 @@ export default function CreateAuctionWizardPage() {
 
             {/* Return Policy */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="auction-return-policy"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Return Policy
               </label>
               <select
+                id="auction-return-policy"
                 value={formData.returnPolicy}
                 onChange={(e) => handleChange("returnPolicy", e.target.value)}
                 className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -1075,10 +1131,14 @@ export default function CreateAuctionWizardPage() {
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="auction-status"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Publish Status
               </label>
               <select
+                id="auction-status"
                 value={formData.status}
                 onChange={(e) => handleChange("status", e.target.value)}
                 className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"

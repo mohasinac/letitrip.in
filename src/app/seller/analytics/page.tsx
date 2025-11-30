@@ -109,7 +109,7 @@ export default function AnalyticsPage() {
       } catch (err) {
         console.error("Error fetching analytics:", err);
         setError(
-          err instanceof Error ? err.message : "Failed to load analytics",
+          err instanceof Error ? err.message : "Failed to load analytics"
         );
       } finally {
         setLoading(false);
@@ -149,8 +149,11 @@ export default function AnalyticsPage() {
             />
 
             {/* Date Range */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div id="analytics-start-date-wrapper">
+              <label
+                htmlFor="analytics-start-date-wrapper"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Start Date
               </label>
               <DateTimePicker
@@ -159,8 +162,11 @@ export default function AnalyticsPage() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div id="analytics-end-date-wrapper">
+              <label
+                htmlFor="analytics-end-date-wrapper"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 End Date
               </label>
               <DateTimePicker

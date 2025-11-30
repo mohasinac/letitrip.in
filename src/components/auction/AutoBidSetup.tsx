@@ -132,7 +132,10 @@ export default function AutoBidSetup({
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="autobid-max-amount"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Maximum Bid Amount
           </label>
           <div className="relative">
@@ -140,6 +143,7 @@ export default function AutoBidSetup({
               ₹
             </span>
             <input
+              id="autobid-max-amount"
               type="number"
               value={maxBid}
               onChange={(e) => setMaxBid(e.target.value)}

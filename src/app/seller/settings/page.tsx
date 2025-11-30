@@ -348,7 +348,10 @@ export default function SellerSettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="settings-business-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="settings-business-name"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Business Name
                 </label>
                 <div className="relative">
@@ -367,7 +370,10 @@ export default function SellerSettingsPage() {
               </div>
 
               <div>
-                <label htmlFor="settings-business-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="settings-business-type"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Business Type
                 </label>
                 <select
@@ -389,12 +395,16 @@ export default function SellerSettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="settings-gst"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   GST Number
                 </label>
                 <div className="relative">
                   <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
+                    id="settings-gst"
                     type="text"
                     value={profile.gstNumber}
                     onChange={(e) =>
@@ -414,12 +424,16 @@ export default function SellerSettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="settings-pan"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   PAN Number
                 </label>
                 <div className="relative">
                   <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
+                    id="settings-pan"
                     type="text"
                     value={profile.panNumber}
                     onChange={(e) =>
@@ -443,12 +457,16 @@ export default function SellerSettingsPage() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label
+                    htmlFor="settings-street"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
                     Street Address
                   </label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                     <textarea
+                      id="settings-street"
                       value={profile.address.street}
                       onChange={(e) =>
                         setProfile({
@@ -468,10 +486,14 @@ export default function SellerSettingsPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label
+                      htmlFor="settings-city"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    >
                       City
                     </label>
                     <input
+                      id="settings-city"
                       type="text"
                       value={profile.address.city}
                       onChange={(e) =>
@@ -486,10 +508,14 @@ export default function SellerSettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label
+                      htmlFor="settings-state"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    >
                       State
                     </label>
                     <input
+                      id="settings-state"
                       type="text"
                       value={profile.address.state}
                       onChange={(e) =>
@@ -507,10 +533,14 @@ export default function SellerSettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label
+                      htmlFor="settings-pincode"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    >
                       PIN Code
                     </label>
                     <input
+                      id="settings-pincode"
                       type="text"
                       value={profile.address.pincode}
                       onChange={(e) =>
@@ -639,8 +669,11 @@ export default function SellerSettingsPage() {
               </p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            <div id="payout-method-group">
+              <label
+                htmlFor="payout-method-group"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+              >
                 Preferred Payout Method
               </label>
               <div className="flex gap-4">
@@ -678,10 +711,14 @@ export default function SellerSettingsPage() {
             {payout.preferredMethod === "bank" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label
+                    htmlFor="payout-account-holder"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
                     Account Holder Name
                   </label>
                   <input
+                    id="payout-account-holder"
                     type="text"
                     value={payout.accountHolderName}
                     onChange={(e) =>
@@ -696,10 +733,14 @@ export default function SellerSettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label
+                    htmlFor="payout-bank-name"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
                     Bank Name
                   </label>
                   <input
+                    id="payout-bank-name"
                     type="text"
                     value={payout.bankName}
                     onChange={(e) =>
@@ -711,10 +752,14 @@ export default function SellerSettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label
+                    htmlFor="payout-account-number"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
                     Account Number
                   </label>
                   <input
+                    id="payout-account-number"
                     type="text"
                     value={payout.accountNumber}
                     onChange={(e) =>
@@ -729,10 +774,14 @@ export default function SellerSettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label
+                    htmlFor="payout-ifsc"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
                     IFSC Code
                   </label>
                   <input
+                    id="payout-ifsc"
                     type="text"
                     value={payout.ifscCode}
                     onChange={(e) =>
@@ -751,10 +800,14 @@ export default function SellerSettingsPage() {
 
             {payout.preferredMethod === "upi" && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="payout-upi"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   UPI ID
                 </label>
                 <input
+                  id="payout-upi"
                   type="text"
                   value={payout.upiId}
                   onChange={(e) =>
@@ -767,10 +820,14 @@ export default function SellerSettingsPage() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label
+                htmlFor="payout-min-amount"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
                 Minimum Payout Amount (₹)
               </label>
               <select
+                id="payout-min-amount"
                 value={payout.minPayoutAmount}
                 onChange={(e) =>
                   setPayout({

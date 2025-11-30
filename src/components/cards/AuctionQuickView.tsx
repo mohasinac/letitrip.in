@@ -326,11 +326,15 @@ export default function AuctionQuickView({
               {!isEnded && (
                 <div className="space-y-3 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label
+                      htmlFor="quick-bid-amount"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    >
                       Your Bid (Min: {formatCurrency(minNextBid)})
                     </label>
                     <div className="flex gap-2">
                       <input
+                        id="quick-bid-amount"
                         type="number"
                         value={bidAmount}
                         onChange={(e) => {

@@ -15,7 +15,7 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore";
 /**
  * Helper function to convert role to sender/recipient type
  */
-function getUserType(role: string): "admin" | "seller" | "user" {
+function getUserType(role: string | null): "admin" | "seller" | "user" {
   if (role === "admin") return "admin";
   if (role === "seller") return "seller";
   return "user";
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
 
       // Create message
       const messageRef = db.collection(COLLECTIONS.MESSAGES).doc();
-      const getSenderType = (role: string) => {
+      const getSenderType = (role: string | null) => {
         if (role === "admin") return "admin";
         if (role === "seller") return "seller";
         return "user";

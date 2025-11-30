@@ -3,7 +3,7 @@ import { requireAdmin } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
 // Status requirements for each action
-const STATUS_REQUIREMENTS: Record<string, { required: string[]; excluded?: string[]; message: string }> = {
+const STATUS_REQUIREMENTS: Record<string, { required?: string[]; excluded?: string[]; message: string }> = {
   approve: { required: ["pending"], message: "Only pending payouts can be approved" },
   process: { required: ["pending", "approved"], message: "Only pending or approved payouts can be processed" },
   complete: { required: ["processing"], message: "Only processing payouts can be completed" },

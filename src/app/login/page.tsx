@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { COMPANY_NAME } from "@/constants/navigation";
-import { MobileFormInput } from "@/components/mobile/MobileFormInput";
+import { Input } from "@/components/ui/Input";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
@@ -84,8 +84,8 @@ function LoginForm() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email - Mobile Optimized */}
-            <MobileFormInput
+            {/* Email */}
+            <Input
               label="Email Address"
               type="email"
               id="email"
@@ -96,10 +96,11 @@ function LoginForm() {
               placeholder="you@example.com"
               leftIcon={<Mail className="w-5 h-5" />}
               autoComplete="email"
+              size="lg"
             />
 
-            {/* Password - Mobile Optimized with show/hide */}
-            <MobileFormInput
+            {/* Password with show/hide */}
+            <Input
               label="Password"
               type={showPassword ? "text" : "password"}
               id="password"
@@ -113,7 +114,7 @@ function LoginForm() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors touch-target"
+                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors touch-target"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
@@ -124,6 +125,7 @@ function LoginForm() {
                 </button>
               }
               autoComplete="current-password"
+              size="lg"
             />
 
             {/* Remember & Forgot */}

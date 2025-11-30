@@ -9,6 +9,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
  */
 
 interface SlugInputProps {
+  id?: string;
   value: string;
   onChange: (slug: string) => void;
   sourceText?: string; // Text to auto-generate slug from (e.g., title)

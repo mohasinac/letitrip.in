@@ -25,7 +25,7 @@ const auctionsConfig = {
     startingPrice: "starting_bid",
     bidCount: "bid_count",
     featured: "is_featured",
-  },
+  } as Record<string, string>,
 };
 
 /**

@@ -197,7 +197,10 @@ export default function AdminShippingSettingsPage() {
           </h2>
           <div className="grid gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label
+                htmlFor="shipping-free-threshold"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
                 Free Shipping Threshold
               </label>
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
@@ -208,6 +211,7 @@ export default function AdminShippingSettingsPage() {
                   ₹
                 </span>
                 <input
+                  id="shipping-free-threshold"
                   type="number"
                   value={settings.freeShippingThreshold}
                   onChange={(e) =>
@@ -232,7 +236,10 @@ export default function AdminShippingSettingsPage() {
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label
+                htmlFor="shipping-standard-charge"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
                 Standard Shipping Charge
               </label>
               <div className="relative">
@@ -240,6 +247,7 @@ export default function AdminShippingSettingsPage() {
                   ₹
                 </span>
                 <input
+                  id="shipping-standard-charge"
                   type="number"
                   value={settings.defaultShippingCharge}
                   onChange={(e) =>
@@ -255,7 +263,10 @@ export default function AdminShippingSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label
+                htmlFor="shipping-express-charge"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
                 Express Shipping Charge
               </label>
               <div className="relative">
@@ -263,6 +274,7 @@ export default function AdminShippingSettingsPage() {
                   ₹
                 </span>
                 <input
+                  id="shipping-express-charge"
                   type="number"
                   value={settings.expressShippingCharge}
                   onChange={(e) =>
@@ -323,11 +335,15 @@ export default function AdminShippingSettingsPage() {
           <div className="grid md:grid-cols-2 gap-6">
             {/* Standard Delivery */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="shipping-standard-min"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Standard Delivery (days)
               </label>
               <div className="flex items-center gap-2">
                 <input
+                  id="shipping-standard-min"
                   type="number"
                   value={settings.estimatedDeliveryDays.standard.min}
                   onChange={(e) =>
@@ -372,11 +388,15 @@ export default function AdminShippingSettingsPage() {
 
             {/* Express Delivery */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="shipping-express-min"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Express Delivery (days)
               </label>
               <div className="flex items-center gap-2">
                 <input
+                  id="shipping-express-min"
                   type="number"
                   value={settings.estimatedDeliveryDays.express.min}
                   onChange={(e) =>

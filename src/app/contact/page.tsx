@@ -14,8 +14,8 @@ import {
   FileText,
 } from "lucide-react";
 import { supportService } from "@/services/support.service";
-import { MobileFormInput } from "@/components/mobile/MobileFormInput";
-import { MobileTextarea } from "@/components/mobile/MobileTextarea";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -194,8 +194,8 @@ export default function ContactPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Name - Mobile Optimized */}
-              <MobileFormInput
+              {/* Name */}
+              <Input
                 label="Your Name"
                 type="text"
                 id="name"
@@ -206,10 +206,11 @@ export default function ContactPage() {
                 placeholder="John Doe"
                 leftIcon={<User className="w-5 h-5" />}
                 autoComplete="name"
+                size="lg"
               />
 
-              {/* Email - Mobile Optimized */}
-              <MobileFormInput
+              {/* Email */}
+              <Input
                 label="Email Address"
                 type="email"
                 id="email"
@@ -220,10 +221,11 @@ export default function ContactPage() {
                 placeholder="john@example.com"
                 leftIcon={<Mail className="w-5 h-5" />}
                 autoComplete="email"
+                size="lg"
               />
 
-              {/* Phone - Mobile Optimized */}
-              <MobileFormInput
+              {/* Phone */}
+              <Input
                 label="Phone Number"
                 type="tel"
                 id="phone"
@@ -234,10 +236,11 @@ export default function ContactPage() {
                 leftIcon={<Phone className="w-5 h-5" />}
                 helperText="Optional"
                 autoComplete="tel"
+                size="lg"
               />
 
-              {/* Subject - Mobile Optimized */}
-              <MobileFormInput
+              {/* Subject */}
+              <Input
                 label="Subject"
                 type="text"
                 id="subject"
@@ -247,10 +250,11 @@ export default function ContactPage() {
                 onChange={handleChange}
                 placeholder="How can we help you?"
                 leftIcon={<FileText className="w-5 h-5" />}
+                size="lg"
               />
 
-              {/* Message - Mobile Optimized */}
-              <MobileTextarea
+              {/* Message */}
+              <Textarea
                 label="Message"
                 id="message"
                 name="message"
@@ -259,9 +263,10 @@ export default function ContactPage() {
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Tell us more about your inquiry..."
+                size="lg"
               />
 
-              {/* Submit Button - Mobile Optimized */}
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}

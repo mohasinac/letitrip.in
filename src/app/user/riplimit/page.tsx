@@ -588,9 +588,9 @@ export default function UserRipLimitPage() {
 
             {/* Quick Amounts */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <span className="block text-sm font-medium text-gray-700 mb-3">
                 Quick Select
-              </label>
+              </span>
               <div className="grid grid-cols-5 gap-2">
                 {quickAmounts.map((amount) => (
                   <button
@@ -610,7 +610,10 @@ export default function UserRipLimitPage() {
 
             {/* Custom Amount */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="riplimit-custom-amount"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Or enter custom amount
               </label>
               <div className="relative">
@@ -618,6 +621,7 @@ export default function UserRipLimitPage() {
                   ₹
                 </span>
                 <input
+                  id="riplimit-custom-amount"
                   type="number"
                   value={purchaseAmount}
                   onChange={(e) => setPurchaseAmount(Number(e.target.value))}
@@ -690,10 +694,14 @@ export default function UserRipLimitPage() {
 
             {/* Refund Amount */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="riplimit-refund-amount"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Refund Amount (RL)
               </label>
               <input
+                id="riplimit-refund-amount"
                 type="number"
                 value={refundAmount}
                 onChange={(e) => setRefundAmount(Number(e.target.value))}
@@ -708,10 +716,14 @@ export default function UserRipLimitPage() {
 
             {/* Reason */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="riplimit-refund-reason"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Reason (optional)
               </label>
               <textarea
+                id="riplimit-refund-reason"
                 value={refundReason}
                 onChange={(e) => setRefundReason(e.target.value)}
                 placeholder="Why are you requesting a refund?"

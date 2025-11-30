@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { User, Mail, Phone, MapPin, Save } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { authService } from "@/services/auth.service";
-import { MobileFormInput } from "@/components/mobile/MobileFormInput";
+import { Input } from "@/components/ui/Input";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -61,19 +61,19 @@ export default function SettingsPage() {
 
   return (
     <main id="user-settings-page" className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
         Account Settings
       </h1>
 
       {/* Profile Form */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
           Profile Information
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name - Mobile Optimized */}
-          <MobileFormInput
+          {/* Name */}
+          <Input
             label="Full Name"
             type="text"
             value={formData.name}
@@ -81,10 +81,11 @@ export default function SettingsPage() {
             required
             leftIcon={<User className="w-5 h-5" />}
             autoComplete="name"
+            size="lg"
           />
 
-          {/* Email - Mobile Optimized */}
-          <MobileFormInput
+          {/* Email */}
+          <Input
             label="Email Address"
             type="email"
             value={formData.email}
@@ -95,10 +96,11 @@ export default function SettingsPage() {
             leftIcon={<Mail className="w-5 h-5" />}
             helperText="We'll send order confirmations to this email"
             autoComplete="email"
+            size="lg"
           />
 
-          {/* Phone - Mobile Optimized */}
-          <MobileFormInput
+          {/* Phone */}
+          <Input
             label="Phone Number"
             type="tel"
             value={formData.phone}
@@ -109,23 +111,24 @@ export default function SettingsPage() {
             leftIcon={<Phone className="w-5 h-5" />}
             helperText="Used for order updates and delivery coordination"
             autoComplete="tel"
+            size="lg"
           />
 
           {/* Success Message */}
           {success && (
-            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+            <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg">
               Profile updated successfully!
             </div>
           )}
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
 
-          {/* Submit Button - Mobile Optimized */}
+          {/* Submit Button */}
           <div className="flex justify-end">
             <button
               type="submit"
@@ -139,23 +142,23 @@ export default function SettingsPage() {
         </form>
       </div>
 
-      {/* Account Actions - Mobile Optimized */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+      {/* Account Actions */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
           Account Actions
         </h2>
 
         <div className="space-y-4">
           <button
             onClick={() => router.push("/user/addresses")}
-            className="w-full text-left px-4 py-4 min-h-[64px] border border-gray-200 rounded-lg hover:border-primary hover:bg-gray-50 active:bg-gray-100 transition-colors touch-manipulation"
+            className="w-full text-left px-4 py-4 min-h-[64px] border border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors touch-manipulation"
           >
             <div className="flex items-center justify-between">
               <div>
-                <div className="font-medium text-gray-900">
+                <div className="font-medium text-gray-900 dark:text-white">
                   Manage Addresses
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   Add, edit, or delete shipping addresses
                 </div>
               </div>
@@ -165,7 +168,7 @@ export default function SettingsPage() {
 
           <button
             onClick={() => router.push("/logout")}
-            className="w-full text-left px-4 py-4 min-h-[64px] border border-red-200 rounded-lg hover:bg-red-50 active:bg-red-100 transition-colors text-red-600 touch-manipulation"
+            className="w-full text-left px-4 py-4 min-h-[64px] border border-red-200 dark:border-red-800 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 active:bg-red-100 transition-colors text-red-600 dark:text-red-400 touch-manipulation"
           >
             <div className="font-medium">Log Out</div>
             <div className="text-sm">Sign out of your account</div>

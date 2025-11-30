@@ -16,9 +16,11 @@ import { shopsService } from "@/services/shops.service";
 import { notFound } from "@/lib/error-redirects";
 import { formatINR, formatDiscount } from "@/lib/price.utils";
 import { useCart } from "@/hooks/useCart";
+import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import { toast } from "@/components/admin/Toast";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
 import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
+import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
 import type { ProductFE, ProductCardFE } from "@/types/frontend/product.types";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
@@ -39,10 +41,27 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   const { addItem, loading: cartLoading } = useCart();
+  const { addToHistory } = useViewingHistory();
 
   useEffect(() => {
     loadProduct();
   }, [slug]);
+
+  // Track product view in history
+  useEffect(() => {
+    if (product && shop) {
+      addToHistory({
+        id: product.id,
+        type: "product",
+        title: product.name,
+        slug: product.slug,
+        image: product.images?.[0] || "",
+        price: product.price,
+        shop_id: product.shopId,
+        shop_name: shop.name || "",
+      });
+    }
+  }, [product, shop, addToHistory]);
 
   const loadProduct = async () => {
     try {
@@ -443,6 +462,17 @@ export default function ProductPage({ params }: ProductPageProps) {
       >
         <div className="max-w-7xl mx-auto px-4 py-8">
           <ProductReviews productId={product.id} productSlug={product.slug} />
+        </div>
+      </div>
+
+      {/* 9. Recently Viewed - Exclude current product */}
+      <div className="bg-gray-50 dark:bg-gray-900 border-t dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4">
+          <RecentlyViewedWidget
+            excludeId={product.id}
+            title="Recently Viewed"
+            limit={6}
+          />
         </div>
       </div>
     </div>

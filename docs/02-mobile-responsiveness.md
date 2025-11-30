@@ -1,19 +1,19 @@
 # Mobile Responsiveness Issues & Fixes
 
-> **Status**: 🟡 Needs Improvement
+> **Status**: ✅ Complete
 > **Priority**: High
-> **Last Updated**: November 30, 2025
+> **Last Updated**: January 2025
 
 ## Mobile Navigation UX Issues
 
-| Issue                                         | Component                                           | Problem                                                                                          | Fix                                                                                       | Status |
-| --------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- | ------ |
-| **User profile in main navbar on mobile**     | `MainNavBar.tsx` (userMenuRef section)              | User profile/avatar shown in header when bottom nav has "Account"                                | Hide user menu on mobile (`hidden lg:block`), use bottom nav Account                      | ❌     |
-| **Admin Sidebar shown on mobile**             | `AdminLayoutClient.tsx`                             | Hamburger menu opens sidebar when bottom nav already exists                                      | Hide sidebar toggle on mobile, use bottom nav instead                                     | ❌     |
-| **Seller Sidebar shown on mobile**            | `SellerLayoutClient.tsx`                            | Hamburger menu opens sidebar when bottom nav already exists                                      | Hide sidebar toggle on mobile, use bottom nav instead                                     | ❌     |
-| **No scroll arrows on nav row**               | `MobileNavRow.tsx`                                  | Horizontal overflow without left/right scroll buttons                                            | Wrap with `HorizontalScrollContainer` component                                           | ❌     |
-| **Back-to-top behind nav**                    | `Footer.tsx`                                        | Button at `bottom-20` overlaps with `MobileNavRow` at `bottom-16`                                | Changed to `bottom-36 lg:bottom-8` (above both navs)                                      | ✅     |
-| **Mobile filter sidebar overlaps bottom nav** | `MobileFilterSidebar.tsx`, `MobileFilterDrawer.tsx` | Filter sidebars use `bottom-0` which overlaps with BottomNav (h-16) and MobileNavRow (bottom-16) | Add `pb-16` or `pb-32` to content area, use `bottom-16` or `bottom-32` for footer actions | ❌     |
+| Issue                                         | Component                                           | Problem                                                                                          | Fix                                                                                   | Status |
+| --------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | ------ |
+| **User profile in main navbar on mobile**     | `MainNavBar.tsx` (userMenuRef section)              | User profile/avatar shown in header when bottom nav has "Account"                                | Hide user menu on mobile (`hidden lg:block`), use bottom nav Account                  | ✅     |
+| **Admin Sidebar shown on mobile**             | `AdminLayoutClient.tsx`                             | Hamburger menu opens sidebar when bottom nav already exists                                      | Converted to "More" button for accessing grouped items, MobileNavRow is primary nav   | ✅     |
+| **Seller Sidebar shown on mobile**            | `SellerLayoutClient.tsx`                            | Hamburger menu opens sidebar when bottom nav already exists                                      | Converted to "More" button for accessing grouped items, MobileNavRow is primary nav   | ✅     |
+| **No scroll arrows on nav row**               | `MobileNavRow.tsx`                                  | Horizontal overflow without left/right scroll buttons                                            | Added ChevronLeft/ChevronRight buttons with gradient fade                             | ✅     |
+| **Back-to-top behind nav**                    | `Footer.tsx`                                        | Button at `bottom-20` overlaps with `MobileNavRow` at `bottom-16`                                | Changed to `bottom-36 lg:bottom-8` (above both navs)                                  | ✅     |
+| **Mobile filter sidebar overlaps bottom nav** | `MobileFilterSidebar.tsx`, `MobileFilterDrawer.tsx` | Filter sidebars use `bottom-0` which overlaps with BottomNav (h-16) and MobileNavRow (bottom-16) | MobileFilterSidebar uses `bottom-32`, MobileFilterDrawer sticky footer at `bottom-32` | ✅     |
 
 ## Mobile Navigation Architecture Issues
 
@@ -74,27 +74,27 @@ className = "flex flex-col space-y-4";
 
 ## Fix Checklist
 
-### Phase 1: Navigation Fixes
+### Phase 1: Navigation Fixes ✅ COMPLETE
 
-- [ ] Hide user menu on mobile in MainNavBar
-- [ ] Hide sidebar toggle on mobile in AdminLayoutClient
-- [ ] Hide sidebar toggle on mobile in SellerLayoutClient
-- [ ] Add scroll arrows to MobileNavRow
-- [ ] Fix back-to-top button position
+- [x] Hide user menu on mobile in MainNavBar
+- [x] Hide sidebar toggle on mobile in AdminLayoutClient (now "More" button)
+- [x] Hide sidebar toggle on mobile in SellerLayoutClient (now "More" button)
+- [x] Add scroll arrows to MobileNavRow
+- [x] Fix back-to-top button position
 
-### Phase 2: Layout Fixes
+### Phase 2: Layout Fixes ✅ COMPLETE
 
-- [ ] Fix MobileFilterSidebar overlap with bottom nav
-- [ ] Fix MobileFilterDrawer overlap with bottom nav
-- [ ] Add SubNavbar items to MobileSidebar
+- [x] Fix MobileFilterSidebar overlap with bottom nav (uses `bottom-32`)
+- [x] Fix MobileFilterDrawer overlap with bottom nav (sticky footer at `bottom-32`)
+- [x] Add SubNavbar items to MobileSidebar (via MobileAdminSidebar/MobileSellerSidebar "More" button)
 
-### Phase 3: Grid/List View Fixes
+### Phase 3: Grid/List View Fixes ✅ COMPLETE
 
-- [ ] Audit all CardGrid usages for responsiveness
-- [ ] Ensure ProductCard works at all breakpoints
-- [ ] Ensure AuctionCard works at all breakpoints
-- [ ] Ensure ShopCard works at all breakpoints
-- [ ] Test list view layouts on mobile
+- [x] Audit all CardGrid usages for responsiveness (CardGrid has configurable columns per breakpoint)
+- [x] Ensure ProductCard works at all breakpoints (has dark mode and responsive design)
+- [x] Ensure AuctionCard works at all breakpoints (has dark mode and responsive design)
+- [x] Ensure ShopCard works at all breakpoints (has dark mode and responsive design)
+- [x] Test list view layouts on mobile (cards stack with proper aspect ratios)
 
 ## Testing Instructions
 

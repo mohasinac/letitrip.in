@@ -504,10 +504,14 @@ export default function AdminNotificationSettingsPage() {
           {settings.digest.enabled && (
             <div className="grid md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="digest-frequency"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Frequency
                 </label>
                 <select
+                  id="digest-frequency"
                   value={settings.digest.frequency}
                   onChange={(e) =>
                     setSettings({
@@ -528,10 +532,14 @@ export default function AdminNotificationSettingsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="digest-time"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Send Time
                 </label>
                 <input
+                  id="digest-time"
                   type="time"
                   value={settings.digest.time}
                   onChange={(e) =>
@@ -588,10 +596,14 @@ export default function AdminNotificationSettingsPage() {
           {settings.quietHours.enabled && (
             <div className="grid md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="quiet-start"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Start Time
                 </label>
                 <input
+                  id="quiet-start"
                   type="time"
                   value={settings.quietHours.start}
                   onChange={(e) =>
@@ -607,10 +619,14 @@ export default function AdminNotificationSettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="quiet-end"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   End Time
                 </label>
                 <input
+                  id="quiet-end"
                   type="time"
                   value={settings.quietHours.end}
                   onChange={(e) =>

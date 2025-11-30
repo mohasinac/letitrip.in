@@ -26,7 +26,7 @@ const categoriesConfig = {
     featured: "is_featured",
     showOnHomepage: "show_on_homepage",
     isActive: "is_active",
-  },
+  } as Record<string, string>,
 };
 
 /**

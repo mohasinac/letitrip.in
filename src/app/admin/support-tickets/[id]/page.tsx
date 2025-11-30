@@ -443,10 +443,14 @@ function TicketDetailContent() {
               </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="ticket-agent-id"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Agent ID
                   </label>
                   <input
+                    id="ticket-agent-id"
                     type="text"
                     value={assignedTo}
                     onChange={(e) => setAssignedTo(e.target.value)}
@@ -455,10 +459,14 @@ function TicketDetailContent() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="ticket-assign-notes"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Notes (optional)
                   </label>
                   <textarea
+                    id="ticket-assign-notes"
                     value={assignNotes}
                     onChange={(e) => setAssignNotes(e.target.value)}
                     placeholder="Add assignment notes..."
@@ -657,10 +665,14 @@ function TicketDetailContent() {
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="ticket-escalate-reason"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Reason for Escalation *
                     </label>
                     <input
+                      id="ticket-escalate-reason"
                       type="text"
                       value={escalateReason}
                       onChange={(e) => setEscalateReason(e.target.value)}
@@ -670,10 +682,14 @@ function TicketDetailContent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="ticket-escalate-notes"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Additional Notes (optional)
                     </label>
                     <textarea
+                      id="ticket-escalate-notes"
                       value={escalateNotes}
                       onChange={(e) => setEscalateNotes(e.target.value)}
                       placeholder="Add any additional context..."

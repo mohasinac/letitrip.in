@@ -1084,10 +1084,14 @@ export default function CreateProductPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="product-status"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Publishing Status *
               </label>
               <select
+                id="product-status"
                 value={formData.status}
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value as any })
