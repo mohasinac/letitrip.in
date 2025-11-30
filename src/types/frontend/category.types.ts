@@ -17,6 +17,10 @@ export interface CategoryFE {
   order: number;
   status: Status;
   productCount: number;
+  inStockCount: number; // Products with stock > 0
+  outOfStockCount: number; // Products with stock = 0
+  liveAuctionCount: number; // Active auctions
+  endedAuctionCount: number; // Ended/completed auctions
   isLeaf: boolean;
   metadata: {
     seoTitle?: string;

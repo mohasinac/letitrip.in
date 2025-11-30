@@ -32,6 +32,10 @@ export function toFECategory(data: CategoryBE | any): CategoryFE {
   // Handle both snake_case and camelCase field names from API
   const parentIds = data.parentIds || data.parent_ids || (data.parent_id ? [data.parent_id] : []);
   const productCount = data.productCount ?? data.product_count ?? 0;
+  const inStockCount = data.inStockCount ?? data.in_stock_count ?? 0;
+  const outOfStockCount = data.outOfStockCount ?? data.out_of_stock_count ?? 0;
+  const liveAuctionCount = data.liveAuctionCount ?? data.live_auction_count ?? 0;
+  const endedAuctionCount = data.endedAuctionCount ?? data.ended_auction_count ?? 0;
   const level = data.level ?? 0;
   const hasChildrenValue = data.hasChildren ?? data.has_children ?? false;
   const isLeaf = data.isLeaf ?? data.is_leaf ?? !hasChildrenValue;
@@ -63,6 +67,10 @@ export function toFECategory(data: CategoryBE | any): CategoryFE {
     order,
     status: isActive ? Status.PUBLISHED : Status.DRAFT,
     productCount,
+    inStockCount,
+    outOfStockCount,
+    liveAuctionCount,
+    endedAuctionCount,
     isLeaf,
     metadata: data.metadata || {},
     createdAt: parseDate(data.createdAt || data.created_at),

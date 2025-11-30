@@ -166,6 +166,8 @@ export async function PATCH(
     const statusChanged = body.status && body.status !== productData.status;
     const categoryChanged =
       body.category_id && body.category_id !== productData.category_id;
+    const stockChanged = 
+      body.stock_count !== undefined && body.stock_count !== productData.stock_count;
     const oldCategoryId = productData.category_id;
     const newCategoryId = body.category_id || oldCategoryId;
 
@@ -173,8 +175,8 @@ export async function PATCH(
     const updatedDoc = await Collections.products().doc(doc.id).get();
     const updatedData: any = updatedDoc.data();
 
-    // Update category counts if status or category changed
-    if (statusChanged || categoryChanged) {
+    // Update category counts if status, category, or stock changed
+    if (statusChanged || categoryChanged || stockChanged) {
       try {
         if (categoryChanged && oldCategoryId) {
           // Update old category counts
@@ -279,6 +281,15 @@ export async function DELETE(
     }
 
     await Collections.products().doc(doc.id).delete();
+
+    // Update category counts after deletion
+    if (productData?.category_id) {
+      try {
+        await updateCategoryProductCounts(productData.category_id);
+      } catch (error) {
+        console.error("Failed to update category counts:", error);
+      }
+    }
 
     return NextResponse.json({
       success: true,

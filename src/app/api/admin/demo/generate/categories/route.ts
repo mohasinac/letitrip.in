@@ -4,30 +4,170 @@ import { COLLECTIONS } from "@/constants/database";
 
 const DEMO_PREFIX = "DEMO_";
 
+// Beyblade and collectibles focused images
+const CATEGORY_IMAGES: Record<string, { image: string; banner: string; icon: string }> = {
+  "Beyblades": {
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop",
+  },
+  "Beyblade Burst": {
+    image: "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=100&h=100&fit=crop",
+  },
+  "Beyblade X": {
+    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=100&h=100&fit=crop",
+  },
+  "Attack Types": {
+    image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&h=100&fit=crop",
+  },
+  "Defense Types": {
+    image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=100&h=100&fit=crop",
+  },
+  "Stamina Types": {
+    image: "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=100&h=100&fit=crop",
+  },
+  "Balance Types": {
+    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=100&h=100&fit=crop",
+  },
+  "Launchers & Gear": {
+    image: "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=100&h=100&fit=crop",
+  },
+  "Stadiums & Arenas": {
+    image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=100&h=100&fit=crop",
+  },
+  "Parts & Upgrades": {
+    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=100&h=100&fit=crop",
+  },
+  "Limited Editions": {
+    image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=100&h=100&fit=crop",
+  },
+  "Vintage & Rare": {
+    image: "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=100&h=100&fit=crop",
+  },
+  "Accessories": {
+    image: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400&h=300&fit=crop",
+    banner: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=1200&h=400&fit=crop",
+    icon: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=100&h=100&fit=crop",
+  },
+};
+
+// Default images for subcategories
+const DEFAULT_CATEGORY_IMAGES = [
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64",
+  "https://images.unsplash.com/photo-1566577739112-5180d4bf9390",
+  "https://images.unsplash.com/photo-1542751371-adc38448a05e",
+  "https://images.unsplash.com/photo-1593305841991-05c297ba4575",
+  "https://images.unsplash.com/photo-1550745165-9bc0b252726f",
+  "https://images.unsplash.com/photo-1560343776-97e7d202ff0e",
+  "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa",
+  "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf",
+];
+
+// Beyblade-focused category tree
 const CATEGORY_TREE = {
-  "Trading Card Games": {
+  "Beyblades": {
     children: {
-      "Pokemon TCG": { children: { "Base Set": { isLeaf: true }, "Booster Packs": { isLeaf: true }, "Elite Trainer Boxes": { isLeaf: true } } },
-      "Yu-Gi-Oh!": { children: { "Structure Decks": { isLeaf: true }, "Booster Boxes": { isLeaf: true }, "Legendary Collections": { isLeaf: true } } },
-      "Magic: The Gathering": { children: { "Commander Decks": { isLeaf: true }, "Draft Boosters": { isLeaf: true }, "Set Boosters": { isLeaf: true } } },
+      "Beyblade Burst": {
+        children: {
+          "Attack Types": { isLeaf: true },
+          "Defense Types": { isLeaf: true },
+          "Stamina Types": { isLeaf: true },
+          "Balance Types": { isLeaf: true },
+        },
+      },
+      "Beyblade X": {
+        children: {
+          "X Attack": { isLeaf: true },
+          "X Defense": { isLeaf: true },
+          "X Stamina": { isLeaf: true },
+          "X Balance": { isLeaf: true },
+        },
+      },
+      "Metal Fight": {
+        children: {
+          "Metal Fusion": { isLeaf: true },
+          "Metal Masters": { isLeaf: true },
+          "Metal Fury": { isLeaf: true },
+        },
+      },
+      "Original Series": {
+        children: {
+          "Plastic Gen": { isLeaf: true },
+          "HMS (Heavy Metal System)": { isLeaf: true },
+        },
+      },
     },
   },
-  Beyblades: {
+  "Launchers & Gear": {
     children: {
-      "Beyblade Burst": { children: { "Attack Types": { isLeaf: true }, "Defense Types": { isLeaf: true }, "Stamina Types": { isLeaf: true }, Launchers: { isLeaf: true } } },
-      "Beyblade X": { children: { "X Series Attack": { isLeaf: true }, "X Series Defense": { isLeaf: true } } },
+      "String Launchers": { isLeaf: true },
+      "Ripcord Launchers": { isLeaf: true },
+      "LR Launchers": { isLeaf: true },
+      "Launcher Grips": { isLeaf: true },
+      "Power Launchers": { isLeaf: true },
     },
   },
-  Figurines: {
+  "Stadiums & Arenas": {
     children: {
-      "Anime Figures": { children: { Nendoroid: { isLeaf: true }, Figma: { isLeaf: true }, "Scale Figures": { isLeaf: true } } },
-      "Gaming Figures": { children: { Amiibo: { isLeaf: true }, "Action RPG": { isLeaf: true } } },
+      "Standard Stadiums": { isLeaf: true },
+      "Burst Stadiums": { isLeaf: true },
+      "X Stadiums": { isLeaf: true },
+      "Battle Sets": { isLeaf: true },
     },
   },
-  Accessories: {
+  "Parts & Upgrades": {
     children: {
-      "Card Protection": { children: { "Card Sleeves": { isLeaf: true }, "Deck Boxes": { isLeaf: true }, Binders: { isLeaf: true } } },
-      "Display": { children: { "Display Cases": { isLeaf: true }, Risers: { isLeaf: true } } },
+      "Energy Layers": { isLeaf: true },
+      "Forge Discs": { isLeaf: true },
+      "Performance Tips": { isLeaf: true },
+      "Blades": { isLeaf: true },
+      "Ratchets": { isLeaf: true },
+      "Bits": { isLeaf: true },
+    },
+  },
+  "Limited Editions": {
+    children: {
+      "Tournament Exclusives": { isLeaf: true },
+      "Store Exclusives": { isLeaf: true },
+      "Anniversary Editions": { isLeaf: true },
+      "Gold Series": { isLeaf: true },
+    },
+  },
+  "Vintage & Rare": {
+    children: {
+      "Vintage Beyblades": { isLeaf: true },
+      "Rare Finds": { isLeaf: true },
+      "Collector Items": { isLeaf: true },
+    },
+  },
+  "Accessories": {
+    children: {
+      "Carrying Cases": { isLeaf: true },
+      "Tool Kits": { isLeaf: true },
+      "Display Stands": { isLeaf: true },
+      "Spare Parts": { isLeaf: true },
     },
   },
 };
@@ -50,17 +190,31 @@ export async function POST() {
         const categoryId = categoryRef.id;
         const categoryName = `${DEMO_PREFIX}${name}`;
 
+        // Get category-specific images or use defaults
+        const catImages = CATEGORY_IMAGES[name] || {
+          image: `${DEFAULT_CATEGORY_IMAGES[categoryCount % DEFAULT_CATEGORY_IMAGES.length]}?w=400&h=300&fit=crop`,
+          banner: `${DEFAULT_CATEGORY_IMAGES[categoryCount % DEFAULT_CATEGORY_IMAGES.length]}?w=1200&h=400&fit=crop`,
+          icon: `${DEFAULT_CATEGORY_IMAGES[categoryCount % DEFAULT_CATEGORY_IMAGES.length]}?w=100&h=100&fit=crop`,
+        };
+
         await categoryRef.set({
           name: categoryName,
           slug: categoryName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-          description: `Demo category for ${name}`,
+          description: `Premium ${name} collection - authentic Beyblades and accessories`,
           parent_id: parentId,
           parent_ids: [...parentIds, ...(parentId ? [parentId] : [])],
           is_leaf: catData.isLeaf || false,
           is_active: true,
           is_featured: Math.random() > 0.6,
           product_count: 0,
-          image: `https://picsum.photos/seed/cat-${categoryId}/400/300`,
+          in_stock_count: 0,
+          out_of_stock_count: 0,
+          live_auction_count: 0,
+          ended_auction_count: 0,
+          image: catImages.image,
+          banner_image: catImages.banner,
+          icon: catImages.icon,
+          thumbnail: `https://picsum.photos/seed/cat-thumb-${categoryId}/150/150`,
           created_at: timestamp,
           updated_at: timestamp,
         });

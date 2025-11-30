@@ -4,27 +4,20 @@ import { COLLECTIONS } from "@/constants/database";
 
 const DEMO_PREFIX = "DEMO_";
 
+// Beyblade product images
 const PRODUCT_IMAGES = [
-  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
-  "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
-  "https://images.unsplash.com/photo-1585386959984-a4155224a1ad",
-  "https://images.unsplash.com/photo-1572635196237-14b3f281503f",
-  "https://images.unsplash.com/photo-1560343090-f0409e92791a",
-  "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
-  "https://images.unsplash.com/photo-1549298916-b41d501d3772",
-  "https://images.unsplash.com/photo-1553062407-98eeb64c6a62",
-  "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa",
-  "https://images.unsplash.com/photo-1598808503491-fa80d3e5a0d9",
-  "https://images.unsplash.com/photo-1571781418606-70265b9cce90",
-  "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf",
-  "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf",
-  "https://images.unsplash.com/photo-1622297845775-5ff3fef71d13",
-  "https://images.unsplash.com/photo-1598550476439-6847785fcea6",
-  "https://images.unsplash.com/photo-1629727820047-c8bbf05c7e19",
-  "https://images.unsplash.com/photo-1611329532992-0b7d41e8b9b1",
-  "https://images.unsplash.com/photo-1512820790803-83ca734da794",
-  "https://images.unsplash.com/photo-1596462502278-27bfdc403348",
-  "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338",
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=800&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=800&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=800&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=800&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=800&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=800&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=800&h=800&fit=crop",
 ];
 
 // Sample videos for auction demos
@@ -36,16 +29,65 @@ const AUCTION_VIDEOS = [
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
 ];
 
-const PRODUCT_NAMES = [
-  "Charizard VMAX", "Pikachu VMAX", "Mewtwo GX", "Rayquaza VMAX", "Umbreon VMAX",
-  "Blue-Eyes White Dragon", "Dark Magician", "Red-Eyes Black Dragon", "Exodia",
-  "Valkyrie Evolution", "Spriggan Requiem", "Drain Fafnir", "Achilles",
+// Rare/collectible Beyblade items for auctions
+const AUCTION_ITEMS = [
+  // Rare vintage items
+  { name: "Original Dragoon S - Mint Condition", category: "Vintage Beyblades", basePrice: 15000 },
+  { name: "First Edition Dranzer S - Sealed", category: "Vintage Beyblades", basePrice: 18000 },
+  { name: "Classic Driger S - Complete Set", category: "Vintage Beyblades", basePrice: 12000 },
+  { name: "Rare Draciel S - Original Box", category: "Vintage Beyblades", basePrice: 14000 },
+  { name: "HMS Dragoon MS - Near Mint", category: "HMS (Heavy Metal System)", basePrice: 22000 },
+  { name: "HMS Dranzer MS - Collector Grade", category: "HMS (Heavy Metal System)", basePrice: 25000 },
+  
+  // Tournament exclusives
+  { name: "World Championship Valkyrie 2023", category: "Tournament Exclusives", basePrice: 35000 },
+  { name: "Japan Tournament Gold Spriggan", category: "Tournament Exclusives", basePrice: 28000 },
+  { name: "Pro League Champion Fafnir", category: "Tournament Exclusives", basePrice: 32000 },
+  { name: "Asia Championship Longinus", category: "Tournament Exclusives", basePrice: 30000 },
+  
+  // Gold series
+  { name: "24K Gold Plated Valkyrie", category: "Gold Series", basePrice: 45000 },
+  { name: "Gold Edition Spriggan Requiem", category: "Gold Series", basePrice: 40000 },
+  { name: "Anniversary Gold Dragoon", category: "Gold Series", basePrice: 50000 },
+  { name: "Limited Gold L-Drago", category: "Gold Series", basePrice: 38000 },
+  
+  // Store exclusives
+  { name: "Japan Import Limited Achilles", category: "Store Exclusives", basePrice: 8000 },
+  { name: "Korea Exclusive Belial", category: "Store Exclusives", basePrice: 9500 },
+  { name: "US Convention Exclusive Set", category: "Store Exclusives", basePrice: 12000 },
+  
+  // Anniversary editions
+  { name: "20th Anniversary Dragoon Set", category: "Anniversary Editions", basePrice: 55000 },
+  { name: "15th Anniversary Dranzer", category: "Anniversary Editions", basePrice: 42000 },
+  { name: "10th Anniversary Metal Series", category: "Anniversary Editions", basePrice: 38000 },
+  
+  // Rare finds
+  { name: "Prototype Valkyrie - Test Version", category: "Rare Finds", basePrice: 75000 },
+  { name: "Factory Sample Spriggan", category: "Rare Finds", basePrice: 60000 },
+  { name: "Pre-Production Fafnir", category: "Rare Finds", basePrice: 65000 },
+  { name: "Limited Color Variant Longinus", category: "Rare Finds", basePrice: 25000 },
+  
+  // Collector items
+  { name: "Complete Metal Fusion Set - Sealed", category: "Collector Items", basePrice: 85000 },
+  { name: "Full HMS Collection - 12 Beyblades", category: "Collector Items", basePrice: 120000 },
+  { name: "Original Series Complete Box", category: "Collector Items", basePrice: 95000 },
+  { name: "Burst Series Master Collection", category: "Collector Items", basePrice: 70000 },
+  
+  // Beyblade X rare
+  { name: "First Edition Dran Sword", category: "X Attack", basePrice: 5000 },
+  { name: "Limited Cobalt Drake", category: "X Defense", basePrice: 6000 },
+  { name: "Exclusive Wizard Rod", category: "X Stamina", basePrice: 5500 },
+  
+  // Metal series rare
+  { name: "Lightning L-Drago - Mint", category: "Metal Fusion", basePrice: 8000 },
+  { name: "Galaxy Pegasus - Sealed", category: "Metal Masters", basePrice: 9000 },
+  { name: "Diablo Nemesis - Complete", category: "Metal Fury", basePrice: 12000 },
 ];
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { shops, productsByShop } = body;
+    const { shops, productsByShop, categoryMap } = body;
 
     if (!shops || !Array.isArray(shops) || shops.length === 0) {
       return NextResponse.json({ success: false, error: "Shops data required" }, { status: 400 });
@@ -58,6 +100,9 @@ export async function POST(request: NextRequest) {
     const db = getFirestoreAdmin();
     const timestamp = new Date();
     const createdAuctions: string[] = [];
+    
+    // Track auction counts per category: { categoryId: { live, ended } }
+    const auctionStats: Record<string, { live: number; ended: number }> = {};
 
     // Create 250 auctions (5 per shop for 50 shops)
     const auctionsPerShop = 5;
@@ -71,46 +116,108 @@ export async function POST(request: NextRequest) {
       const shopProducts = productsByShop[currentShop.id] || [];
       const productId = shopProducts[i % Math.max(shopProducts.length, 1)] || "";
 
+      // Get auction item details
+      const auctionItem = AUCTION_ITEMS[i % AUCTION_ITEMS.length];
+      
+      // Find category ID for this auction item
+      let categoryId = "";
+      if (categoryMap) {
+        categoryId = categoryMap[auctionItem.category] || "";
+      }
+
       const auctionRef = db.collection(COLLECTIONS.AUCTIONS).doc();
+      
+      // Create varied end times: 30% ended, 70% live
+      const isEnded = Math.random() < 0.3;
       const startDate = new Date();
       const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 3 + (i % 14));
+      
+      if (isEnded) {
+        // Ended 1-7 days ago
+        startDate.setDate(startDate.getDate() - 14 - Math.floor(Math.random() * 7));
+        endDate.setDate(endDate.getDate() - 1 - Math.floor(Math.random() * 7));
+      } else {
+        // Ends in 1-14 days
+        startDate.setDate(startDate.getDate() - Math.floor(Math.random() * 3));
+        endDate.setDate(endDate.getDate() + 1 + Math.floor(Math.random() * 14));
+      }
 
-      const startingBid = 1000 + Math.random() * 20000;
-      const title = `${DEMO_PREFIX}Auction #${i + 1} - ${PRODUCT_NAMES[i % PRODUCT_NAMES.length]}`;
-      // Generate 4-6 images per auction for better carousel
+      const startingBid = auctionItem.basePrice * (0.3 + Math.random() * 0.4); // 30-70% of base price
+      const currentBid = isEnded 
+        ? startingBid * (1.2 + Math.random() * 0.8) // Ended auctions have higher bids
+        : startingBid * (1 + Math.random() * 0.5); // Live auctions
+
+      const title = `${DEMO_PREFIX}${auctionItem.name}`;
+      
+      // Generate 4-6 images per auction
       const imageCount = 4 + Math.floor(Math.random() * 3);
       const auctionImages = Array.from({ length: imageCount }, (_, idx) => 
-        `${PRODUCT_IMAGES[(i * 4 + idx) % PRODUCT_IMAGES.length]}?w=800&h=800&fit=crop`
+        PRODUCT_IMAGES[(i * 4 + idx) % PRODUCT_IMAGES.length]
       );
+      
       // 35% of auctions have videos
       const hasVideo = Math.random() < 0.35;
       const auctionVideos = hasVideo ? [AUCTION_VIDEOS[i % AUCTION_VIDEOS.length]] : [];
+
+      // Determine condition for auction items
+      const conditions = ["Mint", "Near Mint", "Excellent", "Good", "Fair"];
+      const condition = conditions[Math.floor(Math.random() * conditions.length)];
+
+      const status = isEnded ? "ended" : "active";
+      const totalBids = isEnded 
+        ? 5 + Math.floor(Math.random() * 20) 
+        : Math.floor(Math.random() * 10);
 
       await auctionRef.set({
         product_id: productId,
         shop_id: currentShop.id,
         seller_id: currentShop.ownerId,
+        category_id: categoryId,
         title,
         slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 100),
-        description: "Rare collectible up for auction!",
+        description: `Rare ${auctionItem.name} up for auction! ${condition} condition. Perfect for serious collectors. Certificate of authenticity included.`,
         images: auctionImages,
         videos: auctionVideos,
         starting_bid: Math.round(startingBid),
-        current_bid: Math.round(startingBid),
-        bid_increment: [100, 200, 500][i % 3],
-        reserve_price: Math.round(startingBid * 1.5),
+        current_bid: Math.round(currentBid),
+        bid_increment: [100, 200, 500, 1000][i % 4],
+        reserve_price: Math.round(auctionItem.basePrice * 0.8),
+        buy_now_price: Math.round(auctionItem.basePrice * 1.5),
         start_time: startDate,
         end_time: endDate,
-        status: "active",
+        status,
+        condition,
         is_featured: i % 5 < 2,
-        total_bids: 0,
-        unique_bidders: 0,
+        total_bids: totalBids,
+        unique_bidders: Math.floor(totalBids * 0.6) + 1,
+        watchers: Math.floor(Math.random() * 50) + 5,
+        view_count: Math.floor(Math.random() * 500) + 50,
+        tags: ["beyblade", "rare", "collectible", condition.toLowerCase()],
         created_at: timestamp,
         updated_at: timestamp,
       });
 
       createdAuctions.push(auctionRef.id);
+      
+      // Track auction stats per category
+      if (categoryId) {
+        if (!auctionStats[categoryId]) {
+          auctionStats[categoryId] = { live: 0, ended: 0 };
+        }
+        if (isEnded) {
+          auctionStats[categoryId].ended++;
+        } else {
+          auctionStats[categoryId].live++;
+        }
+      }
+    }
+
+    // Update category auction counts
+    for (const [catId, stats] of Object.entries(auctionStats)) {
+      await db.collection(COLLECTIONS.CATEGORIES).doc(catId).update({
+        live_auction_count: stats.live,
+        ended_auction_count: stats.ended,
+      });
     }
 
     return NextResponse.json({
@@ -119,6 +226,7 @@ export async function POST(request: NextRequest) {
       data: {
         count: createdAuctions.length,
         auctions: createdAuctions,
+        auctionStats,
       },
     });
   } catch (error: unknown) {
