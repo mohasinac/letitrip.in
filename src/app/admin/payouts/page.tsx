@@ -147,7 +147,7 @@ export default function AdminPayoutsPage() {
 
   return (
     <AuthGuard requireAuth allowedRoles={["admin"]}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="flex">
           {/* Filter Sidebar */}
           <UnifiedFilterSidebar
@@ -182,41 +182,53 @@ export default function AdminPayoutsPage() {
           {/* Main Content */}
           <div className="flex-1 p-6">
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 Seller Payouts
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
                 Process and manage seller payout requests
               </p>
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Total Requests</div>
-                <div className="text-2xl font-bold">{stats.total}</div>
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Total Requests
+                </div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {stats.total}
+                </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Pending</div>
-                <div className="text-2xl font-bold text-yellow-600">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Pending
+                </div>
+                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                   {stats.pending}
                 </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Processed</div>
-                <div className="text-2xl font-bold text-green-600">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Processed
+                </div>
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {stats.processed}
                 </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Rejected</div>
-                <div className="text-2xl font-bold text-red-600">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Rejected
+                </div>
+                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                   {stats.rejected}
                 </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Total Amount</div>
-                <div className="text-2xl font-bold">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Total Amount
+                </div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
                   {formatCurrency(stats.totalAmount)}
                 </div>
               </div>
@@ -243,18 +255,18 @@ export default function AdminPayoutsPage() {
             )}
 
             {/* Payouts Table */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
               {loading ? (
                 <div className="p-8 text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                 </div>
               ) : payouts.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">
+                <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                   <p>No payout requests found</p>
                 </div>
               ) : (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
                       <th className="px-6 py-3 text-left">
                         <TableCheckbox
@@ -274,32 +286,35 @@ export default function AdminPayoutsPage() {
                           }}
                         />
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Payout ID
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Seller
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Shop
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Amount
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Requested
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {payouts.map((payout) => (
-                      <tr key={payout.id} className="hover:bg-gray-50">
+                      <tr
+                        key={payout.id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                      >
                         <td className="px-6 py-4">
                           <TableCheckbox
                             checked={selectedPayouts.has(payout.id)}
@@ -314,33 +329,37 @@ export default function AdminPayoutsPage() {
                             }}
                           />
                         </td>
-                        <td className="px-6 py-4 text-sm font-mono">
+                        <td className="px-6 py-4 text-sm font-mono text-gray-900 dark:text-white">
                           {payout.id}
                         </td>
                         <td className="px-6 py-4 text-sm">
-                          <div>{payout.sellerName}</div>
-                          <div className="text-gray-500">
+                          <div className="text-gray-900 dark:text-white">
+                            {payout.sellerName}
+                          </div>
+                          <div className="text-gray-500 dark:text-gray-400">
                             {payout.sellerEmail}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm">{payout.shopName}</td>
-                        <td className="px-6 py-4 text-sm font-semibold">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                          {payout.shopName}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">
                           {formatCurrency(payout.amount)}
                         </td>
                         <td className="px-6 py-4">
                           <span
                             className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                               payout.status === "processed"
-                                ? "bg-green-100 text-green-800"
+                                ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
                                 : payout.status === "rejected"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-yellow-100 text-yellow-800"
+                                ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
+                                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
                             }`}
                           >
                             {payout.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                           {new Date(payout.createdAt).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 text-sm space-x-2">
@@ -348,14 +367,14 @@ export default function AdminPayoutsPage() {
                             <>
                               <button
                                 onClick={() => handleProcessPayout(payout.id)}
-                                className="text-green-600 hover:text-green-900"
+                                className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
                                 title="Process"
                               >
                                 <CheckCircle className="w-5 h-5" />
                               </button>
                               <button
                                 onClick={() => handleRejectPayout(payout.id)}
-                                className="text-red-600 hover:text-red-900"
+                                className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                                 title="Reject"
                               >
                                 <XCircle className="w-5 h-5" />
@@ -366,7 +385,7 @@ export default function AdminPayoutsPage() {
                             onClick={() =>
                               router.push(`/admin/payouts/${payout.id}`)
                             }
-                            className="text-indigo-600 hover:text-indigo-900"
+                            className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                             title="View Details"
                           >
                             <Eye className="w-5 h-5" />
@@ -385,11 +404,11 @@ export default function AdminPayoutsPage() {
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 border rounded-lg disabled:opacity-50"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Previous
                 </button>
-                <span className="px-4 py-2">
+                <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
@@ -397,7 +416,7 @@ export default function AdminPayoutsPage() {
                     setCurrentPage((p) => Math.min(totalPages, p + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 border rounded-lg disabled:opacity-50"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Next
                 </button>

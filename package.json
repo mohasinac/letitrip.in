@@ -30,7 +30,7 @@
     "deploy": "npm run build && git push origin main",
     "deploy:prod": "npm run build && vercel --prod --yes",
     "deploy:firebase": "npm run build && firebase deploy",
-    "sonar": "npx sonar-scanner"
+    "sonar": "node scripts/run-sonar.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
