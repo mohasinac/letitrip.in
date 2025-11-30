@@ -1,32 +1,33 @@
 # Dark Mode Issues & Fixes
 
-> **Status**: 🔴 Critical - Multiple components lack dark mode support
+> **Status**: 🟡 In Progress - Malformed CSS fixed, Tables now have dark mode
 > **Priority**: High
 > **Last Updated**: November 30, 2025
 
 ## Critical Dark Mode Issues
 
-| Component/Module                             | Status                          | Impact                                  |
-| -------------------------------------------- | ------------------------------- | --------------------------------------- |
-| **Checkout Module** (4 components)           | ❌ No dark mode                 | High - Payment flow broken in dark mode |
-| **DataTable**                                | ❌ No dark mode + malformed CSS | High - All table views broken           |
-| **MobileDataTable**                          | ❌ No dark mode                 | High - Mobile tables broken             |
-| **Admin Tables** (returns, tickets, payouts) | ❌ No dark mode                 | High - Admin pages broken in dark mode  |
-| **DateTimePicker**                           | ❌ No dark mode                 | Medium - Form inputs broken             |
-| **RichTextEditor**                           | ❌ No dark mode                 | Medium - Blog/Product editing broken    |
-| **ToggleSwitch**                             | ❌ No dark mode                 | Low - Settings toggles broken           |
-| **AdminSidebar** highlight                   | ⚠️ Partial                      | Low - Search highlight not visible      |
+| Component/Module                             | Status          | Impact                                  |
+| -------------------------------------------- | --------------- | --------------------------------------- |
+| **Checkout Module** (4 components)           | ❌ No dark mode | High - Payment flow broken in dark mode |
+| **DataTable**                                | ✅ Fixed        | Dark mode + malformed CSS fixed         |
+| **MobileDataTable**                          | ✅ Fixed        | Dark mode added                         |
+| **ActionMenu**                               | ✅ Fixed        | Dark mode + malformed CSS fixed         |
+| **InlineEditor**                             | ✅ Fixed        | Dark mode + malformed CSS fixed         |
+| **TagInput**                                 | ✅ Fixed        | Dark mode + malformed CSS fixed         |
+| **Admin Tables** (returns, tickets, payouts) | ❌ No dark mode | High - Admin pages broken in dark mode  |
+| **DateTimePicker**                           | ❌ No dark mode | Medium - Form inputs broken             |
+| **RichTextEditor**                           | ❌ No dark mode | Medium - Blog/Product editing broken    |
+| **ToggleSwitch**                             | ❌ No dark mode | Low - Settings toggles broken           |
+| **AdminSidebar** highlight                   | ⚠️ Partial      | Low - Search highlight not visible      |
 
-## Malformed CSS Classes (Bug)
+## Malformed CSS Classes (Bug) - ✅ FIXED (Session 16)
 
-The following files have malformed CSS: `hover:bg-gray-100:bg-gray-700` should be `hover:bg-gray-100 dark:hover:bg-gray-700`
+~~The following files had malformed CSS.~~ All fixed:
 
-| File                                     | Line |
-| ---------------------------------------- | ---- |
-| `src/components/common/DataTable.tsx`    | 125  |
-| `src/components/common/ActionMenu.tsx`   | 63   |
-| `src/components/common/InlineEditor.tsx` | 102  |
-| `src/components/common/TagInput.tsx`     | 265  |
+- ✅ `src/components/common/DataTable.tsx` - Fixed
+- ✅ `src/components/common/ActionMenu.tsx` - Fixed
+- ✅ `src/components/common/InlineEditor.tsx` - Fixed
+- ✅ `src/components/common/TagInput.tsx` - Fixed
 
 ## Components with Full Dark Mode (Verified)
 
@@ -35,14 +36,19 @@ The following files have malformed CSS: `hover:bg-gray-100:bg-gray-700` should b
 - ✅ MobileFormInput, MobileFormSelect, MobileTextarea
 - ✅ ConfirmDialog, SubNavbar
 - ✅ SellerSidebar, AdminSidebar (except highlight)
+- ✅ DataTable (Session 16)
+- ✅ MobileDataTable (Session 16)
+- ✅ ActionMenu (Session 16)
+- ✅ InlineEditor (Session 16)
+- ✅ TagInput (Session 16)
 
 ## Fix Checklist
 
-### Priority 1 - Critical (Week 1)
+### Priority 1 - Critical (Week 1) - ✅ COMPLETE
 
-- [ ] Fix malformed CSS in DataTable.tsx, ActionMenu.tsx, InlineEditor.tsx, TagInput.tsx
-- [ ] Add dark mode to DataTable component
-- [ ] Add dark mode to MobileDataTable component
+- [x] Fix malformed CSS in DataTable.tsx, ActionMenu.tsx, InlineEditor.tsx, TagInput.tsx
+- [x] Add dark mode to DataTable component
+- [x] Add dark mode to MobileDataTable component
 - [ ] Add dark mode to checkout components (AddressForm, AddressSelector, PaymentMethod, ShopOrderSummary)
 
 ### Priority 2 - High (Week 2)
