@@ -25,7 +25,7 @@ export default function PendingUploadsWarning({
     useUploadContext();
   const [showWarning, setShowWarning] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(
-    null,
+    null
   );
 
   // Intercept browser back/forward/refresh
@@ -39,10 +39,10 @@ export default function PendingUploadsWarning({
       }
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    globalThis.addEventListener?.("beforeunload", handleBeforeUnload);
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      globalThis.removeEventListener?.("beforeunload", handleBeforeUnload);
     };
   }, [enabled, hasPendingUploads]);
 

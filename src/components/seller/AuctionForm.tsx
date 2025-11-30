@@ -321,7 +321,7 @@ export default function AuctionForm({
 
       {/* Submit Buttons */}
       <FormActions
-        onCancel={() => window.history.back()}
+        onCancel={() => globalThis.history?.back()}
         onSubmit={handleSubmit}
         submitLabel={mode === "edit" ? "Save Changes" : "Create Auction"}
         isSubmitting={isSubmitting}

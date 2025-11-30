@@ -29,7 +29,7 @@ export async function logError(
 
   try {
     // Log to Firebase Analytics (FREE tier)
-    if (analytics && typeof window !== "undefined") {
+    if (analytics && typeof globalThis !== "undefined" && globalThis.document) {
       logEvent(analytics, "exception", {
         description: errorMessage,
         fatal: severity === "critical",
@@ -74,7 +74,7 @@ export function logPerformance(
   metadata?: Record<string, any>,
 ): void {
   try {
-    if (analytics && typeof window !== "undefined") {
+    if (analytics && typeof globalThis !== "undefined" && globalThis.document) {
       logEvent(analytics, "timing_complete", {
         name: metricName,
         value: duration,
@@ -94,7 +94,7 @@ export function logUserAction(
   metadata?: Record<string, any>,
 ): void {
   try {
-    if (analytics && typeof window !== "undefined") {
+    if (analytics && typeof globalThis !== "undefined" && globalThis.document) {
       logEvent(analytics, "user_action", {
         action,
         ...metadata,
@@ -109,14 +109,14 @@ export function logUserAction(
  * Initialize global error handlers
  */
 export function initErrorHandlers(): void {
-  if (typeof window === "undefined") return;
+  if (typeof globalThis === "undefined" || !globalThis.addEventListener) return;
 
   // Global error handler
-  window.addEventListener("error", (event) => {
+  globalThis.addEventListener("error", (event) => {
     logError(
-      event.error || event.message,
+      (event as ErrorEvent).error || (event as ErrorEvent).message,
       {
-        url: window.location.href,
+        url: globalThis.location?.href,
         component: "global",
       },
       "high",
@@ -124,11 +124,11 @@ export function initErrorHandlers(): void {
   });
 
   // Unhandled promise rejection handler
-  window.addEventListener("unhandledrejection", (event) => {
+  globalThis.addEventListener("unhandledrejection", (event) => {
     logError(
-      event.reason instanceof Error ? event.reason : String(event.reason),
+      (event as PromiseRejectionEvent).reason instanceof Error ? (event as PromiseRejectionEvent).reason : String((event as PromiseRejectionEvent).reason),
       {
-        url: window.location.href,
+        url: globalThis.location?.href,
         component: "promise",
       },
       "high",

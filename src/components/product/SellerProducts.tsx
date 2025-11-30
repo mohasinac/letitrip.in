@@ -92,11 +92,11 @@ export function SellerProducts({
 
     updateScrollButtons();
     container.addEventListener("scroll", updateScrollButtons);
-    window.addEventListener("resize", updateScrollButtons);
+    globalThis.addEventListener("resize", updateScrollButtons);
 
     return () => {
       container.removeEventListener("scroll", updateScrollButtons);
-      window.removeEventListener("resize", updateScrollButtons);
+      globalThis.removeEventListener("resize", updateScrollButtons);
     };
   }, [products]);
 

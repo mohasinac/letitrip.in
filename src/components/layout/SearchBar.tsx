@@ -115,7 +115,9 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
 
       // Navigate to search results
       const searchUrl = `/search?${params.toString()}`;
-      window.location.href = searchUrl;
+      if (globalThis.location) {
+        globalThis.location.href = searchUrl;
+      }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

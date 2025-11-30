@@ -57,10 +57,10 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
       return message;
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    globalThis.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      globalThis.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [enabled, message]);
 
@@ -78,7 +78,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
       if (isNavigatingRef.current) return;
 
       // Show confirmation dialog
-      const confirmed = window.confirm(message);
+      const confirmed = globalThis.confirm?.(message) ?? true;
 
       if (confirmed) {
         isNavigatingRef.current = true;
@@ -101,17 +101,17 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
         }
 
         // Prevent the navigation by pushing current state back
-        window.history.pushState(null, "", window.location.href);
+        globalThis.history?.pushState(null, "", globalThis.location?.href);
       }
     };
 
     // Push an initial state to enable popstate detection
-    window.history.pushState(null, "", window.location.href);
+    globalThis.history?.pushState(null, "", globalThis.location?.href);
 
-    window.addEventListener("popstate", handlePopState);
+    globalThis.addEventListener("popstate", handlePopState);
 
     return () => {
-      window.removeEventListener("popstate", handlePopState);
+      globalThis.removeEventListener("popstate", handlePopState);
     };
   }, [enabled, message, onNavigate, onCancel]);
 
@@ -126,7 +126,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
         return true;
       }
 
-      const confirmed = window.confirm(message);
+      const confirmed = globalThis.confirm?.(message) ?? true;
 
       if (confirmed) {
         isNavigatingRef.current = true;

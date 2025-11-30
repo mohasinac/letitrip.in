@@ -37,7 +37,10 @@ export function FavoriteButton({
 
     if (!user) {
       // Redirect to login or show auth modal
-      window.location.href = "/auth/login?redirect=" + window.location.pathname;
+      if (globalThis.location) {
+        globalThis.location.href =
+          "/auth/login?redirect=" + globalThis.location.pathname;
+      }
       return;
     }
 

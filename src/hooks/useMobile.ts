@@ -14,17 +14,17 @@ export function useIsMobile(breakpoint: number = 768): boolean {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < breakpoint);
+      setIsMobile((globalThis.innerWidth ?? 0) < breakpoint);
     };
 
     // Check on mount
     checkMobile();
 
     // Add event listener
-    window.addEventListener("resize", checkMobile);
+    globalThis.addEventListener?.("resize", checkMobile);
 
     // Cleanup
-    return () => window.removeEventListener("resize", checkMobile);
+    return () => globalThis.removeEventListener?.("resize", checkMobile);
   }, [breakpoint]);
 
   return isMobile;
@@ -37,7 +37,7 @@ export function useIsTouchDevice(): boolean {
   const [isTouch, setIsTouch] = useState(false);
 
   useEffect(() => {
-    setIsTouch("ontouchstart" in window || navigator.maxTouchPoints > 0);
+    setIsTouch("ontouchstart" in globalThis || navigator.maxTouchPoints > 0);
   }, []);
 
   return isTouch;
@@ -55,15 +55,15 @@ export function useViewport() {
   useEffect(() => {
     const updateViewport = () => {
       setViewport({
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: globalThis.innerWidth ?? 0,
+        height: globalThis.innerHeight ?? 0,
       });
     };
 
     updateViewport();
-    window.addEventListener("resize", updateViewport);
+    globalThis.addEventListener?.("resize", updateViewport);
 
-    return () => window.removeEventListener("resize", updateViewport);
+    return () => globalThis.removeEventListener?.("resize", updateViewport);
   }, []);
 
   return viewport;
@@ -88,13 +88,13 @@ export function useBreakpoint(breakpoint: keyof typeof breakpoints): boolean {
 
   useEffect(() => {
     const checkBreakpoint = () => {
-      setMatches(window.innerWidth >= breakpoints[breakpoint]);
+      setMatches((globalThis.innerWidth ?? 0) >= breakpoints[breakpoint]);
     };
 
     checkBreakpoint();
-    window.addEventListener("resize", checkBreakpoint);
+    globalThis.addEventListener?.("resize", checkBreakpoint);
 
-    return () => window.removeEventListener("resize", checkBreakpoint);
+    return () => globalThis.removeEventListener?.("resize", checkBreakpoint);
   }, [breakpoint]);
 
   return matches;
@@ -104,10 +104,10 @@ export function useBreakpoint(breakpoint: keyof typeof breakpoints): boolean {
  * Detect iOS device
  */
 export function isIOS(): boolean {
-  if (typeof window === "undefined") return false;
+  if (typeof globalThis === "undefined") return false;
 
   return (
-    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(globalThis as any).MSStream
   );
 }
 
@@ -115,7 +115,7 @@ export function isIOS(): boolean {
  * Detect Android device
  */
 export function isAndroid(): boolean {
-  if (typeof window === "undefined") return false;
+  if (typeof globalThis === "undefined") return false;
 
   return /Android/.test(navigator.userAgent);
 }
@@ -124,9 +124,9 @@ export function isAndroid(): boolean {
  * Get device type
  */
 export function getDeviceType(): "desktop" | "tablet" | "mobile" {
-  if (typeof window === "undefined") return "desktop";
+  if (typeof globalThis === "undefined") return "desktop";
 
-  const width = window.innerWidth;
+  const width = globalThis.innerWidth ?? 0;
 
   if (width < 768) return "mobile";
   if (width < 1024) return "tablet";
@@ -147,9 +147,9 @@ export function useDeviceType() {
     };
 
     updateDeviceType();
-    window.addEventListener("resize", updateDeviceType);
+    globalThis.addEventListener?.("resize", updateDeviceType);
 
-    return () => window.removeEventListener("resize", updateDeviceType);
+    return () => globalThis.removeEventListener?.("resize", updateDeviceType);
   }, []);
 
   return deviceType;

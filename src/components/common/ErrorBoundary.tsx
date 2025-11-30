@@ -67,7 +67,7 @@ export class ErrorBoundary extends Component<Props, State> {
     logComponentError(
       "ErrorBoundary",
       this.getComponentStack(errorInfo),
-      error,
+      error
     );
 
     this.setState({
@@ -106,11 +106,13 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   private handleReload = () => {
-    window.location.reload();
+    globalThis.location?.reload();
   };
 
   private handleGoHome = () => {
-    window.location.href = "/";
+    if (globalThis.location) {
+      globalThis.location.href = "/";
+    }
   };
 
   render() {
@@ -198,7 +200,7 @@ export class ErrorBoundary extends Component<Props, State> {
  */
 export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
-  errorBoundaryProps?: Omit<Props, "children">,
+  errorBoundaryProps?: Omit<Props, "children">
 ) {
   const WrappedComponent = (props: P) => (
     <ErrorBoundary {...errorBoundaryProps}>

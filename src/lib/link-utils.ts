@@ -65,8 +65,8 @@ const defaultValidationOptions: LinkValidationOptions = {
  */
 export function getBaseUrl(): string {
   // Browser context
-  if (typeof window !== 'undefined') {
-    return window.location.origin;
+  if (typeof globalThis !== 'undefined' && globalThis.location) {
+    return globalThis.location.origin;
   }
   
   // Server context - check for environment variables

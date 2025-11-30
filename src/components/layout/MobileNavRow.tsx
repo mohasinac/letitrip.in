@@ -63,10 +63,10 @@ export function MobileNavRow({
     const scrollElement = scrollRef.current;
     if (scrollElement) {
       scrollElement.addEventListener("scroll", checkScroll);
-      window.addEventListener("resize", checkScroll);
+      globalThis.addEventListener?.("resize", checkScroll);
       return () => {
         scrollElement.removeEventListener("scroll", checkScroll);
-        window.removeEventListener("resize", checkScroll);
+        globalThis.removeEventListener?.("resize", checkScroll);
       };
     }
   }, [checkScroll, items]);

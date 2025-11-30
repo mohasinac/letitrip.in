@@ -55,13 +55,13 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
       try {
         await navigator.share({
           title: shop.name,
-          url: window.location.href,
+          url: globalThis.location?.href || "",
         });
       } catch (error) {
         console.error("Share failed:", error);
       }
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      navigator.clipboard.writeText(globalThis.location?.href || "");
       toast.success("Link copied to clipboard!");
     }
   };
