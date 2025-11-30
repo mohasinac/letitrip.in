@@ -156,8 +156,8 @@ export async function executeSieveQuery<T extends DocumentData>(
       // Fetch documents up to the offset to get the cursor
       const cursorSnapshot = await q.limit(adapted.offset).get();
       
-      if (cursorSnapshot.docs.length > 0) {
-        const lastVisible = cursorSnapshot.docs[cursorSnapshot.docs.length - 1];
+      const lastVisible = cursorSnapshot.docs.at(-1);
+      if (lastVisible) {
         q = q.startAfter(lastVisible).limit(adapted.limit);
       } else {
         // No documents before this page, just apply limit

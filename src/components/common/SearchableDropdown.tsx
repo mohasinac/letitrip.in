@@ -464,8 +464,10 @@ function SearchableDropdownInner<T = string>(
 
         case "Backspace":
           if (isMulti && searchQuery === "" && selectedValues.length > 0) {
-            const lastValue = selectedValues[selectedValues.length - 1];
-            handleRemove(lastValue);
+            const lastValue = selectedValues.at(-1);
+            if (lastValue !== undefined) {
+              handleRemove(lastValue);
+            }
           }
           break;
 

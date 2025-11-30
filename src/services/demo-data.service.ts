@@ -176,7 +176,7 @@ class DemoDataService {
    * Step-by-step cleanup methods
    */
   async cleanupStep(step: DemoStep): Promise<StepResult> {
-    return apiService.delete<StepResult>(`/api/admin/demo/cleanup/${step}`);
+    return apiService.delete<StepResult>(`/admin/demo/cleanup/${step}`);
   }
 }
 

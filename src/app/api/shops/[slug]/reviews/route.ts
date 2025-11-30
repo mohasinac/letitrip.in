@@ -42,8 +42,8 @@ export async function GET(
     const offset = (page - 1) * limit;
     if (offset > 0) {
       const offsetSnapshot = await query.limit(offset).get();
-      if (!offsetSnapshot.empty) {
-        const lastDoc = offsetSnapshot.docs[offsetSnapshot.docs.length - 1];
+      const lastDoc = offsetSnapshot.docs.at(-1);
+      if (lastDoc) {
         query = query.startAfter(lastDoc);
       }
     }

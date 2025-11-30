@@ -250,10 +250,9 @@ export function processPaginatedResults<T>(
   const hasNextPage = docs.length === pageSize;
   const hasPrevPage = hasPrevCursor || docs.length > 0;
 
-  const nextCursor =
-    hasNextPage && docs.length > 0 ? docs[docs.length - 1] : null;
+  const nextCursor = hasNextPage ? docs.at(-1) ?? null : null;
 
-  const prevCursor = docs.length > 0 ? docs[0] : null;
+  const prevCursor = docs.at(0) ?? null;
 
   return {
     data,

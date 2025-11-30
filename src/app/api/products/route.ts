@@ -163,8 +163,8 @@ export async function GET(request: NextRequest) {
         if (offset > 0) {
           // Skip to the correct page
           const skipSnapshot = await query.limit(offset).get();
-          if (skipSnapshot.docs.length > 0) {
-            const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+          const lastDoc = skipSnapshot.docs.at(-1);
+          if (lastDoc) {
             query = query.startAfter(lastDoc);
           }
         }
