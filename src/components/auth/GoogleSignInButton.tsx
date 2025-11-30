@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { initializeApp, getApps } from "firebase/app";
@@ -25,14 +25,17 @@ interface GoogleSignInButtonProps {
   className?: string;
   variant?: "full" | "icon";
   disabled?: boolean;
+  redirectPath?: string;
 }
 
-export function GoogleSignInButton({
+// Inner component that uses useSearchParams
+function GoogleSignInButtonInner({
   onSuccess,
   onError,
   className = "",
   variant = "full",
   disabled = false,
+  redirectPath,
 }: GoogleSignInButtonProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -69,7 +72,7 @@ export function GoogleSignInButton({
       }
 
       // Redirect to specified URL or home
-      const redirect = searchParams.get("redirect") || "/";
+      const redirect = redirectPath || searchParams.get("redirect") || "/";
 
       if (onSuccess) {
         onSuccess();
@@ -139,6 +142,52 @@ export function GoogleSignInButton({
         </>
       )}
     </button>
+  );
+}
+
+// Fallback component for loading state
+function GoogleSignInButtonFallback({
+  className = "",
+  variant = "full",
+}: Pick<GoogleSignInButtonProps, "className" | "variant">) {
+  if (variant === "icon") {
+    return (
+      <button
+        type="button"
+        disabled
+        className={`flex items-center justify-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg opacity-50 cursor-not-allowed ${className}`}
+        aria-label="Sign in with Google"
+      >
+        <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-500 border-t-gray-600 dark:border-t-gray-200 rounded-full animate-spin" />
+      </button>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      disabled
+      className={`w-full min-h-[48px] flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium opacity-50 cursor-not-allowed ${className}`}
+    >
+      <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-500 border-t-gray-600 dark:border-t-gray-200 rounded-full animate-spin" />
+      <span>Loading...</span>
+    </button>
+  );
+}
+
+// Exported component wrapped in Suspense
+export function GoogleSignInButton(props: GoogleSignInButtonProps) {
+  return (
+    <Suspense
+      fallback={
+        <GoogleSignInButtonFallback
+          className={props.className}
+          variant={props.variant}
+        />
+      }
+    >
+      <GoogleSignInButtonInner {...props} />
+    </Suspense>
   );
 }
 
