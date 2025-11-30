@@ -188,7 +188,9 @@ export default function AdminShopsPage() {
       setDeleteSlug(null);
     } catch (error) {
       console.error("Failed to delete shop:", error);
-      toast.error("Failed to delete shop. It may have active products or orders.");
+      toast.error(
+        "Failed to delete shop. It may have active products or orders."
+      );
     }
   };
 

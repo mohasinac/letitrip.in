@@ -99,7 +99,7 @@ export default function AdminEditShopPage() {
   } = useMediaUploadWithCleanup({
     onUploadSuccess: (url) => {
       setShop((prev: ShopFE | null) =>
-        prev ? { ...prev, banner: url } : null,
+        prev ? { ...prev, banner: url } : null
       );
     },
   });
@@ -272,7 +272,9 @@ export default function AdminEditShopPage() {
       router.push("/admin/shops");
     } catch (error) {
       console.error("Failed to delete shop:", error);
-      toast.error("Failed to delete shop. It may have active products or orders.");
+      toast.error(
+        "Failed to delete shop. It may have active products or orders."
+      );
       setShowDeleteDialog(false);
     } finally {
       setDeleting(false);

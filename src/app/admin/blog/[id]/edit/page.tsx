@@ -85,7 +85,7 @@ export default function EditBlogPostPage() {
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
@@ -215,7 +215,7 @@ export default function EditBlogPostPage() {
     } catch (error) {
       console.error("Failed to update blog post:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to update blog post",
+        error instanceof Error ? error.message : "Failed to update blog post"
       );
     } finally {
       setLoading(false);
@@ -226,7 +226,7 @@ export default function EditBlogPostPage() {
     if (uploadedUrls.length > 0) {
       if (
         confirm(
-          "Are you sure you want to cancel? All unsaved changes will be lost.",
+          "Are you sure you want to cancel? All unsaved changes will be lost."
         )
       ) {
         cleanupUploadedMedia();
