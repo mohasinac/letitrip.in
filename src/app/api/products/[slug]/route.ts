@@ -21,17 +21,21 @@ export async function GET(
     const user = await getUserFromRequest(request);
     const { slug } = await params;
 
-    const snapshot = await Collections.products()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
-    if (snapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: "Product not found" },
-        { status: 404 },
-      );
+    // Try direct doc access first (slug as ID), fallback to query for backward compatibility
+    let doc = await Collections.products().doc(slug).get();
+    if (!doc.exists) {
+      const snapshot = await Collections.products()
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
+      if (snapshot.empty) {
+        return NextResponse.json(
+          { success: false, error: "Product not found" },
+          { status: 404 },
+        );
+      }
+      doc = snapshot.docs[0];
     }
-    const doc = snapshot.docs[0];
     const data: any = doc.data();
 
     // Public users can only see published products
@@ -114,17 +118,22 @@ export async function PATCH(
     const user = authResult.user!;
 
     const { slug } = await params;
-    const snapshot = await Collections.products()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
-    if (snapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: "Product not found" },
-        { status: 404 },
-      );
+    
+    // Try direct doc access first (slug as ID), fallback to query for backward compatibility
+    let doc = await Collections.products().doc(slug).get();
+    if (!doc.exists) {
+      const snapshot = await Collections.products()
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
+      if (snapshot.empty) {
+        return NextResponse.json(
+          { success: false, error: "Product not found" },
+          { status: 404 },
+        );
+      }
+      doc = snapshot.docs[0];
     }
-    const doc = snapshot.docs[0];
     const productData = doc.data() as any;
 
     // Validate user owns the shop (sellers only edit own, admin edits all)
@@ -253,17 +262,22 @@ export async function DELETE(
     const user = authResult.user!;
 
     const { slug } = await params;
-    const snapshot = await Collections.products()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
-    if (snapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: "Product not found" },
-        { status: 404 },
-      );
+    
+    // Try direct doc access first (slug as ID), fallback to query for backward compatibility
+    let doc = await Collections.products().doc(slug).get();
+    if (!doc.exists) {
+      const snapshot = await Collections.products()
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
+      if (snapshot.empty) {
+        return NextResponse.json(
+          { success: false, error: "Product not found" },
+          { status: 404 },
+        );
+      }
+      doc = snapshot.docs[0];
     }
-    const doc = snapshot.docs[0];
     const productData = doc.data() as any;
 
     // Validate user owns the shop (sellers only delete own, admin deletes all)

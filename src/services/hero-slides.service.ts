@@ -47,6 +47,55 @@ export interface HeroSlideFormData {
 }
 
 /**
+ * Transform camelCase form data to snake_case for API
+ */
+function toApiFormat(data: Partial<HeroSlideFormData>): Record<string, unknown> {
+  const apiData: Record<string, unknown> = {};
+  
+  if (data.title !== undefined) apiData.title = data.title;
+  if (data.subtitle !== undefined) apiData.subtitle = data.subtitle;
+  if (data.description !== undefined) apiData.description = data.description;
+  if (data.image !== undefined) apiData.image_url = data.image;
+  if (data.mobileImage !== undefined) apiData.mobile_image_url = data.mobileImage;
+  if (data.ctaText !== undefined) apiData.cta_text = data.ctaText;
+  if (data.ctaLink !== undefined) apiData.link_url = data.ctaLink;
+  if (data.ctaTarget !== undefined) apiData.cta_target = data.ctaTarget;
+  if (data.order !== undefined) apiData.position = data.order;
+  if (data.isActive !== undefined) apiData.is_active = data.isActive;
+  if (data.startDate !== undefined) apiData.start_date = data.startDate;
+  if (data.endDate !== undefined) apiData.end_date = data.endDate;
+  if (data.backgroundColor !== undefined) apiData.background_color = data.backgroundColor;
+  if (data.textColor !== undefined) apiData.text_color = data.textColor;
+  
+  return apiData;
+}
+
+/**
+ * Transform snake_case API response to camelCase
+ */
+function fromApiFormat(data: Record<string, unknown>): HeroSlide {
+  return {
+    id: data.id as string,
+    title: data.title as string,
+    subtitle: (data.subtitle as string) || undefined,
+    description: (data.description as string) || undefined,
+    image: (data.image_url as string) || (data.image as string) || "",
+    mobileImage: (data.mobile_image_url as string) || undefined,
+    ctaText: (data.cta_text as string) || (data.ctaText as string) || "Shop Now",
+    ctaLink: (data.link_url as string) || (data.ctaLink as string) || "/",
+    ctaTarget: (data.cta_target as "_blank" | "_self") || undefined,
+    order: (data.position as number) ?? (data.order as number) ?? 0,
+    isActive: data.is_active !== undefined ? (data.is_active as boolean) : (data.enabled as boolean) ?? true,
+    startDate: (data.start_date as string) || undefined,
+    endDate: (data.end_date as string) || undefined,
+    backgroundColor: (data.background_color as string) || undefined,
+    textColor: (data.text_color as string) || undefined,
+    createdAt: (data.created_at as string) || (data.createdAt as string) || "",
+    updatedAt: (data.updated_at as string) || (data.updatedAt as string) || "",
+  };
+}
+
+/**
  * Hero Slides Service
  * Manages homepage hero slides/carousel with RBAC
  */
@@ -72,8 +121,8 @@ class HeroSlidesService {
       ? `${HERO_SLIDE_ROUTES.LIST}?${params}`
       : HERO_SLIDE_ROUTES.LIST;
 
-    const response = await apiService.get<{ slides: HeroSlide[] }>(url);
-    return response.slides || [];
+    const response = await apiService.get<{ slides: Record<string, unknown>[] }>(url);
+    return (response.slides || []).map(fromApiFormat);
   }
 
   /**
@@ -82,21 +131,21 @@ class HeroSlidesService {
    * Admin: Returns full slide data
    */
   async getHeroSlideById(id: string): Promise<HeroSlide> {
-    const response = await apiService.get<{ slide: HeroSlide }>(
+    const response = await apiService.get<{ slide: Record<string, unknown> }>(
       HERO_SLIDE_ROUTES.BY_ID(id),
     );
-    return response.slide;
+    return fromApiFormat(response.slide);
   }
 
   /**
    * Create a new hero slide (Admin only)
    */
   async createHeroSlide(data: HeroSlideFormData): Promise<HeroSlide> {
-    const response = await apiService.post<{ slide: HeroSlide }>(
+    const response = await apiService.post<{ slide: Record<string, unknown> }>(
       HERO_SLIDE_ROUTES.LIST,
-      data,
+      toApiFormat(data),
     );
-    return response.slide;
+    return fromApiFormat(response.slide);
   }
 
   /**
@@ -106,11 +155,11 @@ class HeroSlidesService {
     id: string,
     data: Partial<HeroSlideFormData>,
   ): Promise<HeroSlide> {
-    const response = await apiService.patch<{ slide: HeroSlide }>(
+    const response = await apiService.patch<{ slide: Record<string, unknown> }>(
       HERO_SLIDE_ROUTES.BY_ID(id),
-      data,
+      toApiFormat(data),
     );
-    return response.slide;
+    return fromApiFormat(response.slide);
   }
 
   /**
@@ -140,7 +189,7 @@ class HeroSlidesService {
     await apiService.post(HERO_SLIDE_ROUTES.BULK, {
       action: "update",
       ids,
-      updates,
+      updates: toApiFormat(updates),
     });
   }
 
@@ -152,7 +201,7 @@ class HeroSlidesService {
   ): Promise<void> {
     await apiService.post(HERO_SLIDE_ROUTES.BULK, {
       action: "reorder",
-      slides: slideOrders,
+      slides: slideOrders.map(s => ({ id: s.id, position: s.order })),
     });
   }
 }

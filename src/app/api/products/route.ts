@@ -278,12 +278,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if slug is unique (global for now)
-    const existingSlug = await Collections.products()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
-    if (!existingSlug.empty) {
+    // Check if slug/ID already exists (slug is used as document ID)
+    const existingDoc = await Collections.products().doc(slug).get();
+    if (existingDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Product slug already exists" },
         { status: 400 },
@@ -306,7 +303,8 @@ export async function POST(request: NextRequest) {
       updated_at: now,
     };
 
-    const docRef = await Collections.products().add(productData);
+    // Use slug as document ID for SEO-friendly URLs
+    await Collections.products().doc(slug).set(productData);
 
     // Update category product counts (including ancestors)
     if (category_id && status === "published") {
@@ -319,7 +317,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: true, data: { id: docRef.id, ...productData } },
+      { success: true, data: { id: slug, ...productData } },
       { status: 201 },
     );
   } catch (error: any) {

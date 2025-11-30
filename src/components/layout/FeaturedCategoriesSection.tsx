@@ -6,15 +6,34 @@ import { CategoryCard } from "@/components/cards/CategoryCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
+import { apiService } from "@/services/api.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+
+interface FeaturedItem {
+  id: string;
+  type: string;
+  itemId: string;
+  name: string;
+  image?: string;
+  position: number;
+  active: boolean;
+}
 
 interface CategoryWithProducts {
   category: CategoryFE;
   products: ProductCardFE[];
 }
 
-export default function FeaturedCategoriesSection() {
+interface Props {
+  maxCategories?: number;
+  productsPerCategory?: number;
+}
+
+export default function FeaturedCategoriesSection({
+  maxCategories = 3,
+  productsPerCategory = 5,
+}: Props) {
   const [categoriesWithProducts, setCategoriesWithProducts] = useState<
     CategoryWithProducts[]
   >([]);
@@ -22,20 +41,50 @@ export default function FeaturedCategoriesSection() {
 
   useEffect(() => {
     fetchFeaturedCategories();
-  }, []);
+  }, [maxCategories, productsPerCategory]);
 
   const fetchFeaturedCategories = async () => {
     try {
       setLoading(true);
-      const categories = await categoriesService.getHomepage();
-      const topCategories = categories.slice(0, 3); // Reduced from 5 to 3
 
+      // First, try to get admin-curated featured categories
+      let curatedCategories: CategoryFE[] = [];
+
+      try {
+        const response: any = await apiService.get("/homepage");
+        const featuredItems: FeaturedItem[] =
+          response.data?.featuredItems?.categories || [];
+
+        // Filter active items and sort by position
+        const activeItems = featuredItems
+          .filter((item) => item.active)
+          .sort((a, b) => a.position - b.position)
+          .slice(0, maxCategories);
+
+        if (activeItems.length > 0) {
+          const categoryIds = activeItems.map((item) => item.itemId);
+          curatedCategories = await categoriesService.getByIds(categoryIds);
+        }
+      } catch (err) {
+        console.log("No curated categories, falling back to homepage query");
+      }
+
+      // Use curated categories or fallback to homepage query
+      let topCategories: CategoryFE[];
+      if (curatedCategories.length > 0) {
+        topCategories = curatedCategories;
+      } else {
+        const categories = await categoriesService.getHomepage();
+        topCategories = categories.slice(0, maxCategories);
+      }
+
+      // Fetch products for each category
       const categoriesData = await Promise.all(
         topCategories.map(async (category: CategoryFE) => {
           try {
             const productsData = await productsService.list({
               categoryId: category.id,
-              limit: 5, // Reduced from 10 to 5
+              limit: productsPerCategory,
             } as any);
             return {
               category,
@@ -44,20 +93,20 @@ export default function FeaturedCategoriesSection() {
           } catch (error) {
             console.error(
               `Error fetching products for category ${category.id}:`,
-              error,
+              error
             );
             return {
               category,
               products: [],
             };
           }
-        }),
+        })
       );
 
       setCategoriesWithProducts(
         categoriesData.filter(
-          (item: CategoryWithProducts) => item.products.length > 0,
-        ),
+          (item: CategoryWithProducts) => item.products.length > 0
+        )
       );
     } catch (error) {
       console.error("Error fetching featured categories:", error);

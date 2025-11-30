@@ -12,20 +12,25 @@ export async function GET(
     const db = getFirestoreAdmin();
     const { slug } = await params;
 
-    const snapshot = await db
-      .collection(COLLECTION)
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
+    // Try direct doc access first (slug as ID), fallback to query for backward compatibility
+    let doc = await db.collection(COLLECTION).doc(slug).get();
+    
+    if (!doc.exists) {
+      const snapshot = await db
+        .collection(COLLECTION)
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
 
-    if (snapshot.empty) {
-      return NextResponse.json(
-        { error: "Blog post not found" },
-        { status: 404 },
-      );
+      if (snapshot.empty) {
+        return NextResponse.json(
+          { error: "Blog post not found" },
+          { status: 404 },
+        );
+      }
+      doc = snapshot.docs[0];
     }
 
-    const doc = snapshot.docs[0];
     const post = {
       id: doc.id,
       ...doc.data(),
@@ -33,7 +38,7 @@ export async function GET(
 
     // Increment view count
     await doc.ref.update({
-      views: (doc.data().views || 0) + 1,
+      views: ((doc.data() as any)?.views || 0) + 1,
     });
 
     return NextResponse.json(post);
@@ -56,20 +61,25 @@ export async function PATCH(
     const { slug } = await params;
     const body = await req.json();
 
-    const snapshot = await db
-      .collection(COLLECTION)
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
+    // Try direct doc access first (slug as ID), fallback to query for backward compatibility
+    let doc = await db.collection(COLLECTION).doc(slug).get();
+    
+    if (!doc.exists) {
+      const snapshot = await db
+        .collection(COLLECTION)
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
 
-    if (snapshot.empty) {
-      return NextResponse.json(
-        { error: "Blog post not found" },
-        { status: 404 },
-      );
+      if (snapshot.empty) {
+        return NextResponse.json(
+          { error: "Blog post not found" },
+          { status: 404 },
+        );
+      }
+      doc = snapshot.docs[0];
     }
 
-    const doc = snapshot.docs[0];
     const updates: any = {
       updatedAt: new Date().toISOString(),
     };
@@ -93,7 +103,8 @@ export async function PATCH(
     });
 
     // Update publishedAt if changing to published
-    if (body.status === "published" && doc.data().status !== "published") {
+    const docData = doc.data() as any;
+    if (body.status === "published" && docData?.status !== "published") {
       updates.publishedAt = new Date().toISOString();
     }
 
@@ -101,7 +112,7 @@ export async function PATCH(
 
     return NextResponse.json({
       id: doc.id,
-      ...doc.data(),
+      ...docData,
       ...updates,
     });
   } catch (error) {
@@ -122,20 +133,26 @@ export async function DELETE(
     const db = getFirestoreAdmin();
     const { slug } = await params;
 
-    const snapshot = await db
-      .collection(COLLECTION)
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
+    // Try direct doc access first (slug as ID), fallback to query for backward compatibility
+    let doc = await db.collection(COLLECTION).doc(slug).get();
+    
+    if (!doc.exists) {
+      const snapshot = await db
+        .collection(COLLECTION)
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
 
-    if (snapshot.empty) {
-      return NextResponse.json(
-        { error: "Blog post not found" },
-        { status: 404 },
-      );
+      if (snapshot.empty) {
+        return NextResponse.json(
+          { error: "Blog post not found" },
+          { status: 404 },
+        );
+      }
+      doc = snapshot.docs[0];
     }
 
-    await snapshot.docs[0].ref.delete();
+    await doc.ref.delete();
 
     return NextResponse.json({
       success: true,

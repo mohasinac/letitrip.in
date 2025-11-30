@@ -18,17 +18,22 @@ export async function GET(
   try {
     const user = await getUserFromRequest(request);
     const { slug } = await params;
-    const snapshot = await Collections.categories()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
-    if (snapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: "Category not found" },
-        { status: 404 },
-      );
+    
+    // Try direct doc access first (slug as ID), fallback to query for backward compatibility
+    let doc = await Collections.categories().doc(slug).get();
+    if (!doc.exists) {
+      const snapshot = await Collections.categories()
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
+      if (snapshot.empty) {
+        return NextResponse.json(
+          { success: false, error: "Category not found" },
+          { status: 404 },
+        );
+      }
+      doc = snapshot.docs[0];
     }
-    const doc = snapshot.docs[0];
     const data: any = doc.data();
 
     // Public users can only see active categories
@@ -89,17 +94,22 @@ export async function PATCH(
     }
 
     const { slug } = await params;
-    const snapshot = await Collections.categories()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
-    if (snapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: "Category not found" },
-        { status: 404 },
-      );
+    
+    // Try direct doc access first (slug as ID), fallback to query for backward compatibility
+    let doc = await Collections.categories().doc(slug).get();
+    if (!doc.exists) {
+      const snapshot = await Collections.categories()
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
+      if (snapshot.empty) {
+        return NextResponse.json(
+          { success: false, error: "Category not found" },
+          { status: 404 },
+        );
+      }
+      doc = snapshot.docs[0];
     }
-    const doc = snapshot.docs[0];
     const data = await request.json();
     const oldData: any = doc.data();
 
@@ -228,17 +238,22 @@ export async function DELETE(
     }
 
     const { slug } = await params;
-    const snapshot = await Collections.categories()
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
-    if (snapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: "Category not found" },
-        { status: 404 },
-      );
+    
+    // Try direct doc access first (slug as ID), fallback to query for backward compatibility
+    let doc = await Collections.categories().doc(slug).get();
+    if (!doc.exists) {
+      const snapshot = await Collections.categories()
+        .where("slug", "==", slug)
+        .limit(1)
+        .get();
+      if (snapshot.empty) {
+        return NextResponse.json(
+          { success: false, error: "Category not found" },
+          { status: 404 },
+        );
+      }
+      doc = snapshot.docs[0];
     }
-    const doc = snapshot.docs[0];
     const docData: any = doc.data();
 
     // Prevent deletion if category has children

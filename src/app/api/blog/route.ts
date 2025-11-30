@@ -159,14 +159,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if slug already exists
-    const existingSlug = await db
-      .collection(COLLECTION)
-      .where("slug", "==", slug)
-      .limit(1)
-      .get();
+    // Check if slug/ID already exists (slug is used as document ID)
+    const existingDoc = await db.collection(COLLECTION).doc(slug).get();
 
-    if (!existingSlug.empty) {
+    if (existingDoc.exists) {
       return NextResponse.json(
         { error: "A blog post with this slug already exists" },
         { status: 400 },
@@ -192,10 +188,11 @@ export async function POST(req: NextRequest) {
       updatedAt: now,
     };
 
-    const docRef = await db.collection(COLLECTION).add(post);
+    // Use slug as document ID for SEO-friendly URLs
+    await db.collection(COLLECTION).doc(slug).set(post);
 
     return NextResponse.json({
-      id: docRef.id,
+      id: slug,
       ...post,
     });
   } catch (error) {

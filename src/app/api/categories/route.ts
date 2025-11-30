@@ -207,6 +207,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Slug uniqueness (global)
+    // Check if slug already exists as document ID
+    const existingDoc = await Collections.categories().doc(slug).get();
+    if (existingDoc.exists) {
+      return NextResponse.json(
+        { success: false, error: "Category slug already exists" },
+        { status: 400 },
+      );
+    }
+    
+    // Fallback check for legacy data
     const existing = await Collections.categories()
       .where("slug", "==", slug)
       .limit(1)
@@ -229,7 +239,7 @@ export async function POST(request: NextRequest) {
       parentIds = [body.parent_id];
     }
 
-    const docRef = await Collections.categories().add({
+    const categoryData = {
       name,
       slug,
       description: body.description || "",
@@ -247,7 +257,11 @@ export async function POST(request: NextRequest) {
       commission_rate: body.commission_rate || 0,
       created_at: now,
       updated_at: now,
-    });
+    };
+    
+    // Use slug as document ID for SEO
+    await Collections.categories().doc(slug).set(categoryData);
+    const docRef = { id: slug };
 
     // Update parent categories to include this as a child
     if (parentIds.length > 0) {
@@ -272,13 +286,13 @@ export async function POST(request: NextRequest) {
       await batch.commit();
     }
 
-    const created = await docRef.get();
+    const created = await Collections.categories().doc(slug).get();
     const createdData: any = created.data();
     return NextResponse.json(
       {
         success: true,
         data: {
-          id: created.id,
+          id: slug,
           ...createdData,
           // Add camelCase aliases for multi-parent support
           parentIds: createdData.parent_ids || [],

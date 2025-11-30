@@ -21,27 +21,28 @@ export async function GET(
     const user = await getUserFromRequest(request);
     const { id } = await params;
 
-    // Try to find by slug first, then by ID
-    let doc = await Collections.auctions()
-      .where("slug", "==", id)
-      .limit(1)
-      .get();
+    // Try direct doc access first (slug/id as document ID), fallback to query for backward compatibility
     let data: any = null;
-
-    if (!doc.empty) {
-      // Found by slug
-      const firstDoc = doc.docs[0];
-      data = { id: firstDoc.id, ...firstDoc.data() };
+    const docById = await Collections.auctions().doc(id).get();
+    
+    if (docById.exists) {
+      data = { id: docById.id, ...docById.data() };
     } else {
-      // Try by ID
-      const docById = await Collections.auctions().doc(id).get();
-      if (!docById.exists) {
+      // Fallback: Try to find by slug field (backward compatibility)
+      const slugQuery = await Collections.auctions()
+        .where("slug", "==", id)
+        .limit(1)
+        .get();
+
+      if (!slugQuery.empty) {
+        const firstDoc = slugQuery.docs[0];
+        data = { id: firstDoc.id, ...firstDoc.data() };
+      } else {
         return NextResponse.json(
           { success: false, error: "Auction not found" },
           { status: 404 },
         );
       }
-      data = { id: docById.id, ...docById.data() };
     }
 
     // Public users can view active and ended auctions (readonly for ended)
