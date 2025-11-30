@@ -91,6 +91,7 @@ export {
   heroSlidesSieveConfig,
   payoutsSieveConfig,
   favoritesSieveConfig,
+  notificationsSieveConfig,
   getSieveConfig,
   getAllSieveConfigs,
 } from "./config";

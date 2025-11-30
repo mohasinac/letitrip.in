@@ -683,6 +683,42 @@ export const favoritesSieveConfig: SieveConfig = {
   defaultPageSize: 20,
 };
 
+/**
+ * Notifications sieve configuration
+ */
+export const notificationsSieveConfig: SieveConfig = {
+  resource: "notifications",
+  sortableFields: [
+    "createdAt",
+    "type",
+  ],
+  filterableFields: [
+    {
+      field: "type",
+      operators: ["==", "!="],
+      type: "string",
+    },
+    {
+      field: "read",
+      operators: ["=="],
+      type: "boolean",
+    },
+    {
+      field: "userId",
+      operators: ["=="],
+      type: "string",
+    },
+    {
+      field: "createdAt",
+      operators: [">", "<", ">=", "<="],
+      type: "date",
+    },
+  ],
+  defaultSort: { field: "createdAt", direction: "desc" },
+  maxPageSize: 100,
+  defaultPageSize: 20,
+};
+
 // ==================== CONFIG REGISTRY ====================
 
 /**
@@ -704,6 +740,7 @@ export function getSieveConfig(resource: string): SieveConfig | undefined {
     "hero-slides": heroSlidesSieveConfig,
     payouts: payoutsSieveConfig,
     favorites: favoritesSieveConfig,
+    notifications: notificationsSieveConfig,
   };
 
   return configs[resource];
@@ -728,5 +765,6 @@ export function getAllSieveConfigs(): SieveConfig[] {
     heroSlidesSieveConfig,
     payoutsSieveConfig,
     favoritesSieveConfig,
+    notificationsSieveConfig,
   ];
 }

@@ -2,7 +2,7 @@
  * Notifications API
  * Epic: E016 - Notifications System
  *
- * GET: List user notifications with pagination
+ * GET: List user notifications with Sieve pagination
  * POST: Create notification (admin only)
  * PATCH: Mark notifications as read
  */
@@ -11,6 +11,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import {
+  parseSieveQuery,
+  notificationsSieveConfig,
+  createPaginationMeta,
+} from "@/app/api/lib/sieve";
 
 export interface NotificationBE {
   id: string;
@@ -33,9 +38,38 @@ export interface NotificationBE {
   readAt?: string;
 }
 
+// Extended Sieve config with field mappings for notifications
+const notificationsConfig = {
+  ...notificationsSieveConfig,
+  fieldMappings: {
+    userId: "userId",
+    createdAt: "createdAt",
+    readAt: "readAt",
+  } as Record<string, string>,
+};
+
+/**
+ * Transform notification document to API response format
+ */
+function transformNotification(id: string, data: any): NotificationBE {
+  return {
+    id,
+    userId: data.userId,
+    type: data.type,
+    title: data.title,
+    message: data.message,
+    read: data.read,
+    link: data.link,
+    metadata: data.metadata,
+    createdAt: data.createdAt,
+    readAt: data.readAt,
+  };
+}
+
 /**
  * GET /api/notifications
- * List notifications for the authenticated user
+ * List notifications for the authenticated user with Sieve pagination
+ * Query Format: ?page=1&pageSize=20&sorts=-createdAt&filters=read==false
  */
 export async function GET(request: NextRequest) {
   try {
@@ -49,49 +83,89 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const pageSize = parseInt(searchParams.get("pageSize") || "20");
+
+    // Parse Sieve query
+    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
+      searchParams,
+      notificationsConfig
+    );
+
+    if (errors.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid query parameters",
+          details: errors,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Legacy query param support (backward compatibility)
     const unreadOnly = searchParams.get("unreadOnly") === "true";
 
     const db = getFirestoreAdmin();
-    let query = db
+    let query: FirebaseFirestore.Query = db
       .collection(COLLECTIONS.NOTIFICATIONS)
-      .where("userId", "==", auth.user.uid)
-      .orderBy("createdAt", "desc");
+      .where("userId", "==", auth.user.uid);
 
+    // Legacy filter support
     if (unreadOnly) {
       query = query.where("read", "==", false);
     }
 
+    // Apply Sieve filters
+    for (const filter of sieveQuery.filters) {
+      const dbField = notificationsConfig.fieldMappings[filter.field] || filter.field;
+      if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
+        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+      }
+    }
+
+    // Apply sorting
+    if (sieveQuery.sorts.length > 0) {
+      for (const sort of sieveQuery.sorts) {
+        const dbField = notificationsConfig.fieldMappings[sort.field] || sort.field;
+        query = query.orderBy(dbField, sort.direction);
+      }
+    } else {
+      query = query.orderBy("createdAt", "desc");
+    }
+
     // Get total count
-    const countSnapshot = await db
-      .collection(COLLECTIONS.NOTIFICATIONS)
-      .where("userId", "==", auth.user.uid)
-      .count()
-      .get();
-    const total = countSnapshot.data().count || 0;
+    const countSnapshot = await query.count().get();
+    const totalCount = countSnapshot.data().count;
 
-    // Get paginated notifications
-    const offset = (page - 1) * pageSize;
-    const snapshot = await query.offset(offset).limit(pageSize).get();
+    // Apply pagination
+    const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0) {
+      const skipSnapshot = await query.limit(offset).get();
+      if (skipSnapshot.docs.length > 0) {
+        const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+        query = query.startAfter(lastDoc);
+      }
+    }
+    query = query.limit(sieveQuery.pageSize);
 
-    const notifications: NotificationBE[] = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as NotificationBE[];
+    // Execute query
+    const snapshot = await query.get();
+    const notifications = snapshot.docs.map((doc) => 
+      transformNotification(doc.id, doc.data())
+    );
+
+    // Build response with Sieve pagination meta
+    const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
       success: true,
       data: {
         notifications,
-        pagination: {
-          page,
-          pageSize,
-          total,
-          totalPages: Math.ceil(total / pageSize),
-          hasNext: offset + notifications.length < total,
-          hasPrev: page > 1,
-        },
+        pagination,
+      },
+      meta: {
+        appliedFilters: sieveQuery.filters,
+        appliedSorts: sieveQuery.sorts,
+        warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
   } catch (error) {
