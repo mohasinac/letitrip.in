@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { Loader2, Search, Filter, Grid, List } from "lucide-react";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Loader2, Filter, Grid, List } from "lucide-react";
 import { ShopCard } from "@/components/cards/ShopCard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { SHOP_FILTERS } from "@/constants/filters";
@@ -12,14 +12,12 @@ import type { ShopCardFE } from "@/types/frontend/shop.types";
 
 function ShopsContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const isMobile = useIsMobile();
 
   const [shops, setShops] = useState<ShopCardFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "list">("grid");
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || ""
-  );
   const [sortBy, setSortBy] = useState<string>(
     searchParams.get("sortBy") || "rating"
   );
@@ -38,11 +36,12 @@ function ShopsContent() {
   // Unified filters
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
 
+  // Load on sort/page change
   useEffect(() => {
     loadShops();
-  }, [filterValues, sortBy, sortOrder, searchQuery, currentPage]);
+  }, [sortBy, sortOrder, currentPage]);
 
-  const loadShops = async () => {
+  const loadShops = useCallback(async () => {
     try {
       setLoading(true);
       const startAfter = cursors[currentPage - 1];
@@ -52,7 +51,6 @@ function ShopsContent() {
         limit,
         sortBy,
         sortOrder,
-        search: searchQuery || undefined,
         ...filterValues,
       });
 
@@ -80,16 +78,16 @@ function ShopsContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [cursors, currentPage, limit, sortBy, sortOrder, filterValues]);
 
-  const handleReset = () => {
-    setSearchQuery("");
+  const handleReset = useCallback(() => {
     setFilterValues({});
     setSortBy("rating");
     setSortOrder("desc");
     setCurrentPage(1);
     setCursors([null]);
-  };
+    setShowFilters(false);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -104,35 +102,23 @@ function ShopsContent() {
           </p>
         </div>
 
-        {/* Search & Controls */}
+        {/* Controls - No Search (use main search bar) */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1 flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
-                <input
-                  type="search"
-                  placeholder="Search shops..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && loadShops()}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <button
-                onClick={loadShops}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Search
-              </button>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4">
+            {/* Filter Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="px-4 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+            >
+              <Filter className="w-4 h-4" />
+              <span>{showFilters ? "Hide" : "Show"} Filters</span>
+            </button>
 
             {/* Sort */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
             >
               <option value="rating">Highest Rated</option>
               <option value="products">Most Products</option>
@@ -143,7 +129,7 @@ function ShopsContent() {
             <div className="hidden md:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
               <button
                 onClick={() => setView("grid")}
-                className={`px-3 py-2 ${
+                className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                   view === "grid"
                     ? "bg-blue-600 text-white"
                     : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300"
@@ -153,7 +139,7 @@ function ShopsContent() {
               </button>
               <button
                 onClick={() => setView("list")}
-                className={`px-3 py-2 ${
+                className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                   view === "list"
                     ? "bg-blue-600 text-white"
                     : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300"
@@ -162,15 +148,6 @@ function ShopsContent() {
                 <List className="w-5 h-5" />
               </button>
             </div>
-
-            {/* Filter Toggle (Mobile) */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg flex items-center gap-2 text-gray-700 dark:text-gray-300"
-            >
-              <Filter className="w-5 h-5" />
-              Filters
-            </button>
           </div>
         </div>
 
@@ -184,10 +161,15 @@ function ShopsContent() {
               onChange={(key, value) => {
                 setFilterValues((prev) => ({ ...prev, [key]: value }));
               }}
-              onApply={() => {}}
+              onApply={(pendingValues) => {
+                if (pendingValues) setFilterValues(pendingValues);
+                setCurrentPage(1);
+                setCursors([null]);
+                setTimeout(() => loadShops(), 0);
+              }}
               onReset={handleReset}
-              isOpen={true}
-              onClose={() => {}}
+              isOpen={showFilters}
+              onClose={() => setShowFilters(false)}
               searchable={true}
               mobile={false}
               resultCount={totalShops}
@@ -313,8 +295,12 @@ function ShopsContent() {
             onChange={(key, value) => {
               setFilterValues((prev) => ({ ...prev, [key]: value }));
             }}
-            onApply={() => {
+            onApply={(pendingValues) => {
+              if (pendingValues) setFilterValues(pendingValues);
+              setCurrentPage(1);
+              setCursors([null]);
               setShowFilters(false);
+              setTimeout(() => loadShops(), 0);
             }}
             onReset={handleReset}
             isOpen={showFilters}

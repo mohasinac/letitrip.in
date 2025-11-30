@@ -40,7 +40,7 @@ export function SellerProducts({
 
       // Filter out current product and prioritize same category
       const filtered = (response.data || []).filter(
-        (p: ProductCardFE) => p.id !== productId,
+        (p: ProductCardFE) => p.id !== productId
       );
 
       // Sort: same category first, then others
@@ -82,7 +82,7 @@ export function SellerProducts({
 
     setCanScrollLeft(container.scrollLeft > 0);
     setCanScrollRight(
-      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10,
+      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10
     );
   };
 

@@ -29,7 +29,7 @@ export default function AdminReturnsPage() {
         ...filterValues,
         page: currentPage,
         limit: 20,
-      });
+      } as any);
       setReturns(response.data || []);
       // Calculate total pages from count
       setTotalPages(Math.ceil((response.count || 0) / 20));
@@ -188,10 +188,10 @@ export default function AdminReturnsPage() {
                               returnItem.status === "approved"
                                 ? "bg-green-100 text-green-800"
                                 : returnItem.status === "rejected"
-                                  ? "bg-red-100 text-red-800"
-                                  : returnItem.status === "completed"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : "bg-yellow-100 text-yellow-800"
+                                ? "bg-red-100 text-red-800"
+                                : returnItem.status === "completed"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-yellow-100 text-yellow-800"
                             }`}
                           >
                             {returnItem.status}

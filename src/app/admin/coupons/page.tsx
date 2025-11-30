@@ -26,8 +26,9 @@ export default function AdminCouponsPage() {
   const [coupons, setCoupons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCoupons, setSelectedCoupons] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -39,13 +40,14 @@ export default function AdminCouponsPage() {
 
   useEffect(() => {
     loadCoupons();
-  }, [filterValues, currentPage]);
+  }, [filterValues, currentPage, searchQuery]);
 
   const loadCoupons = async () => {
     try {
       setLoading(true);
       const response = await couponsService.list({
         ...filterValues,
+        search: searchQuery || undefined,
         page: currentPage,
         limit: 20,
       });
@@ -73,25 +75,25 @@ export default function AdminCouponsPage() {
         case "activate":
           await Promise.all(
             couponIds.map((id) =>
-              couponsService.update(id, { is_active: true } as any),
-            ),
+              couponsService.update(id, { is_active: true } as any)
+            )
           );
           toast.success(
             `${couponIds.length} coupon${
               couponIds.length > 1 ? "s" : ""
-            } activated successfully`,
+            } activated successfully`
           );
           break;
         case "deactivate":
           await Promise.all(
             couponIds.map((id) =>
-              couponsService.update(id, { is_active: false } as any),
-            ),
+              couponsService.update(id, { is_active: false } as any)
+            )
           );
           toast.success(
             `${couponIds.length} coupon${
               couponIds.length > 1 ? "s" : ""
-            } deactivated successfully`,
+            } deactivated successfully`
           );
           break;
         case "delete":
@@ -99,7 +101,7 @@ export default function AdminCouponsPage() {
             !confirm(
               `Delete ${couponIds.length} coupon${
                 couponIds.length > 1 ? "s" : ""
-              }?`,
+              }?`
             )
           )
             return;
@@ -107,7 +109,7 @@ export default function AdminCouponsPage() {
           toast.success(
             `${couponIds.length} coupon${
               couponIds.length > 1 ? "s" : ""
-            } deleted successfully`,
+            } deleted successfully`
           );
           break;
       }
@@ -174,6 +176,7 @@ export default function AdminCouponsPage() {
             onApply={() => setCurrentPage(1)}
             onReset={() => {
               setFilterValues({});
+              setSearchQuery("");
               setCurrentPage(1);
             }}
             isOpen={false}
@@ -181,6 +184,13 @@ export default function AdminCouponsPage() {
             searchable={true}
             resultCount={totalCoupons}
             isLoading={loading}
+            showInlineSearch={true}
+            onInlineSearchChange={(value: string) => {
+              setSearchQuery(value);
+              setCurrentPage(1);
+            }}
+            inlineSearchValue={searchQuery}
+            inlineSearchPlaceholder="Search coupons..."
           />
 
           {/* Main Content */}
@@ -329,7 +339,7 @@ export default function AdminCouponsPage() {
                               try {
                                 await couponsService.update(
                                   coupon.id,
-                                  values as any,
+                                  values as any
                                 );
                                 setEditingId(null);
                                 loadCoupons();

@@ -63,9 +63,16 @@ export function ProductDescription({
         {activeTab === "specifications" && specifications && (
           <div className="space-y-3">
             {Object.entries(specifications).map(([key, value]) => (
-              <div key={key} className="flex py-3 border-b dark:border-gray-700 last:border-b-0">
-                <span className="w-1/3 text-gray-600 dark:text-gray-400 font-medium">{key}</span>
-                <span className="w-2/3 text-gray-900 dark:text-white">{value}</span>
+              <div
+                key={key}
+                className="flex py-3 border-b dark:border-gray-700 last:border-b-0"
+              >
+                <span className="w-1/3 text-gray-600 dark:text-gray-400 font-medium">
+                  {key}
+                </span>
+                <span className="w-2/3 text-gray-900 dark:text-white">
+                  {value}
+                </span>
               </div>
             ))}
           </div>

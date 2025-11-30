@@ -77,6 +77,12 @@ class ShopsService {
     return toFEShop(response.data);
   }
 
+  // Get shop by ID
+  async getById(id: string): Promise<ShopFE> {
+    const response: any = await apiService.get(SHOP_ROUTES.BY_ID(id));
+    return toFEShop(response.data);
+  }
+
   // Create shop (seller/admin)
   async create(formData: ShopFormFE): Promise<ShopFE> {
     const request = toBECreateShopRequest(formData);

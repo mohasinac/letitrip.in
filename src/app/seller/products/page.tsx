@@ -155,15 +155,23 @@ export default function ProductsPage() {
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Products
             </h1>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Manage your product listings
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <ViewToggle view={view} onViewChange={setView} />
+            {/* Filter Toggle Button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 min-h-[48px] text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 touch-manipulation"
+            >
+              <Filter className="h-4 w-4" />
+              {showFilters ? "Hide" : "Show"} Filters
+            </button>
             <Link
               href="/seller/products/create"
               className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-3 min-h-[48px] text-sm font-medium text-white hover:bg-blue-700 active:bg-blue-800 touch-manipulation"
@@ -172,29 +180,6 @@ export default function ProductsPage() {
               Add Product
             </Link>
           </div>
-        </div>
-
-        {/* Search Bar - Mobile Optimized */}
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-            <input
-              type="search"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 py-3 min-h-[48px] pl-10 pr-4 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 touch-manipulation"
-            />
-          </div>
-          {isMobile && (
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 min-h-[48px] text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 touch-manipulation"
-            >
-              <Filter className="h-4 w-4" />
-              Filters
-            </button>
-          )}
         </div>
 
         {/* Main Content with Sidebar Layout */}
@@ -210,16 +195,23 @@ export default function ProductsPage() {
                   [key]: value,
                 }));
               }}
-              onApply={() => {}}
+              onApply={(pendingValues) => {
+                if (pendingValues) setFilterValues(pendingValues);
+              }}
               onReset={() => {
                 setFilterValues({});
+                setSearchQuery("");
               }}
-              isOpen={false}
-              onClose={() => {}}
+              isOpen={showFilters}
+              onClose={() => setShowFilters(false)}
               searchable={true}
               mobile={false}
               resultCount={totalProducts}
               isLoading={loading}
+              showInlineSearch={true}
+              inlineSearchValue={searchQuery}
+              onInlineSearchChange={setSearchQuery}
+              inlineSearchPlaceholder="Search products..."
             />
           )}
 
@@ -667,11 +659,13 @@ export default function ProductsPage() {
                 [key]: value,
               }));
             }}
-            onApply={() => {
+            onApply={(pendingValues) => {
+              if (pendingValues) setFilterValues(pendingValues);
               setShowFilters(false);
             }}
             onReset={() => {
               setFilterValues({});
+              setSearchQuery("");
             }}
             isOpen={showFilters}
             onClose={() => setShowFilters(false)}
@@ -679,6 +673,10 @@ export default function ProductsPage() {
             mobile={true}
             resultCount={totalProducts}
             isLoading={loading}
+            showInlineSearch={true}
+            inlineSearchValue={searchQuery}
+            onInlineSearchChange={setSearchQuery}
+            inlineSearchPlaceholder="Search products..."
           />
         )}
       </div>

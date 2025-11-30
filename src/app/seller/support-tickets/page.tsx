@@ -30,7 +30,7 @@ export default function SellerSupportTicketsPage() {
 
 function SellerSupportTicketsContent() {
   const isMobile = useIsMobile();
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(!isMobile);
   const [tickets, setTickets] = useState<SupportTicketFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -75,7 +75,7 @@ function SellerSupportTicketsContent() {
           supportService.getTicketCount({ status: TicketStatus.OPEN }),
           supportService.getTicketCount({ status: TicketStatus.IN_PROGRESS }),
           supportService.getTicketCount({ status: TicketStatus.RESOLVED }),
-        ],
+        ]
       );
 
       setStats({
@@ -129,7 +129,7 @@ function SellerSupportTicketsContent() {
     const now = new Date();
     const ticketDate = new Date(date);
     const diffInMinutes = Math.floor(
-      (now.getTime() - ticketDate.getTime()) / 60000,
+      (now.getTime() - ticketDate.getTime()) / 60000
     );
 
     if (diffInMinutes < 1) return "Just now";
@@ -217,19 +217,9 @@ function SellerSupportTicketsContent() {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            type="search"
-            placeholder="Search tickets..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-        {isMobile && (
+      {/* Mobile Filter Toggle */}
+      {isMobile && (
+        <div className="flex justify-end">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -237,8 +227,8 @@ function SellerSupportTicketsContent() {
             <Filter className="h-4 w-4" />
             Filters
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Main Content with Sidebar Layout */}
       <div className="flex gap-6">
@@ -256,13 +246,18 @@ function SellerSupportTicketsContent() {
             onApply={() => {}}
             onReset={() => {
               setFilterValues({});
+              setSearchQuery("");
             }}
-            isOpen={false}
-            onClose={() => {}}
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
             searchable={true}
             mobile={false}
             resultCount={totalTickets}
             isLoading={loading}
+            showInlineSearch={true}
+            inlineSearchValue={searchQuery}
+            onInlineSearchChange={setSearchQuery}
+            inlineSearchPlaceholder="Search tickets..."
           />
         )}
 
@@ -352,7 +347,7 @@ function SellerSupportTicketsContent() {
                       <StatusBadge status={ticket.status} />
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getPriorityColor(
-                          ticket.priority,
+                          ticket.priority
                         )}`}
                       >
                         {ticket.priority}
@@ -444,6 +439,7 @@ function SellerSupportTicketsContent() {
           }}
           onReset={() => {
             setFilterValues({});
+            setSearchQuery("");
           }}
           isOpen={showFilters}
           onClose={() => setShowFilters(false)}
@@ -451,6 +447,10 @@ function SellerSupportTicketsContent() {
           mobile={true}
           resultCount={totalTickets}
           isLoading={loading}
+          showInlineSearch={true}
+          inlineSearchValue={searchQuery}
+          onInlineSearchChange={setSearchQuery}
+          inlineSearchPlaceholder="Search tickets..."
         />
       )}
     </div>

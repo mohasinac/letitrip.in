@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
@@ -10,16 +10,27 @@ import { ordersService } from "@/services/orders.service";
 import type { OrderCardFE, OrderFiltersFE } from "@/types/frontend/order.types";
 import { OrderStatus } from "@/types/shared/common.types";
 import { logComponentError } from "@/lib/error-logger";
-import { Eye, Package, Truck, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Eye,
+  Package,
+  Truck,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+} from "lucide-react";
+import { useIsMobile } from "@/hooks/useMobile";
 
 export default function SellerOrdersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isMobile = useIsMobile();
 
   // Cursor pagination state
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [showFilters, setShowFilters] = useState(!isMobile);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [orders, setOrders] = useState<OrderCardFE[]>([]);
   const [loading, setLoading] = useState(true);
@@ -137,7 +148,20 @@ export default function SellerOrdersPage() {
   return (
     <AuthGuard requireAuth allowedRoles={["seller"]}>
       <ErrorBoundary>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          {/* Mobile Filter Toggle */}
+          {isMobile && (
+            <div className="p-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="w-full px-4 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+              >
+                <Filter className="w-4 h-4" />
+                <span>{showFilters ? "Hide" : "Show"} Filters</span>
+              </button>
+            </div>
+          )}
+
           <div className="flex">
             <UnifiedFilterSidebar
               sections={ORDER_FILTERS}
@@ -146,6 +170,7 @@ export default function SellerOrdersPage() {
               onApply={() => {
                 setCurrentPage(1);
                 setCursors([null]);
+                if (isMobile) setShowFilters(false);
               }}
               onReset={() => {
                 setFilterValues({
@@ -153,14 +178,20 @@ export default function SellerOrdersPage() {
                   sortBy: "createdAt",
                   sortOrder: "desc",
                 });
+                setSearchQuery("");
                 setCurrentPage(1);
                 setCursors([null]);
               }}
-              isOpen={false}
-              onClose={() => {}}
+              isOpen={showFilters}
+              onClose={() => setShowFilters(false)}
               searchable={true}
+              mobile={isMobile}
               resultCount={totalOrders}
               isLoading={loading}
+              showInlineSearch={true}
+              inlineSearchValue={searchQuery}
+              onInlineSearchChange={setSearchQuery}
+              inlineSearchPlaceholder="Search orders..."
             />
 
             <div className="flex-1 p-4 sm:p-6">

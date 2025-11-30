@@ -131,8 +131,8 @@ export default function ShopPage({ params }: ShopPageProps) {
           productFilters.stock === "in_stock"
             ? true
             : productFilters.stock === "out_of_stock"
-              ? false
-              : undefined,
+            ? false
+            : undefined,
         featured: productFilters.featured,
         rating: productFilters.rating,
       });
@@ -145,7 +145,7 @@ export default function ShopPage({ params }: ShopPageProps) {
         ...new Set(
           productsData
             .map((p) => p.brand)
-            .filter((brand): brand is string => Boolean(brand)),
+            .filter((brand): brand is string => Boolean(brand))
         ),
       ];
       setAvailableBrands(brands);
@@ -233,7 +233,7 @@ export default function ShopPage({ params }: ShopPageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    },
+    }
   ) => {
     try {
       if (!productDetails) {
@@ -344,32 +344,11 @@ export default function ShopPage({ params }: ShopPageProps) {
 
             {/* Products Section */}
             <div className="flex-1 bg-white rounded-lg shadow-sm p-6">
-              {/* Search & Controls */}
+              {/* Sort & Controls */}
               <div className="mb-6">
                 <div className="flex flex-col lg:flex-row gap-4 mb-4">
-                  {/* Search */}
-                  <div className="flex-1 flex gap-2">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="search"
-                        placeholder="Search products in this shop..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                    <button
-                      onClick={handleSearch}
-                      className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Search
-                    </button>
-                  </div>
-
                   {/* Sort & View */}
-                  <div className="flex gap-2">
+                  <div className="flex-1 flex gap-2">
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
@@ -565,30 +544,9 @@ export default function ShopPage({ params }: ShopPageProps) {
             {/* Auctions Section */}
             <div className="flex-1">
               <div className="bg-white rounded-lg shadow-sm p-6">
-                {/* Search & Controls */}
+                {/* Controls */}
                 <div className="mb-6">
                   <div className="flex flex-col lg:flex-row gap-4 mb-4">
-                    {/* Search */}
-                    <div className="flex-1 flex gap-2">
-                      <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                          type="search"
-                          placeholder="Search auctions in this shop..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
-                      </div>
-                      <button
-                        onClick={handleSearch}
-                        className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                      >
-                        Search
-                      </button>
-                    </div>
-
                     {/* Filter Toggle (Mobile) */}
                     <button
                       onClick={() => setShowAuctionFilters(!showAuctionFilters)}
@@ -597,6 +555,8 @@ export default function ShopPage({ params }: ShopPageProps) {
                       <FilterIcon className="h-5 w-5" />
                       Filters
                     </button>
+
+                    <div className="flex-1"></div>
 
                     {/* View Toggle */}
                     <div className="hidden md:flex border border-gray-300 rounded-lg overflow-hidden">
@@ -672,10 +632,10 @@ export default function ShopPage({ params }: ShopPageProps) {
                                     auction.status === "active"
                                       ? "bg-green-500 text-white"
                                       : auction.status === "scheduled"
-                                        ? "bg-blue-500 text-white"
-                                        : auction.status === "completed"
-                                          ? "bg-gray-500 text-white"
-                                          : "bg-yellow-500 text-white"
+                                      ? "bg-blue-500 text-white"
+                                      : auction.status === "completed"
+                                      ? "bg-gray-500 text-white"
+                                      : "bg-yellow-500 text-white"
                                   }`}
                                 >
                                   {auction.status.toUpperCase()}
@@ -740,10 +700,10 @@ export default function ShopPage({ params }: ShopPageProps) {
                                       auction.status === "active"
                                         ? "bg-green-500 text-white"
                                         : auction.status === "scheduled"
-                                          ? "bg-blue-500 text-white"
-                                          : auction.status === "completed"
-                                            ? "bg-gray-500 text-white"
-                                            : "bg-yellow-500 text-white"
+                                        ? "bg-blue-500 text-white"
+                                        : auction.status === "completed"
+                                        ? "bg-gray-500 text-white"
+                                        : "bg-yellow-500 text-white"
                                     }`}
                                   >
                                     {auction.status.toUpperCase()}

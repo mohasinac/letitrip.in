@@ -38,7 +38,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<"recent" | "helpful" | "rating">(
-    "recent",
+    "recent"
   );
   const [filterRating, setFilterRating] = useState<number | null>(null);
 
@@ -56,8 +56,8 @@ export default function ReviewList({ productId }: ReviewListProps) {
           sortBy === "helpful"
             ? "helpfulCount"
             : sortBy === "rating"
-              ? "rating"
-              : "createdAt",
+            ? "rating"
+            : "createdAt",
         sortOrder: "desc",
         limit: 20,
       });
@@ -75,7 +75,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
               acc[item.rating] = item.count;
               return acc;
             },
-            {},
+            {}
           ),
         });
       }
@@ -95,8 +95,8 @@ export default function ReviewList({ productId }: ReviewListProps) {
       // Update local state
       setReviews(
         reviews.map((r) =>
-          r.id === reviewId ? { ...r, helpful_count: result.helpfulCount } : r,
-        ),
+          r.id === reviewId ? { ...r, helpful_count: result.helpfulCount } : r
+        )
       );
     } catch (error: any) {
       console.error("Failed to mark as helpful:", error);
@@ -143,7 +143,9 @@ export default function ReviewList({ productId }: ReviewListProps) {
                 filterRating === rating ? "bg-blue-50 dark:bg-blue-900/30" : ""
               }`}
             >
-              <span className="text-sm font-medium w-12 text-gray-900 dark:text-white">{rating} star</span>
+              <span className="text-sm font-medium w-12 text-gray-900 dark:text-white">
+                {rating} star
+              </span>
               <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-yellow-400 transition-all duration-300"
@@ -202,7 +204,9 @@ export default function ReviewList({ productId }: ReviewListProps) {
       <div className="flex flex-wrap gap-4 items-center justify-between">
         {/* Sort */}
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sort by:</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Sort by:
+          </label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
@@ -239,7 +243,10 @@ export default function ReviewList({ productId }: ReviewListProps) {
       ) : (
         <div className="space-y-6">
           {reviews.map((review) => (
-            <div key={review.id} className="border-b dark:border-gray-700 pb-6 last:border-b-0">
+            <div
+              key={review.id}
+              className="border-b dark:border-gray-700 pb-6 last:border-b-0"
+            >
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
                 <div>

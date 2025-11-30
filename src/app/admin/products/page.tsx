@@ -291,29 +291,18 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Search & Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            type="search"
-            placeholder="Search by name or SKU..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-          />
+      {/* Mobile Filter Toggle */}
+      {isMobile && (
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+          </button>
         </div>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          <Filter className="h-4 w-4" />
-          Filters {showFilters ? "▲" : "▼"}
-        </button>
-      </div>
+      )}
 
       {/* Bulk Action Bar */}
       {selectedIds.length > 0 && (
@@ -345,6 +334,7 @@ export default function AdminProductsPage() {
             onApply={() => setCurrentPage(1)}
             onReset={() => {
               setFilterValues({});
+              setSearchQuery("");
               setCurrentPage(1);
             }}
             isOpen={false}
@@ -353,6 +343,13 @@ export default function AdminProductsPage() {
             mobile={false}
             resultCount={totalProducts}
             isLoading={loading}
+            showInlineSearch={true}
+            onInlineSearchChange={(value: string) => {
+              setSearchQuery(value);
+              setCurrentPage(1);
+            }}
+            inlineSearchValue={searchQuery}
+            inlineSearchPlaceholder="Search by name or SKU..."
           />
         )}
 
@@ -730,6 +727,7 @@ export default function AdminProductsPage() {
             }}
             onReset={() => {
               setFilterValues({});
+              setSearchQuery("");
               setCurrentPage(1);
             }}
             isOpen={showFilters}
@@ -738,6 +736,13 @@ export default function AdminProductsPage() {
             mobile={true}
             resultCount={totalProducts}
             isLoading={loading}
+            showInlineSearch={true}
+            onInlineSearchChange={(value: string) => {
+              setSearchQuery(value);
+              setCurrentPage(1);
+            }}
+            inlineSearchValue={searchQuery}
+            inlineSearchPlaceholder="Search by name or SKU..."
           />
         )}
       </div>
