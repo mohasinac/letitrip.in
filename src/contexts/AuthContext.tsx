@@ -10,11 +10,23 @@ import React, {
 import { authService, AuthResponse } from "@/services/auth.service";
 import { UserFE } from "@/types/frontend/user.types";
 
+interface GoogleAuthResponse extends AuthResponse {
+  isNewUser: boolean;
+}
+
 interface AuthContextType {
   user: UserFE | null;
   loading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<AuthResponse>;
+  loginWithGoogle: (
+    idToken: string,
+    userData?: {
+      displayName?: string;
+      email?: string;
+      photoURL?: string;
+    }
+  ) => Promise<GoogleAuthResponse>;
   register: (data: {
     email: string;
     password: string;
@@ -29,7 +41,7 @@ interface AuthContextType {
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined,
+  undefined
 );
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -81,6 +93,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Google Login function
+  const loginWithGoogle = useCallback(
+    async (
+      idToken: string,
+      userData?: {
+        displayName?: string;
+        email?: string;
+        photoURL?: string;
+      }
+    ) => {
+      try {
+        const response = await authService.loginWithGoogle({
+          idToken,
+          userData,
+        });
+        // Immediately set user state with the response
+        setUser(response.user);
+        setLoading(false);
+        return response;
+      } catch (error) {
+        setUser(null);
+        setLoading(false);
+        throw error;
+      }
+    },
+    []
+  );
+
   // Register function
   const register = useCallback(
     async (data: {
@@ -101,7 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    [],
+    []
   );
 
   // Logout function
@@ -137,6 +177,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     isAuthenticated,
     login,
+    loginWithGoogle,
     register,
     logout,
     refreshUser,

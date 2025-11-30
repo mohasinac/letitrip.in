@@ -1999,3 +1999,747 @@ class ProductsService {
 - [ ] Update `/admin/*` pages
 - [ ] Update `/seller/*` pages
 - [ ] Update `/user/*` pages
+
+---
+
+## 11. Firebase Functions & Background Jobs Opportunities
+
+### Current Firebase Functions
+
+| Function                   | Trigger        | Schedule       | Purpose                                      |
+| -------------------------- | -------------- | -------------- | -------------------------------------------- |
+| `processAuctions`          | Pub/Sub Cron   | Every 1 minute | Close ended auctions, notify winners/sellers |
+| `triggerAuctionProcessing` | HTTPS Callable | Manual (admin) | Manual trigger for auction processing        |
+
+### Jobs Currently Done via API Routes (Should Move to Firebase Functions)
+
+#### High Priority - Status Change Triggers
+
+| Current Implementation                    | Proposed Firebase Function | Trigger Type         | Benefits                                      |
+| ----------------------------------------- | -------------------------- | -------------------- | --------------------------------------------- |
+| Order status updates → notifications      | `onOrderStatusChange`      | Firestore `onUpdate` | Real-time notifications, decouple from API    |
+| Payment status updates → order status     | `onPaymentStatusChange`    | Firestore `onUpdate` | Auto-confirm orders when payment succeeds     |
+| Return status updates → refund processing | `onReturnStatusChange`     | Firestore `onUpdate` | Auto-process refunds, update inventory        |
+| Ticket status updates → notifications     | `onTicketStatusChange`     | Firestore `onUpdate` | Notify users of ticket updates                |
+| Shop verification → seller notifications  | `onShopVerificationChange` | Firestore `onUpdate` | Notify sellers when shop is verified/rejected |
+| Product publish → category counts update  | `onProductStatusChange`    | Firestore `onUpdate` | Keep category product counts accurate         |
+| Auction status → category auction counts  | `onAuctionStatusChange`    | Firestore `onUpdate` | Keep category auction counts accurate         |
+
+#### Medium Priority - Scheduled Jobs
+
+| Current Implementation                         | Proposed Firebase Function   | Schedule          | Benefits                                    |
+| ---------------------------------------------- | ---------------------------- | ----------------- | ------------------------------------------- |
+| Rebuild category counts (manual admin trigger) | `rebuildCategoryCounts`      | Every 6 hours     | Ensure data consistency automatically       |
+| Session cleanup (none currently)               | `cleanupExpiredSessions`     | Every hour        | Remove expired sessions, save storage costs |
+| Cart cleanup (none currently)                  | `cleanupAbandonedCarts`      | Every 6 hours     | Clean up old abandoned carts                |
+| Coupon expiry check (client-side only)         | `expireCoupons`              | Every hour        | Mark expired coupons as inactive            |
+| Analytics aggregation (none currently)         | `aggregateAnalytics`         | Daily at midnight | Pre-compute analytics for dashboard         |
+| Review moderation queue (manual)               | `processReviewQueue`         | Every 30 minutes  | Auto-moderate reviews, notify admins        |
+| Low stock alerts (none currently)              | `checkLowStockAlerts`        | Every 2 hours     | Notify sellers of low stock products        |
+| Auction reminders (none currently)             | `sendAuctionReminders`       | Every 15 minutes  | Notify watchers when auction ending soon    |
+| Winner payment reminder (none currently)       | `sendWinnerPaymentReminders` | Every 2 hours     | Remind auction winners to pay               |
+
+#### Low Priority - Event-Driven Jobs
+
+| Current Implementation                 | Proposed Firebase Function | Trigger Type         | Benefits                       |
+| -------------------------------------- | -------------------------- | -------------------- | ------------------------------ |
+| New bid → outbid notifications         | `onNewBid`                 | Firestore `onCreate` | Real-time outbid notifications |
+| New review → shop rating recalculation | `onNewReview`              | Firestore `onCreate` | Keep shop ratings updated      |
+| New order → inventory update           | `onNewOrder`               | Firestore `onCreate` | Decrement stock counts         |
+| User registration → welcome email      | `onUserCreate`             | Firestore `onCreate` | Automated welcome flow         |
+| Shop creation → admin notification     | `onShopCreate`             | Firestore `onCreate` | Alert admins for verification  |
+| Media upload → thumbnail generation    | `onMediaUpload`            | Storage `onFinalize` | Auto-generate thumbnails       |
+| Order delivery → review request        | `onOrderDelivered`         | Firestore `onUpdate` | Request reviews after delivery |
+
+### Proposed Firebase Functions Implementation
+
+```typescript
+// functions/src/index.ts additions
+
+// Status Change Triggers
+export const onOrderStatusChange = functions
+  .region("asia-south1")
+  .firestore.document("orders/{orderId}")
+  .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+
+    if (before.status !== after.status) {
+      await notificationService.notifyOrderStatusChange({
+        orderId: context.params.orderId,
+        oldStatus: before.status,
+        newStatus: after.status,
+        userId: after.user_id,
+      });
+    }
+  });
+
+export const onPaymentStatusChange = functions
+  .region("asia-south1")
+  .firestore.document("payments/{paymentId}")
+  .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+
+    if (before.status !== after.status && after.status === "completed") {
+      // Auto-confirm the order
+      await db.collection("orders").doc(after.order_id).update({
+        status: "confirmed",
+        payment_status: "paid",
+        updated_at: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+  });
+
+// Scheduled Jobs
+export const cleanupExpiredSessions = functions
+  .region("asia-south1")
+  .pubsub.schedule("every 1 hours")
+  .timeZone("Asia/Kolkata")
+  .onRun(async () => {
+    const now = admin.firestore.Timestamp.now();
+    const snapshot = await db
+      .collection("sessions")
+      .where("expiresAt", "<", now)
+      .limit(500)
+      .get();
+
+    const batch = db.batch();
+    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
+
+    console.log(`Cleaned up ${snapshot.size} expired sessions`);
+  });
+
+export const rebuildCategoryCounts = functions
+  .region("asia-south1")
+  .pubsub.schedule("every 6 hours")
+  .timeZone("Asia/Kolkata")
+  .onRun(async () => {
+    // Rebuild all category counts
+    const categories = await db.collection("categories").get();
+    for (const doc of categories.docs) {
+      // Count products, auctions, etc. for each category
+    }
+  });
+
+export const sendAuctionReminders = functions
+  .region("asia-south1")
+  .pubsub.schedule("every 15 minutes")
+  .timeZone("Asia/Kolkata")
+  .onRun(async () => {
+    const soon = admin.firestore.Timestamp.fromDate(
+      new Date(Date.now() + 60 * 60 * 1000) // 1 hour from now
+    );
+    const now = admin.firestore.Timestamp.now();
+
+    const snapshot = await db
+      .collection("auctions")
+      .where("status", "==", "active")
+      .where("end_time", ">", now)
+      .where("end_time", "<=", soon)
+      .where("reminder_sent", "==", false)
+      .limit(50)
+      .get();
+
+    for (const doc of snapshot.docs) {
+      // Send reminders to watchers
+      await notificationService.sendAuctionEndingReminder(doc.id, doc.data());
+      await doc.ref.update({ reminder_sent: true });
+    }
+  });
+```
+
+---
+
+## 12. Infrastructure Configuration Recommendations
+
+### Firestore Indexes (Missing/Needed)
+
+| Collection     | Fields Needed                                   | Purpose                              | Status    |
+| -------------- | ----------------------------------------------- | ------------------------------------ | --------- |
+| `auctions`     | `status`, `reminder_sent`, `end_time`           | For auction reminder cron job        | ⚠️ NEEDED |
+| `sessions`     | `userId`, `expiresAt`                           | For session cleanup (already exists) | ✅ EXISTS |
+| `orders`       | `status`, `payment_due_at`                      | For payment reminder jobs            | ⚠️ NEEDED |
+| `coupons`      | `status`, `end_date`, `is_active`               | For coupon expiry cron               | ⚠️ NEEDED |
+| `products`     | `shop_id`, `stock_count`, `low_stock_threshold` | For low stock alerts                 | ⚠️ NEEDED |
+| `won_auctions` | `order_created`, `payment_due_at`, `created_at` | For winner payment reminders         | ⚠️ NEEDED |
+| `categories`   | `parent_ids` (array-contains), `level`          | For hierarchy queries                | ✅ EXISTS |
+
+### Firestore Rules Updates Needed
+
+```javascript
+// Add to firestore.rules
+
+// Won Auctions collection (for Firebase functions)
+match /won_auctions/{docId} {
+  allow read: if isOwner(resource.data.user_id) ||
+              ownsShop(resource.data.shop_id) ||
+              isAdmin();
+  allow write: if false; // Only server-side
+}
+
+// Notification preferences (for opt-out)
+match /notification_preferences/{userId} {
+  allow read, write: if isOwner(userId);
+}
+```
+
+### Storage Rules Updates Needed
+
+```javascript
+// Add to storage.rules
+
+// Auction media (separate from products for better organization)
+match /auction-images/{auctionId}/{fileName} {
+  allow read: if true;
+  allow write: if isSeller() && isImage(request.resource.contentType);
+}
+
+match /auction-videos/{auctionId}/{fileName} {
+  allow read: if true;
+  allow write: if isSeller() && isVideo(request.resource.contentType)
+               && request.resource.size < 100 * 1024 * 1024;
+}
+
+// User avatars
+match /user-avatars/{userId}/{fileName} {
+  allow read: if true;
+  allow write: if isAuthenticated() && request.auth.uid == userId
+               && isImage(request.resource.contentType)
+               && request.resource.size < 5 * 1024 * 1024;
+}
+
+// Category images (admin only)
+match /category-images/{categoryId}/{fileName} {
+  allow read: if true;
+  allow write: if isAdmin() && isImage(request.resource.contentType);
+}
+```
+
+### Realtime Database Rules Updates Needed
+
+```json
+{
+  "rules": {
+    // Add watchlist for real-time auction updates
+    "auction-watchers": {
+      "$auctionId": {
+        ".read": true,
+        "$userId": {
+          ".write": "auth != null && auth.uid == $userId"
+        }
+      }
+    },
+
+    // Add typing indicators for messages
+    "typing-indicators": {
+      "$conversationId": {
+        ".read": "auth != null",
+        "$userId": {
+          ".write": "auth != null && auth.uid == $userId",
+          ".validate": "newData.hasChildren(['isTyping', 'timestamp'])"
+        }
+      }
+    },
+
+    // Add presence for online status
+    "presence": {
+      "$userId": {
+        ".read": true,
+        ".write": "auth != null && auth.uid == $userId"
+      }
+    }
+  }
+}
+```
+
+### Vercel Configuration Updates Needed
+
+```json
+{
+  // Add to vercel.json
+
+  // Increase timeout for admin routes
+  "functions": {
+    "src/app/api/**": {
+      "memory": 1024,
+      "maxDuration": 10
+    },
+    "src/app/api/admin/**": {
+      "memory": 1024,
+      "maxDuration": 30
+    },
+    "src/app/api/admin/categories/rebuild-counts/**": {
+      "memory": 2048,
+      "maxDuration": 60
+    },
+    "src/app/api/checkout/**": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+
+  // Add caching headers for static content
+  "headers": [
+    {
+      "source": "/api/categories",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=300, stale-while-revalidate=600"
+        }
+      ]
+    },
+    {
+      "source": "/api/categories/tree",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=300, stale-while-revalidate=600"
+        }
+      ]
+    },
+    {
+      "source": "/api/hero-slides",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=120, stale-while-revalidate=300"
+        }
+      ]
+    }
+  ],
+
+  // Add rewrites for legacy routes if needed
+  "rewrites": [
+    { "source": "/shop/:slug", "destination": "/shops/:slug" },
+    { "source": "/product/:slug", "destination": "/products/:slug" },
+    { "source": "/auction/:slug", "destination": "/auctions/:slug" }
+  ]
+}
+```
+
+### Firebase Configuration (firebase.json) Updates Needed
+
+```json
+{
+  // Add to firebase.json
+
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+
+  "storage": {
+    "rules": "storage.rules"
+  },
+
+  "database": {
+    "rules": "database.rules.json"
+  },
+
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs18",
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint",
+      "npm --prefix \"$RESOURCE_DIR\" run build"
+    ],
+    "ignore": [
+      "node_modules",
+      ".git",
+      "firebase-debug.log",
+      "firebase-debug.*.log"
+    ]
+  },
+
+  // Add emulators for local development
+  "emulators": {
+    "auth": { "port": 9099 },
+    "functions": { "port": 5001 },
+    "firestore": { "port": 8080 },
+    "database": { "port": 9000 },
+    "storage": { "port": 9199 },
+    "ui": { "enabled": true, "port": 4000 }
+  }
+}
+```
+
+---
+
+## 13. Implementation Priority Matrix
+
+### Immediate (Week 1-2)
+
+| Task                                        | Type              | Effort | Impact |
+| ------------------------------------------- | ----------------- | ------ | ------ |
+| Add `onOrderStatusChange` Firebase function | Firebase Function | Medium | High   |
+| Add session cleanup cron                    | Firebase Function | Low    | Medium |
+| Update Vercel config with proper timeouts   | Config            | Low    | High   |
+| Add missing Firestore indexes               | Config            | Low    | High   |
+
+### Short-term (Week 3-4)
+
+| Task                                        | Type              | Effort | Impact |
+| ------------------------------------------- | ----------------- | ------ | ------ |
+| Add `onPaymentStatusChange` function        | Firebase Function | Medium | High   |
+| Add auction reminders cron                  | Firebase Function | Medium | Medium |
+| Add low stock alerts cron                   | Firebase Function | Medium | Medium |
+| Update storage rules for avatars/categories | Config            | Low    | Low    |
+
+### Medium-term (Month 2)
+
+| Task                                     | Type              | Effort | Impact |
+| ---------------------------------------- | ----------------- | ------ | ------ |
+| Add analytics aggregation cron           | Firebase Function | High   | High   |
+| Add review moderation queue              | Firebase Function | High   | Medium |
+| Add presence/typing indicators           | Realtime DB       | Medium | Medium |
+| Implement full event-driven architecture | Architecture      | High   | High   |
+
+### Long-term (Month 3+)
+
+| Task                                               | Type         | Effort | Impact |
+| -------------------------------------------------- | ------------ | ------ | ------ |
+| Migrate all status changes to Firestore triggers   | Architecture | High   | High   |
+| Add full offline support with service worker       | PWA          | High   | Medium |
+| Implement webhook system for external integrations | Architecture | High   | Medium |
+
+---
+
+## 14. Beyblade Demo Data Architecture (November 2025)
+
+### Category Counts System
+
+The demo data generator now tracks comprehensive category statistics:
+
+| Field                 | Type     | Description                          | Updated By                   |
+| --------------------- | -------- | ------------------------------------ | ---------------------------- |
+| `product_count`       | `number` | Total products in category           | Products API, Demo Generator |
+| `in_stock_count`      | `number` | Products with stock > 0              | Products API, Demo Generator |
+| `out_of_stock_count`  | `number` | Products with stock = 0              | Products API, Demo Generator |
+| `live_auction_count`  | `number` | Active auctions in category          | Auctions API, Demo Generator |
+| `ended_auction_count` | `number` | Completed/ended auctions in category | Auctions API, Demo Generator |
+
+### Category Count Update Flow
+
+```
+Product Created/Updated → updateCategoryProductCounts() → Updates:
+  - product_count
+  - in_stock_count
+  - out_of_stock_count
+  - All ancestor categories (bottom-up)
+
+Auction Created/Updated → updateCategoryAuctionCounts() → Updates:
+  - live_auction_count
+  - ended_auction_count
+  - All ancestor categories (bottom-up)
+
+Rebuild All → rebuildAllCategoryCounts() → Updates all counts for all categories
+```
+
+### Demo Data Generator Flow
+
+```
+1. Categories (Beyblade hierarchy: Attack, Defense, Stamina, Balance, etc.)
+2. Users (100 users with Beyblade-themed display names for sellers)
+3. Shops (50 shops with Beyblade-themed names)
+4. Products (1000+ products, updates category product counts)
+5. Auctions (250+ auctions, updates category auction counts)
+6. Bids (2500+ bids across auctions)
+7. Reviews (1500+ reviews)
+8. Orders (with payments)
+9. Extras (hero slides, coupons, tickets, returns)
+```
+
+### Files Involved in Count Tracking
+
+| File                                                   | Responsibility                              |
+| ------------------------------------------------------ | ------------------------------------------- |
+| `src/lib/category-hierarchy.ts`                        | Count update functions                      |
+| `src/app/api/products/route.ts`                        | Calls updateCategoryProductCounts on create |
+| `src/app/api/products/[slug]/route.ts`                 | Calls counts on update/delete               |
+| `src/app/api/auctions/route.ts`                        | Calls updateCategoryAuctionCounts on create |
+| `src/app/api/auctions/[id]/route.ts`                   | Calls counts on update/delete               |
+| `src/app/api/admin/demo/generate/products/route.ts`    | Updates counts during demo generation       |
+| `src/app/api/admin/demo/generate/auctions/route.ts`    | Updates counts during demo generation       |
+| `src/app/api/admin/categories/rebuild-counts/route.ts` | Manual rebuild trigger                      |
+
+---
+
+## 15. Sieve Pagination Migration Plan
+
+### Current State
+
+The codebase has **two pagination systems**:
+
+| System                   | Location                              | Status               |
+| ------------------------ | ------------------------------------- | -------------------- |
+| Sieve (modern, standard) | `src/app/api/lib/sieve/`              | Fully implemented |
+| Cursor/Offset (legacy)   | `src/app/api/lib/utils/pagination.ts` | Being phased out  |
+
+### Sieve Query Format
+
+```
+GET /api/products?page=1&pageSize=20&sorts=-createdAt,price&filters=status==published,price>100
+```
+
+**Supported Operators:**
+
+| Operator | Description                 | Example             |
+| -------- | --------------------------- | ------------------- |
+| `==`     | Equals                      | `status==published` |
+| `!=`     | Not equals                  | `status!=draft`     |
+| `>`      | Greater than                | `price>100`         |
+| `>=`     | Greater than or equal       | `price>=100`        |
+| `<`      | Less than                   | `stock<10`          |
+| `<=`     | Less than or equal          | `stock<=0`          |
+| `@=`     | Contains (case-sensitive)   | `name@=blade`       |
+| `_=`     | Starts with                 | `name_=Storm`       |
+| `@=*`    | Contains (case-insensitive) | `name@=*BLADE`      |
+| `==null` | Is null/undefined           | `deletedAt==null`   |
+| `!=null` | Is not null                 | `paidAt!=null`      |
+
+### API Routes to Migrate
+
+#### Priority 1 - High Traffic Routes
+
+| Route             | Current Pagination            | Config                  | Complexity |
+| ----------------- | ----------------------------- | ----------------------- | ---------- |
+| `/api/products`   | `executeCursorPaginatedQuery` | `productsSieveConfig`   | Medium     |
+| `/api/auctions`   | `executeCursorPaginatedQuery` | `auctionsSieveConfig`   | Medium     |
+| `/api/shops`      | `executeCursorPaginatedQuery` | `shopsSieveConfig`      | Low        |
+| `/api/categories` | Manual offset                 | `categoriesSieveConfig` | Low        |
+| `/api/reviews`    | Manual limit                  | `reviewsSieveConfig`    | Low        |
+
+#### Priority 2 - Admin Routes
+
+| Route                    | Current Pagination            | Config                  | Complexity |
+| ------------------------ | ----------------------------- | ----------------------- | ---------- |
+| `/api/admin/products`    | `executeCursorPaginatedQuery` | `productsSieveConfig`   | Medium     |
+| `/api/admin/auctions`    | Manual                        | `auctionsSieveConfig`   | Medium     |
+| `/api/admin/orders`      | `executeCursorPaginatedQuery` | `ordersSieveConfig`     | Medium     |
+| `/api/admin/users`       | `executeCursorPaginatedQuery` | `usersSieveConfig`      | Low        |
+| `/api/admin/shops`       | Manual limit                  | `shopsSieveConfig`      | Low        |
+| `/api/admin/tickets`     | Manual                        | `ticketsSieveConfig`    | Low        |
+| `/api/admin/payouts`     | Manual                        | `payoutsSieveConfig`    | Low        |
+| `/api/admin/coupons`     | Manual                        | `couponsSieveConfig`    | Low        |
+| `/api/admin/returns`     | Manual                        | `returnsSieveConfig`    | Low        |
+| `/api/admin/hero-slides` | Manual                        | `heroSlidesSieveConfig` | Low        |
+| `/api/blog/posts`        | Manual                        | `blogSieveConfig`       | Low        |
+
+#### Priority 3 - User/Seller Routes
+
+| Route                  | Current Pagination            | Config                 | Complexity |
+| ---------------------- | ----------------------------- | ---------------------- | ---------- |
+| `/api/user/orders`     | Manual limit                  | `ordersSieveConfig`    | Low        |
+| `/api/user/favorites`  | Manual                        | `favoritesSieveConfig` | Low        |
+| `/api/seller/products` | `executeCursorPaginatedQuery` | `productsSieveConfig`  | Medium     |
+| `/api/seller/auctions` | `executeCursorPaginatedQuery` | `auctionsSieveConfig`  | Medium     |
+| `/api/seller/orders`   | Manual                        | `ordersSieveConfig`    | Low        |
+
+### Migration Pattern
+
+#### Before (Legacy Cursor Pagination)
+
+```typescript
+import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
+
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const limit = parseInt(searchParams.get("limit") || "20");
+  const cursor = searchParams.get("cursor");
+  const sortBy = searchParams.get("sortBy") || "createdAt";
+  const sortOrder = searchParams.get("sortOrder") || "desc";
+
+  let query = db
+    .collection("products")
+    .where("status", "==", "published")
+    .orderBy(sortBy, sortOrder);
+
+  if (categoryId) query = query.where("categoryId", "==", categoryId);
+  if (minPrice) query = query.where("price", ">=", minPrice);
+
+  const result = await executeCursorPaginatedQuery(
+    query,
+    searchParams,
+    getProductByIdForCursor,
+    transformProduct,
+    limit,
+    100
+  );
+
+  return NextResponse.json(result);
+}
+```
+
+#### After (Sieve Pagination)
+
+```typescript
+import {
+  parseSieveQuery,
+  executeSieveQuery,
+  productsSieveConfig,
+} from "@/app/api/lib/sieve";
+
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const sieveQuery = parseSieveQuery(searchParams, productsSieveConfig);
+
+  // Add mandatory filters (e.g., only published products for public API)
+  sieveQuery.filters.push({
+    field: "status",
+    operator: "==",
+    value: "published",
+  });
+
+  const result = await executeSieveQuery(
+    "products",
+    sieveQuery,
+    productsSieveConfig
+  );
+
+  return NextResponse.json({
+    success: true,
+    data: result.data.map(transformProduct),
+    pagination: result.pagination,
+    meta: result.meta,
+  });
+}
+```
+
+### Sieve Config Reference
+
+All configs are in `src/app/api/lib/sieve/config.ts`:
+
+| Config                  | Sortable Fields                                               | Default Sort |
+| ----------------------- | ------------------------------------------------------------- | ------------ |
+| `productsSieveConfig`   | createdAt, updatedAt, price, name, stock, rating, reviewCount | -createdAt   |
+| `auctionsSieveConfig`   | createdAt, endTime, currentBid, startingPrice, bidCount       | -createdAt   |
+| `ordersSieveConfig`     | createdAt, updatedAt, totalAmount, status                     | -createdAt   |
+| `usersSieveConfig`      | createdAt, updatedAt, displayName, email                      | -createdAt   |
+| `shopsSieveConfig`      | createdAt, updatedAt, name, rating, reviewCount, productCount | -createdAt   |
+| `reviewsSieveConfig`    | createdAt, rating                                             | -createdAt   |
+| `categoriesSieveConfig` | createdAt, updatedAt, name, sortOrder                         | sortOrder    |
+| `couponsSieveConfig`    | createdAt, expiresAt, discountPercent, usageCount             | -createdAt   |
+| `returnsSieveConfig`    | createdAt, updatedAt, status                                  | -createdAt   |
+| `ticketsSieveConfig`    | createdAt, updatedAt, status, priority                        | -createdAt   |
+| `blogSieveConfig`       | createdAt, updatedAt, publishedAt, title                      | -publishedAt |
+| `heroSlidesSieveConfig` | createdAt, sortOrder                                          | sortOrder    |
+| `payoutsSieveConfig`    | createdAt, amount, status                                     | -createdAt   |
+| `favoritesSieveConfig`  | createdAt                                                     | -createdAt   |
+
+### Frontend Integration
+
+#### Update Service Methods
+
+```typescript
+// src/services/products.service.ts
+import { buildSieveQueryString, type SieveParams } from "@/app/api/lib/sieve";
+
+class ProductsService {
+  async getProducts(
+    params: SieveParams = {}
+  ): Promise<SievePaginatedResponse<Product>> {
+    const queryString = buildSieveQueryString(params);
+    return apiService.get(`/products${queryString});
+  }
+}
+```
+
+#### Create useSievePagination Hook
+
+```typescript
+// src/hooks/useSievePagination.ts
+import { useState, useCallback } from "react";
+import {
+  buildSieveQueryString,
+  type SieveParams,
+} from "@/app/api/lib/sieve";
+
+export function useSievePagination<T>(
+  fetchFn: (params: SieveParams) => Promise<SievePaginatedResponse<T>>,
+  initialParams: SieveParams = {}
+) {
+  const [data, setData] = useState<T[]>([]);
+  const [pagination, setPagination] = useState<SievePaginationMeta | null>(
+    null
+  );
+  const [loading, setLoading] = useState(false);
+  const [params, setParams] = useState(initialParams);
+
+  const fetch = useCallback(
+    async (newParams: Partial<SieveParams> = {}) => {
+      setLoading(true);
+      const mergedParams = { ...params, ...newParams };
+      const result = await fetchFn(mergedParams);
+      setData(result.data);
+      setPagination(result.pagination);
+      setParams(mergedParams);
+      setLoading(false);
+    },
+    [params, fetchFn]
+  );
+
+  const goToPage = (page: number) => fetch({ page });
+  const setPageSize = (pageSize: number) => fetch({ pageSize, page: 1 });
+  const setSorts = (sorts: string) => fetch({ sorts, page: 1 });
+  const setFilters = (filters: string) => fetch({ filters, page: 1 });
+
+  return {
+    data,
+    pagination,
+    loading,
+    fetch,
+    goToPage,
+    setPageSize,
+    setSorts,
+    setFilters,
+  };
+}
+```
+
+### Migration Checklist
+
+#### Phase 1: Core Routes (Week 1)
+
+- [ ] `/api/products` -> Sieve
+- [ ] `/api/auctions` -> Sieve
+- [ ] `/api/shops` -> Sieve
+- [ ] `/api/categories` -> Sieve
+- [ ] `/api/reviews` -> Sieve
+
+#### Phase 2: Admin Routes (Week 2)
+
+- [ ] `/api/admin/products` -> Sieve
+- [ ] `/api/admin/auctions` -> Sieve
+- [ ] `/api/admin/orders` -> Sieve
+- [ ] `/api/admin/users` -> Sieve
+- [ ] `/api/admin/shops` -> Sieve
+- [ ] `/api/admin/tickets` -> Sieve
+- [ ] `/api/admin/payouts` -> Sieve
+- [ ] `/api/admin/coupons` -> Sieve
+- [ ] `/api/admin/returns` -> Sieve
+- [ ] `/api/admin/hero-slides` -> Sieve
+- [ ] `/api/blog/posts` -> Sieve
+
+#### Phase 3: User/Seller Routes (Week 3)
+
+- [ ] `/api/user/orders` -> Sieve
+- [ ] `/api/user/favorites` -> Sieve
+- [ ] `/api/seller/products` -> Sieve
+- [ ] `/api/seller/auctions` -> Sieve
+- [ ] `/api/seller/orders` -> Sieve
+
+#### Phase 4: Frontend Integration (Week 4)
+
+- [ ] Create `useSievePagination` hook
+- [ ] Update service methods with `buildSieveQueryString`
+- [ ] Create standardized Pagination components
+- [ ] Update listing pages to use new components
+
+#### Phase 5: Cleanup (Week 5)
+
+- [ ] Remove `executeCursorPaginatedQuery` from pagination.ts
+- [ ] Remove legacy pagination params from route handlers
+- [ ] Update API documentation with Sieve query format

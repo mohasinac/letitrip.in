@@ -52,14 +52,14 @@ export default function AdminSettingsPage() {
           title="Shipping"
           description="Shipping zones and carrier settings"
           href="/admin/settings/shipping"
-          status="pending"
+          status="ready"
           icon="📦"
         />
         <SettingsCard
           title="Email"
           description="SMTP configuration and templates"
           href="/admin/settings/email"
-          status="pending"
+          status="ready"
           icon="📧"
         />
         <SettingsCard

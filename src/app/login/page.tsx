@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { COMPANY_NAME } from "@/constants/navigation";
 import { MobileFormInput } from "@/components/mobile/MobileFormInput";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 function LoginForm() {
@@ -180,7 +181,7 @@ function LoginForm() {
             </button>
           </form>
 
-          {/* Divider */}
+          {/* Social Login Divider */}
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -188,7 +189,26 @@ function LoginForm() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                  Don't have an account?
+                  Or continue with
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Google Sign In */}
+          <div className="mt-6">
+            <GoogleSignInButton disabled={loading} />
+          </div>
+
+          {/* Register Divider */}
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                  Don&apos;t have an account?
                 </span>
               </div>
             </div>
