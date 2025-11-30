@@ -28,12 +28,12 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
     };
 
     if (isLightboxOpen) {
-      window.addEventListener("keydown", handleEscape);
+      globalThis.addEventListener("keydown", handleEscape);
       document.body.style.overflow = "hidden";
     }
 
     return () => {
-      window.removeEventListener("keydown", handleEscape);
+      globalThis.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "unset";
     };
   }, [isLightboxOpen]);

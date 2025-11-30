@@ -19,8 +19,8 @@ export function MobileInstallPrompt() {
   useEffect(() => {
     // Check if already installed (standalone mode)
     const isInStandaloneMode =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true;
+      globalThis.matchMedia?.("(display-mode: standalone)").matches ||
+      (globalThis.navigator as any)?.standalone === true;
     setIsStandalone(isInStandaloneMode);
 
     // Check if iOS
@@ -48,7 +48,10 @@ export function MobileInstallPrompt() {
       }, 3000);
     };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    globalThis.addEventListener?.(
+      "beforeinstallprompt",
+      handleBeforeInstallPrompt
+    );
 
     // For iOS, show custom prompt after delay if not installed
     if (ios && !isInStandaloneMode) {
@@ -58,9 +61,9 @@ export function MobileInstallPrompt() {
     }
 
     return () => {
-      window.removeEventListener(
+      globalThis.removeEventListener?.(
         "beforeinstallprompt",
-        handleBeforeInstallPrompt,
+        handleBeforeInstallPrompt
       );
     };
   }, []);
@@ -92,7 +95,7 @@ export function MobileInstallPrompt() {
         "fixed bottom-20 left-4 right-4 z-50 lg:hidden",
         "bg-white rounded-xl shadow-xl border border-gray-200",
         "animate-slide-up",
-        "safe-area-inset-bottom",
+        "safe-area-inset-bottom"
       )}
       role="dialog"
       aria-labelledby="install-prompt-title"

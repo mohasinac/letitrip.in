@@ -74,14 +74,14 @@ export default function SellerRevenuePage() {
         },
         format,
       );
-      const url = window.URL.createObjectURL(blob);
+      const url = globalThis.URL?.createObjectURL(blob) || '';
       const link = document.createElement("a");
       link.href = url;
       link.download = `revenue-report-${dateRange.startDate}-to-${dateRange.endDate}.${format}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      globalThis.URL?.revokeObjectURL(url);
     } catch (error: any) {
       console.error("Failed to export data:", error);
     }

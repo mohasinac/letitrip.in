@@ -55,7 +55,7 @@ export function ErrorMessage({
     <div
       className={cn(
         "flex flex-col items-center justify-center p-8 text-center",
-        className,
+        className
       )}
     >
       {/* Error Icon */}
@@ -102,7 +102,12 @@ export function ErrorMessage({
 
         {showGoHome && (
           <button
-            onClick={onGoHome || (() => (window.location.href = "/"))}
+            onClick={
+              onGoHome ||
+              (() => {
+                if (globalThis.location) globalThis.location.href = "/";
+              })
+            }
             className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
           >
             <Home className="h-4 w-4" />
@@ -112,7 +117,7 @@ export function ErrorMessage({
 
         {showGoBack && (
           <button
-            onClick={onGoBack || (() => window.history.back())}
+            onClick={onGoBack || (() => globalThis.history?.back())}
             className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -185,7 +190,7 @@ export function InlineError({
     <div
       className={cn(
         "flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700",
-        className,
+        className
       )}
     >
       <AlertCircle className="h-4 w-4 flex-shrink-0" />

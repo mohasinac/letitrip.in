@@ -82,14 +82,14 @@ export function ProductInfo({ product }: ProductInfoProps) {
       try {
         await navigator.share({
           title: product.name,
-          url: window.location.href,
+          url: globalThis.location?.href || "",
         });
       } catch (error) {
         console.error("Share failed:", error);
       }
     } else {
       // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
+      navigator.clipboard.writeText(globalThis.location?.href || "");
       toast.success("Link copied to clipboard!");
     }
   };

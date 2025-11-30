@@ -329,13 +329,15 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              window.location.href = `/shops/${shopSlug}`;
+              if (globalThis.location)
+                globalThis.location.href = `/shops/${shopSlug}`;
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
                 e.stopPropagation();
-                window.location.href = `/shops/${shopSlug}`;
+                if (globalThis.location)
+                  globalThis.location.href = `/shops/${shopSlug}`;
               }
             }}
             role="link"

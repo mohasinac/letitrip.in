@@ -99,8 +99,8 @@ export function useHeaderStats() {
       }
     };
 
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
+    globalThis.addEventListener?.("focus", handleFocus);
+    return () => globalThis.removeEventListener?.("focus", handleFocus);
   }, [isAuthenticated, fetchStats]);
 
   // Optimistic update functions

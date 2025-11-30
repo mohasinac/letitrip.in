@@ -24,12 +24,12 @@ export function MobileOfflineIndicator() {
       setShowIndicator(true);
     };
 
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    globalThis.addEventListener?.("online", handleOnline);
+    globalThis.addEventListener?.("offline", handleOffline);
 
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      globalThis.removeEventListener?.("online", handleOnline);
+      globalThis.removeEventListener?.("offline", handleOffline);
     };
   }, []);
 
@@ -43,7 +43,7 @@ export function MobileOfflineIndicator() {
       className={cn(
         "fixed top-0 left-0 right-0 z-[100] flex items-center justify-center gap-2 py-2 px-4 text-sm font-medium transition-colors duration-300",
         "safe-area-inset-top",
-        isOffline ? "bg-red-500 text-white" : "bg-green-500 text-white",
+        isOffline ? "bg-red-500 text-white" : "bg-green-500 text-white"
       )}
       role="status"
       aria-live="polite"

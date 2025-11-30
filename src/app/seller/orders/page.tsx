@@ -56,8 +56,8 @@ export default function SellerOrdersPage() {
     if (filterValues.sortOrder) params.set("sortOrder", filterValues.sortOrder);
 
     const queryString = params.toString();
-    const newUrl = queryString ? `?${queryString}` : window.location.pathname;
-    window.history.replaceState({}, "", newUrl);
+    const newUrl = queryString ? `?${queryString}` : globalThis.location?.pathname || '';
+    globalThis.history?.replaceState({}, "", newUrl);
   }, [filterValues]);
 
   useEffect(() => {

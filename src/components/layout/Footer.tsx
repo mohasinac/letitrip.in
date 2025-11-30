@@ -16,7 +16,7 @@ import { COMPANY_NAME } from "@/constants/navigation";
 
 export default function Footer() {
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
   };
 
   return (

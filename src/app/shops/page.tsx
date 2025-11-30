@@ -256,7 +256,7 @@ function ShopsContent() {
                     onClick={() => {
                       if (currentPage > 1) {
                         setCurrentPage(currentPage - 1);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
                       }
                     }}
                     disabled={currentPage === 1}
@@ -274,7 +274,7 @@ function ShopsContent() {
                     onClick={() => {
                       if (hasNextPage) {
                         setCurrentPage(currentPage + 1);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
                       }
                     }}
                     disabled={!hasNextPage}

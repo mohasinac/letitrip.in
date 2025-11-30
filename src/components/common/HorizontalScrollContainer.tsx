@@ -82,11 +82,11 @@ export const HorizontalScrollContainer: React.FC<
 
     if (scrollElement) {
       scrollElement.addEventListener("scroll", checkScroll);
-      window.addEventListener("resize", handleResize);
+      globalThis.addEventListener?.("resize", handleResize);
 
       return () => {
         scrollElement.removeEventListener("scroll", checkScroll);
-        window.removeEventListener("resize", handleResize);
+        globalThis.removeEventListener?.("resize", handleResize);
       };
     }
   }, [children, itemWidth, gap, showArrows, arrowStyle]);
