@@ -35,6 +35,10 @@ export function FormKeyValueInput({
 }: FormKeyValueInputProps) {
   const [keyInput, setKeyInput] = useState("");
   const [valueInput, setValueInput] = useState("");
+  const keyInputId =
+    label?.toLowerCase().replace(/\s+/g, "-") + "-key" || "key-input";
+  const valueInputId =
+    label?.toLowerCase().replace(/\s+/g, "-") + "-value" || "value-input";
 
   const entries = Object.entries(value);
   const canAdd = !disabled && (!maxItems || entries.length < maxItems);
@@ -69,7 +73,10 @@ export function FormKeyValueInput({
   return (
     <div className={cn(fullWidth && "w-full")}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor={keyInputId}
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -78,12 +85,14 @@ export function FormKeyValueInput({
       <div className="space-y-2">
         <div className="grid grid-cols-2 gap-2">
           <input
+            id={keyInputId}
             type="text"
             value={keyInput}
             onChange={(e) => setKeyInput(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={disabled || !canAdd}
             placeholder={keyPlaceholder}
+            aria-invalid={!!error}
             className={cn(
               "rounded-lg border px-3 py-2 text-sm transition-colors duration-200",
               "focus:outline-none focus:ring-1",
@@ -98,12 +107,14 @@ export function FormKeyValueInput({
           />
           <div className="flex gap-2">
             <input
+              id={valueInputId}
               type="text"
               value={valueInput}
               onChange={(e) => setValueInput(e.target.value)}
               onKeyDown={handleKeyDown}
               disabled={disabled || !canAdd}
               placeholder={valuePlaceholder}
+              aria-invalid={!!error}
               className={cn(
                 "flex-1 rounded-lg border px-3 py-2 text-sm transition-colors duration-200",
                 "focus:outline-none focus:ring-1",

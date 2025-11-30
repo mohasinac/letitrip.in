@@ -32,6 +32,7 @@ export function FormListInput({
   addButtonText = "Add",
 }: FormListInputProps) {
   const [inputValue, setInputValue] = useState("");
+  const inputId = label?.toLowerCase().replace(/\s+/g, "-") || "list-input";
 
   const handleAdd = () => {
     const trimmedValue = inputValue.trim();
@@ -59,7 +60,10 @@ export function FormListInput({
   return (
     <div className={cn(fullWidth && "w-full")}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor={inputId}
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -68,12 +72,14 @@ export function FormListInput({
       <div className="space-y-2">
         <div className="flex gap-2">
           <input
+            id={inputId}
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={disabled || !canAdd}
             placeholder={placeholder}
+            aria-invalid={!!error}
             className={cn(
               "flex-1 rounded-lg border px-3 py-2 text-sm transition-colors duration-200",
               "focus:outline-none focus:ring-1",

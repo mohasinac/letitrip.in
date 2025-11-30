@@ -470,7 +470,8 @@ export default function ShopPage({ params }: ShopPageProps) {
                                 router.push(`/products/${product.slug}`)
                               }
                               onKeyDown={(e) =>
-                                e.key === "Enter" && router.push(`/products/${product.slug}`)
+                                e.key === "Enter" &&
+                                router.push(`/products/${product.slug}`)
                               }
                               role="link"
                               tabIndex={0}

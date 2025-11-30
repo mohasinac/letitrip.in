@@ -526,12 +526,13 @@ const status = getStatus();
 | Read AI_AGENT_GUIDE and README               | ✅     |
 | Read CODEBASE-ANALYSIS documents             | ✅     |
 | Fix S1082 missing mouse handlers (29 bugs)   | ✅     |
-| Fix S6853 form labels in form components     | ⬜     |
-| Fix S6853 form labels in seller components   | ⬜     |
-| Fix S6853 form labels in checkout components | ⬜     |
+| Fix S6853 form labels in form components     | ✅     |
+| Fix S6853 form labels in seller components   | ✅     |
+| Fix S6853 form labels in checkout components | ✅     |
 | Run Sonar scan to verify fixes               | ⬜     |
 
 **S1082 Fixes Applied (29 files):**
+
 - `StatsCard.tsx` - Added role="button", tabIndex, onKeyDown
 - `PaymentMethod.tsx` - Added keyboard handlers to payment options
 - `AddressSelector.tsx` - Added keyboard handler to address cards
@@ -546,6 +547,15 @@ const status = getStatus();
 - `ProductCard.tsx`, `ShopCard.tsx` - Shop links and menu handlers
 - `InlineCategorySelectorWithCreate.tsx`, `MediaGallery.tsx`, `MediaUploader.tsx`
 - `notifications/page.tsx`, `tickets/page.tsx`, `edit/page.tsx`, `shops/[slug]/page.tsx`
+
+**S6853 Fixes Applied:**
+
+- `FormListInput.tsx` - Added htmlFor/id association
+- `FormKeyValueInput.tsx` - Added htmlFor/id for key and value inputs
+- `ProductInlineForm.tsx` - Fixed 5 label-input associations
+- `CouponInlineForm.tsx` - Fixed 6 label-input associations
+- `AddressForm.tsx` - Fixed 8 label-input associations
+- `ShopOrderSummary.tsx` - Fixed coupon input label association
 
 ### Session 6 (November 30, 2025)
 
