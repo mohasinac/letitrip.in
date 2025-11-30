@@ -264,7 +264,7 @@ export default function AuctionModerationPage() {
                             {auction.status === "pending" ||
                             auction.status === "scheduled"
                               ? `Starts in ${getTimeUntilStart(
-                                  auction.startTime,
+                                  auction.startTime
                                 )}`
                               : formatDateTime(auction.startTime)}
                           </div>
@@ -275,7 +275,7 @@ export default function AuctionModerationPage() {
                         <td className="px-6 py-4">
                           <span
                             className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                              auction.status,
+                              auction.status
                             )}`}
                           >
                             {auction.status}
@@ -304,7 +304,7 @@ export default function AuctionModerationPage() {
                                 <button
                                   onClick={() =>
                                     router.push(
-                                      `/admin/auctions/${auction.id}/edit`,
+                                      `/admin/auctions/${auction.id}/edit`
                                     )
                                   }
                                   className="text-blue-600 hover:text-blue-900"

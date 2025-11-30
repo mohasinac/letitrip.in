@@ -76,7 +76,7 @@ export default function AdminEditProductPage() {
   });
 
   const [specifications, setSpecifications] = useState<ProductSpecification[]>(
-    [],
+    []
   );
   const [newSpec, setNewSpec] = useState({ name: "", value: "" });
   const [tagInput, setTagInput] = useState("");
@@ -159,7 +159,7 @@ export default function AdminEditProductPage() {
     } catch (error) {
       console.error("Failed to load product:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load product",
+        error instanceof Error ? error.message : "Failed to load product"
       );
     } finally {
       setLoading(false);
@@ -215,13 +215,10 @@ export default function AdminEditProductPage() {
       setSaving(true);
 
       // Convert specifications array to Record for API
-      const specsRecord = specifications.reduce(
-        (acc, spec) => {
-          acc[spec.name] = spec.value;
-          return acc;
-        },
-        {} as Record<string, string>,
-      );
+      const specsRecord = specifications.reduce((acc, spec) => {
+        acc[spec.name] = spec.value;
+        return acc;
+      }, {} as Record<string, string>);
 
       const updateData = {
         ...formData,
