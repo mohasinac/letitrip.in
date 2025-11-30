@@ -354,7 +354,7 @@ function ProductsContent() {
             {loading ? (
               <ProductCardSkeletonGrid count={view === "grid" ? 12 : 8} />
             ) : products.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-sm">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                 <EmptyStates.NoProducts
                   action={{
                     label: "Clear filters",
@@ -391,30 +391,33 @@ function ProductsContent() {
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
                     <table className="w-full">
-                      <thead className="bg-gray-50 border-b">
+                      <thead className="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600">
                         <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                             Product
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                             Price
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                             Stock
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                             Rating
                           </th>
-                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                             Actions
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200">
+                      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                         {products.map((product) => (
-                          <tr key={product.id} className="hover:bg-gray-50">
+                          <tr
+                            key={product.id}
+                            className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                          >
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
                                 <img
@@ -423,22 +426,22 @@ function ProductsContent() {
                                   className="w-12 h-12 rounded object-cover"
                                 />
                                 <div>
-                                  <div className="font-medium text-gray-900">
+                                  <div className="font-medium text-gray-900 dark:text-white">
                                     {product.name}
                                   </div>
-                                  <div className="text-sm text-gray-500">
+                                  <div className="text-sm text-gray-500 dark:text-gray-400">
                                     {product.condition}
                                   </div>
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="font-medium">
+                              <div className="font-medium text-gray-900 dark:text-white">
                                 ₹{product.price.toLocaleString()}
                               </div>
                               {product.originalPrice &&
                                 product.originalPrice > product.price && (
-                                  <div className="text-sm text-gray-500 line-through">
+                                  <div className="text-sm text-gray-500 dark:text-gray-400 line-through">
                                     ₹{product.originalPrice.toLocaleString()}
                                   </div>
                                 )}
@@ -447,8 +450,8 @@ function ProductsContent() {
                               <span
                                 className={`px-2 py-1 text-xs rounded ${
                                   product.stockCount > 0
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-red-100 text-red-700"
+                                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                    : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
                                 }`}
                               >
                                 {product.stockCount > 0
@@ -460,10 +463,10 @@ function ProductsContent() {
                               {product.rating > 0 && (
                                 <div className="flex items-center gap-1">
                                   <span className="text-yellow-500">★</span>
-                                  <span className="font-medium">
+                                  <span className="font-medium text-gray-900 dark:text-white">
                                     {product.rating.toFixed(1)}
                                   </span>
-                                  <span className="text-sm text-gray-500">
+                                  <span className="text-sm text-gray-500 dark:text-gray-400">
                                     ({product.reviewCount})
                                   </span>
                                 </div>
@@ -481,14 +484,14 @@ function ProductsContent() {
                                   onClick={() =>
                                     router.push(`/products/${product.slug}`)
                                   }
-                                  className="text-blue-600 hover:underline text-sm"
+                                  className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
                                 >
                                   View
                                 </button>
                                 {product.stockCount > 0 && (
                                   <button
                                     onClick={() => handleAddToCart(product.id)}
-                                    className="text-blue-600 hover:underline text-sm"
+                                    className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
                                   >
                                     Add to Cart
                                   </button>

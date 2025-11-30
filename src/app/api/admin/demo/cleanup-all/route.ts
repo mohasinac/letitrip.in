@@ -90,14 +90,18 @@ export async function DELETE() {
       { name: "products", field: "name", strategy: "prefix" },
       { name: "auctions", field: "title", strategy: "prefix" },
       { name: "orders", field: "orderNumber", strategy: "prefix" },
-      { name: "payments", field: "transactionId", strategy: "prefix" },
-      { name: "shipments", field: "trackingNumber", strategy: "prefix" },
       { name: "coupons", field: "code", strategy: "prefix" },
       { name: "hero_slides", field: "title", strategy: "prefix" },
       { name: "blog_posts", field: "title", strategy: "prefix" },
       { name: "blog_categories", field: "name", strategy: "prefix" },
       { name: "blog_tags", field: "name", strategy: "prefix" },
       { name: "conversations", field: "subject", strategy: "prefix" },
+
+      // Payments - use receipt or invoice_id field which has DEMO_ prefix
+      { name: "payments", field: "receipt", strategy: "prefix" },
+      
+      // Shipments - related to demo orders
+      { name: "shipments", relatedField: "orderId", relatedIds: demoOrderIds, strategy: "related" },
 
       // Related collections (delete by referenced ID)
       { name: "bids", relatedField: "auctionId", relatedIds: demoAuctionIds, strategy: "related" },
@@ -110,7 +114,11 @@ export async function DELETE() {
       { name: "notifications", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
       { name: "addresses", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
       { name: "returns", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
-      { name: "tickets", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
+      
+      // Support tickets - use correct collection name and strategy
+      { name: "support_tickets", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
+      { name: "tickets", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" }, // legacy name
+      
       { name: "payouts", relatedField: "shopId", relatedIds: demoShopIds, strategy: "related" },
       { name: "media", relatedField: "uploadedBy", relatedIds: demoUserIds, strategy: "related" },
 

@@ -3,6 +3,10 @@
  *
  * Scheduled Functions:
  * - processAuctions: Runs every minute to process ended auctions
+ * - rebuildCategoryTree: Runs every hour to rebuild category tree cache
+ * 
+ * Trigger Functions:
+ * - onCategoryWrite: Rebuilds tree when categories are modified
  */
 
 import * as functions from "firebase-functions/v1";
@@ -504,4 +508,301 @@ async function updateInventory(productId: string): Promise<void> {
   } catch (error) {
     console.error("[Auction Cron] Error updating inventory:", error);
   }
+}
+
+// ============================================================================
+// CATEGORY TREE FUNCTIONS
+// ============================================================================
+
+interface CategoryNode {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  icon?: string;
+  parentIds: string[];
+  level: number;
+  productCount: number;
+  auctionCount: number;
+  isActive: boolean;
+  sortOrder: number;
+  children: CategoryNode[];
+  ancestors: Array<{ id: string; name: string; slug: string }>;
+  path: string; // Full path like "Electronics > Phones > Smartphones"
+}
+
+interface CategoryTreeCache {
+  tree: CategoryNode[];
+  flat: Record<string, Omit<CategoryNode, "children">>;
+  roots: string[];
+  leaves: string[];
+  totalCount: number;
+  maxDepth: number;
+  updatedAt: admin.firestore.Timestamp;
+  version: number;
+}
+
+/**
+ * Scheduled function to rebuild category tree cache
+ * Runs every hour to keep the cache fresh
+ */
+export const rebuildCategoryTree = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 120,
+    memory: "512MB",
+    minInstances: 0,
+    maxInstances: 1,
+    serviceAccount,
+  })
+  .pubsub.schedule("every 60 minutes")
+  .timeZone("Asia/Kolkata")
+  .onRun(async () => {
+    console.log("[Category Tree] Starting scheduled rebuild...");
+    
+    try {
+      const result = await buildAndSaveCategoryTree();
+      console.log(`[Category Tree] Scheduled rebuild complete: ${result.totalCount} categories`);
+      return result;
+    } catch (error) {
+      console.error("[Category Tree] Scheduled rebuild failed:", error);
+      return { success: false, error: String(error) };
+    }
+  });
+
+/**
+ * Firestore trigger to rebuild tree when categories change
+ */
+export const onCategoryWrite = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 120,
+    memory: "512MB",
+  })
+  .firestore.document("categories/{categoryId}")
+  .onWrite(async (change, context) => {
+    console.log(`[Category Tree] Category ${context.params.categoryId} changed, triggering rebuild...`);
+    
+    // Debounce: Only rebuild if last update was more than 5 seconds ago
+    const cacheRef = db.collection("cache").doc("category_tree");
+    const cacheDoc = await cacheRef.get();
+    
+    if (cacheDoc.exists) {
+      const cache = cacheDoc.data() as CategoryTreeCache;
+      const lastUpdate = cache.updatedAt?.toDate();
+      if (lastUpdate && Date.now() - lastUpdate.getTime() < 5000) {
+        console.log("[Category Tree] Skipping rebuild - too recent");
+        return;
+      }
+    }
+    
+    try {
+      await buildAndSaveCategoryTree();
+      console.log("[Category Tree] Trigger rebuild complete");
+    } catch (error) {
+      console.error("[Category Tree] Trigger rebuild failed:", error);
+    }
+  });
+
+/**
+ * HTTP callable function to manually rebuild category tree
+ */
+export const triggerCategoryTreeRebuild = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 120,
+    memory: "512MB",
+  })
+  .https.onCall(async (_data, context) => {
+    // Require authentication
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "User must be authenticated",
+      );
+    }
+
+    // Only admins can manually rebuild
+    const userDoc = await db.collection("users").doc(context.auth.uid).get();
+    const user = userDoc.data();
+
+    if (!user || user.role !== "admin") {
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        "Admin access required",
+      );
+    }
+
+    console.log("[Category Tree] Manual rebuild triggered by:", context.auth.uid);
+
+    try {
+      const result = await buildAndSaveCategoryTree();
+      return {
+        success: true,
+        ...result,
+      };
+    } catch (error) {
+      console.error("[Category Tree] Manual rebuild failed:", error);
+      throw new functions.https.HttpsError(
+        "internal",
+        error instanceof Error ? error.message : String(error),
+      );
+    }
+  });
+
+/**
+ * Build the complete category tree and save to cache
+ */
+async function buildAndSaveCategoryTree(): Promise<{
+  totalCount: number;
+  rootCount: number;
+  leafCount: number;
+  maxDepth: number;
+}> {
+  console.log("[Category Tree] Building tree structure...");
+
+  // Fetch all categories
+  const categoriesSnapshot = await db
+    .collection("categories")
+    .where("isActive", "==", true)
+    .get();
+
+  if (categoriesSnapshot.empty) {
+    console.log("[Category Tree] No active categories found");
+    
+    // Save empty cache
+    await db.collection("cache").doc("category_tree").set({
+      tree: [],
+      flat: {},
+      roots: [],
+      leaves: [],
+      totalCount: 0,
+      maxDepth: 0,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      version: Date.now(),
+    });
+
+    return { totalCount: 0, rootCount: 0, leafCount: 0, maxDepth: 0 };
+  }
+
+  // Build flat map first
+  const categoryMap = new Map<string, any>();
+  const childrenMap = new Map<string, string[]>();
+
+  categoriesSnapshot.docs.forEach((doc) => {
+    const data = doc.data();
+    categoryMap.set(doc.id, {
+      id: doc.id,
+      ...data,
+    });
+
+    // Build parent -> children mapping
+    const parentIds = data.parentIds || (data.parentId ? [data.parentId] : []);
+    parentIds.forEach((parentId: string) => {
+      if (!childrenMap.has(parentId)) {
+        childrenMap.set(parentId, []);
+      }
+      childrenMap.get(parentId)!.push(doc.id);
+    });
+  });
+
+  // Find root categories (no parents)
+  const rootIds: string[] = [];
+  categoryMap.forEach((cat, id) => {
+    const parentIds = cat.parentIds || (cat.parentId ? [cat.parentId] : []);
+    if (parentIds.length === 0 || parentIds.every((pid: string) => !categoryMap.has(pid))) {
+      rootIds.push(id);
+    }
+  });
+
+  // Build tree recursively
+  function buildNode(catId: string, level: number, ancestors: Array<{ id: string; name: string; slug: string }>): CategoryNode {
+    const cat = categoryMap.get(catId)!;
+    const childIds = childrenMap.get(catId) || [];
+    
+    const currentAncestors = [
+      ...ancestors,
+      { id: catId, name: cat.name, slug: cat.slug },
+    ];
+
+    const children = childIds
+      .map((childId) => buildNode(childId, level + 1, currentAncestors))
+      .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name));
+
+    const path = [...ancestors.map((a) => a.name), cat.name].join(" > ");
+
+    return {
+      id: catId,
+      name: cat.name,
+      slug: cat.slug,
+      description: cat.description || "",
+      image: cat.image || "",
+      icon: cat.icon || "",
+      parentIds: cat.parentIds || (cat.parentId ? [cat.parentId] : []),
+      level,
+      productCount: cat.productCount || 0,
+      auctionCount: cat.auctionCount || 0,
+      isActive: cat.isActive !== false,
+      sortOrder: cat.sortOrder || 0,
+      children,
+      ancestors: ancestors,
+      path,
+    };
+  }
+
+  // Build full tree
+  const tree = rootIds
+    .map((rootId) => buildNode(rootId, 0, []))
+    .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name));
+
+  // Build flat map without children for quick lookups
+  const flat: Record<string, Omit<CategoryNode, "children">> = {};
+  function flattenNode(node: CategoryNode) {
+    const { children, ...rest } = node;
+    flat[node.id] = rest;
+    children.forEach(flattenNode);
+  }
+  tree.forEach(flattenNode);
+
+  // Find leaf nodes (no children)
+  const leaves: string[] = [];
+  function findLeaves(node: CategoryNode) {
+    if (node.children.length === 0) {
+      leaves.push(node.id);
+    } else {
+      node.children.forEach(findLeaves);
+    }
+  }
+  tree.forEach(findLeaves);
+
+  // Calculate max depth
+  function getMaxDepth(nodes: CategoryNode[], currentDepth: number): number {
+    if (nodes.length === 0) return currentDepth;
+    return Math.max(...nodes.map((n) => getMaxDepth(n.children, currentDepth + 1)));
+  }
+  const maxDepth = tree.length > 0 ? getMaxDepth(tree, 0) : 0;
+
+  // Save to cache
+  const cacheData: CategoryTreeCache = {
+    tree,
+    flat,
+    roots: rootIds,
+    leaves,
+    totalCount: categoryMap.size,
+    maxDepth,
+    updatedAt: admin.firestore.Timestamp.now(),
+    version: Date.now(),
+  };
+
+  await db.collection("cache").doc("category_tree").set(cacheData);
+
+  console.log(`[Category Tree] Saved tree with ${categoryMap.size} categories, ${rootIds.length} roots, ${leaves.length} leaves, depth ${maxDepth}`);
+
+  return {
+    totalCount: categoryMap.size,
+    rootCount: rootIds.length,
+    leafCount: leaves.length,
+    maxDepth,
+  };
 }
