@@ -5,21 +5,24 @@ import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import MediaUploader from "@/components/media/MediaUploader";
-import { heroSlidesService } from "@/services/hero-slides.service";
+import {
+  heroSlidesService,
+  type HeroSlideFormData,
+} from "@/services/hero-slides.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { MediaFile } from "@/types/media";
 
-interface HeroSlide {
-  id: string;
+interface FormState {
   title: string;
   subtitle: string;
   description: string;
-  image_url: string;
-  link_url: string;
-  cta_text: string;
-  is_active: boolean;
+  image: string;
+  ctaLink: string;
+  ctaText: string;
+  isActive: boolean;
+  order: number;
 }
 
 export default function EditHeroSlidePage() {
@@ -28,7 +31,7 @@ export default function EditHeroSlidePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [formData, setFormData] = useState<HeroSlide | null>(null);
+  const [formData, setFormData] = useState<FormState | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<MediaFile[]>([]);
 
   const {
@@ -44,7 +47,7 @@ export default function EditHeroSlidePage() {
     navigationGuardMessage:
       "You have uploaded a new image. Leave and delete it?",
     onUploadSuccess: (url) => {
-      setFormData((prev) => (prev ? { ...prev, image_url: url } : null));
+      setFormData((prev) => (prev ? { ...prev, image: url } : null));
     },
     onUploadError: (error) => {
       toast.error(`Upload failed: ${error}`);
@@ -66,15 +69,15 @@ export default function EditHeroSlidePage() {
         params.id as string
       );
       // Transform from service format to form format
-      const data: HeroSlide = {
-        id: slide.id,
+      const data: FormState = {
         title: slide.title,
         subtitle: slide.subtitle || "",
         description: slide.description || "",
-        image_url: slide.image,
-        link_url: slide.ctaLink,
-        cta_text: slide.ctaText,
-        is_active: slide.isActive,
+        image: slide.image,
+        ctaLink: slide.ctaLink,
+        ctaText: slide.ctaText,
+        isActive: slide.isActive,
+        order: slide.order,
       };
       setFormData(data);
     } catch (error) {
@@ -101,24 +104,14 @@ export default function EditHeroSlidePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData || !formData.title || !formData.image_url) {
+    if (!formData || !formData.title || !formData.image) {
       toast.error("Title and image are required");
       return;
     }
 
     try {
       setSaving(true);
-      // Transform to service format
-      await heroSlidesService.updateHeroSlide(params.id as string, {
-        title: formData.title,
-        subtitle: formData.subtitle,
-        description: formData.description,
-        image: formData.image_url,
-        ctaText: formData.cta_text,
-        ctaLink: formData.link_url,
-        order: 0,
-        isActive: formData.is_active,
-      });
+      await heroSlidesService.updateHeroSlide(params.id as string, formData);
 
       // Success! Clear tracking
       clearTracking();
@@ -249,10 +242,10 @@ export default function EditHeroSlidePage() {
               Image <span className="text-red-500">*</span>
             </label>
 
-            {formData.image_url && !uploadedFiles.length && (
+            {formData.image && !uploadedFiles.length && (
               <div className="mb-4">
                 <img
-                  src={formData.image_url}
+                  src={formData.image}
                   alt="Current hero slide"
                   className="w-full h-48 object-cover rounded-lg"
                 />
@@ -296,9 +289,9 @@ export default function EditHeroSlidePage() {
             </label>
             <input
               type="url"
-              value={formData.link_url}
+              value={formData.ctaLink}
               onChange={(e) =>
-                setFormData({ ...formData, link_url: e.target.value })
+                setFormData({ ...formData, ctaLink: e.target.value })
               }
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="https://..."
@@ -315,9 +308,9 @@ export default function EditHeroSlidePage() {
             </label>
             <input
               type="text"
-              value={formData.cta_text}
+              value={formData.ctaText}
               onChange={(e) =>
-                setFormData({ ...formData, cta_text: e.target.value })
+                setFormData({ ...formData, ctaText: e.target.value })
               }
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="Shop Now"
@@ -329,9 +322,9 @@ export default function EditHeroSlidePage() {
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={formData.is_active}
+                checked={formData.isActive}
                 onChange={(e) =>
-                  setFormData({ ...formData, is_active: e.target.checked })
+                  setFormData({ ...formData, isActive: e.target.checked })
                 }
                 className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
               />
@@ -351,7 +344,7 @@ export default function EditHeroSlidePage() {
               isUploading ||
               isCleaning ||
               !formData.title ||
-              !formData.image_url
+              !formData.image
             }
             className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >

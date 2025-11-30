@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   Search,
@@ -18,6 +19,7 @@ import {
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { ProductCard } from "@/components/cards/ProductCard";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   InlineEditRow,
@@ -41,6 +43,7 @@ import { validateForm } from "@/lib/form-validation";
 
 export default function AdminProductsPage() {
   const { user, isAdmin } = useAuth();
+  const router = useRouter();
   const isMobile = useIsMobile();
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
@@ -356,80 +359,37 @@ export default function AdminProductsPage() {
 
         {/* Content Area */}
         <div className="flex-1 space-y-6">
-          {/* Grid View */}
+          {/* Grid View - Using Unified ProductCard */}
           {view === "grid" && (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {products.map((product) => (
-                <div
+                <ProductCard
                   key={product.id}
-                  className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="aspect-square bg-gray-100 relative">
-                    {product.images[0] ? (
-                      <img
-                        src={product.images[0]}
-                        alt={product.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-gray-400">
-                        <Package size={48} />
-                      </div>
-                    )}
-                    {product.featured && (
-                      <div className="absolute top-2 right-2">
-                        <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700">
-                          Featured
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900 truncate">
-                          {product.name}
-                        </h3>
-                        <p className="text-sm text-gray-500 truncate">
-                          SKU: {product.sku || "N/A"}
-                        </p>
-                      </div>
-                      <StatusBadge status={product.status} />
-                    </div>
-                    <div className="mt-2">
-                      <p className="text-lg font-semibold text-gray-900">
-                        {formatPrice(product.price)}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Stock: {product.stockCount}
-                      </p>
-                    </div>
-                    <div className="mt-3 flex items-center gap-2 text-sm">
-                      <span className="text-gray-500">
-                        ⭐ {product.rating.toFixed(1)}
-                      </span>
-                      <span className="text-gray-400">•</span>
-                      <span className="text-gray-500">
-                        {product.salesCount} sales
-                      </span>
-                    </div>
-                    <div className="mt-4 flex gap-2">
-                      <Link
-                        href={`/admin/products/${product.slug}/edit`}
-                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-50"
-                      >
-                        Edit
-                      </Link>
-                      <Link
-                        href={`/products/${product.slug}`}
-                        target="_blank"
-                        className="flex-1 rounded-lg bg-purple-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-purple-700"
-                      >
-                        View
-                      </Link>
-                    </div>
-                  </div>
-                </div>
+                  id={product.id}
+                  name={product.name}
+                  slug={product.slug}
+                  price={product.price}
+                  originalPrice={product.compareAtPrice ?? undefined}
+                  image={product.images[0] || ""}
+                  images={product.images}
+                  rating={product.rating}
+                  reviewCount={product.reviewCount}
+                  inStock={product.stockCount > 0}
+                  featured={product.featured}
+                  status={product.status}
+                  sku={product.sku || undefined}
+                  stockCount={product.stockCount}
+                  salesCount={product.salesCount}
+                  variant="admin"
+                  onEdit={(slug) => router.push(`/admin/products/${slug}/edit`)}
+                  onDelete={(slug) => setDeleteSlug(slug)}
+                  isSelected={selectedIds.includes(product.id)}
+                  onSelect={(id, selected) => {
+                    setSelectedIds((prev) =>
+                      selected ? [...prev, id] : prev.filter((i) => i !== id)
+                    );
+                  }}
+                />
               ))}
             </div>
           )}
