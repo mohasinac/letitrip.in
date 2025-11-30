@@ -149,7 +149,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
           <div className="flex gap-2 mb-3 overflow-x-auto">
             {media.slice(0, 4).map((mediaUrl, index) => (
               <div
-                key={index}
+                key={`media-${mediaUrl}-${index}`}
                 className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700"
               >
                 <Image

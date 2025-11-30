@@ -193,9 +193,9 @@ export const ShopCard: React.FC<ShopCardProps> = ({
         {/* Categories */}
         {categories.length > 0 && !compact && (
           <div className="flex flex-wrap gap-2 mb-4">
-            {categories.slice(0, 3).map((category, index) => (
+            {categories.slice(0, 3).map((category) => (
               <span
-                key={index}
+                key={category}
                 className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded"
               >
                 {category}

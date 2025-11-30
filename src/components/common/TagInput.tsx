@@ -206,7 +206,7 @@ export default function TagInput({
         {/* Existing tags */}
         {value.map((tag, index) => (
           <span
-            key={index}
+            key={tag}
             className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100/30 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md text-sm"
           >
             {tag}
@@ -266,7 +266,7 @@ export default function TagInput({
           <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto">
             {filteredSuggestions.map((suggestion, index) => (
               <div
-                key={index}
+                key={suggestion}
                 onClick={() => handleSuggestionClick(suggestion)}
                 onKeyDown={(e) =>
                   e.key === "Enter" && handleSuggestionClick(suggestion)

@@ -195,9 +195,9 @@ export const BlogCard: React.FC<BlogCardProps> = ({
           {/* Tags */}
           {!compact && tags.length > 0 && (
             <div className="flex items-center gap-1">
-              {tags.slice(0, 2).map((tag, index) => (
+              {tags.slice(0, 2).map((tag) => (
                 <span
-                  key={index}
+                  key={tag}
                   className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded"
                 >
                   #{tag}

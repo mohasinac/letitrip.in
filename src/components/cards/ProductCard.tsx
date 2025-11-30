@@ -207,9 +207,9 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
         {/* Media Indicators - show image dots when rotating images */}
         {allImages.length > 1 && isHovered && !isPlayingVideo && (
           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1 z-20">
-            {allImages.map((_, index) => (
+            {allImages.map((imageUrl, index) => (
               <div
-                key={index}
+                key={`dot-${imageUrl}-${index}`}
                 className={`h-1.5 rounded-full transition-all ${
                   index === currentMediaIndex
                     ? "w-4 bg-white"

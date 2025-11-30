@@ -13,6 +13,15 @@ import { COLLECTIONS } from "@/constants/database";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
 /**
+ * Helper function to convert role to sender/recipient type
+ */
+function getUserType(role: string): "admin" | "seller" | "user" {
+  if (role === "admin") return "admin";
+  if (role === "seller") return "seller";
+  return "user";
+}
+
+/**
  * GET /api/messages
  * List conversations for the authenticated user
  */
@@ -146,11 +155,16 @@ export async function POST(request: NextRequest) {
 
       // Create message
       const messageRef = db.collection(COLLECTIONS.MESSAGES).doc();
+      const getSenderType = (role: string) => {
+        if (role === "admin") return "admin";
+        if (role === "seller") return "seller";
+        return "user";
+      };
       const messageData = {
         conversationId,
         senderId: userId,
         senderName: userName,
-        senderType: auth.role === "admin" ? "admin" : auth.role === "seller" ? "seller" : "user",
+        senderType: getSenderType(auth.role),
         content: message.trim(),
         attachments: [],
         readBy: { [userId]: now },
@@ -212,7 +226,7 @@ export async function POST(request: NextRequest) {
 
     const recipientData = recipientDoc.data();
     const recipientName = recipientData?.displayName || recipientData?.email || "User";
-    const recipientType = recipientData?.role === "admin" ? "admin" : recipientData?.role === "seller" ? "seller" : "user";
+    const recipientType = getUserType(recipientData?.role || "user");
 
     // Check for existing conversation between these users
     const existingQuery = await db
@@ -232,7 +246,7 @@ export async function POST(request: NextRequest) {
         conversationId: existingConversation.id,
         senderId: userId,
         senderName: userName,
-        senderType: auth.role === "admin" ? "admin" : auth.role === "seller" ? "seller" : "user",
+        senderType: getUserType(auth.role),
         content: message.trim(),
         attachments: [],
         readBy: { [userId]: now },
@@ -276,7 +290,7 @@ export async function POST(request: NextRequest) {
         sender: {
           id: userId,
           name: userName,
-          type: auth.role === "admin" ? "admin" : auth.role === "seller" ? "seller" : "user",
+          type: getUserType(auth.role),
         },
         recipient: {
           id: recipientId,
@@ -309,7 +323,7 @@ export async function POST(request: NextRequest) {
       conversationId: conversationRef.id,
       senderId: userId,
       senderName: userName,
-      senderType: auth.role === "admin" ? "admin" : auth.role === "seller" ? "seller" : "user",
+      senderType: getUserType(auth.role),
       content: message.trim(),
       attachments: [],
       readBy: { [userId]: now },

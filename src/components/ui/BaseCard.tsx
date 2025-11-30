@@ -113,9 +113,9 @@ export const BaseCard: React.FC<BaseCardProps> = ({
         {/* Badges */}
         {badges.length > 0 && (
           <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-            {badges.map((badge, index) => (
+            {badges.map((badge) => (
               <span
-                key={index}
+                key={`badge-${badge.text}-${badge.color}`}
                 className={`${
                   badgeColors[badge.color]
                 } text-xs font-semibold px-2 py-1 rounded`}
@@ -129,9 +129,9 @@ export const BaseCard: React.FC<BaseCardProps> = ({
         {/* Action Buttons */}
         {actionButtons.length > 0 && (
           <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-            {actionButtons.map((button, index) => (
+            {actionButtons.map((button) => (
               <button
-                key={index}
+                key={`action-${button.label}`}
                 onClick={button.onClick}
                 className={`
                   p-2 rounded-full bg-white dark:bg-gray-700 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors

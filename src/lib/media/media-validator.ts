@@ -40,9 +40,13 @@ export function validateFileType(
   allowedTypes: MediaType[],
 ): { isValid: boolean; error?: string } {
   const fileType = file.type;
+  const getFormatKey = (type: MediaType): keyof typeof SUPPORTED_FORMATS => {
+    if (type === "image") return "IMAGES";
+    if (type === "video") return "VIDEOS";
+    return "DOCUMENTS";
+  };
   const isValid = allowedTypes.some((type) => {
-    const formatKey =
-      type === "image" ? "IMAGES" : type === "video" ? "VIDEOS" : "DOCUMENTS";
+    const formatKey = getFormatKey(type);
     const formats = SUPPORTED_FORMATS[formatKey];
     return (formats.mimeTypes as readonly string[]).includes(fileType);
   });
