@@ -25,12 +25,28 @@ const PRODUCT_IMAGES = [
   "https://images.unsplash.com/photo-1512820790803-83ca734da794",
   "https://images.unsplash.com/photo-1596462502278-27bfdc403348",
   "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338",
+  "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f",
+  "https://images.unsplash.com/photo-1583394838336-acd977736f90",
+  "https://images.unsplash.com/photo-1491553895911-0055uj8f27za",
+  "https://images.unsplash.com/photo-1546868871-7041f2a55e12",
+  "https://images.unsplash.com/photo-1585386959984-a4155224a1ad",
+  "https://images.unsplash.com/photo-1525904097878-94fb15835963",
+  "https://images.unsplash.com/photo-1559056199-641a0ac8b55e",
+  "https://images.unsplash.com/photo-1560343776-97e7d202ff0e",
+  "https://images.unsplash.com/photo-1587829741301-dc798b83add3",
+  "https://images.unsplash.com/photo-1608231387042-66d1773070a5",
 ];
 
+// Sample videos for product demos
 const PRODUCT_VIDEOS = [
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
 ];
 
 const PRODUCT_NAMES = [
@@ -84,10 +100,14 @@ export async function POST(request: NextRequest) {
       const productRef = db.collection(COLLECTIONS.PRODUCTS).doc();
       const basePrice = 500 + Math.random() * 50000;
       const stockCount = Math.floor(Math.random() * 100) + 5;
-      const imageCount = 2 + Math.floor(Math.random() * 3);
+      // Generate 4-6 images per product for better carousel experience
+      const imageCount = 4 + Math.floor(Math.random() * 3);
       const productImages = Array.from({ length: imageCount }, (_, idx) => 
-        `${PRODUCT_IMAGES[(i * 3 + idx) % PRODUCT_IMAGES.length]}?w=800&h=800&fit=crop`
+        `${PRODUCT_IMAGES[(i * 5 + idx) % PRODUCT_IMAGES.length]}?w=800&h=800&fit=crop`
       );
+      // 40% of products have videos
+      const hasVideo = Math.random() < 0.4;
+      const productVideos = hasVideo ? [PRODUCT_VIDEOS[i % PRODUCT_VIDEOS.length]] : [];
 
       await productRef.set({
         name: `${DEMO_PREFIX}${productName} #${i + 1}`,
@@ -107,7 +127,7 @@ export async function POST(request: NextRequest) {
         brand: ["Official", "Licensed", "Premium", "Authentic"][i % 4],
         condition: "New",
         images: productImages,
-        videos: Math.random() < 0.3 ? [PRODUCT_VIDEOS[i % PRODUCT_VIDEOS.length]] : [],
+        videos: productVideos,
         view_count: Math.floor(Math.random() * 1000),
         sales_count: Math.floor(Math.random() * 100),
         review_count: 0,
