@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
 
         // Build base Firestore query
         const productsRef = Collections.products();
-        let query = productsRef.where("is_deleted", "!=", true);
+        let query: FirebaseFirestore.Query = productsRef;
 
         // Role-based filtering
         const role = user?.role ? (user.role as UserRole) : UserRole.USER;

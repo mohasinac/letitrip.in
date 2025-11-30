@@ -260,11 +260,11 @@ export async function POST(request: NextRequest) {
       const isOutOfStock = Math.random() < 0.15;
       const stockCount = isOutOfStock ? 0 : Math.floor(Math.random() * 50) + 1;
       
-      // Generate 4-6 images per product
+      // Generate 4-6 images per product - use shuffled selection for variety
       const imageCount = 4 + Math.floor(Math.random() * 3);
-      const productImages = Array.from({ length: imageCount }, (_, idx) => 
-        `${PRODUCT_IMAGES[(i * 5 + idx) % PRODUCT_IMAGES.length]}`
-      );
+      // Shuffle and pick unique images for this product
+      const shuffledImages = [...PRODUCT_IMAGES].sort(() => Math.random() - 0.5);
+      const productImages = shuffledImages.slice(0, imageCount);
       
       // 40% of products have videos
       const hasVideo = Math.random() < 0.4;

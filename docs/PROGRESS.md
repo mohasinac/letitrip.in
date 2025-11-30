@@ -5,30 +5,81 @@
 
 ---
 
-## Session 2 Checklist (Current)
+## Session 2 Checklist (Completed ✅)
 
 ### Priority 1: Sieve Pagination Migration (Core Routes)
 
-- [ ] 1. Migrate `/api/products` to Sieve pagination
-- [ ] 2. Migrate `/api/auctions` to Sieve pagination
-- [ ] 3. Migrate `/api/shops` to Sieve pagination
-- [ ] 4. Migrate `/api/categories` to Sieve pagination
-- [ ] 5. Migrate `/api/reviews` to Sieve pagination
+- [x] 1. Migrate `/api/products` to Sieve pagination
+- [x] 2. Migrate `/api/auctions` to Sieve pagination
+- [x] 3. Migrate `/api/shops` to Sieve pagination
+- [x] 4. Migrate `/api/categories` to Sieve pagination
+- [x] 5. Migrate `/api/reviews` to Sieve pagination
 
 ### Priority 2: Component Dark Mode (Remaining)
 
-- [ ] 6. Add dark mode to `LoadingSkeleton.tsx`
-- [ ] 7. Add dark mode to `ErrorState.tsx`
-- [ ] 8. Fix AdminSidebar search highlight visibility for dark mode
+- [x] 6. Add dark mode to `LoadingSkeleton.tsx`
+- [x] 7. Add dark mode to `ErrorState.tsx`
+- [x] 8. Fix AdminSidebar search highlight visibility for dark mode
 
 ### Priority 3: Mobile Responsiveness Fixes
 
-- [ ] 9. Hide user menu on mobile in MainNavBar (use bottom nav instead)
-- [ ] 10. Fix MobileFilterSidebar overlap with bottom nav
+- [x] 9. Hide user menu on mobile in MainNavBar (use bottom nav instead)
+- [x] 10. Fix MobileFilterSidebar overlap with bottom nav
+- [x] 11. Fix MobileFilterDrawer overlap with bottom nav (added)
 
 ### Priority 4: Code Quality
 
-- [ ] 11. Run local Sonar scan and report metrics
+- [x] 12. Run local Sonar scan and report metrics
+
+---
+
+## Session 2.5 Hotfix (Current)
+
+### API Bug Fixes
+
+- [x] 13. Fix products API - removed is_deleted filter that caused 500 error
+- [x] 14. Fix categories API - added 'order' field mapping to 'sort_order'
+
+### Categories Page Enhancement
+
+- [x] 15. Add filter sidebar to public categories page (`/categories`)
+  - Added UnifiedFilterSidebar with CATEGORY_FILTERS
+  - Added view toggle (grid/list)
+  - Added sort controls
+  - Added filter state management
+  - Added dynamic parent category options
+
+### Summary of Session 2.5 Changes
+
+| File                              | Changes                                                                        |
+| --------------------------------- | ------------------------------------------------------------------------------ |
+| `src/app/api/products/route.ts`   | Removed `is_deleted` Firestore filter that was causing query errors            |
+| `src/app/api/categories/route.ts` | Added `order: "sort_order"` field mapping for Sieve config                     |
+| `src/app/categories/page.tsx`     | Complete rewrite with filter sidebar, view toggle, and proper state management |
+
+---
+
+### Summary of Session 2 Changes
+
+| File                                            | Changes                                                                                                                                        |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/api/products/route.ts`                 | Migrated from `executeCursorPaginatedQuery` to Sieve with `parseSieveQuery`/`executeSieveQuery`, added field mappings for snake_case DB fields |
+| `src/app/api/auctions/route.ts`                 | Migrated to Sieve pagination with `auctionsSieveConfig`, role-based filters                                                                    |
+| `src/app/api/shops/route.ts`                    | Migrated to Sieve pagination with `shopsSieveConfig`                                                                                           |
+| `src/app/api/categories/route.ts`               | Migrated to Sieve pagination with `categoriesSieveConfig`                                                                                      |
+| `src/app/api/reviews/route.ts`                  | Migrated to Sieve pagination with `reviewsSieveConfig`, maintained stats calculation                                                           |
+| `src/components/common/LoadingSkeleton.tsx`     | Added `dark:bg-gray-700` and `dark:bg-gray-600` classes for dark mode                                                                          |
+| `src/components/common/ErrorState.tsx`          | Added dark mode for background, text, icons, and button                                                                                        |
+| `src/components/admin/AdminSidebar.tsx`         | Fixed search highlight: `bg-yellow-200 dark:bg-yellow-900/50 text-yellow-900 dark:text-yellow-200`                                             |
+| `src/components/layout/MainNavBar.tsx`          | Added `hidden lg:block` wrapper to hide user menu on mobile when authenticated                                                                 |
+| `src/components/common/MobileFilterSidebar.tsx` | Changed footer from `bottom-0` to `bottom-32` for BottomNav + MobileNavRow clearance                                                           |
+| `src/components/common/MobileFilterDrawer.tsx`  | Changed footer from `bottom-0` to `bottom-32` + added full dark mode support                                                                   |
+
+### Sonar Scan Results
+
+- **Status**: ✅ ANALYSIS SUCCESSFUL
+- **Files Analyzed**: 1000 TypeScript/JavaScript + 10 CSS
+- **Dashboard**: https://sonarcloud.io/dashboard?id=mohasinac_letitrip.in
 
 ---
 
