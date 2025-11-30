@@ -183,7 +183,7 @@ export default function Footer() {
       {/* Scroll to Top Button */}
       <button
         onClick={scrollToTop}
-        className="fixed bottom-20 lg:bottom-8 right-8 bg-yellow-500 hover:bg-yellow-600 text-gray-900 p-3 rounded-full shadow-lg transition-all z-40"
+        className="fixed bottom-36 lg:bottom-8 right-8 bg-yellow-500 hover:bg-yellow-600 text-gray-900 p-3 rounded-full shadow-lg transition-all z-40"
         aria-label="Scroll to top"
       >
         <ChevronUp className="w-6 h-6" />

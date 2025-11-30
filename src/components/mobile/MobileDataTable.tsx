@@ -52,13 +52,13 @@ export function MobileDataTable<T extends Record<string, any>>({
         {Array.from({ length: loadingRows }).map((_, i) => (
           <div
             key={i}
-            className="bg-white border border-gray-200 rounded-lg p-4 animate-pulse"
+            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 animate-pulse"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gray-200 rounded-full" />
+              <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-3 bg-gray-200 rounded w-1/2" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
               </div>
             </div>
           </div>
@@ -72,9 +72,9 @@ export function MobileDataTable<T extends Record<string, any>>({
     return (
       <div className={cn("py-12 text-center", className)}>
         {emptyState || (
-          <div className="text-gray-500">
+          <div className="text-gray-500 dark:text-gray-400">
             <svg
-              className="w-12 h-12 mx-auto mb-4 text-gray-300"
+              className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -124,16 +124,16 @@ export function MobileDataTable<T extends Record<string, any>>({
               key={key}
               onClick={() => onRowClick?.(item)}
               className={cn(
-                "bg-white border border-gray-200 rounded-lg p-4",
+                "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4",
                 onRowClick &&
-                  "cursor-pointer hover:border-gray-300 active:bg-gray-50 transition-colors",
+                  "cursor-pointer hover:border-gray-300 dark:hover:border-gray-600 active:bg-gray-50 dark:active:bg-gray-700 transition-colors"
               )}
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
                   {/* Primary info */}
                   {primaryColumn && (
-                    <div className="font-medium text-gray-900 truncate">
+                    <div className="font-medium text-gray-900 dark:text-gray-100 truncate">
                       {primaryColumn.render
                         ? primaryColumn.render(item)
                         : getValue(item, primaryColumn.key as string)}
@@ -141,10 +141,12 @@ export function MobileDataTable<T extends Record<string, any>>({
                   )}
 
                   {/* Secondary info */}
-                  <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
+                  <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
                     {secondaryColumns.map((col) => (
                       <div key={col.key as string}>
-                        <span className="text-gray-400">{col.header}: </span>
+                        <span className="text-gray-400 dark:text-gray-500">
+                          {col.header}:{" "}
+                        </span>
                         {col.render
                           ? col.render(item)
                           : getValue(item, col.key as string)}
@@ -155,7 +157,7 @@ export function MobileDataTable<T extends Record<string, any>>({
 
                 {/* Arrow indicator if clickable */}
                 {onRowClick && (
-                  <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
+                  <ChevronRight className="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" />
                 )}
               </div>
             </div>
@@ -167,13 +169,13 @@ export function MobileDataTable<T extends Record<string, any>>({
       <div className="hidden lg:block overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-200">
+            <tr className="border-b border-gray-200 dark:border-gray-700">
               {columns.map((col) => (
                 <th
                   key={col.key as string}
                   className={cn(
-                    "px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider",
-                    col.className,
+                    "px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-800",
+                    col.className
                   )}
                 >
                   {col.header}
@@ -181,23 +183,23 @@ export function MobileDataTable<T extends Record<string, any>>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {data.map((item) => (
               <tr
                 key={keyExtractor(item)}
                 onClick={() => onRowClick?.(item)}
                 className={cn(
-                  "bg-white",
+                  "bg-white dark:bg-gray-900",
                   onRowClick &&
-                    "cursor-pointer hover:bg-gray-50 transition-colors",
+                    "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 )}
               >
                 {columns.map((col) => (
                   <td
                     key={col.key as string}
                     className={cn(
-                      "px-4 py-4 text-sm text-gray-900",
-                      col.className,
+                      "px-4 py-4 text-sm text-gray-900 dark:text-gray-100",
+                      col.className
                     )}
                   >
                     {col.render
