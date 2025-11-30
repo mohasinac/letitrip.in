@@ -6,11 +6,47 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ValidationError } from "@/lib/api-errors";
-import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
+import {
+  parseSieveQuery,
+  ordersSieveConfig,
+  createPaginationMeta,
+} from "@/app/api/lib/sieve";
+
+// Extended Sieve config with field mappings for orders
+const ordersConfig = {
+  ...ordersSieveConfig,
+  fieldMappings: {
+    userId: "user_id",
+    shopId: "shop_id",
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    paymentStatus: "payment_status",
+    total: "total_amount",
+  } as Record<string, string>,
+};
+
+/**
+ * Transform order document to API response format
+ */
+function transformOrder(id: string, data: any) {
+  return {
+    id,
+    ...data,
+    userId: data.user_id,
+    shopId: data.shop_id,
+    paymentStatus: data.payment_status,
+    totalAmount: data.total_amount,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
+}
 
 /**
  * GET /api/orders
- * List orders with role-based filtering
+ * List orders with Sieve pagination
+ * Query Format: ?page=1&pageSize=20&sorts=-createdAt&filters=status==pending
+ *
+ * Role-based filtering:
  * - User: Own orders only
  * - Seller: Orders for their shop(s)
  * - Admin: All orders
@@ -21,41 +57,53 @@ export async function GET(request: NextRequest) {
     const role = user?.role || "guest";
     const { searchParams } = new URL(request.url);
 
-    // Filter params
-    const shopId = searchParams.get("shop_id");
-    const status = searchParams.get("status");
-    const paymentStatus = searchParams.get("paymentStatus");
+    // Parse Sieve query
+    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
+      searchParams,
+      ordersConfig
+    );
 
-    // Sort params
-    const sortBy = searchParams.get("sortBy") || "created_at";
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as
-      | "asc"
-      | "desc";
+    if (errors.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid query parameters",
+          details: errors,
+        },
+        { status: 400 }
+      );
+    }
 
     let query: FirebaseFirestore.Query = Collections.orders();
+
+    // Legacy query params support (for backward compatibility)
+    const shopId = searchParams.get("shop_id") || searchParams.get("shopId");
+    const status = searchParams.get("status");
+    const paymentStatus = searchParams.get("paymentStatus") || searchParams.get("payment_status");
 
     // Role-based filtering
     if (role === "admin") {
       if (shopId) query = query.where("shop_id", "==", shopId);
     } else if (role === "seller") {
-      if (!shopId)
+      if (!shopId) {
         return NextResponse.json({
           success: true,
           data: [],
-          count: 0,
           pagination: {
-            limit: 50,
-            hasNextPage: false,
-            nextCursor: null,
-            count: 0,
+            page: 1,
+            pageSize: sieveQuery.pageSize,
+            total: 0,
+            totalPages: 0,
           },
         });
+      }
       const owns = await userOwnsShop(shopId, user!.uid);
-      if (!owns)
+      if (!owns) {
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
+      }
       query = query.where("shop_id", "==", shopId);
     } else if (role === "user") {
       query = query.where("user_id", "==", user!.uid);
@@ -63,17 +111,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         data: [],
-        count: 0,
         pagination: {
-          limit: 50,
-          hasNextPage: false,
-          nextCursor: null,
-          count: 0,
+          page: 1,
+          pageSize: sieveQuery.pageSize,
+          total: 0,
+          totalPages: 0,
         },
       });
     }
 
-    // Apply additional filters
+    // Apply legacy filters (backward compatibility)
     if (status) {
       query = query.where("status", "==", status);
     }
@@ -81,27 +128,61 @@ export async function GET(request: NextRequest) {
       query = query.where("payment_status", "==", paymentStatus);
     }
 
-    // Add sorting
-    const validSortFields = ["created_at", "updated_at", "total_amount"];
-    const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
-    query = query.orderBy(sortField, sortOrder);
+    // Apply Sieve filters
+    for (const filter of sieveQuery.filters) {
+      const dbField = ordersConfig.fieldMappings[filter.field] || filter.field;
+      if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
+        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+      }
+    }
 
-    // Execute paginated query
-    const response = await executeCursorPaginatedQuery(
-      query,
-      searchParams,
-      (id) => Collections.orders().doc(id).get(),
-      (doc) => ({ id: doc.id, ...doc.data() }),
-      50, // defaultLimit
-      200, // maxLimit
-    );
+    // Apply sorting
+    if (sieveQuery.sorts.length > 0) {
+      for (const sort of sieveQuery.sorts) {
+        const dbField = ordersConfig.fieldMappings[sort.field] || sort.field;
+        query = query.orderBy(dbField, sort.direction);
+      }
+    } else {
+      query = query.orderBy("created_at", "desc");
+    }
 
-    return NextResponse.json(response);
+    // Get total count
+    const countSnapshot = await query.count().get();
+    const totalCount = countSnapshot.data().count;
+
+    // Apply pagination
+    const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0) {
+      const skipSnapshot = await query.limit(offset).get();
+      if (skipSnapshot.docs.length > 0) {
+        const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+        query = query.startAfter(lastDoc);
+      }
+    }
+    query = query.limit(sieveQuery.pageSize);
+
+    // Execute query
+    const snapshot = await query.get();
+    const data = snapshot.docs.map((doc) => transformOrder(doc.id, doc.data()));
+
+    // Build response with Sieve pagination meta
+    const pagination = createPaginationMeta(totalCount, sieveQuery);
+
+    return NextResponse.json({
+      success: true,
+      data,
+      pagination,
+      meta: {
+        appliedFilters: sieveQuery.filters,
+        appliedSorts: sieveQuery.sorts,
+        warnings: warnings.length > 0 ? warnings : undefined,
+      },
+    });
   } catch (error) {
     console.error("Orders list error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to list orders" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

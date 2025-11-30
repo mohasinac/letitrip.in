@@ -5,11 +5,44 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { ValidationError } from "@/lib/api-errors";
-import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
+import {
+  parseSieveQuery,
+  ticketsSieveConfig,
+  createPaginationMeta,
+} from "@/app/api/lib/sieve";
+
+// Extended Sieve config with field mappings for tickets
+const ticketsConfig = {
+  ...ticketsSieveConfig,
+  fieldMappings: {
+    userId: "userId",
+    shopId: "shopId",
+    assignedTo: "assignedTo",
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
+    resolvedAt: "resolvedAt",
+  } as Record<string, string>,
+};
+
+/**
+ * Transform ticket document to API response format
+ */
+function transformTicket(id: string, data: any) {
+  return {
+    id,
+    ...data,
+    createdAt: data.createdAt?.toDate?.() || data.createdAt,
+    updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
+    resolvedAt: data.resolvedAt?.toDate?.() || data.resolvedAt,
+  };
+}
 
 /**
  * GET /api/tickets
- * List support tickets with role-based filtering
+ * List support tickets with Sieve pagination
+ * Query Format: ?page=1&pageSize=20&sorts=-createdAt&filters=status==open
+ *
+ * Role-based filtering:
  * - User: Own tickets only
  * - Seller: Shop-related tickets (if shopId matches their shop)
  * - Admin: All tickets
@@ -17,48 +50,56 @@ import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
 export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
-
     const searchParams = request.nextUrl.searchParams;
 
-    // Filter params
+    // Parse Sieve query
+    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
+      searchParams,
+      ticketsConfig
+    );
+
+    if (errors.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid query parameters",
+          details: errors,
+        },
+        { status: 400 }
+      );
+    }
+
+    const db = getFirestoreAdmin();
+    let query: FirebaseFirestore.Query = db.collection("support_tickets");
+
+    // Legacy query params support (for backward compatibility)
     const status = searchParams.get("status");
     const category = searchParams.get("category");
     const priority = searchParams.get("priority");
     const assignedTo = searchParams.get("assignedTo");
     const shopId = searchParams.get("shopId");
 
-    // Sort params
-    const sortBy = searchParams.get("sortBy") || "createdAt";
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as
-      | "asc"
-      | "desc";
-
-    const db = getFirestoreAdmin();
-    let query: FirebaseFirestore.Query = db.collection("support_tickets");
-
     // Role-based filtering
     if (!user || user.role === "user") {
-      // Users and guests see only their own tickets (require auth for users)
       if (!user) {
         return NextResponse.json(
           { error: "Authentication required" },
-          { status: 401 },
+          { status: 401 }
         );
       }
       query = query.where("userId", "==", user.uid);
     } else if (user.role === "seller") {
-      // Sellers see tickets related to their shops
       if (!shopId) {
         return NextResponse.json(
           { error: "Shop ID required for seller" },
-          { status: 400 },
+          { status: 400 }
         );
       }
       query = query.where("shopId", "==", shopId);
     }
     // Admin sees all tickets (no additional filter)
 
-    // Apply filters
+    // Apply legacy filters
     if (status) {
       query = query.where("status", "==", status);
     }
@@ -72,29 +113,42 @@ export async function GET(request: NextRequest) {
       query = query.where("assignedTo", "==", assignedTo);
     }
 
-    // Add sorting
-    const validSortFields = ["createdAt", "updatedAt", "priority"];
-    const sortField = validSortFields.includes(sortBy) ? sortBy : "createdAt";
-    query = query.orderBy(sortField, sortOrder);
+    // Apply Sieve filters
+    for (const filter of sieveQuery.filters) {
+      const dbField = ticketsConfig.fieldMappings[filter.field] || filter.field;
+      if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
+        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+      }
+    }
 
-    // Execute paginated query
-    const response = await executeCursorPaginatedQuery(
-      query,
-      searchParams,
-      (id) => db.collection("support_tickets").doc(id).get(),
-      (doc) => {
-        const data = doc.data() || {};
-        return {
-          id: doc.id,
-          ...data,
-          createdAt: data.createdAt?.toDate?.() || data.createdAt,
-          updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
-          resolvedAt: data.resolvedAt?.toDate?.() || data.resolvedAt,
-        };
-      },
-      20, // defaultLimit
-      100, // maxLimit
-    );
+    // Apply sorting
+    if (sieveQuery.sorts.length > 0) {
+      for (const sort of sieveQuery.sorts) {
+        const dbField = ticketsConfig.fieldMappings[sort.field] || sort.field;
+        query = query.orderBy(dbField, sort.direction);
+      }
+    } else {
+      query = query.orderBy("createdAt", "desc");
+    }
+
+    // Get total count
+    const countSnapshot = await query.count().get();
+    const totalCount = countSnapshot.data().count;
+
+    // Apply pagination
+    const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0) {
+      const skipSnapshot = await query.limit(offset).get();
+      if (skipSnapshot.docs.length > 0) {
+        const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+        query = query.startAfter(lastDoc);
+      }
+    }
+    query = query.limit(sieveQuery.pageSize);
+
+    // Execute query
+    const snapshot = await query.get();
+    const data = snapshot.docs.map((doc) => transformTicket(doc.id, doc.data()));
 
     // Get statistics (admin only)
     let stats = undefined;
@@ -110,17 +164,27 @@ export async function GET(request: NextRequest) {
       };
 
       statsSnapshot.docs.forEach((doc) => {
-        const status = doc.data().status;
-        if (status === "open") stats!.open++;
-        else if (status === "in-progress") stats!.inProgress++;
-        else if (status === "resolved") stats!.resolved++;
-        else if (status === "closed") stats!.closed++;
-        else if (status === "escalated") stats!.escalated++;
+        const ticketStatus = doc.data().status;
+        if (ticketStatus === "open") stats!.open++;
+        else if (ticketStatus === "in-progress") stats!.inProgress++;
+        else if (ticketStatus === "resolved") stats!.resolved++;
+        else if (ticketStatus === "closed") stats!.closed++;
+        else if (ticketStatus === "escalated") stats!.escalated++;
       });
     }
 
+    // Build response with Sieve pagination meta
+    const pagination = createPaginationMeta(totalCount, sieveQuery);
+
     return NextResponse.json({
-      ...response,
+      success: true,
+      data,
+      pagination,
+      meta: {
+        appliedFilters: sieveQuery.filters,
+        appliedSorts: sieveQuery.sorts,
+        warnings: warnings.length > 0 ? warnings : undefined,
+      },
       ...(stats && { stats }),
     });
   } catch (error: any) {

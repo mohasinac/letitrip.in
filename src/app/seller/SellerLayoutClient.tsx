@@ -17,20 +17,24 @@ export function SellerLayoutClient({ children }: SellerLayoutClientProps) {
 
   return (
     <>
-      {/* Mobile Header with Menu Toggle */}
-      <div className="lg:hidden sticky top-0 z-40 bg-blue-600 text-white px-4 py-3 flex items-center gap-3">
+      {/* Mobile Header - simplified, no hamburger since MobileNavRow provides navigation */}
+      <div className="lg:hidden sticky top-0 z-40 bg-blue-600 text-white px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Store className="w-5 h-5" />
+          <span className="font-semibold">Seller Hub</span>
+        </div>
+        {/* Only show menu button for accessing full sidebar with grouped sections */}
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="p-2 hover:bg-blue-700 rounded-lg touch-target"
-          aria-label="Open seller menu"
+          className="p-2 hover:bg-blue-700 rounded-lg touch-target text-sm flex items-center gap-1"
+          aria-label="More options"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-5 h-5" />
+          <span className="text-xs">More</span>
         </button>
-        <Store className="w-5 h-5" />
-        <span className="font-semibold">Seller Hub</span>
       </div>
 
-      {/* Mobile Sidebar */}
+      {/* Mobile Sidebar - for accessing grouped/nested navigation items */}
       <MobileSellerSidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -39,7 +43,7 @@ export function SellerLayoutClient({ children }: SellerLayoutClientProps) {
       {/* Page Content */}
       {children}
 
-      {/* Mobile Navigation Row - above bottom nav, hidden on desktop */}
+      {/* Mobile Navigation Row - primary navigation above bottom nav */}
       <MobileNavRow items={sellerMobileNavItems} variant="seller" />
     </>
   );

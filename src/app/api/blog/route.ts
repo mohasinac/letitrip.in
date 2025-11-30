@@ -1,36 +1,72 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import {
+  parseSieveQuery,
+  blogSieveConfig,
+  createPaginationMeta,
+} from "@/app/api/lib/sieve";
 
 const COLLECTION = "blog_posts";
 
-// GET /api/blog - List blog posts with cursor-based pagination
+// Extended Sieve config with field mappings for blog posts
+const blogConfig = {
+  ...blogSieveConfig,
+  fieldMappings: {
+    createdAt: "created_at",
+    publishedAt: "publishedAt",
+    viewCount: "view_count",
+    featured: "is_featured",
+  } as Record<string, string>,
+};
+
+/**
+ * Transform blog post document to API response format
+ */
+function transformBlogPost(id: string, data: any) {
+  return {
+    id,
+    ...data,
+    featured: data.is_featured,
+    viewCount: data.view_count,
+  };
+}
+
+/**
+ * GET /api/blog
+ * List blog posts with Sieve pagination
+ * Query Format: ?page=1&pageSize=20&sorts=-publishedAt&filters=status==published
+ */
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
     const { searchParams } = new URL(req.url);
 
-    // Pagination params
-    const startAfter = searchParams.get("startAfter");
-    const limit = parseInt(searchParams.get("limit") || "20");
+    // Parse Sieve query
+    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
+      searchParams,
+      blogConfig
+    );
 
-    // Filter params
+    if (errors.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid query parameters",
+          details: errors,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Legacy query params support (for backward compatibility)
     const status = searchParams.get("status") || "published";
     const category = searchParams.get("category");
-    const featured =
-      searchParams.get("featured") || searchParams.get("showOnHomepage");
+    const featured = searchParams.get("featured") || searchParams.get("showOnHomepage");
 
-    // Sort params
-    const sortBy = searchParams.get("sortBy") || "publishedAt";
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as
-      | "asc"
-      | "desc";
-
-    // Build query using composite indexes
-    let query: FirebaseFirestore.Query = db
-      .collection(COLLECTION)
+    let query: FirebaseFirestore.Query = db.collection(COLLECTION)
       .where("status", "==", status);
 
-    // Apply filters
+    // Apply legacy filters
     if (featured === "true") {
       query = query.where("is_featured", "==", true);
     }
@@ -38,59 +74,61 @@ export async function GET(req: NextRequest) {
       query = query.where("category", "==", category);
     }
 
-    // Add sorting
-    const validSortFields = [
-      "publishedAt",
-      "created_at",
-      "view_count",
-      "title",
-    ];
-    const sortField = validSortFields.includes(sortBy) ? sortBy : "publishedAt";
-    query = query.orderBy(sortField, sortOrder);
-
-    // Apply cursor pagination
-    if (startAfter) {
-      const startDoc = await db.collection(COLLECTION).doc(startAfter).get();
-      if (startDoc.exists) {
-        query = query.startAfter(startDoc);
+    // Apply Sieve filters
+    for (const filter of sieveQuery.filters) {
+      const dbField = blogConfig.fieldMappings[filter.field] || filter.field;
+      if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
+        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
       }
     }
 
-    // Fetch limit + 1 to check if there's a next page
-    query = query.limit(limit + 1);
+    // Apply sorting
+    if (sieveQuery.sorts.length > 0) {
+      for (const sort of sieveQuery.sorts) {
+        const dbField = blogConfig.fieldMappings[sort.field] || sort.field;
+        query = query.orderBy(dbField, sort.direction);
+      }
+    } else {
+      query = query.orderBy("publishedAt", "desc");
+    }
+
+    // Get total count
+    const countSnapshot = await query.count().get();
+    const totalCount = countSnapshot.data().count;
+
+    // Apply pagination
+    const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0) {
+      const skipSnapshot = await query.limit(offset).get();
+      if (skipSnapshot.docs.length > 0) {
+        const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+        query = query.startAfter(lastDoc);
+      }
+    }
+    query = query.limit(sieveQuery.pageSize);
+
+    // Execute query
     const snapshot = await query.get();
-    const docs = snapshot.docs;
+    const data = snapshot.docs.map((doc) => transformBlogPost(doc.id, doc.data()));
 
-    // Check if there's a next page
-    const hasNextPage = docs.length > limit;
-    const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
-
-    const posts = resultDocs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    // Get next cursor
-    const nextCursor =
-      hasNextPage && resultDocs.length > 0
-        ? resultDocs[resultDocs.length - 1].id
-        : null;
+    // Build response with Sieve pagination meta
+    const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
       success: true,
-      data: posts,
-      count: posts.length,
-      pagination: {
-        limit,
-        hasNextPage,
-        nextCursor,
+      data,
+      pagination,
+      meta: {
+        appliedFilters: sieveQuery.filters,
+        appliedSorts: sieveQuery.sorts,
+        warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
   } catch (error) {
     console.error("Error fetching blog posts:", error);
     return NextResponse.json(
       { error: "Failed to fetch blog posts" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -1,13 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { requireRole } from "@/app/api/middleware/rbac-auth";
-import { executeCursorPaginatedQuery } from "@/app/api/lib/utils/pagination";
+import {
+  parseSieveQuery,
+  usersSieveConfig,
+  createPaginationMeta,
+} from "@/app/api/lib/sieve";
+
+// Extended Sieve config with field mappings for users
+const usersConfig = {
+  ...usersSieveConfig,
+  fieldMappings: {
+    displayName: "name",
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    lastLogin: "last_login",
+    emailVerified: "email_verified",
+    isBanned: "is_banned",
+  } as Record<string, string>,
+};
+
+/**
+ * Transform user document to API response format
+ */
+function transformUser(id: string, data: any) {
+  return {
+    id,
+    ...data,
+    displayName: data.name,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+    lastLogin: data.last_login,
+    emailVerified: data.email_verified,
+    isBanned: data.is_banned,
+  };
+}
 
 /**
  * GET /api/users
- * List users
+ * List users with Sieve pagination
+ * Query Format: ?page=1&pageSize=20&sorts=-createdAt&filters=role==admin
  * - Admin: Can view all users
- * - User: Can only view their own profile (redirected to /api/users/me)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -17,18 +50,29 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
 
-    // Filter params
-    const role = searchParams.get("role");
-    const search = searchParams.get("search");
-    const status = searchParams.get("status"); // active, banned
+    // Parse Sieve query
+    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
+      searchParams,
+      usersConfig
+    );
 
-    // Sort params
-    const sortBy = searchParams.get("sortBy") || "created_at";
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as
-      | "asc"
-      | "desc";
+    if (errors.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid query parameters",
+          details: errors,
+        },
+        { status: 400 }
+      );
+    }
 
     let query: FirebaseFirestore.Query = Collections.users();
+
+    // Legacy query params support (for backward compatibility)
+    const role = searchParams.get("role");
+    const status = searchParams.get("status");
+    const search = searchParams.get("search");
 
     // Filter by role
     if (role && role !== "all") {
@@ -42,43 +86,75 @@ export async function GET(request: NextRequest) {
       query = query.where("is_banned", "==", false);
     }
 
-    // Add sorting
-    const validSortFields = ["created_at", "last_login", "name"];
-    const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
-    query = query.orderBy(sortField, sortOrder);
+    // Apply Sieve filters
+    for (const filter of sieveQuery.filters) {
+      const dbField = usersConfig.fieldMappings[filter.field] || filter.field;
+      if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
+        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+      }
+    }
 
-    // Execute paginated query
-    const response = await executeCursorPaginatedQuery(
-      query,
-      searchParams,
-      (id) => Collections.users().doc(id).get(),
-      (doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }),
-      50, // defaultLimit
-      200, // maxLimit
-    );
+    // Apply sorting
+    if (sieveQuery.sorts.length > 0) {
+      for (const sort of sieveQuery.sorts) {
+        const dbField = usersConfig.fieldMappings[sort.field] || sort.field;
+        query = query.orderBy(dbField, sort.direction);
+      }
+    } else {
+      query = query.orderBy("created_at", "desc");
+    }
+
+    // Get total count
+    const countSnapshot = await query.count().get();
+    const totalCount = countSnapshot.data().count;
+
+    // Apply pagination
+    const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0) {
+      const skipSnapshot = await query.limit(offset).get();
+      if (skipSnapshot.docs.length > 0) {
+        const lastDoc = skipSnapshot.docs[skipSnapshot.docs.length - 1];
+        query = query.startAfter(lastDoc);
+      }
+    }
+    query = query.limit(sieveQuery.pageSize);
+
+    // Execute query
+    const snapshot = await query.get();
+    let data = snapshot.docs.map((doc) => transformUser(doc.id, doc.data()));
 
     // Client-side search filter (Firestore doesn't support full-text search)
     if (search) {
       const searchLower = search.toLowerCase();
-      response.data = response.data.filter(
+      data = data.filter(
         (user: any) =>
           user.email?.toLowerCase().includes(searchLower) ||
           user.name?.toLowerCase().includes(searchLower) ||
-          user.phone?.includes(search),
+          user.phone?.includes(search)
       );
-      response.count = response.data.length;
     }
 
-    return NextResponse.json(response);
+    // Build response with Sieve pagination meta
+    const pagination = createPaginationMeta(
+      search ? data.length : totalCount,
+      sieveQuery
+    );
+
+    return NextResponse.json({
+      success: true,
+      data,
+      pagination,
+      meta: {
+        appliedFilters: sieveQuery.filters,
+        appliedSorts: sieveQuery.sorts,
+        warnings: warnings.length > 0 ? warnings : undefined,
+      },
+    });
   } catch (error: any) {
     console.error("Failed to fetch users:", error);
-
     return NextResponse.json(
       { success: false, error: "Failed to fetch users" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
