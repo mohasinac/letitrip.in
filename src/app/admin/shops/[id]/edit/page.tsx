@@ -18,6 +18,7 @@ import {
   Edit,
 } from "lucide-react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { useAuth } from "@/contexts/AuthContext";
 import { shopsService } from "@/services/shops.service";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
@@ -1100,11 +1101,12 @@ export default function AdminEditShopPage() {
                   Shop Logo
                 </h2>
                 {shop.logo && (
-                  <div className="mb-4">
-                    <img
+                  <div className="mb-4 relative w-full h-32">
+                    <OptimizedImage
                       src={shop.logo}
                       alt="Shop Logo"
-                      className="w-full h-32 object-contain rounded-lg border border-gray-200"
+                      fill
+                      className="object-contain rounded-lg border border-gray-200"
                     />
                   </div>
                 )}
@@ -1122,11 +1124,12 @@ export default function AdminEditShopPage() {
                   Shop Banner
                 </h2>
                 {shop.banner && (
-                  <div className="mb-4">
-                    <img
+                  <div className="mb-4 relative w-full h-32">
+                    <OptimizedImage
                       src={shop.banner}
                       alt="Shop Banner"
-                      className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                      fill
+                      className="object-cover rounded-lg border border-gray-200"
                     />
                   </div>
                 )}
@@ -1208,12 +1211,13 @@ export default function AdminEditShopPage() {
               shopProducts.map((product) => (
                 <div key={product.id} className="p-6 hover:bg-gray-50">
                   <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 flex-shrink-0 rounded bg-gray-100 overflow-hidden">
+                    <div className="h-16 w-16 flex-shrink-0 rounded bg-gray-100 overflow-hidden relative">
                       {product.images?.[0] ? (
-                        <img
+                        <OptimizedImage
                           src={product.images[0]}
                           alt={product.name}
-                          className="h-full w-full object-cover"
+                          fill
+                          className="object-cover"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full text-gray-400">

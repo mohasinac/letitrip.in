@@ -15,6 +15,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import SlugInput from "@/components/common/SlugInput";
 import { shopsService } from "@/services/shops.service";
 
@@ -418,15 +419,18 @@ export default function CreateShopWizardPage() {
                     Logo Preview
                   </p>
                   <div className="flex items-center gap-4">
-                    <img
-                      src={formData.logoUrl}
-                      alt="Logo preview"
-                      className="w-20 h-20 object-cover rounded-lg border border-gray-200"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          "/placeholder-logo.png";
-                      }}
-                    />
+                    <div className="relative w-20 h-20">
+                      <OptimizedImage
+                        src={formData.logoUrl}
+                        alt="Logo preview"
+                        fill
+                        className="object-cover rounded-lg border border-gray-200"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            "/placeholder-logo.png";
+                        }}
+                      />
+                    </div>
                     <p className="text-xs text-gray-500">
                       Your logo will appear here
                     </p>
@@ -461,15 +465,18 @@ export default function CreateShopWizardPage() {
                   <p className="text-sm font-medium text-gray-700 mb-2">
                     Banner Preview
                   </p>
-                  <img
-                    src={formData.bannerUrl}
-                    alt="Banner preview"
-                    className="w-full h-32 object-cover rounded-lg border border-gray-200"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "/placeholder-banner.png";
-                    }}
-                  />
+                  <div className="relative w-full h-32">
+                    <OptimizedImage
+                      src={formData.bannerUrl}
+                      alt="Banner preview"
+                      fill
+                      className="object-cover rounded-lg border border-gray-200"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "/placeholder-banner.png";
+                      }}
+                    />
+                  </div>
                 </div>
               )}
 

@@ -15,6 +15,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import SlugInput from "@/components/common/SlugInput";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
@@ -377,15 +378,18 @@ export default function CreateCategoryWizardPage() {
                   <p className="text-sm font-medium text-gray-700 mb-2">
                     Image Preview
                   </p>
-                  <img
-                    src={formData.imageUrl}
-                    alt="CategoryFE preview"
-                    className="w-full max-w-sm h-48 object-cover rounded-lg border border-gray-200"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "/placeholder-CategoryFE.png";
-                    }}
-                  />
+                  <div className="relative w-full max-w-sm h-48">
+                    <OptimizedImage
+                      src={formData.imageUrl}
+                      alt="CategoryFE preview"
+                      fill
+                      className="object-cover rounded-lg border border-gray-200"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "/placeholder-CategoryFE.png";
+                      }}
+                    />
+                  </div>
                 </div>
               )}
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import AuthGuard from "@/components/auth/AuthGuard";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { auctionsService } from "@/services/auctions.service";
@@ -236,11 +237,14 @@ export default function AuctionModerationPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center">
                             {auction.images?.[0] && (
-                              <img
-                                src={auction.images[0]}
-                                alt={auction.name}
-                                className="w-12 h-12 object-cover rounded mr-3"
-                              />
+                              <div className="relative w-12 h-12 mr-3">
+                                <OptimizedImage
+                                  src={auction.images[0]}
+                                  alt={auction.name}
+                                  fill
+                                  className="object-cover rounded"
+                                />
+                              </div>
                             )}
                             <div>
                               <div className="font-medium text-gray-900">

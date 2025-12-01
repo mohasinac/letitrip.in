@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   Search,
@@ -360,10 +361,11 @@ export default function AdminShopsPage() {
                 >
                   <div className="aspect-video bg-gradient-to-br from-purple-50 to-blue-50 relative">
                     {shop.logo ? (
-                      <img
+                      <OptimizedImage
                         src={shop.logo}
                         alt={shop.name}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full text-gray-400">
@@ -586,12 +588,13 @@ export default function AdminShopsPage() {
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="h-12 w-12 flex-shrink-0 rounded bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center overflow-hidden">
+                              <div className="h-12 w-12 flex-shrink-0 rounded bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center overflow-hidden relative">
                                 {shop.logo ? (
-                                  <img
+                                  <OptimizedImage
                                     src={shop.logo}
                                     alt={shop.name}
-                                    className="h-full w-full object-cover"
+                                    fill
+                                    className="object-cover"
                                   />
                                 ) : (
                                   <Store className="h-6 w-6 text-purple-600" />

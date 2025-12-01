@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   ChevronRight,
   Tag,
@@ -362,11 +363,12 @@ function CategoriesContent() {
                       >
                         {/* Category Image */}
                         {category.image && (
-                          <div className="w-full h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden">
-                            <img
+                          <div className="w-full h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden relative">
+                            <OptimizedImage
                               src={category.image}
                               alt={category.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform"
                             />
                           </div>
                         )}

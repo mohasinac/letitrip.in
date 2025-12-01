@@ -4,6 +4,7 @@ import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   Loader2,
   Search,
@@ -458,11 +459,14 @@ export default function ShopPage({ params }: ShopPageProps) {
                           key={product.id}
                           className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                         >
-                          <img
-                            src={product.images?.[0] || ""}
-                            alt={product.name}
-                            className="w-32 h-32 object-cover rounded-lg flex-shrink-0"
-                          />
+                          <div className="relative w-32 h-32 flex-shrink-0">
+                            <OptimizedImage
+                              src={product.images?.[0] || ""}
+                              alt={product.name}
+                              fill
+                              className="object-cover rounded-lg"
+                            />
+                          </div>
                           <div className="flex-1 min-w-0">
                             <h3
                               className="font-semibold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer"
@@ -622,10 +626,11 @@ export default function ShopPage({ params }: ShopPageProps) {
                             {/* Auction Image */}
                             <div className="relative h-48 bg-gray-100">
                               {auction.productImage ? (
-                                <img
+                                <OptimizedImage
                                   src={auction.productImage}
                                   alt={auction.productName}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                  fill
+                                  className="object-cover group-hover:scale-105 transition-transform duration-200"
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
@@ -696,10 +701,11 @@ export default function ShopPage({ params }: ShopPageProps) {
                             {/* Image */}
                             {auction.productImage && (
                               <div className="relative w-full sm:w-48 aspect-video sm:aspect-square overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
-                                <img
+                                <OptimizedImage
                                   src={auction.productImage}
                                   alt={auction.productName}
-                                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  fill
+                                  className="object-cover group-hover:scale-105 transition-transform duration-300"
                                 />
                                 <div className="absolute top-2 right-2">
                                   <span

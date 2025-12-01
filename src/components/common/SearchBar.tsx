@@ -12,6 +12,7 @@ import {
   FolderTree,
 } from "lucide-react";
 import { searchService } from "@/services/search.service";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import type { SearchResultFE } from "@/types/frontend/search.types";
 
 export default function SearchBar() {
@@ -206,11 +207,14 @@ export default function SearchBar() {
                         className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded"
                       >
                         {product.images?.[0] && (
-                          <img
-                            src={product.images[0]}
-                            alt={product.name}
-                            className="w-12 h-12 object-cover rounded"
-                          />
+                          <div className="relative w-12 h-12">
+                            <OptimizedImage
+                              src={product.images[0]}
+                              alt={product.name}
+                              fill
+                              className="object-cover rounded"
+                            />
+                          </div>
                         )}
                         <div className="flex-1 text-left">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -241,11 +245,14 @@ export default function SearchBar() {
                         className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded"
                       >
                         {shop.logo_url && (
-                          <img
-                            src={shop.logo_url}
-                            alt={shop.name}
-                            className="w-12 h-12 object-cover rounded"
-                          />
+                          <div className="relative w-12 h-12">
+                            <OptimizedImage
+                              src={shop.logo_url}
+                              alt={shop.name}
+                              fill
+                              className="object-cover rounded"
+                            />
+                          </div>
                         )}
                         <div className="flex-1 text-left">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -278,11 +285,14 @@ export default function SearchBar() {
                         className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded"
                       >
                         {category.image_url && (
-                          <img
-                            src={category.image_url}
-                            alt={category.name}
-                            className="w-12 h-12 object-cover rounded"
-                          />
+                          <div className="relative w-12 h-12">
+                            <OptimizedImage
+                              src={category.image_url}
+                              alt={category.name}
+                              fill
+                              className="object-cover rounded"
+                            />
+                          </div>
                         )}
                         <div className="flex-1 text-left">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">

@@ -475,7 +475,10 @@ export default function CheckoutPage() {
                   ))}
 
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
-                    <FormField label="Delivery Notes (Optional)" hint="E.g., ring the doorbell twice, leave at gate">
+                    <FormField
+                      label="Delivery Notes (Optional)"
+                      hint="E.g., ring the doorbell twice, leave at gate"
+                    >
                       <FormTextarea
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}

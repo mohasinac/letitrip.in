@@ -77,27 +77,40 @@ export default function SettingsPage() {
             <FormInput
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               autoComplete="name"
             />
           </FormField>
 
           {/* Email */}
-          <FormField label="Email Address" required hint="We'll send order confirmations to this email">
+          <FormField
+            label="Email Address"
+            required
+            hint="We'll send order confirmations to this email"
+          >
             <FormInput
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               autoComplete="email"
             />
           </FormField>
 
           {/* Phone */}
-          <FormField label="Phone Number" hint="Used for order updates and delivery coordination">
+          <FormField
+            label="Phone Number"
+            hint="Used for order updates and delivery coordination"
+          >
             <FormInput
               type="tel"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
               placeholder="+91 9876543210"
               autoComplete="tel"
             />

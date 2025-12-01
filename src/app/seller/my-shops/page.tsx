@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   Plus,
   Search,
@@ -149,21 +150,23 @@ export default function MyShopsPage() {
               key={shop.id}
               className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
             >
-              <div className="h-32 bg-gray-100">
-                <img
-                  src={shop.banner || undefined}
+              <div className="h-32 bg-gray-100 relative">
+                <OptimizedImage
+                  src={shop.banner || "/placeholder-shop-banner.jpg"}
                   alt={shop.name}
-                  className="h-full w-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               </div>
               <div className="p-4">
                 <div className="flex items-start gap-3">
-                  <div className="h-16 w-16 flex-shrink-0 rounded-lg border-2 border-white bg-white shadow-md -mt-10">
+                  <div className="h-16 w-16 flex-shrink-0 rounded-lg border-2 border-white bg-white shadow-md -mt-10 relative overflow-hidden">
                     {shop.logo ? (
-                      <img
+                      <OptimizedImage
                         src={shop.logo}
                         alt={shop.name}
-                        className="h-full w-full rounded-lg object-cover"
+                        fill
+                        className="rounded-lg object-cover"
                       />
                     ) : (
                       <div className="h-full w-full rounded-lg bg-gray-200 flex items-center justify-center text-gray-400 text-2xl font-bold">
@@ -270,12 +273,13 @@ export default function MyShopsPage() {
                   <tr key={shop.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100">
+                        <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100 relative overflow-hidden">
                           {shop.logo ? (
-                            <img
+                            <OptimizedImage
                               src={shop.logo}
                               alt={shop.name}
-                              className="h-full w-full rounded object-cover"
+                              fill
+                              className="rounded object-cover"
                             />
                           ) : (
                             <div className="h-full w-full rounded bg-gray-200 flex items-center justify-center text-gray-400 font-bold">

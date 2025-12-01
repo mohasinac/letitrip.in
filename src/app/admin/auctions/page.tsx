@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   Search,
   Filter,
@@ -541,11 +542,14 @@ export default function AdminAuctionsPage() {
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-3">
                               {auction.images && auction.images[0] && (
-                                <img
-                                  src={auction.images[0]}
-                                  alt={auction.name}
-                                  className="h-10 w-10 rounded object-cover"
-                                />
+                                <div className="relative h-10 w-10">
+                                  <OptimizedImage
+                                    src={auction.images[0]}
+                                    alt={auction.name}
+                                    fill
+                                    className="rounded object-cover"
+                                  />
+                                </div>
                               )}
                               <div>
                                 <Link
@@ -651,11 +655,14 @@ export default function AdminAuctionsPage() {
                   >
                     <div className="relative">
                       {auction.images && auction.images[0] ? (
-                        <img
-                          src={auction.images[0]}
-                          alt={auction.name}
-                          className="w-full h-48 object-cover"
-                        />
+                        <div className="relative w-full h-48">
+                          <OptimizedImage
+                            src={auction.images[0]}
+                            alt={auction.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                       ) : (
                         <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
                           <Gavel className="h-12 w-12 text-gray-400" />

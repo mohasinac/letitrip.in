@@ -17,6 +17,7 @@ import {
   Filter,
 } from "lucide-react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -499,11 +500,12 @@ export default function SellerAuctionsPage() {
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
                                 {auction.images?.[0] && (
-                                  <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 overflow-hidden">
-                                    <img
+                                  <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 overflow-hidden relative">
+                                    <OptimizedImage
                                       src={auction.images[0]}
                                       alt={auction.name}
-                                      className="h-full w-full object-cover"
+                                      fill
+                                      className="object-cover"
                                     />
                                   </div>
                                 )}
@@ -600,11 +602,12 @@ export default function SellerAuctionsPage() {
                     className="overflow-hidden rounded-lg border border-gray-200 bg-white hover:shadow-lg transition-shadow"
                   >
                     {auction.images && auction.images[0] && (
-                      <div className="aspect-video w-full overflow-hidden bg-gray-100">
-                        <img
+                      <div className="aspect-video w-full overflow-hidden bg-gray-100 relative">
+                        <OptimizedImage
                           src={auction.images[0]}
                           alt={auction.name}
-                          className="h-full w-full object-cover"
+                          fill
+                          className="object-cover"
                         />
                       </div>
                     )}

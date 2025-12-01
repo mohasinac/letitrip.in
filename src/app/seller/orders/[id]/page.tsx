@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { ordersService } from "@/services/orders.service";
 import { notFound } from "@/lib/error-redirects";
 import {
@@ -207,11 +208,14 @@ export default function SellerOrderDetailPage() {
                       className="flex items-center gap-4 pb-4 border-b last:border-b-0"
                     >
                       {item.productImage && (
-                        <img
-                          src={item.productImage}
-                          alt={item.productName}
-                          className="w-20 h-20 object-cover rounded-lg"
-                        />
+                        <div className="relative w-20 h-20">
+                          <OptimizedImage
+                            src={item.productImage}
+                            alt={item.productName}
+                            fill
+                            className="object-cover rounded-lg"
+                          />
+                        </div>
                       )}
                       <div className="flex-1">
                         <h3 className="font-medium text-gray-900">

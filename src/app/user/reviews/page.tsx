@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   Star,
   Edit,
@@ -132,10 +133,13 @@ function ReviewCard({
             {/* Product/Auction Image */}
             <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
               {review.images && review.images.length > 0 ? (
-                <img
+                <OptimizedImage
                   src={review.images[0]}
                   alt="Review"
-                  className="w-full h-full object-cover"
+                  width={48}
+                  height={48}
+                  className="w-full h-full"
+                  objectFit="cover"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
@@ -177,10 +181,13 @@ function ReviewCard({
                 key={index}
                 className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100"
               >
-                <img
+                <OptimizedImage
                   src={image}
                   alt={`Review image ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  width={64}
+                  height={64}
+                  className="w-full h-full"
+                  objectFit="cover"
                 />
                 {index === 3 && review.images && review.images.length > 4 && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center">

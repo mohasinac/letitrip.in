@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   Plus,
   Search,
@@ -342,11 +343,12 @@ export default function AdminBlogPage() {
                   className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
                 >
                   {post.featuredImage && (
-                    <div className="aspect-video bg-gray-100">
-                      <img
+                    <div className="aspect-video bg-gray-100 relative">
+                      <OptimizedImage
                         src={post.featuredImage}
                         alt={post.title}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     </div>
                   )}
@@ -481,11 +483,12 @@ export default function AdminBlogPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             {post.featuredImage && (
-                              <div className="h-12 w-12 flex-shrink-0 rounded overflow-hidden bg-gray-100">
-                                <img
+                              <div className="h-12 w-12 flex-shrink-0 rounded overflow-hidden bg-gray-100 relative">
+                                <OptimizedImage
                                   src={post.featuredImage}
                                   alt={post.title}
-                                  className="h-full w-full object-cover"
+                                  fill
+                                  className="object-cover"
                                 />
                               </div>
                             )}

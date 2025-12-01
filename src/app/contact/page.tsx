@@ -2,14 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Send,
-  Loader2,
-  CheckCircle,
-} from "lucide-react";
+import { Mail, Phone, MapPin, Send, Loader2, CheckCircle } from "lucide-react";
 import { supportService } from "@/services/support.service";
 import { FormField, FormInput, FormTextarea } from "@/components/forms";
 
