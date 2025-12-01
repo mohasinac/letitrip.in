@@ -216,87 +216,83 @@ export default function SellerReturnsPage() {
                     No returns found
                   </div>
                 ) : (
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Return ID
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Order ID
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Reason
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Amount
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Date
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {returns.map((returnItem) => (
-                        <tr key={returnItem.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 text-sm font-mono">
-                            {returnItem.id.substring(0, 8)}
-                          </td>
-                          <td className="px-6 py-4">
-                            <button
-                              onClick={() =>
-                                router.push(
-                                  `/seller/orders/${returnItem.orderId}`
-                                )
-                              }
-                              className="text-sm text-indigo-600 hover:text-indigo-900 font-mono"
-                            >
-                              {returnItem.orderId.substring(0, 8)}
-                            </button>
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            <div className="flex items-center">
-                              {returnItem.status === "escalated" && (
-                                <AlertTriangle className="w-4 h-4 text-orange-500 mr-2" />
-                              )}
-                              {getReasonLabel(returnItem.reason)}
+                  <>
+                    {/* Mobile Cards */}
+                    {isMobile && (
+                      <div className="lg:hidden space-y-4 p-4">
+                        {returns.map((returnItem) => (
+                          <div
+                            key={returnItem.id}
+                            className="bg-white dark:bg-gray-800 rounded-lg border p-4"
+                          >
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-mono text-sm text-gray-900 dark:text-white">
+                                  #{returnItem.id.substring(0, 8)}
+                                </h3>
+                                <button
+                                  onClick={() =>
+                                    router.push(
+                                      `/seller/orders/${returnItem.orderId}`
+                                    )
+                                  }
+                                  className="text-sm text-indigo-600 hover:text-indigo-900 font-mono"
+                                >
+                                  Order: {returnItem.orderId.substring(0, 8)}
+                                </button>
+                              </div>
+                              <span
+                                className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                                  returnItem.status
+                                )}`}
+                              >
+                                {returnItem.status}
+                              </span>
                             </div>
-                          </td>
-                          <td className="px-6 py-4 text-sm font-semibold">
-                            {returnItem.refundAmount
-                              ? formatCurrency(returnItem.refundAmount)
-                              : "N/A"}
-                          </td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                                returnItem.status
-                              )}`}
-                            >
-                              {returnItem.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">
-                            {new Date(
-                              returnItem.createdAt
-                            ).toLocaleDateString()}
-                          </td>
-                          <td className="px-6 py-4 text-sm space-x-2">
+
+                            <div className="space-y-2 text-sm mb-3">
+                              <div className="flex items-center gap-2">
+                                {returnItem.status === "escalated" && (
+                                  <AlertTriangle className="w-4 h-4 text-orange-500" />
+                                )}
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Reason:
+                                </span>
+                                <span className="text-gray-900 dark:text-white">
+                                  {getReasonLabel(returnItem.reason)}
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Amount:
+                                </span>
+                                <span className="font-semibold text-gray-900 dark:text-white">
+                                  {returnItem.refundAmount
+                                    ? formatCurrency(returnItem.refundAmount)
+                                    : "N/A"}
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Date:
+                                </span>
+                                <span className="text-gray-900 dark:text-white">
+                                  {new Date(
+                                    returnItem.createdAt
+                                  ).toLocaleDateString()}
+                                </span>
+                              </div>
+                            </div>
+
                             {returnItem.status === "requested" && (
-                              <>
+                              <div className="flex gap-2 pt-3 border-t dark:border-gray-700">
                                 <button
                                   onClick={() => handleApprove(returnItem.id)}
                                   disabled={processingId === returnItem.id}
-                                  className="text-green-600 hover:text-green-900 disabled:opacity-50"
-                                  title="Approve Return"
+                                  className="flex-1 py-2 text-center text-green-600 font-medium border border-green-300 rounded-lg hover:bg-green-50 transition-colors text-sm disabled:opacity-50 flex items-center justify-center gap-1"
                                 >
-                                  <CheckCircle className="w-5 h-5" />
+                                  <CheckCircle className="w-4 h-4" />
+                                  Approve
                                 </button>
                                 <button
                                   onClick={() => {
@@ -308,27 +304,158 @@ export default function SellerReturnsPage() {
                                     }
                                   }}
                                   disabled={processingId === returnItem.id}
-                                  className="text-red-600 hover:text-red-900 disabled:opacity-50"
-                                  title="Reject Return"
+                                  className="flex-1 py-2 text-center text-red-600 font-medium border border-red-300 rounded-lg hover:bg-red-50 transition-colors text-sm disabled:opacity-50 flex items-center justify-center gap-1"
                                 >
-                                  <XCircle className="w-5 h-5" />
+                                  <XCircle className="w-4 h-4" />
+                                  Reject
                                 </button>
-                              </>
+                              </div>
                             )}
-                            <button
-                              onClick={() =>
-                                router.push(`/seller/returns/${returnItem.id}`)
-                              }
-                              className="text-indigo-600 hover:text-indigo-900"
-                              title="View Details"
+
+                            {returnItem.status !== "requested" && (
+                              <div className="flex gap-2 pt-3 border-t dark:border-gray-700">
+                                <button
+                                  onClick={() =>
+                                    router.push(
+                                      `/seller/orders/${returnItem.orderId}`
+                                    )
+                                  }
+                                  className="flex-1 py-2 text-center text-indigo-600 font-medium border border-indigo-300 rounded-lg hover:bg-indigo-50 transition-colors text-sm flex items-center justify-center gap-1"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                  View Order
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Desktop Table */}
+                    <div className={isMobile ? "hidden" : ""}>
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Return ID
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Order ID
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Reason
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Amount
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Status
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Date
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {returns.map((returnItem) => (
+                            <tr
+                              key={returnItem.id}
+                              className="hover:bg-gray-50"
                             >
-                              <Eye className="w-5 h-5" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                              <td className="px-6 py-4 text-sm font-mono">
+                                {returnItem.id.substring(0, 8)}
+                              </td>
+                              <td className="px-6 py-4">
+                                <button
+                                  onClick={() =>
+                                    router.push(
+                                      `/seller/orders/${returnItem.orderId}`
+                                    )
+                                  }
+                                  className="text-sm text-indigo-600 hover:text-indigo-900 font-mono"
+                                >
+                                  {returnItem.orderId.substring(0, 8)}
+                                </button>
+                              </td>
+                              <td className="px-6 py-4 text-sm">
+                                <div className="flex items-center">
+                                  {returnItem.status === "escalated" && (
+                                    <AlertTriangle className="w-4 h-4 text-orange-500 mr-2" />
+                                  )}
+                                  {getReasonLabel(returnItem.reason)}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-sm font-semibold">
+                                {returnItem.refundAmount
+                                  ? formatCurrency(returnItem.refundAmount)
+                                  : "N/A"}
+                              </td>
+                              <td className="px-6 py-4">
+                                <span
+                                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                                    returnItem.status
+                                  )}`}
+                                >
+                                  {returnItem.status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-500">
+                                {new Date(
+                                  returnItem.createdAt
+                                ).toLocaleDateString()}
+                              </td>
+                              <td className="px-6 py-4 text-sm space-x-2">
+                                {returnItem.status === "requested" && (
+                                  <>
+                                    <button
+                                      onClick={() =>
+                                        handleApprove(returnItem.id)
+                                      }
+                                      disabled={processingId === returnItem.id}
+                                      className="text-green-600 hover:text-green-900 disabled:opacity-50"
+                                      title="Approve Return"
+                                    >
+                                      <CheckCircle className="w-5 h-5" />
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        const notes = prompt(
+                                          "Reason for rejection (optional):"
+                                        );
+                                        if (notes !== null) {
+                                          handleReject(returnItem.id, notes);
+                                        }
+                                      }}
+                                      disabled={processingId === returnItem.id}
+                                      className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                                      title="Reject Return"
+                                    >
+                                      <XCircle className="w-5 h-5" />
+                                    </button>
+                                  </>
+                                )}
+                                <button
+                                  onClick={() =>
+                                    router.push(
+                                      `/seller/returns/${returnItem.id}`
+                                    )
+                                  }
+                                  className="text-indigo-600 hover:text-indigo-900"
+                                  title="View Details"
+                                >
+                                  <Eye className="w-5 h-5" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
                 )}
               </div>
 

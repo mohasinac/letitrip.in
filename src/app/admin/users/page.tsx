@@ -433,8 +433,190 @@ export default function AdminUsersPage() {
           </div>
         )}
 
-        {/* Users Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        {/* Mobile User Cards */}
+        {isMobile && (
+          <div className="space-y-3 lg:hidden">
+            {filteredUsers.length === 0 ? (
+              <div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
+                {searchQuery
+                  ? "No users found matching your search"
+                  : "No users found"}
+              </div>
+            ) : (
+              filteredUsers.map((user) => {
+                const canEdit = user.id !== currentUser?.uid;
+                return (
+                  <div
+                    key={user.id}
+                    className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3"
+                  >
+                    {/* Header with avatar and name */}
+                    <div className="flex items-start gap-3">
+                      {canEdit && (
+                        <TableCheckbox
+                          checked={selectedIds.includes(user.id)}
+                          onChange={(checked) => {
+                            setSelectedIds((prev) =>
+                              checked
+                                ? [...prev, user.id]
+                                : prev.filter((id) => id !== user.id)
+                            );
+                          }}
+                          aria-label={`Select ${user.name || user.email}`}
+                        />
+                      )}
+                      {user.avatar ? (
+                        <img
+                          src={user.avatar}
+                          alt={user.name || user.email}
+                          className="h-12 w-12 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
+                          <span className="text-blue-600 dark:text-blue-300 font-semibold">
+                            {(user.name || user.email)[0].toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-gray-900 dark:text-white truncate">
+                          {user.name || "No name"}
+                        </h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate flex items-center gap-1">
+                          <Mail className="h-3 w-3 flex-shrink-0" />
+                          {user.email}
+                        </p>
+                        {user.phone && (
+                          <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <Phone className="h-3 w-3 flex-shrink-0" />
+                            {user.phone}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Status badges row */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StatusBadge status={user.role} />
+                      {user.is_banned ? (
+                        <StatusBadge status="banned" />
+                      ) : (
+                        <StatusBadge status="active" />
+                      )}
+                      {user.emailVerified && (
+                        <span className="inline-flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                          <CheckCircle className="h-3 w-3" />
+                          Email verified
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Info grid */}
+                    <div className="grid grid-cols-2 gap-2 text-sm border-t border-gray-100 dark:border-gray-700 pt-3">
+                      <div>
+                        <span className="text-gray-500 dark:text-gray-400">
+                          Joined:
+                        </span>{" "}
+                        <span className="text-gray-900 dark:text-white">
+                          {new Date(user.createdAt).toLocaleDateString(
+                            "en-IN",
+                            {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )}
+                        </span>
+                      </div>
+                      {user.ban_reason && (
+                        <div className="col-span-2">
+                          <span className="text-gray-500 dark:text-gray-400">
+                            Ban reason:
+                          </span>{" "}
+                          <span className="text-red-600 dark:text-red-400">
+                            {user.ban_reason}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    {canEdit && (
+                      <div className="flex gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                        <button
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setNewRole(user.role);
+                            setShowRoleDialog(true);
+                          }}
+                          className="flex-1 py-2 px-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg text-sm font-medium flex items-center justify-center gap-2"
+                        >
+                          <Shield className="h-4 w-4" />
+                          Change Role
+                        </button>
+                        {user.is_banned ? (
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowUnbanDialog(true);
+                            }}
+                            className="flex-1 py-2 px-3 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg text-sm font-medium flex items-center justify-center gap-2"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                            Unban
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowBanDialog(true);
+                            }}
+                            className="flex-1 py-2 px-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-medium flex items-center justify-center gap-2"
+                          >
+                            <Ban className="h-4 w-4" />
+                            Ban
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+
+            {/* Mobile Pagination */}
+            {filteredUsers.length > 0 && (
+              <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1 || loading}
+                  className="flex items-center gap-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg disabled:opacity-50 text-sm"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Prev
+                </button>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Page {currentPage}
+                </span>
+                <button
+                  onClick={handleNextPage}
+                  disabled={!hasNextPage || loading}
+                  className="flex items-center gap-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg disabled:opacity-50 text-sm"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Users Table - Desktop Only */}
+        <div
+          className={`bg-white rounded-lg border border-gray-200 overflow-hidden ${
+            isMobile ? "hidden" : ""
+          }`}
+        >
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
