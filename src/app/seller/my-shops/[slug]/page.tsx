@@ -13,6 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { shopsService } from "@/services/shops.service";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
@@ -113,11 +114,14 @@ export default function ShopDashboardPage() {
           <div className="mt-4">
             <div className="flex items-center gap-3">
               {shop.logo && (
-                <img
-                  src={shop.logo}
-                  alt={shop.name}
-                  className="h-12 w-12 rounded-lg object-cover"
-                />
+                <div className="relative h-12 w-12">
+                  <OptimizedImage
+                    src={shop.logo}
+                    alt={shop.name}
+                    fill
+                    className="rounded-lg object-cover"
+                  />
+                </div>
               )}
               <div>
                 <div className="flex items-center gap-2">

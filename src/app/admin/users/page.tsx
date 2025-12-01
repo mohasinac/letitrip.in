@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   Loader2,
   Search,
@@ -466,11 +467,14 @@ export default function AdminUsersPage() {
                         />
                       )}
                       {user.avatar ? (
-                        <img
-                          src={user.avatar}
-                          alt={user.name || user.email}
-                          className="h-12 w-12 rounded-full object-cover"
-                        />
+                        <div className="relative h-12 w-12">
+                          <OptimizedImage
+                            src={user.avatar}
+                            alt={user.name || user.email}
+                            fill
+                            className="rounded-full object-cover"
+                          />
+                        </div>
                       ) : (
                         <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
                           <span className="text-blue-600 dark:text-blue-300 font-semibold">
@@ -746,11 +750,14 @@ export default function AdminUsersPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             {user.avatar ? (
-                              <img
-                                src={user.avatar}
-                                alt={user.name || user.email}
-                                className="h-10 w-10 rounded-full object-cover"
-                              />
+                              <div className="relative h-10 w-10">
+                                <OptimizedImage
+                                  src={user.avatar}
+                                  alt={user.name || user.email}
+                                  fill
+                                  className="rounded-full object-cover"
+                                />
+                              </div>
                             ) : (
                               <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
                                 <span className="text-blue-600 font-semibold text-sm">

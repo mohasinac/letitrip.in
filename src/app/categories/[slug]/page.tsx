@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ChevronRight,
@@ -267,10 +268,11 @@ function CategoryDetailContent({ params }: PageProps) {
       {/* Banner Section */}
       {category.banner && (
         <div className="relative h-64 w-full bg-gradient-to-r from-blue-500 to-purple-600 overflow-hidden">
-          <img
+          <OptimizedImage
             src={category.banner}
             alt={category.name}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-black/40" />
         </div>
@@ -284,16 +286,17 @@ function CategoryDetailContent({ params }: PageProps) {
               {/* Profile Image */}
               {category.image && (
                 <div
-                  className={`w-24 h-24 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0 ${
+                  className={`w-24 h-24 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0 relative ${
                     category.banner
                       ? "-mt-12 border-4 border-white dark:border-gray-800 shadow-lg"
                       : ""
                   }`}
                 >
-                  <img
+                  <OptimizedImage
                     src={category.image}
                     alt={category.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
               )}
@@ -556,11 +559,14 @@ function CategoryDetailContent({ params }: PageProps) {
                             >
                               <td className="px-6 py-4">
                                 <div className="flex items-center gap-3">
-                                  <img
-                                    src={product.images?.[0] || ""}
-                                    alt={product.name}
-                                    className="w-12 h-12 rounded object-cover"
-                                  />
+                                  <div className="relative w-12 h-12">
+                                    <OptimizedImage
+                                      src={product.images?.[0] || ""}
+                                      alt={product.name}
+                                      fill
+                                      className="rounded object-cover"
+                                    />
+                                  </div>
                                   <div>
                                     <div className="font-medium text-gray-900 dark:text-white">
                                       {product.name}
@@ -708,11 +714,12 @@ function CategoryDetailContent({ params }: PageProps) {
                         className="flex-shrink-0 w-40 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-md transition-all p-3 group"
                       >
                         {subcat.image && (
-                          <div className="w-full h-24 mb-2 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
-                            <img
+                          <div className="w-full h-24 mb-2 rounded-lg overflow-hidden bg-white dark:bg-gray-800 relative">
+                            <OptimizedImage
                               src={subcat.image}
                               alt={subcat.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform"
                             />
                           </div>
                         )}

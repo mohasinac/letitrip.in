@@ -13,6 +13,7 @@ import {
   Filter as FilterIcon,
 } from "lucide-react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState, EmptyStates } from "@/components/common/EmptyState";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
@@ -382,10 +383,11 @@ function AuctionsContent() {
                     {/* Image */}
                     {auction.images && auction.images[0] && (
                       <div className="relative aspect-video w-full overflow-hidden bg-gray-100">
-                        <img
+                        <OptimizedImage
                           src={auction.images[0]}
                           alt={auction.name}
-                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         {auction.featured && (
                           <div className="absolute top-2 right-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
@@ -480,10 +482,11 @@ function AuctionsContent() {
                     {/* Image */}
                     {auction.images && auction.images[0] && (
                       <div className="relative w-full sm:w-48 aspect-video sm:aspect-square overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
-                        <img
+                        <OptimizedImage
                           src={auction.images[0]}
                           alt={auction.name}
-                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         {auction.featured && (
                           <div className="absolute top-2 right-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-medium text-white">

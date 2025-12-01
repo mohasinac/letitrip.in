@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { productsService } from "@/services/products.service";
 import { categoriesService } from "@/services/categories.service";
 import { shopsService } from "@/services/shops.service";
@@ -449,11 +450,12 @@ export default function AdminEditProductPage() {
                 {product.images && product.images.length > 0 && (
                   <div className="grid grid-cols-4 gap-4 mb-4">
                     {product.images.map((url, index) => (
-                      <div key={index} className="relative group">
-                        <img
+                      <div key={index} className="relative group h-32">
+                        <OptimizedImage
                           src={url}
                           alt={`Product ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                          fill
+                          className="object-cover rounded-lg border border-gray-200"
                         />
                         <button
                           type="button"

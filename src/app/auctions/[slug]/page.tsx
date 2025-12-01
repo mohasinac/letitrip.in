@@ -17,6 +17,7 @@ import {
   Store,
 } from "lucide-react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { auctionsService } from "@/services/auctions.service";
 import { shopsService } from "@/services/shops.service";
 import { notFound } from "@/lib/error-redirects";
@@ -295,10 +296,11 @@ export default function AuctionDetailPage() {
             {auction.images && auction.images.length > 0 && (
               <>
                 <div className="aspect-video w-full bg-gray-100 relative group">
-                  <img
+                  <OptimizedImage
                     src={auction.images[selectedImage]}
                     alt={auction.name}
-                    className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                    fill
+                    className="object-contain transition-transform duration-300 group-hover:scale-105"
                   />
                   {auction.featured && (
                     <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
@@ -312,16 +314,17 @@ export default function AuctionDetailPage() {
                       <button
                         key={idx}
                         onClick={() => setSelectedImage(idx)}
-                        className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                        className={`aspect-square rounded-lg overflow-hidden border-2 transition-all relative ${
                           selectedImage === idx
                             ? "border-primary ring-2 ring-primary ring-offset-2"
                             : "border-gray-200 hover:border-gray-300"
                         }`}
                       >
-                        <img
+                        <OptimizedImage
                           src={img}
                           alt={`${auction.name} ${idx + 1}`}
-                          className="h-full w-full object-cover"
+                          fill
+                          className="object-cover"
                         />
                       </button>
                     ))}
@@ -403,12 +406,13 @@ export default function AuctionDetailPage() {
                     href={`/auctions/${a.slug}`}
                     className="group"
                   >
-                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-2">
+                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-2 relative">
                       {a.images?.[0] && (
-                        <img
+                        <OptimizedImage
                           src={a.images[0]}
                           alt={a.name}
-                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-200"
                         />
                       )}
                     </div>
@@ -452,10 +456,11 @@ export default function AuctionDetailPage() {
                   >
                     <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-2 relative">
                       {a.images?.[0] && (
-                        <img
+                        <OptimizedImage
                           src={a.images[0]}
                           alt={a.name}
-                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-200"
                         />
                       )}
                       {a.status === AuctionStatus.ACTIVE && (
@@ -659,11 +664,14 @@ export default function AuctionDetailPage() {
                 {/* Shop Logo */}
                 {shop.logo && (
                   <div className="flex justify-center">
-                    <img
-                      src={shop.logo}
-                      alt={shop.name}
-                      className="h-20 w-20 rounded-full object-cover border-2 border-gray-200"
-                    />
+                    <div className="relative h-20 w-20">
+                      <OptimizedImage
+                        src={shop.logo}
+                        alt={shop.name}
+                        fill
+                        className="rounded-full object-cover border-2 border-gray-200"
+                      />
+                    </div>
                   </div>
                 )}
 

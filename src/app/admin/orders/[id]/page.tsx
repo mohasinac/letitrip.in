@@ -9,6 +9,7 @@ import { OrderStatus } from "@/types/shared/common.types";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { notFound } from "@/lib/error-redirects";
 
 export default function OrderDetailPage() {
@@ -361,11 +362,14 @@ export default function OrderDetailPage() {
                   key={item.id}
                   className="flex gap-4 p-4 bg-gray-50 rounded-lg"
                 >
-                  <img
-                    src={item.productImage || "/placeholder.png"}
-                    alt={item.productName}
-                    className="w-20 h-20 object-cover rounded"
-                  />
+                  <div className="relative w-20 h-20">
+                    <OptimizedImage
+                      src={item.productImage || "/placeholder.png"}
+                      alt={item.productName}
+                      fill
+                      className="object-cover rounded"
+                    />
+                  </div>
                   <div className="flex-1">
                     <Link
                       href={`/admin/products/${item.productId}/edit`}

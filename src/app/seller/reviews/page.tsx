@@ -14,6 +14,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   Star,
   MessageSquare,
@@ -535,12 +536,13 @@ export default function SellerReviewsPage() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-start gap-3">
                   {/* Product Image */}
-                  <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0 relative">
                     {review.productImage ? (
-                      <img
+                      <OptimizedImage
                         src={review.productImage}
                         alt={review.productName}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
@@ -601,12 +603,13 @@ export default function SellerReviewsPage() {
                   {review.images.map((img, idx) => (
                     <div
                       key={idx}
-                      className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600"
+                      className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 relative"
                     >
-                      <img
+                      <OptimizedImage
                         src={img}
                         alt={`Review image ${idx + 1}`}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     </div>
                   ))}

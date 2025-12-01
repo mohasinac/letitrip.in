@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
@@ -514,12 +515,13 @@ export default function AdminProductsPage() {
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="h-12 w-12 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center overflow-hidden">
+                              <div className="h-12 w-12 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center overflow-hidden relative">
                                 {product.images[0] ? (
-                                  <img
+                                  <OptimizedImage
                                     src={product.images[0]}
                                     alt={product.name}
-                                    className="h-full w-full object-cover"
+                                    fill
+                                    className="object-cover"
                                   />
                                 ) : (
                                   <Package className="h-6 w-6 text-gray-400" />

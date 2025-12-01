@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   Plus,
   Search,
@@ -286,12 +287,13 @@ export default function CategoriesPage() {
               key={category.id}
               className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
             >
-              <div className="aspect-video bg-gray-100">
+              <div className="aspect-video bg-gray-100 relative">
                 {category.image ? (
-                  <img
+                  <OptimizedImage
                     src={category.image}
                     alt={category.name}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-400">
@@ -391,12 +393,13 @@ export default function CategoriesPage() {
                         }}
                         aria-label={`Select ${category.name}`}
                       />
-                      <div className="h-12 w-12 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center">
+                      <div className="h-12 w-12 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center relative overflow-hidden">
                         {category.image ? (
-                          <img
+                          <OptimizedImage
                             src={category.image}
                             alt={category.name}
-                            className="h-full w-full rounded object-cover"
+                            fill
+                            className="rounded object-cover"
                           />
                         ) : (
                           <FolderTree className="h-6 w-6 text-gray-400" />
@@ -637,12 +640,13 @@ export default function CategoriesPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center">
+                            <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center relative overflow-hidden">
                               {category.image ? (
-                                <img
+                                <OptimizedImage
                                   src={category.image}
                                   alt={category.name}
-                                  className="h-full w-full rounded object-cover"
+                                  fill
+                                  className="rounded object-cover"
                                 />
                               ) : (
                                 <FolderTree className="h-5 w-5 text-gray-400" />

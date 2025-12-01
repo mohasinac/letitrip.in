@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   ChevronLeft,
   Loader2,
@@ -188,10 +189,13 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
                 key={index}
                 className="flex gap-4 pb-4 border-b dark:border-gray-700 last:border-b-0"
               >
-                <img
+                <OptimizedImage
                   src={item.imageUrl || "/placeholder.png"}
                   alt={item.productName}
-                  className="w-20 h-20 object-cover rounded"
+                  width={80}
+                  height={80}
+                  className="rounded"
+                  objectFit="cover"
                 />
                 <div className="flex-1">
                   <h3 className="font-medium text-gray-900 dark:text-white">

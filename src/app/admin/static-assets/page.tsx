@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   uploadAsset,
   getAssetsByType,
@@ -193,12 +194,13 @@ export default function StaticAssetsPage() {
                 className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition"
               >
                 {/* Preview */}
-                <div className="aspect-video bg-gray-100 flex items-center justify-center p-4">
+                <div className="aspect-video bg-gray-100 flex items-center justify-center p-4 relative">
                   {asset.contentType.startsWith("image/") ? (
-                    <img
+                    <OptimizedImage
                       src={asset.url}
                       alt={asset.name}
-                      className="max-w-full max-h-full object-contain"
+                      fill
+                      className="object-contain"
                     />
                   ) : asset.contentType.startsWith("video/") ? (
                     <video

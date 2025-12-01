@@ -128,7 +128,11 @@ export default function RegisterPage() {
             </FormField>
 
             {/* Password with show/hide */}
-            <FormField label="Password" required hint="Must be at least 8 characters">
+            <FormField
+              label="Password"
+              required
+              hint="Must be at least 8 characters"
+            >
               <div className="relative">
                 <FormInput
                   type={showPassword ? "text" : "password"}
@@ -168,7 +172,9 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  aria-label={
+                    showConfirmPassword ? "Hide password" : "Show password"
+                  }
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="w-5 h-5 text-gray-400" />

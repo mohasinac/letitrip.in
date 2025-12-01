@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import CategorySelector, {
@@ -281,11 +282,12 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       <Card title="Category Image">
         <div className="space-y-4">
           {formData.image && !uploadedFiles.length && (
-            <div>
-              <img
+            <div className="relative w-full max-w-md h-48">
+              <OptimizedImage
                 src={formData.image}
                 alt="Current category"
-                className="w-full max-w-md h-48 object-cover rounded-lg"
+                fill
+                className="object-cover rounded-lg"
               />
             </div>
           )}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { ArrowLeft, Save, Eye, Loader2, Upload, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import RichTextEditor from "@/components/common/RichTextEditor";
@@ -297,11 +298,13 @@ export default function CreateBlogPostPage() {
             Featured Image
           </label>
           {uploadedUrls.length > 0 ? (
-            <div className="relative inline-block">
-              <img
+            <div className="relative inline-block h-48">
+              <OptimizedImage
                 src={uploadedUrls[0]}
                 alt="Featured"
-                className="h-48 w-auto rounded-lg border border-gray-300"
+                width={300}
+                height={192}
+                className="rounded-lg border border-gray-300"
               />
               <button
                 onClick={() => cleanupUploadedMedia()}

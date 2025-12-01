@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   Plus,
   Search,
@@ -233,10 +234,11 @@ export default function ProductsPage() {
                     className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
                   >
                     <div className="aspect-square bg-gray-100 relative">
-                      <img
+                      <OptimizedImage
                         src={product.images?.[0] || "/placeholder-product.jpg"}
                         alt={product.name}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                       {/* Media count badge */}
                       {(product.images?.length > 0 ||
@@ -515,10 +517,12 @@ export default function ProductsPage() {
                               <div className="flex items-center gap-3">
                                 <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 overflow-hidden relative">
                                   {product.images?.[0] ? (
-                                    <img
+                                    <OptimizedImage
                                       src={product.images[0]}
                                       alt={product.name}
-                                      className="h-full w-full object-cover"
+                                      width={48}
+                                      height={48}
+                                      className="object-cover"
                                     />
                                   ) : (
                                     <div className="h-full w-full flex items-center justify-center text-gray-400 text-xs">

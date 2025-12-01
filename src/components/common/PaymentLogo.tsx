@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getPaymentLogo } from "@/lib/payment-logos";
-import Image from "next/image";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 interface PaymentLogoProps {
   paymentId: string;
@@ -69,9 +69,11 @@ export function PaymentLogo({
   }
 
   return (
-    <img
+    <OptimizedImage
       src={logoUrl}
       alt={name}
+      width={50}
+      height={20}
       className={className}
       style={{ objectFit: "contain" }}
       onError={() => setError(true)}

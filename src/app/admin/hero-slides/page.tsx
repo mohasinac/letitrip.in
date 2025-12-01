@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { toast } from "sonner";
 import {
   Edit,
@@ -390,11 +391,14 @@ export default function HeroSlidesPage() {
                       </td>
                       <td className="px-4 py-3">
                         {slide.image && (
-                          <img
-                            src={slide.image}
-                            alt={slide.title}
-                            className="w-16 h-16 object-cover rounded"
-                          />
+                          <div className="relative w-16 h-16">
+                            <OptimizedImage
+                              src={slide.image}
+                              alt={slide.title}
+                              fill
+                              className="object-cover rounded"
+                            />
+                          </div>
                         )}
                       </td>
                       <td className="px-4 py-3">

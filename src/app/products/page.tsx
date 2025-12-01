@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { Grid, List, Loader2, Filter } from "lucide-react";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
@@ -420,11 +421,14 @@ function ProductsContent() {
                           >
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
-                                <img
-                                  src={product.images?.[0] || ""}
-                                  alt={product.name}
-                                  className="w-12 h-12 rounded object-cover"
-                                />
+                                <div className="relative w-12 h-12">
+                                  <OptimizedImage
+                                    src={product.images?.[0] || ""}
+                                    alt={product.name}
+                                    fill
+                                    className="rounded object-cover"
+                                  />
+                                </div>
                                 <div>
                                   <div className="font-medium text-gray-900 dark:text-white">
                                     {product.name}

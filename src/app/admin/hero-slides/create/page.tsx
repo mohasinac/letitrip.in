@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import MediaUploader from "@/components/media/MediaUploader";
 import { heroSlidesService } from "@/services/hero-slides.service";
 import RichTextEditor from "@/components/common/RichTextEditor";
@@ -202,11 +203,12 @@ export default function CreateHeroSlidePage() {
             />
 
             {formData.image && !uploadedFiles.length && (
-              <div className="mt-4">
-                <img
+              <div className="mt-4 relative w-full h-48">
+                <OptimizedImage
                   src={formData.image}
                   alt="Hero slide preview"
-                  className="w-full h-48 object-cover rounded-lg"
+                  fill
+                  className="object-cover rounded-lg"
                 />
               </div>
             )}

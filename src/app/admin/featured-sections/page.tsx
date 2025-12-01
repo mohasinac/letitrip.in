@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import Image from "next/image";
 import {
   Search,
@@ -180,10 +181,11 @@ function SortableItem({
       </button>
       <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden bg-gray-100 relative">
         {item.image ? (
-          <img
+          <OptimizedImage
             src={item.image}
             alt={item.name}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

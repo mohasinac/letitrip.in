@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   RefreshCw,
   Eye,
@@ -147,12 +148,13 @@ function LiveAuctionRow({
     <tr className="hover:bg-gray-50 transition-colors">
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
-          <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
+          <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-gray-100 relative">
             {auction.images && auction.images[0] ? (
-              <img
+              <OptimizedImage
                 src={auction.images[0]}
                 alt={auction.name}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
