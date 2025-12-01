@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { COMPANY_NAME, COMPANY_ALT_TEXT } from "@/constants/navigation";
 import {
@@ -278,6 +278,62 @@ export default function Home() {
     loadSettings();
   }, []);
 
+  // Default section order
+  const defaultSectionOrder = [
+    "featuredCategories",
+    "featuredProducts",
+    "featuredAuctions",
+    "featuredShops",
+    "featuredBlogs",
+    "featuredReviews",
+  ];
+
+  // Get section order from settings or use default
+  const sectionOrder = useMemo(() => {
+    if (settings?.sectionOrder && settings.sectionOrder.length > 0) {
+      return settings.sectionOrder;
+    }
+    return defaultSectionOrder;
+  }, [settings?.sectionOrder]);
+
+  // Section components map
+  const sectionComponents: Record<string, React.ReactNode> = {
+    featuredCategories: (!settings ||
+      settings.sections.featuredCategories.enabled) && (
+      <section key="featured-categories" id="featured-categories">
+        <FeaturedCategoriesSection />
+      </section>
+    ),
+    featuredProducts: (!settings ||
+      settings.sections.featuredProducts.enabled) && (
+      <section key="featured-products" id="featured-products">
+        <FeaturedProductsSection />
+      </section>
+    ),
+    featuredAuctions: (!settings ||
+      settings.sections.featuredAuctions.enabled) && (
+      <section key="featured-auctions" id="featured-auctions">
+        <FeaturedAuctionsSection />
+      </section>
+    ),
+    featuredShops: (!settings || settings.sections.featuredShops.enabled) && (
+      <section key="featured-shops" id="featured-shops">
+        <FeaturedShopsSection />
+      </section>
+    ),
+    featuredBlogs: (!settings || settings.sections.featuredBlogs.enabled) && (
+      <section key="featured-blogs" id="featured-blogs">
+        <FeaturedBlogsSection />
+      </section>
+    ),
+    featuredReviews: (!settings ||
+      settings.sections.featuredReviews.enabled) && (
+      <section key="featured-reviews" id="featured-reviews">
+        <FeaturedReviewsSection />
+      </section>
+    ),
+  };
+
   // Show loading state with mobile-optimized skeletons
   if (loading) {
     return (
@@ -405,50 +461,11 @@ export default function Home() {
         {/* Recently Viewed Products - Client-side only */}
         <RecentlyViewedWidget title="Continue Browsing" />
 
-        {/* Featured Categories Section - Conditional */}
-        {(!settings || settings.sections.featuredCategories.enabled) && (
-          <section id="featured-categories">
-            <FeaturedCategoriesSection />
-          </section>
-        )}
-
-        {/* Featured Products Section - Conditional */}
-        {(!settings || settings.sections.featuredProducts.enabled) && (
-          <section id="featured-products">
-            <FeaturedProductsSection />
-          </section>
-        )}
-
-        {/* Featured Auctions Section - Conditional */}
-        {(!settings || settings.sections.featuredAuctions.enabled) && (
-          <section id="featured-auctions">
-            <FeaturedAuctionsSection />
-          </section>
-        )}
+        {/* Dynamic Sections - Rendered in order from settings */}
+        {sectionOrder.map((sectionKey) => sectionComponents[sectionKey])}
 
         {/* Shops Navigation - Always shown */}
         <ShopsNav />
-
-        {/* Featured Shops Section - Conditional */}
-        {(!settings || settings.sections.featuredShops.enabled) && (
-          <section id="featured-shops">
-            <FeaturedShopsSection />
-          </section>
-        )}
-
-        {/* Featured Blog Posts Section - Conditional */}
-        {(!settings || settings.sections.featuredBlogs.enabled) && (
-          <section id="featured-blogs">
-            <FeaturedBlogsSection />
-          </section>
-        )}
-
-        {/* Featured Reviews Section - Conditional */}
-        {(!settings || settings.sections.featuredReviews.enabled) && (
-          <section id="featured-reviews">
-            <FeaturedReviewsSection />
-          </section>
-        )}
 
         {/* FAQ Section - Always shown */}
         <section id="faq-section" className="py-6 md:py-8">

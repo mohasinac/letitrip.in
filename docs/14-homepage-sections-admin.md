@@ -1,6 +1,6 @@
 # Homepage Sections Admin Setup
 
-## Status: ✅ Phase 1 & 2 Complete
+## Status: ✅ Complete
 
 ### Completed
 
@@ -27,10 +27,10 @@
    - `FeaturedShopsSection({ maxShops, productsPerShop })`
    - `FeaturedCategoriesSection({ maxCategories, productsPerCategory })`
 
-### Remaining
-
-- [ ] Section ordering on homepage (Phase 4)
-- [ ] Homepage settings UI for limits (Phase 4)
+5. **Section Ordering (Phase 4)** ✅
+   - Homepage sections now render dynamically based on `sectionOrder` from settings
+   - Admin can reorder sections using up/down arrows in `/admin/homepage`
+   - Section order is saved to settings and persists
 
 ---
 

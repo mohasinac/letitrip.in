@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   RefreshCw,
   Save,
   GripVertical,
   ChevronDown,
   ChevronUp,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import {
   homepageSettingsService,
@@ -21,6 +23,44 @@ import {
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import RichTextEditor from "@/components/common/RichTextEditor";
 
+// Default section order
+const DEFAULT_SECTION_ORDER = [
+  "featuredCategories",
+  "featuredProducts",
+  "featuredAuctions",
+  "featuredShops",
+  "featuredBlogs",
+  "featuredReviews",
+];
+
+// Section display names
+const SECTION_NAMES: Record<string, { title: string; description: string }> = {
+  featuredCategories: {
+    title: "Featured Categories",
+    description: "Categories with products",
+  },
+  featuredProducts: {
+    title: "Featured Products",
+    description: "Highlighted products showcase",
+  },
+  featuredAuctions: {
+    title: "Featured Auctions",
+    description: "Live and upcoming auctions",
+  },
+  featuredShops: {
+    title: "Featured Shops",
+    description: "Top shops with their products",
+  },
+  featuredBlogs: {
+    title: "Featured Blogs",
+    description: "Latest blog posts",
+  },
+  featuredReviews: {
+    title: "Featured Reviews",
+    description: "Customer reviews showcase",
+  },
+};
+
 export default function HomepageSettingsPage() {
   const [settings, setSettings] = useState<HomepageSettings | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +68,9 @@ export default function HomepageSettingsPage() {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
+  const [sectionOrder, setSectionOrder] = useState<string[]>(
+    DEFAULT_SECTION_ORDER
+  );
 
   useEffect(() => {
     loadSettings();
@@ -57,6 +100,12 @@ export default function HomepageSettingsPage() {
       };
 
       setSettings(loadedSettings);
+      // Load section order from settings or use default
+      setSectionOrder(
+        loadedSettings.sectionOrder?.length > 0
+          ? loadedSettings.sectionOrder
+          : DEFAULT_SECTION_ORDER
+      );
       setHasChanges(false);
     } catch (error) {
       console.error("Failed to load homepage settings:", error);
@@ -66,12 +115,46 @@ export default function HomepageSettingsPage() {
     }
   };
 
+  // Move section up in order
+  const moveSectionUp = useCallback((sectionKey: string) => {
+    setSectionOrder((prevOrder) => {
+      const index = prevOrder.indexOf(sectionKey);
+      if (index <= 0) return prevOrder;
+      const newOrder = [...prevOrder];
+      [newOrder[index - 1], newOrder[index]] = [
+        newOrder[index],
+        newOrder[index - 1],
+      ];
+      return newOrder;
+    });
+    setHasChanges(true);
+  }, []);
+
+  // Move section down in order
+  const moveSectionDown = useCallback((sectionKey: string) => {
+    setSectionOrder((prevOrder) => {
+      const index = prevOrder.indexOf(sectionKey);
+      if (index < 0 || index >= prevOrder.length - 1) return prevOrder;
+      const newOrder = [...prevOrder];
+      [newOrder[index], newOrder[index + 1]] = [
+        newOrder[index + 1],
+        newOrder[index],
+      ];
+      return newOrder;
+    });
+    setHasChanges(true);
+  }, []);
+
   const handleSave = async () => {
     if (!settings) return;
 
     try {
       setSaving(true);
-      await homepageSettingsService.updateSettings(settings);
+      // Include section order in the settings update
+      await homepageSettingsService.updateSettings({
+        ...settings,
+        sectionOrder,
+      });
       setHasChanges(false);
       toast.success("Homepage settings saved successfully!");
     } catch (error) {
@@ -87,6 +170,7 @@ export default function HomepageSettingsPage() {
       setSaving(true);
       const defaultSettings = await homepageSettingsService.resetSettings();
       setSettings(defaultSettings);
+      setSectionOrder(DEFAULT_SECTION_ORDER);
       setHasChanges(false);
       setShowResetDialog(false);
       toast.success("Settings reset to defaults!");
@@ -115,7 +199,7 @@ export default function HomepageSettingsPage() {
   const updateSectionValue = (
     sectionKey: string,
     field: string,
-    value: number,
+    value: number
   ) => {
     if (!settings) return;
 
@@ -441,14 +525,19 @@ export default function HomepageSettingsPage() {
 
         {/* Homepage Sections */}
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Homepage Sections
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Homepage Sections
+            </h2>
+            <p className="text-sm text-gray-500">
+              Use arrows to reorder sections
+            </p>
+          </div>
 
-          {/* Value Proposition */}
+          {/* Value Proposition - Always at top, not reorderable */}
           <SectionCard
             title="Value Proposition Banner"
-            description="Key benefits displayed below hero"
+            description="Key benefits displayed below hero (fixed position)"
             enabled={settings.sections.valueProposition.enabled}
             onToggle={() => toggleSection("valueProposition")}
             expanded={expandedSection === "valueProposition"}
@@ -456,192 +545,42 @@ export default function HomepageSettingsPage() {
               setExpandedSection(
                 expandedSection === "valueProposition"
                   ? null
-                  : "valueProposition",
+                  : "valueProposition"
               )
             }
           />
 
-          {/* Featured Categories */}
-          <SectionCard
-            title="Featured Categories"
-            description="Categories with products"
-            enabled={settings.sections.featuredCategories.enabled}
-            onToggle={() => toggleSection("featuredCategories")}
-            expanded={expandedSection === "featuredCategories"}
-            onToggleExpand={() =>
-              setExpandedSection(
-                expandedSection === "featuredCategories"
-                  ? null
-                  : "featuredCategories",
-              )
-            }
-          >
-            <div className="space-y-4">
-              <SliderControl
-                label="Max Categories"
-                value={settings.sections.featuredCategories.maxCategories}
-                min={1}
-                max={10}
-                onChange={(value) =>
-                  updateSectionValue(
-                    "featuredCategories",
-                    "maxCategories",
-                    value,
+          {/* Reorderable Sections */}
+          {sectionOrder.map((sectionKey, index) => {
+            const sectionInfo = SECTION_NAMES[sectionKey];
+            if (!sectionInfo) return null;
+
+            const section =
+              settings.sections[sectionKey as keyof typeof settings.sections];
+            if (!section) return null;
+
+            return (
+              <SectionCard
+                key={sectionKey}
+                title={sectionInfo.title}
+                description={sectionInfo.description}
+                enabled={(section as any).enabled}
+                onToggle={() => toggleSection(sectionKey)}
+                expanded={expandedSection === sectionKey}
+                onToggleExpand={() =>
+                  setExpandedSection(
+                    expandedSection === sectionKey ? null : sectionKey
                   )
                 }
-              />
-              <SliderControl
-                label="Products per Category"
-                value={settings.sections.featuredCategories.productsPerCategory}
-                min={5}
-                max={20}
-                onChange={(value) =>
-                  updateSectionValue(
-                    "featuredCategories",
-                    "productsPerCategory",
-                    value,
-                  )
-                }
-              />
-            </div>
-          </SectionCard>
-
-          {/* Featured Products */}
-          <SectionCard
-            title="Featured Products"
-            description="Highlighted products showcase"
-            enabled={settings.sections.featuredProducts.enabled}
-            onToggle={() => toggleSection("featuredProducts")}
-            expanded={expandedSection === "featuredProducts"}
-            onToggleExpand={() =>
-              setExpandedSection(
-                expandedSection === "featuredProducts"
-                  ? null
-                  : "featuredProducts",
-              )
-            }
-          >
-            <SliderControl
-              label="Max Products"
-              value={settings.sections.featuredProducts.maxProducts}
-              min={5}
-              max={20}
-              onChange={(value) =>
-                updateSectionValue("featuredProducts", "maxProducts", value)
-              }
-            />
-          </SectionCard>
-
-          {/* Featured Auctions */}
-          <SectionCard
-            title="Featured Auctions"
-            description="Live and upcoming auctions"
-            enabled={settings.sections.featuredAuctions.enabled}
-            onToggle={() => toggleSection("featuredAuctions")}
-            expanded={expandedSection === "featuredAuctions"}
-            onToggleExpand={() =>
-              setExpandedSection(
-                expandedSection === "featuredAuctions"
-                  ? null
-                  : "featuredAuctions",
-              )
-            }
-          >
-            <SliderControl
-              label="Max Auctions"
-              value={settings.sections.featuredAuctions.maxAuctions}
-              min={5}
-              max={20}
-              onChange={(value) =>
-                updateSectionValue("featuredAuctions", "maxAuctions", value)
-              }
-            />
-          </SectionCard>
-
-          {/* Featured Shops */}
-          <SectionCard
-            title="Featured Shops"
-            description="Top shops with their products"
-            enabled={settings.sections.featuredShops.enabled}
-            onToggle={() => toggleSection("featuredShops")}
-            expanded={expandedSection === "featuredShops"}
-            onToggleExpand={() =>
-              setExpandedSection(
-                expandedSection === "featuredShops" ? null : "featuredShops",
-              )
-            }
-          >
-            <div className="space-y-4">
-              <SliderControl
-                label="Max Shops"
-                value={settings.sections.featuredShops.maxShops}
-                min={1}
-                max={10}
-                onChange={(value) =>
-                  updateSectionValue("featuredShops", "maxShops", value)
-                }
-              />
-              <SliderControl
-                label="Products per Shop"
-                value={settings.sections.featuredShops.productsPerShop}
-                min={5}
-                max={20}
-                onChange={(value) =>
-                  updateSectionValue("featuredShops", "productsPerShop", value)
-                }
-              />
-            </div>
-          </SectionCard>
-
-          {/* Featured Blogs */}
-          <SectionCard
-            title="Featured Blogs"
-            description="Latest blog posts"
-            enabled={settings.sections.featuredBlogs.enabled}
-            onToggle={() => toggleSection("featuredBlogs")}
-            expanded={expandedSection === "featuredBlogs"}
-            onToggleExpand={() =>
-              setExpandedSection(
-                expandedSection === "featuredBlogs" ? null : "featuredBlogs",
-              )
-            }
-          >
-            <SliderControl
-              label="Max Blogs"
-              value={settings.sections.featuredBlogs.maxBlogs}
-              min={5}
-              max={20}
-              onChange={(value) =>
-                updateSectionValue("featuredBlogs", "maxBlogs", value)
-              }
-            />
-          </SectionCard>
-
-          {/* Featured Reviews */}
-          <SectionCard
-            title="Featured Reviews"
-            description="Customer reviews showcase"
-            enabled={settings.sections.featuredReviews.enabled}
-            onToggle={() => toggleSection("featuredReviews")}
-            expanded={expandedSection === "featuredReviews"}
-            onToggleExpand={() =>
-              setExpandedSection(
-                expandedSection === "featuredReviews"
-                  ? null
-                  : "featuredReviews",
-              )
-            }
-          >
-            <SliderControl
-              label="Max Reviews"
-              value={settings.sections.featuredReviews.maxReviews}
-              min={5}
-              max={20}
-              onChange={(value) =>
-                updateSectionValue("featuredReviews", "maxReviews", value)
-              }
-            />
-          </SectionCard>
+                orderIndex={index + 1}
+                totalSections={sectionOrder.length}
+                onMoveUp={() => moveSectionUp(sectionKey)}
+                onMoveDown={() => moveSectionDown(sectionKey)}
+              >
+                {renderSectionConfig(sectionKey, settings, updateSectionValue)}
+              </SectionCard>
+            );
+          })}
         </div>
 
         {/* Last Updated Info */}
@@ -656,6 +595,116 @@ export default function HomepageSettingsPage() {
   );
 }
 
+// Helper function to render section-specific configuration
+function renderSectionConfig(
+  sectionKey: string,
+  settings: HomepageSettings,
+  updateSectionValue: (section: string, field: string, value: number) => void
+): React.ReactNode {
+  switch (sectionKey) {
+    case "featuredCategories":
+      return (
+        <div className="space-y-4">
+          <SliderControl
+            label="Max Categories"
+            value={settings.sections.featuredCategories.maxCategories}
+            min={1}
+            max={10}
+            onChange={(value) =>
+              updateSectionValue("featuredCategories", "maxCategories", value)
+            }
+          />
+          <SliderControl
+            label="Products per Category"
+            value={settings.sections.featuredCategories.productsPerCategory}
+            min={5}
+            max={20}
+            onChange={(value) =>
+              updateSectionValue(
+                "featuredCategories",
+                "productsPerCategory",
+                value
+              )
+            }
+          />
+        </div>
+      );
+    case "featuredProducts":
+      return (
+        <SliderControl
+          label="Max Products"
+          value={settings.sections.featuredProducts.maxProducts}
+          min={5}
+          max={20}
+          onChange={(value) =>
+            updateSectionValue("featuredProducts", "maxProducts", value)
+          }
+        />
+      );
+    case "featuredAuctions":
+      return (
+        <SliderControl
+          label="Max Auctions"
+          value={settings.sections.featuredAuctions.maxAuctions}
+          min={5}
+          max={20}
+          onChange={(value) =>
+            updateSectionValue("featuredAuctions", "maxAuctions", value)
+          }
+        />
+      );
+    case "featuredShops":
+      return (
+        <div className="space-y-4">
+          <SliderControl
+            label="Max Shops"
+            value={settings.sections.featuredShops.maxShops}
+            min={1}
+            max={10}
+            onChange={(value) =>
+              updateSectionValue("featuredShops", "maxShops", value)
+            }
+          />
+          <SliderControl
+            label="Products per Shop"
+            value={settings.sections.featuredShops.productsPerShop}
+            min={5}
+            max={20}
+            onChange={(value) =>
+              updateSectionValue("featuredShops", "productsPerShop", value)
+            }
+          />
+        </div>
+      );
+    case "featuredBlogs":
+      return (
+        <SliderControl
+          label="Max Blogs"
+          value={settings.sections.featuredBlogs.maxBlogs}
+          min={5}
+          max={20}
+          onChange={(value) =>
+            updateSectionValue("featuredBlogs", "maxBlogs", value)
+          }
+        />
+      );
+    case "featuredReviews":
+      return (
+        <SliderControl
+          label="Max Reviews"
+          value={settings.sections.featuredReviews.maxReviews}
+          min={5}
+          max={20}
+          onChange={(value) =>
+            updateSectionValue("featuredReviews", "maxReviews", value)
+          }
+        />
+      );
+    default:
+      return null;
+  }
+}
+
 // Section Card Component
 interface SectionCardProps {
   title: string;
@@ -665,6 +714,10 @@ interface SectionCardProps {
   expanded?: boolean;
   onToggleExpand?: () => void;
   children?: React.ReactNode;
+  orderIndex?: number;
+  totalSections?: number;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
 function SectionCard({
@@ -675,16 +728,53 @@ function SectionCard({
   expanded,
   onToggleExpand,
   children,
+  orderIndex,
+  totalSections,
+  onMoveUp,
+  onMoveDown,
 }: SectionCardProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
       <div className="p-4 flex items-center justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <GripVertical className="w-5 h-5 text-gray-400 cursor-move" />
+            {/* Reorder buttons */}
+            {onMoveUp &&
+              onMoveDown &&
+              orderIndex !== undefined &&
+              totalSections !== undefined && (
+                <div className="flex flex-col gap-0.5">
+                  <button
+                    onClick={onMoveUp}
+                    disabled={orderIndex === 1}
+                    className="p-0.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                    title="Move up"
+                  >
+                    <ArrowUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </button>
+                  <button
+                    onClick={onMoveDown}
+                    disabled={orderIndex === totalSections}
+                    className="p-0.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                    title="Move down"
+                  >
+                    <ArrowDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </button>
+                </div>
+              )}
+            {/* Order number badge */}
+            {orderIndex && (
+              <span className="flex items-center justify-center w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-full text-xs font-medium text-gray-600 dark:text-gray-300">
+                {orderIndex}
+              </span>
+            )}
             <div>
-              <h3 className="font-medium text-gray-900">{title}</h3>
-              <p className="text-sm text-gray-500">{description}</p>
+              <h3 className="font-medium text-gray-900 dark:text-white">
+                {title}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {description}
+              </p>
             </div>
           </div>
         </div>
@@ -693,20 +783,20 @@ function SectionCard({
           {children && onToggleExpand && (
             <button
               onClick={onToggleExpand}
-              className="p-1 hover:bg-gray-100 rounded"
+              className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
               disabled={!enabled}
             >
               {expanded ? (
-                <ChevronUp className="w-5 h-5 text-gray-500" />
+                <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               ) : (
-                <ChevronDown className="w-5 h-5 text-gray-500" />
+                <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               )}
             </button>
           )}
         </div>
       </div>
       {expanded && enabled && children && (
-        <div className="px-4 pb-4 pt-2 border-t border-gray-200">
+        <div className="px-4 pb-4 pt-2 border-t border-gray-200 dark:border-gray-700">
           {children}
         </div>
       )}
