@@ -2,7 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check, Info, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Info,
+  Loader2,
+} from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import SlugInput from "@/components/common/SlugInput";
@@ -14,32 +22,17 @@ import { WizardSteps } from "@/components/forms/WizardSteps";
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
 import type { CategoryFE } from "@/types/frontend/category.types";
 
-// Step definitions
+// Step definitions - Simplified 2-step wizard
 const STEPS = [
   {
-    id: "basic",
-    name: "Basic Info",
-    description: "Title, category & description",
+    id: "required",
+    name: "Required Info",
+    description: "Essential auction details",
   },
   {
-    id: "bidding",
-    name: "Bidding Rules",
-    description: "Pricing & bid settings",
-  },
-  {
-    id: "schedule",
-    name: "Schedule",
-    description: "Start & end times",
-  },
-  {
-    id: "media",
-    name: "Media",
-    description: "Images & videos",
-  },
-  {
-    id: "review",
-    name: "Review & Publish",
-    description: "Review & publish auction",
+    id: "optional",
+    name: "Additional Details",
+    description: "Optional settings",
   },
 ];
 
@@ -77,6 +70,19 @@ export default function CreateAuctionWizardPage() {
   );
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [errorSteps, setErrorSteps] = useState<number[]>([]);
+
+  // Expandable sections state for Step 2
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({
+    bidding: false,
+    schedule: false,
+    shipping: false,
+  });
+
+  const toggleSection = (section: string) => {
+    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
 
   // Form data
   const [formData, setFormData] = useState({
@@ -153,36 +159,14 @@ export default function CreateAuctionWizardPage() {
     (step: number): string[] => {
       const errors: string[] = [];
       switch (step) {
-        case 0:
+        case 0: // Required Info
           if (!formData.title.trim()) errors.push("Title is required");
           if (!formData.slug.trim()) errors.push("URL slug is required");
           if (slugError) errors.push("Please fix the URL error");
           if (!formData.category) errors.push("Category is required");
-          break;
-        case 1:
           if (!formData.startingBid || parseFloat(formData.startingBid) <= 0) {
             errors.push("Starting bid must be greater than 0");
           }
-          if (
-            !formData.bidIncrement ||
-            parseFloat(formData.bidIncrement) <= 0
-          ) {
-            errors.push("Bid increment must be greater than 0");
-          }
-          if (
-            formData.reservePrice &&
-            parseFloat(formData.reservePrice) < parseFloat(formData.startingBid)
-          ) {
-            errors.push("Reserve price must be >= starting bid");
-          }
-          if (
-            formData.buyNowPrice &&
-            parseFloat(formData.buyNowPrice) <= parseFloat(formData.startingBid)
-          ) {
-            errors.push("Buy now price must be > starting bid");
-          }
-          break;
-        case 2:
           if (formData.endTime <= formData.startTime) {
             errors.push("End time must be after start time");
           }
@@ -192,11 +176,11 @@ export default function CreateAuctionWizardPage() {
           if (duration < 1) {
             errors.push("Auction must run for at least 1 hour");
           }
-          break;
-        case 3:
           if (formData.images.length === 0) {
             errors.push("At least one image is required");
           }
+          break;
+        case 1: // Optional Details - no required fields
           break;
       }
       return errors;
