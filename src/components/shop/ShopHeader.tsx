@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Star, MapPin, Heart, Share2 } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import type { ShopFE, ShopCardFE } from "@/types/frontend/shop.types";
 import { shopsService } from "@/services/shops.service";
 
@@ -71,10 +72,11 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
       {/* Banner */}
       {shop.banner && (
         <div className="w-full h-48 md:h-64 relative">
-          <img
+          <OptimizedImage
             src={shop.banner}
             alt={`${shop.name} banner`}
-            className="w-full h-full object-cover"
+            fill
+            objectFit="cover"
           />
         </div>
       )}
@@ -85,10 +87,13 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
           {/* Logo */}
           <div className="flex-shrink-0">
             {shop.logo ? (
-              <img
+              <OptimizedImage
                 src={shop.logo}
                 alt={shop.name}
-                className="w-24 h-24 rounded-lg object-cover border-4 border-white dark:border-gray-800 shadow-lg"
+                width={96}
+                height={96}
+                className="rounded-lg border-4 border-white dark:border-gray-800 shadow-lg"
+                objectFit="cover"
               />
             ) : (
               <div className="w-24 h-24 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-4 border-white dark:border-gray-800 shadow-lg">

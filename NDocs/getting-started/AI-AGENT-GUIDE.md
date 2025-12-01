@@ -1,6 +1,6 @@
 # AI Agent Guide
 
-> **Last Updated**: November 30, 2025
+> **Last Updated**: January 2025
 
 ## Quick Reference for AI Coding Agents
 
@@ -10,6 +10,7 @@
 2. Check `src/constants/routes.ts` for route constants
 3. Check `src/constants/api-routes.ts` for API endpoints
 4. Use existing services from `src/services/`
+5. **Use wrapper components** - See "HTML Tag Wrappers" section below
 
 ### Code Style
 
@@ -36,21 +37,156 @@ import { SELLER_ROUTES } from '@/constants/routes';
 href={SELLER_ROUTES.AUCTION_EDIT(auction.slug)}
 ```
 
+---
+
+## HTML Tag Wrappers (IMPORTANT)
+
+**Always use wrapper components instead of raw HTML tags** for consistency, dark mode support, accessibility, and easier maintenance.
+
+### Image Wrapper
+
+```tsx
+// ❌ Bad - raw img tag
+<img src="/product.jpg" alt="Product" className="w-full h-48 object-cover" />;
+
+// ✅ Good - use OptimizedImage
+import OptimizedImage from "@/components/common/OptimizedImage";
+
+<OptimizedImage
+  src="/product.jpg"
+  alt="Product"
+  width={400}
+  height={300}
+  objectFit="cover"
+/>;
+```
+
+### Form Wrappers
+
+```tsx
+// ❌ Bad - raw label and input
+<label className="block text-sm font-medium">Name</label>
+<input type="text" className="border rounded px-3 py-2" />
+
+// ✅ Good - use FormField with FormInput
+import { FormField, FormInput } from '@/components/forms';
+
+<FormField label="Name" required error={errors.name}>
+  <FormInput
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+  />
+</FormField>
+```
+
+### Typography Wrappers
+
+```tsx
+// ❌ Bad - raw headings
+<h1 className="text-3xl font-bold">Title</h1>;
+
+// ✅ Good - use Heading component
+import { Heading } from "@/components/ui/Heading";
+
+<Heading level={1}>Title</Heading>;
+```
+
+### Available Wrappers
+
+| Raw HTML                  | Wrapper Component | Location                                   |
+| ------------------------- | ----------------- | ------------------------------------------ |
+| `<img>`                   | `OptimizedImage`  | `src/components/common/OptimizedImage.tsx` |
+| `<label>`                 | `FormLabel`       | `src/components/forms/FormLabel.tsx`       |
+| `<input>`                 | `FormInput`       | `src/components/forms/FormInput.tsx`       |
+| `<textarea>`              | `FormTextarea`    | `src/components/forms/FormTextarea.tsx`    |
+| `<select>`                | `FormSelect`      | `src/components/forms/FormSelect.tsx`      |
+| `<input type="checkbox">` | `FormCheckbox`    | `src/components/forms/FormCheckbox.tsx`    |
+| `<input type="radio">`    | `FormRadio`       | `src/components/forms/FormRadio.tsx`       |
+| Label + Input             | `FormField`       | `src/components/forms/FormField.tsx`       |
+| `<h1>` - `<h6>`           | `Heading`         | `src/components/ui/Heading.tsx`            |
+| `<p>`                     | `Text`            | `src/components/ui/Text.tsx`               |
+
+---
+
+## Common Problems & Solutions
+
+### 1. Large File Syndrome
+
+**Problem**: Files over 300+ lines become hard to maintain.
+
+**Solution**: Split into modular components.
+
+```
+// Before: /seller/products/create/page.tsx (898 lines)
+
+// After:
+src/components/seller/product-wizard/
+├── types.ts              # Form data interface
+├── RequiredInfoStep.tsx  # Step 1 component
+├── OptionalDetailsStep.tsx # Step 2 component
+└── index.ts              # Barrel exports
+
+/seller/products/create/page.tsx (297 lines)
+```
+
+### 2. Orphaned Code After Refactoring
+
+**Problem**: Old code remains after simplifying wizard steps.
+
+**Solution**: Don't try to find orphaned code. **Rewrite the entire file** - it's faster and cleaner.
+
+```typescript
+// ❌ Bad - trying to find and remove old step 3, 4, 5, 6 content
+// Leads to partial removal and broken files
+
+// ✅ Good - rewrite the file with only needed content
+// Creates clean, minimal code
+```
+
+### 3. Dark Mode Missing
+
+**Problem**: Components don't work in dark mode.
+
+**Solution**: Always include dark mode variants:
+
+```tsx
+// ✅ Include dark mode classes
+className =
+  "bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700";
+```
+
+### 4. No Legacy Support Policy
+
+**Problem**: Old patterns need to coexist with new patterns.
+
+**Solution**: **Don't maintain backward compatibility.** Delete old files and patterns entirely.
+
+```typescript
+// ❌ Bad - keeping old getById() alongside new getBySlug()
+// ✅ Good - remove getById(), use only getBySlug()
+```
+
+---
+
 ### Key Files
 
-| Purpose         | Location                                    |
-| --------------- | ------------------------------------------- |
-| Page routes     | `src/constants/routes.ts`                   |
-| API routes      | `src/constants/api-routes.ts`               |
-| Form components | `src/components/forms/`                     |
-| Services        | `src/services/`                             |
-| Types           | `src/types/frontend/`, `src/types/backend/` |
+| Purpose           | Location                                                   |
+| ----------------- | ---------------------------------------------------------- |
+| Page routes       | `src/constants/routes.ts`                                  |
+| API routes        | `src/constants/api-routes.ts`                              |
+| Form components   | `src/components/forms/`                                    |
+| Services          | `src/services/`                                            |
+| Types             | `src/types/frontend/`, `src/types/backend/`                |
+| Wizard components | `src/components/seller/product-wizard/`, `auction-wizard/` |
+| Image wrapper     | `src/components/common/OptimizedImage.tsx`                 |
 
-### Recent Changes (November 2025)
+### Recent Changes (January 2025)
 
-1. **SearchBar refactored**: Now uses `ContentTypeFilter` instead of category dropdown
-2. **Slug-based routing**: Seller auctions route changed from `[id]` to `[slug]`
-3. **Review types**: Added `productSlug` field for slug-based product links
+1. **Wizard Simplification**: Product/Auction wizards reduced to 2 steps (Required → Optional)
+2. **Modular Step Components**: Each wizard step is now a separate component
+3. **WizardSteps/WizardActionBar**: Reusable form components for all wizards
+4. **OptimizedImage**: Use instead of raw `<img>` tags for automatic optimization
+5. **FormField/FormInput**: Use instead of raw `<label>` + `<input>` for consistency
 
 ### Don't Do
 
@@ -58,3 +194,7 @@ href={SELLER_ROUTES.AUCTION_EDIT(auction.slug)}
 - ❌ Don't create documentation files unless asked
 - ❌ Don't use `getById()` for public/seller URLs - use `getBySlug()`
 - ❌ Don't hardcode API paths - use constants from `api-routes.ts`
+- ❌ Don't use raw `<img>` tags - use `OptimizedImage` component
+- ❌ Don't use raw `<label>` + `<input>` - use `FormField` + `FormInput`
+- ❌ Don't maintain legacy code - delete old patterns entirely
+- ❌ Don't try to find orphaned code - rewrite the file instead

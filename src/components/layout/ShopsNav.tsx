@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { shopsService } from "@/services/shops.service";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 import {
@@ -68,7 +69,7 @@ export default function ShopsNav() {
           setShowLeftArrow(scrollRef.current.scrollLeft > 0);
           setShowRightArrow(
             scrollRef.current.scrollLeft <
-              scrollRef.current.scrollWidth - scrollRef.current.clientWidth,
+              scrollRef.current.scrollWidth - scrollRef.current.clientWidth
           );
         }
       }, 300);
@@ -103,7 +104,7 @@ export default function ShopsNav() {
               const target = e.target as HTMLDivElement;
               setShowLeftArrow(target.scrollLeft > 0);
               setShowRightArrow(
-                target.scrollLeft < target.scrollWidth - target.clientWidth,
+                target.scrollLeft < target.scrollWidth - target.clientWidth
               );
             }}
           >
@@ -129,10 +130,13 @@ export default function ShopsNav() {
                     >
                       <div className="w-12 h-12 lg:w-16 lg:h-16 bg-yellow-100 rounded-full flex items-center justify-center group-hover:bg-yellow-200 transition-colors overflow-hidden">
                         {ShopCardFE.logo ? (
-                          <img
+                          <OptimizedImage
                             src={ShopCardFE.logo}
                             alt={ShopCardFE.name}
-                            className="w-full h-full object-cover"
+                            width={64}
+                            height={64}
+                            className="rounded-full"
+                            objectFit="cover"
                           />
                         ) : (
                           <Icon className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-700" />

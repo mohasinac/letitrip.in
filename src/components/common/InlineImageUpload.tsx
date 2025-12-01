@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Upload, X, Loader2, Image as ImageIcon } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { InlineImageUploadProps } from "@/types/inline-edit";
 import { mediaService } from "@/services/media.service";
 
@@ -86,10 +87,13 @@ export function InlineImageUpload({
         {/* Image Preview */}
         {value && !isLoading ? (
           <>
-            <img
+            <OptimizedImage
               src={value}
               alt="Preview"
-              className="w-full h-full object-cover"
+              width={size}
+              height={size}
+              className="rounded-lg"
+              objectFit="cover"
             />
             {!disabled && (
               <button

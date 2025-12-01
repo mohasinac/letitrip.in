@@ -2,7 +2,8 @@
 
 ## Current State
 
-**Status**: ✅ IMPLEMENTED
+> **Status**: ✅ IMPLEMENTED
+> **Priority**: ✅ Complete
 
 ### Implemented Files
 

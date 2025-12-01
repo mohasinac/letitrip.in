@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Eye, Edit, Trash2, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { DataTable, Column } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
@@ -61,10 +62,13 @@ export default function ProductTable({
       render: (_, ProductCardFE) => (
         <div className="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden flex-shrink-0">
           {ProductCardFE.images?.[0] ? (
-            <img
+            <OptimizedImage
               src={ProductCardFE.images[0]}
               alt={ProductCardFE.name}
-              className="h-full w-full object-cover"
+              width={48}
+              height={48}
+              className="rounded-lg"
+              objectFit="cover"
             />
           ) : (
             <div className="h-full w-full flex items-center justify-center text-gray-400 text-xs">

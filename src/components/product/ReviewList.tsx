@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Star, ThumbsUp, Check } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { reviewsService } from "@/services/reviews.service";
 import { EmptyState } from "@/components/common/EmptyState";
 
@@ -287,11 +288,14 @@ export default function ReviewList({ productId }: ReviewListProps) {
               {review.images && review.images.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
                   {review.images.map((url, index) => (
-                    <img
+                    <OptimizedImage
                       key={index}
                       src={url}
                       alt={`Review image ${index + 1}`}
-                      className="w-20 h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:opacity-75 transition-opacity"
+                      width={80}
+                      height={80}
+                      className="rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:opacity-75 transition-opacity"
+                      objectFit="cover"
                     />
                   ))}
                 </div>

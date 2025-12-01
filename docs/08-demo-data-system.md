@@ -1,8 +1,8 @@
 # Demo Data System
 
-> **Status**: ✅ Implemented
-> **Priority**: Complete
-> **Last Updated**: December 2025
+> **Status**: 🔄 Partially Implemented
+> **Priority**: 🟡 Medium - Demo Data Updates Pending
+> **Last Updated**: January 2025
 
 ## Overview
 
@@ -10,7 +10,7 @@ The demo data generator creates Beyblade-themed test data for development and QA
 
 ---
 
-## Feature Demo Data Requirements (Docs 01-26)
+## Feature Demo Data Requirements (Docs 01-29)
 
 ### No Demo Data Needed (UI/Config Features)
 
@@ -32,6 +32,9 @@ The demo data generator creates Beyblade-themed test data for development and QA
 | 24  | Mobile Page Audit       | Audit doc - no data                  |
 | 25  | Wizard Forms Mobile     | UI patterns - no data                |
 | 26  | Media Upload            | Upload features - test images needed |
+| 27  | HTML Tag Wrappers       | Component wrappers - no data         |
+| 28  | Component Splitting     | Code organization - no data          |
+| 29  | Image Wrapper Migration | Component migration - no data        |
 
 ### Demo Data Updates Needed
 
