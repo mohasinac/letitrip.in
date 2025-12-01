@@ -5,23 +5,27 @@
 ### Completed
 
 1. **Featured Sections Now Use Admin Curation** ✅
+
    - Components first check for admin-curated items from `/homepage` API
    - Fallback to `featured: true` query if no curated items exist
    - Admin curation now takes effect on homepage display
 
 2. **Batch APIs Created** ✅
+
    - `POST /api/products/batch` - Fetch multiple products by IDs
    - `POST /api/auctions/batch` - Fetch multiple auctions by IDs
    - `POST /api/shops/batch` - Fetch multiple shops by IDs
    - `POST /api/categories/batch` - Fetch multiple categories by IDs
 
 3. **Service Methods Added** ✅
+
    - `productsService.getByIds(ids)` - Batch fetch products
    - `auctionsService.getByIds(ids)` - Batch fetch auctions
    - `shopsService.getByIds(ids)` - Batch fetch shops
    - `categoriesService.getByIds(ids)` - Batch fetch categories
 
 4. **Components Accept Limit Props** ✅
+
    - `FeaturedProductsSection({ maxProducts })`
    - `FeaturedAuctionsSection({ maxAuctions })`
    - `FeaturedShopsSection({ maxShops, productsPerShop })`
@@ -58,13 +62,16 @@ const response = await apiService.get("/homepage");
 const featuredItems = response.data?.featuredItems?.products || [];
 
 if (activeItems.length > 0) {
-  const productIds = activeItems.map(item => item.itemId);
+  const productIds = activeItems.map((item) => item.itemId);
   curatedProducts = await productsService.getByIds(productIds);
 }
 
 // Fallback if no curated items
 if (curatedProducts.length === 0) {
-  const response = await productsService.list({ featured: true, limit: maxProducts });
+  const response = await productsService.list({
+    featured: true,
+    limit: maxProducts,
+  });
   setProducts(response.data);
 }
 ```
