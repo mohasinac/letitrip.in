@@ -2,7 +2,8 @@
 
 ## Current State
 
-**Status**: Constants defined, not implemented
+> **Status**: ⏸️ Constants defined, not implemented
+> **Priority**: 🟢 Low - Future Enhancement
 
 ### Existing Code
 

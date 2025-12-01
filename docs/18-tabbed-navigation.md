@@ -2,7 +2,8 @@
 
 ## Current State
 
-**Status**: ✅ Phase 1 Complete - TabNav component and layouts created
+> **Status**: ✅ Phase 1 Complete - TabNav component and layouts created
+> **Priority**: ✅ Complete
 
 ### Implementation Complete
 

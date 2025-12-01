@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Grid3X3, Folder } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
 
@@ -161,10 +162,12 @@ export function SimilarCategories({
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow">
                 <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20">
                   {category.image ? (
-                    <img
+                    <OptimizedImage
                       src={category.image}
                       alt={category.name}
-                      className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300"
+                      fill
+                      objectFit="cover"
+                      className="group-hover/card:scale-105 transition-transform duration-300"
                     />
                   ) : (
                     <div className="flex items-center justify-center w-full h-full">

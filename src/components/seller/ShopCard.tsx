@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   Store,
   Package,
@@ -48,10 +49,13 @@ export default function ShopCard({
         <div className="flex items-center gap-3">
           {/* Logo */}
           {shop.logo ? (
-            <img
+            <OptimizedImage
               src={shop.logo}
               alt={shop.name}
-              className="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-gray-700"
+              width={48}
+              height={48}
+              className="rounded-lg border border-gray-200 dark:border-gray-700"
+              objectFit="cover"
             />
           ) : (
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -83,10 +87,11 @@ export default function ShopCard({
       {/* Shop Logo/Banner */}
       <div className="relative h-32 bg-gradient-to-br from-blue-500 to-purple-600">
         {shop.logo && (
-          <img
+          <OptimizedImage
             src={shop.logo}
             alt={shop.name}
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            objectFit="cover"
           />
         )}
         <div className="absolute inset-0 bg-black bg-opacity-20" />

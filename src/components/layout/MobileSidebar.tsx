@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { X, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   ADMIN_MENU_ITEMS,
   SELLER_MENU_ITEMS,
@@ -121,10 +122,13 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
             >
               <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center overflow-hidden">
                 {user.photoURL ? (
-                  <img
+                  <OptimizedImage
                     src={user.photoURL}
                     alt={getDisplayName()}
-                    className="w-full h-full object-cover"
+                    width={48}
+                    height={48}
+                    className="rounded-full"
+                    objectFit="cover"
                   />
                 ) : (
                   <span className="text-gray-900 font-bold text-lg">

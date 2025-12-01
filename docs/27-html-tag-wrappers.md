@@ -1,8 +1,9 @@
 # HTML Tag Wrappers - Consistent Component Usage
 
-> **Status**: ✅ Phase 1 Complete (All Form Components Created)
-> **Priority**: High
+> **Status**: 🔄 Phase 1 Complete, Phase 2 Pending
+> **Priority**: 🔴 Highest - Migration Pending
 > **Last Updated**: January 2025
+> **Related**: [Doc 29 - Image Wrapper Migration](./29-image-wrapper-migration.md)
 
 ## Components Created ✅
 

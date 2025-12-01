@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Camera, X, RotateCw, Check } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { MediaFile } from "@/types/media";
 
 interface CameraCaptureProps {
@@ -170,10 +171,13 @@ export default function CameraCapture({
             )}
           </>
         ) : (
-          <img
+          <OptimizedImage
             src={capturedImage}
             alt="Captured"
-            className="max-w-full max-h-full object-contain"
+            width={600}
+            height={600}
+            objectFit="contain"
+            className="max-w-full max-h-full"
           />
         )}
       </div>

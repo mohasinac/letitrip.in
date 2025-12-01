@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Tag, X, Loader2, Store } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 interface ShopOrderSummaryProps {
   shopId: string;
@@ -87,10 +88,13 @@ export function ShopOrderSummary({
       <div className="space-y-3">
         {items.map((item) => (
           <div key={item.id} className="flex gap-4">
-            <img
+            <OptimizedImage
               src={item.productImage || "/placeholder.png"}
               alt={item.productName}
-              className="w-16 h-16 object-cover rounded"
+              width={64}
+              height={64}
+              className="rounded"
+              objectFit="cover"
             />
             <div className="flex-1">
               <h4 className="font-medium text-gray-900 dark:text-white">
