@@ -14,6 +14,7 @@ import {
   Calendar,
   AlertCircle,
   TrendingUp,
+  Store,
 } from "lucide-react";
 import Link from "next/link";
 import { auctionsService } from "@/services/auctions.service";
@@ -390,11 +391,11 @@ export default function AuctionDetailPage() {
           </div>
 
           {/* Shop Auctions Section */}
-          {shopAuctions.length > 0 && (
-            <div className="rounded-lg border border-gray-200 bg-white p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                More from this shop
-              </h2>
+          <div className="rounded-lg border border-gray-200 bg-white p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              More from this shop
+            </h2>
+            {shopAuctions.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {shopAuctions.map((a) => (
                   <Link
@@ -420,15 +421,28 @@ export default function AuctionDetailPage() {
                   </Link>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                <Store className="w-10 h-10 text-gray-400 mb-3" />
+                <p className="text-gray-500 mb-4 text-sm">
+                  No other auctions from this shop
+                </p>
+                <Link
+                  href="/auctions"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  View All Auctions
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* Similar Auctions Section */}
-          {similarAuctions.length > 0 && (
-            <div className="rounded-lg border border-gray-200 bg-white p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                Similar Auctions
-              </h2>
+          <div className="rounded-lg border border-gray-200 bg-white p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Similar Auctions
+            </h2>
+            {similarAuctions.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {similarAuctions.map((a) => (
                   <Link
@@ -463,8 +477,21 @@ export default function AuctionDetailPage() {
                   </Link>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                <Gavel className="w-10 h-10 text-gray-400 mb-3" />
+                <p className="text-gray-500 mb-4 text-sm">
+                  No similar auctions available
+                </p>
+                <Link
+                  href="/auctions"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  View All Auctions
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Column - Bidding Panel */}

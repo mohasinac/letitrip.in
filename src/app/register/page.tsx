@@ -296,7 +296,7 @@ export default function RegisterPage() {
           <div className="mt-6">
             <Link
               href="/login"
-              className="block w-full py-3 px-4 min-h-[48px] border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:border-yellow-500 hover:text-yellow-600 active:bg-gray-50 dark:active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all text-center touch-manipulation flex items-center justify-center"
+              className="w-full py-3 px-4 min-h-[48px] border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:border-yellow-500 hover:text-yellow-600 active:bg-gray-50 dark:active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all text-center touch-manipulation flex items-center justify-center"
             >
               Sign In Instead
             </Link>

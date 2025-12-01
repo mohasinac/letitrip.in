@@ -2,19 +2,19 @@
 
 ## Current State
 
-**Status**: 🟡 ProductCard unified - Admin products page updated
+**Status**: ✅ Complete - All cards unified with variant support
 
 ### Analysis Summary
 
-| Resource | Public Card                 | Admin/Seller         | Consistency Issue         |
-| -------- | --------------------------- | -------------------- | ------------------------- |
-| Product  | `ProductCard.tsx` ✅        | Uses unified card ✅ | Unified with variant prop |
-| Auction  | `AuctionCard.tsx` ✅        | Table/DataTable view | Needs variant support     |
-| Category | `CategoryCard.tsx` ✅       | Table view only      | Needs variant support     |
-| Shop     | `ShopCard.tsx` (2 versions) | Table view only      | Seller has own ShopCard   |
-| Review   | `ReviewCard.tsx` ✅         | Table view only      | No card view in admin     |
-| Order    | No dedicated card           | Table view only      | Inline render in pages    |
-| Blog     | `BlogCard.tsx` ✅           | Table view only      | No card view in admin     |
+| Resource | Public Card           | Admin/Seller          | Consistency Issue         |
+| -------- | --------------------- | --------------------- | ------------------------- |
+| Product  | `ProductCard.tsx` ✅  | Uses unified card ✅  | Unified with variant prop |
+| Auction  | `AuctionCard.tsx` ✅  | Uses unified card ✅  | Unified with variant prop |
+| Category | `CategoryCard.tsx` ✅ | default/compact/large | Has size variants         |
+| Shop     | `ShopCard.tsx` ✅     | Uses unified card ✅  | Unified with variant prop |
+| Review   | `ReviewCard.tsx` ✅   | Table view only       | No card view in admin     |
+| Order    | No dedicated card     | Table view only       | Inline render in pages    |
+| Blog     | `BlogCard.tsx` ✅     | Table view only       | No card view in admin     |
 
 ### ProductCard Unified ✅
 
@@ -35,6 +35,49 @@ interface ProductCardProps {
   onDelete?: (slug: string) => void;
   onSelect?: (id: string, selected: boolean) => void;
   isSelected?: boolean;
+}
+```
+
+### AuctionCard Unified ✅
+
+```typescript
+// src/components/cards/AuctionCard.tsx now supports variants:
+type AuctionCardVariant = "public" | "admin" | "seller" | "compact";
+
+interface AuctionCardProps {
+  auction: {
+    /* ... */ status?:
+      | "active"
+      | "pending"
+      | "ended"
+      | "cancelled"
+      | "moderation";
+  };
+  variant?: AuctionCardVariant;
+  // Admin/Seller specific
+  onEdit?: (slug: string) => void;
+  onDelete?: (id: string) => void;
+  onApprove?: (id: string) => void;
+  onReject?: (id: string) => void;
+  isSelected?: boolean;
+  onSelect?: (id: string, selected: boolean) => void;
+}
+```
+
+### ShopCard Unified ✅
+
+```typescript
+// src/components/cards/ShopCard.tsx now supports variants:
+type ShopCardVariant = "public" | "admin" | "seller" | "compact";
+
+interface ShopCardProps {
+  // ... base props
+  variant?: ShopCardVariant;
+  // Admin/Seller specific
+  onEdit?: (slug: string) => void;
+  onDelete?: (id: string) => void;
+  isSelected?: boolean;
+  onSelect?: (id: string, selected: boolean) => void;
 }
 ```
 
@@ -105,14 +148,14 @@ interface ShopCardProps {
 
 ## Implementation Checklist
 
-### Phase 1: Update Card Props
+### Phase 1: Update Card Props ✅
 
 - [x] Add `variant` prop to ProductCard ✅
-- [ ] Add `variant` prop to AuctionCard
-- [ ] Add `variant` prop to CategoryCard
-- [ ] Add `variant` prop to ShopCard
+- [x] Add `variant` prop to AuctionCard ✅
+- [x] Add `variant` prop to CategoryCard ✅ (has default/compact/large)
+- [x] Add `variant` prop to ShopCard ✅
 - [x] Ensure ProductCard has dark mode support ✅
-- [ ] Add consistent action handlers
+- [x] Add consistent action handlers ✅
 
 ### Phase 2: Create Row Variants
 

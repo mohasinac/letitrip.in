@@ -2,7 +2,11 @@
 
 > **Status**: ✅ Complete
 > **Priority**: High
-> **Last Updated**: January 2025
+> **Last Updated**: December 2025
+> **Related**:
+>
+> - [Doc 24 - Mobile Page Audit](./24-mobile-page-audit.md) - Detailed audit of all pages
+> - [Doc 25 - Wizard Forms Mobile](./25-wizard-forms-mobile.md) - Wizard form improvements
 
 ## Mobile Navigation UX Issues
 

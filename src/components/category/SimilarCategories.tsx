@@ -1,67 +1,48 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Store } from "lucide-react";
-import { ProductCard } from "@/components/cards/ProductCard";
-import { productsService } from "@/services/products.service";
-import type { ProductCardFE } from "@/types/frontend/product.types";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, Grid3X3, Folder } from "lucide-react";
+import { categoriesService } from "@/services/categories.service";
+import type { CategoryFE } from "@/types/frontend/category.types";
 
-interface SellerProductsProps {
-  productId: string;
-  categoryId: string;
-  shopId: string;
-  shopName?: string;
+interface SimilarCategoriesProps {
+  categorySlug: string;
+  categoryName?: string;
+  limit?: number;
 }
 
-export function SellerProducts({
-  productId,
-  categoryId,
-  shopId,
-  shopName = "this seller",
-}: SellerProductsProps) {
-  const [products, setProducts] = useState<ProductCardFE[]>([]);
+export function SimilarCategories({
+  categorySlug,
+  categoryName = "this category",
+  limit = 10,
+}: SimilarCategoriesProps) {
+  const [categories, setCategories] = useState<CategoryFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
   useEffect(() => {
-    loadSellerProducts();
-  }, [productId, shopId, categoryId]);
+    loadSimilarCategories();
+  }, [categorySlug]);
 
-  const loadSellerProducts = async () => {
+  const loadSimilarCategories = async () => {
     try {
       setLoading(true);
-      // Fetch seller's other products from same category or parent categories
-      const response = await productsService.list({
-        shopId,
-        status: "active" as any,
-        limit: 30,
-      });
-
-      // Filter out current product and prioritize same category
-      const filtered = (response.data || []).filter(
-        (p: ProductCardFE) => p.id !== productId
+      const response = await categoriesService.getSimilarCategories(
+        categorySlug,
+        limit
       );
-
-      // Sort: same category first, then others
-      const sorted = filtered.sort((a, b) => {
-        if (a.categoryId === categoryId && b.categoryId !== categoryId)
-          return -1;
-        if (a.categoryId !== categoryId && b.categoryId === categoryId)
-          return 1;
-        return 0;
-      });
-
-      setProducts(sorted.slice(0, 16)); // Max 16 products
+      setCategories(response || []);
     } catch (error) {
-      console.error("Failed to load seller products:", error);
+      console.error("Failed to load similar categories:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleScroll = (direction: "left" | "right") => {
-    const container = document.getElementById("seller-products-scroll");
+    const container = document.getElementById("similar-categories-scroll");
     if (!container) return;
 
     const scrollAmount = container.offsetWidth * 0.8;
@@ -77,7 +58,7 @@ export function SellerProducts({
   };
 
   const updateScrollButtons = () => {
-    const container = document.getElementById("seller-products-scroll");
+    const container = document.getElementById("similar-categories-scroll");
     if (!container) return;
 
     setCanScrollLeft(container.scrollLeft > 0);
@@ -87,7 +68,7 @@ export function SellerProducts({
   };
 
   useEffect(() => {
-    const container = document.getElementById("seller-products-scroll");
+    const container = document.getElementById("similar-categories-scroll");
     if (!container) return;
 
     updateScrollButtons();
@@ -98,22 +79,22 @@ export function SellerProducts({
       container.removeEventListener("scroll", updateScrollButtons);
       globalThis.removeEventListener("resize", updateScrollButtons);
     };
-  }, [products]);
+  }, [categories]);
 
   if (loading) {
     return (
       <div className="space-y-4 mt-8">
         <div className="flex items-center gap-2">
-          <Store className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <Grid3X3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-            More from {shopName}
+            Similar Categories
           </h3>
         </div>
         <div className="flex gap-4 overflow-hidden">
-          {[...Array(4)].map((_, i) => (
+          {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-48 h-64 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
+              className="flex-shrink-0 w-40 h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
             />
           ))}
         </div>
@@ -121,26 +102,26 @@ export function SellerProducts({
     );
   }
 
-  if (!products || products.length === 0) {
+  if (!categories || categories.length === 0) {
     return (
       <div className="space-y-4 mt-8">
         <div className="flex items-center gap-2">
-          <Store className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <Grid3X3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-            More from {shopName}
+            Similar Categories
           </h3>
         </div>
         <div className="flex flex-col items-center justify-center py-12 px-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-          <Store className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
+          <Folder className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
           <p className="text-gray-600 dark:text-gray-400 mb-4 text-center">
-            No other products from this seller yet
+            No similar categories available
           </p>
-          <a
-            href="/products"
+          <Link
+            href="/categories"
             className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
           >
-            View All Products
-          </a>
+            View All Categories
+          </Link>
         </div>
       </div>
     );
@@ -149,9 +130,9 @@ export function SellerProducts({
   return (
     <div className="space-y-4 mt-8">
       <div className="flex items-center gap-2">
-        <Store className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        <Grid3X3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-          More from {shopName}
+          Similar Categories
         </h3>
       </div>
 
@@ -167,29 +148,40 @@ export function SellerProducts({
         )}
 
         <div
-          id="seller-products-scroll"
+          id="similar-categories-scroll"
           className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {products.map((product) => (
-            <div key={product.id} className="flex-shrink-0 w-48">
-              <ProductCard
-                id={product.id}
-                name={product.name}
-                slug={product.slug}
-                price={product.price}
-                originalPrice={product.originalPrice ?? undefined}
-                image={product.images?.[0] || ""}
-                rating={product.rating}
-                reviewCount={product.reviewCount}
-                shopName={product.shopId}
-                shopSlug={product.shopId}
-                inStock={product.stockCount > 0}
-                featured={product.featured}
-                condition={product.condition}
-                showShopName={false}
-              />
-            </div>
+          {categories.map((category) => (
+            <Link
+              key={category.id}
+              href={`/categories/${category.slug}`}
+              className="flex-shrink-0 w-40 group/card"
+            >
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow">
+                <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20">
+                  {category.image ? (
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center w-full h-full">
+                      <Folder className="w-10 h-10 text-blue-400 dark:text-blue-500" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-3">
+                  <h4 className="font-medium text-sm text-gray-900 dark:text-white line-clamp-1 group-hover/card:text-blue-600 dark:group-hover/card:text-blue-400 transition-colors">
+                    {category.name}
+                  </h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    {category.productCount || 0} products
+                  </p>
+                </div>
+              </div>
+            </Link>
           ))}
         </div>
 

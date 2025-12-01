@@ -15,6 +15,7 @@ import {
   Filter,
 } from "lucide-react";
 import { ProductCard } from "@/components/cards/ProductCard";
+import { SimilarCategories } from "@/components/category/SimilarCategories";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { categoriesService } from "@/services/categories.service";
@@ -742,6 +743,17 @@ function CategoryDetailContent({ params }: PageProps) {
                 )}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Similar Categories Section (sibling categories at same tree level) */}
+        {category && (
+          <div className="mt-8 mb-8 px-4 md:px-8">
+            <SimilarCategories
+              categorySlug={category.slug}
+              categoryName={category.name}
+              limit={12}
+            />
           </div>
         )}
       </div>

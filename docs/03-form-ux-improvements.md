@@ -2,7 +2,8 @@
 
 > **Status**: ✅ Phase 1 Complete
 > **Priority**: Medium
-> **Last Updated**: January 2025
+> **Last Updated**: December 2025
+> **Related**: See [Doc 25 - Wizard Forms Mobile](./25-wizard-forms-mobile.md) for mobile-specific wizard improvements
 
 ## Current Issues
 

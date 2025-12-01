@@ -127,25 +127,15 @@ export async function POST(request: NextRequest) {
 
       const auctionRef = db.collection(COLLECTIONS.AUCTIONS).doc();
       
-      // Create varied end times: 30% ended, 70% live
-      const isEnded = Math.random() < 0.3;
-      const startDate = new Date();
-      const endDate = new Date();
-      
-      if (isEnded) {
-        // Ended 1-7 days ago
-        startDate.setDate(startDate.getDate() - 14 - Math.floor(Math.random() * 7));
-        endDate.setDate(endDate.getDate() - 1 - Math.floor(Math.random() * 7));
-      } else {
-        // Ends in 1-14 days
-        startDate.setDate(startDate.getDate() - Math.floor(Math.random() * 3));
-        endDate.setDate(endDate.getDate() + 1 + Math.floor(Math.random() * 14));
-      }
+      // All auctions are LIVE with end dates 3-7 days in the future
+      // Auctions can run max 7 days and demo should show active auctions
+      const now = Date.now();
+      const startDate = new Date(now - Math.floor(Math.random() * 2) * 24 * 60 * 60 * 1000); // Started 0-2 days ago
+      const daysUntilEnd = 3 + Math.floor(Math.random() * 5); // 3-7 days from now
+      const endDate = new Date(now + daysUntilEnd * 24 * 60 * 60 * 1000);
 
       const startingBid = auctionItem.basePrice * (0.3 + Math.random() * 0.4); // 30-70% of base price
-      const currentBid = isEnded 
-        ? startingBid * (1.2 + Math.random() * 0.8) // Ended auctions have higher bids
-        : startingBid * (1 + Math.random() * 0.5); // Live auctions
+      const currentBid = startingBid * (1 + Math.random() * 0.5); // Live auctions with some bids
 
       const title = `${DEMO_PREFIX}${auctionItem.name}`;
       
@@ -163,10 +153,8 @@ export async function POST(request: NextRequest) {
       const conditions = ["Mint", "Near Mint", "Excellent", "Good", "Fair"];
       const condition = conditions[Math.floor(Math.random() * conditions.length)];
 
-      const status = isEnded ? "ended" : "active";
-      const totalBids = isEnded 
-        ? 5 + Math.floor(Math.random() * 20) 
-        : Math.floor(Math.random() * 10);
+      const status = "active"; // All demo auctions are live
+      const totalBids = 1 + Math.floor(Math.random() * 15); // 1-15 bids on live auctions
 
       await auctionRef.set({
         product_id: productId,
@@ -200,16 +188,12 @@ export async function POST(request: NextRequest) {
 
       createdAuctions.push(auctionRef.id);
       
-      // Track auction stats per category
+      // Track auction stats per category - all are live
       if (categoryId) {
         if (!auctionStats[categoryId]) {
           auctionStats[categoryId] = { live: 0, ended: 0 };
         }
-        if (isEnded) {
-          auctionStats[categoryId].ended++;
-        } else {
-          auctionStats[categoryId].live++;
-        }
+        auctionStats[categoryId].live++;  // All demo auctions are live
       }
     }
 

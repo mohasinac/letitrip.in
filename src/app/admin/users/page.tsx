@@ -15,8 +15,10 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  MoreVertical,
 } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useIsMobile } from "@/hooks/useMobile";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { UserRole } from "@/types/shared/common.types";
@@ -52,6 +54,7 @@ interface User {
 
 export default function AdminUsersPage() {
   const { user: currentUser, isAdmin, loading: authLoading } = useAuth();
+  const isMobile = useIsMobile();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

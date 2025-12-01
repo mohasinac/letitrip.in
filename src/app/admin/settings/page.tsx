@@ -23,60 +23,49 @@ export const metadata: Metadata = {
 
 export default function AdminSettingsPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
-        System Settings
-      </h1>
-
-      <p className="text-gray-600 dark:text-gray-400 mb-8">
-        Configure your platform settings, payment gateways, and system
-        preferences.
-      </p>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <SettingsCard
-          title="General"
-          description="Site name, logo, and contact information"
-          href="/admin/settings/general"
-          status="ready"
-          icon="⚙️"
-        />
-        <SettingsCard
-          title="Payment"
-          description="Payment gateway configuration (Razorpay, PayU, COD)"
-          href="/admin/settings/payment"
-          status="ready"
-          icon="💳"
-        />
-        <SettingsCard
-          title="Shipping"
-          description="Shipping zones and carrier settings"
-          href="/admin/settings/shipping"
-          status="ready"
-          icon="📦"
-        />
-        <SettingsCard
-          title="Email"
-          description="SMTP configuration and templates"
-          href="/admin/settings/email"
-          status="ready"
-          icon="📧"
-        />
-        <SettingsCard
-          title="Features"
-          description="Enable or disable platform features"
-          href="/admin/settings/features"
-          status="pending"
-          icon="🎛️"
-        />
-        <SettingsCard
-          title="Maintenance"
-          description="Maintenance mode and access control"
-          href="/admin/settings/maintenance"
-          status="pending"
-          icon="🔧"
-        />
-      </div>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <SettingsCard
+        title="General"
+        description="Site name, logo, and contact information"
+        href="/admin/settings/general"
+        status="ready"
+        icon="⚙️"
+      />
+      <SettingsCard
+        title="Payment"
+        description="Payment gateway configuration (Razorpay, PayU, COD)"
+        href="/admin/settings/payment"
+        status="ready"
+        icon="💳"
+      />
+      <SettingsCard
+        title="Shipping"
+        description="Shipping zones and carrier settings"
+        href="/admin/settings/shipping"
+        status="ready"
+        icon="📦"
+      />
+      <SettingsCard
+        title="Email"
+        description="SMTP configuration and templates"
+        href="/admin/settings/email"
+        status="ready"
+        icon="📧"
+      />
+      <SettingsCard
+        title="Features"
+        description="Enable or disable platform features"
+        href="/admin/settings/features"
+        status="pending"
+        icon="🎛️"
+      />
+      <SettingsCard
+        title="Maintenance"
+        description="Maintenance mode and access control"
+        href="/admin/settings/maintenance"
+        status="pending"
+        icon="🔧"
+      />
     </div>
   );
 }
