@@ -2,8 +2,24 @@
 
 > **Status**: 🔄 Phase 1 Complete, Phase 2 Pending
 > **Priority**: 🔴 Highest - Migration Pending
-> **Last Updated**: January 2025
-> **Related**: [Doc 29 - Image Wrapper Migration](./29-image-wrapper-migration.md)
+> **Last Updated**: December 1, 2025
+> **Related**: [Doc 29 - Image Wrapper Migration](./29-image-wrapper-migration.md), [Doc 30 - Component Library Consolidation](./30-component-library-consolidation.md)
+
+## ⚠️ CRITICAL RULE: Use ONLY These Form Components
+
+**DO NOT use:**
+
+- ❌ `Input` from `@/components/ui/Input` (DEPRECATED)
+- ❌ `Select` from `@/components/ui/Select` (DEPRECATED)
+- ❌ `MobileFormInput` from `@/components/mobile` (DUPLICATE)
+- ❌ `MobileFormSelect` from `@/components/mobile` (DUPLICATE)
+
+**USE ONLY:**
+
+- ✅ `FormField`, `FormInput`, `FormSelect`, `FormCheckbox`, etc. from `@/components/forms` (Doc 27 Standards)
+- ✅ Specialized inputs like `MobileInput`, `PincodeInput`, `LinkInput` when you need their specific features
+
+**See [Doc 30 - Component Library Consolidation](./30-component-library-consolidation.md) for complete migration guide.**
 
 ## Components Created ✅
 
