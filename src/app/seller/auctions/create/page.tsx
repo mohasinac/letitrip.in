@@ -2,13 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  Info,
-  Loader2,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Info, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import SlugInput from "@/components/common/SlugInput";
@@ -346,10 +340,10 @@ export default function CreateAuctionWizardPage() {
   // Check if form has minimum required fields
   const isFormValid = Boolean(
     formData.title.trim() &&
-    formData.slug.trim() &&
-    formData.category &&
-    parseFloat(formData.startingBid) > 0 &&
-    formData.images.length > 0
+      formData.slug.trim() &&
+      formData.category &&
+      parseFloat(formData.startingBid) > 0 &&
+      formData.images.length > 0
   );
 
   const duration =

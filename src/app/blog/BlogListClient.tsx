@@ -147,14 +147,14 @@ export default function BlogListClient() {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Sort */}
           <div className="lg:col-span-2">
             <select
               value={filters.sortBy}
               onChange={(e) => handleSortChange(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="publishedAt">Latest</option>
               <option value="views">Most Viewed</option>
@@ -166,7 +166,7 @@ export default function BlogListClient() {
           <div></div>
 
           {/* Filter Toggle for Mobile */}
-          <button className="md:hidden flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+          <button className="md:hidden flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
             <Filter className="w-5 h-5" />
             <span>Filters</span>
           </button>
@@ -174,11 +174,11 @@ export default function BlogListClient() {
 
         {/* Active Filters */}
         {filters.category && (
-          <div className="flex items-center gap-2 mt-4 pt-4 border-t">
-            <span className="text-sm text-gray-600">Active filters:</span>
+          <div className="flex items-center gap-2 mt-4 pt-4 border-t dark:border-gray-700">
+            <span className="text-sm text-gray-600 dark:text-gray-400">Active filters:</span>
             <button
               onClick={() => handleCategoryFilter(filters.category!)}
-              className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200"
+              className="flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm hover:bg-blue-200 dark:hover:bg-blue-900/50"
             >
               <Tag className="w-3 h-3" />
               <span>{filters.category}</span>
@@ -252,25 +252,25 @@ export default function BlogListClient() {
 
           {/* Pagination */}
           {blogs.length > 0 && (
-            <div className="bg-white rounded-lg shadow-sm p-4 mt-12">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mt-12">
               <div className="flex items-center justify-between">
                 <button
                   onClick={handlePrevPage}
                   disabled={currentPage === 1 || loading}
-                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Previous
                 </button>
 
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
                   Page {currentPage} • {blogs.length} posts
                 </span>
 
                 <button
                   onClick={handleNextPage}
                   disabled={!hasNextPage || loading}
-                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
                 >
                   Next
                   <ChevronRight className="w-4 h-4" />
