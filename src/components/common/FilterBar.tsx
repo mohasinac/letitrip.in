@@ -55,14 +55,14 @@ export function FilterBar({
   });
 
   return (
-    <div className={`bg-white border-b border-gray-200 ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 ${className}`}>
       <div className="px-6 py-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
-            <h3 className="text-sm font-medium text-gray-900">Quick Filters</h3>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white">Quick Filters</h3>
             {resultCount !== undefined && (
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 {resultCount} result{resultCount !== 1 ? "s" : ""}
               </span>
             )}
@@ -72,7 +72,7 @@ export function FilterBar({
             {hasActiveFilters && onReset && (
               <button
                 onClick={onReset}
-                className="text-sm text-blue-600 hover:text-blue-700:text-blue-300"
+                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
               >
                 Reset All
               </button>
@@ -81,7 +81,7 @@ export function FilterBar({
             {onToggleAdvanced && (
               <button
                 onClick={onToggleAdvanced}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50:bg-gray-700 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <svg
                   className="w-4 h-4"
@@ -106,7 +106,7 @@ export function FilterBar({
         <div className="flex flex-wrap items-center gap-4">
           {filters.map((filter) => (
             <div key={filter.key} className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {filter.label}:
               </label>
 
@@ -114,7 +114,7 @@ export function FilterBar({
                 <select
                   value={values[filter.key] || ""}
                   onChange={(e) => onChange(filter.key, e.target.value)}
-                  className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                  className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="">All</option>
                   {filter.options.map((option) => (
@@ -141,7 +141,7 @@ export function FilterBar({
                         onChange={(e) => onChange(filter.key, e.target.value)}
                         className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                       />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
                         {option.label}
                         {option.count !== undefined && ` (${option.count})`}
                       </span>
@@ -171,7 +171,7 @@ export function FilterBar({
                         }
                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                       />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
                         {option.label}
                         {option.count !== undefined && ` (${option.count})`}
                       </span>
@@ -185,8 +185,8 @@ export function FilterBar({
 
         {/* Active Filters Pills */}
         {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-gray-200">
-            <span className="text-sm text-gray-500">Active:</span>
+          <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <span className="text-sm text-gray-500 dark:text-gray-400">Active:</span>
             {Object.entries(values).map(([key, value]) => {
               const filter = filters.find((f) => f.key === key);
               if (
@@ -206,7 +206,7 @@ export function FilterBar({
                 return value.map((val) => (
                   <span
                     key={`${key}-${val}`}
-                    className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100/20 text-blue-800 rounded-full"
+                    className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full"
                   >
                     {filter.label}: {getLabel(val)}
                     <button
@@ -214,7 +214,7 @@ export function FilterBar({
                         const newValues = value.filter((v: any) => v !== val);
                         onChange(key, newValues);
                       }}
-                      className="hover:text-blue-900:text-blue-100"
+                      className="hover:text-blue-900 dark:hover:text-blue-100"
                     >
                       ×
                     </button>
@@ -225,12 +225,12 @@ export function FilterBar({
               return (
                 <span
                   key={key}
-                  className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100/20 text-blue-800 rounded-full"
+                  className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full"
                 >
                   {filter.label}: {getLabel(value)}
                   <button
                     onClick={() => onChange(key, "")}
-                    className="hover:text-blue-900:text-blue-100"
+                    className="hover:text-blue-900 dark:hover:text-blue-100"
                   >
                     ×
                   </button>
