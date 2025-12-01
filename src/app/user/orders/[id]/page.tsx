@@ -107,20 +107,20 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
   const canCancel = order.status === "pending" || order.status === "confirmed";
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div className="max-w-5xl mx-auto px-4">
         {/* Success Message */}
         {isSuccess && (
-          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <CheckCircle className="w-6 h-6 text-green-600 mt-0.5" />
+              <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400 mt-0.5" />
               <div>
-                <h3 className="font-semibold text-green-900">
+                <h3 className="font-semibold text-green-900 dark:text-green-300">
                   {isMultiOrder
                     ? "Orders placed successfully!"
                     : "Order placed successfully!"}
                 </h3>
-                <p className="text-green-700 mt-1">
+                <p className="text-green-700 dark:text-green-400 mt-1">
                   {isMultiOrder
                     ? "You can view all your orders below."
                     : "Your order has been confirmed and is being processed."}
@@ -134,17 +134,17 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
         <div className="mb-6">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
           >
             <ChevronLeft className="w-5 h-5" />
             Back to Orders
           </button>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 Order #{order.id.slice(0, 8)}
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
                 Placed on{" "}
                 {new Date(order.createdAt).toLocaleDateString("en-IN")}
               </p>
@@ -170,23 +170,23 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
         </div>
 
         {/* Order Timeline */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
             Order Status
           </h2>
           <OrderTimeline status={order.status} />
         </div>
 
         {/* Order Items */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
             Items ({order.items?.length || 0})
           </h2>
           <div className="space-y-4">
             {order.items?.map((item: any, index: number) => (
               <div
                 key={index}
-                className="flex gap-4 pb-4 border-b last:border-b-0"
+                className="flex gap-4 pb-4 border-b dark:border-gray-700 last:border-b-0"
               >
                 <img
                   src={item.imageUrl || "/placeholder.png"}
@@ -194,16 +194,16 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
                   className="w-20 h-20 object-cover rounded"
                 />
                 <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">
+                  <h3 className="font-medium text-gray-900 dark:text-white">
                     {item.productName}
                   </h3>
-                  <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Qty: {item.quantity}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-gray-900">
+                  <p className="font-semibold text-gray-900 dark:text-white">
                     ₹{item.price.toLocaleString()}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Total: ₹{(item.price * item.quantity).toLocaleString()}
                   </p>
                 </div>
@@ -215,11 +215,11 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
         {/* Order Summary & Shipping */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Shipping Address */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Shipping Address
             </h2>
-            <div className="text-gray-700">
+            <div className="text-gray-700 dark:text-gray-300">
               <p className="font-medium">{order.shippingAddress?.name}</p>
               <p>{order.shippingAddress?.line1}</p>
               {order.shippingAddress?.line2 && (
@@ -234,50 +234,50 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
           </div>
 
           {/* Order Summary */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Order Summary
             </h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="text-gray-900">
+                <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                <span className="text-gray-900 dark:text-white">
                   ₹{order.subtotal?.toLocaleString()}
                 </span>
               </div>
               {order.discount > 0 && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-green-600 dark:text-green-400">
                   <span>Discount</span>
                   <span>-₹{order.discount.toLocaleString()}</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-gray-600">Shipping</span>
-                <span className="text-gray-900">
+                <span className="text-gray-600 dark:text-gray-400">Shipping</span>
+                <span className="text-gray-900 dark:text-white">
                   {order.shipping === 0 ? "FREE" : `₹${order.shipping}`}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Tax</span>
-                <span className="text-gray-900">
+                <span className="text-gray-600 dark:text-gray-400">Tax</span>
+                <span className="text-gray-900 dark:text-white">
                   ₹{order.tax?.toLocaleString()}
                 </span>
               </div>
-              <div className="flex justify-between pt-2 border-t font-semibold text-lg">
-                <span>Total</span>
+              <div className="flex justify-between pt-2 border-t dark:border-gray-700 font-semibold text-lg">
+                <span className="dark:text-white">Total</span>
                 <span className="text-primary">
                   ₹{order.total.toLocaleString()}
                 </span>
               </div>
-              <div className="pt-2 border-t">
+              <div className="pt-2 border-t dark:border-gray-700">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Payment Method</span>
-                  <span className="text-gray-900 uppercase">
+                  <span className="text-gray-600 dark:text-gray-400">Payment Method</span>
+                  <span className="text-gray-900 dark:text-white uppercase">
                     {order.paymentMethod}
                   </span>
                 </div>
                 <div className="flex justify-between mt-1">
-                  <span className="text-gray-600">Payment Status</span>
+                  <span className="text-gray-600 dark:text-gray-400">Payment Status</span>
                   <StatusBadge status={order.paymentStatus} />
                 </div>
               </div>

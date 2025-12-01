@@ -175,7 +175,9 @@ export default function BlogListClient() {
         {/* Active Filters */}
         {filters.category && (
           <div className="flex items-center gap-2 mt-4 pt-4 border-t dark:border-gray-700">
-            <span className="text-sm text-gray-600 dark:text-gray-400">Active filters:</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Active filters:
+            </span>
             <button
               onClick={() => handleCategoryFilter(filters.category!)}
               className="flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm hover:bg-blue-200 dark:hover:bg-blue-900/50"

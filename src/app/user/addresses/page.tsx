@@ -78,14 +78,14 @@ function AddressesContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             My Addresses
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             Manage your shipping addresses for faster checkout
           </p>
         </div>
@@ -101,12 +101,12 @@ function AddressesContent() {
 
         {/* Addresses Grid */}
         {addresses.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
-            <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
+            <MapPin className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               No addresses yet
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
               Add your first address to make checkout easier
             </p>
             <button
@@ -122,13 +122,13 @@ function AddressesContent() {
             {addresses.map((address) => (
               <div
                 key={address.id}
-                className={`bg-white rounded-lg shadow-md p-6 relative ${
+                className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 relative ${
                   address.isDefault ? "ring-2 ring-blue-500" : ""
                 }`}
               >
                 {address.isDefault && (
                   <div className="absolute top-4 right-4">
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-semibold rounded-full">
                       <CheckCircle className="w-3 h-3" />
                       Default
                     </span>
@@ -136,13 +136,13 @@ function AddressesContent() {
                 )}
 
                 <div className="mb-4">
-                  <h3 className="text-lg font-bold text-gray-900">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                     {address.fullName}
                   </h3>
-                  <p className="text-gray-600">{address.phoneNumber}</p>
+                  <p className="text-gray-600 dark:text-gray-400">{address.phoneNumber}</p>
                 </div>
 
-                <div className="text-gray-700 space-y-1 mb-6">
+                <div className="text-gray-700 dark:text-gray-300 space-y-1 mb-6">
                   <p>{address.addressLine1}</p>
                   {address.addressLine2 && <p>{address.addressLine2}</p>}
                   <p>
@@ -155,20 +155,20 @@ function AddressesContent() {
                   {!address.isDefault && (
                     <button
                       onClick={() => handleSetDefault(address.id)}
-                      className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 active:bg-blue-100 transition-colors font-semibold text-sm touch-manipulation"
+                      className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] border border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 active:bg-blue-100 transition-colors font-semibold text-sm touch-manipulation"
                     >
                       Set as Default
                     </button>
                   )}
                   <button
                     onClick={() => handleOpenForm(address.id)}
-                    className="px-4 py-3 min-h-[48px] border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors font-semibold text-sm touch-manipulation flex items-center justify-center"
+                    className="px-4 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 transition-colors font-semibold text-sm touch-manipulation flex items-center justify-center"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setDeleteId(address.id)}
-                    className="px-4 py-3 min-h-[48px] border border-red-300 text-red-600 rounded-lg hover:bg-red-50 active:bg-red-100 transition-colors font-semibold text-sm touch-manipulation flex items-center justify-center"
+                    className="px-4 py-3 min-h-[48px] border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 active:bg-red-100 transition-colors font-semibold text-sm touch-manipulation flex items-center justify-center"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

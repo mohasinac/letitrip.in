@@ -68,7 +68,10 @@ export default function PaymentMethodsPage() {
           {/* Payment Methods Grid */}
           <div className="grid md:grid-cols-2 gap-6 mb-12">
             {paymentMethods.map((method) => (
-              <div key={method.title} className="border dark:border-gray-700 rounded-lg p-6">
+              <div
+                key={method.title}
+                className="border dark:border-gray-700 rounded-lg p-6"
+              >
                 <div className="flex items-start gap-4 mb-4">
                   <div className="flex-shrink-0 w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center text-yellow-600 dark:text-yellow-400">
                     {method.icon}
@@ -102,14 +105,20 @@ export default function PaymentMethodsPage() {
 
                   <div className="flex items-center justify-between text-sm pt-2 border-t dark:border-gray-700">
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Processing Time</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Processing Time
+                      </p>
                       <p className="font-medium text-gray-900 dark:text-white">
                         {method.processingTime}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Fees</p>
-                      <p className="font-medium text-gray-900 dark:text-white">{method.fees}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Fees
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {method.fees}
+                      </p>
                     </div>
                   </div>
                 </div>

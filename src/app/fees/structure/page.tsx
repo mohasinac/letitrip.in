@@ -24,7 +24,9 @@ export default function FeeStructurePage() {
           <section className="mb-12">
             <div className="flex items-center gap-3 mb-6">
               <ShoppingBag className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Buyer Fees</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Buyer Fees
+              </h2>
             </div>
 
             <div className="space-y-4">
@@ -59,7 +61,9 @@ export default function FeeStructurePage() {
           <section className="mb-12">
             <div className="flex items-center gap-3 mb-6">
               <Store className="w-8 h-8 text-green-600 dark:text-green-400" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Seller Fees</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Seller Fees
+              </h2>
             </div>
 
             <div className="space-y-4">
@@ -122,35 +126,59 @@ export default function FeeStructurePage() {
                 </thead>
                 <tbody className="divide-y dark:divide-gray-700">
                   <tr>
-                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">Electronics</td>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">5%</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">₹500</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                      Electronics
+                    </td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">
+                      5%
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                      ₹500
+                    </td>
                   </tr>
                   <tr>
                     <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
                       Fashion & Apparel
                     </td>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">7%</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">₹700</td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">
+                      7%
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                      ₹700
+                    </td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">Home & Kitchen</td>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">6%</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">₹600</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                      Home & Kitchen
+                    </td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">
+                      6%
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                      ₹600
+                    </td>
                   </tr>
                   <tr>
                     <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
                       Collectibles & Art
                     </td>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">10%</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">₹1,000</td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">
+                      10%
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                      ₹1,000
+                    </td>
                   </tr>
                   <tr>
                     <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
                       Other Categories
                     </td>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">7%</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">₹700</td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">
+                      7%
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                      ₹700
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -174,7 +202,9 @@ export default function FeeStructurePage() {
 
           {/* No Hidden Fees */}
           <div className="text-center bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-            <h3 className="font-bold text-gray-900 dark:text-white mb-2">✓ No Hidden Fees</h3>
+            <h3 className="font-bold text-gray-900 dark:text-white mb-2">
+              ✓ No Hidden Fees
+            </h3>
             <p className="text-gray-600 dark:text-gray-300 text-sm">
               The fees listed above are all-inclusive. What you see is what you
               pay. No surprise charges ever.
@@ -201,11 +231,17 @@ function FeeRow({
     <div className="border dark:border-gray-700 rounded-lg p-4">
       <div className="flex items-start justify-between gap-4 mb-2">
         <div>
-          <h4 className="font-semibold text-gray-900 dark:text-white">{title}</h4>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
+          <h4 className="font-semibold text-gray-900 dark:text-white">
+            {title}
+          </h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {description}
+          </p>
         </div>
         <div className="flex-shrink-0 text-right">
-          <p className="text-lg font-bold text-gray-900 dark:text-white">{fee}</p>
+          <p className="text-lg font-bold text-gray-900 dark:text-white">
+            {fee}
+          </p>
         </div>
       </div>
       <p className="text-xs text-gray-500 dark:text-gray-400">{details}</p>
