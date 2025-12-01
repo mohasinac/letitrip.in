@@ -59,28 +59,32 @@ export function ErrorMessage({
       )}
     >
       {/* Error Icon */}
-      <div className="mb-4 p-3 bg-red-50 rounded-full">
-        <AlertCircle className="h-12 w-12 text-red-500" />
+      <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-full">
+        <AlertCircle className="h-12 w-12 text-red-500 dark:text-red-400" />
       </div>
 
       {/* Title */}
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+        {title}
+      </h3>
 
       {/* User-friendly message */}
-      <p className="text-gray-600 mb-6 max-w-md">{message}</p>
+      <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md">
+        {message}
+      </p>
 
       {/* Technical error (development only) */}
       {isDevelopment && error && (
         <details className="mb-6 w-full max-w-2xl">
-          <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
+          <summary className="cursor-pointer text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
             Show technical details
           </summary>
-          <div className="mt-2 p-4 bg-gray-50 rounded-lg text-left">
-            <p className="text-sm font-mono text-gray-700 break-all">
+          <div className="mt-2 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-left">
+            <p className="text-sm font-mono text-gray-700 dark:text-gray-300 break-all">
               {error.message}
             </p>
             {error.stack && (
-              <pre className="mt-2 text-xs text-gray-600 overflow-auto max-h-40">
+              <pre className="mt-2 text-xs text-gray-600 dark:text-gray-400 overflow-auto max-h-40">
                 {error.stack}
               </pre>
             )}
@@ -108,7 +112,7 @@ export function ErrorMessage({
                 if (globalThis.location) globalThis.location.href = "/";
               })
             }
-            className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             <Home className="h-4 w-4" />
             Go Home
@@ -118,7 +122,7 @@ export function ErrorMessage({
         {showGoBack && (
           <button
             onClick={onGoBack || (() => globalThis.history?.back())}
-            className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Go Back
@@ -189,7 +193,7 @@ export function InlineError({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700",
+        "flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-700 dark:text-red-400",
         className
       )}
     >
