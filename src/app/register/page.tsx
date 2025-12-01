@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { COMPANY_NAME } from "@/constants/navigation";
-import { Input } from "@/components/ui/Input";
+import { FormField, FormInput } from "@/components/forms";
+import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -103,124 +104,106 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name */}
-            <Input
-              label="Full Name"
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              placeholder="John Doe"
-              leftIcon={<User className="w-5 h-5" />}
-              autoComplete="name"
-              size="lg"
-            />
+            <FormField label="Full Name" required>
+              <FormInput
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="John Doe"
+                autoComplete="name"
+              />
+            </FormField>
 
             {/* Email */}
-            <Input
-              label="Email Address"
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="you@example.com"
-              leftIcon={<Mail className="w-5 h-5" />}
-              autoComplete="email"
-              size="lg"
-            />
+            <FormField label="Email Address" required>
+              <FormInput
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                autoComplete="email"
+              />
+            </FormField>
 
             {/* Password with show/hide */}
-            <Input
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              placeholder="••••••••"
-              helperText="Must be at least 8 characters"
-              leftIcon={<Lock className="w-5 h-5" />}
-              rightIcon={
+            <FormField label="Password" required hint="Must be at least 8 characters">
+              <div className="relative">
+                <FormInput
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors touch-target"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
+                    <EyeOff className="w-5 h-5 text-gray-400" />
                   ) : (
-                    <Eye className="w-5 h-5" />
+                    <Eye className="w-5 h-5 text-gray-400" />
                   )}
                 </button>
-              }
-              autoComplete="new-password"
-              size="lg"
-            />
+              </div>
+            </FormField>
 
             {/* Confirm Password with show/hide */}
-            <Input
-              label="Confirm Password"
-              type={showConfirmPassword ? "text" : "password"}
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-              placeholder="••••••••"
-              leftIcon={<Lock className="w-5 h-5" />}
-              rightIcon={
+            <FormField label="Confirm Password" required>
+              <div className="relative">
+                <FormInput
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors touch-target"
-                  aria-label={
-                    showConfirmPassword ? "Hide password" : "Show password"
-                  }
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
                   {showConfirmPassword ? (
-                    <EyeOff className="w-5 h-5" />
+                    <EyeOff className="w-5 h-5 text-gray-400" />
                   ) : (
-                    <Eye className="w-5 h-5" />
+                    <Eye className="w-5 h-5 text-gray-400" />
                   )}
                 </button>
-              }
-              autoComplete="new-password"
-              size="lg"
-            />
+              </div>
+            </FormField>
 
             {/* Terms Checkbox */}
-            <div className="flex items-start">
-              <input
-                type="checkbox"
+            <div className="flex items-start gap-2">
+              <FormCheckbox
                 id="acceptTerms"
                 checked={acceptTerms}
                 onChange={(e) => setAcceptTerms(e.target.checked)}
-                className="mt-1 w-4 h-4 text-yellow-500 border-gray-300 dark:border-gray-600 rounded focus:ring-yellow-500 dark:bg-gray-700"
+                label={
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    I agree to the{" "}
+                    <Link
+                      href="/terms"
+                      className="text-yellow-600 hover:text-yellow-700 font-medium"
+                    >
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link
+                      href="/privacy"
+                      className="text-yellow-600 hover:text-yellow-700 font-medium"
+                    >
+                      Privacy Policy
+                    </Link>
+                  </span>
+                }
               />
-              <label
-                htmlFor="acceptTerms"
-                className="ml-2 text-sm text-gray-600 dark:text-gray-400"
-              >
-                I agree to the{" "}
-                <Link
-                  href="/terms"
-                  className="text-yellow-600 hover:text-yellow-700 font-medium"
-                >
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link
-                  href="/privacy"
-                  className="text-yellow-600 hover:text-yellow-700 font-medium"
-                >
-                  Privacy Policy
-                </Link>
-              </label>
             </div>
 
             {/* Submit Button - Mobile Optimized */}

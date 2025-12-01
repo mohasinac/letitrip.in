@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { COMPANY_NAME } from "@/constants/navigation";
-import { Input } from "@/components/ui/Input";
+import { FormField, FormInput } from "@/components/forms";
+import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -85,63 +86,68 @@ function LoginForm() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
-            <Input
+            <FormField
               label="Email Address"
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
               required
-              placeholder="you@example.com"
-              leftIcon={<Mail className="w-5 h-5" />}
-              autoComplete="email"
-              size="lg"
-            />
+              error={error && !formData.email ? "Email is required" : ""}
+            >
+              <FormInput
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                autoComplete="email"
+              />
+            </FormField>
 
             {/* Password with show/hide */}
-            <Input
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              placeholder="••••••••"
-              leftIcon={<Lock className="w-5 h-5" />}
-              rightIcon={
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors touch-target"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
-              }
-              autoComplete="current-password"
-              size="lg"
-            />
+            <div>
+              <FormField
+                label="Password"
+                required
+                error={
+                  error && !formData.password ? "Password is required" : ""
+                }
+              >
+                <div className="relative">
+                  <FormInput
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5 text-gray-400" />
+                    ) : (
+                      <Eye className="w-5 h-5 text-gray-400" />
+                    )}
+                  </button>
+                </div>
+              </FormField>
+            </div>
 
             {/* Remember & Forgot */}
             <div className="flex items-center justify-between">
-              <label className="flex items-center touch-target">
-                <input
-                  type="checkbox"
-                  className="w-5 h-5 text-yellow-500 border-gray-300 dark:border-gray-600 rounded focus:ring-yellow-500 dark:bg-gray-700"
-                />
-                <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                  Remember me
-                </span>
-              </label>
+              <FormCheckbox
+                id="remember-me"
+                label="Remember me"
+                checked={false}
+                onChange={() => {}}
+              />
               <Link
                 href="/forgot-password"
-                className="text-sm text-yellow-600 hover:text-yellow-700 font-medium py-2 touch-target"
+                className="text-sm text-yellow-600 hover:text-yellow-700 font-medium py-2"
               >
                 Forgot password?
               </Link>

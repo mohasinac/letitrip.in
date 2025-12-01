@@ -18,7 +18,7 @@ import { AddressSelector } from "@/components/checkout/AddressSelector";
 import { PaymentMethod } from "@/components/checkout/PaymentMethod";
 import { ShopOrderSummary } from "@/components/checkout/ShopOrderSummary";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
-import { Textarea } from "@/components/ui/Textarea";
+import { FormField, FormTextarea } from "@/components/forms";
 import { checkoutService } from "@/services/checkout.service";
 
 declare global {
@@ -475,15 +475,14 @@ export default function CheckoutPage() {
                   ))}
 
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
-                    <Textarea
-                      label="Delivery Notes (Optional)"
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      rows={3}
-                      placeholder="Add any special instructions for delivery..."
-                      helperText="E.g., ring the doorbell twice, leave at gate"
-                      size="lg"
-                    />
+                    <FormField label="Delivery Notes (Optional)" hint="E.g., ring the doorbell twice, leave at gate">
+                      <FormTextarea
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        rows={3}
+                        placeholder="Add any special instructions for delivery..."
+                      />
+                    </FormField>
                   </div>
                 </div>
               )}
