@@ -1,6 +1,6 @@
 # Form UX Improvements
 
-> **Status**: ✅ Phase 1 Complete
+> **Status**: ✅ Phase 1 & 2 Complete
 > **Priority**: Medium
 > **Last Updated**: December 2025
 > **Related**: See [Doc 25 - Wizard Forms Mobile](./25-wizard-forms-mobile.md) for mobile-specific wizard improvements
@@ -10,10 +10,10 @@
 | Issue                          | Files Affected                                       | Impact                                 | Status                        |
 | ------------------------------ | ---------------------------------------------------- | -------------------------------------- | ----------------------------- |
 | **Errors via alert()**         | ProductInlineForm, CouponInlineForm, wizard pages    | Blocks user, poor UX                   | ✅ Fixed - uses inline errors |
-| **Submit only on last step**   | `/seller/products/create`, `/seller/auctions/create` | User must complete all steps first     | 🟡                            |
-| **Mandatory fields scattered** | 6-step product wizard, 5-step auction wizard         | User confusion, incomplete submissions | 🟡                            |
+| **Submit only on last step**   | `/seller/products/create`, `/seller/auctions/create` | User must complete all steps first     | ✅ Fixed - visible action bar |
+| **Mandatory fields scattered** | 6-step product wizard, 5-step auction wizard         | User confusion, incomplete submissions | ✅ Fixed - 2 steps            |
 | **Unnecessary flags in forms** | Status dropdowns, featured checkboxes                | Adds clutter, should default to draft  | ✅ Defaults to draft          |
-| **Too many wizard steps**      | Product (6 steps), Auction (5 steps)                 | Slow task completion                   | 🟡                            |
+| **Too many wizard steps**      | Product (6 steps), Auction (5 steps)                 | Slow task completion                   | ✅ Fixed - 2 steps            |
 
 ## Solution
 
@@ -93,12 +93,20 @@ Forms should default to sensible values:
 - [x] Replace alert() with inline errors in CouponInlineForm (uses `errors` state + inline error messages)
 - [x] Replace alert() with inline errors in wizard pages (forms use inline validation)
 
-### Phase 2: Wizard Simplification
+### Phase 2: Wizard Simplification ✅ COMPLETE
 
-- [ ] Simplify product creation to 2-step wizard
-- [ ] Simplify auction creation to 2-step wizard
-- [ ] Add always-visible submit button
-- [ ] Move optional fields to expandable sections
+- [x] Simplify product creation to 2-step wizard
+  - Created `src/components/seller/product-wizard/` with modular step components
+  - RequiredInfoStep: name, slug, category, SKU, price, stock, images
+  - OptionalDetailsStep: collapsible details, shipping, SEO sections
+  - Reduced page from 898 to 297 lines
+- [x] Simplify auction creation to 2-step wizard
+  - Created `src/components/seller/auction-wizard/` with modular step components
+  - RequiredInfoStep: title, slug, category, starting bid, type, images
+  - OptionalDetailsStep: collapsible bidding, schedule, shipping sections
+  - Reduced page from 1251 to 403 lines
+- [x] Add always-visible submit button (WizardActionBar component)
+- [x] Move optional fields to expandable sections (uses expandedSections state)
 
 ### Phase 3: Form Defaults ✅ COMPLETE
 
