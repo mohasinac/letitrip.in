@@ -69,6 +69,10 @@ export interface EditorState {
   contrast: number; // -100 to 100
   saturation: number; // -100 to 100
   filter?: "none" | "grayscale" | "sepia" | "vintage" | "cold" | "warm";
+  focusPoint?: {
+    x: number; // 0-100 percentage from left
+    y: number; // 0-100 percentage from top
+  };
 }
 
 export interface CropArea {

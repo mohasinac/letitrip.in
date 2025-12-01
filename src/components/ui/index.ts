@@ -8,3 +8,5 @@ export * from "./FormActions";
 export * from "./FormLayout";
 export * from "./BaseCard";
 export * from "./BaseTable";
+export * from "./Heading";
+export * from "./Text";

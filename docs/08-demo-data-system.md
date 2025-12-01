@@ -2,11 +2,230 @@
 
 > **Status**: ✅ Implemented
 > **Priority**: Complete
-> **Last Updated**: November 30, 2025
+> **Last Updated**: December 2025
 
 ## Overview
 
-The demo data generator creates Beyblade-themed test data for development and QA testing.
+The demo data generator creates Beyblade-themed test data for development and QA testing. This document also tracks demo data requirements for all features (docs 01-26).
+
+---
+
+## Feature Demo Data Requirements (Docs 01-26)
+
+### No Demo Data Needed (UI/Config Features)
+
+| Doc | Feature                 | Reason                               |
+| --- | ----------------------- | ------------------------------------ |
+| 01  | Dark Mode               | CSS/Theme - no data                  |
+| 02  | Mobile Responsiveness   | CSS/Layout - no data                 |
+| 03  | Form UX                 | UI patterns - no data                |
+| 04  | Component Consolidation | Component refactor - no data         |
+| 05  | Sieve Pagination        | Query system - uses existing data    |
+| 07  | Infrastructure Config   | Deploy config - no data              |
+| 09  | Code Standards          | Dev guidelines - no data             |
+| 12  | Multi-language i18n     | Translation files - no demo data     |
+| 13  | Unified Cards           | Component variants - no data         |
+| 16  | Route Fixes             | URL structure - no data              |
+| 17  | Constants Consolidation | Code organization - no data          |
+| 18  | Tabbed Navigation       | UI component - no data               |
+| 23  | ProductCard Variants    | Component variants - no data         |
+| 24  | Mobile Page Audit       | Audit doc - no data                  |
+| 25  | Wizard Forms Mobile     | UI patterns - no data                |
+| 26  | Media Upload            | Upload features - test images needed |
+
+### Demo Data Updates Needed
+
+| Doc | Feature                | Demo Data Requirement               | Status       |
+| --- | ---------------------- | ----------------------------------- | ------------ |
+| 06  | Firebase Functions     | Cloud functions test data           | ⬜           |
+| 10  | Product Comparison     | Products with comparable specs      | ✅ Existing  |
+| 11  | Viewing History        | None - client-side localStorage     | ✅ N/A       |
+| 14  | Homepage Sections      | Featured items in homepage settings | ✅ Generated |
+| 15  | Hero Slides            | Multiple hero slides with CTAs      | ✅ Generated |
+| 19  | Demo Auction Dates     | Auctions 3-7 days in future         | ✅ Fixed     |
+| 20  | Empty Section Products | SellerProducts/SimilarProducts      | ✅ Existing  |
+| 21  | Empty Section Auctions | Shop/Similar auctions               | ✅ Existing  |
+| 22  | Similar Categories     | Categories with siblings            | ✅ Existing  |
+
+---
+
+## Demo Data Generator Enhancements
+
+### For Doc 10 - Product Comparison
+
+Products should have comparable specifications:
+
+```typescript
+// Ensure products have specs for comparison
+const demoProductSpecs = {
+  // Electronics category
+  electronics: {
+    "Screen Size": ["6.1 inch", "6.7 inch", "5.4 inch"],
+    Storage: ["64GB", "128GB", "256GB", "512GB"],
+    RAM: ["4GB", "6GB", "8GB", "12GB"],
+    Battery: ["3000mAh", "4000mAh", "5000mAh"],
+  },
+  // Beyblade category
+  beyblades: {
+    Type: ["Attack", "Defense", "Stamina", "Balance"],
+    Weight: ["40g", "45g", "50g", "55g"],
+    Material: ["Metal", "Plastic", "Hybrid"],
+    Series: ["Metal Fusion", "Metal Masters", "Metal Fury"],
+  },
+};
+```
+
+### For Doc 14 - Homepage Sections
+
+Generate `homepage` document with featured items:
+
+```typescript
+// src/app/api/admin/demo/generate/extras/route.ts
+const homepageSettings = {
+  featuredItems: {
+    products: demoProducts.slice(0, 8).map((p, i) => ({
+      id: `feat-prod-${i}`,
+      itemId: p.id,
+      type: "product",
+      title: p.name,
+      image: p.images[0],
+      order: i,
+      isActive: true,
+    })),
+    auctions: demoAuctions.slice(0, 6).map((a, i) => ({
+      id: `feat-auc-${i}`,
+      itemId: a.id,
+      type: "auction",
+      title: a.name,
+      image: a.images[0],
+      order: i,
+      isActive: true,
+    })),
+    shops: demoShops.slice(0, 4).map((s, i) => ({
+      id: `feat-shop-${i}`,
+      itemId: s.id,
+      type: "shop",
+      title: s.name,
+      image: s.logo,
+      order: i,
+      isActive: true,
+    })),
+    categories: demoCategories.slice(0, 6).map((c, i) => ({
+      id: `feat-cat-${i}`,
+      itemId: c.id,
+      type: "category",
+      title: c.name,
+      image: c.image,
+      order: i,
+      isActive: true,
+    })),
+  },
+};
+```
+
+### For Doc 15 - Hero Slides
+
+Generate multiple hero slides:
+
+```typescript
+const heroSlides = [
+  {
+    id: "DEMO_hero-1",
+    title: "Season Sale - Up to 50% Off",
+    subtitle: "Shop the best Beyblades at unbeatable prices",
+    image: "/demo/hero-sale.jpg",
+    ctaText: "Shop Now",
+    ctaLink: "/products?sale=true",
+    order: 0,
+    isActive: true,
+    startDate: null,
+    endDate: null,
+  },
+  {
+    id: "DEMO_hero-2",
+    title: "New Arrivals",
+    subtitle: "Check out the latest Metal Fight collection",
+    image: "/demo/hero-new.jpg",
+    ctaText: "Explore",
+    ctaLink: "/categories/metal-fight",
+    order: 1,
+    isActive: true,
+  },
+  {
+    id: "DEMO_hero-3",
+    title: "Live Auctions",
+    subtitle: "Bid on rare and collectible Beyblades",
+    image: "/demo/hero-auction.jpg",
+    ctaText: "View Auctions",
+    ctaLink: "/auctions",
+    order: 2,
+    isActive: true,
+  },
+];
+```
+
+### For Doc 19 - Demo Auction Dates
+
+All auctions should have future dates:
+
+```typescript
+// Generate endTime 3-7 days in future
+const getAuctionEndTime = () => {
+  const now = new Date();
+  const daysToAdd = 3 + Math.floor(Math.random() * 5); // 3-7 days
+  const hoursToAdd = Math.floor(Math.random() * 24);
+  now.setDate(now.getDate() + daysToAdd);
+  now.setHours(now.getHours() + hoursToAdd);
+  return now;
+};
+```
+
+### For Doc 22 - Similar Categories
+
+Ensure categories have siblings:
+
+```typescript
+// Category structure with siblings
+const categories = [
+  { id: "attack", name: "Attack Types", parentId: "beyblade" },
+  { id: "defense", name: "Defense Types", parentId: "beyblade" },
+  { id: "stamina", name: "Stamina Types", parentId: "beyblade" },
+  { id: "balance", name: "Balance Types", parentId: "beyblade" },
+  // Attack sub-categories (siblings)
+  { id: "storm-pegasus", name: "Storm Pegasus", parentId: "attack" },
+  { id: "galaxy-pegasus", name: "Galaxy Pegasus", parentId: "attack" },
+  { id: "cyber-pegasus", name: "Cyber Pegasus", parentId: "attack" },
+];
+```
+
+### For Doc 26 - Media Upload Testing
+
+Include test images with various sizes:
+
+```typescript
+const testMediaAssets = {
+  // Square images for products
+  productImages: [
+    "/demo/products/square-1.jpg", // 1000x1000
+    "/demo/products/square-2.jpg",
+  ],
+  // Wide images for banners
+  bannerImages: [
+    "/demo/banners/wide-1.jpg", // 1920x600
+    "/demo/banners/wide-2.jpg",
+  ],
+  // Various aspect ratios for testing focus point
+  focusPointTestImages: [
+    "/demo/test/portrait.jpg", // 800x1200
+    "/demo/test/landscape.jpg", // 1200x800
+    "/demo/test/square.jpg", // 1000x1000
+  ],
+  // Test videos
+  testVideos: ["/demo/videos/product-demo.mp4", "/demo/videos/unboxing.mp4"],
+};
+```
+
+---
 
 ## Category Counts System
 
@@ -157,3 +376,58 @@ If a step fails:
 - Fix the issue
 - Click "Run" on the failed step to retry
 - Continue with remaining steps
+
+---
+
+## Demo Data Enhancement Checklist
+
+### Phase 1: Core Data (Already Implemented)
+
+- [x] Categories with hierarchy (Attack/Defense/Stamina/Balance)
+- [x] Users with roles (Admin/Mod/Support/Seller/Buyer)
+- [x] Shops with Beyblade theme names
+- [x] Products with images and specs
+- [x] Auctions with bids
+- [x] Orders, payments, shipments
+- [x] Reviews and ratings
+
+### Phase 2: Homepage & Featured (Doc 14, 15)
+
+- [x] Hero slides with CTAs (3 slides)
+- [x] Featured products in homepage settings
+- [x] Featured auctions in homepage settings
+- [x] Featured shops in homepage settings
+- [x] Featured categories in homepage settings
+
+### Phase 3: Auction Dates (Doc 19)
+
+- [x] All auctions 3-7 days in future
+- [x] No ended auctions in demo data
+- [x] Varied end times throughout the day
+
+### Phase 4: Category Structure (Doc 22)
+
+- [x] Parent categories with multiple children (siblings)
+- [x] 3+ sub-categories per parent for Similar Categories
+- [x] Proper parentIds set on all categories
+
+### Phase 5: Product Specifications (Doc 10)
+
+- [ ] Add comparable specs to products
+- [ ] Ensure products in same category have same spec keys
+- [ ] Add variation in spec values for comparison
+
+### Phase 6: Test Media Assets (Doc 26)
+
+- [ ] Add square test images (1:1) for products
+- [ ] Add wide test images (16:9) for banners
+- [ ] Add portrait test images for focus point testing
+- [ ] Add test video files for video upload testing
+- [ ] Document test asset locations in `/public/demo/`
+
+### Phase 7: Edge Cases
+
+- [ ] Products with no reviews (for empty state testing)
+- [ ] Shops with no products (for empty state testing)
+- [ ] Categories with no products (for empty state testing)
+- [ ] Users with no orders (for empty state testing)

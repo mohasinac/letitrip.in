@@ -3,6 +3,12 @@
  *
  * Displays auction information in a card format for listings
  * Similar to ProductCard but for auctions
+ *
+ * Supports variants:
+ * - "public" (default) - Full customer-facing card with watch/bid buttons
+ * - "admin" - Admin dashboard with status, moderation actions
+ * - "seller" - Seller dashboard with bid count, edit actions
+ * - "compact" - Minimal card for carousels/featured sections
  */
 
 "use client";
@@ -10,10 +16,21 @@
 import React from "react";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import Link from "next/link";
-import { Clock, Gavel, Eye } from "lucide-react";
+import {
+  Clock,
+  Gavel,
+  Eye,
+  Edit,
+  Trash2,
+  Shield,
+  CheckCircle,
+} from "lucide-react";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
 import { formatCurrency, formatTimeRemaining } from "@/lib/formatters";
 import { getTimeRemaining } from "@/lib/validation/auction";
+import { cn } from "@/lib/utils";
+
+export type AuctionCardVariant = "public" | "admin" | "seller" | "compact";
 
 export interface AuctionCardProps {
   auction: {
@@ -28,6 +45,7 @@ export interface AuctionCardProps {
     endTime: Date | string;
     condition?: "new" | "used" | "refurbished";
     featured?: boolean;
+    status?: "active" | "pending" | "ended" | "cancelled" | "moderation";
     shop?: {
       id: string;
       name: string;
@@ -36,24 +54,44 @@ export interface AuctionCardProps {
     };
     viewCount?: number;
   };
+  variant?: AuctionCardVariant;
   onWatch?: (auctionId: string) => void;
   isWatched?: boolean;
   showShopInfo?: boolean;
   priority?: boolean;
+  // Admin/Seller specific props
+  onEdit?: (slug: string) => void;
+  onDelete?: (id: string) => void;
+  onApprove?: (id: string) => void;
+  onReject?: (id: string) => void;
+  isSelected?: boolean;
+  onSelect?: (id: string, selected: boolean) => void;
 }
 
 const AuctionCardComponent = ({
   auction,
+  variant = "public",
   onWatch,
   isWatched = false,
   showShopInfo = true,
   priority = false,
+  onEdit,
+  onDelete,
+  onApprove,
+  onReject,
+  isSelected = false,
+  onSelect,
 }: AuctionCardProps) => {
   const [isHovered, setIsHovered] = React.useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = React.useState(0);
   const [isPlayingVideo, setIsPlayingVideo] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Variant-specific flags
+  const isCompact = variant === "compact";
+  const isAdmin = variant === "admin";
+  const isSeller = variant === "seller";
 
   // Convert endTime to Date object, handling various formats
   let endTime: Date | null = null;
@@ -137,15 +175,83 @@ const AuctionCardComponent = ({
     timeRemaining.totalMs <= 24 * 60 * 60 * 1000 && !timeRemaining.isEnded;
   const isEnded = timeRemaining.isEnded;
 
+  // Status badge for admin/seller variants
+  const statusBadge = isAdmin || isSeller ? auction.status : null;
+
+  // Handle selection for bulk actions
+  const handleSelectClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelect?.(auction.id, !isSelected);
+  };
+
+  // Handle edit click
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onEdit?.(auction.slug);
+  };
+
+  // Handle delete click
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onDelete?.(auction.id);
+  };
+
+  // Handle approve click
+  const handleApproveClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onApprove?.(auction.id);
+  };
+
+  // Handle reject click
+  const handleRejectClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onReject?.(auction.id);
+  };
+
+  // Card container classes based on variant
+  const cardClasses = cn(
+    "group block rounded-lg overflow-hidden transition-all duration-200",
+    "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700",
+    "hover:shadow-lg dark:hover:shadow-gray-900/50",
+    isSelected && "ring-2 ring-blue-500 dark:ring-blue-400",
+    isCompact && "hover:shadow-md"
+  );
+
   return (
     <Link
       href={`/auctions/${auction.slug}`}
-      className="group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow duration-200"
+      className={cardClasses}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image/Video Section */}
-      <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
+      <div
+        className={cn(
+          "relative overflow-hidden bg-gray-100 dark:bg-gray-700",
+          isCompact ? "aspect-[4/3]" : "aspect-square"
+        )}
+      >
+        {/* Selection Checkbox for Admin/Seller */}
+        {(isAdmin || isSeller) && onSelect && (
+          <div className="absolute top-2 left-2 z-30">
+            <button
+              onClick={handleSelectClick}
+              className={cn(
+                "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
+                isSelected
+                  ? "bg-blue-500 border-blue-500 text-white"
+                  : "bg-white/90 border-gray-400 hover:border-blue-500"
+              )}
+            >
+              {isSelected && <CheckCircle size={14} />}
+            </button>
+          </div>
+        )}
         {/* Video layer - shown when playing video */}
         {hasVideos && (
           <video
@@ -181,13 +287,32 @@ const AuctionCardComponent = ({
         )}
 
         {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1 z-20">
+        <div
+          className={cn(
+            "absolute flex flex-col gap-1 z-20",
+            (isAdmin || isSeller) && onSelect ? "top-2 left-9" : "top-2 left-2"
+          )}
+        >
+          {/* Status Badge for Admin/Seller */}
+          {statusBadge && statusBadge !== "active" && (
+            <span
+              className={cn(
+                "text-white text-xs font-semibold px-2 py-1 rounded",
+                statusBadge === "pending" && "bg-yellow-500",
+                statusBadge === "moderation" && "bg-purple-500",
+                statusBadge === "ended" && "bg-gray-500",
+                statusBadge === "cancelled" && "bg-red-600"
+              )}
+            >
+              {statusBadge.charAt(0).toUpperCase() + statusBadge.slice(1)}
+            </span>
+          )}
           {auction.featured && (
             <span className="bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded">
               Featured
             </span>
           )}
-          {isEnded && (
+          {isEnded && !statusBadge && (
             <span className="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
               Ended
             </span>
@@ -197,7 +322,7 @@ const AuctionCardComponent = ({
               Ending Soon
             </span>
           )}
-          {auction.condition && auction.condition !== "new" && (
+          {!isCompact && auction.condition && auction.condition !== "new" && (
             <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded capitalize">
               {auction.condition}
             </span>
@@ -255,31 +380,102 @@ const AuctionCardComponent = ({
         )}
 
         {/* Action Buttons */}
-        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <FavoriteButton
-            itemId={auction.id}
-            itemType="auction"
-            initialIsFavorite={isWatched}
-            onToggle={() => onWatch?.(auction.id)}
-            size="md"
-          />
-          {auction.viewCount && auction.viewCount > 0 && (
-            <div className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md text-gray-600 dark:text-gray-300 flex items-center gap-1 text-xs">
-              <Eye size={14} />
-              <span>
-                {auction.viewCount > 999
-                  ? `${Math.floor(auction.viewCount / 1000)}k`
-                  : auction.viewCount}
-              </span>
-            </div>
+        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
+          {/* Admin Actions */}
+          {isAdmin && (
+            <>
+              {auction.status === "moderation" && onApprove && (
+                <button
+                  onClick={handleApproveClick}
+                  className="p-2 rounded-full bg-green-500 text-white shadow-md hover:bg-green-600 transition-colors"
+                  title="Approve"
+                >
+                  <CheckCircle size={16} />
+                </button>
+              )}
+              {auction.status === "moderation" && onReject && (
+                <button
+                  onClick={handleRejectClick}
+                  className="p-2 rounded-full bg-red-500 text-white shadow-md hover:bg-red-600 transition-colors"
+                  title="Reject"
+                >
+                  <Shield size={16} />
+                </button>
+              )}
+              {onEdit && (
+                <button
+                  onClick={handleEditClick}
+                  className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  title="Edit"
+                >
+                  <Edit size={16} />
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  onClick={handleDeleteClick}
+                  className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  title="Delete"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
+            </>
+          )}
+
+          {/* Seller Actions */}
+          {isSeller && (
+            <>
+              {onEdit && (
+                <button
+                  onClick={handleEditClick}
+                  className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  title="Edit"
+                >
+                  <Edit size={16} />
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  onClick={handleDeleteClick}
+                  className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  title="Delete"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
+            </>
+          )}
+
+          {/* Public/Compact Actions */}
+          {!isAdmin && !isSeller && (
+            <>
+              <FavoriteButton
+                itemId={auction.id}
+                itemType="auction"
+                initialIsFavorite={isWatched}
+                onToggle={() => onWatch?.(auction.id)}
+                size="md"
+              />
+              {!isCompact && auction.viewCount && auction.viewCount > 0 && (
+                <div className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md text-gray-600 dark:text-gray-300 flex items-center gap-1 text-xs">
+                  <Eye size={14} />
+                  <span>
+                    {auction.viewCount > 999
+                      ? `${Math.floor(auction.viewCount / 1000)}k`
+                      : auction.viewCount}
+                  </span>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
 
       {/* Content Section */}
-      <div className="p-3">
-        {/* Shop Info */}
-        {showShopInfo && auction.shop && (
+      <div className={cn("p-3", isCompact && "p-2")}>
+        {/* Shop Info - not shown in compact */}
+        {!isCompact && showShopInfo && auction.shop && (
           <div className="flex items-center gap-1.5 mb-2">
             {auction.shop.logo && (
               <OptimizedImage
@@ -311,65 +507,121 @@ const AuctionCardComponent = ({
         )}
 
         {/* Auction Name */}
-        <h3 className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors min-h-[2.5rem]">
+        <h3
+          className={cn(
+            "font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors",
+            isCompact
+              ? "text-xs line-clamp-1 mb-1"
+              : "text-sm line-clamp-2 mb-2 min-h-[2.5rem]"
+          )}
+        >
           {auction.name}
         </h3>
 
         {/* Current Bid */}
-        <div className="mb-2">
+        <div className={cn(isCompact ? "mb-1" : "mb-2")}>
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-gray-900 dark:text-white">
+            <span
+              className={cn(
+                "font-bold text-gray-900 dark:text-white",
+                isCompact ? "text-sm" : "text-lg"
+              )}
+            >
               {formatCurrency(currentBid)}
             </span>
-            {auction.bidCount > 0 && (
+            {!isCompact && auction.bidCount > 0 && (
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 {auction.bidCount} {auction.bidCount === 1 ? "bid" : "bids"}
               </span>
             )}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            Current Bid
-          </div>
+          {!isCompact && (
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              Current Bid
+            </div>
+          )}
         </div>
 
         {/* Time Remaining */}
         <div
-          className={`flex items-center gap-1 text-xs mb-3 ${
+          className={cn(
+            "flex items-center gap-1 text-xs",
+            isCompact ? "mb-0" : "mb-3",
             isEnded
               ? "text-gray-500 dark:text-gray-500"
               : isEndingSoon
               ? "text-orange-600 dark:text-orange-400 font-medium"
               : "text-gray-600 dark:text-gray-400"
-          }`}
+          )}
         >
-          <Clock size={12} />
+          <Clock size={isCompact ? 10 : 12} />
           <span>{isEnded ? "Ended" : formatTimeRemaining(endTime)}</span>
         </div>
 
-        {/* Quick Action Button */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            // This would typically open a quick bid modal or navigate to details
-          }}
-          className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2 ${
-            isEnded
-              ? "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-              : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
-          }`}
-        >
-          {isEnded ? (
-            <>
-              <Eye size={16} />
-              View Details
-            </>
-          ) : (
-            <>
-              <Gavel size={16} />
-              Place Bid
-            </>
-          )}
-        </button>
+        {/* Bid Count for Admin/Seller - in compact mode too */}
+        {(isAdmin || isSeller) && auction.bidCount > 0 && (
+          <div
+            className={cn(
+              "flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400",
+              isCompact ? "mb-0" : "mb-3"
+            )}
+          >
+            <Gavel size={12} />
+            <span>
+              {auction.bidCount} {auction.bidCount === 1 ? "bid" : "bids"}
+            </span>
+          </div>
+        )}
+
+        {/* Quick Action Button - not shown in compact */}
+        {!isCompact && !isAdmin && !isSeller && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              // This would typically open a quick bid modal or navigate to details
+            }}
+            className={cn(
+              "w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2",
+              isEnded
+                ? "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
+            )}
+          >
+            {isEnded ? (
+              <>
+                <Eye size={16} />
+                View Details
+              </>
+            ) : (
+              <>
+                <Gavel size={16} />
+                Place Bid
+              </>
+            )}
+          </button>
+        )}
+
+        {/* Admin/Seller Quick Actions */}
+        {!isCompact && (isAdmin || isSeller) && (
+          <div className="flex gap-2">
+            {onEdit && (
+              <button
+                onClick={handleEditClick}
+                className="flex-1 py-2 px-3 rounded-lg font-medium text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
+              >
+                <Edit size={14} />
+                Edit
+              </button>
+            )}
+            <button
+              onClick={(e) => e.preventDefault()}
+              className="flex-1 py-2 px-3 rounded-lg font-medium text-sm bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            >
+              <Eye size={14} />
+              View
+            </button>
+          </div>
+        )}
       </div>
     </Link>
   );
