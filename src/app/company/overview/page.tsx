@@ -38,7 +38,9 @@ export default function CompanyOverviewPage() {
 
           {/* About Us */}
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">About Us</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              About Us
+            </h2>
             <div className="prose max-w-none text-gray-700 dark:text-gray-300">
               <p className="mb-4">
                 Let It Rip is India's leading auction and e-commerce platform,
@@ -69,7 +71,9 @@ export default function CompanyOverviewPage() {
             <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Target className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Our Mission</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Our Mission
+                </h3>
               </div>
               <p className="text-gray-700 dark:text-gray-300">
                 To democratize commerce by providing a platform where anyone can
@@ -82,7 +86,9 @@ export default function CompanyOverviewPage() {
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Award className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Our Vision</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Our Vision
+                </h3>
               </div>
               <p className="text-gray-700 dark:text-gray-300">
                 To become the most trusted and innovative marketplace in India,
@@ -134,20 +140,26 @@ export default function CompanyOverviewPage() {
           <section className="border-t dark:border-gray-700 pt-8">
             <div className="flex items-center gap-3 mb-6">
               <Mail className="w-8 h-8 text-gray-700 dark:text-gray-300" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Get in Touch</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Get in Touch
+              </h2>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                   General Inquiries
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-1">Email: info@letitrip.com</p>
+                <p className="text-gray-600 dark:text-gray-400 mb-1">
+                  Email: info@letitrip.com
+                </p>
                 <p className="text-gray-600 dark:text-gray-400">
                   Phone: +91 1800-123-4567 (Toll-free)
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Support</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  Support
+                </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-1">
                   Email: support@letitrip.com
                 </p>
@@ -189,7 +201,9 @@ function ValueCard({
   return (
     <div className="border dark:border-gray-700 rounded-lg p-5">
       <div className="text-4xl mb-3">{emoji}</div>
-      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{title}</h4>
+      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+        {title}
+      </h4>
       <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
     </div>
   );

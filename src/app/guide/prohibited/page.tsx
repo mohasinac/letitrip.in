@@ -131,7 +131,9 @@ export default function ProhibitedItemsPage() {
                       key={item}
                       className="flex items-start gap-2 text-gray-700 dark:text-gray-300"
                     >
-                      <span className="text-red-600 dark:text-red-400 mt-1">✗</span>
+                      <span className="text-red-600 dark:text-red-400 mt-1">
+                        ✗
+                      </span>
                       <span>{item}</span>
                     </li>
                   ))}

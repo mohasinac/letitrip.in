@@ -305,7 +305,7 @@ export default function CheckoutPage() {
 
   if (!user || cartLoading || !cart) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
@@ -313,7 +313,7 @@ export default function CheckoutPage() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
         <div className="max-w-5xl mx-auto px-4">
           {/* Error Display */}
           {error && (
@@ -331,11 +331,11 @@ export default function CheckoutPage() {
 
           {/* Validation Errors */}
           {Object.keys(validationErrors).length > 0 && (
-            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-red-800 mb-2">
+            <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-red-800 dark:text-red-300 mb-2">
                 Please fix the following errors:
               </h4>
-              <ul className="text-sm text-red-700 space-y-1 list-disc list-inside">
+              <ul className="text-sm text-red-700 dark:text-red-400 space-y-1 list-disc list-inside">
                 {Object.values(validationErrors).map((err, idx) => (
                   <li key={idx}>{err}</li>
                 ))}
@@ -347,18 +347,18 @@ export default function CheckoutPage() {
           <div className="mb-8">
             <button
               onClick={() => router.push("/cart")}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 active:text-gray-700 transition-colors mb-4 min-h-[44px] touch-manipulation"
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white active:text-gray-700 transition-colors mb-4 min-h-[44px] touch-manipulation"
             >
               <ChevronLeft className="w-5 h-5" />
               Back to Cart
             </button>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               Checkout
             </h1>
           </div>
 
           {/* Progress Steps - Mobile Optimized */}
-          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-6">
             <div className="flex items-center justify-between">
               {steps.map((step, index) => {
                 const Icon = step.icon;
@@ -374,7 +374,7 @@ export default function CheckoutPage() {
                             ? "bg-green-500 text-white"
                             : isCurrent
                             ? "bg-primary text-white"
-                            : "bg-gray-200 text-gray-400"
+                            : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                         }`}
                       >
                         {isCompleted ? (
@@ -385,7 +385,7 @@ export default function CheckoutPage() {
                       </div>
                       <span
                         className={`mt-1.5 sm:mt-2 text-xs sm:text-sm font-medium ${
-                          isCurrent ? "text-primary" : "text-gray-600"
+                          isCurrent ? "text-primary" : "text-gray-600 dark:text-gray-400"
                         }`}
                       >
                         {step.label}
@@ -395,7 +395,7 @@ export default function CheckoutPage() {
                     {index < steps.length - 1 && (
                       <div
                         className={`h-1 flex-1 mx-2 sm:mx-4 rounded transition-all ${
-                          isCompleted ? "bg-green-500" : "bg-gray-200"
+                          isCompleted ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"
                         }`}
                       />
                     )}

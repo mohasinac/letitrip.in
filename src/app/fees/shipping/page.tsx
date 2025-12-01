@@ -60,7 +60,10 @@ export default function InternationalShippingPage() {
             </h2>
             <div className="space-y-4">
               {regions.map((region) => (
-                <div key={region.name} className="border dark:border-gray-700 rounded-lg p-5">
+                <div
+                  key={region.name}
+                  className="border dark:border-gray-700 rounded-lg p-5"
+                >
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
@@ -74,7 +77,9 @@ export default function InternationalShippingPage() {
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">
                         {region.baseRate}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Base rate</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Base rate
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -109,23 +114,41 @@ export default function InternationalShippingPage() {
                 </thead>
                 <tbody className="divide-y dark:divide-gray-700">
                   <tr>
-                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">Up to 1 kg</td>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white">Base rate</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                      Up to 1 kg
+                    </td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white">
+                      Base rate
+                    </td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">1-3 kg</td>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white">+₹500</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                      1-3 kg
+                    </td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white">
+                      +₹500
+                    </td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">3-5 kg</td>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white">+₹1,000</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                      3-5 kg
+                    </td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white">
+                      +₹1,000
+                    </td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">5-10 kg</td>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white">+₹2,000</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                      5-10 kg
+                    </td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white">
+                      +₹2,000
+                    </td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">Above 10 kg</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                      Above 10 kg
+                    </td>
                     <td className="px-4 py-3 text-gray-900 dark:text-white">
                       Contact for quote
                     </td>
@@ -177,7 +200,9 @@ export default function InternationalShippingPage() {
 
           {/* FAQ */}
           <section className="border-t dark:border-gray-700 pt-6">
-            <h3 className="font-bold text-gray-900 dark:text-white mb-4">Common Questions</h3>
+            <h3 className="font-bold text-gray-900 dark:text-white mb-4">
+              Common Questions
+            </h3>
             <div className="space-y-4">
               <div>
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
@@ -230,7 +255,9 @@ function InfoCard({
       <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400 mb-3">
         {icon}
       </div>
-      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{title}</h4>
+      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+        {title}
+      </h4>
       <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
     </div>
   );

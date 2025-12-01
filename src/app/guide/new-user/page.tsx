@@ -83,30 +83,40 @@ export default function NewUserGuidePage() {
 
           {/* Tips Section */}
           <div className="mt-12 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Pro Tips</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+              Pro Tips
+            </h2>
             <ul className="space-y-2 text-gray-700 dark:text-gray-300">
               <li className="flex items-start gap-2">
-                <span className="text-yellow-600 dark:text-yellow-400 mt-1">•</span>
+                <span className="text-yellow-600 dark:text-yellow-400 mt-1">
+                  •
+                </span>
                 <span>
                   Set up email notifications to get alerts for auction endings
                   and new listings
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-600 dark:text-yellow-400 mt-1">•</span>
+                <span className="text-yellow-600 dark:text-yellow-400 mt-1">
+                  •
+                </span>
                 <span>
                   Read seller ratings and reviews before making a purchase
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-600 dark:text-yellow-400 mt-1">•</span>
+                <span className="text-yellow-600 dark:text-yellow-400 mt-1">
+                  •
+                </span>
                 <span>
                   Check our prohibited items list before listing anything for
                   sale
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-600 dark:text-yellow-400 mt-1">•</span>
+                <span className="text-yellow-600 dark:text-yellow-400 mt-1">
+                  •
+                </span>
                 <span>
                   Contact support if you have any questions - we're here to
                   help!
@@ -117,7 +127,9 @@ export default function NewUserGuidePage() {
 
           {/* Need Help */}
           <div className="mt-8 text-center">
-            <p className="text-gray-600 dark:text-gray-300 mb-4">Need more help?</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              Need more help?
+            </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Link
                 href="/faq"
@@ -156,7 +168,9 @@ function GuideSection({
         {icon}
       </div>
       <div className="flex-1">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          {title}
+        </h3>
         <p className="text-gray-600 dark:text-gray-300 mb-3">{description}</p>
         {links && links.length > 0 && (
           <div className="flex gap-3 flex-wrap">
