@@ -71,27 +71,27 @@ export default function ResourceDetailWrapper({
   commentsSection,
 }: ResourceDetailWrapperProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Breadcrumbs */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center gap-2 text-sm text-gray-600">
+          <nav className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             {breadcrumbs.map((item, index) => (
               <div key={index} className="flex items-center gap-2">
                 {item.href ? (
                   <Link
                     href={item.href}
-                    className="hover:text-yellow-600 transition-colors"
+                    className="hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
                   >
                     {item.label}
                   </Link>
                 ) : (
-                  <span className="text-gray-900 font-medium">
+                  <span className="text-gray-900 dark:text-white font-medium">
                     {item.label}
                   </span>
                 )}
                 {index < breadcrumbs.length - 1 && (
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                 )}
               </div>
             ))}
@@ -100,17 +100,17 @@ export default function ResourceDetailWrapper({
       </div>
 
       {/* Header Section */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             {/* Title and Badge */}
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{title}</h1>
                 {badge && <div>{badge}</div>}
               </div>
               {subtitle && (
-                <p className="text-gray-600 mt-1 text-sm">{subtitle}</p>
+                <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">{subtitle}</p>
               )}
             </div>
 
@@ -127,18 +127,18 @@ export default function ResourceDetailWrapper({
                 <div
                   key={index}
                   className={`bg-gradient-to-br ${
-                    stat.color || "from-blue-50 to-blue-100"
+                    stat.color || "from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30"
                   } p-4 rounded-lg`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{stat.label}</p>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
                         {stat.value}
                       </p>
                     </div>
                     {stat.icon && (
-                      <div className="text-gray-600">{stat.icon}</div>
+                      <div className="text-gray-600 dark:text-gray-400">{stat.icon}</div>
                     )}
                   </div>
                 </div>
@@ -148,7 +148,7 @@ export default function ResourceDetailWrapper({
 
           {/* Tabs */}
           {tabs && tabs.length > 0 && (
-            <div className="mt-6 border-b">
+            <div className="mt-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex gap-6 overflow-x-auto">
                 {tabs.map((tab) => (
                   <button
@@ -156,8 +156,8 @@ export default function ResourceDetailWrapper({
                     onClick={() => onTabChange?.(tab.id)}
                     className={`pb-3 px-1 text-sm font-medium whitespace-nowrap transition-colors ${
                       activeTab === tab.id
-                        ? "text-yellow-600 border-b-2 border-yellow-600"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "text-yellow-600 dark:text-yellow-400 border-b-2 border-yellow-600 dark:border-yellow-400"
+                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     }`}
                   >
                     {tab.label}
@@ -173,19 +173,19 @@ export default function ResourceDetailWrapper({
       <div className="container mx-auto px-4 py-6">
         {/* Tab Content or Main Content */}
         {tabs && tabs.length > 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             {tabs.find((tab) => tab.id === activeTab)?.content || children}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             {children}
           </div>
         )}
 
         {/* Related Items */}
         {relatedItems && (
-          <div className="mt-6 bg-white rounded-lg shadow-sm border p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
+          <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
               Related Items
             </h2>
             {relatedItems}
@@ -194,7 +194,7 @@ export default function ResourceDetailWrapper({
 
         {/* Comments/Reviews Section */}
         {commentsSection && (
-          <div className="mt-6 bg-white rounded-lg shadow-sm border p-6">
+          <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             {commentsSection}
           </div>
         )}

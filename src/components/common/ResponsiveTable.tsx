@@ -16,7 +16,7 @@ export function ResponsiveTable({
   stickyFirstColumn = true,
 }: ResponsiveTableProps) {
   return (
-    <div className="bg-white rounded-lg border overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="overflow-x-auto">
         <div
           className={`min-w-full inline-block ${
@@ -35,13 +35,26 @@ export function ResponsiveTable({
           background-color: white;
         }
 
+        .dark .sticky-first-col table thead tr th:first-child,
+        .dark .sticky-first-col table tbody tr td:first-child {
+          background-color: rgb(31 41 55); /* dark:bg-gray-800 */
+        }
+
         .sticky-first-col table thead tr th:first-child {
           z-index: 11;
           background-color: rgb(249 250 251); /* bg-gray-50 */
         }
 
+        .dark .sticky-first-col table thead tr th:first-child {
+          background-color: rgb(55 65 81); /* dark:bg-gray-700 */
+        }
+
         .sticky-first-col table tbody tr:hover td:first-child {
           background-color: rgb(249 250 251); /* bg-gray-50 */
+        }
+
+        .dark .sticky-first-col table tbody tr:hover td:first-child {
+          background-color: rgb(55 65 81); /* dark:bg-gray-700 */
         }
 
         /* Add shadow to sticky column for depth */
