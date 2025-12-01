@@ -72,10 +72,10 @@ export function CollapsibleFilter({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Filters
           {getTotalActiveCount() > 0 && (
-            <span className="ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+            <span className="ml-2 rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300">
               {getTotalActiveCount()}
             </span>
           )}
@@ -83,7 +83,7 @@ export function CollapsibleFilter({
         {getTotalActiveCount() > 0 && (
           <button
             onClick={() => onClear()}
-            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+            className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
           >
             Clear All
           </button>
@@ -100,19 +100,19 @@ export function CollapsibleFilter({
         return (
           <div
             key={section.id}
-            className="rounded-lg border border-gray-200 bg-white"
+            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
           >
             {/* Section Header */}
             <button
               onClick={() => toggleSection(section.id)}
-              className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-gray-50"
+              className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               <div className="flex items-center gap-2">
-                <span className="font-medium text-gray-900">
+                <span className="font-medium text-gray-900 dark:text-white">
                   {section.title}
                 </span>
                 {activeCount > 0 && (
-                  <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                  <span className="rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300">
                     {activeCount}
                   </span>
                 )}
@@ -124,26 +124,26 @@ export function CollapsibleFilter({
                       e.stopPropagation();
                       onClear(section.id);
                     }}
-                    className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                    className="text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Clear
                   </button>
                 )}
                 {isExpanded ? (
-                  <ChevronDown className="h-4 w-4 text-gray-400" />
+                  <ChevronDown className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                 ) : (
-                  <ChevronRight className="h-4 w-4 text-gray-400" />
+                  <ChevronRight className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                 )}
               </div>
             </button>
 
             {/* Section Content */}
             {isExpanded && (
-              <div className="border-t border-gray-200 px-4 py-3">
+              <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-3">
                 {/* Search Input */}
                 {needsSearch && (
                   <div className="relative mb-3">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                     <input
                       type="search"
                       placeholder={`Search ${section.title.toLowerCase()}...`}
@@ -154,7 +154,7 @@ export function CollapsibleFilter({
                           [section.id]: e.target.value,
                         }))
                       }
-                      className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
                 )}
@@ -165,7 +165,7 @@ export function CollapsibleFilter({
                   style={{ maxHeight: 300, overflowY: "auto" }}
                 >
                   {filteredOptions.length === 0 ? (
-                    <p className="py-4 text-center text-sm text-gray-500">
+                    <p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                       No results found
                     </p>
                   ) : (
@@ -196,13 +196,13 @@ export function CollapsibleFilter({
                               onChange(section.id, updated);
                             }
                           }}
-                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                         />
-                        <span className="flex-1 text-sm text-gray-700">
+                        <span className="flex-1 text-sm text-gray-700 dark:text-gray-300">
                           {option.label}
                         </span>
                         {option.count !== undefined && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             ({option.count})
                           </span>
                         )}

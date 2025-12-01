@@ -74,12 +74,16 @@ export default function MobileStickyBar({
                   )}
                 </div>
                 {!inStock && (
-                  <p className="text-xs text-red-600 dark:text-red-400">Out of Stock</p>
+                  <p className="text-xs text-red-600 dark:text-red-400">
+                    Out of Stock
+                  </p>
                 )}
               </div>
             ) : (
               <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Current Bid</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Current Bid
+                </p>
                 <span className="text-xl font-bold text-gray-900 dark:text-white">
                   ₹{currentBid?.toLocaleString() || 0}
                 </span>

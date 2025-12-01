@@ -69,7 +69,9 @@ export function FormModal({
         >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              {title}
+            </h2>
             {showCloseButton && (
               <button
                 onClick={onClose}
