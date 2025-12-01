@@ -63,12 +63,22 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 
 ### Form Wrappers
 
+**⚠️ CRITICAL: Use ONLY Doc 27 standardized form components (see Doc 30 for details)**
+
 ```tsx
 // ❌ Bad - raw label and input
 <label className="block text-sm font-medium">Name</label>
 <input type="text" className="border rounded px-3 py-2" />
 
-// ✅ Good - use FormField with FormInput
+// ❌ Bad - using deprecated Input component
+import { Input } from '@/components/ui/Input';
+<Input label="Name" />
+
+// ❌ Bad - using duplicate MobileFormInput
+import { MobileFormInput } from '@/components/mobile';
+<MobileFormInput label="Name" />
+
+// ✅ Good - use Doc 27 standard FormField with FormInput
 import { FormField, FormInput } from '@/components/forms';
 
 <FormField label="Name" required error={errors.name}>
@@ -78,6 +88,18 @@ import { FormField, FormInput } from '@/components/forms';
   />
 </FormField>
 ```
+
+**DO NOT USE:**
+
+- ❌ `Input` from `@/components/ui/Input` (DEPRECATED - being removed)
+- ❌ `Select` from `@/components/ui/Select` (DEPRECATED - being removed)
+- ❌ `MobileFormInput` from `@/components/mobile` (DUPLICATE - use FormInput instead)
+- ❌ `MobileFormSelect` from `@/components/mobile` (DUPLICATE - use FormSelect instead)
+
+**USE ONLY:**
+
+- ✅ `FormField`, `FormInput`, `FormSelect`, `FormCheckbox`, `FormTextarea`, `FormRadio` from `@/components/forms`
+- ✅ Specialized inputs: `MobileInput` (phone with country code), `PincodeInput` (postal lookup), `LinkInput` (URL validation), `SlugInput` (auto-slugify), `TagInput` (multi-value tags)
 
 ### Typography Wrappers
 
