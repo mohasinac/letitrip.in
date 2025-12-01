@@ -7,6 +7,7 @@ import { validateMedia } from "@/lib/media/media-validator";
 import MediaPreviewCard from "./MediaPreviewCard";
 import CameraCapture from "./CameraCapture";
 import VideoRecorder from "./VideoRecorder";
+import MediaEditorModal from "./MediaEditorModal";
 
 interface MediaUploaderProps {
   accept?: "image" | "video" | "all";
@@ -15,11 +16,13 @@ interface MediaUploaderProps {
   multiple?: boolean;
   onFilesAdded?: (files: MediaFile[]) => void;
   onFileRemoved?: (id: string) => void;
+  onFileEdited?: (editedFile: MediaFile) => void;
   files?: MediaFile[];
   className?: string;
   disabled?: boolean;
   enableCamera?: boolean;
   enableVideoRecording?: boolean;
+  enableEditing?: boolean;
 }
 
 export default function MediaUploader({
@@ -29,17 +32,20 @@ export default function MediaUploader({
   multiple = true,
   onFilesAdded,
   onFileRemoved,
+  onFileEdited,
   files = [],
   className = "",
   disabled = false,
   enableCamera = true,
   enableVideoRecording = true,
+  enableEditing = true,
 }: MediaUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [showCamera, setShowCamera] = useState(false);
   const [showVideoRecorder, setShowVideoRecorder] = useState(false);
+  const [editingMedia, setEditingMedia] = useState<MediaFile | null>(null);
 
   const acceptedTypes = {
     image: "image/*",
@@ -187,8 +193,32 @@ export default function MediaUploader({
     setShowVideoRecorder(false);
   };
 
+  const handleEditMedia = (media: MediaFile) => {
+    setEditingMedia(media);
+  };
+
+  const handleSaveEdit = (editedMedia: MediaFile) => {
+    if (onFileEdited) {
+      onFileEdited(editedMedia);
+    }
+    setEditingMedia(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMedia(null);
+  };
+
   return (
     <div className={className}>
+      {/* Media Editor Modal */}
+      {editingMedia && (
+        <MediaEditorModal
+          media={editingMedia}
+          onSave={handleSaveEdit}
+          onCancel={handleCancelEdit}
+        />
+      )}
+
       {/* Camera Capture Modal */}
       {showCamera && (
         <CameraCapture
@@ -327,6 +357,7 @@ export default function MediaUploader({
               key={file.id}
               media={file}
               onRemove={() => onFileRemoved?.(file.id)}
+              onEdit={enableEditing ? () => handleEditMedia(file) : undefined}
             />
           ))}
         </div>
