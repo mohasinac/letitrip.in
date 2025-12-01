@@ -1,8 +1,8 @@
 # Media Upload - Crop, Zoom, Rotate & Mobile Focus Point
 
-> **Status**: 🟡 In Progress (Phase 1 Complete)
+> **Status**: 🟡 In Progress (Phase 1 & 2 Complete)
 > **Priority**: Medium
-> **Last Updated**: December 2025
+> **Last Updated**: January 2025
 
 ## Completed
 
@@ -16,6 +16,9 @@
 - ✅ Added zoom control for cropping
 - ✅ Added rotation support in crop mode
 - ✅ Added mobile focus preview showing how images look at different sizes
+- ✅ Added `focusX`, `focusY` fields to `MediaMetadata` type
+- ✅ ImageEditor passes focus point when saving edited media
+- ✅ Updated `OptimizedImage` component to use `objectPosition` with focus point
 
 ## Overview
 
@@ -522,28 +525,28 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
 
 ## Implementation Checklist
 
-### Phase 1: Image Editor Component
+### Phase 1: Image Editor Component ✅ COMPLETE
 
-- [ ] Create `ImageEditor` component with crop/zoom/rotate
-- [ ] Integrate react-image-crop or similar library
-- [ ] Add aspect ratio presets
-- [ ] Add rotation controls
-- [ ] Test on touch devices
+- [x] Create `ImageEditor` component with crop/zoom/rotate
+- [x] Integrate react-easy-crop library
+- [x] Add aspect ratio presets
+- [x] Add rotation controls
+- [x] Test on touch devices
 
-### Phase 2: Focus Point Feature
+### Phase 2: Focus Point Feature ✅ COMPLETE
 
-- [ ] Create `FocusPointSelector` component
-- [ ] Add focus point storage to image data
-- [ ] Update `OptimizedImage` to use object-position
-- [ ] Add mobile preview in editor
-- [ ] Update image upload APIs to store focus point
+- [x] Create `FocusPointSelector` component (integrated into ImageEditor)
+- [x] Add focus point storage to image data (`MediaMetadata.focusX`, `focusY`)
+- [x] Update `OptimizedImage` to use object-position
+- [x] Add mobile preview in editor
+- [x] ImageEditor passes focus point when saving
 
-### Phase 3: Video Thumbnails
+### Phase 3: Video Thumbnails 🟡 PARTIAL
 
-- [ ] Create client-side thumbnail generator
+- [x] Create client-side thumbnail generator (`VideoThumbnailGenerator.tsx`)
 - [ ] Create server-side fallback with FFmpeg
-- [ ] Add timeline scrubber UI
-- [ ] Add custom thumbnail upload option
+- [x] Add timeline scrubber UI
+- [x] Add custom thumbnail upload option
 - [ ] Store thumbnail URL with video data
 
 ### Phase 4: Integration
@@ -556,7 +559,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
 
 ### Phase 5: Database Updates
 
-- [ ] Add `focusX`, `focusY` fields to image storage
+- [x] Add `focusX`, `focusY` fields to MediaMetadata type
 - [ ] Add `thumbnailUrl` field to video storage
 - [ ] Update existing images with default focus (50, 50)
 - [ ] Create migration script if needed

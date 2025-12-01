@@ -168,6 +168,8 @@ export default function ImageEditor({
         metadata: {
           ...media.metadata!,
           size: editedFile.size,
+          focusX: editorState.focusPoint?.x ?? 50,
+          focusY: editorState.focusPoint?.y ?? 50,
         },
       };
 

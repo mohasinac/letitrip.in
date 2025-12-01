@@ -12,6 +12,8 @@ interface OptimizedImageProps {
   quality?: number;
   sizes?: string;
   objectFit?: "contain" | "cover" | "fill" | "none" | "scale-down";
+  focusX?: number; // 0-100, percentage from left
+  focusY?: number; // 0-100, percentage from top
   onLoad?: () => void;
   onError?: () => void;
 }
@@ -25,6 +27,7 @@ interface OptimizedImageProps {
  * - Error handling with fallback
  * - Optimized quality (85% default)
  * - Automatic format conversion (WebP/AVIF)
+ * - Focus point support for smart cropping on smaller screens
  *
  * Usage:
  * <OptimizedImage
@@ -32,6 +35,8 @@ interface OptimizedImageProps {
  *   alt="Description"
  *   width={300}
  *   height={200}
+ *   focusX={50}
+ *   focusY={30}
  * />
  */
 export default function OptimizedImage({
@@ -45,6 +50,8 @@ export default function OptimizedImage({
   quality = 85,
   sizes,
   objectFit = "cover",
+  focusX = 50,
+  focusY = 50,
   onLoad,
   onError,
 }: OptimizedImageProps) {
@@ -85,7 +92,7 @@ export default function OptimizedImage({
     onError: handleError,
     onLoad: handleLoad,
     className: `${className} ${isError ? "opacity-50" : ""}`,
-    style: fill ? { objectFit } : undefined,
+    style: fill ? { objectFit, objectPosition: `${focusX}% ${focusY}%` } : { objectPosition: `${focusX}% ${focusY}%` },
   };
 
   // For fill images (responsive containers)
@@ -106,7 +113,7 @@ export default function OptimizedImage({
   // For fixed size images
   if (!width || !height) {
     console.warn(
-      `OptimizedImage: width and height are required when fill is false. Image: ${src}`,
+      `OptimizedImage: width and height are required when fill is false. Image: ${src}`
     );
     return (
       <img
