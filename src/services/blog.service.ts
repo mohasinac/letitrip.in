@@ -1,5 +1,7 @@
 import { apiService } from "./api.service";
 import { PaginatedResponseBE } from "@/types";
+import { PAGINATION } from "@/constants/limits";
+import { BLOG_STATUS, type BlogStatus } from "@/constants/statuses";
 
 export interface BlogPost {
   id: string;
@@ -15,7 +17,7 @@ export interface BlogPost {
   };
   category: string;
   tags: string[];
-  status: "draft" | "published" | "archived";
+  status: BlogStatus;
   featured: boolean;
   publishedAt?: Date;
   createdAt: Date;
@@ -28,7 +30,7 @@ interface BlogFilters {
   category?: string;
   tag?: string;
   author?: string;
-  status?: "draft" | "published" | "archived";
+  status?: BlogStatus;
   search?: string;
   featured?: boolean;
   page?: number;
@@ -46,7 +48,7 @@ interface CreateBlogPostData {
   featuredImage?: string;
   category: string;
   tags?: string[];
-  status: "draft" | "published";
+  status: typeof BLOG_STATUS.DRAFT | typeof BLOG_STATUS.PUBLISHED;
   featured?: boolean;
   publishedAt?: Date;
 }
@@ -54,7 +56,7 @@ interface CreateBlogPostData {
 interface UpdateBlogPostData extends Partial<
   Omit<CreateBlogPostData, "status">
 > {
-  status?: "draft" | "published" | "archived";
+  status?: BlogStatus;
 }
 
 class BlogService {
@@ -117,7 +119,7 @@ class BlogService {
   async getFeatured(): Promise<BlogPost[]> {
     const response = await this.list({
       featured: true,
-      status: "published",
+      status: BLOG_STATUS.PUBLISHED,
       limit: 100,
     });
     return Array.isArray(response) ? response : (response as any).data || [];
@@ -127,8 +129,8 @@ class BlogService {
   async getHomepage(): Promise<BlogPost[]> {
     const response = await this.list({
       featured: true,
-      status: "published",
-      limit: 20,
+      status: BLOG_STATUS.PUBLISHED,
+      limit: PAGINATION.DEFAULT_PAGE_SIZE,
     });
     return Array.isArray(response) ? response : (response as any).data || [];
   }
@@ -160,7 +162,7 @@ class BlogService {
     page?: number,
     limit?: number,
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
-    return this.list({ category, status: "published", page, limit });
+    return this.list({ category, status: BLOG_STATUS.PUBLISHED, page, limit });
   }
 
   // Get posts by tag
@@ -169,7 +171,7 @@ class BlogService {
     page?: number,
     limit?: number,
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
-    return this.list({ tag, status: "published", page, limit });
+    return this.list({ tag, status: BLOG_STATUS.PUBLISHED, page, limit });
   }
 
   // Get posts by author
@@ -178,7 +180,7 @@ class BlogService {
     page?: number,
     limit?: number,
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
-    return this.list({ author: authorId, status: "published", page, limit });
+    return this.list({ author: authorId, status: BLOG_STATUS.PUBLISHED, page, limit });
   }
 
   // Search posts
@@ -187,7 +189,7 @@ class BlogService {
     page?: number,
     limit?: number,
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
-    return this.list({ search: query, status: "published", page, limit });
+    return this.list({ search: query, status: BLOG_STATUS.PUBLISHED, page, limit });
   }
 }
 

@@ -1,5 +1,7 @@
 import { apiService } from "./api.service";
 import { AUCTION_ROUTES, buildUrl } from "@/constants/api-routes";
+import { PAGINATION } from "@/constants/limits";
+import { AUCTION_STATUS } from "@/constants/statuses";
 import {
   AuctionBE,
   AuctionFiltersBE,
@@ -207,8 +209,8 @@ class AuctionsService {
   // Get homepage auctions
   async getHomepage(): Promise<AuctionCardFE[]> {
     const response = await this.list({
-      status: "active" as any,
-      limit: 20,
+      status: AUCTION_STATUS.ACTIVE as any,
+      limit: PAGINATION.DEFAULT_PAGE_SIZE,
     });
     return response.data;
   }

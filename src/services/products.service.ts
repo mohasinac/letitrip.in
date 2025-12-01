@@ -1,5 +1,7 @@
 import { apiService } from "./api.service";
 import { PRODUCT_ROUTES, buildUrl } from "@/constants/api-routes";
+import { PAGINATION } from "@/constants/limits";
+import { PRODUCT_STATUS } from "@/constants/statuses";
 import { ProductBE, ProductListItemBE } from "@/types/backend/product.types";
 import {
   ProductFE,
@@ -243,8 +245,8 @@ class ProductsService {
   async getHomepage(): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(PRODUCT_ROUTES.LIST, {
       featured: true,
-      status: "published",
-      limit: 20,
+      status: PRODUCT_STATUS.PUBLISHED,
+      limit: PAGINATION.DEFAULT_PAGE_SIZE,
     });
     const response =
       await apiService.get<PaginatedResponse<ProductListItemBE>>(endpoint);

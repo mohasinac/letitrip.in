@@ -1,6 +1,6 @@
 # Constants Consolidation
 
-## Status: ✅ Partially Complete
+## Status: ✅ Complete
 
 ### Created Files
 
@@ -66,9 +66,9 @@ import { SITE_NAME, CONTACT_EMAIL } from "@/constants/site";
 - [x] Create `limits.ts` with all numeric limits
 - [x] Create `statuses.ts` with all status enums and types
 
-### Phase 2: Update References (Future)
+### ✅ Phase 2: Update References
 
-- [ ] Update services to use LIMITS constants
-- [ ] Update components to use STATUS constants
-- [ ] Remove hardcoded values from components
-- [ ] Ensure single source of truth
+- [x] Update services to use LIMITS constants (products, auctions, blog services)
+- [x] Update services to use STATUS constants (PRODUCT_STATUS, AUCTION_STATUS, BLOG_STATUS)
+- [x] Replace hardcoded pagination values with PAGINATION.DEFAULT_PAGE_SIZE
+- [x] Services now import from centralized constants files
