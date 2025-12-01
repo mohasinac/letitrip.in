@@ -10,51 +10,51 @@ After comprehensive audit, many items in the original consolidation plan are NOT
 
 ### Components That Should Stay Separate
 
-| Component Pair | Why Keep Separate | Status |
-|----------------|-------------------|--------|
-| `BaseCard` + `Card` | Different purposes: BaseCard for image cards, Card for containers | ✅ Keep Both |
-| `DataTable` + `ResponsiveTable` | Different purposes: DataTable has sorting, ResponsiveTable adds sticky | ✅ Keep Both |
-| `Skeleton` + `MobileSkeleton` | Different uses: base skeleton vs mobile-specific variants | ✅ Keep Both |
-| `ProductQuickView` + `AuctionQuickView` | Different features: cart vs bidding | ✅ Keep Both |
-| `layout/SearchBar` + `common/SearchBar` | Different features: nav search vs product search | ✅ Keep Both |
+| Component Pair                          | Why Keep Separate                                                      | Status       |
+| --------------------------------------- | ---------------------------------------------------------------------- | ------------ |
+| `BaseCard` + `Card`                     | Different purposes: BaseCard for image cards, Card for containers      | ✅ Keep Both |
+| `DataTable` + `ResponsiveTable`         | Different purposes: DataTable has sorting, ResponsiveTable adds sticky | ✅ Keep Both |
+| `Skeleton` + `MobileSkeleton`           | Different uses: base skeleton vs mobile-specific variants              | ✅ Keep Both |
+| `ProductQuickView` + `AuctionQuickView` | Different features: cart vs bidding                                    | ✅ Keep Both |
+| `layout/SearchBar` + `common/SearchBar` | Different features: nav search vs product search                       | ✅ Keep Both |
 
 ### Components Fixed This Session
 
-| Component | Issue | Fix Applied |
-|-----------|-------|-------------|
-| `ErrorMessage` | Missing dark mode | ✅ Added dark:* classes |
-| `InlineError` | Missing dark mode | ✅ Added dark:* classes |
-| `admin/Toast` | Missing dark mode | ✅ Added dark:* classes |
-| `common/SearchBar` | Missing dark mode | ✅ Added dark:* classes |
+| Component          | Issue             | Fix Applied              |
+| ------------------ | ----------------- | ------------------------ |
+| `ErrorMessage`     | Missing dark mode | ✅ Added dark:\* classes |
+| `InlineError`      | Missing dark mode | ✅ Added dark:\* classes |
+| `admin/Toast`      | Missing dark mode | ✅ Added dark:\* classes |
+| `common/SearchBar` | Missing dark mode | ✅ Added dark:\* classes |
 
 ### Components Already Correct
 
-| Component | Status |
-|-----------|--------|
+| Component          | Status           |
+| ------------------ | ---------------- |
 | `layout/SearchBar` | ✅ Has dark mode |
-| `common/Toast` | ✅ Has dark mode |
+| `common/Toast`     | ✅ Has dark mode |
 | `ProductQuickView` | ✅ Has dark mode |
 | `AuctionQuickView` | ✅ Has dark mode |
-| `BaseCard` | ✅ Has dark mode |
-| `Card` | ✅ Has dark mode |
-| `MobileDataTable` | ✅ Has dark mode |
+| `BaseCard`         | ✅ Has dark mode |
+| `Card`             | ✅ Has dark mode |
+| `MobileDataTable`  | ✅ Has dark mode |
 
 ## Duplicate Components to Merge
 
 ### UI Components
 
-| Keep               | Remove/Merge       | Reason                          | Status  |
-| ------------------ | ------------------ | ------------------------------- | ------- |
-| `Input`            | `MobileInput`      | Use responsive design instead   | ✅ Done |
-| `Textarea`         | `MobileTextarea`   | Use responsive design instead   | ✅ Done |
-| `Select`           | `MobileFormSelect` | Use responsive design instead   | ✅ Done |
-| `BaseCard`         | `Card`             | **Audit: Keep Both** - Different purposes | ✅ N/A |
-| `DataTable`        | `ResponsiveTable`  | **Audit: Keep Both** - Different purposes | ✅ N/A |
-| `LoadingSkeleton`  | `Skeleton`         | **Audit: Keep Both** - Different use cases | ✅ N/A |
-| `ErrorState`       | `ErrorMessage`     | Added dark mode to ErrorMessage | ✅ Done |
-| `Toast`            | `Admin/Toast`      | Added dark mode to admin Toast | ✅ Done |
-| `SearchBar`        | `Layout/SearchBar` | Added dark mode to common SearchBar | ✅ Done |
-| `ProductQuickView` | `AuctionQuickView` | **Audit: Keep Both** - Different features | ✅ N/A |
+| Keep               | Remove/Merge       | Reason                                     | Status  |
+| ------------------ | ------------------ | ------------------------------------------ | ------- |
+| `Input`            | `MobileInput`      | Use responsive design instead              | ✅ Done |
+| `Textarea`         | `MobileTextarea`   | Use responsive design instead              | ✅ Done |
+| `Select`           | `MobileFormSelect` | Use responsive design instead              | ✅ Done |
+| `BaseCard`         | `Card`             | **Audit: Keep Both** - Different purposes  | ✅ N/A  |
+| `DataTable`        | `ResponsiveTable`  | **Audit: Keep Both** - Different purposes  | ✅ N/A  |
+| `LoadingSkeleton`  | `Skeleton`         | **Audit: Keep Both** - Different use cases | ✅ N/A  |
+| `ErrorState`       | `ErrorMessage`     | Added dark mode to ErrorMessage            | ✅ Done |
+| `Toast`            | `Admin/Toast`      | Added dark mode to admin Toast             | ✅ Done |
+| `SearchBar`        | `Layout/SearchBar` | Added dark mode to common SearchBar        | ✅ Done |
+| `ProductQuickView` | `AuctionQuickView` | **Audit: Keep Both** - Different features  | ✅ N/A  |
 
 ### Filter Components
 
