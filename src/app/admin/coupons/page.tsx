@@ -19,10 +19,23 @@ import {
   toInlineFields,
 } from "@/constants/form-fields";
 import { toast } from "@/components/admin/Toast";
-import { Eye, Edit, Trash2, Plus, Copy } from "lucide-react";
+import {
+  Eye,
+  Edit,
+  Trash2,
+  Plus,
+  Copy,
+  Tag,
+  Calendar,
+  Percent,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { useIsMobile } from "@/hooks/useMobile";
 
 export default function AdminCouponsPage() {
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [coupons, setCoupons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
@@ -252,8 +265,200 @@ export default function AdminCouponsPage() {
               />
             )}
 
-            {/* Coupons Table */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            {/* Mobile Coupon Cards */}
+            {isMobile && (
+              <div className="space-y-3 lg:hidden">
+                {loading ? (
+                  <div className="bg-white rounded-lg p-8 text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+                  </div>
+                ) : coupons.length === 0 ? (
+                  <div className="bg-white rounded-lg p-8 text-center text-gray-500">
+                    <p>No coupons found</p>
+                    <button
+                      onClick={() => router.push("/admin/coupons/create")}
+                      className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                    >
+                      Create First Coupon
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {coupons.map((coupon) => {
+                      const isExpired = new Date(coupon.validTo) < new Date();
+                      return (
+                        <div
+                          key={coupon.id}
+                          className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3"
+                        >
+                          {/* Header with code and checkbox */}
+                          <div className="flex items-start gap-3">
+                            <TableCheckbox
+                              checked={selectedCoupons.has(coupon.id)}
+                              onChange={(checked) => {
+                                const newSelected = new Set(selectedCoupons);
+                                if (checked) {
+                                  newSelected.add(coupon.id);
+                                } else {
+                                  newSelected.delete(coupon.id);
+                                }
+                                setSelectedCoupons(newSelected);
+                              }}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <Tag className="h-4 w-4 text-indigo-600" />
+                                <span className="font-mono font-bold text-lg text-gray-900 dark:text-white">
+                                  {coupon.code}
+                                </span>
+                                <button
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(coupon.code);
+                                    toast.success("Code copied!");
+                                  }}
+                                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                                >
+                                  <Copy className="h-4 w-4 text-gray-400" />
+                                </button>
+                              </div>
+                              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                {coupon.description || "No description"}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Status badges */}
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span
+                              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                coupon.isActive && !isExpired
+                                  ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                                  : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                              }`}
+                            >
+                              {coupon.isActive && !isExpired
+                                ? "Active"
+                                : "Inactive"}
+                            </span>
+                            {isExpired && (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                Expired
+                              </span>
+                            )}
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400">
+                              <Percent className="h-3 w-3" />
+                              {coupon.type === "percentage"
+                                ? `${coupon.value}% off`
+                                : `₹${coupon.value} off`}
+                            </span>
+                          </div>
+
+                          {/* Info grid */}
+                          <div className="grid grid-cols-2 gap-2 text-sm border-t border-gray-100 dark:border-gray-700 pt-3">
+                            <div>
+                              <span className="text-gray-500 dark:text-gray-400">
+                                Uses:
+                              </span>{" "}
+                              <span className="text-gray-900 dark:text-white">
+                                {coupon.usageCount || 0} /{" "}
+                                {coupon.maxUses || "∞"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3 text-gray-400" />
+                              <span className="text-gray-500 dark:text-gray-400">
+                                Expires:
+                              </span>{" "}
+                              <span
+                                className={
+                                  isExpired
+                                    ? "text-red-600"
+                                    : "text-gray-900 dark:text-white"
+                                }
+                              >
+                                {new Date(coupon.validTo).toLocaleDateString(
+                                  "en-IN",
+                                  {
+                                    day: "numeric",
+                                    month: "short",
+                                  }
+                                )}
+                              </span>
+                            </div>
+                            {coupon.minOrderValue && (
+                              <div className="col-span-2">
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Min order:
+                                </span>{" "}
+                                <span className="text-gray-900 dark:text-white">
+                                  ₹{coupon.minOrderValue}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                            <button
+                              onClick={() =>
+                                router.push(`/admin/coupons/${coupon.id}/edit`)
+                              }
+                              className="flex-1 py-2 px-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg text-sm font-medium flex items-center justify-center gap-2"
+                            >
+                              <Edit className="h-4 w-4" />
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(coupon.id)}
+                              className="flex-1 py-2 px-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-medium flex items-center justify-center gap-2"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Mobile Pagination */}
+                    {totalPages > 1 && (
+                      <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                        <button
+                          onClick={() =>
+                            setCurrentPage((p) => Math.max(1, p - 1))
+                          }
+                          disabled={currentPage === 1 || loading}
+                          className="flex items-center gap-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg disabled:opacity-50 text-sm"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                          Prev
+                        </button>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                          onClick={() =>
+                            setCurrentPage((p) => Math.min(totalPages, p + 1))
+                          }
+                          disabled={currentPage === totalPages || loading}
+                          className="flex items-center gap-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg disabled:opacity-50 text-sm"
+                        >
+                          Next
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Coupons Table - Desktop Only */}
+            <div
+              className={`bg-white rounded-lg shadow overflow-hidden ${
+                isMobile ? "hidden" : ""
+              }`}
+            >
               {loading ? (
                 <div className="p-8 text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>

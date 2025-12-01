@@ -1,17 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
   Check,
   Info,
-  Gavel,
-  DollarSign,
-  Clock,
-  Image as ImageIcon,
-  FileText,
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
@@ -21,28 +16,35 @@ import DateTimePicker from "@/components/common/DateTimePicker";
 import { auctionsService } from "@/services/auctions.service";
 import { categoriesService } from "@/services/categories.service";
 import { mediaService } from "@/services/media.service";
+import { WizardSteps } from "@/components/forms/WizardSteps";
+import { WizardActionBar } from "@/components/forms/WizardActionBar";
 import type { CategoryFE } from "@/types/frontend/category.types";
 
 // Step definitions
 const STEPS = [
   {
-    id: 1,
+    id: "basic",
     name: "Basic Info",
-    icon: Gavel,
     description: "Title, category & description",
   },
   {
-    id: 2,
+    id: "bidding",
     name: "Bidding Rules",
-    icon: DollarSign,
     description: "Pricing & bid settings",
   },
-  { id: 3, name: "Schedule", icon: Clock, description: "Start & end times" },
-  { id: 4, name: "Media", icon: ImageIcon, description: "Images & videos" },
   {
-    id: 5,
+    id: "schedule",
+    name: "Schedule",
+    description: "Start & end times",
+  },
+  {
+    id: "media",
+    name: "Media",
+    description: "Images & videos",
+  },
+  {
+    id: "review",
     name: "Review & Publish",
-    icon: FileText,
     description: "Review & publish auction",
   },
 ];
@@ -67,8 +69,9 @@ const AUCTION_TYPES = [
 
 export default function CreateAuctionWizardPage() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
   const [categories, setCategories] = useState<CategoryFE[]>([]);
   const [slugError, setSlugError] = useState("");
@@ -78,6 +81,8 @@ export default function CreateAuctionWizardPage() {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
     {}
   );
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [errorSteps, setErrorSteps] = useState<number[]>([]);
 
   // Form data
   const [formData, setFormData] = useState({
@@ -150,89 +155,156 @@ export default function CreateAuctionWizardPage() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const validateStep = (step: number): boolean => {
-    switch (step) {
-      case 1:
-        if (!formData.title.trim()) {
-          setError("Title is required");
-          return false;
-        }
-        if (!formData.slug.trim()) {
-          setError("URL slug is required");
-          return false;
-        }
-        if (slugError) {
-          setError("Please fix the URL error");
-          return false;
-        }
-        if (!formData.category) {
-          setError("Category is required");
-          return false;
-        }
-        break;
-      case 2:
-        if (!formData.startingBid || parseFloat(formData.startingBid) <= 0) {
-          setError("Starting bid must be greater than 0");
-          return false;
-        }
-        if (!formData.bidIncrement || parseFloat(formData.bidIncrement) <= 0) {
-          setError("Bid increment must be greater than 0");
-          return false;
-        }
-        if (
-          formData.reservePrice &&
-          parseFloat(formData.reservePrice) < parseFloat(formData.startingBid)
-        ) {
-          setError(
-            "Reserve price must be greater than or equal to starting bid"
-          );
-          return false;
-        }
-        if (
-          formData.buyNowPrice &&
-          parseFloat(formData.buyNowPrice) <= parseFloat(formData.startingBid)
-        ) {
-          setError("Buy now price must be greater than starting bid");
-          return false;
-        }
-        break;
-      case 3:
-        if (formData.endTime <= formData.startTime) {
-          setError("End time must be after start time");
-          return false;
-        }
-        const duration =
-          (formData.endTime.getTime() - formData.startTime.getTime()) /
-          (1000 * 60 * 60);
-        if (duration < 1) {
-          setError("Auction must run for at least 1 hour");
-          return false;
-        }
-        break;
-      case 4:
-        if (formData.images.length === 0) {
-          setError("At least one image is required");
-          return false;
-        }
-        break;
-    }
+  const validateStep = useCallback(
+    (step: number): string[] => {
+      const errors: string[] = [];
+      switch (step) {
+        case 0:
+          if (!formData.title.trim()) errors.push("Title is required");
+          if (!formData.slug.trim()) errors.push("URL slug is required");
+          if (slugError) errors.push("Please fix the URL error");
+          if (!formData.category) errors.push("Category is required");
+          break;
+        case 1:
+          if (!formData.startingBid || parseFloat(formData.startingBid) <= 0) {
+            errors.push("Starting bid must be greater than 0");
+          }
+          if (
+            !formData.bidIncrement ||
+            parseFloat(formData.bidIncrement) <= 0
+          ) {
+            errors.push("Bid increment must be greater than 0");
+          }
+          if (
+            formData.reservePrice &&
+            parseFloat(formData.reservePrice) < parseFloat(formData.startingBid)
+          ) {
+            errors.push("Reserve price must be >= starting bid");
+          }
+          if (
+            formData.buyNowPrice &&
+            parseFloat(formData.buyNowPrice) <= parseFloat(formData.startingBid)
+          ) {
+            errors.push("Buy now price must be > starting bid");
+          }
+          break;
+        case 2:
+          if (formData.endTime <= formData.startTime) {
+            errors.push("End time must be after start time");
+          }
+          const duration =
+            (formData.endTime.getTime() - formData.startTime.getTime()) /
+            (1000 * 60 * 60);
+          if (duration < 1) {
+            errors.push("Auction must run for at least 1 hour");
+          }
+          break;
+        case 3:
+          if (formData.images.length === 0) {
+            errors.push("At least one image is required");
+          }
+          break;
+      }
+      return errors;
+    },
+    [formData, slugError]
+  );
+
+  const handleValidate = useCallback(() => {
+    const newErrorSteps: number[] = [];
+    const allErrors: Record<string, string[]> = {};
+
+    STEPS.forEach((step, index) => {
+      const stepErrors = validateStep(index);
+      if (stepErrors.length > 0) {
+        newErrorSteps.push(index);
+        allErrors[step.name] = stepErrors;
+      }
+    });
+
+    setErrorSteps(newErrorSteps);
     setError("");
-    return true;
-  };
+
+    if (Object.keys(allErrors).length === 0) {
+      toast.success("All fields are valid! Ready to submit.");
+      return true;
+    } else {
+      const errorSummary = Object.entries(allErrors)
+        .map(
+          ([step, errors]) =>
+            `${errors.length} error${errors.length > 1 ? "s" : ""} in ${step}`
+        )
+        .join(", ");
+      toast.error(`Please fix: ${errorSummary}`);
+      return false;
+    }
+  }, [validateStep]);
 
   const nextStep = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
+    const stepErrors = validateStep(currentStep);
+    if (stepErrors.length === 0) {
+      // Mark current step as completed
+      if (!completedSteps.includes(currentStep)) {
+        setCompletedSteps([...completedSteps, currentStep]);
+      }
+      setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
+      setError("");
+    } else {
+      setError(stepErrors[0]);
     }
   };
 
   const prevStep = () => {
     setError("");
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+  };
+
+  const handleStepClick = (index: number) => {
+    setError("");
+    setCurrentStep(index);
+  };
+
+  // Save as draft
+  const handleSaveDraft = async () => {
+    try {
+      setIsSaving(true);
+      setError("");
+
+      const auctionData: any = {
+        name: formData.title,
+        slug: formData.slug,
+        categoryId: formData.category,
+        description: formData.description,
+        startingBid: parseFloat(formData.startingBid) || 0,
+        reservePrice: formData.reservePrice
+          ? parseFloat(formData.reservePrice)
+          : undefined,
+        bidIncrement: parseFloat(formData.bidIncrement),
+        buyoutPrice: formData.buyNowPrice
+          ? parseFloat(formData.buyNowPrice)
+          : undefined,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        status: "draft",
+        images: formData.images,
+        videos: formData.videos,
+        featured: formData.featured,
+      };
+
+      await auctionsService.create(auctionData);
+      toast.success("Draft saved successfully!");
+      router.push("/seller/auctions");
+    } catch (err: any) {
+      console.error("Error saving draft:", err);
+      setError(err.message || "Failed to save draft");
+      toast.error("Failed to save draft");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(currentStep)) return;
+    if (!handleValidate()) return;
 
     try {
       setIsSubmitting(true);
@@ -260,14 +332,25 @@ export default function CreateAuctionWizardPage() {
       };
 
       await auctionsService.create(auctionData);
+      toast.success("Auction created successfully!");
       router.push("/seller/auctions?created=true");
     } catch (err: any) {
       console.error("Error creating auction:", err);
       setError(err.message || "Failed to create auction");
+      toast.error("Failed to create auction");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Check if form has minimum required fields
+  const isFormValid = Boolean(
+    formData.title.trim() &&
+    formData.slug.trim() &&
+    formData.category &&
+    parseFloat(formData.startingBid) > 0 &&
+    formData.images.length > 0
+  );
 
   const duration =
     formData.endTime && formData.startTime
@@ -279,59 +362,34 @@ export default function CreateAuctionWizardPage() {
       : 0;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 pb-20">
+    <div className="mx-auto max-w-4xl space-y-6 pb-24">
       {/* Header */}
       <div>
         <Link
           href="/seller/auctions"
-          className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+          className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Auctions
         </Link>
-        <h1 className="mt-4 text-2xl font-bold text-gray-900">
+        <h1 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
           Create New Auction
         </h1>
-        <p className="mt-1 text-sm text-gray-600">
-          Step {currentStep} of {STEPS.length}: {STEPS[currentStep - 1].name}
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          Step {currentStep + 1} of {STEPS.length}: {STEPS[currentStep].name}
         </p>
       </div>
 
-      {/* Progress Bar */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <div className="flex items-center justify-between">
-          {STEPS.map((step, index) => (
-            <div key={step.id} className="flex items-center">
-              <div className="flex flex-col items-center">
-                <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors ${
-                    currentStep > step.id
-                      ? "border-green-500 bg-green-500 text-white"
-                      : currentStep === step.id
-                      ? "border-primary bg-primary text-white"
-                      : "border-gray-300 bg-white text-gray-400"
-                  }`}
-                >
-                  {currentStep > step.id ? (
-                    <Check className="h-5 w-5" />
-                  ) : (
-                    <step.icon className="h-5 w-5" />
-                  )}
-                </div>
-                <span className="mt-2 hidden text-xs font-medium text-gray-700 sm:block">
-                  {step.name}
-                </span>
-              </div>
-              {index < STEPS.length - 1 && (
-                <div
-                  className={`mx-2 h-0.5 w-12 transition-colors sm:w-20 ${
-                    currentStep > step.id ? "bg-green-500" : "bg-gray-300"
-                  }`}
-                />
-              )}
-            </div>
-          ))}
-        </div>
+      {/* Mobile-friendly Progress Steps */}
+      <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0 z-30">
+        <WizardSteps
+          steps={STEPS}
+          currentStep={currentStep}
+          completedSteps={completedSteps}
+          errorSteps={errorSteps}
+          onStepClick={handleStepClick}
+          variant="numbered"
+        />
       </div>
 
       {/* Error Message */}
@@ -345,9 +403,9 @@ export default function CreateAuctionWizardPage() {
       )}
 
       {/* Step Content */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
+      <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
         {/* Step 1: Basic Info */}
-        {currentStep === 1 && (
+        {currentStep === 0 && (
           <div className="space-y-6">
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -498,7 +556,7 @@ export default function CreateAuctionWizardPage() {
         )}
 
         {/* Step 2: Bidding Rules */}
-        {currentStep === 2 && (
+        {currentStep === 1 && (
           <div className="space-y-6">
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -645,7 +703,7 @@ export default function CreateAuctionWizardPage() {
         )}
 
         {/* Step 3: Schedule */}
-        {currentStep === 3 && (
+        {currentStep === 2 && (
           <div className="space-y-6">
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -744,7 +802,7 @@ export default function CreateAuctionWizardPage() {
         )}
 
         {/* Step 4: Media */}
-        {currentStep === 4 && (
+        {currentStep === 3 && (
           <div className="space-y-6">
             {/* Images Upload */}
             <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
@@ -1031,7 +1089,7 @@ export default function CreateAuctionWizardPage() {
         )}
 
         {/* Step 5: Review & Publish */}
-        {currentStep === 5 && (
+        {currentStep === 4 && (
           <div className="space-y-6">
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -1174,18 +1232,18 @@ export default function CreateAuctionWizardPage() {
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4">
+      <div className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
         <button
           type="button"
           onClick={prevStep}
-          disabled={currentStep === 1}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={currentStep === 0}
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ArrowLeft className="h-4 w-4" />
           Previous
         </button>
 
-        {currentStep < STEPS.length ? (
+        {currentStep < STEPS.length - 1 && (
           <button
             type="button"
             onClick={nextStep}
@@ -1194,18 +1252,21 @@ export default function CreateAuctionWizardPage() {
             Next
             <ArrowRight className="h-4 w-4" />
           </button>
-        ) : (
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isSubmitting || isValidatingSlug}
-            className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-            {isSubmitting ? "Creating..." : "Create Auction"}
-          </button>
         )}
       </div>
+
+      {/* Sticky Action Bar */}
+      <WizardActionBar
+        onSaveDraft={handleSaveDraft}
+        onValidate={handleValidate}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        isSaving={isSaving}
+        isValid={isFormValid}
+        submitLabel="Create Auction"
+        showSaveDraft={true}
+        showValidate={true}
+      />
     </div>
   );
 }

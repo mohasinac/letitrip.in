@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
+import { useIsMobile } from "@/hooks/useMobile";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800",
@@ -15,6 +16,7 @@ const statusColors = {
 
 export default function AdminTicketsPage() {
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [tickets, setTickets] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -146,45 +148,27 @@ export default function AdminTicketsPage() {
             <p className="text-gray-600">No tickets found</p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg border overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ticket
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Priority
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+          <>
+            {/* Mobile Cards */}
+            {isMobile && (
+              <div className="lg:hidden space-y-4 mb-4">
                 {tickets.map((ticket) => (
-                  <tr
+                  <div
                     key={ticket.id}
-                    className="hover:bg-gray-50 cursor-pointer"
                     onClick={() => router.push(`/admin/tickets/${ticket.id}`)}
+                    className="bg-white dark:bg-gray-800 rounded-lg border p-4 cursor-pointer hover:shadow-md transition-shadow"
                   >
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {ticket.subject}
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-gray-900 dark:text-white truncate">
+                          {ticket.subject}
+                        </h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {ticket.category}
+                        </p>
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {ticket.category}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${
                           statusColors[
                             ticket.status as keyof typeof statusColors
                           ]
@@ -192,31 +176,128 @@ export default function AdminTicketsPage() {
                       >
                         {ticket.status}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-gray-900">
-                        {ticket.priority}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {new Date(ticket.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/admin/tickets/${ticket.id}`);
-                        }}
-                        className="text-yellow-600 hover:text-yellow-900"
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3 text-sm mb-3">
+                      <div className="flex items-center gap-1">
+                        <span className="text-gray-500 dark:text-gray-400">
+                          Priority:
+                        </span>
+                        <span
+                          className={`font-medium ${
+                            ticket.priority === "urgent"
+                              ? "text-red-600"
+                              : ticket.priority === "high"
+                              ? "text-orange-600"
+                              : ticket.priority === "medium"
+                              ? "text-yellow-600"
+                              : "text-gray-600"
+                          }`}
+                        >
+                          {ticket.priority}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="text-gray-500 dark:text-gray-400">
+                          Created:
+                        </span>
+                        <span className="text-gray-900 dark:text-white">
+                          {new Date(ticket.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/admin/tickets/${ticket.id}`);
+                      }}
+                      className="w-full py-2 text-center text-yellow-600 hover:text-yellow-700 font-medium border border-yellow-300 rounded-lg hover:bg-yellow-50 transition-colors"
+                    >
+                      View Details
+                    </button>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
+            )}
+
+            {/* Desktop Table */}
+            <div
+              className={`bg-white rounded-lg border overflow-hidden ${
+                isMobile ? "hidden" : ""
+              }`}
+            >
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Ticket
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Priority
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Created
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {tickets.map((ticket) => (
+                    <tr
+                      key={ticket.id}
+                      className="hover:bg-gray-50 cursor-pointer"
+                      onClick={() => router.push(`/admin/tickets/${ticket.id}`)}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-medium text-gray-900">
+                          {ticket.subject}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {ticket.category}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            statusColors[
+                              ticket.status as keyof typeof statusColors
+                            ]
+                          }`}
+                        >
+                          {ticket.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-gray-900">
+                          {ticket.priority}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {new Date(ticket.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm font-medium">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/admin/tickets/${ticket.id}`);
+                          }}
+                          className="text-yellow-600 hover:text-yellow-900"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </main>
     </AuthGuard>

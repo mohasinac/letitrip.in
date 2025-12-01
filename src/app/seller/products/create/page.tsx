@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
@@ -9,20 +9,37 @@ import SlugInput from "@/components/common/SlugInput";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import { productsService } from "@/services/products.service";
 import { mediaService } from "@/services/media.service";
+import { WizardSteps } from "@/components/forms/WizardSteps";
+import { WizardActionBar } from "@/components/forms/WizardActionBar";
 
 const STEPS = [
-  { id: 1, name: "Basic Info", description: "Name, category, and brand" },
-  { id: 2, name: "Pricing & Stock", description: "Price, stock, and weight" },
-  { id: 3, name: "Product Details", description: "Condition, features, specs" },
-  { id: 4, name: "Media", description: "Images and videos" },
-  { id: 5, name: "Shipping & Policies", description: "Shipping and returns" },
-  { id: 6, name: "SEO & Publish", description: "Metadata and publish" },
+  { id: "basic", name: "Basic Info", description: "Name, category, and brand" },
+  {
+    id: "pricing",
+    name: "Pricing & Stock",
+    description: "Price, stock, and weight",
+  },
+  {
+    id: "details",
+    name: "Product Details",
+    description: "Condition, features, specs",
+  },
+  { id: "media", name: "Media", description: "Images and videos" },
+  {
+    id: "shipping",
+    name: "Shipping & Policies",
+    description: "Shipping and returns",
+  },
+  { id: "seo", name: "SEO & Publish", description: "Metadata and publish" },
 ];
 
 export default function CreateProductPage() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [errorSteps, setErrorSteps] = useState<number[]>([]);
   const [formData, setFormData] = useState({
     // Step 1: Basic Info
     name: "",
@@ -73,18 +90,115 @@ export default function CreateProductPage() {
   }>({});
 
   const handleNext = () => {
-    if (currentStep < STEPS.length) {
+    if (currentStep < STEPS.length - 1) {
+      // Mark current step as completed
+      if (!completedSteps.includes(currentStep)) {
+        setCompletedSteps([...completedSteps, currentStep]);
+      }
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
+    if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
+  const handleStepClick = (index: number) => {
+    setCurrentStep(index);
+  };
+
+  // Validate a specific step
+  const validateStep = useCallback(
+    (stepIndex: number): string[] => {
+      const errors: string[] = [];
+
+      switch (stepIndex) {
+        case 0: // Basic Info
+          if (!formData.name.trim()) errors.push("Product name is required");
+          if (!formData.slug.trim()) errors.push("URL slug is required");
+          if (!formData.categoryId) errors.push("Category is required");
+          if (!formData.sku.trim()) errors.push("SKU is required");
+          break;
+        case 1: // Pricing & Stock
+          if (formData.price <= 0) errors.push("Price must be greater than 0");
+          if (formData.stockCount < 0) errors.push("Stock cannot be negative");
+          break;
+        case 3: // Media
+          if (formData.images.length === 0)
+            errors.push("At least one image is required");
+          break;
+      }
+
+      return errors;
+    },
+    [formData]
+  );
+
+  // Validate all steps
+  const handleValidate = useCallback(() => {
+    const newErrorSteps: number[] = [];
+    const allErrors: Record<string, string[]> = {};
+
+    STEPS.forEach((step, index) => {
+      const stepErrors = validateStep(index);
+      if (stepErrors.length > 0) {
+        newErrorSteps.push(index);
+        allErrors[step.name] = stepErrors;
+      }
+    });
+
+    setErrorSteps(newErrorSteps);
+
+    if (Object.keys(allErrors).length === 0) {
+      toast.success("All fields are valid! Ready to submit.");
+      return true;
+    } else {
+      const errorSummary = Object.entries(allErrors)
+        .map(
+          ([step, errors]) =>
+            `${errors.length} error${errors.length > 1 ? "s" : ""} in ${step}`
+        )
+        .join(", ");
+      toast.error(`Please fix: ${errorSummary}`);
+      return false;
+    }
+  }, [validateStep]);
+
+  // Save as draft
+  const handleSaveDraft = async () => {
+    try {
+      setIsSaving(true);
+
+      const result = await productsService.create({
+        ...formData,
+        status: "draft",
+        countryOfOrigin: "India",
+        lowStockThreshold: 5,
+        isReturnable: true,
+        returnWindowDays: 7,
+      } as any);
+
+      toast.success("Draft saved successfully!");
+
+      if (result.slug) {
+        router.push(`/seller/products/${result.slug}/edit`);
+      }
+    } catch (error) {
+      console.error("Failed to save draft:", error);
+      toast.error("Failed to save draft. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleSubmit = async () => {
+    // Validate all steps before submitting
+    if (!handleValidate()) {
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -95,6 +209,8 @@ export default function CreateProductPage() {
         isReturnable: true,
         returnWindowDays: 7,
       } as any);
+
+      toast.success("Product created successfully!");
 
       // Redirect to edit page with the slug
       if (result.slug) {
@@ -110,79 +226,52 @@ export default function CreateProductPage() {
     }
   };
 
+  // Check if form has minimum required fields
+  const isFormValid = Boolean(
+    formData.name.trim() &&
+    formData.slug.trim() &&
+    formData.categoryId &&
+    formData.sku.trim() &&
+    formData.price > 0 &&
+    formData.images.length > 0
+  );
+
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 pb-24">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link
           href="/seller/products"
-          className="rounded-lg p-2 text-gray-600 hover:bg-gray-100"
+          className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Create Product</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Create Product
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
             Add a new product to your shop
           </p>
         </div>
       </div>
 
-      {/* Steps */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <nav aria-label="Progress">
-          <ol className="flex items-center justify-between">
-            {STEPS.map((step, index) => (
-              <li
-                key={step.id}
-                className={`relative flex flex-col items-center ${
-                  index !== STEPS.length - 1 ? "flex-1" : ""
-                }`}
-              >
-                {index !== STEPS.length - 1 && (
-                  <div
-                    className={`absolute left-1/2 top-5 h-0.5 w-full ${
-                      currentStep > step.id ? "bg-blue-600" : "bg-gray-300"
-                    }`}
-                  />
-                )}
-                <div
-                  className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 ${
-                    currentStep > step.id
-                      ? "border-blue-600 bg-blue-600 text-white"
-                      : currentStep === step.id
-                      ? "border-blue-600 bg-white text-blue-600"
-                      : "border-gray-300 bg-white text-gray-400"
-                  }`}
-                >
-                  {currentStep > step.id ? (
-                    <Check className="h-5 w-5" />
-                  ) : (
-                    <span>{step.id}</span>
-                  )}
-                </div>
-                <div className="mt-2 text-center">
-                  <div
-                    className={`text-sm font-medium ${
-                      currentStep >= step.id ? "text-gray-900" : "text-gray-500"
-                    }`}
-                  >
-                    {step.name}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {step.description}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </nav>
+      {/* Mobile-friendly Steps */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 sticky top-0 z-30">
+        <WizardSteps
+          steps={STEPS}
+          currentStep={currentStep}
+          completedSteps={completedSteps}
+          errorSteps={errorSteps}
+          onStepClick={handleStepClick}
+          variant="numbered"
+        />
       </div>
 
       {/* Form Content */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         {/* Step 1: Basic Info */}
-        {currentStep === 1 && (
+        {currentStep === 0 && (
           <div className="space-y-4">
             <div>
               <label
@@ -278,7 +367,7 @@ export default function CreateProductPage() {
         )}
 
         {/* Step 2: Pricing & Stock */}
-        {currentStep === 2 && (
+        {currentStep === 1 && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -416,7 +505,7 @@ export default function CreateProductPage() {
         )}
 
         {/* Step 3: Product Details */}
-        {currentStep === 3 && (
+        {currentStep === 2 && (
           <div className="space-y-4">
             <div>
               <label
@@ -645,7 +734,7 @@ export default function CreateProductPage() {
         )}
 
         {/* Step 4: Media */}
-        {currentStep === 4 && (
+        {currentStep === 3 && (
           <div className="space-y-4">
             <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
               <div className="mx-auto w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
@@ -935,7 +1024,7 @@ export default function CreateProductPage() {
         )}
 
         {/* Step 5: Shipping & Policies */}
-        {currentStep === 5 && (
+        {currentStep === 4 && (
           <div className="space-y-4">
             <div>
               <label
@@ -1002,7 +1091,7 @@ export default function CreateProductPage() {
         )}
 
         {/* Step 6: SEO & Publish */}
-        {currentStep === 6 && (
+        {currentStep === 5 && (
           <div className="space-y-4">
             <div className="rounded-lg bg-green-50 p-4 mb-4">
               <h3 className="text-sm font-medium text-green-900">
@@ -1163,18 +1252,18 @@ export default function CreateProductPage() {
         )}
 
         {/* Navigation Buttons */}
-        <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
+        <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
           <button
             type="button"
             onClick={handlePrevious}
-            disabled={currentStep === 1}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={currentStep === 0}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ArrowLeft className="h-4 w-4" />
             Previous
           </button>
 
-          {currentStep < STEPS.length ? (
+          {currentStep < STEPS.length - 1 && (
             <button
               type="button"
               onClick={handleNext}
@@ -1183,19 +1272,22 @@ export default function CreateProductPage() {
               Next
               <ArrowRight className="h-4 w-4" />
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={loading}
-              className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
-            >
-              {loading ? "Creating..." : "Create Product"}
-              <Check className="h-4 w-4" />
-            </button>
           )}
         </div>
       </div>
+
+      {/* Sticky Action Bar */}
+      <WizardActionBar
+        onSaveDraft={handleSaveDraft}
+        onValidate={handleValidate}
+        onSubmit={handleSubmit}
+        isSubmitting={loading}
+        isSaving={isSaving}
+        isValid={isFormValid}
+        submitLabel="Create Product"
+        showSaveDraft={true}
+        showValidate={true}
+      />
     </div>
   );
 }

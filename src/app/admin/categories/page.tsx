@@ -33,6 +33,7 @@ import {
   toInlineFields,
 } from "@/constants/form-fields";
 import { validateForm } from "@/lib/form-validation";
+import { useIsMobile } from "@/hooks/useMobile";
 
 interface Category {
   id: string;
@@ -51,6 +52,7 @@ interface Category {
 
 export default function CategoriesPage() {
   const { user, isAdmin } = useAuth();
+  const isMobile = useIsMobile();
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -364,244 +366,355 @@ export default function CategoriesPage() {
 
       {/* Table View */}
       {view === "table" && (
-        <div className="rounded-lg border border-gray-200 bg-white">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-gray-200 bg-gray-50">
-                <tr>
-                  <th className="w-12 px-6 py-3">
-                    <TableCheckbox
-                      checked={
-                        selectedIds.length === filteredCategories.length &&
-                        filteredCategories.length > 0
-                      }
-                      indeterminate={
-                        selectedIds.length > 0 &&
-                        selectedIds.length < filteredCategories.length
-                      }
-                      onChange={(checked) => {
-                        setSelectedIds(
-                          checked ? filteredCategories.map((c) => c.id) : []
-                        );
-                      }}
-                      aria-label="Select all categories"
-                    />
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Parent
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Flags
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {/* Quick Create Row */}
-                <QuickCreateRow
-                  fields={fields}
-                  onSave={async (values) => {
-                    try {
-                      // Validate form fields
-                      const fieldsToValidate = getFieldsForContext(
-                        CATEGORY_FIELDS,
-                        "table"
-                      );
-                      const { isValid } = validateForm(
-                        values,
-                        fieldsToValidate
-                      );
-
-                      if (!isValid) {
-                        throw new Error("Please fix validation errors");
-                      }
-
-                      await categoriesService.create({
-                        name: values.name,
-                        slug: values.name.toLowerCase().replace(/\s+/g, "-"),
-                        parentId: values.parent_id || null,
-                        image: values.image || "",
-                        featured: values.is_featured || false,
-                        isActive: values.is_active !== false,
-                        sortOrder: 0,
-                      } as any);
-                      await loadCategories();
-                    } catch (error) {
-                      console.error("Failed to create category:", error);
-                      throw error;
-                    }
-                  }}
-                  resourceName="category"
-                  defaultValues={{
-                    is_active: true,
-                    is_featured: false,
-                    show_on_homepage: false,
-                    parent_id: "",
-                  }}
-                />
-
-                {/* Category Rows */}
-                {filteredCategories.map((category) => {
-                  const isEditing = editingId === category.id;
-                  const parentCategory = categories.find(
-                    (c) => c.id === category.parent_id
-                  );
-
-                  if (isEditing) {
-                    return (
-                      <InlineEditRow
-                        key={category.id}
-                        fields={fields}
-                        initialValues={{
-                          image: category.image || "",
-                          name: category.name,
-                          parent_id: category.parent_id || "",
-                          is_featured: category.is_featured,
-                          show_on_homepage: category.show_on_homepage,
-                          is_active: category.is_active,
+        <>
+          {/* Mobile Cards */}
+          {isMobile && (
+            <div className="lg:hidden space-y-4 mb-4">
+              {filteredCategories.map((category) => {
+                const parentCategory = categories.find(
+                  (c) => c.id === category.parent_id
+                );
+                return (
+                  <div
+                    key={category.id}
+                    className="bg-white dark:bg-gray-800 rounded-lg border p-4"
+                  >
+                    <div className="flex items-start gap-3 mb-3">
+                      <TableCheckbox
+                        checked={selectedIds.includes(category.id)}
+                        onChange={(checked) => {
+                          setSelectedIds((prev) =>
+                            checked
+                              ? [...prev, category.id]
+                              : prev.filter((id) => id !== category.id)
+                          );
                         }}
-                        onSave={async (values) => {
-                          try {
-                            // Validate form fields
-                            const fieldsToValidate = getFieldsForContext(
-                              CATEGORY_FIELDS,
-                              "table"
-                            );
-                            const { isValid } = validateForm(
-                              values,
-                              fieldsToValidate
-                            );
-
-                            if (!isValid) {
-                              throw new Error("Please fix validation errors");
-                            }
-
-                            await categoriesService.update(category.slug, {
-                              name: values.name,
-                              parentId: values.parent_id || null,
-                              image: values.image || undefined,
-                              featured: values.is_featured,
-                              isActive: values.is_active,
-                            });
-                            await loadCategories();
-                            setEditingId(null);
-                          } catch (error) {
-                            console.error("Failed to update category:", error);
-                            throw error;
-                          }
-                        }}
-                        onCancel={() => setEditingId(null)}
-                        resourceName="category"
+                        aria-label={`Select ${category.name}`}
                       />
-                    );
-                  }
+                      <div className="h-12 w-12 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center">
+                        {category.image ? (
+                          <img
+                            src={category.image}
+                            alt={category.name}
+                            className="h-full w-full rounded object-cover"
+                          />
+                        ) : (
+                          <FolderTree className="h-6 w-6 text-gray-400" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-gray-900 dark:text-white truncate">
+                          {category.name}
+                        </h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          /{category.slug}
+                        </p>
+                      </div>
+                      <StatusBadge
+                        status={category.is_active ? "active" : "inactive"}
+                      />
+                    </div>
 
-                  return (
-                    <tr
-                      key={category.id}
-                      className="hover:bg-gray-50"
-                      onDoubleClick={() => setEditingId(category.id)}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <TableCheckbox
-                          checked={selectedIds.includes(category.id)}
-                          onChange={(checked) => {
-                            setSelectedIds((prev) =>
-                              checked
-                                ? [...prev, category.id]
-                                : prev.filter((id) => id !== category.id)
-                            );
+                    <div className="flex flex-wrap gap-2 text-sm mb-3">
+                      <div className="flex items-center gap-1">
+                        <span className="text-gray-500 dark:text-gray-400">
+                          Parent:
+                        </span>
+                        <span className="text-gray-900 dark:text-white">
+                          {parentCategory ? parentCategory.name : "Root"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {category.is_featured && (
+                        <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
+                          Featured
+                        </span>
+                      )}
+                      {category.show_on_homepage && (
+                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                          Homepage
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex gap-2 pt-2 border-t dark:border-gray-700">
+                      <Link
+                        href={`/categories/${category.slug}`}
+                        target="_blank"
+                        className="flex-1 py-2 text-center text-gray-600 dark:text-gray-300 font-medium border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm"
+                      >
+                        <Eye className="h-4 w-4 inline mr-1" />
+                        View
+                      </Link>
+                      <Link
+                        href={`/admin/categories/${category.slug}/edit`}
+                        className="flex-1 py-2 text-center text-blue-600 font-medium border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors text-sm"
+                      >
+                        <Edit className="h-4 w-4 inline mr-1" />
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => setDeleteId(category.id)}
+                        className="py-2 px-4 text-center text-red-600 font-medium border border-red-300 rounded-lg hover:bg-red-50 transition-colors text-sm"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Desktop Table */}
+          <div
+            className={`rounded-lg border border-gray-200 bg-white ${
+              isMobile ? "hidden" : ""
+            }`}
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b border-gray-200 bg-gray-50">
+                  <tr>
+                    <th className="w-12 px-6 py-3">
+                      <TableCheckbox
+                        checked={
+                          selectedIds.length === filteredCategories.length &&
+                          filteredCategories.length > 0
+                        }
+                        indeterminate={
+                          selectedIds.length > 0 &&
+                          selectedIds.length < filteredCategories.length
+                        }
+                        onChange={(checked) => {
+                          setSelectedIds(
+                            checked ? filteredCategories.map((c) => c.id) : []
+                          );
+                        }}
+                        aria-label="Select all categories"
+                      />
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Category
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Parent
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Flags
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {/* Quick Create Row */}
+                  <QuickCreateRow
+                    fields={fields}
+                    onSave={async (values) => {
+                      try {
+                        // Validate form fields
+                        const fieldsToValidate = getFieldsForContext(
+                          CATEGORY_FIELDS,
+                          "table"
+                        );
+                        const { isValid } = validateForm(
+                          values,
+                          fieldsToValidate
+                        );
+
+                        if (!isValid) {
+                          throw new Error("Please fix validation errors");
+                        }
+
+                        await categoriesService.create({
+                          name: values.name,
+                          slug: values.name.toLowerCase().replace(/\s+/g, "-"),
+                          parentId: values.parent_id || null,
+                          image: values.image || "",
+                          featured: values.is_featured || false,
+                          isActive: values.is_active !== false,
+                          sortOrder: 0,
+                        } as any);
+                        await loadCategories();
+                      } catch (error) {
+                        console.error("Failed to create category:", error);
+                        throw error;
+                      }
+                    }}
+                    resourceName="category"
+                    defaultValues={{
+                      is_active: true,
+                      is_featured: false,
+                      show_on_homepage: false,
+                      parent_id: "",
+                    }}
+                  />
+
+                  {/* Category Rows */}
+                  {filteredCategories.map((category) => {
+                    const isEditing = editingId === category.id;
+                    const parentCategory = categories.find(
+                      (c) => c.id === category.parent_id
+                    );
+
+                    if (isEditing) {
+                      return (
+                        <InlineEditRow
+                          key={category.id}
+                          fields={fields}
+                          initialValues={{
+                            image: category.image || "",
+                            name: category.name,
+                            parent_id: category.parent_id || "",
+                            is_featured: category.is_featured,
+                            show_on_homepage: category.show_on_homepage,
+                            is_active: category.is_active,
                           }}
-                          aria-label={`Select ${category.name}`}
+                          onSave={async (values) => {
+                            try {
+                              // Validate form fields
+                              const fieldsToValidate = getFieldsForContext(
+                                CATEGORY_FIELDS,
+                                "table"
+                              );
+                              const { isValid } = validateForm(
+                                values,
+                                fieldsToValidate
+                              );
+
+                              if (!isValid) {
+                                throw new Error("Please fix validation errors");
+                              }
+
+                              await categoriesService.update(category.slug, {
+                                name: values.name,
+                                parentId: values.parent_id || null,
+                                image: values.image || undefined,
+                                featured: values.is_featured,
+                                isActive: values.is_active,
+                              });
+                              await loadCategories();
+                              setEditingId(null);
+                            } catch (error) {
+                              console.error(
+                                "Failed to update category:",
+                                error
+                              );
+                              throw error;
+                            }
+                          }}
+                          onCancel={() => setEditingId(null)}
+                          resourceName="category"
                         />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center">
-                            {category.image ? (
-                              <img
-                                src={category.image}
-                                alt={category.name}
-                                className="h-full w-full rounded object-cover"
-                              />
-                            ) : (
-                              <FolderTree className="h-5 w-5 text-gray-400" />
+                      );
+                    }
+
+                    return (
+                      <tr
+                        key={category.id}
+                        className="hover:bg-gray-50"
+                        onDoubleClick={() => setEditingId(category.id)}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <TableCheckbox
+                            checked={selectedIds.includes(category.id)}
+                            onChange={(checked) => {
+                              setSelectedIds((prev) =>
+                                checked
+                                  ? [...prev, category.id]
+                                  : prev.filter((id) => id !== category.id)
+                              );
+                            }}
+                            aria-label={`Select ${category.name}`}
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100 flex items-center justify-center">
+                              {category.image ? (
+                                <img
+                                  src={category.image}
+                                  alt={category.name}
+                                  className="h-full w-full rounded object-cover"
+                                />
+                              ) : (
+                                <FolderTree className="h-5 w-5 text-gray-400" />
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-900">
+                                {category.name}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                /{category.slug}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {parentCategory ? parentCategory.name : "Root"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <StatusBadge
+                            status={category.is_active ? "active" : "inactive"}
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            {category.is_featured && (
+                              <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
+                                Featured
+                              </span>
+                            )}
+                            {category.show_on_homepage && (
+                              <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                                Homepage
+                              </span>
                             )}
                           </div>
-                          <div>
-                            <div className="font-medium text-gray-900">
-                              {category.name}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              /{category.slug}
-                            </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                          <div className="flex items-center justify-end gap-2">
+                            <Link
+                              href={`/categories/${category.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
+                              title="View"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Link>
+                            <Link
+                              href={`/admin/categories/${category.slug}/edit`}
+                              className="rounded p-1.5 text-blue-600 hover:bg-blue-50"
+                              title="Edit"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Link>
+                            <button
+                              onClick={() => setDeleteId(category.id)}
+                              className="rounded p-1.5 text-red-600 hover:bg-red-50"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {parentCategory ? parentCategory.name : "Root"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <StatusBadge
-                          status={category.is_active ? "active" : "inactive"}
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          {category.is_featured && (
-                            <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
-                              Featured
-                            </span>
-                          )}
-                          {category.show_on_homepage && (
-                            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                              Homepage
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            href={`/categories/${category.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
-                            title="View"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                          <Link
-                            href={`/admin/categories/${category.slug}/edit`}
-                            className="rounded p-1.5 text-blue-600 hover:bg-blue-50"
-                            title="Edit"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Link>
-                          <button
-                            onClick={() => setDeleteId(category.id)}
-                            className="rounded p-1.5 text-red-600 hover:bg-red-50"
-                            title="Delete"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Empty State */}

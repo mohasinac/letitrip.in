@@ -245,113 +245,225 @@ export default function SellerOrdersPage() {
                     No orders found
                   </div>
                 ) : (
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Order ID
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Customer
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Items
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Total
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Date
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {orders.map((order) => (
-                        <tr key={order.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 text-sm font-mono">
-                            {order.id}
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            <div>{order.shippingAddress?.name || "N/A"}</div>
-                            <div className="text-gray-500">
-                              {order.shippingAddress?.phone || "N/A"}
+                  <>
+                    {/* Mobile Cards */}
+                    {isMobile && (
+                      <div className="lg:hidden space-y-4 p-4">
+                        {orders.map((order) => (
+                          <div
+                            key={order.id}
+                            className="bg-white dark:bg-gray-800 rounded-lg border p-4"
+                          >
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-mono text-sm text-gray-900 dark:text-white">
+                                  #{order.id.substring(0, 8)}
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                  {order.shippingAddress?.name || "N/A"}
+                                </p>
+                              </div>
+                              <span
+                                className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${
+                                  order.status === OrderStatus.DELIVERED
+                                    ? "bg-green-100 text-green-800"
+                                    : order.status === OrderStatus.SHIPPED
+                                    ? "bg-blue-100 text-blue-800"
+                                    : order.status === OrderStatus.PROCESSING
+                                    ? "bg-purple-100 text-purple-800"
+                                    : order.status === OrderStatus.CANCELLED
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-yellow-100 text-yellow-800"
+                                }`}
+                              >
+                                {order.status}
+                              </span>
                             </div>
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            {order.itemCount} items
-                          </td>
-                          <td className="px-6 py-4 text-sm font-semibold">
-                            {formatCurrency(order.total)}
-                          </td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                order.status === OrderStatus.DELIVERED
-                                  ? "bg-green-100 text-green-800"
-                                  : order.status === OrderStatus.SHIPPED
-                                  ? "bg-blue-100 text-blue-800"
-                                  : order.status === OrderStatus.PROCESSING
-                                  ? "bg-purple-100 text-purple-800"
-                                  : order.status === OrderStatus.CANCELLED
-                                  ? "bg-red-100 text-red-800"
-                                  : "bg-yellow-100 text-yellow-800"
-                              }`}
-                            >
-                              {order.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">
-                            {order.orderDate}
-                          </td>
-                          <td className="px-6 py-4 text-sm space-x-2">
-                            {order.status === OrderStatus.PENDING && (
+
+                            <div className="grid grid-cols-2 gap-3 text-sm mb-3">
+                              <div>
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Total:
+                                </span>
+                                <span className="ml-1 font-semibold text-gray-900 dark:text-white">
+                                  {formatCurrency(order.total)}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Items:
+                                </span>
+                                <span className="ml-1 text-gray-900 dark:text-white">
+                                  {order.itemCount}
+                                </span>
+                              </div>
+                              <div className="col-span-2">
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Date:
+                                </span>
+                                <span className="ml-1 text-gray-900 dark:text-white">
+                                  {order.orderDate}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex gap-2 pt-3 border-t dark:border-gray-700">
+                              {order.status === OrderStatus.PENDING && (
+                                <button
+                                  onClick={() =>
+                                    handleUpdateStatus(
+                                      order.id,
+                                      OrderStatus.PROCESSING
+                                    )
+                                  }
+                                  className="flex-1 py-2 text-center text-blue-600 font-medium border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors text-sm flex items-center justify-center gap-1"
+                                >
+                                  <Package className="w-4 h-4" />
+                                  Process
+                                </button>
+                              )}
+                              {order.status === OrderStatus.PROCESSING && (
+                                <button
+                                  onClick={() =>
+                                    handleUpdateStatus(
+                                      order.id,
+                                      OrderStatus.SHIPPED
+                                    )
+                                  }
+                                  className="flex-1 py-2 text-center text-purple-600 font-medium border border-purple-300 rounded-lg hover:bg-purple-50 transition-colors text-sm flex items-center justify-center gap-1"
+                                >
+                                  <Truck className="w-4 h-4" />
+                                  Ship
+                                </button>
+                              )}
                               <button
                                 onClick={() =>
-                                  handleUpdateStatus(
-                                    order.id,
-                                    OrderStatus.PROCESSING
-                                  )
+                                  router.push(`/seller/orders/${order.id}`)
                                 }
-                                className="text-blue-600 hover:text-blue-900"
-                                title="Start Processing"
+                                className="flex-1 py-2 text-center text-indigo-600 font-medium border border-indigo-300 rounded-lg hover:bg-indigo-50 transition-colors text-sm flex items-center justify-center gap-1"
                               >
-                                <Package className="w-5 h-5" />
+                                <Eye className="w-4 h-4" />
+                                View
                               </button>
-                            )}
-                            {order.status === OrderStatus.PROCESSING && (
-                              <button
-                                onClick={() =>
-                                  handleUpdateStatus(
-                                    order.id,
-                                    OrderStatus.SHIPPED
-                                  )
-                                }
-                                className="text-purple-600 hover:text-purple-900"
-                                title="Mark as Shipped"
-                              >
-                                <Truck className="w-5 h-5" />
-                              </button>
-                            )}
-                            <button
-                              onClick={() =>
-                                router.push(`/seller/orders/${order.id}`)
-                              }
-                              className="text-indigo-600 hover:text-indigo-900"
-                              title="View Details"
-                            >
-                              <Eye className="w-5 h-5" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Desktop Table */}
+                    <div className={isMobile ? "hidden" : ""}>
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Order ID
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Customer
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Items
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Total
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Status
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Date
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {orders.map((order) => (
+                            <tr key={order.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 text-sm font-mono">
+                                {order.id}
+                              </td>
+                              <td className="px-6 py-4 text-sm">
+                                <div>
+                                  {order.shippingAddress?.name || "N/A"}
+                                </div>
+                                <div className="text-gray-500">
+                                  {order.shippingAddress?.phone || "N/A"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-sm">
+                                {order.itemCount} items
+                              </td>
+                              <td className="px-6 py-4 text-sm font-semibold">
+                                {formatCurrency(order.total)}
+                              </td>
+                              <td className="px-6 py-4">
+                                <span
+                                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                    order.status === OrderStatus.DELIVERED
+                                      ? "bg-green-100 text-green-800"
+                                      : order.status === OrderStatus.SHIPPED
+                                      ? "bg-blue-100 text-blue-800"
+                                      : order.status === OrderStatus.PROCESSING
+                                      ? "bg-purple-100 text-purple-800"
+                                      : order.status === OrderStatus.CANCELLED
+                                      ? "bg-red-100 text-red-800"
+                                      : "bg-yellow-100 text-yellow-800"
+                                  }`}
+                                >
+                                  {order.status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-500">
+                                {order.orderDate}
+                              </td>
+                              <td className="px-6 py-4 text-sm space-x-2">
+                                {order.status === OrderStatus.PENDING && (
+                                  <button
+                                    onClick={() =>
+                                      handleUpdateStatus(
+                                        order.id,
+                                        OrderStatus.PROCESSING
+                                      )
+                                    }
+                                    className="text-blue-600 hover:text-blue-900"
+                                    title="Start Processing"
+                                  >
+                                    <Package className="w-5 h-5" />
+                                  </button>
+                                )}
+                                {order.status === OrderStatus.PROCESSING && (
+                                  <button
+                                    onClick={() =>
+                                      handleUpdateStatus(
+                                        order.id,
+                                        OrderStatus.SHIPPED
+                                      )
+                                    }
+                                    className="text-purple-600 hover:text-purple-900"
+                                    title="Mark as Shipped"
+                                  >
+                                    <Truck className="w-5 h-5" />
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() =>
+                                    router.push(`/seller/orders/${order.id}`)
+                                  }
+                                  className="text-indigo-600 hover:text-indigo-900"
+                                  title="View Details"
+                                >
+                                  <Eye className="w-5 h-5" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
                 )}
               </div>
 

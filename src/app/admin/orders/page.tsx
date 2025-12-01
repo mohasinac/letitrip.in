@@ -402,8 +402,89 @@ export default function AdminOrdersPage() {
 
         {/* Content Area */}
         <div className="flex-1 space-y-6">
-          {/* Orders Table */}
-          <div className="rounded-lg border border-gray-200 bg-white">
+          {/* Mobile Cards */}
+          {isMobile && orders.length > 0 && (
+            <div className="lg:hidden space-y-4">
+              {orders.map((order) => (
+                <div
+                  key={order.id}
+                  className="bg-white dark:bg-gray-800 rounded-lg border p-4"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-gray-900 dark:text-white">
+                        {order.orderNumber}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {order.shippingAddress?.name || "N/A"}
+                      </p>
+                    </div>
+                    <span
+                      className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                        order.status
+                      )}`}
+                    >
+                      {order.status}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 text-sm mb-3">
+                    <div>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Total:
+                      </span>
+                      <span className="ml-1 font-semibold text-gray-900 dark:text-white">
+                        ₹{order.total.toLocaleString()}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Items:
+                      </span>
+                      <span className="ml-1 text-gray-900 dark:text-white">
+                        {order.itemCount}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Date:
+                      </span>
+                      <span className="ml-1 text-gray-900 dark:text-white">
+                        {order.createdAt || order.orderDate}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Payment:
+                      </span>
+                      <span
+                        className={`ml-1 px-1.5 py-0.5 text-xs font-medium rounded ${getPaymentStatusColor(
+                          order.paymentStatus
+                        )}`}
+                      >
+                        {order.paymentStatus}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Link
+                    href={`/admin/orders/${order.id}`}
+                    className="block w-full py-2 text-center text-purple-600 font-medium border border-purple-300 rounded-lg hover:bg-purple-50 transition-colors text-sm"
+                  >
+                    <Eye className="h-4 w-4 inline mr-1" />
+                    View Details
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Desktop Orders Table */}
+          <div
+            className={`rounded-lg border border-gray-200 bg-white ${
+              isMobile ? "hidden" : ""
+            }`}
+          >
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="border-b border-gray-200 bg-gray-50">
