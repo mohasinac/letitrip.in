@@ -197,7 +197,9 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
                   <h3 className="font-medium text-gray-900 dark:text-white">
                     {item.productName}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Qty: {item.quantity}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Qty: {item.quantity}
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="font-semibold text-gray-900 dark:text-white">
@@ -240,7 +242,9 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
             </h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Subtotal
+                </span>
                 <span className="text-gray-900 dark:text-white">
                   ₹{order.subtotal?.toLocaleString()}
                 </span>
@@ -252,7 +256,9 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Shipping</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Shipping
+                </span>
                 <span className="text-gray-900 dark:text-white">
                   {order.shipping === 0 ? "FREE" : `₹${order.shipping}`}
                 </span>
@@ -271,13 +277,17 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
               </div>
               <div className="pt-2 border-t dark:border-gray-700">
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Payment Method</span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Payment Method
+                  </span>
                   <span className="text-gray-900 dark:text-white uppercase">
                     {order.paymentMethod}
                   </span>
                 </div>
                 <div className="flex justify-between mt-1">
-                  <span className="text-gray-600 dark:text-gray-400">Payment Status</span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Payment Status
+                  </span>
                   <StatusBadge status={order.paymentStatus} />
                 </div>
               </div>

@@ -139,7 +139,9 @@ function AddressesContent() {
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                     {address.fullName}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">{address.phoneNumber}</p>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {address.phoneNumber}
+                  </p>
                 </div>
 
                 <div className="text-gray-700 dark:text-gray-300 space-y-1 mb-6">

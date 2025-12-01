@@ -385,7 +385,9 @@ export default function CheckoutPage() {
                       </div>
                       <span
                         className={`mt-1.5 sm:mt-2 text-xs sm:text-sm font-medium ${
-                          isCurrent ? "text-primary" : "text-gray-600 dark:text-gray-400"
+                          isCurrent
+                            ? "text-primary"
+                            : "text-gray-600 dark:text-gray-400"
                         }`}
                       >
                         {step.label}
@@ -395,7 +397,9 @@ export default function CheckoutPage() {
                     {index < steps.length - 1 && (
                       <div
                         className={`h-1 flex-1 mx-2 sm:mx-4 rounded transition-all ${
-                          isCompleted ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"
+                          isCompleted
+                            ? "bg-green-500"
+                            : "bg-gray-200 dark:bg-gray-700"
                         }`}
                       />
                     )}
