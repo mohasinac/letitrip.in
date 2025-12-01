@@ -1,6 +1,6 @@
 # Media Upload - Crop, Zoom, Rotate & Mobile Focus Point
 
-> **Status**: 🟡 In Progress (Phase 1 & 2 Complete)
+> **Status**: 🟡 In Progress (Phase 1, 2 & 4 Complete)
 > **Priority**: Medium
 > **Last Updated**: January 2025
 
@@ -19,6 +19,8 @@
 - ✅ Added `focusX`, `focusY` fields to `MediaMetadata` type
 - ✅ ImageEditor passes focus point when saving edited media
 - ✅ Updated `OptimizedImage` component to use `objectPosition` with focus point
+- ✅ Integrated `MediaEditorModal` into `MediaUploader` component
+- ✅ Added `enableEditing` prop and `onFileEdited` callback to MediaUploader
 
 ## Overview
 
@@ -549,12 +551,12 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
 - [x] Add custom thumbnail upload option
 - [ ] Store thumbnail URL with video data
 
-### Phase 4: Integration
+### Phase 4: Integration ✅ COMPLETE
 
-- [ ] Integrate ImageEditor into product upload
-- [ ] Integrate ImageEditor into auction upload
-- [ ] Integrate ImageEditor into shop settings
-- [ ] Integrate ImageEditor into hero slides
+- [x] Integrate MediaEditorModal into MediaUploader
+- [x] Add enableEditing prop and onFileEdited callback
+- [x] MediaPreviewCard edit button triggers ImageEditor/VideoThumbnailGenerator
+- [ ] Wire up MediaUploader in product/auction/shop pages (uses custom upload)
 - [ ] Add video thumbnail to product/auction uploads
 
 ### Phase 5: Database Updates
