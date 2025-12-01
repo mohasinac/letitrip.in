@@ -41,6 +41,8 @@ export interface MediaMetadata {
   size: number; // File size in bytes
   mimeType: string;
   thumbnail?: string; // Thumbnail URL for videos
+  focusX?: number; // Focus point X coordinate (0-100, percentage from left)
+  focusY?: number; // Focus point Y coordinate (0-100, percentage from top)
 }
 
 export interface UploadedMedia {
