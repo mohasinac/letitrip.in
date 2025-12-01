@@ -92,7 +92,9 @@ export default function OptimizedImage({
     onError: handleError,
     onLoad: handleLoad,
     className: `${className} ${isError ? "opacity-50" : ""}`,
-    style: fill ? { objectFit, objectPosition: `${focusX}% ${focusY}%` } : { objectPosition: `${focusX}% ${focusY}%` },
+    style: fill
+      ? { objectFit, objectPosition: `${focusX}% ${focusY}%` }
+      : { objectPosition: `${focusX}% ${focusY}%` },
   };
 
   // For fill images (responsive containers)
