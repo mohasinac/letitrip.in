@@ -69,14 +69,14 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-12 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Get in Touch
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Have questions or need help? We're here to assist you. Send us a
             message and we'll respond as soon as possible.
           </p>
@@ -85,62 +85,66 @@ export default function ContactPage() {
         <div className="grid md:grid-cols-2 gap-8">
           {/* Contact Info */}
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                 Contact Information
               </h2>
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                    <p className="text-gray-600">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                      Email
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
                       <a
                         href="mailto:support@justforview.in"
-                        className="text-blue-600 hover:underline"
+                        className="text-blue-600 dark:text-blue-400 hover:underline"
                       >
                         support@justforview.in
                       </a>
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       We'll respond within 24 hours
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-6 h-6 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
-                    <p className="text-gray-600">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                      Phone
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
                       <a
                         href="tel:+918000000000"
-                        className="text-green-600 hover:underline"
+                        className="text-green-600 dark:text-green-400 hover:underline"
                       >
                         1800-000-0000
                       </a>{" "}
                       (Toll-free)
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       Mon-Fri, 9am-6pm IST
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
                       Address
                     </h3>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-300">
                       123 Market Street
                       <br />
                       Mumbai, Maharashtra 400001
@@ -168,8 +172,8 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Form */}
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
               Send us a Message
             </h2>
 
@@ -289,47 +293,51 @@ export default function ContactPage() {
         </div>
 
         {/* Additional Help Section */}
-        <div className="mt-12 bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+        <div className="mt-12 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
             Other Ways to Reach Us
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-gray-50 rounded-xl">
-              <h3 className="font-semibold text-gray-900 mb-2">For Sellers</h3>
-              <p className="text-gray-600 text-sm mb-3">
+            <div className="text-center p-6 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                For Sellers
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
                 Questions about selling on our platform?
               </p>
               <a
                 href="/seller"
-                className="text-blue-600 font-semibold hover:underline text-sm"
+                className="text-blue-600 dark:text-blue-400 font-semibold hover:underline text-sm"
               >
                 Seller Dashboard →
               </a>
             </div>
 
-            <div className="text-center p-6 bg-gray-50 rounded-xl">
-              <h3 className="font-semibold text-gray-900 mb-2">
+            <div className="text-center p-6 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                 Support Tickets
               </h3>
-              <p className="text-gray-600 text-sm mb-3">
+              <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
                 Track your existing support requests
               </p>
               <Link
                 href="/user/tickets"
-                className="text-blue-600 font-semibold hover:underline text-sm"
+                className="text-blue-600 dark:text-blue-400 font-semibold hover:underline text-sm"
               >
                 View Tickets →
               </Link>
             </div>
 
-            <div className="text-center p-6 bg-gray-50 rounded-xl">
-              <h3 className="font-semibold text-gray-900 mb-2">Help Center</h3>
-              <p className="text-gray-600 text-sm mb-3">
+            <div className="text-center p-6 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                Help Center
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
                 Browse our documentation and guides
               </p>
               <a
                 href="/guide"
-                className="text-blue-600 font-semibold hover:underline text-sm"
+                className="text-blue-600 dark:text-blue-400 font-semibold hover:underline text-sm"
               >
                 View Guides →
               </a>

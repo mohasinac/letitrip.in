@@ -82,19 +82,19 @@ export default function ProhibitedItemsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="bg-white rounded-lg shadow-sm border p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 p-8">
           {/* Header */}
           <div className="flex items-start gap-4 mb-8">
             <div className="flex-shrink-0">
-              <ShieldAlert className="w-12 h-12 text-red-600" />
+              <ShieldAlert className="w-12 h-12 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
                 Prohibited Items
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 The following items are strictly prohibited from being listed,
                 sold, or purchased on Let It Rip. Violations may result in
                 account suspension or legal action.
@@ -103,9 +103,9 @@ export default function ProhibitedItemsPage() {
           </div>
 
           {/* Warning Banner */}
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8 flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-red-800">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-8 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-red-800 dark:text-red-300">
               <p className="font-semibold mb-1">Important Warning</p>
               <p>
                 Listing prohibited items may result in immediate removal of your
@@ -120,18 +120,18 @@ export default function ProhibitedItemsPage() {
             {prohibitedCategories.map((category) => (
               <div
                 key={category.category}
-                className="border-b pb-6 last:border-b-0"
+                className="border-b dark:border-gray-700 pb-6 last:border-b-0"
               >
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                   {category.category}
                 </h2>
                 <ul className="grid md:grid-cols-2 gap-3">
                   {category.items.map((item) => (
                     <li
                       key={item}
-                      className="flex items-start gap-2 text-gray-700"
+                      className="flex items-start gap-2 text-gray-700 dark:text-gray-300"
                     >
-                      <span className="text-red-600 mt-1">✗</span>
+                      <span className="text-red-600 dark:text-red-400 mt-1">✗</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -141,11 +141,11 @@ export default function ProhibitedItemsPage() {
           </div>
 
           {/* Additional Info */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
-            <h3 className="font-bold text-gray-900 mb-3">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 mb-8">
+            <h3 className="font-bold text-gray-900 dark:text-white mb-3">
               Not Sure If Your Item Is Allowed?
             </h3>
-            <p className="text-gray-700 mb-4">
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
               If you're uncertain whether an item is permitted on our platform,
               please contact our support team before listing. We're here to help
               ensure compliance with our policies.
@@ -159,16 +159,16 @@ export default function ProhibitedItemsPage() {
           </div>
 
           {/* Reporting */}
-          <div className="border-t pt-6">
-            <h3 className="font-bold text-gray-900 mb-3">
+          <div className="border-t dark:border-gray-700 pt-6">
+            <h3 className="font-bold text-gray-900 dark:text-white mb-3">
               Reporting Prohibited Items
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               If you encounter a listing that violates our policies, please
               report it immediately. We review all reports and take appropriate
               action.
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Our team monitors listings 24/7 to ensure platform safety and
               compliance.
             </p>

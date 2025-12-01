@@ -17,13 +17,13 @@ export const metadata: Metadata = {
 
 export default function NewUserGuidePage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="bg-white rounded-lg shadow-sm border p-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 p-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
             New Users' Guide
           </h1>
-          <p className="text-gray-600 mb-8">
+          <p className="text-gray-600 dark:text-gray-300 mb-8">
             Welcome to Let It Rip! This guide will help you get started with
             buying and bidding on our platform.
           </p>
@@ -82,31 +82,31 @@ export default function NewUserGuidePage() {
           </div>
 
           {/* Tips Section */}
-          <div className="mt-12 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Pro Tips</h2>
-            <ul className="space-y-2 text-gray-700">
+          <div className="mt-12 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Pro Tips</h2>
+            <ul className="space-y-2 text-gray-700 dark:text-gray-300">
               <li className="flex items-start gap-2">
-                <span className="text-yellow-600 mt-1">•</span>
+                <span className="text-yellow-600 dark:text-yellow-400 mt-1">•</span>
                 <span>
                   Set up email notifications to get alerts for auction endings
                   and new listings
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-600 mt-1">•</span>
+                <span className="text-yellow-600 dark:text-yellow-400 mt-1">•</span>
                 <span>
                   Read seller ratings and reviews before making a purchase
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-600 mt-1">•</span>
+                <span className="text-yellow-600 dark:text-yellow-400 mt-1">•</span>
                 <span>
                   Check our prohibited items list before listing anything for
                   sale
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-600 mt-1">•</span>
+                <span className="text-yellow-600 dark:text-yellow-400 mt-1">•</span>
                 <span>
                   Contact support if you have any questions - we're here to
                   help!
@@ -117,11 +117,11 @@ export default function NewUserGuidePage() {
 
           {/* Need Help */}
           <div className="mt-8 text-center">
-            <p className="text-gray-600 mb-4">Need more help?</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">Need more help?</p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Link
                 href="/faq"
-                className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-200"
               >
                 Read FAQ
               </Link>
@@ -152,19 +152,19 @@ function GuideSection({
 }) {
   return (
     <div className="flex gap-4">
-      <div className="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center text-yellow-600">
+      <div className="flex-shrink-0 w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center text-yellow-600 dark:text-yellow-400">
         {icon}
       </div>
       <div className="flex-1">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-600 mb-3">{description}</p>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
+        <p className="text-gray-600 dark:text-gray-300 mb-3">{description}</p>
         {links && links.length > 0 && (
           <div className="flex gap-3 flex-wrap">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-yellow-600 hover:text-yellow-700 font-medium"
+                className="text-sm text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 font-medium"
               >
                 {link.label} →
               </Link>

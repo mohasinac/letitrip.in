@@ -10,13 +10,13 @@ export const metadata: Metadata = {
 
 export default function ReturnsGuidePage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="bg-white rounded-lg shadow-sm border p-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 p-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
             Returns & Refunds Guide
           </h1>
-          <p className="text-gray-600 mb-8">
+          <p className="text-gray-600 dark:text-gray-300 mb-8">
             We want you to be completely satisfied with your purchase. Here's
             everything you need to know about our return and refund policy.
           </p>
@@ -54,15 +54,15 @@ export default function ReturnsGuidePage() {
 
           {/* Return Eligibility */}
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               Return Eligibility
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="border border-green-200 bg-green-50 rounded-lg p-4">
-                <h3 className="font-semibold text-green-900 mb-3">
+              <div className="border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                <h3 className="font-semibold text-green-900 dark:text-green-300 mb-3">
                   ✓ Returnable Items
                 </h3>
-                <ul className="space-y-2 text-sm text-green-800">
+                <ul className="space-y-2 text-sm text-green-800 dark:text-green-400">
                   <li>• Unopened products in original packaging</li>
                   <li>• Items with defects or damage</li>
                   <li>• Wrong items shipped</li>
@@ -70,11 +70,11 @@ export default function ReturnsGuidePage() {
                 </ul>
               </div>
 
-              <div className="border border-red-200 bg-red-50 rounded-lg p-4">
-                <h3 className="font-semibold text-red-900 mb-3">
+              <div className="border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+                <h3 className="font-semibold text-red-900 dark:text-red-300 mb-3">
                   ✗ Non-Returnable Items
                 </h3>
-                <ul className="space-y-2 text-sm text-red-800">
+                <ul className="space-y-2 text-sm text-red-800 dark:text-red-400">
                   <li>• Opened electronics or software</li>
                   <li>• Personal care products (used)</li>
                   <li>• Custom-made items</li>
@@ -86,46 +86,46 @@ export default function ReturnsGuidePage() {
 
           {/* Refund Methods */}
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               Refund Methods
             </h2>
             <div className="grid md:grid-cols-3 gap-4">
-              <div className="border rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">
+              <div className="border dark:border-gray-700 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                   Original Payment Method
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Refund to the card/account used for payment
                 </p>
-                <p className="text-xs text-gray-500 mt-2">5-7 business days</p>
+                <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">5-7 business days</p>
               </div>
 
-              <div className="border rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">
+              <div className="border dark:border-gray-700 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                   Store Credit
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Instant credit to your Let It Rip wallet
                 </p>
-                <p className="text-xs text-gray-500 mt-2">Immediate</p>
+                <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">Immediate</p>
               </div>
 
-              <div className="border rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">
+              <div className="border dark:border-gray-700 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                   Bank Transfer
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Direct transfer to your bank account
                 </p>
-                <p className="text-xs text-gray-500 mt-2">7-10 business days</p>
+                <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">7-10 business days</p>
               </div>
             </div>
           </div>
 
           {/* Important Notes */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
-            <h3 className="font-bold text-gray-900 mb-3">Important Notes</h3>
-            <ul className="space-y-2 text-gray-700 text-sm">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 mb-8">
+            <h3 className="font-bold text-gray-900 dark:text-white mb-3">Important Notes</h3>
+            <ul className="space-y-2 text-gray-700 dark:text-gray-300 text-sm">
               <li>
                 • Return shipping costs may apply unless the item is defective
                 or wrong
@@ -147,7 +147,7 @@ export default function ReturnsGuidePage() {
 
           {/* CTA */}
           <div className="text-center">
-            <p className="text-gray-600 mb-4">Ready to initiate a return?</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">Ready to initiate a return?</p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Link
                 href="/user/orders"
@@ -157,7 +157,7 @@ export default function ReturnsGuidePage() {
               </Link>
               <Link
                 href="/refund-policy"
-                className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-200"
               >
                 Read Full Policy
               </Link>
@@ -182,17 +182,17 @@ function ProcessStep({
 }) {
   return (
     <div className="flex gap-4">
-      <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+      <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
         {icon}
       </div>
       <div className="flex-1">
         <div className="flex items-start justify-between gap-4 mb-2">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded whitespace-nowrap">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+          <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded whitespace-nowrap">
             {timeframe}
           </span>
         </div>
-        <p className="text-gray-600">{description}</p>
+        <p className="text-gray-600 dark:text-gray-300">{description}</p>
       </div>
     </div>
   );

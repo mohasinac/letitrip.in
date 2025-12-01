@@ -11,6 +11,7 @@ This document outlines requirements for making wizard forms (product creation, a
 ## Completed ✅
 
 ### Phase 1: Components Created
+
 | Component         | File                                       | Status      |
 | ----------------- | ------------------------------------------ | ----------- |
 | `WizardSteps`     | `src/components/forms/WizardSteps.tsx`     | ✅ Complete |
@@ -18,10 +19,11 @@ This document outlines requirements for making wizard forms (product creation, a
 | `WizardForm`      | `src/components/forms/WizardForm.tsx`      | ✅ Complete |
 
 ### Phase 2: Pages Integrated
-| Page                  | File                                | Status      |
-| --------------------- | ----------------------------------- | ----------- |
-| Create Product        | `/seller/products/create/page.tsx`  | ✅ Complete |
-| Create Auction        | `/seller/auctions/create/page.tsx`  | ✅ Complete |
+
+| Page           | File                               | Status      |
+| -------------- | ---------------------------------- | ----------- |
+| Create Product | `/seller/products/create/page.tsx` | ✅ Complete |
+| Create Auction | `/seller/auctions/create/page.tsx` | ✅ Complete |
 
 ### Component Features
 

@@ -229,11 +229,11 @@ export default function CreateProductPage() {
   // Check if form has minimum required fields
   const isFormValid = Boolean(
     formData.name.trim() &&
-    formData.slug.trim() &&
-    formData.categoryId &&
-    formData.sku.trim() &&
-    formData.price > 0 &&
-    formData.images.length > 0
+      formData.slug.trim() &&
+      formData.categoryId &&
+      formData.sku.trim() &&
+      formData.price > 0 &&
+      formData.images.length > 0
   );
 
   return (
