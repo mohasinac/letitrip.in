@@ -1,6 +1,6 @@
 # Component Library Consolidation
 
-> **Status**: 🔴 Critical - Migration Required
+> **Status**: 🔄 In Progress - Form Input Migration Complete
 > **Priority**: 🔴 Highest
 > **Last Updated**: December 1, 2025
 > **Related**: [Doc 27 - HTML Tag Wrappers](./27-html-tag-wrappers.md), [Doc 04 - Component Consolidation](./04-component-consolidation.md)
@@ -238,16 +238,16 @@ import { FormField, FormInput } from "@/components/forms";
 
 ### Step 4: Pages to Migrate
 
-| File                                      | Current           | Replace With              | Priority  |
-| ----------------------------------------- | ----------------- | ------------------------- | --------- |
-| `src/app/login/page.tsx`                  | `Input` (ui)      | `FormField` + `FormInput` | 🔴 High   |
-| `src/app/register/page.tsx`               | `Input` (ui)      | `FormField` + `FormInput` | 🔴 High   |
-| `src/app/contact/page.tsx`                | `Input` (ui)      | `FormField` + `FormInput` | 🔴 High   |
-| `src/app/user/settings/page.tsx`          | `Input` (ui)      | `FormField` + `FormInput` | 🟡 Medium |
-| `src/app/checkout/page.tsx`               | `MobileFormInput` | `FormField` + `FormInput` | 🟡 Medium |
-| `src/app/seller/products/create/page.tsx` | Mixed             | `FormField` + `FormInput` | 🟡 Medium |
-| `src/app/seller/auctions/create/page.tsx` | Mixed             | `FormField` + `FormInput` | 🟡 Medium |
-| `src/app/admin/*/create/page.tsx`         | Mixed             | `FormField` + `FormInput` | 🟢 Low    |
+| File                                      | Current           | Replace With              | Status       |
+| ----------------------------------------- | ----------------- | ------------------------- | ------------ |
+| `src/app/login/page.tsx`                  | `Input` (ui)      | `FormField` + `FormInput` | ✅ Complete  |
+| `src/app/register/page.tsx`               | `Input` (ui)      | `FormField` + `FormInput` | ✅ Complete  |
+| `src/app/contact/page.tsx`                | `Input` (ui)      | `FormField` + `FormInput` | ✅ Complete  |
+| `src/app/user/settings/page.tsx`          | `Input` (ui)      | `FormField` + `FormInput` | ✅ Complete  |
+| `src/app/checkout/page.tsx`               | `Textarea` (ui)   | `FormField` + `FormTextarea` | ✅ Complete  |
+| `src/app/seller/products/create/page.tsx` | Wizard components | Already uses FormField    | ✅ Complete  |
+| `src/app/seller/auctions/create/page.tsx` | Wizard components | Already uses FormField    | ✅ Complete  |
+| `src/app/admin/*/create/page.tsx`         | Mixed             | `FormField` + `FormInput` | 🟢 Low       |
 
 ### Step 5: Delete Old Components
 
@@ -454,14 +454,14 @@ src/components/
 
 ### Solution
 
-| Keep                                      | Delete                                            | Reason                          |
-| ----------------------------------------- | ------------------------------------------------- | ------------------------------- |
-| `common/Skeleton.tsx`                     | -                                                 | Base primitives                 |
-| `cards/ProductCardSkeleton.tsx`           | `common/skeletons/ProductCardSkeleton.tsx`        | Duplicate in different location |
-| `cards/AuctionCardSkeleton.tsx`           | `common/skeletons/AuctionCardSkeleton.tsx`        | Duplicate in different location |
-| `cards/ShopCardSkeleton.tsx`              | -                                                 | Unique                          |
-| `cards/CategoryCardSkeleton.tsx`          | -                                                 | Unique                          |
-| `mobile/MobileSkeleton.tsx` (refactor)    | -                                                 | Should use card skeletons       |
+| Keep                                   | Delete                                     | Reason                          |
+| -------------------------------------- | ------------------------------------------ | ------------------------------- |
+| `common/Skeleton.tsx`                  | -                                          | Base primitives                 |
+| `cards/ProductCardSkeleton.tsx`        | `common/skeletons/ProductCardSkeleton.tsx` | Duplicate in different location |
+| `cards/AuctionCardSkeleton.tsx`        | `common/skeletons/AuctionCardSkeleton.tsx` | Duplicate in different location |
+| `cards/ShopCardSkeleton.tsx`           | -                                          | Unique                          |
+| `cards/CategoryCardSkeleton.tsx`       | -                                          | Unique                          |
+| `mobile/MobileSkeleton.tsx` (refactor) | -                                          | Should use card skeletons       |
 
 ### Migration
 
@@ -491,31 +491,31 @@ src/components/
 
 ### Solution
 
-| Keep                      | Role                                     |
-| ------------------------- | ---------------------------------------- |
-| `DataTable.tsx`           | ✅ STANDARD - Generic data table         |
-| `ResponsiveTable.tsx`     | ✅ KEEP - Wraps DataTable for responsive |
-| `MobileDataTable.tsx`     | ✅ KEEP - Card view for mobile           |
-| `TableCheckbox.tsx`       | ✅ KEEP - Selection helper               |
-| `BaseTable.tsx`           | ❌ DELETE - Duplicate of DataTable       |
-| `ProductTable.tsx`        | 🔄 REFACTOR - Should use DataTable       |
+| Keep                  | Role                                     |
+| --------------------- | ---------------------------------------- |
+| `DataTable.tsx`       | ✅ STANDARD - Generic data table         |
+| `ResponsiveTable.tsx` | ✅ KEEP - Wraps DataTable for responsive |
+| `MobileDataTable.tsx` | ✅ KEEP - Card view for mobile           |
+| `TableCheckbox.tsx`   | ✅ KEEP - Selection helper               |
+| `BaseTable.tsx`       | ❌ DELETE - Duplicate of DataTable       |
+| `ProductTable.tsx`    | 🔄 REFACTOR - Should use DataTable       |
 
 ### Migration
 
 ```tsx
 // ❌ Before - using BaseTable
-import { BaseTable } from '@/components/ui/BaseTable';
-<BaseTable data={items} columns={columns} />
+import { BaseTable } from "@/components/ui/BaseTable";
+<BaseTable data={items} columns={columns} />;
 
 // ✅ After - using DataTable
-import { DataTable } from '@/components/common/DataTable';
-<DataTable data={items} columns={columns} />
+import { DataTable } from "@/components/common/DataTable";
+<DataTable data={items} columns={columns} />;
 
 // ✅ For responsive - wrap with ResponsiveTable
-import { ResponsiveTable } from '@/components/common/ResponsiveTable';
+import { ResponsiveTable } from "@/components/common/ResponsiveTable";
 <ResponsiveTable>
   <DataTable data={items} columns={columns} />
-</ResponsiveTable>
+</ResponsiveTable>;
 ```
 
 ---
@@ -547,28 +547,28 @@ src/components/
 
 ### Solution
 
-| Keep                           | Delete/Refactor                | Reason                            |
-| ------------------------------ | ------------------------------ | --------------------------------- |
-| `cards/ShopCard.tsx`           | `seller/ShopCard.tsx`          | Use `variant="seller"` instead    |
-| `ui/Card.tsx`                  | `ui/BaseCard.tsx`              | Duplicate wrapper                 |
-| `common/StatsCard.tsx`         | `admin/dashboard/StatCard.tsx` | Merge into one                    |
-| `cards/*Card.tsx`              | -                              | All main cards stay               |
+| Keep                   | Delete/Refactor                | Reason                         |
+| ---------------------- | ------------------------------ | ------------------------------ |
+| `cards/ShopCard.tsx`   | `seller/ShopCard.tsx`          | Use `variant="seller"` instead |
+| `ui/Card.tsx`          | `ui/BaseCard.tsx`              | Duplicate wrapper              |
+| `common/StatsCard.tsx` | `admin/dashboard/StatCard.tsx` | Merge into one                 |
+| `cards/*Card.tsx`      | -                              | All main cards stay            |
 
 ### Migration
 
 ```tsx
 // ❌ Before - seller-specific ShopCard
-import ShopCard from '@/components/seller/ShopCard';
+import ShopCard from "@/components/seller/ShopCard";
 
 // ✅ After - use unified ShopCard with variant
-import { ShopCard } from '@/components/cards/ShopCard';
-<ShopCard shop={shop} variant="seller" />
+import { ShopCard } from "@/components/cards/ShopCard";
+<ShopCard shop={shop} variant="seller" />;
 
 // ❌ Before - using BaseCard
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseCard } from "@/components/ui/BaseCard";
 
 // ✅ After - use Card
-import { Card } from '@/components/ui/Card';
+import { Card } from "@/components/ui/Card";
 ```
 
 ---
@@ -592,28 +592,28 @@ src/components/
 
 ### Solution
 
-| Keep                     | Delete/Merge            | Reason                                |
-| ------------------------ | ----------------------- | ------------------------------------- |
-| `ConfirmDialog.tsx`      | -                       | Unique purpose                        |
-| `FormModal.tsx`          | `InlineFormModal.tsx`   | Merge into FormModal with inline prop |
-| `MobileBottomSheet.tsx`  | -                       | Mobile-specific                       |
-| `MobileActionSheet.tsx`  | -                       | Uses MobileBottomSheet                |
-| `MediaEditorModal.tsx`   | -                       | Specialized                           |
+| Keep                    | Delete/Merge          | Reason                                |
+| ----------------------- | --------------------- | ------------------------------------- |
+| `ConfirmDialog.tsx`     | -                     | Unique purpose                        |
+| `FormModal.tsx`         | `InlineFormModal.tsx` | Merge into FormModal with inline prop |
+| `MobileBottomSheet.tsx` | -                     | Mobile-specific                       |
+| `MobileActionSheet.tsx` | -                     | Uses MobileBottomSheet                |
+| `MediaEditorModal.tsx`  | -                     | Specialized                           |
 
 ### Migration
 
 ```tsx
 // ❌ Before - InlineFormModal
-import { InlineFormModal } from '@/components/common/InlineFormModal';
+import { InlineFormModal } from "@/components/common/InlineFormModal";
 <InlineFormModal isOpen={open} onClose={close}>
   <Form />
-</InlineFormModal>
+</InlineFormModal>;
 
 // ✅ After - FormModal with inline prop
-import { FormModal } from '@/components/common/FormModal';
+import { FormModal } from "@/components/common/FormModal";
 <FormModal isOpen={open} onClose={close} inline>
   <Form />
-</FormModal>
+</FormModal>;
 ```
 
 ---

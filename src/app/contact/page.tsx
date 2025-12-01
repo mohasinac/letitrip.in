@@ -9,13 +9,9 @@ import {
   Send,
   Loader2,
   CheckCircle,
-  User,
-  MessageSquare,
-  FileText,
 } from "lucide-react";
 import { supportService } from "@/services/support.service";
-import { Input } from "@/components/ui/Input";
-import { Textarea } from "@/components/ui/Textarea";
+import { FormField, FormInput, FormTextarea } from "@/components/forms";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -199,76 +195,62 @@ export default function ContactPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Name */}
-              <Input
-                label="Your Name"
-                type="text"
-                id="name"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="John Doe"
-                leftIcon={<User className="w-5 h-5" />}
-                autoComplete="name"
-                size="lg"
-              />
+              <FormField label="Your Name" required>
+                <FormInput
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="John Doe"
+                  autoComplete="name"
+                />
+              </FormField>
 
               {/* Email */}
-              <Input
-                label="Email Address"
-                type="email"
-                id="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="john@example.com"
-                leftIcon={<Mail className="w-5 h-5" />}
-                autoComplete="email"
-                size="lg"
-              />
+              <FormField label="Email Address" required>
+                <FormInput
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="john@example.com"
+                  autoComplete="email"
+                />
+              </FormField>
 
               {/* Phone */}
-              <Input
-                label="Phone Number"
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="+91 98765 43210"
-                leftIcon={<Phone className="w-5 h-5" />}
-                helperText="Optional"
-                autoComplete="tel"
-                size="lg"
-              />
+              <FormField label="Phone Number" hint="Optional">
+                <FormInput
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+91 98765 43210"
+                  autoComplete="tel"
+                />
+              </FormField>
 
               {/* Subject */}
-              <Input
-                label="Subject"
-                type="text"
-                id="subject"
-                name="subject"
-                required
-                value={formData.subject}
-                onChange={handleChange}
-                placeholder="How can we help you?"
-                leftIcon={<FileText className="w-5 h-5" />}
-                size="lg"
-              />
+              <FormField label="Subject" required>
+                <FormInput
+                  type="text"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  placeholder="How can we help you?"
+                />
+              </FormField>
 
               {/* Message */}
-              <Textarea
-                label="Message"
-                id="message"
-                name="message"
-                required
-                rows={5}
-                value={formData.message}
-                onChange={handleChange}
-                placeholder="Tell us more about your inquiry..."
-                size="lg"
-              />
+              <FormField label="Message" required>
+                <FormTextarea
+                  name="message"
+                  rows={5}
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Tell us more about your inquiry..."
+                />
+              </FormField>
 
               {/* Submit Button */}
               <button

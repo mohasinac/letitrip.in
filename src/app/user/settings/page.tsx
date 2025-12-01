@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { User, Mail, Phone, MapPin, Save } from "lucide-react";
+import { MapPin, Save } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { authService } from "@/services/auth.service";
-import { Input } from "@/components/ui/Input";
+import { FormField, FormInput } from "@/components/forms";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -73,46 +73,35 @@ export default function SettingsPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
-          <Input
-            label="Full Name"
-            type="text"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-            leftIcon={<User className="w-5 h-5" />}
-            autoComplete="name"
-            size="lg"
-          />
+          <FormField label="Full Name" required>
+            <FormInput
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              autoComplete="name"
+            />
+          </FormField>
 
           {/* Email */}
-          <Input
-            label="Email Address"
-            type="email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-            required
-            leftIcon={<Mail className="w-5 h-5" />}
-            helperText="We'll send order confirmations to this email"
-            autoComplete="email"
-            size="lg"
-          />
+          <FormField label="Email Address" required hint="We'll send order confirmations to this email">
+            <FormInput
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              autoComplete="email"
+            />
+          </FormField>
 
           {/* Phone */}
-          <Input
-            label="Phone Number"
-            type="tel"
-            value={formData.phone}
-            onChange={(e) =>
-              setFormData({ ...formData, phone: e.target.value })
-            }
-            placeholder="+91 9876543210"
-            leftIcon={<Phone className="w-5 h-5" />}
-            helperText="Used for order updates and delivery coordination"
-            autoComplete="tel"
-            size="lg"
-          />
+          <FormField label="Phone Number" hint="Used for order updates and delivery coordination">
+            <FormInput
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="+91 9876543210"
+              autoComplete="tel"
+            />
+          </FormField>
 
           {/* Success Message */}
           {success && (
