@@ -690,21 +690,114 @@ auctions/
 Fixed auction detail page to always show sections with helpful empty states:
 
 **Files Changed**:
+
 - `src/app/auctions/[slug]/page.tsx` - Added empty state cards for "More from this shop" and "Similar Auctions"
 
 **Shop Auctions Section**:
+
 - Always renders section with heading
 - Shows cards if `shopAuctions.length > 0`
 - Otherwise shows empty state with Store icon, message, "View All Auctions" button
 - Dashed border card styling with dark mode support
 
 **Similar Auctions Section**:
+
 - Always renders section with heading
 - Shows cards if `similarAuctions.length > 0`
 - Otherwise shows empty state with Gavel icon, message, "View All Auctions" button
 - Consistent styling with shop auctions empty state
 
 **Result**: Users always see helpful section headers with clear navigation, no disappearing sections
+
+---
+
+### Session 17 - Demo Data & Media Upload (December 2025)
+
+**Doc References**: docs/19-demo-auction-dates.md, docs/26-media-upload-enhancements.md
+
+#### Demo Auction Date Fixes ✅
+
+**Status**: Complete
+
+**Files Changed**:
+- `src/app/api/admin/demo/generate/auctions/route.ts` - Fixed date generation logic
+
+**Changes**:
+- All demo auctions are now **LIVE** (no ended auctions)
+- Start dates: 0-2 days in the past
+- End dates: **3-7 days in the future** (previously up to 14 days)
+- All auctions have "active" status
+- Bid counts: 1-15 for active auctions
+- Current bid: Starting bid * (1 + random 0-50%)
+
+**Before/After**:
+```typescript
+// Before: 30% ended, 70% live with random dates up to 14 days
+const isEnded = Math.random() < 0.3;
+
+// After: All live, consistent timeframes
+const startDate = new Date(now - Math.floor(Math.random() * 2) * 24 * 60 * 60 * 1000);
+const daysUntilEnd = 3 + Math.floor(Math.random() * 5); // 3-7 days
+const endDate = new Date(now + daysUntilEnd * 24 * 60 * 60 * 1000);
+```
+
+**Result**: Demo auctions now properly showcase live bidding functionality with realistic end dates
+
+#### Media Upload Enhancements ✅
+
+**Status**: Complete (All Phases)
+
+**Components Created**:
+- `src/components/media/ImageEditor.tsx` - Crop, zoom, rotate with tabbed interface
+- `src/components/media/VideoThumbnailGenerator.tsx` - Client-side thumbnail generation
+- `src/components/media/MediaEditorModal.tsx` - Modal wrapper for editing
+- `src/components/media/FocusPointSelector.tsx` - Mobile focus point selector
+
+**Features Implemented**:
+
+1. **Image Editor**:
+   - Crop with aspect ratio presets (1:1, 4:3, 16:9, free)
+   - Zoom control (1-3x)
+   - Rotation (90° increments)
+   - Tabbed interface (Crop / Focus)
+   - Uses `react-easy-crop` library
+
+2. **Focus Point Selection**:
+   - Click/tap to set focus point on image
+   - Visual crosshair indicator
+   - Mobile preview showing cropped result
+   - Stored as percentage coordinates (focusX, focusY)
+   - `OptimizedImage` uses `object-position` with focus point
+
+3. **Video Thumbnails**:
+   - Client-side Canvas API thumbnail generation
+   - Timeline scrubber to select frame
+   - Custom thumbnail upload option
+   - Thumbnail saved to MediaMetadata
+
+**Type Updates**:
+```typescript
+// EditorState type includes focusPoint
+interface EditorState {
+  // ... existing fields
+  focusPoint?: { x: number; y: number };
+}
+
+// MediaMetadata includes focus and thumbnail
+interface MediaMetadata {
+  focusX?: number;
+  focusY?: number;
+  thumbnail?: string; // For videos
+}
+```
+
+**Integration**:
+- `MediaUploader` component has `enableEditing` prop
+- Edit button on `MediaPreviewCard` triggers editor
+- `onFileEdited` callback passes edited image and focus point
+- Product/auction/shop pages can enable editing for uploads
+
+**Result**: Users can crop, optimize for mobile, and select video thumbnails during upload
 
 ---
 

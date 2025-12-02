@@ -513,6 +513,56 @@ interface ProductBE {
 
 ## Implementation Status
 
+### Session 17 - Product Comparison & Viewing History (December 2025)
+
+**Doc References**: docs/10-product-comparison.md, docs/11-viewing-history.md
+
+#### Product Comparison Feature ✅
+
+**Status**: Complete - Full implementation with localStorage sync
+
+**Files Implemented**:
+- `src/constants/comparison.ts` - Max 4 products, comparison fields
+- `src/services/comparison.service.ts` - Add/remove/clear comparison
+- `src/contexts/ComparisonContext.tsx` - React context provider
+- `src/components/products/CompareButton.tsx` - Toggle button for cards
+- `src/components/products/ComparisonBar.tsx` - Fixed bottom bar with thumbnails
+- `src/app/compare/page.tsx` - Side-by-side comparison table
+- `src/components/cards/ProductCard.tsx` - Integrated compare button
+
+**Features**:
+- Add up to 4 products to comparison
+- Floating comparison bar at bottom of screen
+- Side-by-side table with price/rating/specs comparison
+- Highlights lowest price and highest rating
+- Cross-tab sync via localStorage
+- Dark mode support
+- Mobile responsive
+
+#### Viewing History Feature ✅
+
+**Status**: Complete - Auto-tracking with 30-day expiry
+
+**Files Implemented**:
+- `src/services/viewing-history.service.ts` - Track/fetch/clear history
+- `src/contexts/ViewingHistoryContext.tsx` - React context provider
+- `src/components/products/RecentlyViewedWidget.tsx` - Horizontal carousel widget
+- `src/app/user/history/page.tsx` - Full history page with grid view
+- `src/app/products/[slug]/page.tsx` - Auto-tracks product views
+- `src/app/page.tsx` - Shows RecentlyViewedWidget on homepage
+
+**Features**:
+- Automatic tracking when viewing product detail pages
+- Recently viewed widget (horizontal scrollable, max 8 items)
+- Full history page with remove individual/clear all
+- Relative date display ("Today", "Yesterday", "3 days ago")
+- Cross-tab sync via localStorage
+- Auto-expiry after 30 days, max 50 items stored
+- Excludes current product from widget
+- Dark mode support
+
+---
+
 ### Session 17 - Card Variants & Empty States (December 2025)
 
 **Doc References**: docs/13-unified-component-cards.md, docs/20-empty-section-products.md, docs/23-productcard-variants.md
@@ -520,16 +570,19 @@ interface ProductBE {
 #### Unified ProductCard Component ✅
 
 Implemented variant-based ProductCard supporting:
+
 - `variant="public"` (default) - Customer-facing card with favorites, compare, add-to-cart
 - `variant="admin"` - Admin dashboard with status badges, SKU, stock count
 - `variant="seller"` - Seller dashboard with sales metrics
 - `variant="compact"` - Minimal card for featured sections
 
 **Files Changed**:
+
 - `src/components/cards/ProductCard.tsx` - Added variant prop and conditional rendering
 - `/admin/products/page.tsx` - Uses unified card with `variant="admin"`
 
 **Key Features**:
+
 - Status badges (active/draft/out-of-stock)
 - Admin/seller action buttons (edit/delete)
 - Public quick actions (favorite/compare/cart)
@@ -539,15 +592,74 @@ Implemented variant-based ProductCard supporting:
 #### Empty State Fallbacks ✅
 
 Fixed `SimilarProducts` and `SellerProducts` components:
+
 - Changed from returning `null` to showing styled empty state cards
 - Added icons (Package/Store), helpful messages, "View All Products" CTA
 - Dashed border styling with dark mode support
 
 **Files Changed**:
+
 - `src/components/product/SimilarProducts.tsx` - Empty state with Package icon
 - `src/components/product/SellerProducts.tsx` - Empty state with Store icon
 
 **Result**: Users always see helpful sections with clear navigation, even when no items exist
+
+---
+
+### Session 17 - Route Optimization & Constants (December 2025)
+
+**Doc References**: docs/16-route-fixes.md, docs/17-constants-consolidation.md
+
+#### Route Fixes - Slug as Document ID ✅
+
+**Status**: Phase 1 & 2 Complete
+
+**Strategy**: Use slug as Firestore document ID for SEO consistency
+- `doc.id === slug` for all entities
+- No need to query by slug - direct document access: `doc(slug).get()`
+- Eliminates id vs slug confusion
+
+**Files Changed**:
+- `src/app/api/products/route.ts` - Uses `doc(slug).set()` instead of `add()`
+- `src/app/api/products/[slug]/route.ts` - Direct doc fetch with query fallback
+- `src/app/api/shops/route.ts` - Uses `doc(slug).set()`
+- `src/app/api/shops/[slug]/route.ts` - Direct doc fetch
+- `src/app/api/categories/route.ts` - Uses `doc(slug).set()`
+- `src/app/api/categories/[slug]/route.ts` - Direct doc fetch
+- `src/app/api/auctions/route.ts` - Uses `doc(slug).set()`
+- `src/app/api/blog/route.ts` - Uses `doc(slug).set()`
+
+**Pattern**:
+```typescript
+// Creating: Slug becomes document ID
+await collection.doc(slug).set({ ...data, slug });
+
+// Fetching: Direct access first, fallback for old data
+let doc = await collection.doc(slug).get();
+if (!doc.exists) {
+  const snapshot = await collection.where('slug', '==', slug).limit(1).get();
+  doc = snapshot.docs[0];
+}
+```
+
+#### Constants Consolidation ✅
+
+**Status**: Complete
+
+**Files Created**:
+- `src/constants/limits.ts` - All numeric limits (pagination, products, uploads)
+- `src/constants/statuses.ts` - All status enums with types, labels, colors
+
+**Benefits**:
+- Centralized limits (PAGINATION.DEFAULT_PAGE_SIZE, PRODUCT_LIMITS, UPLOAD_LIMITS)
+- Centralized statuses (PRODUCT_STATUS, ORDER_STATUS, AUCTION_STATUS)
+- Status labels and colors for consistent UI
+- Services now import from constants instead of hardcoding
+
+**Files Updated**:
+- Product, auction, blog services use LIMITS constants
+- All services use STATUS enums consistently
+- Replaced hardcoded pagination values
 
 ---
 
