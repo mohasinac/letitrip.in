@@ -37,6 +37,7 @@ const TIPS_LIST = [
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supportService } from "@/services/support.service";
+import { FormInput, FormSelect, FormTextarea } from "@/components/forms";
 
 export default function SupportTicketPage() {
   const router = useRouter();
@@ -95,94 +96,52 @@ export default function SupportTicketPage() {
 
       <div className="bg-white rounded-lg border p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="support-subject"
-              className="block text-gray-800 mb-2 font-semibold"
-            >
-              {SUBJECT_LABEL} <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="support-subject"
-              type="text"
-              value={formData.subject}
-              onChange={(e) =>
-                setFormData({ ...formData, subject: e.target.value })
-              }
-              className="w-full border border-gray-300 rounded px-4 py-2 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              placeholder={SUBJECT_PLACEHOLDER}
-              required
-            />
-          </div>
+          <FormInput
+            id="support-subject"
+            label={`${SUBJECT_LABEL} *`}
+            value={formData.subject}
+            onChange={(e) =>
+              setFormData({ ...formData, subject: e.target.value })
+            }
+            placeholder={SUBJECT_PLACEHOLDER}
+            required
+          />
 
-          <div>
-            <label
-              htmlFor="support-category"
-              className="block text-gray-800 mb-2 font-semibold"
-            >
-              {CATEGORY_LABEL} <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="support-category"
-              value={formData.category}
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
-              }
-              className="w-full border border-gray-300 rounded px-4 py-2 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              required
-            >
-              {CATEGORY_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <FormSelect
+            id="support-category"
+            label={`${CATEGORY_LABEL} *`}
+            value={formData.category}
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
+            options={CATEGORY_OPTIONS}
+            required
+          />
 
-          <div>
-            <label
-              htmlFor="support-priority"
-              className="block text-gray-800 mb-2 font-semibold"
-            >
-              {PRIORITY_LABEL}
-            </label>
-            <select
-              id="support-priority"
-              value={formData.priority}
-              onChange={(e) =>
-                setFormData({ ...formData, priority: e.target.value })
-              }
-              className="w-full border border-gray-300 rounded px-4 py-2 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-yellow-500"
-            >
-              {PRIORITY_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <FormSelect
+            id="support-priority"
+            label={PRIORITY_LABEL}
+            value={formData.priority}
+            onChange={(e) =>
+              setFormData({ ...formData, priority: e.target.value })
+            }
+            options={PRIORITY_OPTIONS}
+          />
 
-          <div>
-            <label
-              htmlFor="support-description"
-              className="block text-gray-800 mb-2 font-semibold"
-            >
-              {DESCRIPTION_LABEL} <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              id="support-description"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              className="w-full border border-gray-300 rounded px-4 py-2 h-32 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              placeholder={DESCRIPTION_PLACEHOLDER}
-              required
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              {formData.description.length} characters
-            </p>
-          </div>
+          <FormTextarea
+            id="support-description"
+            label={`${DESCRIPTION_LABEL} *`}
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            className="h-32"
+            placeholder={DESCRIPTION_PLACEHOLDER}
+            required
+          />
+          <p className="text-sm text-gray-500 mt-1">
+            {formData.description.length} characters
+          </p>
 
           <div className="flex gap-3">
             <button

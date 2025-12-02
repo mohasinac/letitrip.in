@@ -16,8 +16,9 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { FormInput } from "@/components/forms";
 import { messagesService } from "@/services/messages.service";
-import { ConversationFE } from "@/types/frontend/message.types";
+import type { ConversationFE } from "@/types/frontend/message.types";
 import { formatDistanceToNow } from "date-fns";
 import {
   MessageSquare,
@@ -168,16 +169,14 @@ export default function SellerMessagesPage() {
 
       {/* Search */}
       <div className="mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search conversations..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          />
-        </div>
+        <FormInput
+          id="conversation-search"
+          type="text"
+          placeholder="Search conversations..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          leftIcon={<Search className="h-5 w-5" />}
+        />
       </div>
 
       {/* Stats Bar */}

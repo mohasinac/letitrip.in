@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, Filter, Grid, List } from "lucide-react";
+import { FormSelect } from "@/components/forms";
 import { ShopCard } from "@/components/cards/ShopCard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { SHOP_FILTERS } from "@/constants/filters";
@@ -115,15 +116,17 @@ function ShopsContent() {
             </button>
 
             {/* Sort */}
-            <select
+            <FormSelect
+              id="shops-sort-by"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
-            >
-              <option value="rating">Highest Rated</option>
-              <option value="products">Most Products</option>
-              <option value="newest">Newest</option>
-            </select>
+              options={[
+                { value: "rating", label: "Highest Rated" },
+                { value: "products", label: "Most Products" },
+                { value: "newest", label: "Newest" },
+              ]}
+              compact
+            />
 
             {/* View Toggle */}
             <div className="hidden md:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">

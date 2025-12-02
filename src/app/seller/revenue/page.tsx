@@ -17,6 +17,7 @@ import {
   Download,
   Calendar,
 } from "lucide-react";
+import { FormInput, FormSelect } from "@/components/forms";
 
 export default function SellerRevenuePage() {
   const router = useRouter();
@@ -164,7 +165,8 @@ export default function SellerRevenuePage() {
                   Date Range:
                 </span>
               </div>
-              <input
+              <FormInput
+                id="start-date"
                 type="date"
                 value={dateRange.startDate}
                 onChange={(e) =>
@@ -174,10 +176,11 @@ export default function SellerRevenuePage() {
                   }))
                 }
                 max={dateRange.endDate}
-                className="px-3 py-2 border rounded-lg text-sm"
+                compact
               />
-              <span className="text-gray-500">to</span>
-              <input
+              <span className="text-gray-500 dark:text-gray-400">to</span>
+              <FormInput
+                id="end-date"
                 type="date"
                 value={dateRange.endDate}
                 onChange={(e) =>
@@ -188,23 +191,25 @@ export default function SellerRevenuePage() {
                 }
                 min={dateRange.startDate}
                 max={new Date().toISOString().split("T")[0]}
-                className="px-3 py-2 border rounded-lg text-sm"
+                compact
               />
               <div className="ml-4 flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Period:
                 </span>
-                <select
+                <FormSelect
+                  id="period-select"
                   value={period}
                   onChange={(e) =>
                     setPeriod(e.target.value as "day" | "week" | "month")
                   }
-                  className="px-3 py-2 border rounded-lg text-sm"
-                >
-                  <option value="day">Daily</option>
-                  <option value="week">Weekly</option>
-                  <option value="month">Monthly</option>
-                </select>
+                  options={[
+                    { value: "day", label: "Daily" },
+                    { value: "week", label: "Weekly" },
+                    { value: "month", label: "Monthly" },
+                  ]}
+                  compact
+                />
               </div>
             </div>
           </div>

@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { AuctionCard } from "@/components/cards/AuctionCard";
+import AuctionCard from "@/components/cards/AuctionCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -604,8 +604,8 @@ export default function SellerAuctionsPage() {
                     key={auction.id}
                     auction={{
                       id: auction.id,
-                      name: auction.name,
-                      slug: auction.slug,
+                      name: auction.name || "",
+                      slug: auction.slug || "",
                       images: auction.images || [],
                       currentBid: auction.currentBid || 0,
                       startingBid: auction.startingBid || 0,

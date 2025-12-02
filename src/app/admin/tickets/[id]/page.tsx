@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { DateDisplay } from "@/components/common/values";
+import { FormSelect, FormTextarea, FormCheckbox } from "@/components/forms";
 import { supportService } from "@/services/support.service";
 
 const statusColors = {
@@ -253,7 +255,7 @@ export default function AdminTicketDetailsPage() {
                           {message.senderRole === "admin" ? "Admin" : "User"}
                         </span>
                         <span className="text-sm text-gray-500">
-                          {new Date(message.createdAt).toLocaleString()}
+                          <DateDisplay date={message.createdAt} includeTime />
                         </span>
                       </div>
                       <p className="text-gray-700 whitespace-pre-wrap">
@@ -280,27 +282,20 @@ export default function AdminTicketDetailsPage() {
                 Add Reply
               </h2>
               <form onSubmit={handleReply}>
-                <textarea
+                <FormTextarea
+                  id="reply-message"
                   value={replyMessage}
                   onChange={(e) => setReplyMessage(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
                   rows={4}
                   placeholder="Type your message here..."
                   required
                 />
-                <div className="flex items-center gap-4">
-                  <label className="inline-flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={isInternal}
-                      onChange={(e) => setIsInternal(e.target.checked)}
-                      className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">
-                      Internal Note (not visible to user)
-                    </span>
-                  </label>
-                </div>
+                <FormCheckbox
+                  id="is-internal"
+                  label="Internal Note (not visible to user)"
+                  checked={isInternal}
+                  onChange={(e) => setIsInternal(e.target.checked)}
+                />
                 <div className="mt-4">
                   <button
                     type="submit"
@@ -329,20 +324,20 @@ export default function AdminTicketDetailsPage() {
                 <div>
                   <span className="text-gray-600">Created:</span>
                   <span className="ml-2 text-gray-900">
-                    {new Date(ticket.createdAt).toLocaleString()}
+                    <DateDisplay date={ticket.createdAt} includeTime />
                   </span>
                 </div>
                 <div>
                   <span className="text-gray-600">Updated:</span>
                   <span className="ml-2 text-gray-900">
-                    {new Date(ticket.updatedAt).toLocaleString()}
+                    <DateDisplay date={ticket.updatedAt} includeTime />
                   </span>
                 </div>
                 {ticket.resolvedAt && (
                   <div>
                     <span className="text-gray-600">Resolved:</span>
                     <span className="ml-2 text-gray-900">
-                      {new Date(ticket.resolvedAt).toLocaleString()}
+                      <DateDisplay date={ticket.resolvedAt} includeTime />
                     </span>
                   </div>
                 )}
@@ -354,18 +349,19 @@ export default function AdminTicketDetailsPage() {
               <h3 className="font-semibold text-gray-900 mb-3">
                 Change Status
               </h3>
-              <select
+              <FormSelect
+                id="ticket-status"
                 value={ticket.status}
                 onChange={(e) => handleStatusChange(e.target.value)}
                 disabled={isUpdating}
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
-              >
-                <option value="open">Open</option>
-                <option value="in-progress">In Progress</option>
-                <option value="resolved">Resolved</option>
-                <option value="closed">Closed</option>
-                <option value="escalated">Escalated</option>
-              </select>
+                options={[
+                  { value: "open", label: "Open" },
+                  { value: "in-progress", label: "In Progress" },
+                  { value: "resolved", label: "Resolved" },
+                  { value: "closed", label: "Closed" },
+                  { value: "escalated", label: "Escalated" },
+                ]}
+              />
             </div>
 
             {/* Priority Control */}
@@ -373,17 +369,18 @@ export default function AdminTicketDetailsPage() {
               <h3 className="font-semibold text-gray-900 mb-3">
                 Change Priority
               </h3>
-              <select
+              <FormSelect
+                id="ticket-priority"
                 value={ticket.priority}
                 onChange={(e) => handlePriorityChange(e.target.value)}
                 disabled={isUpdating}
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
-              </select>
+                options={[
+                  { value: "low", label: "Low" },
+                  { value: "medium", label: "Medium" },
+                  { value: "high", label: "High" },
+                  { value: "urgent", label: "Urgent" },
+                ]}
+              />
             </div>
 
             {/* Quick Actions */}

@@ -43,6 +43,7 @@ import {
   FormTextarea,
   FormLabel,
 } from "@/components/forms";
+import { Price } from "@/components/common/values";
 
 interface SellerProfile {
   displayName: string;
@@ -567,7 +568,7 @@ export default function SellerSettingsPage() {
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
               <p className="text-sm text-blue-800 dark:text-blue-200">
                 Payouts are processed weekly on Wednesdays. Minimum payout
-                amount is ₹{payout.minPayoutAmount}.
+                amount is <Price amount={payout.minPayoutAmount} />.
               </p>
             </div>
 

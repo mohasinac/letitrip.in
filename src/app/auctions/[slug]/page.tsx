@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { FormInput } from "@/components/forms";
+import { DateDisplay } from "@/components/common/values";
 import { auctionsService } from "@/services/auctions.service";
 import { shopsService } from "@/services/shops.service";
 import { notFound } from "@/lib/error-redirects";
@@ -641,7 +642,7 @@ export default function AuctionDetailPage() {
                   Ends:
                 </span>
                 <span className="font-medium text-gray-900">
-                  {new Date(auction.endTime).toLocaleString()}
+                  <DateDisplay date={auction.endTime} includeTime />
                 </span>
               </div>
             </div>

@@ -6,6 +6,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
 import { useIsMobile } from "@/hooks/useMobile";
 import { DateDisplay } from "@/components/common/values";
+import { FormSelect } from "@/components/forms";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800",
@@ -94,48 +95,51 @@ export default function AdminTicketsPage() {
         {/* Filters */}
         <div className="bg-white rounded-lg border p-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <select
+            <FormSelect
+              id="filter-status"
               value={filter.status}
               onChange={(e) => setFilter({ ...filter, status: e.target.value })}
-              className="border border-gray-300 rounded px-4 py-2"
-            >
-              <option value="">All Statuses</option>
-              <option value="open">Open</option>
-              <option value="in-progress">In Progress</option>
-              <option value="resolved">Resolved</option>
-              <option value="closed">Closed</option>
-              <option value="escalated">Escalated</option>
-            </select>
+              options={[
+                { value: "", label: "All Statuses" },
+                { value: "open", label: "Open" },
+                { value: "in-progress", label: "In Progress" },
+                { value: "resolved", label: "Resolved" },
+                { value: "closed", label: "Closed" },
+                { value: "escalated", label: "Escalated" },
+              ]}
+            />
 
-            <select
+            <FormSelect
+              id="filter-category"
               value={filter.category}
               onChange={(e) =>
                 setFilter({ ...filter, category: e.target.value })
               }
-              className="border border-gray-300 rounded px-4 py-2"
-            >
-              <option value="">All Categories</option>
-              <option value="order-issue">Order Issue</option>
-              <option value="return-refund">Return/Refund</option>
-              <option value="product-question">Product Question</option>
-              <option value="account">Account</option>
-              <option value="payment">Payment</option>
-              <option value="other">Other</option>
-            </select>
+              options={[
+                { value: "", label: "All Categories" },
+                { value: "order-issue", label: "Order Issue" },
+                { value: "return-refund", label: "Return/Refund" },
+                { value: "product-question", label: "Product Question" },
+                { value: "account", label: "Account" },
+                { value: "payment", label: "Payment" },
+                { value: "other", label: "Other" },
+              ]}
+            />
 
-            <select
+            <FormSelect
+              id="filter-priority"
               value={filter.priority}
               onChange={(e) =>
                 setFilter({ ...filter, priority: e.target.value })
               }
-              className="border border-gray-300 rounded px-4 py-2"
-            >
-              <option value="">All Priorities</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
-            </select>
+              options={[
+                { value: "", label: "All Priorities" },
+                { value: "low", label: "Low" },
+                { value: "medium", label: "Medium" },
+                { value: "high", label: "High" },
+                { value: "urgent", label: "Urgent" },
+              ]}
+            />
           </div>
         </div>
 

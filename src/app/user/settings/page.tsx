@@ -35,7 +35,7 @@ export default function SettingsPage() {
     setFormData({
       name: user.fullName || "",
       email: user.email || "",
-      phone: user.phone || "",
+      phone: user.phoneNumber || "",
     });
   }, [user]);
 
@@ -53,11 +53,11 @@ export default function SettingsPage() {
 
   const handleAvatarUpload = async (files: MediaFile[]) => {
     setAvatarFiles(files);
-    if (files.length > 0 && files[0].url) {
+    if (files.length > 0 && files[0].preview) {
       try {
         setLoading(true);
         await authService.updateProfile({
-          photoURL: files[0].url,
+          photoURL: files[0].preview,
         });
         setSuccess(true);
         setShowAvatarUpload(false);
@@ -86,7 +86,7 @@ export default function SettingsPage() {
       await authService.updateProfile({
         fullName: formData.name,
         email: formData.email,
-        phone: formData.phone,
+        phoneNumber: formData.phone,
       });
 
       setSuccess(true);

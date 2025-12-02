@@ -41,14 +41,25 @@ All inline `new Date().toLocaleDateString()` patterns have been migrated to use 
 - `src/app/seller/coupons/page.tsx` - Coupon expiry dates
 - `src/app/seller/auctions/page.tsx` - Auction end dates
 - `src/app/seller/returns/page.tsx` - Return request dates
-- `src/app/seller/orders/[id]/page.tsx` - Delivery dates
+- `src/app/seller/orders/[id]/page.tsx` - Order placed date (Dec 2, 2025) ✅
+
+**Public Pages:**
+
+- `src/app/auctions/[slug]/page.tsx` - Auction end time (Dec 2, 2025) ✅
 
 **Admin Pages:**
 
 - `src/app/admin/payouts/page.tsx` - Payout dates
 - `src/app/admin/users/page.tsx` - User creation dates
 - `src/app/admin/tickets/page.tsx` - Ticket dates
+- `src/app/admin/tickets/[id]/page.tsx` - Message timestamps + metadata dates (Dec 2, 2025) ✅
 - `src/app/admin/returns/page.tsx` - Return dates
+
+### Price Migration Updates (December 2, 2025)
+
+**Seller Pages:**
+
+- `src/app/seller/settings/page.tsx` - Payout minimum amount (Dec 2, 2025) ✅
 - `src/app/admin/shops/[id]/edit/page.tsx` - Shop dates
 - `src/app/admin/coupons/page.tsx` - Coupon expiry dates
 - `src/app/admin/blog/page.tsx` - Post dates

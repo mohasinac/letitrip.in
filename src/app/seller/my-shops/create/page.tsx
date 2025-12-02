@@ -298,7 +298,7 @@ export default function CreateShopWizardPage() {
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
                 placeholder="e.g., Vintage Treasures Emporium"
-                helpText="Choose a unique, memorable name for your shop"
+                helperText="Choose a unique, memorable name for your shop"
                 required
               />
 
@@ -326,7 +326,7 @@ export default function CreateShopWizardPage() {
                 label="Primary Category"
                 value={formData.category}
                 onChange={(e) => handleChange("category", e.target.value)}
-                helpText="Main category your shop focuses on"
+                helperText="Main category your shop focuses on"
                 options={[
                   { value: "", label: "Select a category" },
                   { value: "electronics", label: "Electronics" },
@@ -346,7 +346,7 @@ export default function CreateShopWizardPage() {
                 onChange={(e) => handleChange("description", e.target.value)}
                 rows={5}
                 placeholder="Tell customers about your shop, what makes it unique, and what they can expect..."
-                helpText={`${formData.description.length}/500 characters (min 20)`}
+                helperText={`${formData.description.length}/500 characters (min 20)`}
                 required
               />
             </div>
@@ -371,7 +371,7 @@ export default function CreateShopWizardPage() {
                 value={formData.logoUrl}
                 onChange={(e) => handleChange("logoUrl", e.target.value)}
                 placeholder="https://example.com/logo.png"
-                helpText="Square image recommended (200x200px or larger)"
+                helperText="Square image recommended (200x200px or larger)"
               />
 
               {/* Logo Preview */}
@@ -403,7 +403,7 @@ export default function CreateShopWizardPage() {
                 value={formData.bannerUrl}
                 onChange={(e) => handleChange("bannerUrl", e.target.value)}
                 placeholder="https://example.com/banner.jpg"
-                helpText="Wide image recommended (1200x400px or larger)"
+                helperText="Wide image recommended (1200x400px or larger)"
               />
 
               {/* Banner Preview */}
@@ -549,7 +549,7 @@ export default function CreateShopWizardPage() {
                 value={formData.location}
                 onChange={(e) => handleChange("location", e.target.value)}
                 placeholder="Mumbai, Maharashtra"
-                helpText="City and state where your shop operates"
+                helperText="City and state where your shop operates"
                 required
               />
 
@@ -611,7 +611,7 @@ export default function CreateShopWizardPage() {
                 onChange={(e) => handleChange("shippingPolicy", e.target.value)}
                 rows={4}
                 placeholder="Describe your shipping methods, delivery times, charges, and coverage areas..."
-                helpText="Explain how you ship products and estimated delivery times"
+                helperText="Explain how you ship products and estimated delivery times"
               />
 
               {/* Return Policy */}
@@ -620,7 +620,7 @@ export default function CreateShopWizardPage() {
                 label="Return Policy"
                 value={formData.returnPolicy}
                 onChange={(e) => handleChange("returnPolicy", e.target.value)}
-                helpText="Choose a return window or define custom terms"
+                helperText="Choose a return window or define custom terms"
                 options={[
                   { value: "no-returns", label: "No Returns" },
                   { value: "7-days", label: "7 Days Return" },
@@ -639,7 +639,7 @@ export default function CreateShopWizardPage() {
                 }
                 rows={6}
                 placeholder="Enter your shop's terms and conditions, including payment terms, warranties, and customer obligations..."
-                helpText="Legal terms customers agree to when purchasing from your shop"
+                helperText="Legal terms customers agree to when purchasing from your shop"
               />
 
               {/* Policy Tips */}
