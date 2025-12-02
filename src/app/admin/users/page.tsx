@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { FormTextarea, FormSelect } from "@/components/forms";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   Loader2,
@@ -955,14 +956,12 @@ export default function AdminUsersPage() {
               {selectedUser.name || selectedUser.email}?
             </p>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ban Reason *
-              </label>
-              <textarea
+              <FormTextarea
+                label="Ban Reason"
+                required
                 value={banReason}
                 onChange={(e) => setBanReason(e.target.value)}
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter reason for banning this user..."
               />
             </div>
@@ -1019,18 +1018,16 @@ export default function AdminUsersPage() {
               Change role for {selectedUser.name || selectedUser.email}
             </p>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select New Role
-              </label>
-              <select
+              <FormSelect
+                label="Select New Role"
                 value={newRole}
                 onChange={(e) => setNewRole(e.target.value as UserRole)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="user">User</option>
-                <option value="seller">Seller</option>
-                <option value="admin">Admin</option>
-              </select>
+                options={[
+                  { value: "user", label: "User" },
+                  { value: "seller", label: "Seller" },
+                  { value: "admin", label: "Admin" },
+                ]}
+              />
             </div>
             <div className="flex justify-end gap-3">
               <button

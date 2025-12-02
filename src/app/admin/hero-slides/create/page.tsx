@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { FormInput, FormCheckbox } from "@/components/forms";
 import MediaUploader from "@/components/media/MediaUploader";
 import { heroSlidesService } from "@/services/hero-slides.service";
 import RichTextEditor from "@/components/common/RichTextEditor";
@@ -121,25 +122,19 @@ export default function CreateHeroSlidePage() {
       <form onSubmit={handleSubmit} className="bg-white rounded-lg border p-6">
         <div className="space-y-6">
           {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Title <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="Main headline text"
-              required
-            />
-          </div>
+          <FormInput
+            label="Title"
+            required
+            value={formData.title}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+            placeholder="Main headline text"
+          />
 
           {/* Subtitle */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Subtitle (Rich Text)
             </label>
             <RichTextEditor
@@ -155,7 +150,7 @@ export default function CreateHeroSlidePage() {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Description (Rich Text)
             </label>
             <RichTextEditor
@@ -170,7 +165,7 @@ export default function CreateHeroSlidePage() {
 
           {/* Image */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Image <span className="text-red-500">*</span>
             </label>
 
@@ -215,56 +210,35 @@ export default function CreateHeroSlidePage() {
           </div>
 
           {/* Link URL */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Link URL
-            </label>
-            <input
-              type="url"
-              value={formData.ctaLink}
-              onChange={(e) =>
-                setFormData({ ...formData, ctaLink: e.target.value })
-              }
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="https://..."
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              Where users go when they click the slide
-            </p>
-          </div>
+          <FormInput
+            label="Link URL"
+            type="url"
+            value={formData.ctaLink}
+            onChange={(e) =>
+              setFormData({ ...formData, ctaLink: e.target.value })
+            }
+            placeholder="https://..."
+            helperText="Where users go when they click the slide"
+          />
 
           {/* CTA Text */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Call-to-Action Text
-            </label>
-            <input
-              type="text"
-              value={formData.ctaText}
-              onChange={(e) =>
-                setFormData({ ...formData, ctaText: e.target.value })
-              }
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="Shop Now"
-            />
-          </div>
+          <FormInput
+            label="Call-to-Action Text"
+            value={formData.ctaText}
+            onChange={(e) =>
+              setFormData({ ...formData, ctaText: e.target.value })
+            }
+            placeholder="Shop Now"
+          />
 
           {/* Active Status */}
-          <div>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={formData.isActive}
-                onChange={(e) =>
-                  setFormData({ ...formData, isActive: e.target.checked })
-                }
-                className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
-              />
-              <span className="text-sm font-medium text-gray-700">
-                Active (show on homepage)
-              </span>
-            </label>
-          </div>
+          <FormCheckbox
+            label="Active (show on homepage)"
+            checked={formData.isActive}
+            onChange={(e) =>
+              setFormData({ ...formData, isActive: e.target.checked })
+            }
+          />
         </div>
 
         {/* Actions */}

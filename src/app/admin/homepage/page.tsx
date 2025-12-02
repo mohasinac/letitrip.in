@@ -10,6 +10,7 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
+import { FormInput } from "@/components/forms";
 import {
   homepageSettingsService,
   HomepageSettings,
@@ -353,27 +354,21 @@ export default function HomepageSettingsPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Link URL (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={settings.specialEventBanner.link || ""}
-                  onChange={(e) => {
-                    setSettings({
-                      ...settings,
-                      specialEventBanner: {
-                        ...settings.specialEventBanner,
-                        link: e.target.value,
-                      },
-                    });
-                    setHasChanges(true);
-                  }}
-                  placeholder="/special-offers"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
+              <FormInput
+                label="Link URL (Optional)"
+                value={settings.specialEventBanner.link || ""}
+                onChange={(e) => {
+                  setSettings({
+                    ...settings,
+                    specialEventBanner: {
+                      ...settings.specialEventBanner,
+                      link: e.target.value,
+                    },
+                  });
+                  setHasChanges(true);
+                }}
+                placeholder="/special-offers"
+              />
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
