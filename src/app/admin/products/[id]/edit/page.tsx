@@ -692,37 +692,26 @@ export default function AdminEditProductPage() {
               SEO Settings
             </h2>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Meta Title
-                </label>
-                <input
-                  type="text"
-                  value={formData.metaTitle}
-                  onChange={(e) =>
-                    setFormData({ ...formData, metaTitle: e.target.value })
-                  }
-                  placeholder="Product name - Shop name"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Meta Description
-                </label>
-                <textarea
-                  rows={3}
-                  value={formData.metaDescription}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      metaDescription: e.target.value,
-                    })
-                  }
-                  placeholder="Brief description for search engines..."
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
+              <FormInput
+                label="Meta Title"
+                value={formData.metaTitle}
+                onChange={(e) =>
+                  setFormData({ ...formData, metaTitle: e.target.value })
+                }
+                placeholder="Product name - Shop name"
+              />
+              <FormTextarea
+                label="Meta Description"
+                rows={3}
+                value={formData.metaDescription}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    metaDescription: e.target.value,
+                  })
+                }
+                placeholder="Brief description for search engines..."
+              />
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Tags
@@ -779,66 +768,49 @@ export default function AdminEditProductPage() {
               Publishing
             </h2>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Shop *
-                </label>
-                <select
-                  required
-                  value={formData.shopId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, shopId: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                >
-                  <option value="">Select Shop</option>
-                  {shops.map((shop) => (
-                    <option key={shop.id} value={shop.id}>
-                      {shop.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category *
-                </label>
-                <select
-                  required
-                  value={formData.categoryId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, categoryId: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                >
-                  <option value="">Select Category</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status *
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      status: e.target.value as ProductStatus,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                >
-                  <option value="draft">Draft</option>
-                  <option value="published">Published</option>
-                  <option value="archived">Archived</option>
-                  <option value="out-of-stock">Out of Stock</option>
-                </select>
-              </div>
+              <FormSelect
+                label="Shop"
+                required
+                value={formData.shopId}
+                onChange={(e) =>
+                  setFormData({ ...formData, shopId: e.target.value })
+                }
+                placeholder="Select Shop"
+                options={shops.map((shop) => ({
+                  value: shop.id,
+                  label: shop.name,
+                }))}
+              />
+              <FormSelect
+                label="Category"
+                required
+                value={formData.categoryId}
+                onChange={(e) =>
+                  setFormData({ ...formData, categoryId: e.target.value })
+                }
+                placeholder="Select Category"
+                options={categories.map((category) => ({
+                  value: category.id,
+                  label: category.name,
+                }))}
+              />
+              <FormSelect
+                label="Status"
+                required
+                value={formData.status}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    status: e.target.value as ProductStatus,
+                  })
+                }
+                options={[
+                  { value: "draft", label: "Draft" },
+                  { value: "published", label: "Published" },
+                  { value: "archived", label: "Archived" },
+                  { value: "out-of-stock", label: "Out of Stock" },
+                ]}
+              />
             </div>
           </div>
 
