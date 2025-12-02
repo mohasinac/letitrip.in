@@ -32,12 +32,14 @@ export function InputWrapper({
 }: InputWrapperProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       {children}
       {error && <FieldError error={error} />}
-      {!error && hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
+      {!error && hint && (
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{hint}</p>
+      )}
     </div>
   );
 }

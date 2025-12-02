@@ -19,6 +19,7 @@ import { ordersService } from "@/services/orders.service";
 import { OrderStatus } from "@/types";
 import { notFound } from "@/lib/error-redirects";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { Price, DateDisplay } from "@/components/common/values";
 import type { OrderFE } from "@/types/frontend/order.types";
 
 interface OrderPageProps {
@@ -147,7 +148,11 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
                 Placed on{" "}
-                {new Date(order.createdAt).toLocaleDateString("en-IN")}
+                <DateDisplay
+                  date={order.createdAt}
+                  format="short"
+                  className="inline"
+                />
               </p>
             </div>
             <div className="flex gap-3">
@@ -207,10 +212,10 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
                 </div>
                 <div className="text-right">
                   <p className="font-semibold text-gray-900 dark:text-white">
-                    ₹{item.price.toLocaleString()}
+                    <Price amount={item.price} />
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Total: ₹{(item.price * item.quantity).toLocaleString()}
+                    Total: <Price amount={item.price * item.quantity} />
                   </p>
                 </div>
               </div>
@@ -250,13 +255,15 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
                   Subtotal
                 </span>
                 <span className="text-gray-900 dark:text-white">
-                  ₹{order.subtotal?.toLocaleString()}
+                  <Price amount={order.subtotal || 0} />
                 </span>
               </div>
               {order.discount > 0 && (
                 <div className="flex justify-between text-green-600 dark:text-green-400">
                   <span>Discount</span>
-                  <span>-₹{order.discount.toLocaleString()}</span>
+                  <span>
+                    -<Price amount={order.discount} />
+                  </span>
                 </div>
               )}
               <div className="flex justify-between">
@@ -264,19 +271,23 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
                   Shipping
                 </span>
                 <span className="text-gray-900 dark:text-white">
-                  {order.shipping === 0 ? "FREE" : `₹${order.shipping}`}
+                  {order.shipping === 0 ? (
+                    "FREE"
+                  ) : (
+                    <Price amount={order.shipping || 0} />
+                  )}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600 dark:text-gray-400">Tax</span>
                 <span className="text-gray-900 dark:text-white">
-                  ₹{order.tax?.toLocaleString()}
+                  <Price amount={order.tax || 0} />
                 </span>
               </div>
               <div className="flex justify-between pt-2 border-t dark:border-gray-700 font-semibold text-lg">
                 <span className="dark:text-white">Total</span>
                 <span className="text-primary">
-                  ₹{order.total.toLocaleString()}
+                  <Price amount={order.total} />
                 </span>
               </div>
               <div className="pt-2 border-t dark:border-gray-700">

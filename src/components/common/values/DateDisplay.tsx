@@ -37,9 +37,21 @@ export function DateDisplay({
 }: DateDisplayProps) {
   const formatted = formatDate(date, { format, includeTime, fallback });
 
+  // Safely get ISO string, handling invalid dates
+  const getDateTimeAttr = (): string | undefined => {
+    if (!date) return undefined;
+    try {
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return undefined;
+      return d.toISOString();
+    } catch {
+      return undefined;
+    }
+  };
+
   return (
     <time
-      dateTime={date ? new Date(date).toISOString() : undefined}
+      dateTime={getDateTimeAttr()}
       className={cn("text-gray-600 dark:text-gray-400", className)}
     >
       {formatted}
@@ -64,9 +76,21 @@ export function RelativeDate({
   const relative = formatRelativeTime(date, { style });
   const full = formatDate(date, { format: "long", includeTime: true });
 
+  // Safely get ISO string, handling invalid dates
+  const getDateTimeAttr = (): string | undefined => {
+    if (!date) return undefined;
+    try {
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return undefined;
+      return d.toISOString();
+    } catch {
+      return undefined;
+    }
+  };
+
   return (
     <time
-      dateTime={new Date(date).toISOString()}
+      dateTime={getDateTimeAttr()}
       title={showFullOnHover ? full : undefined}
       className={cn(
         "text-gray-600 dark:text-gray-400 cursor-default",

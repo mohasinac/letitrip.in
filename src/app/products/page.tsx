@@ -7,6 +7,7 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 import { Grid, List, Loader2, Filter } from "lucide-react";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
+import { Price } from "@/components/common/values";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
@@ -27,7 +28,6 @@ function ProductsContent() {
 
   const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<"grid" | "table">("grid");
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
@@ -39,6 +39,7 @@ function ProductsContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [view, setView] = useState<"grid" | "table">("grid");
   const [initialized, setInitialized] = useState(false);
 
   // Initialize filters from URL on mount
@@ -61,16 +62,18 @@ function ProductsContent() {
     if (params.get("status")) initialFilters.status = [params.get("status")];
     if (params.get("featured") === "true") initialFilters.featured = true;
 
-    // Get search, sort, and page from URL
+    // Get search, sort, view, and page from URL
     const urlSearch = params.get("search") || "";
     const urlSortBy = params.get("sortBy") || "createdAt";
     const urlSortOrder = (params.get("sortOrder") as "asc" | "desc") || "desc";
     const urlPage = Number(params.get("page")) || 1;
+    const urlView = (params.get("view") as "grid" | "table") || "grid";
 
     setSearchQuery(urlSearch);
     setSortBy(urlSortBy);
     setSortOrder(urlSortOrder);
     setCurrentPage(urlPage);
+    setView(urlView);
 
     if (Object.keys(initialFilters).length > 0) {
       setFilterValues(initialFilters);
@@ -80,8 +83,8 @@ function ProductsContent() {
     setInitialized(true);
   }, [searchParams]);
 
-  // Update URL when filters change - only on explicit apply
-  const updateUrlAndLoad = useCallback(() => {
+  // Update URL when filters change
+  const updateUrl = useCallback(() => {
     const params = new URLSearchParams();
 
     // Add filter values to URL
@@ -98,21 +101,30 @@ function ProductsContent() {
     if (searchQuery) params.set("search", searchQuery);
     if (sortBy !== "createdAt") params.set("sortBy", sortBy);
     if (sortOrder !== "desc") params.set("sortOrder", sortOrder);
+    if (view !== "grid") params.set("view", view);
     if (currentPage > 1) params.set("page", String(currentPage));
 
     // Update URL without reloading page
     const newUrl = params.toString() ? `?${params.toString()}` : "/products";
-    router.push(newUrl, { scroll: false });
+    router.replace(newUrl, { scroll: false });
+  }, [filterValues, sortBy, sortOrder, view, currentPage, searchQuery, router]);
 
-    loadProducts();
-  }, [filterValues, sortBy, sortOrder, currentPage, searchQuery]);
-
-  // Load on mount and when sort/page changes
+  // Load products whenever sort/page changes
   useEffect(() => {
     if (initialized) {
-      updateUrlAndLoad();
+      updateUrl();
+      loadProducts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialized, sortBy, sortOrder, currentPage]);
+
+  // Update URL when view changes (no reload needed)
+  useEffect(() => {
+    if (initialized) {
+      updateUrl();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view]);
 
   const loadFilterOptions = async () => {
     try {
@@ -210,6 +222,7 @@ function ProductsContent() {
     setSearchQuery("");
     setSortBy("createdAt");
     setSortOrder("desc");
+    setView("grid");
     setCurrentPage(1);
     setCursors([null]); // Reset pagination cursors
     router.push("/products", { scroll: false }); // Clear URL params
@@ -340,7 +353,10 @@ function ProductsContent() {
               setCursors([null]); // Reset pagination when filters change
               if (isMobile) setShowFilters(false);
               // Trigger load after state updates
-              setTimeout(() => updateUrlAndLoad(), 0);
+              setTimeout(() => {
+                updateUrl();
+                loadProducts();
+              }, 0);
             }}
             onReset={handleResetFilters}
             isOpen={showFilters}
@@ -449,12 +465,12 @@ function ProductsContent() {
                             </td>
                             <td className="px-6 py-4">
                               <div className="font-medium text-gray-900 dark:text-white">
-                                ₹{product.price.toLocaleString()}
+                                <Price amount={product.price} />
                               </div>
                               {product.originalPrice &&
                                 product.originalPrice > product.price && (
                                   <div className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                                    ₹{product.originalPrice.toLocaleString()}
+                                    <Price amount={product.originalPrice} />
                                   </div>
                                 )}
                             </td>
@@ -565,7 +581,10 @@ function ProductsContent() {
               setCurrentPage(1);
               setCursors([null]);
               setShowFilters(false);
-              setTimeout(() => updateUrlAndLoad(), 0);
+              setTimeout(() => {
+                updateUrl();
+                loadProducts();
+              }, 0);
             }}
             onReset={handleResetFilters}
             isOpen={showFilters}

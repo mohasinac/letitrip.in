@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { toast } from "sonner";
 import SlugInput from "@/components/common/SlugInput";
+import { FormInput, FormLabel } from "@/components/forms";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import { mediaService } from "@/services/media.service";
 import type { RequiredStepProps } from "./types";
@@ -54,23 +55,14 @@ export function RequiredInfoStep({
 
       {/* Basic Info Section */}
       <div className="space-y-4">
-        <div>
-          <label
-            htmlFor="product-name"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Product Name *
-          </label>
-          <input
-            id="product-name"
-            type="text"
-            required
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            placeholder="Enter product name"
-          />
-        </div>
+        <FormInput
+          id="product-name"
+          label="Product Name"
+          required
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          placeholder="Enter product name"
+        />
 
         <SlugInput
           value={formData.slug}
@@ -79,9 +71,7 @@ export function RequiredInfoStep({
         />
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Category *
-          </label>
+          <FormLabel required>Category</FormLabel>
           <CategorySelectorWithCreate
             value={formData.categoryId}
             onChange={(categoryId) =>
@@ -92,81 +82,54 @@ export function RequiredInfoStep({
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="product-sku"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            SKU *
-          </label>
-          <input
-            id="product-sku"
-            type="text"
-            required
-            value={formData.sku}
-            onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            placeholder="e.g., PROD-12345"
-          />
-        </div>
+        <FormInput
+          id="product-sku"
+          label="SKU"
+          required
+          value={formData.sku}
+          onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+          placeholder="e.g., PROD-12345"
+        />
       </div>
 
       {/* Pricing Section */}
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label
-            htmlFor="product-price"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Price (₹) *
-          </label>
-          <input
-            id="product-price"
-            type="number"
-            required
-            min="0"
-            step="0.01"
-            value={formData.price}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                price: parseFloat(e.target.value) || 0,
-              })
-            }
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            placeholder="0.00"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="product-stock"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Stock Count *
-          </label>
-          <input
-            id="product-stock"
-            type="number"
-            required
-            min="0"
-            value={formData.stockCount}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                stockCount: parseInt(e.target.value) || 0,
-              })
-            }
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            placeholder="0"
-          />
-        </div>
+        <FormInput
+          id="product-price"
+          label="Price (₹)"
+          type="number"
+          required
+          min={0}
+          step={0.01}
+          value={formData.price}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              price: parseFloat(e.target.value) || 0,
+            })
+          }
+          placeholder="0.00"
+        />
+        <FormInput
+          id="product-stock"
+          label="Stock Count"
+          type="number"
+          required
+          min={0}
+          value={formData.stockCount}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              stockCount: parseInt(e.target.value) || 0,
+            })
+          }
+          placeholder="0"
+        />
       </div>
 
       {/* Image Upload Section */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Product Images * (at least 1)
-        </label>
+        <FormLabel required>Product Images (at least 1)</FormLabel>
         <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-6 text-center">
           <input
             type="file"

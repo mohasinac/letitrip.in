@@ -5,6 +5,7 @@ import { Loader2, CheckCircle2, XCircle, MapPin } from "lucide-react";
 import { locationService } from "@/services/location.service";
 import type { PincodeLookupResult } from "@/types/shared/location.types";
 import { PINCODE_LENGTH } from "@/constants/location";
+import { FormLabel } from "@/components/forms";
 
 export interface PincodeInputProps {
   value: string;
@@ -132,13 +133,9 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
     return (
       <div className={`space-y-1 ${className}`}>
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-          >
+          <FormLabel htmlFor={inputId} required={required}>
             {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
-          </label>
+          </FormLabel>
         )}
 
         <div className="relative">
@@ -209,12 +206,7 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
           lookupResult.hasMultipleAreas &&
           lookupResult.areas.length > 1 && (
             <div className="mt-2">
-              <label
-                htmlFor="pincode-area-select"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Select Area
-              </label>
+              <FormLabel htmlFor="pincode-area-select">Select Area</FormLabel>
               <select
                 id="pincode-area-select"
                 value={selectedArea}

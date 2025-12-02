@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { FormInput, FormTextarea } from "@/components/forms";
 import { useAuth } from "@/contexts/AuthContext";
 import { shopsService } from "@/services/shops.service";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
@@ -26,6 +27,7 @@ import MediaUploader from "@/components/media/MediaUploader";
 import SlugInput from "@/components/common/SlugInput";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { Price, Percentage, DateDisplay } from "@/components/common/values";
 import type { ShopFE } from "@/types/frontend/shop.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
@@ -528,29 +530,19 @@ export default function AdminEditShopPage() {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Basic Information */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Basic Information
                 </h2>
                 <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="admin-shop-name"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Shop Name *
-                    </label>
-                    <input
-                      id="admin-shop-name"
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                  </div>
+                  <FormInput
+                    label="Shop Name *"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    required
+                  />
 
                   <div>
                     <SlugInput
@@ -560,535 +552,316 @@ export default function AdminEditShopPage() {
                     />
                   </div>
 
-                  <div>
-                    <label
-                      htmlFor="admin-shop-description"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Description
-                    </label>
-                    <textarea
-                      id="admin-shop-description"
-                      rows={4}
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      placeholder="Tell customers about your shop..."
-                    />
-                  </div>
+                  <FormTextarea
+                    label="Description"
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        description: e.target.value,
+                      })
+                    }
+                    rows={4}
+                    placeholder="Tell customers about your shop..."
+                  />
                 </div>
               </div>
 
               {/* Contact Information */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Contact Information
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label
-                      htmlFor="admin-shop-email"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Email
-                    </label>
-                    <input
-                      id="admin-shop-email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="admin-shop-phone"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Phone
-                    </label>
-                    <input
-                      id="admin-shop-phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                  </div>
+                  <FormInput
+                    label="Email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                  />
+                  <FormInput
+                    label="Phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
+                  />
                   <div className="sm:col-span-2">
-                    <label
-                      htmlFor="admin-shop-location"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Location
-                    </label>
-                    <input
-                      id="admin-shop-location"
-                      type="text"
+                    <FormInput
+                      label="Location"
                       value={formData.location}
                       onChange={(e) =>
                         setFormData({ ...formData, location: e.target.value })
                       }
                       placeholder="City, State"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Address */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Address
                 </h2>
                 <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="admin-shop-address1"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Address Line 1
-                    </label>
-                    <input
-                      id="admin-shop-address1"
-                      type="text"
-                      value={formData.address.line1}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          address: {
-                            ...formData.address,
-                            line1: e.target.value,
-                          },
-                        })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="admin-shop-address2"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Address Line 2
-                    </label>
-                    <input
-                      id="admin-shop-address2"
-                      type="text"
-                      value={formData.address.line2}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          address: {
-                            ...formData.address,
-                            line2: e.target.value,
-                          },
-                        })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                  </div>
+                  <FormInput
+                    label="Address Line 1"
+                    value={formData.address.line1}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        address: {
+                          ...formData.address,
+                          line1: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                  <FormInput
+                    label="Address Line 2"
+                    value={formData.address.line2}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        address: {
+                          ...formData.address,
+                          line2: e.target.value,
+                        },
+                      })
+                    }
+                  />
                   <div className="grid gap-4 sm:grid-cols-3">
-                    <div>
-                      <label
-                        htmlFor="admin-shop-city"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        City
-                      </label>
-                      <input
-                        id="admin-shop-city"
-                        type="text"
-                        value={formData.address.city}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            address: {
-                              ...formData.address,
-                              city: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="admin-shop-state"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        State
-                      </label>
-                      <input
-                        id="admin-shop-state"
-                        type="text"
-                        value={formData.address.state}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            address: {
-                              ...formData.address,
-                              state: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="admin-shop-pincode"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Pincode
-                      </label>
-                      <input
-                        id="admin-shop-pincode"
-                        type="text"
-                        value={formData.address.pincode}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            address: {
-                              ...formData.address,
-                              pincode: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      />
-                    </div>
+                    <FormInput
+                      label="City"
+                      value={formData.address.city}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          address: {
+                            ...formData.address,
+                            city: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                    <FormInput
+                      label="State"
+                      value={formData.address.state}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          address: {
+                            ...formData.address,
+                            state: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                    <FormInput
+                      label="Pincode"
+                      value={formData.address.pincode}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          address: {
+                            ...formData.address,
+                            pincode: e.target.value,
+                          },
+                        })
+                      }
+                    />
                   </div>
                 </div>
               </div>
 
               {/* Social Links */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Social Links
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label
-                      htmlFor="admin-shop-website"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Website
-                    </label>
-                    <input
-                      id="admin-shop-website"
-                      type="url"
-                      value={formData.website}
-                      onChange={(e) =>
-                        setFormData({ ...formData, website: e.target.value })
-                      }
-                      placeholder="https://example.com"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="admin-shop-facebook"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Facebook
-                    </label>
-                    <input
-                      id="admin-shop-facebook"
-                      type="url"
-                      value={formData.facebook}
-                      onChange={(e) =>
-                        setFormData({ ...formData, facebook: e.target.value })
-                      }
-                      placeholder="https://facebook.com/..."
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="admin-shop-instagram"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Instagram
-                    </label>
-                    <input
-                      id="admin-shop-instagram"
-                      type="url"
-                      value={formData.instagram}
-                      onChange={(e) =>
-                        setFormData({ ...formData, instagram: e.target.value })
-                      }
-                      placeholder="https://instagram.com/..."
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="admin-shop-twitter"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Twitter
-                    </label>
-                    <input
-                      id="admin-shop-twitter"
-                      type="url"
-                      value={formData.twitter}
-                      onChange={(e) =>
-                        setFormData({ ...formData, twitter: e.target.value })
-                      }
-                      placeholder="https://twitter.com/..."
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                  </div>
+                  <FormInput
+                    label="Website"
+                    type="url"
+                    value={formData.website}
+                    onChange={(e) =>
+                      setFormData({ ...formData, website: e.target.value })
+                    }
+                    placeholder="https://example.com"
+                  />
+                  <FormInput
+                    label="Facebook"
+                    type="url"
+                    value={formData.facebook}
+                    onChange={(e) =>
+                      setFormData({ ...formData, facebook: e.target.value })
+                    }
+                    placeholder="https://facebook.com/..."
+                  />
+                  <FormInput
+                    label="Instagram"
+                    type="url"
+                    value={formData.instagram}
+                    onChange={(e) =>
+                      setFormData({ ...formData, instagram: e.target.value })
+                    }
+                    placeholder="https://instagram.com/..."
+                  />
+                  <FormInput
+                    label="Twitter"
+                    type="url"
+                    value={formData.twitter}
+                    onChange={(e) =>
+                      setFormData({ ...formData, twitter: e.target.value })
+                    }
+                    placeholder="https://twitter.com/..."
+                  />
                 </div>
               </div>
 
               {/* Business Details */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Business Details
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label
-                      htmlFor="admin-shop-gst"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      GST Number
-                    </label>
-                    <input
-                      id="admin-shop-gst"
-                      type="text"
-                      value={formData.gst}
-                      onChange={(e) =>
-                        setFormData({ ...formData, gst: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="admin-shop-pan"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      PAN Number
-                    </label>
-                    <input
-                      id="admin-shop-pan"
-                      type="text"
-                      value={formData.pan}
-                      onChange={(e) =>
-                        setFormData({ ...formData, pan: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                  </div>
+                  <FormInput
+                    label="GST Number"
+                    value={formData.gst}
+                    onChange={(e) =>
+                      setFormData({ ...formData, gst: e.target.value })
+                    }
+                  />
+                  <FormInput
+                    label="PAN Number"
+                    value={formData.pan}
+                    onChange={(e) =>
+                      setFormData({ ...formData, pan: e.target.value })
+                    }
+                  />
                 </div>
               </div>
 
               {/* Bank Details */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Bank Details
                 </h2>
                 <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="admin-shop-holder"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Account Holder Name
-                    </label>
-                    <input
-                      id="admin-shop-holder"
-                      type="text"
-                      value={formData.bankDetails.accountHolderName}
+                  <FormInput
+                    label="Account Holder Name"
+                    value={formData.bankDetails.accountHolderName}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        bankDetails: {
+                          ...formData.bankDetails,
+                          accountHolderName: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormInput
+                      label="Account Number"
+                      value={formData.bankDetails.accountNumber}
                       onChange={(e) =>
                         setFormData({
                           ...formData,
                           bankDetails: {
                             ...formData.bankDetails,
-                            accountHolderName: e.target.value,
+                            accountNumber: e.target.value,
                           },
                         })
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                     />
-                  </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <label
-                        htmlFor="admin-shop-account"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Account Number
-                      </label>
-                      <input
-                        id="admin-shop-account"
-                        type="text"
-                        value={formData.bankDetails.accountNumber}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            bankDetails: {
-                              ...formData.bankDetails,
-                              accountNumber: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="admin-shop-ifsc"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        IFSC Code
-                      </label>
-                      <input
-                        id="admin-shop-ifsc"
-                        type="text"
-                        value={formData.bankDetails.ifscCode}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            bankDetails: {
-                              ...formData.bankDetails,
-                              ifscCode: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <label
-                        htmlFor="admin-shop-bank"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Bank Name
-                      </label>
-                      <input
-                        id="admin-shop-bank"
-                        type="text"
-                        value={formData.bankDetails.bankName}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            bankDetails: {
-                              ...formData.bankDetails,
-                              bankName: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="admin-shop-branch"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Branch Name
-                      </label>
-                      <input
-                        id="admin-shop-branch"
-                        type="text"
-                        value={formData.bankDetails.branchName}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            bankDetails: {
-                              ...formData.bankDetails,
-                              branchName: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="admin-shop-upi"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      UPI ID
-                    </label>
-                    <input
-                      id="admin-shop-upi"
-                      type="text"
-                      value={formData.upiId}
+                    <FormInput
+                      label="IFSC Code"
+                      value={formData.bankDetails.ifscCode}
                       onChange={(e) =>
-                        setFormData({ ...formData, upiId: e.target.value })
+                        setFormData({
+                          ...formData,
+                          bankDetails: {
+                            ...formData.bankDetails,
+                            ifscCode: e.target.value,
+                          },
+                        })
                       }
-                      placeholder="example@upi"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                     />
                   </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormInput
+                      label="Bank Name"
+                      value={formData.bankDetails.bankName}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          bankDetails: {
+                            ...formData.bankDetails,
+                            bankName: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                    <FormInput
+                      label="Branch Name"
+                      value={formData.bankDetails.branchName}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          bankDetails: {
+                            ...formData.bankDetails,
+                            branchName: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  </div>
+                  <FormInput
+                    label="UPI ID"
+                    value={formData.upiId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, upiId: e.target.value })
+                    }
+                    placeholder="example@upi"
+                  />
                 </div>
               </div>
 
               {/* Policies */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Policies
                 </h2>
                 <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="admin-shop-return-policy"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Return Policy
-                    </label>
-                    <textarea
-                      id="admin-shop-return-policy"
-                      rows={4}
-                      value={formData.returnPolicy}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          returnPolicy: e.target.value,
-                        })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      placeholder="Describe your return policy..."
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="admin-shop-shipping-policy"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Shipping Policy
-                    </label>
-                    <textarea
-                      id="admin-shop-shipping-policy"
-                      rows={4}
-                      value={formData.shippingPolicy}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          shippingPolicy: e.target.value,
-                        })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      placeholder="Describe your shipping policy..."
-                    />
-                  </div>
+                  <FormTextarea
+                    label="Return Policy"
+                    value={formData.returnPolicy}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        returnPolicy: e.target.value,
+                      })
+                    }
+                    rows={4}
+                    placeholder="Describe your return policy..."
+                  />
+                  <FormTextarea
+                    label="Shipping Policy"
+                    value={formData.shippingPolicy}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        shippingPolicy: e.target.value,
+                      })
+                    }
+                    rows={4}
+                    placeholder="Describe your shipping policy..."
+                  />
                 </div>
               </div>
             </div>
@@ -1096,8 +869,8 @@ export default function AdminEditShopPage() {
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Shop Logo */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Shop Logo
                 </h2>
                 {shop.logo && (
@@ -1119,8 +892,8 @@ export default function AdminEditShopPage() {
               </div>
 
               {/* Shop Banner */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Shop Banner
                 </h2>
                 {shop.banner && (
@@ -1142,25 +915,33 @@ export default function AdminEditShopPage() {
               </div>
 
               {/* Seller Details */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Seller Details
                 </h2>
                 <div className="space-y-3 text-sm">
                   <div>
-                    <span className="text-gray-600">Owner ID:</span>
-                    <p className="font-medium truncate">{shop.ownerId}</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Created:</span>
-                    <p className="font-medium">
-                      {new Date(shop.createdAt).toLocaleDateString()}
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Owner ID:
+                    </span>
+                    <p className="font-medium dark:text-white truncate">
+                      {shop.ownerId}
                     </p>
                   </div>
                   <div>
-                    <span className="text-gray-600">Last Updated:</span>
-                    <p className="font-medium">
-                      {new Date(shop.updatedAt).toLocaleDateString()}
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Created:
+                    </span>
+                    <p className="font-medium dark:text-white">
+                      <DateDisplay date={shop.createdAt} format="short" />
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Last Updated:
+                    </span>
+                    <p className="font-medium dark:text-white">
+                      <DateDisplay date={shop.updatedAt} format="short" />
                     </p>
                   </div>
                 </div>
@@ -1230,7 +1011,9 @@ export default function AdminEditShopPage() {
                         {product.name}
                       </h3>
                       <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
-                        <span>₹{product.price.toLocaleString()}</span>
+                        <span>
+                          <Price amount={product.price} />
+                        </span>
                         <span>Stock: {product.stockCount}</span>
                         <StatusBadge status={product.status} />
                       </div>
@@ -1266,7 +1049,7 @@ export default function AdminEditShopPage() {
                 <div>
                   <p className="text-sm text-gray-600">Total Revenue</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    ₹{shopStats.totalRevenue?.toLocaleString() || 0}
+                    <Price amount={shopStats.totalRevenue || 0} />
                   </p>
                 </div>
                 <div>
@@ -1278,13 +1061,13 @@ export default function AdminEditShopPage() {
                 <div>
                   <p className="text-sm text-gray-600">Average Order Value</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    ₹{shopStats.averageOrderValue?.toLocaleString() || 0}
+                    <Price amount={shopStats.averageOrderValue || 0} />
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Conversion Rate</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {shopStats.conversionRate?.toFixed(2) || 0}%
+                    <Percentage value={shopStats.conversionRate || 0} />
                   </p>
                 </div>
               </div>
@@ -1338,18 +1121,11 @@ export default function AdminEditShopPage() {
       >
         {!shop.isBanned && (
           <div className="mt-4">
-            <label
-              htmlFor="admin-shop-ban-reason"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Ban Reason (Optional)
-            </label>
-            <textarea
-              id="admin-shop-ban-reason"
-              rows={3}
+            <FormTextarea
+              label="Ban Reason (Optional)"
               value={banReason}
               onChange={(e) => setBanReason(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              rows={3}
               placeholder="Why is this shop being banned?"
             />
           </div>

@@ -17,6 +17,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { analyticsService } from "@/services/analytics.service";
+import { Price } from "@/components/common/values";
 import type {
   SalesDataPointFE,
   CategoryPerformanceFE,
@@ -78,16 +79,13 @@ function RevenueTrendChart({ data }: { data: SalesDataPointFE[] }) {
             Total Revenue
           </p>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
-            ₹{totalRevenue.toLocaleString("en-IN")}
+            <Price amount={totalRevenue} />
           </p>
         </div>
         <div className="text-right">
           <p className="text-sm text-gray-500 dark:text-gray-400">Avg. Daily</p>
           <p className="text-lg font-semibold text-gray-900 dark:text-white">
-            ₹
-            {Math.round(totalRevenue / (data.length || 1)).toLocaleString(
-              "en-IN"
-            )}
+            <Price amount={Math.round(totalRevenue / (data.length || 1))} />
           </p>
         </div>
       </div>
@@ -108,7 +106,7 @@ function RevenueTrendChart({ data }: { data: SalesDataPointFE[] }) {
               <div className="absolute bottom-full mb-2 hidden group-hover:block z-10">
                 <div className="bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
                   <p className="font-medium">
-                    ₹{point.revenue.toLocaleString("en-IN")}
+                    <Price amount={point.revenue} />
                   </p>
                   <p className="text-gray-300">{point.orders} orders</p>
                 </div>
@@ -161,8 +159,7 @@ function CategoryBreakdown({ data }: { data: CategoryPerformanceFE[] }) {
                 {category.categoryName}
               </span>
               <span className="text-gray-500 dark:text-gray-400">
-                ₹{category.revenue.toLocaleString("en-IN")} (
-                {percentage.toFixed(1)}%)
+                <Price amount={category.revenue} /> ({percentage.toFixed(1)}%)
               </span>
             </div>
             <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -240,7 +237,7 @@ function DetailedProductsTable({ products }: { products: TopProductFE[] }) {
                   {product.sales.toLocaleString("en-IN")}
                 </td>
                 <td className="text-right py-3 px-4 text-sm font-medium text-green-600 dark:text-green-400">
-                  ₹{product.revenue.toLocaleString("en-IN")}
+                  <Price amount={product.revenue} />
                 </td>
                 <td className="text-right py-3 px-4 text-sm text-gray-500 dark:text-gray-400">
                   {product.views.toLocaleString("en-IN")}

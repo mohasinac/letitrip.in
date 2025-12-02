@@ -12,6 +12,7 @@ import { Card, FormActions } from "@/components/ui";
 import {
   FormField,
   FormInput,
+  FormLabel,
   FormSelect,
   FormTextarea,
 } from "@/components/forms";
@@ -159,12 +160,9 @@ export default function AuctionForm({
           </FormField>
 
           <div id="auction-slug-wrapper">
-            <label
-              htmlFor="auction-slug-wrapper"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Auction URL <span className="text-red-500">*</span>
-            </label>
+            <FormLabel htmlFor="auction-slug-wrapper" required>
+              Auction URL
+            </FormLabel>
             <SlugInput
               sourceText={formData.name}
               value={formData.slug}
@@ -186,12 +184,9 @@ export default function AuctionForm({
           </div>
 
           <div id="auction-description-wrapper">
-            <label
-              htmlFor="auction-description-wrapper"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Description <span className="text-red-500">*</span>
-            </label>
+            <FormLabel htmlFor="auction-description-wrapper" required>
+              Description
+            </FormLabel>
             <RichTextEditor
               value={formData.description}
               onChange={(value: string) => handleChange("description", value)}
@@ -239,12 +234,9 @@ export default function AuctionForm({
       <Card title="Auction Timing">
         <div className="grid gap-4 sm:grid-cols-2">
           <div id="auction-start-time-wrapper">
-            <label
-              htmlFor="auction-start-time-wrapper"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Start Time <span className="text-red-500">*</span>
-            </label>
+            <FormLabel htmlFor="auction-start-time-wrapper" required>
+              Start Time
+            </FormLabel>
             <DateTimePicker
               value={formData.startTime}
               onChange={(date) => handleChange("startTime", date)}
@@ -253,12 +245,9 @@ export default function AuctionForm({
           </div>
 
           <div id="auction-end-time-wrapper">
-            <label
-              htmlFor="auction-end-time-wrapper"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              End Time <span className="text-red-500">*</span>
-            </label>
+            <FormLabel htmlFor="auction-end-time-wrapper" required>
+              End Time
+            </FormLabel>
             <DateTimePicker
               value={formData.endTime}
               onChange={(date) => handleChange("endTime", date)}

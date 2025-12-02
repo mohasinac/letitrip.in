@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { FormInput, FormTextarea } from "@/components/forms";
 import { MediaMetadata } from "@/types/media";
 
 interface MediaMetadataFormProps {
@@ -74,113 +75,57 @@ export default function MediaMetadataForm({
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Description */}
-      <div>
-        <label
-          htmlFor="media-description"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Description <span className="text-red-500">*</span>
-        </label>
-        <textarea
-          id="media-description"
-          value={localMetadata.description || ""}
-          onChange={(e) => handleDescriptionChange(e.target.value)}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Enter a description for this media"
-          required
-        />
-      </div>
+      <FormTextarea
+        label="Description"
+        value={localMetadata.description || ""}
+        onChange={(e) => handleDescriptionChange(e.target.value)}
+        rows={3}
+        placeholder="Enter a description for this media"
+        required
+      />
 
       {/* Slug */}
-      <div>
-        <label
-          htmlFor="media-slug"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Slug <span className="text-red-500">*</span>
-        </label>
-        <input
-          id="media-slug"
-          type="text"
-          value={localMetadata.slug || ""}
-          onChange={(e) => handleSlugChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="media-slug"
-          pattern="[a-z0-9-]+"
-          required
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          URL-friendly identifier (lowercase letters, numbers, and hyphens only)
-        </p>
-      </div>
+      <FormInput
+        label="Slug"
+        value={localMetadata.slug || ""}
+        onChange={(e) => handleSlugChange(e.target.value)}
+        placeholder="media-slug"
+        helpText="URL-friendly identifier (lowercase letters, numbers, and hyphens only)"
+        required
+      />
 
       {/* Alt Text (for images) */}
-      <div>
-        <label
-          htmlFor="media-alt"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Alt Text
-        </label>
-        <input
-          id="media-alt"
-          type="text"
-          value={localMetadata.alt || ""}
-          onChange={(e) => handleAltChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Alternative text for accessibility"
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          Describes the image for screen readers and search engines
-        </p>
-      </div>
+      <FormInput
+        label="Alt Text"
+        value={localMetadata.alt || ""}
+        onChange={(e) => handleAltChange(e.target.value)}
+        placeholder="Alternative text for accessibility"
+        helpText="Describes the image for screen readers and search engines"
+      />
 
       {/* Caption */}
-      <div>
-        <label
-          htmlFor="media-caption"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Caption
-        </label>
-        <input
-          id="media-caption"
-          type="text"
-          value={localMetadata.caption || ""}
-          onChange={(e) => handleCaptionChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Optional caption"
-        />
-      </div>
+      <FormInput
+        label="Caption"
+        value={localMetadata.caption || ""}
+        onChange={(e) => handleCaptionChange(e.target.value)}
+        placeholder="Optional caption"
+      />
 
       {/* Tags */}
-      <div>
-        <label
-          htmlFor="media-tags"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Tags
-        </label>
-        <input
-          id="media-tags"
-          type="text"
-          value={localMetadata.tags?.join(", ") || ""}
-          onChange={(e) => handleTagsChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="tag1, tag2, tag3"
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          Comma-separated tags for organization
-        </p>
-      </div>
+      <FormInput
+        label="Tags"
+        value={localMetadata.tags?.join(", ") || ""}
+        onChange={(e) => handleTagsChange(e.target.value)}
+        placeholder="tag1, tag2, tag3"
+        helpText="Comma-separated tags for organization"
+      />
 
       {/* File Info (Read-only) */}
-      <div className="pt-4 border-t border-gray-200">
-        <h4 className="text-sm font-medium text-gray-700 mb-2">
+      <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           File Information
         </h4>
-        <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
+        <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400">
           <div>
             <span className="font-medium">Type:</span> {localMetadata.mimeType}
           </div>

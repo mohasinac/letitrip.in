@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Plus, X, Loader2, ChevronDown } from "lucide-react";
 import SlugInput from "@/components/common/SlugInput";
+import { FormInput, FormLabel, FormTextarea } from "@/components/forms";
 import { categoriesService } from "@/services/categories.service";
 
 interface Category {
@@ -197,17 +198,17 @@ export default function InlineCategorySelectorWithCreate({
           aria-modal="true"
           tabIndex={-1}
         >
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Create New Category
               </h3>
               <button
                 type="button"
                 onClick={handleCloseCreateDialog}
                 disabled={creating}
-                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -216,50 +217,29 @@ export default function InlineCategorySelectorWithCreate({
             {/* Form */}
             <div className="px-6 py-4 space-y-4">
               {/* Name */}
-              <div>
-                <label
-                  htmlFor="new-category-name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Category Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="new-category-name"
-                  value={createForm.name}
-                  onChange={(e) => {
-                    setCreateForm((prev) => ({
-                      ...prev,
-                      name: e.target.value,
-                    }));
-                    setCreateErrors((prev) => ({ ...prev, name: "" }));
-                  }}
-                  className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    createErrors.name ? "border-red-500" : "border-gray-300"
-                  }`}
-                  placeholder="e.g., Electronics, Fashion"
-                  maxLength={100}
-                  autoFocus
-                  disabled={creating}
-                />
-                {createErrors.name && (
-                  <p className="mt-1 text-xs text-red-600">
-                    {createErrors.name}
-                  </p>
-                )}
-                <p className="mt-1 text-xs text-gray-500">
-                  {createForm.name.length}/100 characters
-                </p>
-              </div>
+              <FormInput
+                label="Category Name"
+                value={createForm.name}
+                onChange={(e) => {
+                  setCreateForm((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }));
+                  setCreateErrors((prev) => ({ ...prev, name: "" }));
+                }}
+                placeholder="e.g., Electronics, Fashion"
+                maxLength={100}
+                showCharCount
+                required
+                error={createErrors.name}
+                disabled={creating}
+              />
 
               {/* Slug */}
               <div>
-                <label
-                  htmlFor="new-category-slug"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  URL Slug <span className="text-red-500">*</span>
-                </label>
+                <FormLabel htmlFor="new-category-slug" required>
+                  URL Slug
+                </FormLabel>
                 <SlugInput
                   id="new-category-slug"
                   sourceText={createForm.name}
@@ -275,36 +255,25 @@ export default function InlineCategorySelectorWithCreate({
               </div>
 
               {/* Description (Optional) */}
-              <div>
-                <label
-                  htmlFor="new-category-desc"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Description (Optional)
-                </label>
-                <textarea
-                  id="new-category-desc"
-                  value={createForm.description}
-                  onChange={(e) =>
-                    setCreateForm((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  rows={3}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Brief description of this category"
-                  maxLength={500}
-                  disabled={creating}
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  {createForm.description.length}/500 characters
-                </p>
-              </div>
+              <FormTextarea
+                label="Description (Optional)"
+                value={createForm.description}
+                onChange={(e) =>
+                  setCreateForm((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                rows={3}
+                placeholder="Brief description of this category"
+                maxLength={500}
+                showCharCount
+                disabled={creating}
+              />
 
               {/* Info */}
-              <div className="rounded-lg bg-blue-50 p-3">
-                <p className="text-xs text-blue-800">
+              <div className="rounded-lg bg-blue-50 dark:bg-blue-900/30 p-3">
+                <p className="text-xs text-blue-800 dark:text-blue-300">
                   💡 This will create a new leaf category that can be used
                   immediately for products.
                 </p>
@@ -312,19 +281,21 @@ export default function InlineCategorySelectorWithCreate({
 
               {/* Submit Error */}
               {createErrors.submit && (
-                <div className="rounded-lg bg-red-50 border border-red-200 p-3">
-                  <p className="text-xs text-red-600">{createErrors.submit}</p>
+                <div className="rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3">
+                  <p className="text-xs text-red-600 dark:text-red-400">
+                    {createErrors.submit}
+                  </p>
                 </div>
               )}
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
               <button
                 type="button"
                 onClick={handleCloseCreateDialog}
                 disabled={creating}
-                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
               >
                 Cancel
               </button>

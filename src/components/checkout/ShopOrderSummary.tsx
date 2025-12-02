@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Tag, X, Loader2, Store } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { Price } from "@/components/common/values";
 
 interface ShopOrderSummaryProps {
   shopId: string;
@@ -109,7 +110,7 @@ export function ShopOrderSummary({
                 Qty: {item.quantity}
               </p>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                ₹{(item.price * item.quantity).toLocaleString()}
+                <Price amount={item.price * item.quantity} />
               </p>
             </div>
           </div>
@@ -128,7 +129,7 @@ export function ShopOrderSummary({
                     {appliedCoupon.code}
                   </p>
                   <p className="text-xs text-green-700 dark:text-green-400">
-                    You saved ₹{appliedCoupon.discountAmount.toLocaleString()}
+                    You saved <Price amount={appliedCoupon.discountAmount} />
                   </p>
                 </div>
               </div>
@@ -190,7 +191,7 @@ export function ShopOrderSummary({
             Subtotal ({items.length} items)
           </span>
           <span className="text-gray-900 dark:text-white">
-            ₹{subtotal.toLocaleString()}
+            <Price amount={subtotal} />
           </span>
         </div>
 
@@ -198,7 +199,7 @@ export function ShopOrderSummary({
           <div className="flex justify-between text-sm">
             <span className="text-green-600 dark:text-green-400">Discount</span>
             <span className="text-green-600 dark:text-green-400">
-              -₹{discount.toLocaleString()}
+              -<Price amount={discount} />
             </span>
           </div>
         )}
@@ -211,7 +212,7 @@ export function ShopOrderSummary({
                 FREE
               </span>
             ) : (
-              `₹${shipping}`
+              <Price amount={shipping} />
             )}
           </span>
         </div>
@@ -221,18 +222,20 @@ export function ShopOrderSummary({
             Tax (18% GST)
           </span>
           <span className="text-gray-900 dark:text-white">
-            ₹{tax.toLocaleString()}
+            <Price amount={tax} />
           </span>
         </div>
 
         <div className="flex justify-between text-base font-semibold pt-2 border-t border-gray-200 dark:border-gray-700">
           <span className="text-gray-900 dark:text-white">Shop Total</span>
-          <span className="text-primary">₹{total.toLocaleString()}</span>
+          <span className="text-primary">
+            <Price amount={total} />
+          </span>
         </div>
 
         {shipping > 0 && (
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            💡 Add ₹{(5000 - subtotal).toLocaleString()} more for FREE shipping
+            💡 Add <Price amount={5000 - subtotal} /> more for FREE shipping
           </p>
         )}
       </div>

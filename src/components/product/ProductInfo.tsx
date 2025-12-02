@@ -16,6 +16,8 @@ import {
   Plus,
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
+import { FormLabel } from "@/components/forms";
+import { Price } from "@/components/common/values";
 
 interface ProductInfoProps {
   product: {
@@ -134,13 +136,13 @@ export function ProductInfo({ product }: ProductInfoProps) {
       <div className="border-t border-b py-4">
         <div className="flex items-baseline gap-3">
           <span className="text-4xl font-bold text-primary">
-            ₹{product.salePrice.toLocaleString()}
+            <Price amount={product.salePrice} />
           </span>
           {product.originalPrice &&
             product.originalPrice > product.salePrice && (
               <>
                 <span className="text-xl text-gray-400 line-through">
-                  ₹{product.originalPrice.toLocaleString()}
+                  <Price amount={product.originalPrice} />
                 </span>
                 <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-sm font-semibold">
                   {discountPercent}% OFF
@@ -168,12 +170,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
       {/* Quantity Selector */}
       {inStock && (
         <div>
-          <label
-            htmlFor="product-quantity"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Quantity
-          </label>
+          <FormLabel htmlFor="product-quantity">Quantity</FormLabel>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}

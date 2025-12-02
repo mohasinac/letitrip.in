@@ -16,6 +16,7 @@ import {
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { Price } from "@/components/common/values";
 import {
   InlineEditRow,
   QuickCreateRow,
@@ -286,7 +287,7 @@ export default function ProductsPage() {
                       </p>
                       <div className="mt-3 flex items-center justify-between">
                         <span className="text-lg font-semibold text-gray-900">
-                          ₹{product.price.toLocaleString()}
+                          <Price amount={product.price} />
                         </span>
                         <StatusBadge status={product.status} />
                       </div>
@@ -553,15 +554,12 @@ export default function ProductsPage() {
                             {/* Price */}
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="font-medium text-gray-900">
-                                ₹{product.price?.toLocaleString("en-IN") || "0"}
+                                <Price amount={product.price || 0} />
                               </div>
                               {product.originalPrice &&
                                 product.originalPrice > product.price && (
                                   <div className="text-xs text-gray-500 line-through">
-                                    ₹
-                                    {product.originalPrice.toLocaleString(
-                                      "en-IN"
-                                    )}
+                                    <Price amount={product.originalPrice} />
                                   </div>
                                 )}
                             </td>

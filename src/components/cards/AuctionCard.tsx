@@ -45,7 +45,13 @@ export interface AuctionCardProps {
     endTime: Date | string;
     condition?: "new" | "used" | "refurbished";
     featured?: boolean;
-    status?: "active" | "pending" | "ended" | "cancelled" | "moderation";
+    status?:
+      | "active"
+      | "live"
+      | "pending"
+      | "ended"
+      | "cancelled"
+      | "moderation";
     shop?: {
       id: string;
       name: string;
@@ -174,15 +180,25 @@ const AuctionCardComponent = ({
   const isEndingSoon =
     timeRemaining.totalMs <= 24 * 60 * 60 * 1000 && !timeRemaining.isEnded;
 
-  // Auction is ended if time has passed OR status is explicitly "ended"
-  const isEnded = timeRemaining.isEnded || auction.status === "ended";
+  // Auction is ended if time has passed OR status is explicitly "ended" or "cancelled"
+  const isEnded =
+    timeRemaining.isEnded ||
+    auction.status === "ended" ||
+    auction.status === "cancelled";
 
-  // Check if auction is truly live (status is active AND time hasn't passed)
-  // Only show as live if BOTH conditions are met
-  const isTrulyLive = auction.status === "active" && !timeRemaining.isEnded;
+  // Check if auction is truly live:
+  // - Status must be "active" or "live" AND
+  // - Time must not have passed
+  // This prevents showing "Live" badge when time has passed but status wasn't updated yet
+  const isTrulyLive =
+    (auction.status === "active" || auction.status === "live") &&
+    !timeRemaining.isEnded;
 
-  // Auction is upcoming if status is pending
+  // Auction is upcoming if status is pending (not yet started)
   const isUpcoming = auction.status === "pending";
+
+  // Auction is in moderation review
+  const isInModeration = auction.status === "moderation";
 
   // Status badge for admin/seller variants
   const statusBadge = isAdmin || isSeller ? auction.status : null;
@@ -295,49 +311,67 @@ const AuctionCardComponent = ({
           </div>
         )}
 
-        {/* Badges */}
+        {/* Badges - Clear hierarchy: Status > Time State > Features */}
         <div
           className={cn(
             "absolute flex flex-col gap-1 z-20",
             (isAdmin || isSeller) && onSelect ? "top-2 left-9" : "top-2 left-2"
           )}
         >
-          {/* Live Badge - shown for truly active auctions */}
-          {isTrulyLive && !statusBadge && (
+          {/* Primary Status Badge - For Admin/Seller or special states */}
+          {statusBadge &&
+            statusBadge !== "active" &&
+            statusBadge !== "live" && (
+              <span
+                className={cn(
+                  "text-white text-xs font-semibold px-2 py-1 rounded",
+                  statusBadge === "pending" && "bg-yellow-500",
+                  statusBadge === "moderation" && "bg-purple-500",
+                  statusBadge === "ended" && "bg-gray-500",
+                  statusBadge === "cancelled" && "bg-red-600"
+                )}
+              >
+                {statusBadge.charAt(0).toUpperCase() + statusBadge.slice(1)}
+              </span>
+            )}
+
+          {/* Live Badge - Only shown when truly live (status=active/live AND time not passed) */}
+          {isTrulyLive && (
             <span className="bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded flex items-center gap-1">
               <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
               Live
             </span>
           )}
-          {/* Status Badge for Admin/Seller */}
-          {statusBadge && statusBadge !== "active" && (
-            <span
-              className={cn(
-                "text-white text-xs font-semibold px-2 py-1 rounded",
-                statusBadge === "pending" && "bg-yellow-500",
-                statusBadge === "moderation" && "bg-purple-500",
-                statusBadge === "ended" && "bg-gray-500",
-                statusBadge === "cancelled" && "bg-red-600"
-              )}
-            >
-              {statusBadge.charAt(0).toUpperCase() + statusBadge.slice(1)}
-            </span>
-          )}
-          {auction.featured && (
-            <span className="bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded">
-              Featured
-            </span>
-          )}
+
+          {/* Ended Badge - Only for public view when auction has ended */}
           {isEnded && !statusBadge && (
-            <span className="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
+            <span className="bg-gray-500 text-white text-xs font-semibold px-2 py-1 rounded">
               Ended
             </span>
           )}
-          {isEndingSoon && !isEnded && (
+
+          {/* Upcoming Badge - Only for pending auctions not yet started */}
+          {isUpcoming && !statusBadge && (
+            <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded">
+              Upcoming
+            </span>
+          )}
+
+          {/* Ending Soon Badge - Only for live auctions ending within 24h */}
+          {isEndingSoon && !isEnded && isTrulyLive && (
             <span className="bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded animate-pulse">
               Ending Soon
             </span>
           )}
+
+          {/* Featured Badge */}
+          {auction.featured && (
+            <span className="bg-yellow-500 text-gray-900 text-xs font-semibold px-2 py-1 rounded">
+              Featured
+            </span>
+          )}
+
+          {/* Condition Badge - Only for used/refurbished */}
           {!isCompact && auction.condition && auction.condition !== "new" && (
             <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded capitalize">
               {auction.condition}
@@ -602,6 +636,8 @@ const AuctionCardComponent = ({
               isEnded
                 ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                 : isTrulyLive
+                ? "bg-green-600 text-white hover:bg-green-700 active:bg-green-800"
+                : isUpcoming
                 ? "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
                 : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
             )}
@@ -612,6 +648,11 @@ const AuctionCardComponent = ({
               <>
                 <Gavel size={16} />
                 Place Bid
+              </>
+            ) : isUpcoming ? (
+              <>
+                <Clock size={16} />
+                Starting Soon
               </>
             ) : (
               <>

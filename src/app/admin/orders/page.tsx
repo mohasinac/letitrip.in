@@ -24,6 +24,7 @@ import type { OrderCardFE } from "@/types/frontend/order.types";
 import type { OrderFiltersBE } from "@/types/backend/order.types";
 import { OrderStatus, PaymentStatus } from "@/types/shared/common.types";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { Price } from "@/components/common/values";
 import { ORDER_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 
@@ -312,7 +313,7 @@ export default function AdminOrdersPage() {
               <div>
                 <p className="text-sm text-gray-600">Total Revenue</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ₹{(stats.totalRevenue || 0).toLocaleString()}
+                  <Price amount={stats.totalRevenue || 0} />
                 </p>
               </div>
               <div className="rounded-full bg-green-100 p-3">
@@ -326,7 +327,7 @@ export default function AdminOrdersPage() {
               <div>
                 <p className="text-sm text-gray-600">Avg Order Value</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ₹{(stats.averageOrderValue || 0).toLocaleString()}
+                  <Price amount={stats.averageOrderValue || 0} />
                 </p>
               </div>
               <div className="rounded-full bg-blue-100 p-3">
@@ -434,7 +435,7 @@ export default function AdminOrdersPage() {
                         Total:
                       </span>
                       <span className="ml-1 font-semibold text-gray-900 dark:text-white">
-                        ₹{order.total.toLocaleString()}
+                        <Price amount={order.total} />
                       </span>
                     </div>
                     <div>
@@ -547,7 +548,7 @@ export default function AdminOrdersPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="font-medium text-gray-900">
-                          ₹{order.total.toLocaleString()}
+                          <Price amount={order.total} />
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

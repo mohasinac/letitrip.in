@@ -16,6 +16,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import {
+  FormInput,
+  FormLabel,
+  FormSelect,
+  FormTextarea,
+} from "@/components/forms";
 import SlugInput from "@/components/common/SlugInput";
 import { shopsService } from "@/services/shops.service";
 
@@ -278,43 +284,29 @@ export default function CreateShopWizardPage() {
           {currentStep === 1 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Basic Information
                 </h2>
-                <p className="text-sm text-gray-600 mb-6">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                   Let's start with the basics about your shop
                 </p>
               </div>
 
               {/* Shop Name */}
-              <div>
-                <label
-                  htmlFor="shop-name"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Shop Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="shop-name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="e.g., Vintage Treasures Emporium"
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Choose a unique, memorable name for your shop
-                </p>
-              </div>
+              <FormInput
+                label="Shop Name"
+                value={formData.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                placeholder="e.g., Vintage Treasures Emporium"
+                helpText="Choose a unique, memorable name for your shop"
+                required
+              />
 
               {/* Slug */}
               <div>
-                <label
-                  htmlFor="shop-slug"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Shop URL <span className="text-red-500">*</span>
-                </label>
+                <FormLabel htmlFor="shop-slug" required>
+                  Shop URL
+                </FormLabel>
                 <SlugInput
                   id="shop-slug"
                   sourceText={formData.name}
@@ -329,53 +321,34 @@ export default function CreateShopWizardPage() {
               </div>
 
               {/* Category */}
-              <div>
-                <label
-                  htmlFor="shop-category"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Primary Category
-                </label>
-                <select
-                  id="shop-category"
-                  value={formData.category}
-                  onChange={(e) => handleChange("category", e.target.value)}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                >
-                  <option value="">Select a category</option>
-                  <option value="electronics">Electronics</option>
-                  <option value="fashion">Fashion & Apparel</option>
-                  <option value="home">Home & Garden</option>
-                  <option value="sports">Sports & Outdoors</option>
-                  <option value="collectibles">Collectibles & Art</option>
-                  <option value="automotive">Automotive</option>
-                  <option value="other">Other</option>
-                </select>
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Main category your shop focuses on
-                </p>
-              </div>
+              <FormSelect
+                id="shop-category"
+                label="Primary Category"
+                value={formData.category}
+                onChange={(e) => handleChange("category", e.target.value)}
+                helpText="Main category your shop focuses on"
+                options={[
+                  { value: "", label: "Select a category" },
+                  { value: "electronics", label: "Electronics" },
+                  { value: "fashion", label: "Fashion & Apparel" },
+                  { value: "home", label: "Home & Garden" },
+                  { value: "sports", label: "Sports & Outdoors" },
+                  { value: "collectibles", label: "Collectibles & Art" },
+                  { value: "automotive", label: "Automotive" },
+                  { value: "other", label: "Other" },
+                ]}
+              />
 
               {/* Description */}
-              <div>
-                <label
-                  htmlFor="shop-description"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Shop Description <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  id="shop-description"
-                  value={formData.description}
-                  onChange={(e) => handleChange("description", e.target.value)}
-                  rows={5}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="Tell customers about your shop, what makes it unique, and what they can expect..."
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  {formData.description.length}/500 characters (min 20)
-                </p>
-              </div>
+              <FormTextarea
+                label="Shop Description"
+                value={formData.description}
+                onChange={(e) => handleChange("description", e.target.value)}
+                rows={5}
+                placeholder="Tell customers about your shop, what makes it unique, and what they can expect..."
+                helpText={`${formData.description.length}/500 characters (min 20)`}
+                required
+              />
             </div>
           )}
 
@@ -383,39 +356,28 @@ export default function CreateShopWizardPage() {
           {currentStep === 2 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Shop Branding
                 </h2>
-                <p className="text-sm text-gray-600 mb-6">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                   Customize the look and feel of your shop
                 </p>
               </div>
 
               {/* Logo */}
-              <div>
-                <label
-                  htmlFor="shop-logo-url"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Shop Logo URL
-                </label>
-                <input
-                  id="shop-logo-url"
-                  type="url"
-                  value={formData.logoUrl}
-                  onChange={(e) => handleChange("logoUrl", e.target.value)}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="https://example.com/logo.png"
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Square image recommended (200x200px or larger)
-                </p>
-              </div>
+              <FormInput
+                label="Shop Logo URL"
+                type="url"
+                value={formData.logoUrl}
+                onChange={(e) => handleChange("logoUrl", e.target.value)}
+                placeholder="https://example.com/logo.png"
+                helpText="Square image recommended (200x200px or larger)"
+              />
 
               {/* Logo Preview */}
               {formData.logoUrl && (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 bg-gray-50">
-                  <p className="text-sm font-medium text-gray-700 mb-2">
+                <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-800">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Logo Preview
                   </p>
                   <div className="flex items-center gap-4">
@@ -424,10 +386,10 @@ export default function CreateShopWizardPage() {
                         src={formData.logoUrl}
                         alt="Logo preview"
                         fill
-                        className="object-cover rounded-lg border border-gray-200"
+                        className="object-cover rounded-lg border border-gray-200 dark:border-gray-600"
                       />
                     </div>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       Your logo will appear here
                     </p>
                   </div>
@@ -435,30 +397,19 @@ export default function CreateShopWizardPage() {
               )}
 
               {/* Banner */}
-              <div>
-                <label
-                  htmlFor="shop-banner-url"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Shop Banner URL
-                </label>
-                <input
-                  id="shop-banner-url"
-                  type="url"
-                  value={formData.bannerUrl}
-                  onChange={(e) => handleChange("bannerUrl", e.target.value)}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="https://example.com/banner.jpg"
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Wide image recommended (1200x400px or larger)
-                </p>
-              </div>
+              <FormInput
+                label="Shop Banner URL"
+                type="url"
+                value={formData.bannerUrl}
+                onChange={(e) => handleChange("bannerUrl", e.target.value)}
+                placeholder="https://example.com/banner.jpg"
+                helpText="Wide image recommended (1200x400px or larger)"
+              />
 
               {/* Banner Preview */}
               {formData.bannerUrl && (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 bg-gray-50">
-                  <p className="text-sm font-medium text-gray-700 mb-2">
+                <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-800">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Banner Preview
                   </p>
                   <div className="relative w-full h-32">
@@ -466,7 +417,7 @@ export default function CreateShopWizardPage() {
                       src={formData.bannerUrl}
                       alt="Banner preview"
                       fill
-                      className="object-cover rounded-lg border border-gray-200"
+                      className="object-cover rounded-lg border border-gray-200 dark:border-gray-600"
                     />
                   </div>
                 </div>
@@ -475,12 +426,9 @@ export default function CreateShopWizardPage() {
               {/* Theme Colors */}
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label
-                    htmlFor="shop-theme-color"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
+                  <FormLabel htmlFor="shop-theme-color">
                     Primary Theme Color
-                  </label>
+                  </FormLabel>
                   <div className="flex gap-2">
                     <input
                       id="shop-theme-color"
@@ -489,7 +437,7 @@ export default function CreateShopWizardPage() {
                       onChange={(e) =>
                         handleChange("themeColor", e.target.value)
                       }
-                      className="h-10 w-16 rounded border border-gray-300 cursor-pointer"
+                      className="h-10 w-16 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
                     />
                     <input
                       type="text"
@@ -497,22 +445,19 @@ export default function CreateShopWizardPage() {
                       onChange={(e) =>
                         handleChange("themeColor", e.target.value)
                       }
-                      className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                       placeholder="#3B82F6"
                     />
                   </div>
-                  <p className="mt-1.5 text-xs text-gray-500">
+                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     Main color for buttons and highlights
                   </p>
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="shop-accent-color"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
+                  <FormLabel htmlFor="shop-accent-color">
                     Accent Color
-                  </label>
+                  </FormLabel>
                   <div className="flex gap-2">
                     <input
                       id="shop-accent-color"
@@ -521,7 +466,7 @@ export default function CreateShopWizardPage() {
                       onChange={(e) =>
                         handleChange("accentColor", e.target.value)
                       }
-                      className="h-10 w-16 rounded border border-gray-300 cursor-pointer"
+                      className="h-10 w-16 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
                     />
                     <input
                       type="text"
@@ -529,19 +474,19 @@ export default function CreateShopWizardPage() {
                       onChange={(e) =>
                         handleChange("accentColor", e.target.value)
                       }
-                      className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                       placeholder="#10B981"
                     />
                   </div>
-                  <p className="mt-1.5 text-xs text-gray-500">
+                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     Secondary color for accents
                   </p>
                 </div>
               </div>
 
               {/* Color Preview */}
-              <div className="rounded-lg bg-gray-50 border border-gray-200 p-4">
-                <p className="text-sm font-medium text-gray-700 mb-3">
+              <div className="rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                   Color Preview
                 </p>
                 <div className="flex gap-3">
@@ -568,134 +513,78 @@ export default function CreateShopWizardPage() {
           {currentStep === 3 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Contact & Legal Information
                 </h2>
-                <p className="text-sm text-gray-600 mb-6">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                   How customers can reach you and legal details
                 </p>
               </div>
 
               <div className="grid gap-6 sm:grid-cols-2">
                 {/* Email */}
-                <div>
-                  <label
-                    htmlFor="shop-email"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Shop Email <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="shop-email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                    className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    placeholder="shop@example.com"
-                  />
-                </div>
+                <FormInput
+                  label="Shop Email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  placeholder="shop@example.com"
+                  required
+                />
 
                 {/* Phone */}
-                <div>
-                  <label
-                    htmlFor="shop-phone"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Phone Number <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="shop-phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => handleChange("phone", e.target.value)}
-                    className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    placeholder="+91 9876543210"
-                  />
-                </div>
+                <FormInput
+                  label="Shop Phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleChange("phone", e.target.value)}
+                  placeholder="+91 9876543210"
+                  required
+                />
               </div>
 
               {/* Location */}
-              <div>
-                <label
-                  htmlFor="shop-location"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Location <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="shop-location"
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => handleChange("location", e.target.value)}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="Mumbai, Maharashtra"
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  City and state where your shop operates
-                </p>
-              </div>
+              <FormInput
+                label="Location"
+                value={formData.location}
+                onChange={(e) => handleChange("location", e.target.value)}
+                placeholder="Mumbai, Maharashtra"
+                helpText="City and state where your shop operates"
+                required
+              />
 
               {/* Address */}
-              <div>
-                <label
-                  htmlFor="shop-address"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Business Address
-                </label>
-                <textarea
-                  id="shop-address"
-                  value={formData.address}
-                  onChange={(e) => handleChange("address", e.target.value)}
-                  rows={3}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="Street address, building, area..."
-                />
-              </div>
+              <FormTextarea
+                label="Business Address"
+                value={formData.address}
+                onChange={(e) => handleChange("address", e.target.value)}
+                rows={3}
+                placeholder="Street address, building, area..."
+              />
 
               {/* Legal Details */}
-              <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
-                <h3 className="text-sm font-medium text-blue-900 mb-3">
+              <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
+                <h3 className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-3">
                   Legal Documents (Optional but Recommended)
                 </h3>
                 <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="shop-business-registration"
-                      className="block text-sm font-medium text-blue-900 mb-2"
-                    >
-                      Business Registration Number
-                    </label>
-                    <input
-                      id="shop-business-registration"
-                      type="text"
-                      value={formData.businessRegistration}
-                      onChange={(e) =>
-                        handleChange("businessRegistration", e.target.value)
-                      }
-                      className="block w-full rounded-lg border border-blue-300 bg-white px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      placeholder="e.g., CIN, LLPIN, PAN"
-                    />
-                  </div>
+                  <FormInput
+                    label="Business Registration Number"
+                    value={formData.businessRegistration}
+                    onChange={(e) =>
+                      handleChange("businessRegistration", e.target.value)
+                    }
+                    placeholder="e.g., CIN, LLPIN, PAN"
+                  />
 
-                  <div>
-                    <label
-                      htmlFor="shop-tax-id"
-                      className="block text-sm font-medium text-blue-900 mb-2"
-                    >
-                      GST/Tax ID
-                    </label>
-                    <input
-                      id="shop-tax-id"
-                      type="text"
-                      value={formData.taxId}
-                      onChange={(e) => handleChange("taxId", e.target.value)}
-                      className="block w-full rounded-lg border border-blue-300 bg-white px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      placeholder="GSTIN"
-                    />
-                  </div>
+                  <FormInput
+                    label="GST/Tax ID"
+                    value={formData.taxId}
+                    onChange={(e) => handleChange("taxId", e.target.value)}
+                    placeholder="GSTIN"
+                  />
                 </div>
-                <p className="mt-3 text-xs text-blue-800">
+                <p className="mt-3 text-xs text-blue-800 dark:text-blue-400">
                   Providing legal documents helps build trust and may be
                   required for verification
                 </p>
@@ -707,91 +596,58 @@ export default function CreateShopWizardPage() {
           {currentStep === 4 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Shop Policies
                 </h2>
-                <p className="text-sm text-gray-600 mb-6">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                   Set clear policies for shipping, returns, and terms
                 </p>
               </div>
 
               {/* Shipping Policy */}
-              <div>
-                <label
-                  htmlFor="shop-shipping-policy"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Shipping Policy
-                </label>
-                <textarea
-                  id="shop-shipping-policy"
-                  value={formData.shippingPolicy}
-                  onChange={(e) =>
-                    handleChange("shippingPolicy", e.target.value)
-                  }
-                  rows={4}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="Describe your shipping methods, delivery times, charges, and coverage areas..."
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Explain how you ship products and estimated delivery times
-                </p>
-              </div>
+              <FormTextarea
+                label="Shipping Policy"
+                value={formData.shippingPolicy}
+                onChange={(e) => handleChange("shippingPolicy", e.target.value)}
+                rows={4}
+                placeholder="Describe your shipping methods, delivery times, charges, and coverage areas..."
+                helpText="Explain how you ship products and estimated delivery times"
+              />
 
               {/* Return Policy */}
-              <div>
-                <label
-                  htmlFor="shop-return-policy"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Return Policy
-                </label>
-                <select
-                  id="shop-return-policy"
-                  value={formData.returnPolicy}
-                  onChange={(e) => handleChange("returnPolicy", e.target.value)}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                >
-                  <option value="no-returns">No Returns</option>
-                  <option value="7-days">7 Days Return</option>
-                  <option value="14-days">14 Days Return</option>
-                  <option value="30-days">30 Days Return</option>
-                  <option value="custom">Custom Policy</option>
-                </select>
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Choose a return window or define custom terms
-                </p>
-              </div>
+              <FormSelect
+                id="shop-return-policy"
+                label="Return Policy"
+                value={formData.returnPolicy}
+                onChange={(e) => handleChange("returnPolicy", e.target.value)}
+                helpText="Choose a return window or define custom terms"
+                options={[
+                  { value: "no-returns", label: "No Returns" },
+                  { value: "7-days", label: "7 Days Return" },
+                  { value: "14-days", label: "14 Days Return" },
+                  { value: "30-days", label: "30 Days Return" },
+                  { value: "custom", label: "Custom Policy" },
+                ]}
+              />
 
               {/* Terms and Conditions */}
-              <div>
-                <label
-                  htmlFor="shop-terms"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Terms and Conditions
-                </label>
-                <textarea
-                  id="shop-terms"
-                  value={formData.termsAndConditions}
-                  onChange={(e) =>
-                    handleChange("termsAndConditions", e.target.value)
-                  }
-                  rows={6}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="Enter your shop's terms and conditions, including payment terms, warranties, and customer obligations..."
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Legal terms customers agree to when purchasing from your shop
-                </p>
-              </div>
+              <FormTextarea
+                label="Terms and Conditions"
+                value={formData.termsAndConditions}
+                onChange={(e) =>
+                  handleChange("termsAndConditions", e.target.value)
+                }
+                rows={6}
+                placeholder="Enter your shop's terms and conditions, including payment terms, warranties, and customer obligations..."
+                helpText="Legal terms customers agree to when purchasing from your shop"
+              />
 
               {/* Policy Tips */}
-              <div className="rounded-lg bg-green-50 border border-green-200 p-4">
-                <h3 className="text-sm font-medium text-green-900 mb-2">
+              <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4">
+                <h3 className="text-sm font-medium text-green-900 dark:text-green-300 mb-2">
                   💡 Policy Tips
                 </h3>
-                <ul className="text-sm text-green-800 space-y-1">
+                <ul className="text-sm text-green-800 dark:text-green-400 space-y-1">
                   <li>• Be clear and specific about shipping times</li>
                   <li>• Explain who pays for return shipping</li>
                   <li>

@@ -17,7 +17,12 @@ import {
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import SlugInput from "@/components/common/SlugInput";
-import { FormInput, FormSelect, FormTextarea } from "@/components/forms";
+import {
+  FormInput,
+  FormSelect,
+  FormTextarea,
+  FormLabel,
+} from "@/components/forms";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
 
@@ -433,9 +438,7 @@ export default function CreateCategoryWizardPage() {
 
               {/* Slug */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  URL Slug <span className="text-red-500">*</span>
-                </label>
+                <FormLabel required>URL Slug</FormLabel>
                 <SlugInput
                   sourceText={formData.name}
                   value={formData.slug}

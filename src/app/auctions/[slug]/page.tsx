@@ -18,12 +18,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { FormInput } from "@/components/forms";
 import { auctionsService } from "@/services/auctions.service";
 import { shopsService } from "@/services/shops.service";
 import { notFound } from "@/lib/error-redirects";
 import { formatINR, safeToLocaleString } from "@/lib/price.utils";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
 import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
+import { Price } from "@/components/common/values";
 import type {
   AuctionFE,
   AuctionCardFE,
@@ -381,7 +383,7 @@ export default function AuctionDetailPage() {
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-gray-900">
-                        ₹{(bid.bidAmount || bid.amount).toLocaleString()}
+                        <Price amount={bid.bidAmount || bid.amount} />
                       </p>
                       {idx === 0 && (
                         <p className="text-xs text-green-600">Winning bid</p>
@@ -420,16 +422,16 @@ export default function AuctionDetailPage() {
                       {a.name}
                     </h3>
                     <p className="text-sm font-semibold text-primary mt-1">
-                      ₹{(a.currentBid || a.currentPrice).toLocaleString()}
+                      <Price amount={a.currentBid || a.currentPrice} />
                     </p>
                   </Link>
                 ))}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                <Store className="w-10 h-10 text-gray-400 mb-3" />
+                <Gavel className="w-10 h-10 text-gray-400 mb-3" />
                 <p className="text-gray-500 mb-4 text-sm">
-                  No other auctions from this shop
+                  No more auctions from this shop
                 </p>
                 <Link
                   href="/auctions"
@@ -473,7 +475,7 @@ export default function AuctionDetailPage() {
                       {a.name}
                     </h3>
                     <p className="text-sm font-semibold text-primary mt-1">
-                      ₹{(a.currentBid || a.currentPrice).toLocaleString()}
+                      <Price amount={a.currentBid || a.currentPrice} />
                     </p>
                     <p className="text-xs text-gray-500">
                       {a.bidCount || a.totalBids}{" "}
@@ -555,28 +557,19 @@ export default function AuctionDetailPage() {
             {/* Bid Form */}
             {isLive && (
               <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Your Bid Amount (₹)
-                  </label>
-                  <input
-                    type="number"
-                    value={bidAmount}
-                    onChange={(e) => {
-                      setBidAmount(e.target.value);
-                      setBidError("");
-                    }}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg font-semibold focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                    min={(auction.currentBid || auction.currentPrice) + 1}
-                    step="100"
-                  />
-                  {bidError && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="h-4 w-4" />
-                      {bidError}
-                    </p>
-                  )}
-                </div>
+                <FormInput
+                  label="Your Bid Amount (₹)"
+                  type="number"
+                  value={bidAmount}
+                  onChange={(e) => {
+                    setBidAmount(e.target.value);
+                    setBidError("");
+                  }}
+                  min={(auction.currentBid || auction.currentPrice) + 1}
+                  step="100"
+                  error={bidError}
+                  className="text-lg font-semibold"
+                />
                 <button
                   onClick={handlePlaceBid}
                   disabled={isPlacingBid}

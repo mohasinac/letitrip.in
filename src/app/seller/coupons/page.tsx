@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { Price, Percentage, DateDisplay } from "@/components/common/values";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { couponsService } from "@/services/coupons.service";
 import { useAuth } from "@/contexts/AuthContext";
@@ -237,9 +238,11 @@ export default function CouponsPage() {
                       <div className="flex justify-between">
                         <span className="text-gray-600">Discount:</span>
                         <span className="font-medium text-gray-900">
-                          {coupon.type === "percentage"
-                            ? `${coupon.discountValue || 0}%`
-                            : `₹${coupon.discountValue || 0}`}
+                          {coupon.type === "percentage" ? (
+                            <Percentage value={coupon.discountValue || 0} />
+                          ) : (
+                            <Price amount={coupon.discountValue || 0} />
+                          )}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -250,9 +253,11 @@ export default function CouponsPage() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Valid Until:</span>
-                        <span className="font-medium text-gray-900">
-                          {new Date(coupon.endDate).toLocaleDateString()}
-                        </span>
+                        <DateDisplay
+                          date={coupon.endDate}
+                          format="short"
+                          className="font-medium text-gray-900"
+                        />
                       </div>
                     </div>
                     <div className="mt-4 flex gap-2">
@@ -336,16 +341,18 @@ export default function CouponsPage() {
                             {coupon.type}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {coupon.type === "percentage"
-                              ? `${coupon.discountValue || 0}%`
-                              : `₹${coupon.discountValue || 0}`}
+                            {coupon.type === "percentage" ? (
+                              <Percentage value={coupon.discountValue || 0} />
+                            ) : (
+                              <Price amount={coupon.discountValue || 0} />
+                            )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             {coupon.usageCount || 0} /{" "}
                             {coupon.usageLimit || "∞"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            {new Date(coupon.endDate).toLocaleDateString()}
+                            <DateDisplay date={coupon.endDate} format="short" />
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <StatusBadge status={coupon.status} />

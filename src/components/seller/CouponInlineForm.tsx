@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { FormInput, FormSelect } from "@/components/forms";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE } from "@/types/frontend/coupon.types";
 import { toDateInputValue, getTodayDateInputValue } from "@/lib/date-utils";
@@ -123,100 +124,62 @@ export function CouponInlineForm({
 
       {/* Code */}
       <div>
-        <label
-          htmlFor="coupon-code"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
-          Coupon Code *
-        </label>
-        <input
+        <FormInput
           id="coupon-code"
-          type="text"
+          label="Coupon Code"
           required
           value={formData.code}
           onChange={(e) => {
             setFormData({ ...formData, code: e.target.value.toUpperCase() });
             clearError("code");
           }}
-          className={`w-full rounded-lg border px-3 py-2 text-sm font-mono uppercase focus:outline-none focus:ring-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
-            errors.code
-              ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-              : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
-          }`}
+          className="font-mono uppercase"
           placeholder="SUMMER2024"
           disabled={!!coupon}
+          error={errors.code}
         />
-        {errors.code && (
-          <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-            {errors.code}
-          </p>
-        )}
       </div>
 
       {/* Name */}
       <div>
-        <label
-          htmlFor="coupon-name"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
-          Display Name *
-        </label>
-        <input
+        <FormInput
           id="coupon-name"
-          type="text"
+          label="Display Name"
           required
           value={formData.name}
           onChange={(e) => {
             setFormData({ ...formData, name: e.target.value });
             clearError("name");
           }}
-          className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
-            errors.name
-              ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-              : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
-          }`}
+          error={errors.name}
         />
-        {errors.name && (
-          <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-            {errors.name}
-          </p>
-        )}
       </div>
 
       {/* Type & Discount */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label
-            htmlFor="coupon-type"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Discount Type *
-          </label>
-          <select
+          <FormSelect
             id="coupon-type"
+            label="Discount Type"
+            required
             value={formData.type}
             onChange={(e) =>
               setFormData({ ...formData, type: e.target.value as any })
             }
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-          >
-            <option value="percentage">Percentage</option>
-            <option value="flat">Flat Amount</option>
-          </select>
+            options={[
+              { value: "percentage", label: "Percentage" },
+              { value: "flat", label: "Flat Amount" },
+            ]}
+          />
         </div>
         <div>
-          <label
-            htmlFor="coupon-discount-value"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Discount Value *
-          </label>
-          <input
+          <FormInput
             id="coupon-discount-value"
+            label="Discount Value"
             type="number"
             required
-            min="0"
-            step="0.01"
+            min={0}
+            step={0.01}
             value={formData.discountValue}
             onChange={(e) => {
               setFormData({
@@ -225,56 +188,35 @@ export function CouponInlineForm({
               });
               clearError("discountValue");
             }}
-            className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
-              errors.discountValue
-                ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
-            }`}
+            error={errors.discountValue}
           />
-          {errors.discountValue && (
-            <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-              {errors.discountValue}
-            </p>
-          )}
         </div>
       </div>
 
       {/* Date Range */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label
-            htmlFor="coupon-start-date"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Start Date *
-          </label>
-          <input
+          <FormInput
             id="coupon-start-date"
+            label="Start Date"
             type="date"
             required
             value={formData.startDate}
             onChange={(e) =>
               setFormData({ ...formData, startDate: e.target.value })
             }
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           />
         </div>
         <div>
-          <label
-            htmlFor="coupon-end-date"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            End Date *
-          </label>
-          <input
+          <FormInput
             id="coupon-end-date"
+            label="End Date"
             type="date"
             required
             value={formData.endDate}
             onChange={(e) =>
               setFormData({ ...formData, endDate: e.target.value })
             }
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           />
         </div>
       </div>

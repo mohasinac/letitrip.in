@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { formatCurrency, formatTimeRemaining } from "@/lib/formatters";
 import { getTimeRemaining, getNextMinimumBid } from "@/lib/validation/auction";
+import { FormLabel } from "@/components/forms";
 
 export interface AuctionQuickViewProps {
   auction: {
@@ -326,12 +327,9 @@ export default function AuctionQuickView({
               {!isEnded && (
                 <div className="space-y-3 mb-4">
                   <div>
-                    <label
-                      htmlFor="quick-bid-amount"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
+                    <FormLabel htmlFor="quick-bid-amount">
                       Your Bid (Min: {formatCurrency(minNextBid)})
-                    </label>
+                    </FormLabel>
                     <div className="flex gap-2">
                       <input
                         id="quick-bid-amount"

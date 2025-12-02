@@ -101,11 +101,11 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
         className="fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-900 z-[60] overflow-y-auto lg:hidden pb-safe animate-slide-in-left"
       >
         {/* Header */}
-        <div className="bg-gray-800 text-white p-4 flex items-center justify-between pt-safe">
+        <div className="bg-gray-800 dark:bg-gray-900 text-white p-4 flex items-center justify-between pt-safe">
           <span className="font-bold text-lg">{COMPANY_NAME}</span>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-700 rounded touch-target"
+            className="p-2 hover:bg-gray-700 dark:hover:bg-gray-800 rounded touch-target"
             aria-label="Close menu"
           >
             <X className="w-6 h-6" />

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
 import { useIsMobile } from "@/hooks/useMobile";
+import { DateDisplay } from "@/components/common/values";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800",
@@ -201,9 +202,11 @@ export default function AdminTicketsPage() {
                         <span className="text-gray-500 dark:text-gray-400">
                           Created:
                         </span>
-                        <span className="text-gray-900 dark:text-white">
-                          {new Date(ticket.createdAt).toLocaleDateString()}
-                        </span>
+                        <DateDisplay
+                          date={ticket.createdAt}
+                          format="short"
+                          className="text-gray-900 dark:text-white"
+                        />
                       </div>
                     </div>
 
@@ -279,7 +282,7 @@ export default function AdminTicketsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {new Date(ticket.createdAt).toLocaleDateString()}
+                        <DateDisplay date={ticket.createdAt} format="short" />
                       </td>
                       <td className="px-6 py-4 text-sm font-medium">
                         <button

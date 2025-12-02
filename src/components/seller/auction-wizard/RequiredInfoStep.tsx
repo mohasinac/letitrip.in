@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { toast } from "sonner";
 import SlugInput from "@/components/common/SlugInput";
+import { FormInput, FormSelect, FormLabel } from "@/components/forms";
 import { mediaService } from "@/services/media.service";
 import type { RequiredStepProps } from "./types";
 
@@ -76,34 +77,19 @@ export function RequiredInfoStep({
       </div>
 
       {/* Title */}
-      <div>
-        <label
-          htmlFor="auction-title"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-        >
-          Auction Title <span className="text-red-500">*</span>
-        </label>
-        <input
-          id="auction-title"
-          type="text"
-          value={formData.title}
-          onChange={(e) => handleChange("title", e.target.value)}
-          className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-          placeholder="e.g., Vintage Rolex Watch - Limited Edition"
-        />
-        <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-          Choose a clear, descriptive title that buyers will search for
-        </p>
-      </div>
+      <FormInput
+        id="auction-title"
+        label="Auction Title"
+        required
+        value={formData.title}
+        onChange={(e) => handleChange("title", e.target.value)}
+        placeholder="e.g., Vintage Rolex Watch - Limited Edition"
+        helpText="Choose a clear, descriptive title that buyers will search for"
+      />
 
       {/* Slug */}
       <div>
-        <label
-          htmlFor="auction-slug"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-        >
-          Auction URL <span className="text-red-500">*</span>
-        </label>
+        <FormLabel required>Auction URL</FormLabel>
         <SlugInput
           id="auction-slug"
           sourceText={formData.title}
@@ -118,56 +104,35 @@ export function RequiredInfoStep({
       </div>
 
       {/* Category */}
-      <div>
-        <label
-          htmlFor="auction-category"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-        >
-          Category <span className="text-red-500">*</span>
-        </label>
-        <select
-          id="auction-category"
-          value={formData.category}
-          onChange={(e) => handleChange("category", e.target.value)}
-          className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-        >
-          <option value="">Select a category</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <FormSelect
+        id="auction-category"
+        label="Category"
+        required
+        value={formData.category}
+        onChange={(e) => handleChange("category", e.target.value)}
+        options={[
+          { value: "", label: "Select a category" },
+          ...categories.map((cat) => ({ value: cat.id, label: cat.name })),
+        ]}
+      />
 
       {/* Starting Bid */}
-      <div>
-        <label
-          htmlFor="auction-starting-bid"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-        >
-          Starting Bid (₹) <span className="text-red-500">*</span>
-        </label>
-        <input
-          id="auction-starting-bid"
-          type="number"
-          value={formData.startingBid}
-          onChange={(e) => handleChange("startingBid", e.target.value)}
-          min="1"
-          step="1"
-          className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-          placeholder="1000"
-        />
-        <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-          The minimum bid required to start the auction
-        </p>
-      </div>
+      <FormInput
+        id="auction-starting-bid"
+        label="Starting Bid (₹)"
+        type="number"
+        required
+        value={formData.startingBid}
+        onChange={(e) => handleChange("startingBid", e.target.value)}
+        min={1}
+        step={1}
+        placeholder="1000"
+        helpText="The minimum bid required to start the auction"
+      />
 
       {/* Auction Type */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-          Auction Type <span className="text-red-500">*</span>
-        </label>
+        <FormLabel required>Auction Type</FormLabel>
         <div className="grid gap-3 sm:grid-cols-3">
           {auctionTypes.map((type) => (
             <button
@@ -192,33 +157,25 @@ export function RequiredInfoStep({
       </div>
 
       {/* Condition */}
-      <div>
-        <label
-          htmlFor="auction-condition"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-        >
-          Item Condition <span className="text-red-500">*</span>
-        </label>
-        <select
-          id="auction-condition"
-          value={formData.condition}
-          onChange={(e) => handleChange("condition", e.target.value)}
-          className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-        >
-          <option value="new">New</option>
-          <option value="like-new">Like New</option>
-          <option value="excellent">Excellent</option>
-          <option value="good">Good</option>
-          <option value="fair">Fair</option>
-          <option value="for-parts">For Parts/Not Working</option>
-        </select>
-      </div>
+      <FormSelect
+        id="auction-condition"
+        label="Item Condition"
+        required
+        value={formData.condition}
+        onChange={(e) => handleChange("condition", e.target.value)}
+        options={[
+          { value: "new", label: "New" },
+          { value: "like-new", label: "Like New" },
+          { value: "excellent", label: "Excellent" },
+          { value: "good", label: "Good" },
+          { value: "fair", label: "Fair" },
+          { value: "for-parts", label: "For Parts/Not Working" },
+        ]}
+      />
 
       {/* Image Upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Auction Images <span className="text-red-500">*</span> (at least 1)
-        </label>
+        <FormLabel required>Auction Images (at least 1)</FormLabel>
         <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-6 text-center">
           <div className="mx-auto w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
             <svg

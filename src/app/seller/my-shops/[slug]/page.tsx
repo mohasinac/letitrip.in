@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { Price } from "@/components/common/values";
 import { shopsService } from "@/services/shops.service";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
@@ -222,7 +223,7 @@ export default function ShopDashboardPage() {
                   Total Revenue
                 </p>
                 <p className="mt-2 text-3xl font-bold text-gray-900">
-                  ₹{stats?.totalRevenue?.toLocaleString("en-IN") || "0"}
+                  <Price amount={stats?.totalRevenue || 0} />
                 </p>
               </div>
               <div className="p-3 bg-purple-50 rounded-lg">

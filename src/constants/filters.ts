@@ -352,6 +352,19 @@ export const USER_FILTERS: FilterSection[] = [
  */
 export const CATEGORY_FILTERS: FilterSection[] = [
   {
+    title: "Product Count",
+    fields: [
+      {
+        key: "product_count",
+        label: "Product Count",
+        type: "range",
+        min: 0,
+        max: 1000,
+        step: 10,
+      },
+    ],
+  },
+  {
     title: "Category Features",
     fields: [
       {
@@ -410,6 +423,30 @@ export const REVIEW_FILTERS: FilterSection[] = [
     ],
   },
   {
+    title: "Categories",
+    fields: [
+      {
+        key: "category_id",
+        label: "Category",
+        type: "multiselect",
+        options: [], // Will be populated dynamically
+      },
+    ],
+    collapsible: true,
+  },
+  {
+    title: "Shops",
+    fields: [
+      {
+        key: "shop_id",
+        label: "Shop",
+        type: "multiselect",
+        options: [], // Will be populated dynamically
+      },
+    ],
+    collapsible: true,
+  },
+  {
     title: "Review Type",
     fields: [
       {
@@ -464,6 +501,30 @@ export const AUCTION_FILTERS: FilterSection[] = [
         ],
       },
     ],
+  },
+  {
+    title: "Categories",
+    fields: [
+      {
+        key: "category_id",
+        label: "Category",
+        type: "multiselect",
+        options: [], // Will be populated dynamically
+      },
+    ],
+    collapsible: true,
+  },
+  {
+    title: "Shops",
+    fields: [
+      {
+        key: "shop_id",
+        label: "Shop",
+        type: "multiselect",
+        options: [], // Will be populated dynamically
+      },
+    ],
+    collapsible: true,
   },
   {
     title: "Time Left",

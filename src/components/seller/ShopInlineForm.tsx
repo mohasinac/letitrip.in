@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import SlugInput from "@/components/common/SlugInput";
+import { FormInput, FormTextarea } from "@/components/forms";
 import { shopsService } from "@/services/shops.service";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
@@ -58,84 +59,49 @@ export function ShopInlineForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Name */}
-      <div>
-        <label
-          htmlFor="shop-name"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Shop Name *
-        </label>
-        <input
-          type="text"
-          id="shop-name"
-          required
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+      <FormInput
+        id="shop-name"
+        label="Shop Name"
+        required
+        value={formData.name}
+        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+      />
 
       {/* Slug */}
-      <div>
-        <SlugInput
-          value={formData.slug}
-          sourceText={formData.name}
-          onChange={(slug: string) => setFormData({ ...formData, slug })}
-        />
-      </div>
+      <SlugInput
+        value={formData.slug}
+        sourceText={formData.name}
+        onChange={(slug: string) => setFormData({ ...formData, slug })}
+      />
 
       {/* Description */}
-      <div>
-        <label
-          htmlFor="shop-description"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Description
-        </label>
-        <textarea
-          id="shop-description"
-          rows={3}
-          value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+      <FormTextarea
+        id="shop-description"
+        label="Description"
+        rows={3}
+        value={formData.description}
+        onChange={(e) =>
+          setFormData({ ...formData, description: e.target.value })
+        }
+      />
 
       {/* Email */}
-      <div>
-        <label
-          htmlFor="shop-email"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Email
-        </label>
-        <input
-          type="email"
-          id="shop-email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+      <FormInput
+        id="shop-email"
+        label="Email"
+        type="email"
+        value={formData.email}
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+      />
 
       {/* Phone */}
-      <div>
-        <label
-          htmlFor="shop-phone"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Phone
-        </label>
-        <input
-          type="tel"
-          id="shop-phone"
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+      <FormInput
+        id="shop-phone"
+        label="Phone"
+        type="tel"
+        value={formData.phone}
+        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+      />
 
       {/* Actions */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">

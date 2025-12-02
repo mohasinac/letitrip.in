@@ -144,7 +144,7 @@ export default function FeaturedShopsSection({
   return (
     <div className="space-y-12 py-8">
       <div className="mb-6">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 className="text-2xl md:text-3xl font-bold text-yellow-600 dark:text-yellow-400 mb-2">
           Featured Shops
         </h2>
         <p className="text-gray-600 dark:text-gray-400">

@@ -8,7 +8,12 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 import { ArrowLeft, Save, Eye, Loader2, Upload, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import RichTextEditor from "@/components/common/RichTextEditor";
-import { FormInput, FormTextarea } from "@/components/forms";
+import {
+  FormInput,
+  FormTextarea,
+  FormLabel,
+  FormSelect,
+} from "@/components/forms";
 import { blogService } from "@/services/blog.service";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 
@@ -267,9 +272,7 @@ export default function CreateBlogPostPage() {
 
         {/* Featured Image */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Featured Image
-          </label>
+          <FormLabel>Featured Image</FormLabel>
           {uploadedUrls.length > 0 ? (
             <div className="relative inline-block h-48">
               <OptimizedImage
@@ -311,9 +314,7 @@ export default function CreateBlogPostPage() {
 
         {/* Content */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Content <span className="text-red-500">*</span>
-          </label>
+          <FormLabel required>Content</FormLabel>
           <RichTextEditor
             value={formData.content}
             onChange={(value) =>
@@ -327,9 +328,7 @@ export default function CreateBlogPostPage() {
 
         {/* Category */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Category <span className="text-red-500">*</span>
-          </label>
+          <FormLabel required>Category</FormLabel>
           <div className="flex gap-2">
             <select
               name="category"
@@ -362,9 +361,7 @@ export default function CreateBlogPostPage() {
 
         {/* Tags */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Tags
-          </label>
+          <FormLabel>Tags</FormLabel>
           <div className="flex gap-2 mb-2">
             <input
               type="text"

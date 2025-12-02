@@ -33,6 +33,14 @@ export default function SpecialEventBanner() {
 
   if (loading || !isVisible || !bannerSettings?.enabled) return null;
 
+  // Default colors with dark mode support
+  const defaultBgColor = "#2563eb"; // blue-600
+  const defaultTextColor = "#ffffff";
+
+  // Use custom colors if provided, otherwise use defaults
+  const bgColor = bannerSettings.backgroundColor || defaultBgColor;
+  const textColor = bannerSettings.textColor || defaultTextColor;
+
   const BannerContent = () => (
     <div
       className="prose prose-sm max-w-none text-center"
@@ -48,8 +56,8 @@ export default function SpecialEventBanner() {
       id="special-event-banner"
       className="py-2 px-4 relative"
       style={{
-        backgroundColor: bannerSettings.backgroundColor || "#2563eb",
-        color: bannerSettings.textColor || "#ffffff",
+        backgroundColor: bgColor,
+        color: textColor,
       }}
     >
       <div className="container mx-auto flex items-center justify-center gap-2 text-sm md:text-base">

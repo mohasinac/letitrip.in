@@ -13,7 +13,12 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { FormInput, FormSelect, FormTextarea } from "@/components/forms";
+import {
+  FormInput,
+  FormSelect,
+  FormTextarea,
+  FormLabel,
+} from "@/components/forms";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { productsService } from "@/services/products.service";
 import { categoriesService } from "@/services/categories.service";
@@ -417,12 +422,7 @@ export default function AdminEditProductPage() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label
-                  htmlFor="product-images"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Product Images
-                </label>
+                <FormLabel htmlFor="product-images">Product Images</FormLabel>
                 {product.images && product.images.length > 0 && (
                   <div className="grid grid-cols-4 gap-4 mb-4">
                     {product.images.map((url, index) => (
@@ -713,20 +713,18 @@ export default function AdminEditProductPage() {
                 placeholder="Brief description for search engines..."
               />
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tags
-                </label>
+                <FormLabel htmlFor="product-tags">Tags</FormLabel>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {formData.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700"
+                      className="inline-flex items-center gap-1 rounded-full bg-purple-100 dark:bg-purple-900/30 px-3 py-1 text-sm font-medium text-purple-700 dark:text-purple-300"
                     >
                       {tag}
                       <button
                         type="button"
                         onClick={() => handleRemoveTag(tag)}
-                        className="hover:text-purple-900"
+                        className="hover:text-purple-900 dark:hover:text-purple-100"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -745,7 +743,7 @@ export default function AdminEditProductPage() {
                       }
                     }}
                     placeholder="Add tag..."
-                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                   />
                   <button
                     type="button"
@@ -851,26 +849,23 @@ export default function AdminEditProductPage() {
                   }
                   className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
-                <span className="text-sm text-gray-700">Returnable</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  Returnable
+                </span>
               </label>
               {formData.isReturnable && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Return Window (Days)
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={formData.returnWindowDays}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        returnWindowDays: parseInt(e.target.value),
-                      })
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  />
-                </div>
+                <FormInput
+                  label="Return Window (Days)"
+                  type="number"
+                  min="0"
+                  value={formData.returnWindowDays}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      returnWindowDays: parseInt(e.target.value),
+                    })
+                  }
+                />
               )}
             </div>
           </div>

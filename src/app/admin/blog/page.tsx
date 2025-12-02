@@ -30,6 +30,7 @@ import {
 } from "@/components/common/inline-edit";
 import { blogService, type BlogPost } from "@/services/blog.service";
 import { BLOG_FILTERS } from "@/constants/filters";
+import { DateDisplay } from "@/components/common/values";
 import { getBlogBulkActions } from "@/constants/bulk-actions";
 import { useIsMobile } from "@/hooks/useMobile";
 
@@ -378,7 +379,7 @@ export default function AdminBlogPage() {
                       </span>
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {new Date(post.createdAt).toLocaleDateString()}
+                        <DateDisplay date={post.createdAt} format="short" />
                       </span>
                     </div>
                     <div className="flex gap-2">
@@ -535,15 +536,14 @@ export default function AdminBlogPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           <div className="flex flex-col gap-1">
-                            <span>
-                              {new Date(post.createdAt).toLocaleDateString()}
-                            </span>
+                            <DateDisplay date={post.createdAt} format="short" />
                             {post.publishedAt && (
                               <span className="text-xs text-gray-500">
                                 Published:{" "}
-                                {new Date(
-                                  post.publishedAt
-                                ).toLocaleDateString()}
+                                <DateDisplay
+                                  date={post.publishedAt}
+                                  format="short"
+                                />
                               </span>
                             )}
                           </div>

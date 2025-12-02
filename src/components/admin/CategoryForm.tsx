@@ -13,7 +13,12 @@ import { MediaFile } from "@/types/media";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { categoriesService } from "@/services/categories.service";
 import { Card, Checkbox, FormActions } from "@/components/ui";
-import { FormField, FormInput, FormTextarea } from "@/components/forms";
+import {
+  FormField,
+  FormInput,
+  FormTextarea,
+  FormLabel,
+} from "@/components/forms";
 
 interface CategoryFormProps {
   initialData?: {
@@ -196,12 +201,9 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
 
           {/* Slug */}
           <div id="category-slug-wrapper">
-            <label
-              htmlFor="category-slug-wrapper"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              URL Slug <span className="text-red-500">*</span>
-            </label>
+            <FormLabel htmlFor="category-slug-wrapper" required>
+              URL Slug
+            </FormLabel>
             <SlugInput
               sourceText={formData.name}
               value={formData.slug}
@@ -219,12 +221,9 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
 
           {/* Description */}
           <div id="category-description-wrapper">
-            <label
-              htmlFor="category-description-wrapper"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <FormLabel htmlFor="category-description-wrapper">
               Description
-            </label>
+            </FormLabel>
             <RichTextEditor
               value={formData.description}
               onChange={(html) =>
@@ -236,12 +235,9 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
 
           {/* Parent Category */}
           <div id="parent-category-wrapper">
-            <label
-              htmlFor="parent-category-wrapper"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <FormLabel htmlFor="parent-category-wrapper">
               Parent Category
-            </label>
+            </FormLabel>
             <CategorySelector
               categories={categories}
               value={formData.parent_id}

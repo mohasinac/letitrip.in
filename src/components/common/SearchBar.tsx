@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { searchService } from "@/services/search.service";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { Price } from "@/components/common/values";
 import type { SearchResultFE } from "@/types/frontend/search.types";
 
 export default function SearchBar() {
@@ -221,7 +222,7 @@ export default function SearchBar() {
                             {product.name}
                           </p>
                           <p className="text-xs text-purple-600 dark:text-purple-400">
-                            ₹{product.sale_price?.toLocaleString("en-IN")}
+                            <Price amount={product.sale_price || 0} />
                           </p>
                         </div>
                       </button>
