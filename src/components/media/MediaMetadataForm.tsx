@@ -90,7 +90,7 @@ export default function MediaMetadataForm({
         value={localMetadata.slug || ""}
         onChange={(e) => handleSlugChange(e.target.value)}
         placeholder="media-slug"
-        helpText="URL-friendly identifier (lowercase letters, numbers, and hyphens only)"
+        helperText="URL-friendly identifier (lowercase letters, numbers, and hyphens only)"
         required
       />
 
@@ -100,7 +100,7 @@ export default function MediaMetadataForm({
         value={localMetadata.alt || ""}
         onChange={(e) => handleAltChange(e.target.value)}
         placeholder="Alternative text for accessibility"
-        helpText="Describes the image for screen readers and search engines"
+        helperText="Describes the image for screen readers and search engines"
       />
 
       {/* Caption */}
@@ -117,7 +117,7 @@ export default function MediaMetadataForm({
         value={localMetadata.tags?.join(", ") || ""}
         onChange={(e) => handleTagsChange(e.target.value)}
         placeholder="tag1, tag2, tag3"
-        helpText="Comma-separated tags for organization"
+        helperText="Comma-separated tags for organization"
       />
 
       {/* File Info (Read-only) */}
