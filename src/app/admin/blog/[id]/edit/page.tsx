@@ -485,7 +485,18 @@ export default function EditBlogPostPage() {
           )}
         </div>
 
-        {/* Status */}\n        <FormSelect\n          label=\"Status\"\n          name=\"status\"\n          value={formData.status}\n          onChange={handleInputChange}\n          options={[\n            { value: \"draft\", label: \"Draft\" },\n            { value: \"published\", label: \"Published\" },\n            { value: \"archived\", label: \"Archived\" },\n          ]}\n        />
+        {/* Status */}
+        <FormSelect
+          label="Status"
+          name="status"
+          value={formData.status}
+          onChange={handleInputChange}
+          options={[
+            { value: "draft", label: "Draft" },
+            { value: "published", label: "Published" },
+            { value: "archived", label: "Archived" },
+          ]}
+        />
 
         {/* Options */}
         <div className="space-y-3">

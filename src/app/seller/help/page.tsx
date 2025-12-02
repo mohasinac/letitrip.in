@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { FormInput } from "@/components/forms";
 import {
   Search,
   HelpCircle,
@@ -343,14 +344,15 @@ export default function SellerHelpPage() {
           </p>
 
           {/* Search */}
-          <div className="relative max-w-xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <input
+          <div className="max-w-xl mx-auto">
+            <FormInput
+              id="help-search"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for help..."
-              className="w-full pl-12 pr-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              leftIcon={<Search className="h-5 w-5" />}
+              className="rounded-xl py-3"
             />
           </div>
         </div>

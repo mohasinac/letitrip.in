@@ -13,6 +13,7 @@ import {
   Gavel,
   Filter as FilterIcon,
 } from "lucide-react";
+import { FormSelect } from "@/components/forms";
 import { shopsService } from "@/services/shops.service";
 import { productsService } from "@/services/products.service";
 import { auctionsService } from "@/services/auctions.service";
@@ -353,27 +354,31 @@ export default function ShopPage({ params }: ShopPageProps) {
                 <div className="flex flex-col lg:flex-row gap-4 mb-4">
                   {/* Sort & View */}
                   <div className="flex-1 flex gap-2">
-                    <select
+                    <FormSelect
+                      id="shop-sort-by"
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="createdAt">Newest</option>
-                      <option value="price">Price</option>
-                      <option value="rating">Rating</option>
-                      <option value="sales">Popular</option>
-                    </select>
+                      options={[
+                        { value: "createdAt", label: "Newest" },
+                        { value: "price", label: "Price" },
+                        { value: "rating", label: "Rating" },
+                        { value: "sales", label: "Popular" },
+                      ]}
+                      compact
+                    />
 
-                    <select
+                    <FormSelect
+                      id="shop-sort-order"
                       value={sortOrder}
                       onChange={(e) =>
                         setSortOrder(e.target.value as "asc" | "desc")
                       }
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="desc">High to Low</option>
-                      <option value="asc">Low to High</option>
-                    </select>
+                      options={[
+                        { value: "desc", label: "High to Low" },
+                        { value: "asc", label: "Low to High" },
+                      ]}
+                      compact
+                    />
 
                     {/* View Toggle */}
                     <div className="hidden md:flex border border-gray-300 rounded-lg overflow-hidden">

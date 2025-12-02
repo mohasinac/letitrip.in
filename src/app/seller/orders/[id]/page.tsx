@@ -184,7 +184,7 @@ export default function SellerOrderDetailPage() {
                   Order #{order.orderNumber || order.id}
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Placed on {new Date(order.createdAt).toLocaleString()}
+                  Placed on <DateDisplay date={order.createdAt} includeTime />
                 </p>
               </div>
               <span

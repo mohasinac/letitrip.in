@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { FormInput } from "@/components/forms";
 import {
   uploadAsset,
   getAssetsByType,
@@ -222,7 +223,8 @@ export default function StaticAssetsPage() {
                 <div className="p-4">
                   {editingAsset?.id === asset.id ? (
                     <div className="space-y-2">
-                      <input
+                      <FormInput
+                        id={`edit-asset-${asset.id}`}
                         type="text"
                         value={editingAsset.name}
                         onChange={(e) =>
@@ -231,7 +233,6 @@ export default function StaticAssetsPage() {
                             name: e.target.value,
                           })
                         }
-                        className="w-full px-2 py-1 border rounded"
                       />
                       <div className="flex gap-2">
                         <button

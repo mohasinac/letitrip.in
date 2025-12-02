@@ -34,6 +34,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { FormInput, FormSelect } from "@/components/forms";
 import { reviewsService } from "@/services/reviews.service";
 import { productsService } from "@/services/products.service";
 import { apiService } from "@/services/api.service";
@@ -451,48 +452,51 @@ export default function SellerReviewsPage() {
       <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex flex-wrap items-center gap-4">
           {/* Search */}
-          <div className="flex-1 min-w-[200px] relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
+          <div className="flex-1 min-w-[200px]">
+            <FormInput
+              id="review-search"
               type="text"
-              placeholder="Search reviews..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Search reviews..."
+              leftIcon={<Search className="h-5 w-5" />}
             />
           </div>
 
           {/* Product Filter */}
-          <select
+          <FormSelect
+            id="product-filter"
             value={selectedProduct}
             onChange={(e) => {
               setSelectedProduct(e.target.value);
               setCurrentPage(1);
             }}
-            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">All Products</option>
-            {products.map((product) => (
-              <option key={product.id} value={product.id}>
-                {product.name}
-              </option>
-            ))}
-          </select>
+            options={[
+              { value: "", label: "All Products" },
+              ...products.map((product) => ({
+                value: product.id,
+                label: product.name,
+              })),
+            ]}
+            compact
+          />
 
           {/* Status Filter */}
-          <select
+          <FormSelect
+            id="status-filter"
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Reviews</option>
-            <option value="needs-response">Needs Response</option>
-            <option value="published">Published</option>
-            <option value="pending">Pending</option>
-          </select>
+            options={[
+              { value: "all", label: "All Reviews" },
+              { value: "needs-response", label: "Needs Response" },
+              { value: "published", label: "Published" },
+              { value: "pending", label: "Pending" },
+            ]}
+            compact
+          />
 
           {/* Clear Filters */}
           {(selectedProduct || ratingFilter || statusFilter !== "all") && (

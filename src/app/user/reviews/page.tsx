@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { DateDisplay } from "@/components/common/values";
+import { FormInput, FormSelect } from "@/components/forms";
 import { reviewsService } from "@/services/reviews.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import type { ReviewFE } from "@/types/frontend/review.types";
@@ -450,42 +451,37 @@ export default function UserReviewsPage() {
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Search */}
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
-              <input
+            <div className="flex-1">
+              <FormInput
+                id="review-search"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search reviews..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                leftIcon={<Search className="h-5 w-5" />}
               />
             </div>
 
             {/* Status Filter */}
-            <select
+            <FormSelect
+              id="review-status-filter"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {STATUS_FILTERS.map((filter) => (
-                <option key={filter.value} value={filter.value}>
-                  {filter.label}
-                </option>
-              ))}
-            </select>
+              options={STATUS_FILTERS}
+              compact
+            />
 
             {/* Rating Filter */}
-            <select
-              value={ratingFilter}
+            <FormSelect
+              id="review-rating-filter"
+              value={String(ratingFilter)}
               onChange={(e) => setRatingFilter(Number(e.target.value))}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {RATING_FILTERS.map((filter) => (
-                <option key={filter.value} value={filter.value}>
-                  {filter.label}
-                </option>
-              ))}
-            </select>
+              options={RATING_FILTERS.map((f) => ({
+                value: String(f.value),
+                label: f.label,
+              }))}
+              compact
+            />
           </div>
         </div>
 

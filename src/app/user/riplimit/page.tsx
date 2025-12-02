@@ -28,7 +28,12 @@ import {
   Check,
   X,
 } from "lucide-react";
-import { FormInput, FormTextarea, FormLabel } from "@/components/forms";
+import {
+  FormInput,
+  FormTextarea,
+  FormLabel,
+  FormSelect,
+} from "@/components/forms";
 import { useAuth } from "@/contexts/AuthContext";
 import { ripLimitService } from "@/services/riplimit.service";
 import { Button } from "@/components/ui/Button";
@@ -447,19 +452,21 @@ export default function UserRipLimitPage() {
         description={`${transactionsTotal} total transactions`}
         headerAction={
           <div className="flex items-center gap-2">
-            <select
+            <FormSelect
+              id="transaction-filter"
               value={transactionFilter}
               onChange={(e) =>
                 setTransactionFilter(e.target.value as TransactionFilter)
               }
-              className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="ALL">All Types</option>
-              <option value="PURCHASE">Purchases</option>
-              <option value="BID_BLOCK">Bid Blocks</option>
-              <option value="BID_RELEASE">Bid Releases</option>
-              <option value="REFUND">Refunds</option>
-            </select>
+              options={[
+                { value: "ALL", label: "All Types" },
+                { value: "PURCHASE", label: "Purchases" },
+                { value: "BID_BLOCK", label: "Bid Blocks" },
+                { value: "BID_RELEASE", label: "Bid Releases" },
+                { value: "REFUND", label: "Refunds" },
+              ]}
+              compact
+            />
           </div>
         }
       >
@@ -618,7 +625,7 @@ export default function UserRipLimitPage() {
                 min={100}
                 step={100}
                 prefix="₹"
-                helpText="Minimum: ₹100"
+                helperText="Minimum: ₹100"
               />
             </div>
 
@@ -690,7 +697,7 @@ export default function UserRipLimitPage() {
                 onChange={(e) => setRefundAmount(Number(e.target.value))}
                 max={balance?.availableBalance || 0}
                 min={1}
-                helpText={`You will receive ₹${refundAmount.toLocaleString(
+                helperText={`You will receive ₹${refundAmount.toLocaleString(
                   "en-IN"
                 )}`}
               />

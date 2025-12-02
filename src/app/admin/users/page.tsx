@@ -201,7 +201,7 @@ export default function AdminUsersPage() {
               u.role,
               u.phone || "",
               u.is_banned ? "Banned" : "Active",
-              new Date(u.createdAt).toLocaleDateString("en-IN"),
+              new Date(u.createdAt).toLocaleDateString(),
             ].join(",")
           ),
         ].join("\n");

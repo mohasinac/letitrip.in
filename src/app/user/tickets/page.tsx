@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DateDisplay } from "@/components/common/values";
+import { FormSelect } from "@/components/forms";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
@@ -123,54 +124,44 @@ export default function UserTicketsPage() {
         <div className="bg-white rounded-lg border p-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label
-                htmlFor="status-filter"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Filter by Status
-              </label>
-              <select
+              <FormSelect
                 id="status-filter"
+                label="Filter by Status"
                 value={filter.status}
                 onChange={(e) => {
                   setFilter({ ...filter, status: e.target.value });
                   handleFilterChange();
                 }}
-                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              >
-                <option value="">All Statuses</option>
-                <option value="open">Open</option>
-                <option value="in-progress">In Progress</option>
-                <option value="resolved">Resolved</option>
-                <option value="closed">Closed</option>
-                <option value="escalated">Escalated</option>
-              </select>
+                options={[
+                  { value: "", label: "All Statuses" },
+                  { value: "open", label: "Open" },
+                  { value: "in-progress", label: "In Progress" },
+                  { value: "resolved", label: "Resolved" },
+                  { value: "closed", label: "Closed" },
+                  { value: "escalated", label: "Escalated" },
+                ]}
+              />
             </div>
 
             <div>
-              <label
-                htmlFor="category-filter"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Filter by Category
-              </label>
-              <select
+              <FormSelect
                 id="category-filter"
+                label="Filter by Category"
                 value={filter.category}
                 onChange={(e) => {
                   setFilter({ ...filter, category: e.target.value });
                   handleFilterChange();
                 }}
-                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              >
-                <option value="">All Categories</option>
-                <option value="order-issue">Order Issue</option>
-                <option value="return-refund">Return/Refund</option>
-                <option value="product-question">Product Question</option>
-                <option value="account">Account</option>
-                <option value="payment">Payment</option>
-                <option value="other">Other</option>
-              </select>
+                options={[
+                  { value: "", label: "All Categories" },
+                  { value: "order-issue", label: "Order Issue" },
+                  { value: "return-refund", label: "Return/Refund" },
+                  { value: "product-question", label: "Product Question" },
+                  { value: "account", label: "Account" },
+                  { value: "payment", label: "Payment" },
+                  { value: "other", label: "Other" },
+                ]}
+              />
             </div>
           </div>
         </div>

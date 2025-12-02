@@ -19,7 +19,7 @@ import { PaymentMethod } from "@/components/checkout/PaymentMethod";
 import { ShopOrderSummary } from "@/components/checkout/ShopOrderSummary";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
 import { Price } from "@/components/common/values";
-import { FormField, FormTextarea } from "@/components/forms";
+import { FormField, FormTextarea, FormCheckbox } from "@/components/forms";
 import { checkoutService } from "@/services/checkout.service";
 
 declare global {
@@ -423,21 +423,12 @@ export default function CheckoutPage() {
                   />
 
                   <div className="border-t pt-6">
-                    <label
-                      htmlFor="sameAddress"
-                      className="flex items-center gap-3 mb-4 cursor-pointer min-h-[44px] touch-manipulation"
-                    >
-                      <input
-                        type="checkbox"
-                        id="sameAddress"
-                        checked={useSameAddress}
-                        onChange={(e) => setUseSameAddress(e.target.checked)}
-                        className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary"
-                      />
-                      <span className="text-sm text-gray-700">
-                        Billing address same as shipping
-                      </span>
-                    </label>
+                    <FormCheckbox
+                      id="sameAddress"
+                      checked={useSameAddress}
+                      onChange={(e) => setUseSameAddress(e.target.checked)}
+                      label="Billing address same as shipping"
+                    />
 
                     {!useSameAddress && (
                       <AddressSelector

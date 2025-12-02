@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 import { DateDisplay } from "@/components/common/values";
+import { FormTextarea } from "@/components/forms";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
 
@@ -208,7 +209,7 @@ export default function TicketDetailsPage() {
                       {message.senderRole === "admin" ? "Support Team" : "You"}
                     </span>
                     <span className="text-sm text-gray-500">
-                      {new Date(message.createdAt).toLocaleString()}
+                      <DateDisplay date={message.createdAt} includeTime />
                     </span>
                   </div>
                   <p className="text-gray-700 whitespace-pre-wrap">
@@ -234,10 +235,11 @@ export default function TicketDetailsPage() {
           <div className="bg-white rounded-lg border p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Add Reply</h2>
             <form onSubmit={handleReply}>
-              <textarea
+              <FormTextarea
+                id="reply-message"
+                label="Your Message"
                 value={replyMessage}
                 onChange={(e) => setReplyMessage(e.target.value)}
-                className="w-full border border-gray-300 rounded px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 rows={4}
                 placeholder="Type your message here..."
                 required

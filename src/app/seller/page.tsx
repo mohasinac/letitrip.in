@@ -184,12 +184,10 @@ export default function SellerDashboardPage() {
         />
         <StatsCard
           title="Revenue (This Month)"
-          value={<CompactPrice amount={stats.revenue.thisMonth} />}
-          description={
-            <>
-              <CompactPrice amount={stats.revenue.lastMonth} /> last month
-            </>
-          }
+          value={`₹${stats.revenue.thisMonth.toLocaleString("en-IN")}`}
+          description={`₹${stats.revenue.lastMonth.toLocaleString(
+            "en-IN"
+          )} last month`}
           icon={<DollarSign className="h-6 w-6 text-blue-600" />}
           trend={{
             value:

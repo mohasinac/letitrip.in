@@ -21,6 +21,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { FormInput, FormTextarea } from "@/components/forms";
 import { messagesService } from "@/services/messages.service";
 import {
   ConversationFE,
@@ -398,16 +399,15 @@ function MessagesContent() {
 
             {/* Search and filters */}
             <div className="p-4 space-y-3 border-b border-gray-200 dark:border-gray-700">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search messages..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
+              <FormInput
+                id="message-search"
+                type="text"
+                placeholder="Search messages..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                leftIcon={<Search className="h-4 w-4" />}
+                compact
+              />
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowArchived(false)}
@@ -538,7 +538,8 @@ function MessagesContent() {
                 {/* Message input */}
                 <div className="p-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex items-end gap-2">
-                    <textarea
+                    <FormTextarea
+                      id="new-message"
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       onKeyDown={(e) => {
@@ -549,7 +550,7 @@ function MessagesContent() {
                       }}
                       placeholder="Type a message..."
                       rows={1}
-                      className="flex-1 resize-none px-4 py-2.5 bg-gray-100 dark:bg-gray-700 border-0 rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm"
+                      className="flex-1 resize-none"
                     />
                     <button
                       onClick={handleSendMessage}

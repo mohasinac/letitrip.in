@@ -7,6 +7,7 @@ interface ToggleSwitchProps {
   size?: "sm" | "md" | "lg";
   label?: string;
   description?: string;
+  id?: string;
 }
 
 export function ToggleSwitch({
@@ -16,6 +17,7 @@ export function ToggleSwitch({
   size = "md",
   label,
   description,
+  id,
 }: ToggleSwitchProps) {
   const sizes = {
     sm: {
@@ -37,12 +39,19 @@ export function ToggleSwitch({
 
   const sizeConfig = sizes[size];
 
+  const switchId =
+    id ||
+    (label ? `toggle-${label.toLowerCase().replace(/\s+/g, "-")}` : undefined);
+
   if (label || description) {
     return (
       <div className="flex items-start justify-between">
         <div className="flex-1">
           {label && (
-            <label className="block text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor={switchId}
+              className="block text-sm font-medium text-gray-900 dark:text-white"
+            >
               {label}
             </label>
           )}
@@ -62,6 +71,8 @@ export function ToggleSwitch({
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
           } ${enabled ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-600"}`}
           aria-pressed={enabled}
+          id={switchId}
+          aria-labelledby={label ? `${switchId}-label` : undefined}
         >
           <span
             className={`inline-block ${sizeConfig.circle} transform rounded-full bg-white transition-transform ${sizeConfig.translate}`}

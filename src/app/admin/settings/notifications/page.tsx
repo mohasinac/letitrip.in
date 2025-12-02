@@ -29,13 +29,12 @@ import {
   MessageSquare,
   ShoppingBag,
   Package,
-} from "lucide-react";
-import { FormInput, FormLabel, FormSelect } from "@/components/forms";
   CreditCard,
   Star,
   Users,
   AlertTriangle,
 } from "lucide-react";
+import { FormInput, FormLabel, FormSelect } from "@/components/forms";
 import { apiService } from "@/services/api.service";
 
 interface NotificationCategory {
@@ -514,10 +513,7 @@ export default function AdminNotificationSettingsPage() {
                     ...settings,
                     digest: {
                       ...settings.digest,
-                      frequency: e.target.value as
-                        | "daily"
-                        | "weekly"
-                        | "never",
+                      frequency: e.target.value as "daily" | "weekly" | "never",
                     },
                   })
                 }

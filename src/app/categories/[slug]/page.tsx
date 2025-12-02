@@ -4,6 +4,7 @@ import { use, useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { useRouter, useSearchParams } from "next/navigation";
+import { FormSelect } from "@/components/forms";
 import {
   ChevronRight,
   ChevronLeft,
@@ -366,27 +367,31 @@ function CategoryDetailContent({ params }: PageProps) {
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Sort */}
               <div className="flex-1 flex gap-2">
-                <select
+                <FormSelect
+                  id="sort-by"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="createdAt">Newest</option>
-                  <option value="price">Price</option>
-                  <option value="rating">Rating</option>
-                  <option value="sales">Popular</option>
-                </select>
+                  options={[
+                    { value: "createdAt", label: "Newest" },
+                    { value: "price", label: "Price" },
+                    { value: "rating", label: "Rating" },
+                    { value: "sales", label: "Popular" },
+                  ]}
+                  compact
+                />
 
-                <select
+                <FormSelect
+                  id="sort-order"
                   value={sortOrder}
                   onChange={(e) =>
                     setSortOrder(e.target.value as "asc" | "desc")
                   }
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="desc">High to Low</option>
-                  <option value="asc">Low to High</option>
-                </select>
+                  options={[
+                    { value: "desc", label: "High to Low" },
+                    { value: "asc", label: "Low to High" },
+                  ]}
+                  compact
+                />
 
                 {/* View Toggle */}
                 <div className="flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">

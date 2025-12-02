@@ -6,7 +6,12 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { couponsService } from "@/services/coupons.service";
 import { toast } from "@/components/admin/Toast";
 import { ArrowLeft } from "lucide-react";
-import { FormInput, FormSelect, FormTextarea } from "@/components/forms";
+import {
+  FormInput,
+  FormSelect,
+  FormTextarea,
+  FormCheckbox,
+} from "@/components/forms";
 
 export default function CreateCouponPage() {
   const router = useRouter();
@@ -148,20 +153,14 @@ export default function CreateCouponPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="isActive"
-                  checked={formData.isActive}
-                  onChange={(e) =>
-                    setFormData({ ...formData, isActive: e.target.checked })
-                  }
-                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                />
-                <label htmlFor="isActive" className="text-sm text-gray-700">
-                  Active immediately
-                </label>
-              </div>
+              <FormCheckbox
+                id="isActive"
+                label="Active immediately"
+                checked={formData.isActive}
+                onChange={(e) =>
+                  setFormData({ ...formData, isActive: e.target.checked })
+                }
+              />
 
               <div className="flex gap-4">
                 <button

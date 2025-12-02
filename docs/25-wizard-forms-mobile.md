@@ -20,10 +20,11 @@ This document outlines requirements for making wizard forms (product creation, a
 
 ### Phase 2: Pages Integrated
 
-| Page           | File                               | Status      |
-| -------------- | ---------------------------------- | ----------- |
-| Create Product | `/seller/products/create/page.tsx` | ✅ Complete |
-| Create Auction | `/seller/auctions/create/page.tsx` | ✅ Complete |
+| Page           | File                                    | Status      |
+| -------------- | --------------------------------------- | ----------- |
+| Create Product | `/seller/products/create/page.tsx`      | ✅ Complete |
+| Create Auction | `/seller/auctions/create/page.tsx`      | ✅ Complete |
+| Edit Product   | `/seller/products/[slug]/edit/page.tsx` | ✅ Complete |
 
 ### Component Features
 
@@ -70,17 +71,17 @@ This document outlines requirements for making wizard forms (product creation, a
 
 ## Affected Wizard Pages
 
-| Page                  | File                                     | Current Steps    |
-| --------------------- | ---------------------------------------- | ---------------- |
-| Create Product        | `/seller/products/create/page.tsx`       | 6 steps          |
-| Edit Product          | `/seller/products/[slug]/edit/page.tsx`  | Tabbed (similar) |
-| Create Auction        | `/seller/auctions/create/page.tsx`       | 5 steps          |
-| Edit Auction          | `/seller/auctions/[slug]/edit/page.tsx`  | Tabbed           |
-| Create Shop           | `/seller/my-shops/create/page.tsx`       | Multi-step       |
-| Admin Category Create | `/admin/categories/create/page.tsx`      | Multi-step       |
-| Admin Category Edit   | `/admin/categories/[slug]/edit/page.tsx` | Tabbed           |
-| Admin Blog Create     | `/admin/blog/create/page.tsx`            | Multi-step       |
-| Admin Blog Edit       | `/admin/blog/[slug]/edit/page.tsx`       | Tabbed           |
+| Page                  | File                                     | Current Steps          |
+| --------------------- | ---------------------------------------- | ---------------------- |
+| Create Product        | `/seller/products/create/page.tsx`       | 6 steps                |
+| Edit Product          | `/seller/products/[slug]/edit/page.tsx`  | Wizard (componentized) |
+| Create Auction        | `/seller/auctions/create/page.tsx`       | 5 steps                |
+| Edit Auction          | `/seller/auctions/[slug]/edit/page.tsx`  | Tabbed                 |
+| Create Shop           | `/seller/my-shops/create/page.tsx`       | Multi-step             |
+| Admin Category Create | `/admin/categories/create/page.tsx`      | Multi-step             |
+| Admin Category Edit   | `/admin/categories/[slug]/edit/page.tsx` | Tabbed                 |
+| Admin Blog Create     | `/admin/blog/create/page.tsx`            | Multi-step             |
+| Admin Blog Edit       | `/admin/blog/[slug]/edit/page.tsx`       | Tabbed                 |
 
 ---
 

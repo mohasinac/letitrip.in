@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { Grid, List, Loader2, Filter } from "lucide-react";
+import { FormSelect } from "@/components/forms";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
 import { Price } from "@/components/common/values";
@@ -282,25 +283,29 @@ function ProductsContent() {
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Sort */}
             <div className="flex gap-2 flex-wrap sm:flex-nowrap flex-1">
-              <select
+              <FormSelect
+                id="sort-by"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
-              >
-                <option value="createdAt">Newest</option>
-                <option value="price">Price</option>
-                <option value="rating">Rating</option>
-                <option value="sales">Popular</option>
-              </select>
+                options={[
+                  { value: "createdAt", label: "Newest" },
+                  { value: "price", label: "Price" },
+                  { value: "rating", label: "Rating" },
+                  { value: "sales", label: "Popular" },
+                ]}
+                className="flex-1 sm:flex-none min-h-[48px] touch-manipulation"
+              />
 
-              <select
+              <FormSelect
+                id="sort-order"
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
-                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
-              >
-                <option value="desc">High to Low</option>
-                <option value="asc">Low to High</option>
-              </select>
+                options={[
+                  { value: "desc", label: "High to Low" },
+                  { value: "asc", label: "Low to High" },
+                ]}
+                className="flex-1 sm:flex-none min-h-[48px] touch-manipulation"
+              />
 
               {/* View Toggle - Hidden on mobile */}
               <div className="hidden sm:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">

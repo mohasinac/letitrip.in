@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { FormSelect } from "@/components/forms";
 import {
   ChevronRight,
   Tag,
@@ -242,25 +243,29 @@ function CategoriesContent() {
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex gap-2 flex-wrap sm:flex-nowrap flex-1">
               {/* Sort */}
-              <select
+              <FormSelect
+                id="sort-by"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
-              >
-                <option value="sort_order">Default Order</option>
-                <option value="name">Alphabetically</option>
-                <option value="product_count">By Product Count</option>
-                <option value="created_at">Recently Added</option>
-              </select>
+                options={[
+                  { value: "sort_order", label: "Default Order" },
+                  { value: "name", label: "Alphabetically" },
+                  { value: "product_count", label: "By Product Count" },
+                  { value: "created_at", label: "Recently Added" },
+                ]}
+                className="flex-1 sm:flex-none min-h-[48px] touch-manipulation"
+              />
 
-              <select
+              <FormSelect
+                id="sort-order"
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
-                className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
-              >
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
+                options={[
+                  { value: "asc", label: "Ascending" },
+                  { value: "desc", label: "Descending" },
+                ]}
+                className="flex-1 sm:flex-none min-h-[48px] touch-manipulation"
+              />
 
               {/* View Toggle - Hidden on mobile */}
               <div className="hidden sm:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
