@@ -26,29 +26,30 @@
 
 ## Components Created ✅
 
-| Component           | File                                         | Status | Notes |
-| ------------------- | -------------------------------------------- | ------ | ----- |
-| `FormLabel`         | `src/components/forms/FormLabel.tsx`         | ✅     |       |
-| `FormField`         | `src/components/forms/FormField.tsx`         | ✅     |       |
+| Component           | File                                         | Status | Notes                        |
+| ------------------- | -------------------------------------------- | ------ | ---------------------------- |
+| `FormLabel`         | `src/components/forms/FormLabel.tsx`         | ✅     |                              |
+| `FormField`         | `src/components/forms/FormField.tsx`         | ✅     |                              |
 | `FormInput`         | `src/components/forms/FormInput.tsx`         | ✅     | Supports leftIcon, rightIcon |
-| `FormTextarea`      | `src/components/forms/FormTextarea.tsx`      | ✅     | Supports leftIcon |
-| `FormSelect`        | `src/components/forms/FormSelect.tsx`        | ✅     |       |
-| `FormCheckbox`      | `src/components/forms/FormCheckbox.tsx`      | ✅     | Supports ReactNode labels |
-| `FormRadio`         | `src/components/forms/FormRadio.tsx`         | ✅     |       |
-| `FormRadioGroup`    | `src/components/forms/FormRadio.tsx`         | ✅     |       |
-| `FormFieldset`      | `src/components/forms/FormFieldset.tsx`      | ✅     |       |
-| `FormSection`       | `src/components/forms/FormSection.tsx`       | ✅     |       |
-| `FormListInput`     | `src/components/forms/FormListInput.tsx`     | ✅     |       |
-| `FormKeyValueInput` | `src/components/forms/FormKeyValueInput.tsx` | ✅     |       |
-| `FormNumberInput`   | `src/components/forms/FormNumberInput.tsx`   | ✅     |       |
-| `Heading`           | `src/components/ui/Heading.tsx`              | ✅     |       |
-| `Text`              | `src/components/ui/Text.tsx`                 | ✅     |       |
+| `FormTextarea`      | `src/components/forms/FormTextarea.tsx`      | ✅     | Supports leftIcon            |
+| `FormSelect`        | `src/components/forms/FormSelect.tsx`        | ✅     |                              |
+| `FormCheckbox`      | `src/components/forms/FormCheckbox.tsx`      | ✅     | Supports ReactNode labels    |
+| `FormRadio`         | `src/components/forms/FormRadio.tsx`         | ✅     |                              |
+| `FormRadioGroup`    | `src/components/forms/FormRadio.tsx`         | ✅     |                              |
+| `FormFieldset`      | `src/components/forms/FormFieldset.tsx`      | ✅     |                              |
+| `FormSection`       | `src/components/forms/FormSection.tsx`       | ✅     |                              |
+| `FormListInput`     | `src/components/forms/FormListInput.tsx`     | ✅     |                              |
+| `FormKeyValueInput` | `src/components/forms/FormKeyValueInput.tsx` | ✅     |                              |
+| `FormNumberInput`   | `src/components/forms/FormNumberInput.tsx`   | ✅     |                              |
+| `Heading`           | `src/components/ui/Heading.tsx`              | ✅     |                              |
+| `Text`              | `src/components/ui/Text.tsx`                 | ✅     |                              |
 
 ## Migration Status
 
 ### Phase 1: Deprecated Component Deletion ✅
 
 Deleted deprecated components:
+
 - ❌ `src/components/ui/Input.tsx` + test
 - ❌ `src/components/ui/Select.tsx` + test
 - ❌ `src/components/mobile/MobileFormInput.tsx` + test
@@ -56,24 +57,26 @@ Deleted deprecated components:
 - ❌ `src/components/mobile/MobileTextarea.tsx`
 
 Updated barrel exports:
+
 - ✅ `src/components/ui/index.ts`
 - ✅ `src/components/mobile/index.ts`
 
 ### Phase 2: Key Components Migrated ✅
 
-| File | Before | After | Status |
-| ---- | ------ | ----- | ------ |
-| `seller/settings/page.tsx` | 41 raw tags | 3 (toggles only) | ✅ |
-| `admin/settings/general/page.tsx` | 16 raw tags | 1 (toggle only) | ✅ |
-| `seller/ShopForm.tsx` | ~10 raw tags | 0 | ✅ |
-| `seller/AuctionForm.tsx` | ~10 raw tags | 0 | ✅ |
-| `admin/CategoryForm.tsx` | ~8 raw tags | 0 | ✅ |
+| File                              | Before       | After            | Status |
+| --------------------------------- | ------------ | ---------------- | ------ |
+| `seller/settings/page.tsx`        | 41 raw tags  | 3 (toggles only) | ✅     |
+| `admin/settings/general/page.tsx` | 16 raw tags  | 1 (toggle only)  | ✅     |
+| `seller/ShopForm.tsx`             | ~10 raw tags | 0                | ✅     |
+| `seller/AuctionForm.tsx`          | ~10 raw tags | 0                | ✅     |
+| `admin/CategoryForm.tsx`          | ~8 raw tags  | 0                | ✅     |
 
 ### Phase 3: Remaining Files (TODO)
 
 Files still containing raw `<label>` + `<input>` patterns:
 
 **High Priority (10+ raw tags):**
+
 - `admin/settings/payment/page.tsx` - 13 raw tags
 - `admin/settings/email/page.tsx` - 9 raw tags
 - `admin/categories/create/page.tsx` - 11 raw tags
@@ -82,11 +85,13 @@ Files still containing raw `<label>` + `<input>` patterns:
 - `seller/CouponForm.tsx` - 30 raw tags
 
 **Medium Priority (5-10 raw tags):**
+
 - `admin/blog/create/page.tsx` - 9 raw tags
 - `admin/hero-slides/create/page.tsx` - 7 raw tags
 - `admin/homepage/page.tsx` - 6 raw tags
 
 **Lower Priority (specialized patterns):**
+
 - Filter components use labels for toggle styling
 - Wizard steps have specific layouts
 - Test files (FieldError.test.tsx, FormLayout.test.tsx)
@@ -94,6 +99,7 @@ Files still containing raw `<label>` + `<input>` patterns:
 ## Usage Examples
 
 ### Before (Raw HTML):
+
 ```tsx
 <div>
   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -109,6 +115,7 @@ Files still containing raw `<label>` + `<input>` patterns:
 ```
 
 ### After (Form Components):
+
 ```tsx
 <FormInput
   label="Email Address"
@@ -119,6 +126,7 @@ Files still containing raw `<label>` + `<input>` patterns:
 ```
 
 ### With Icon:
+
 ```tsx
 <FormInput
   label="Email"
@@ -133,6 +141,7 @@ Files still containing raw `<label>` + `<input>` patterns:
 ## Phase 2: Migration (Future)
 
 Pages that could benefit from using these form wrappers:
+
 - `/login/page.tsx` - 3 fields
 - `/register/page.tsx` - 5 fields
 - `/contact/page.tsx` - 4 fields

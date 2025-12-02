@@ -29,6 +29,7 @@ import {
   FileText,
 } from "lucide-react";
 import { apiService } from "@/services/api.service";
+import { FormInput, FormSelect } from "@/components/forms";
 
 interface EmailSettings {
   provider: "resend" | "smtp" | "sendgrid";
@@ -325,46 +326,32 @@ export default function AdminEmailSettingsPage() {
                 Sender Information
               </h2>
               <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    From Email
-                  </label>
-                  <input
-                    type="email"
-                    value={settings.fromEmail}
-                    onChange={(e) =>
-                      setSettings({ ...settings, fromEmail: e.target.value })
-                    }
-                    placeholder="noreply@example.com"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    From Name
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.fromName}
-                    onChange={(e) =>
-                      setSettings({ ...settings, fromName: e.target.value })
-                    }
-                    placeholder="Your Store Name"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <FormInput
+                  label="From Email"
+                  type="email"
+                  value={settings.fromEmail}
+                  onChange={(e) =>
+                    setSettings({ ...settings, fromEmail: e.target.value })
+                  }
+                  placeholder="noreply@example.com"
+                />
+                <FormInput
+                  label="From Name"
+                  value={settings.fromName}
+                  onChange={(e) =>
+                    setSettings({ ...settings, fromName: e.target.value })
+                  }
+                  placeholder="Your Store Name"
+                />
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Reply-To Email
-                  </label>
-                  <input
+                  <FormInput
+                    label="Reply-To Email"
                     type="email"
                     value={settings.replyToEmail}
                     onChange={(e) =>
                       setSettings({ ...settings, replyToEmail: e.target.value })
                     }
                     placeholder="support@example.com"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -377,58 +364,41 @@ export default function AdminEmailSettingsPage() {
                   SMTP Configuration
                 </h2>
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      SMTP Host
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.smtp?.host || ""}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          smtp: { ...settings.smtp!, host: e.target.value },
-                        })
-                      }
-                      placeholder="smtp.example.com"
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Port
-                    </label>
-                    <input
-                      type="number"
-                      value={settings.smtp?.port || 587}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          smtp: {
-                            ...settings.smtp!,
-                            port: parseInt(e.target.value) || 587,
-                          },
-                        })
-                      }
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.smtp?.username || ""}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          smtp: { ...settings.smtp!, username: e.target.value },
-                        })
-                      }
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
+                  <FormInput
+                    label="SMTP Host"
+                    value={settings.smtp?.host || ""}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        smtp: { ...settings.smtp!, host: e.target.value },
+                      })
+                    }
+                    placeholder="smtp.example.com"
+                  />
+                  <FormInput
+                    label="Port"
+                    type="number"
+                    value={settings.smtp?.port || 587}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        smtp: {
+                          ...settings.smtp!,
+                          port: parseInt(e.target.value) || 587,
+                        },
+                      })
+                    }
+                  />
+                  <FormInput
+                    label="Username"
+                    value={settings.smtp?.username || ""}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        smtp: { ...settings.smtp!, username: e.target.value },
+                      })
+                    }
+                  />
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Password

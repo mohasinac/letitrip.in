@@ -20,6 +20,7 @@ import {
   settingsService,
   type PaymentSettings,
 } from "@/services/settings.service";
+import { FormInput, FormSelect } from "@/components/forms";
 
 export default function AdminPaymentSettingsPage() {
   const router = useRouter();
@@ -325,35 +326,23 @@ export default function AdminPaymentSettingsPage() {
               </p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Key ID
-              </label>
-              <input
-                type="text"
-                value={settings.razorpay.keyId}
-                onChange={(e) => updateRazorpay("keyId", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-                placeholder="rzp_live_xxxxxxxxxxxxx"
-              />
-            </div>
+            <FormInput
+              label="Key ID"
+              value={settings.razorpay.keyId}
+              onChange={(e) => updateRazorpay("keyId", e.target.value)}
+              className="font-mono"
+              placeholder="rzp_live_xxxxxxxxxxxxx"
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Key Secret
-              </label>
-              <input
-                type="password"
-                value={settings.razorpay.keySecret || ""}
-                onChange={(e) => updateRazorpay("keySecret", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-                placeholder="Enter new secret to update"
-              />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Leave empty to keep existing secret. Secret is stored securely
-                and never exposed.
-              </p>
-            </div>
+            <FormInput
+              label="Key Secret"
+              type="password"
+              value={settings.razorpay.keySecret || ""}
+              onChange={(e) => updateRazorpay("keySecret", e.target.value)}
+              className="font-mono"
+              placeholder="Enter new secret to update"
+              helperText="Leave empty to keep existing secret. Secret is stored securely and never exposed."
+            />
 
             <div className="flex items-center gap-4">
               <label className="relative inline-flex items-center cursor-pointer">
@@ -415,35 +404,23 @@ export default function AdminPaymentSettingsPage() {
               </p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Merchant Key
-              </label>
-              <input
-                type="text"
-                value={settings.payu.merchantKey}
-                onChange={(e) => updatePayu("merchantKey", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-                placeholder="Your PayU merchant key"
-              />
-            </div>
+            <FormInput
+              label="Merchant Key"
+              value={settings.payu.merchantKey}
+              onChange={(e) => updatePayu("merchantKey", e.target.value)}
+              className="font-mono"
+              placeholder="Your PayU merchant key"
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Merchant Salt
-              </label>
-              <input
-                type="password"
-                value={settings.payu.merchantSalt || ""}
-                onChange={(e) => updatePayu("merchantSalt", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-                placeholder="Enter new salt to update"
-              />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Leave empty to keep existing salt. Salt is stored securely and
-                never exposed.
-              </p>
-            </div>
+            <FormInput
+              label="Merchant Salt"
+              type="password"
+              value={settings.payu.merchantSalt || ""}
+              onChange={(e) => updatePayu("merchantSalt", e.target.value)}
+              className="font-mono"
+              placeholder="Enter new salt to update"
+              helperText="Leave empty to keep existing salt. Salt is stored securely and never exposed."
+            />
 
             <div className="flex items-center gap-4">
               <label className="relative inline-flex items-center cursor-pointer">
@@ -491,41 +468,27 @@ export default function AdminPaymentSettingsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Minimum Order Value (₹)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={settings.cod.minOrderValue}
-                  onChange={(e) =>
-                    updateCod("minOrderValue", Number(e.target.value))
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  Set to 0 for no minimum
-                </p>
-              </div>
+              <FormInput
+                label="Minimum Order Value (₹)"
+                type="number"
+                min={0}
+                value={settings.cod.minOrderValue}
+                onChange={(e) =>
+                  updateCod("minOrderValue", Number(e.target.value))
+                }
+                helperText="Set to 0 for no minimum"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Maximum Order Value (₹)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={settings.cod.maxOrderValue}
-                  onChange={(e) =>
-                    updateCod("maxOrderValue", Number(e.target.value))
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  COD will not be available for orders above this amount
-                </p>
-              </div>
+              <FormInput
+                label="Maximum Order Value (₹)"
+                type="number"
+                min={0}
+                value={settings.cod.maxOrderValue}
+                onChange={(e) =>
+                  updateCod("maxOrderValue", Number(e.target.value))
+                }
+                helperText="COD will not be available for orders above this amount"
+              />
             </div>
 
             <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
@@ -565,36 +528,27 @@ export default function AdminPaymentSettingsPage() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Currency Code
-                </label>
-                <select
-                  value={settings.currency}
-                  onChange={(e) => updateCurrency("currency", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="INR">INR - Indian Rupee</option>
-                  <option value="USD">USD - US Dollar</option>
-                  <option value="EUR">EUR - Euro</option>
-                  <option value="GBP">GBP - British Pound</option>
-                </select>
-              </div>
+              <FormSelect
+                label="Currency Code"
+                value={settings.currency}
+                onChange={(e) => updateCurrency("currency", e.target.value)}
+                options={[
+                  { value: "INR", label: "INR - Indian Rupee" },
+                  { value: "USD", label: "USD - US Dollar" },
+                  { value: "EUR", label: "EUR - Euro" },
+                  { value: "GBP", label: "GBP - British Pound" },
+                ]}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Currency Symbol
-                </label>
-                <input
-                  type="text"
-                  value={settings.currencySymbol}
-                  onChange={(e) =>
-                    updateCurrency("currencySymbol", e.target.value)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-xl"
-                  maxLength={3}
-                />
-              </div>
+              <FormInput
+                label="Currency Symbol"
+                value={settings.currencySymbol}
+                onChange={(e) =>
+                  updateCurrency("currencySymbol", e.target.value)
+                }
+                className="text-center text-xl"
+                maxLength={3}
+              />
             </div>
 
             <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
