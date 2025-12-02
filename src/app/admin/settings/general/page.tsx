@@ -322,9 +322,7 @@ export default function AdminGeneralSettingsPage() {
                 label="📸 Instagram"
                 type="url"
                 value={settings.socialLinks.instagram}
-                onChange={(e) =>
-                  updateSocialLink("instagram", e.target.value)
-                }
+                onChange={(e) => updateSocialLink("instagram", e.target.value)}
                 placeholder="https://instagram.com/yourprofile"
               />
 
