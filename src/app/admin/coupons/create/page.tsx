@@ -6,6 +6,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { couponsService } from "@/services/coupons.service";
 import { toast } from "@/components/admin/Toast";
 import { ArrowLeft } from "lucide-react";
+import { FormInput, FormSelect, FormTextarea } from "@/components/forms";
 
 export default function CreateCouponPage() {
   const router = useRouter();
@@ -58,155 +59,93 @@ export default function CreateCouponPage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label
-                    htmlFor="admin-coupon-code"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Coupon Code *
-                  </label>
-                  <input
-                    id="admin-coupon-code"
-                    type="text"
-                    required
-                    value={formData.code}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        code: e.target.value.toUpperCase(),
-                      })
-                    }
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                    placeholder="SAVE20"
-                  />
-                </div>
+                <FormInput
+                  label="Coupon Code"
+                  required
+                  value={formData.code}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      code: e.target.value.toUpperCase(),
+                    })
+                  }
+                  placeholder="SAVE20"
+                />
 
-                <div>
-                  <label
-                    htmlFor="admin-coupon-type"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Discount Type *
-                  </label>
-                  <select
-                    id="admin-coupon-type"
-                    value={formData.type}
-                    onChange={(e) =>
-                      setFormData({ ...formData, type: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  >
-                    <option value="percentage">Percentage</option>
-                    <option value="flat">Flat Amount</option>
-                    <option value="free-shipping">Free Shipping</option>
-                  </select>
-                </div>
+                <FormSelect
+                  label="Discount Type"
+                  required
+                  value={formData.type}
+                  onChange={(e) =>
+                    setFormData({ ...formData, type: e.target.value })
+                  }
+                  options={[
+                    { value: "percentage", label: "Percentage" },
+                    { value: "flat", label: "Flat Amount" },
+                    { value: "free-shipping", label: "Free Shipping" },
+                  ]}
+                />
               </div>
 
-              <div>
-                <label
-                  htmlFor="admin-coupon-description"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Description
-                </label>
-                <textarea
-                  id="admin-coupon-description"
-                  value={formData.description}
+              <FormTextarea
+                label="Description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                rows={3}
+                placeholder="Enter coupon description"
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormInput
+                  label="Discount Value"
+                  type="number"
+                  required
+                  min={0}
+                  value={formData.value}
                   onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
+                    setFormData({
+                      ...formData,
+                      value: Number(e.target.value),
+                    })
                   }
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  rows={3}
-                  placeholder="Enter coupon description"
+                />
+
+                <FormInput
+                  label="Min Order Value"
+                  type="number"
+                  min={0}
+                  value={formData.minOrderValue}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      minOrderValue: Number(e.target.value),
+                    })
+                  }
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label
-                    htmlFor="admin-coupon-value"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Discount Value *
-                  </label>
-                  <input
-                    id="admin-coupon-value"
-                    type="number"
-                    required
-                    min="0"
-                    value={formData.value}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        value: Number(e.target.value),
-                      })
-                    }
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
+                <FormInput
+                  label="Valid From"
+                  type="date"
+                  required
+                  value={formData.validFrom}
+                  onChange={(e) =>
+                    setFormData({ ...formData, validFrom: e.target.value })
+                  }
+                />
 
-                <div>
-                  <label
-                    htmlFor="admin-coupon-min-order"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Min Order Value
-                  </label>
-                  <input
-                    id="admin-coupon-min-order"
-                    type="number"
-                    min="0"
-                    value={formData.minOrderValue}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        minOrderValue: Number(e.target.value),
-                      })
-                    }
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label
-                    htmlFor="admin-coupon-valid-from"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Valid From *
-                  </label>
-                  <input
-                    id="admin-coupon-valid-from"
-                    type="date"
-                    required
-                    value={formData.validFrom}
-                    onChange={(e) =>
-                      setFormData({ ...formData, validFrom: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="admin-coupon-valid-to"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Valid Until *
-                  </label>
-                  <input
-                    id="admin-coupon-valid-to"
-                    type="date"
-                    required
-                    value={formData.validTo}
-                    onChange={(e) =>
-                      setFormData({ ...formData, validTo: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
+                <FormInput
+                  label="Valid Until"
+                  type="date"
+                  required
+                  value={formData.validTo}
+                  onChange={(e) =>
+                    setFormData({ ...formData, validTo: e.target.value })
+                  }
+                />
               </div>
 
               <div className="flex items-center gap-2">

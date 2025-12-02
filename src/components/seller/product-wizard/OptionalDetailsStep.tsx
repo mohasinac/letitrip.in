@@ -1,6 +1,6 @@
-"use client";
-
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { FormInput, FormTextarea, FormSelect } from "@/components/forms";
+import { Price } from "@/components/common/values";
 import type { OptionalStepProps } from "./types";
 
 export function OptionalDetailsStep({
@@ -36,113 +36,73 @@ export function OptionalDetailsStep({
         </button>
         {expandedSections.details && (
           <div className="p-4 pt-0 space-y-4 border-t border-gray-200 dark:border-gray-700">
-            <div>
-              <label
-                htmlFor="product-brand"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Brand
-              </label>
-              <input
-                id="product-brand"
-                type="text"
-                value={formData.brand}
-                onChange={(e) =>
-                  setFormData({ ...formData, brand: e.target.value })
-                }
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white"
-                placeholder="Enter brand name"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="product-description"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Description
-              </label>
-              <textarea
-                id="product-description"
-                rows={4}
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    description: e.target.value,
-                  })
-                }
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white"
-                placeholder="Describe your product..."
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="product-condition"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Condition
-              </label>
-              <select
-                id="product-condition"
-                value={formData.condition}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    condition: e.target.value as any,
-                  })
-                }
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white"
-              >
-                <option value="new">New</option>
-                <option value="like-new">Like New</option>
-                <option value="used">Used</option>
-                <option value="refurbished">Refurbished</option>
-              </select>
-            </div>
+            <FormInput
+              id="product-brand"
+              label="Brand"
+              value={formData.brand}
+              onChange={(e) =>
+                setFormData({ ...formData, brand: e.target.value })
+              }
+              placeholder="Enter brand name"
+            />
+            <FormTextarea
+              id="product-description"
+              label="Description"
+              rows={4}
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  description: e.target.value,
+                })
+              }
+              placeholder="Describe your product..."
+            />
+            <FormSelect
+              id="product-condition"
+              label="Condition"
+              value={formData.condition}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  condition: e.target.value as any,
+                })
+              }
+              options={[
+                { value: "new", label: "New" },
+                { value: "like-new", label: "Like New" },
+                { value: "used", label: "Used" },
+                { value: "refurbished", label: "Refurbished" },
+              ]}
+            />
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="product-compare-price"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Compare at Price (₹)
-                </label>
-                <input
-                  id="product-compare-price"
-                  type="number"
-                  min="0"
-                  value={formData.compareAtPrice}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      compareAtPrice: parseFloat(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="product-weight"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Weight (kg)
-                </label>
-                <input
-                  id="product-weight"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.weight}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      weight: parseFloat(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white"
-                />
-              </div>
+              <FormInput
+                id="product-compare-price"
+                label="Compare at Price (₹)"
+                type="number"
+                min={0}
+                value={formData.compareAtPrice}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    compareAtPrice: parseFloat(e.target.value) || 0,
+                  })
+                }
+              />
+              <FormInput
+                id="product-weight"
+                label="Weight (kg)"
+                type="number"
+                min={0}
+                step={0.01}
+                value={formData.weight}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    weight: parseFloat(e.target.value) || 0,
+                  })
+                }
+              />
             </div>
           </div>
         )}
@@ -166,72 +126,49 @@ export function OptionalDetailsStep({
         </button>
         {expandedSections.shipping && (
           <div className="p-4 pt-0 space-y-4 border-t border-gray-200 dark:border-gray-700">
-            <div>
-              <label
-                htmlFor="shipping-class"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Shipping Class
-              </label>
-              <select
-                id="shipping-class"
-                value={formData.shippingClass}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    shippingClass: e.target.value as any,
-                  })
-                }
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white"
-              >
-                <option value="standard">Standard Shipping</option>
-                <option value="express">Express Shipping</option>
-                <option value="free">Free Shipping</option>
-                <option value="fragile">Fragile Items</option>
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="return-policy"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Return Policy
-              </label>
-              <textarea
-                id="return-policy"
-                rows={2}
-                value={formData.returnPolicy}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    returnPolicy: e.target.value,
-                  })
-                }
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white"
-                placeholder="e.g., 7 days return policy"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="warranty-info"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Warranty Information
-              </label>
-              <textarea
-                id="warranty-info"
-                rows={2}
-                value={formData.warrantyInfo}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    warrantyInfo: e.target.value,
-                  })
-                }
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white"
-                placeholder="e.g., 1 year manufacturer warranty"
-              />
-            </div>
+            <FormSelect
+              id="shipping-class"
+              label="Shipping Class"
+              value={formData.shippingClass}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  shippingClass: e.target.value as any,
+                })
+              }
+              options={[
+                { value: "standard", label: "Standard Shipping" },
+                { value: "express", label: "Express Shipping" },
+                { value: "free", label: "Free Shipping" },
+                { value: "fragile", label: "Fragile Items" },
+              ]}
+            />
+            <FormTextarea
+              id="return-policy"
+              label="Return Policy"
+              rows={2}
+              value={formData.returnPolicy}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  returnPolicy: e.target.value,
+                })
+              }
+              placeholder="e.g., 7 days return policy"
+            />
+            <FormTextarea
+              id="warranty-info"
+              label="Warranty Information"
+              rows={2}
+              value={formData.warrantyInfo}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  warrantyInfo: e.target.value,
+                })
+              }
+              placeholder="e.g., 1 year manufacturer warranty"
+            />
           </div>
         )}
       </div>
@@ -255,20 +192,13 @@ export function OptionalDetailsStep({
         {expandedSections.seo && (
           <div className="p-4 pt-0 space-y-4 border-t border-gray-200 dark:border-gray-700">
             <div>
-              <label
-                htmlFor="meta-title"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Meta Title
-              </label>
-              <input
+              <FormInput
                 id="meta-title"
-                type="text"
+                label="Meta Title"
                 value={formData.metaTitle}
                 onChange={(e) =>
                   setFormData({ ...formData, metaTitle: e.target.value })
                 }
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white"
                 placeholder="SEO title for search engines"
                 maxLength={60}
               />
@@ -277,14 +207,9 @@ export function OptionalDetailsStep({
               </p>
             </div>
             <div>
-              <label
-                htmlFor="meta-description"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Meta Description
-              </label>
-              <textarea
+              <FormTextarea
                 id="meta-description"
+                label="Meta Description"
                 rows={2}
                 value={formData.metaDescription}
                 onChange={(e) =>
@@ -293,7 +218,6 @@ export function OptionalDetailsStep({
                     metaDescription: e.target.value,
                   })
                 }
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white"
                 placeholder="Brief description for search results"
                 maxLength={160}
               />
@@ -301,28 +225,21 @@ export function OptionalDetailsStep({
                 {formData.metaDescription.length}/160 characters
               </p>
             </div>
-            <div>
-              <label
-                htmlFor="product-status"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Publishing Status
-              </label>
-              <select
-                id="product-status"
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    status: e.target.value as any,
-                  })
-                }
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white"
-              >
-                <option value="draft">Draft (Save for later)</option>
-                <option value="published">Published (Go live now)</option>
-              </select>
-            </div>
+            <FormSelect
+              id="product-status"
+              label="Publishing Status"
+              value={formData.status}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  status: e.target.value as any,
+                })
+              }
+              options={[
+                { value: "draft", label: "Draft (Save for later)" },
+                { value: "published", label: "Published (Go live now)" },
+              ]}
+            />
           </div>
         )}
       </div>
@@ -348,7 +265,7 @@ export function OptionalDetailsStep({
           <div>
             <span className="text-gray-500 dark:text-gray-400">Price:</span>{" "}
             <span className="ml-2 text-gray-900 dark:text-white font-medium">
-              ₹{formData.price.toLocaleString()}
+              <Price amount={formData.price} />
             </span>
           </div>
           <div>

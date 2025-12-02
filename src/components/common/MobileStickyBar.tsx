@@ -7,6 +7,7 @@
 import { ShoppingCart, Gavel, Heart } from "lucide-react";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/useMobile";
+import { Price } from "@/components/common/values";
 
 interface MobileStickyBarProps {
   type?: "product" | "auction";
@@ -65,11 +66,11 @@ export default function MobileStickyBar({
               <div>
                 <div className="flex items-baseline gap-2">
                   <span className="text-xl font-bold text-gray-900 dark:text-white">
-                    ₹{price?.toLocaleString()}
+                    <Price amount={price || 0} />
                   </span>
                   {originalPrice && originalPrice > (price || 0) && (
                     <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                      ₹{originalPrice.toLocaleString()}
+                      <Price amount={originalPrice} />
                     </span>
                   )}
                 </div>
@@ -85,7 +86,7 @@ export default function MobileStickyBar({
                   Current Bid
                 </p>
                 <span className="text-xl font-bold text-gray-900 dark:text-white">
-                  ₹{currentBid?.toLocaleString() || 0}
+                  <Price amount={currentBid || 0} />
                 </span>
               </div>
             )}

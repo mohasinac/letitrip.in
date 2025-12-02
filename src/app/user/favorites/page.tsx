@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Heart, Package, Store, Folder, Gavel, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Price } from "@/components/common/values";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -211,7 +212,7 @@ export default function FavoritesPage() {
 
                 {item.price && (
                   <p className="text-lg font-bold text-primary mb-3">
-                    ₹{item.price.toLocaleString()}
+                    <Price amount={item.price} />
                   </p>
                 )}
 

@@ -35,7 +35,7 @@ export default function Header() {
       <SpecialEventBanner />
 
       {/* 2. Main Navigation Bar - Sticky, always visible when scrolling */}
-      <header className="sticky top-0 z-50 bg-gray-800">
+      <header className="sticky top-0 z-50">
         <MainNavBar
           onMobileMenuToggle={toggleMobileSidebar}
           onSearchClick={handleSearchClick}

@@ -29,6 +29,8 @@ import {
   MessageSquare,
   ShoppingBag,
   Package,
+} from "lucide-react";
+import { FormInput, FormLabel, FormSelect } from "@/components/forms";
   CreditCard,
   Star,
   Users,
@@ -503,54 +505,39 @@ export default function AdminNotificationSettingsPage() {
 
           {settings.digest.enabled && (
             <div className="grid md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <div>
-                <label
-                  htmlFor="digest-frequency"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Frequency
-                </label>
-                <select
-                  id="digest-frequency"
-                  value={settings.digest.frequency}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      digest: {
-                        ...settings.digest,
-                        frequency: e.target.value as
-                          | "daily"
-                          | "weekly"
-                          | "never",
-                      },
-                    })
-                  }
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  htmlFor="digest-time"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Send Time
-                </label>
-                <input
-                  id="digest-time"
-                  type="time"
-                  value={settings.digest.time}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      digest: { ...settings.digest, time: e.target.value },
-                    })
-                  }
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <FormSelect
+                id="digest-frequency"
+                label="Frequency"
+                value={settings.digest.frequency}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    digest: {
+                      ...settings.digest,
+                      frequency: e.target.value as
+                        | "daily"
+                        | "weekly"
+                        | "never",
+                    },
+                  })
+                }
+                options={[
+                  { value: "daily", label: "Daily" },
+                  { value: "weekly", label: "Weekly" },
+                ]}
+              />
+              <FormInput
+                id="digest-time"
+                label="Send Time"
+                type="time"
+                value={settings.digest.time}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    digest: { ...settings.digest, time: e.target.value },
+                  })
+                }
+              />
             </div>
           )}
         </div>
@@ -595,52 +582,36 @@ export default function AdminNotificationSettingsPage() {
 
           {settings.quietHours.enabled && (
             <div className="grid md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <div>
-                <label
-                  htmlFor="quiet-start"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Start Time
-                </label>
-                <input
-                  id="quiet-start"
-                  type="time"
-                  value={settings.quietHours.start}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      quietHours: {
-                        ...settings.quietHours,
-                        start: e.target.value,
-                      },
-                    })
-                  }
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="quiet-end"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  End Time
-                </label>
-                <input
-                  id="quiet-end"
-                  type="time"
-                  value={settings.quietHours.end}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      quietHours: {
-                        ...settings.quietHours,
-                        end: e.target.value,
-                      },
-                    })
-                  }
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <FormInput
+                id="quiet-start"
+                label="Start Time"
+                type="time"
+                value={settings.quietHours.start}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    quietHours: {
+                      ...settings.quietHours,
+                      start: e.target.value,
+                    },
+                  })
+                }
+              />
+              <FormInput
+                id="quiet-end"
+                label="End Time"
+                type="time"
+                value={settings.quietHours.end}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    quietHours: {
+                      ...settings.quietHours,
+                      end: e.target.value,
+                    },
+                  })
+                }
+              />
             </div>
           )}
         </div>

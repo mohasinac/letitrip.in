@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { Price, DateDisplay } from "@/components/common/values";
+import { formatCurrency } from "@/lib/formatters";
 import { analyticsService } from "@/services/analytics.service";
 import { toDateInputValue, getTodayDateInputValue } from "@/lib/date-utils";
 import {
@@ -85,15 +87,6 @@ export default function SellerRevenuePage() {
     } catch (error: any) {
       console.error("Failed to export data:", error);
     }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
   };
 
   const formatNumber = (num: number) => {
@@ -224,7 +217,7 @@ export default function SellerRevenuePage() {
                 <DollarSign className="w-8 h-8 text-green-500" />
               </div>
               <div className="text-3xl font-bold text-gray-900 mb-1">
-                {formatCurrency(overview?.totalRevenue || 0)}
+                <Price amount={overview?.totalRevenue || 0} />
               </div>
               {overview?.revenueGrowth !== undefined && (
                 <div className="text-sm">
@@ -254,7 +247,7 @@ export default function SellerRevenuePage() {
                 <CreditCard className="w-8 h-8 text-purple-500" />
               </div>
               <div className="text-3xl font-bold text-gray-900">
-                {formatCurrency(overview?.averageOrderValue || 0)}
+                <Price amount={overview?.averageOrderValue || 0} />
               </div>
             </div>
 
@@ -294,23 +287,22 @@ export default function SellerRevenuePage() {
                             <div
                               className="bg-indigo-500 rounded-t hover:bg-indigo-600 transition-all cursor-pointer"
                               style={{ height: `${height}%`, minHeight: "4px" }}
-                              title={`${formatCurrency(data.revenue)} - ${
-                                data.orders
-                              } orders`}
+                              title={`${formatCurrency(data.revenue, {
+                                showDecimals: false,
+                              })} - ${data.orders} orders`}
                             >
                               <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                                {formatCurrency(data.revenue)}
+                                <Price amount={data.revenue} />
                                 <br />
                                 {data.orders} orders
                               </div>
                             </div>
                           </div>
-                          <div className="text-xs text-gray-600 mt-2 whitespace-nowrap">
-                            {new Date(data.date).toLocaleDateString("en-IN", {
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </div>
+                          <DateDisplay
+                            date={data.date}
+                            format="short"
+                            className="text-xs text-gray-600 mt-2 whitespace-nowrap"
+                          />
                         </div>
                       );
                     })}
@@ -350,7 +342,7 @@ export default function SellerRevenuePage() {
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-gray-900">
-                          {formatCurrency(product.revenue)}
+                          <Price amount={product.revenue} />
                         </p>
                       </div>
                     </div>

@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import ShopSelector from "@/components/seller/ShopSelector";
 import DateTimePicker from "@/components/common/DateTimePicker";
+import { FormLabel } from "@/components/forms";
 import AnalyticsOverview from "@/components/seller/AnalyticsOverview";
 import SalesChart from "@/components/seller/SalesChart";
 import TopProducts from "@/components/seller/TopProducts";
@@ -150,12 +151,9 @@ export default function AnalyticsPage() {
 
             {/* Date Range */}
             <div id="analytics-start-date-wrapper">
-              <label
-                htmlFor="analytics-start-date-wrapper"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <FormLabel htmlFor="analytics-start-date-wrapper">
                 Start Date
-              </label>
+              </FormLabel>
               <DateTimePicker
                 value={startDate}
                 onChange={(date) => date && setStartDate(date)}
@@ -163,12 +161,9 @@ export default function AnalyticsPage() {
             </div>
 
             <div id="analytics-end-date-wrapper">
-              <label
-                htmlFor="analytics-end-date-wrapper"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <FormLabel htmlFor="analytics-end-date-wrapper">
                 End Date
-              </label>
+              </FormLabel>
               <DateTimePicker
                 value={endDate}
                 onChange={(date) => date && setEndDate(date)}

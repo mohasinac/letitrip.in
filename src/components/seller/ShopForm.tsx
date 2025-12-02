@@ -7,7 +7,7 @@ import RichTextEditor from "@/components/common/RichTextEditor";
 import { useShopSlugValidation } from "@/lib/validation/slug";
 import type { ShopFE } from "@/types/frontend/shop.types";
 import { Card, Button, FormActions } from "@/components/ui";
-import { FormField, FormInput } from "@/components/forms";
+import { FormField, FormInput, FormLabel } from "@/components/forms";
 
 interface ShopFormProps {
   shop?: ShopFE;
@@ -95,12 +95,9 @@ export default function ShopForm({
           </FormField>
 
           <div>
-            <label
-              htmlFor="shop-slug"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Shop Slug <span className="text-red-500">*</span>
-            </label>
+            <FormLabel htmlFor="shop-slug" required>
+              Shop Slug
+            </FormLabel>
             <SlugInput
               id="shop-slug"
               value={slug}
@@ -129,12 +126,9 @@ export default function ShopForm({
           </div>
 
           <div>
-            <label
-              htmlFor="shop-description"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Shop Description <span className="text-red-500">*</span>
-            </label>
+            <FormLabel htmlFor="shop-description" required>
+              Shop Description
+            </FormLabel>
             <RichTextEditor
               id="shop-description"
               value={description}

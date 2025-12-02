@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Star, ThumbsUp, Check } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { DateDisplay } from "@/components/common/values";
 import { reviewsService } from "@/services/reviews.service";
 import { EmptyState } from "@/components/common/EmptyState";
 
@@ -270,13 +271,11 @@ export default function ReviewList({ productId }: ReviewListProps) {
                     </h4>
                   )}
                 </div>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {new Date(review.created_at).toLocaleDateString("en-IN", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </span>
+                <DateDisplay
+                  date={review.created_at}
+                  format="medium"
+                  className="text-sm text-gray-500 dark:text-gray-400"
+                />
               </div>
 
               {/* Comment */}

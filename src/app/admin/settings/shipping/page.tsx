@@ -29,6 +29,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import { FormLabel } from "@/components/forms";
 import {
   settingsService,
   type ShippingSettings,
@@ -197,12 +198,9 @@ export default function AdminShippingSettingsPage() {
           </h2>
           <div className="grid gap-4">
             <div>
-              <label
-                htmlFor="shipping-free-threshold"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
+              <FormLabel htmlFor="shipping-free-threshold">
                 Free Shipping Threshold
-              </label>
+              </FormLabel>
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                 Orders above this amount qualify for free shipping
               </p>
@@ -236,12 +234,9 @@ export default function AdminShippingSettingsPage() {
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label
-                htmlFor="shipping-standard-charge"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
+              <FormLabel htmlFor="shipping-standard-charge">
                 Standard Shipping Charge
-              </label>
+              </FormLabel>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                   ₹
@@ -263,12 +258,9 @@ export default function AdminShippingSettingsPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="shipping-express-charge"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
+              <FormLabel htmlFor="shipping-express-charge">
                 Express Shipping Charge
-              </label>
+              </FormLabel>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                   ₹
@@ -335,12 +327,9 @@ export default function AdminShippingSettingsPage() {
           <div className="grid md:grid-cols-2 gap-6">
             {/* Standard Delivery */}
             <div>
-              <label
-                htmlFor="shipping-standard-min"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
+              <FormLabel htmlFor="shipping-standard-min">
                 Standard Delivery (days)
-              </label>
+              </FormLabel>
               <div className="flex items-center gap-2">
                 <input
                   id="shipping-standard-min"
@@ -388,12 +377,9 @@ export default function AdminShippingSettingsPage() {
 
             {/* Express Delivery */}
             <div>
-              <label
-                htmlFor="shipping-express-min"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
+              <FormLabel htmlFor="shipping-express-min">
                 Express Delivery (days)
-              </label>
+              </FormLabel>
               <div className="flex items-center gap-2">
                 <input
                   id="shipping-express-min"

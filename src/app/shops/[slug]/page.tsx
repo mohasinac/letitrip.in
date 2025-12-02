@@ -22,6 +22,7 @@ import { ProductCard } from "@/components/cards/ProductCard";
 import AuctionCard from "@/components/cards/AuctionCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
+import { Price } from "@/components/common/values";
 import {
   ProductFilters,
   ProductFilterValues,
@@ -505,12 +506,12 @@ export default function ShopPage({ params }: ShopPageProps) {
                             <div className="flex items-center justify-between">
                               <div>
                                 <span className="text-2xl font-bold text-gray-900">
-                                  ₹{product.price.toLocaleString()}
+                                  <Price amount={product.price} />
                                 </span>
                                 {product.originalPrice &&
                                   product.originalPrice > product.price && (
                                     <span className="ml-2 text-gray-500 line-through">
-                                      ₹{product.originalPrice.toLocaleString()}
+                                      <Price amount={product.originalPrice} />
                                     </span>
                                   )}
                               </div>

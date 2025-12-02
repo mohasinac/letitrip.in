@@ -18,6 +18,7 @@ import { AddressSelector } from "@/components/checkout/AddressSelector";
 import { PaymentMethod } from "@/components/checkout/PaymentMethod";
 import { ShopOrderSummary } from "@/components/checkout/ShopOrderSummary";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
+import { Price } from "@/components/common/values";
 import { FormField, FormTextarea } from "@/components/forms";
 import { checkoutService } from "@/services/checkout.service";
 
@@ -557,27 +558,39 @@ export default function CheckoutPage() {
                         <div className="space-y-1 text-xs text-gray-600">
                           <div className="flex justify-between">
                             <span>{shop.items.length} items</span>
-                            <span>₹{subtotal.toLocaleString()}</span>
+                            <span>
+                              <Price amount={subtotal} />
+                            </span>
                           </div>
                           {discount > 0 && (
                             <div className="flex justify-between text-green-600">
                               <span>Discount</span>
-                              <span>-₹{discount.toLocaleString()}</span>
+                              <span>
+                                -<Price amount={discount} />
+                              </span>
                             </div>
                           )}
                           <div className="flex justify-between">
                             <span>Shipping</span>
                             <span>
-                              {shipping === 0 ? "FREE" : `₹${shipping}`}
+                              {shipping === 0 ? (
+                                "FREE"
+                              ) : (
+                                <Price amount={shipping} />
+                              )}
                             </span>
                           </div>
                           <div className="flex justify-between">
                             <span>Tax</span>
-                            <span>₹{tax.toLocaleString()}</span>
+                            <span>
+                              <Price amount={tax} />
+                            </span>
                           </div>
                           <div className="flex justify-between font-semibold text-gray-900 pt-1">
                             <span>Shop Total</span>
-                            <span>₹{shopTotal.toLocaleString()}</span>
+                            <span>
+                              <Price amount={shopTotal} />
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -588,7 +601,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-lg font-bold mb-6 pt-4 border-t">
                   <span>Grand Total</span>
                   <span className="text-primary">
-                    ₹{grandTotal.toLocaleString()}
+                    <Price amount={grandTotal} />
                   </span>
                 </div>
 

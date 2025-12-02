@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { DateDisplay } from "@/components/common/values";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
@@ -265,9 +266,11 @@ export default function UserTicketsPage() {
                                 ticket.category as keyof typeof categoryLabels
                               ] || ticket.category}
                             </span>
-                            <span>
-                              {new Date(ticket.createdAt).toLocaleDateString()}
-                            </span>
+                            <DateDisplay
+                              date={ticket.createdAt}
+                              format="short"
+                              className="text-sm text-gray-500"
+                            />
                           </div>
                         </div>
                       </div>

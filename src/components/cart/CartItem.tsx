@@ -10,6 +10,7 @@ import {
   MobileSwipeActions,
   createDeleteAction,
 } from "@/components/mobile/MobileSwipeActions";
+import { Price } from "@/components/common/values";
 import type { CartItemFE as CartItemType } from "@/types/frontend/cart.types";
 
 interface CartItemProps {
@@ -125,12 +126,12 @@ export function CartItem({
           {/* Price */}
           <div className="text-right flex-shrink-0">
             <div className="text-sm font-bold text-gray-900">
-              ₹{item.price.toLocaleString("en-IN")}
+              <Price amount={item.price} />
             </div>
             {hasDiscount && (
               <>
                 <div className="text-xs text-gray-500 line-through">
-                  ₹{item.originalPrice!.toLocaleString("en-IN")}
+                  <Price amount={item.originalPrice!} />
                 </div>
                 <div className="text-xs text-green-600 font-medium">
                   {discountPercent}% off
@@ -181,7 +182,7 @@ export function CartItem({
           {/* Subtotal & Remove - hide on mobile when swipe is available */}
           <div className="flex items-center gap-4">
             <div className="text-sm font-semibold text-gray-900">
-              ₹{subtotal.toLocaleString("en-IN")}
+              <Price amount={subtotal} />
             </div>
 
             <button

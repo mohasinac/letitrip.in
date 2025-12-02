@@ -10,7 +10,7 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
-import { FormInput } from "@/components/forms";
+import { FormInput, FormLabel } from "@/components/forms";
 import {
   homepageSettingsService,
   HomepageSettings,
@@ -334,9 +334,9 @@ export default function HomepageSettingsPage() {
           {settings.specialEventBanner.enabled && (
             <div className="space-y-4 pt-4 border-t border-gray-200">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <FormLabel htmlFor="banner-content">
                   Banner Content (Rich Text)
-                </label>
+                </FormLabel>
                 <RichTextEditor
                   value={settings.specialEventBanner.content}
                   onChange={(value: string) => {
@@ -372,9 +372,9 @@ export default function HomepageSettingsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <FormLabel htmlFor="banner-bg-color">
                     Background Color
-                  </label>
+                  </FormLabel>
                   <div className="flex gap-2">
                     <input
                       type="color"
@@ -415,9 +415,7 @@ export default function HomepageSettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Text Color
-                  </label>
+                  <FormLabel htmlFor="banner-text-color">Text Color</FormLabel>
                   <div className="flex gap-2">
                     <input
                       type="color"
@@ -494,10 +492,10 @@ export default function HomepageSettingsPage() {
           {settings.heroCarousel.enabled && (
             <div className="space-y-4 pt-4 border-t border-gray-200">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <FormLabel htmlFor="autoplay-interval">
                   Auto-play Interval:{" "}
                   {(settings.heroCarousel.autoPlayInterval / 1000).toFixed(1)}s
-                </label>
+                </FormLabel>
                 <input
                   type="range"
                   min="3000"
@@ -817,9 +815,9 @@ function SliderControl({
 }: SliderControlProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <FormLabel>
         {label}: {value}
-      </label>
+      </FormLabel>
       <input
         type="range"
         min={min}

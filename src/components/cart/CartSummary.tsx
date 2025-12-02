@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Tag, X, Loader2, ShoppingBag } from "lucide-react";
+import { FormLabel } from "@/components/forms";
+import { Price } from "@/components/common/values";
 
 interface CartSummaryProps {
   subtotal: number;
@@ -86,8 +88,7 @@ export function CartSummary({
         <div className="mb-4 p-3 bg-blue-50 rounded-lg">
           <div className="flex items-center justify-between text-sm mb-2">
             <span className="text-blue-900">
-              Add ₹{amountToFreeShipping.toLocaleString("en-IN")} more for FREE
-              shipping
+              Add <Price amount={amountToFreeShipping} /> more for FREE shipping
             </span>
             <span className="text-blue-600 font-medium">
               {Math.round((subtotal / freeShippingThreshold) * 100)}%
@@ -110,12 +111,7 @@ export function CartSummary({
       {/* Coupon Input */}
       {!couponCode && onApplyCoupon && (
         <div className="mb-4">
-          <label
-            htmlFor="cart-coupon-input"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Have a coupon code?
-          </label>
+          <FormLabel htmlFor="cart-coupon-input">Have a coupon code?</FormLabel>
           <div className="flex gap-2">
             <input
               id="cart-coupon-input"
@@ -171,7 +167,7 @@ export function CartSummary({
             )}
           </div>
           <p className="mt-1 text-xs text-green-700">
-            You saved ₹{discount.toLocaleString("en-IN")}!
+            You saved <Price amount={discount} />!
           </p>
         </div>
       )}
@@ -183,7 +179,7 @@ export function CartSummary({
             Subtotal ({itemCount} {itemCount === 1 ? "item" : "items"})
           </span>
           <span className="font-medium text-gray-900">
-            ₹{subtotal.toLocaleString("en-IN")}
+            <Price amount={subtotal} />
           </span>
         </div>
 
@@ -191,7 +187,7 @@ export function CartSummary({
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Discount</span>
             <span className="font-medium text-green-600">
-              -₹{discount.toLocaleString("en-IN")}
+              -<Price amount={discount} />
             </span>
           </div>
         )}
@@ -202,7 +198,7 @@ export function CartSummary({
             {shipping === 0 ? (
               <span className="text-green-600">FREE</span>
             ) : (
-              `₹${shipping.toLocaleString("en-IN")}`
+              <Price amount={shipping} />
             )}
           </span>
         </div>
@@ -210,7 +206,7 @@ export function CartSummary({
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Tax (GST 18%)</span>
           <span className="font-medium text-gray-900">
-            ₹{tax.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+            <Price amount={tax} />
           </span>
         </div>
       </div>
@@ -220,7 +216,7 @@ export function CartSummary({
         <div className="flex justify-between items-center">
           <span className="text-base font-semibold text-gray-900">Total</span>
           <span className="text-2xl font-bold text-gray-900">
-            ₹{total.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+            <Price amount={total} />
           </span>
         </div>
         <p className="text-xs text-gray-600 mt-1">Inclusive of all taxes</p>

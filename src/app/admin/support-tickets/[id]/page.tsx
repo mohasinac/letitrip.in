@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { FormInput, FormTextarea } from "@/components/forms";
 import { supportService } from "@/services/support.service";
 import type {
   SupportTicketFE,
@@ -437,43 +438,24 @@ function TicketDetailContent() {
               </dl>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Assign Ticket
               </h3>
               <div className="space-y-3">
-                <div>
-                  <label
-                    htmlFor="ticket-agent-id"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Agent ID
-                  </label>
-                  <input
-                    id="ticket-agent-id"
-                    type="text"
-                    value={assignedTo}
-                    onChange={(e) => setAssignedTo(e.target.value)}
-                    placeholder="Enter agent user ID"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="ticket-assign-notes"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Notes (optional)
-                  </label>
-                  <textarea
-                    id="ticket-assign-notes"
-                    value={assignNotes}
-                    onChange={(e) => setAssignNotes(e.target.value)}
-                    placeholder="Add assignment notes..."
-                    rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
+                <FormInput
+                  label="Agent ID"
+                  value={assignedTo}
+                  onChange={(e) => setAssignedTo(e.target.value)}
+                  placeholder="Enter agent user ID"
+                />
+                <FormTextarea
+                  label="Notes (optional)"
+                  value={assignNotes}
+                  onChange={(e) => setAssignNotes(e.target.value)}
+                  placeholder="Add assignment notes..."
+                  rows={2}
+                />
                 <button
                   onClick={handleAssign}
                   disabled={assigning || !assignedTo.trim()}
@@ -660,48 +642,29 @@ function TicketDetailContent() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
               <div className="p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                   Escalate Ticket
                 </h3>
                 <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="ticket-escalate-reason"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Reason for Escalation *
-                    </label>
-                    <input
-                      id="ticket-escalate-reason"
-                      type="text"
-                      value={escalateReason}
-                      onChange={(e) => setEscalateReason(e.target.value)}
-                      placeholder="e.g., Customer dissatisfaction, complex issue"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="ticket-escalate-notes"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Additional Notes (optional)
-                    </label>
-                    <textarea
-                      id="ticket-escalate-notes"
-                      value={escalateNotes}
-                      onChange={(e) => setEscalateNotes(e.target.value)}
-                      placeholder="Add any additional context..."
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                  </div>
+                  <FormInput
+                    label="Reason for Escalation *"
+                    value={escalateReason}
+                    onChange={(e) => setEscalateReason(e.target.value)}
+                    placeholder="e.g., Customer dissatisfaction, complex issue"
+                    required
+                  />
+                  <FormTextarea
+                    label="Additional Notes (optional)"
+                    value={escalateNotes}
+                    onChange={(e) => setEscalateNotes(e.target.value)}
+                    placeholder="Add any additional context..."
+                    rows={3}
+                  />
                 </div>
                 <div className="mt-6 flex items-center justify-end space-x-3">
                   <button
                     onClick={() => setShowEscalateModal(false)}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
                     Cancel
                   </button>

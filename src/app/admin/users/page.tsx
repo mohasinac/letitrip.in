@@ -32,6 +32,7 @@ import {
 } from "@/components/common/inline-edit";
 import { getUserBulkActions } from "@/constants/bulk-actions";
 import { usersService } from "@/services/users.service";
+import { DateDisplay } from "@/components/common/values";
 import {
   USER_FIELDS,
   getFieldsForContext,
@@ -200,7 +201,7 @@ export default function AdminUsersPage() {
               u.role,
               u.phone || "",
               u.is_banned ? "Banned" : "Active",
-              new Date(u.createdAt).toLocaleDateString(),
+              new Date(u.createdAt).toLocaleDateString("en-IN"),
             ].join(",")
           ),
         ].join("\n");
@@ -522,16 +523,11 @@ export default function AdminUsersPage() {
                         <span className="text-gray-500 dark:text-gray-400">
                           Joined:
                         </span>{" "}
-                        <span className="text-gray-900 dark:text-white">
-                          {new Date(user.createdAt).toLocaleDateString(
-                            "en-IN",
-                            {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            }
-                          )}
-                        </span>
+                        <DateDisplay
+                          date={user.createdAt}
+                          format="medium"
+                          className="text-gray-900 dark:text-white"
+                        />
                       </div>
                       {user.ban_reason && (
                         <div className="col-span-2">
@@ -851,14 +847,10 @@ export default function AdminUsersPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-1 text-sm text-gray-500">
                             <Calendar className="h-4 w-4" />
-                            {new Date(user.createdAt).toLocaleDateString(
-                              "en-IN",
-                              {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              }
-                            )}
+                            <DateDisplay
+                              date={user.createdAt}
+                              format="medium"
+                            />
                           </div>
                         </td>
 

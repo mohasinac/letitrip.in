@@ -32,6 +32,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/useMobile";
+import { DateDisplay } from "@/components/common/values";
 
 export default function AdminCouponsPage() {
   const router = useRouter();
@@ -369,21 +370,15 @@ export default function AdminCouponsPage() {
                               <span className="text-gray-500 dark:text-gray-400">
                                 Expires:
                               </span>{" "}
-                              <span
+                              <DateDisplay
+                                date={coupon.validTo}
+                                format="short"
                                 className={
                                   isExpired
                                     ? "text-red-600"
                                     : "text-gray-900 dark:text-white"
                                 }
-                              >
-                                {new Date(coupon.validTo).toLocaleDateString(
-                                  "en-IN",
-                                  {
-                                    day: "numeric",
-                                    month: "short",
-                                  }
-                                )}
-                              </span>
+                              />
                             </div>
                             {coupon.minOrderValue && (
                               <div className="col-span-2">
@@ -601,7 +596,7 @@ export default function AdminCouponsPage() {
                             {coupon.usageCount || 0} / {coupon.maxUses || "∞"}
                           </td>
                           <td className="px-6 py-4 text-sm">
-                            {new Date(coupon.validTo).toLocaleDateString()}
+                            <DateDisplay date={coupon.validTo} format="short" />
                           </td>
                           <td className="px-6 py-4">
                             <span

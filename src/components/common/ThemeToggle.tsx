@@ -144,24 +144,22 @@ export function ThemeToggle({
   };
 
   const iconSizeClass = {
-    sm: "w-4 h-4",
-    md: "w-5 h-5",
+    sm: "w-6 h-6",
+    md: "w-6 h-6",
     lg: "w-6 h-6",
   }[size];
 
   // Get current theme label
   const currentOption = themeOptions.find((opt) => opt.value === theme);
 
-  // Base button styles
+  // Base button styles - match other nav bar buttons exactly
   const buttonStyles = `
     inline-flex items-center justify-center gap-2
-    rounded-lg border border-gray-200 dark:border-gray-700
-    bg-white dark:bg-gray-800
-    text-gray-700 dark:text-gray-200
+    p-2 rounded
+    text-gray-900 dark:text-white
     hover:bg-gray-100 dark:hover:bg-gray-700
     focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500
     transition-colors duration-200
-    ${sizeClasses[size]}
     ${className}
   `.trim();
 

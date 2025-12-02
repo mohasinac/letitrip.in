@@ -16,6 +16,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
+import { Price } from "@/components/common/values";
 
 export interface ProductQuickViewProps {
   product: {
@@ -246,13 +247,13 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
               {/* Price */}
               <div className="flex items-baseline gap-3">
                 <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                  ₹{product.price.toLocaleString("en-IN")}
+                  <Price amount={product.price} />
                 </span>
                 {product.originalPrice &&
                   product.originalPrice > product.price && (
                     <>
                       <span className="text-lg text-gray-500 dark:text-gray-400 line-through">
-                        ₹{product.originalPrice.toLocaleString("en-IN")}
+                        <Price amount={product.originalPrice} />
                       </span>
                       <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-semibold rounded">
                         {discountPercentage}% OFF

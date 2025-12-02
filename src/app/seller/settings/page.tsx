@@ -41,6 +41,7 @@ import {
   FormSelect,
   FormCheckbox,
   FormTextarea,
+  FormLabel,
 } from "@/components/forms";
 
 interface SellerProfile {
@@ -571,12 +572,9 @@ export default function SellerSettingsPage() {
             </div>
 
             <div id="payout-method-group">
-              <label
-                htmlFor="payout-method-group"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
-              >
+              <FormLabel htmlFor="payout-method-group">
                 Preferred Payout Method
-              </label>
+              </FormLabel>
               <div className="flex gap-4">
                 <label className="flex items-center gap-2 p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                   <input

@@ -7,6 +7,13 @@ import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
 import SlugInput from "@/components/common/SlugInput";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
+import {
+  FormInput,
+  FormLabel,
+  FormTextarea,
+  FormSelect,
+} from "@/components/forms";
+import { Price } from "@/components/common/values";
 import { productsService } from "@/services/products.service";
 import type { ProductFE } from "@/types/frontend/product.types";
 import { ProductStatus, ProductCondition } from "@/types/shared/common.types";
@@ -106,20 +113,22 @@ export default function EditProductPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/seller/products"
-          className="rounded-lg p-2 text-gray-600 hover:bg-gray-100"
+          className="rounded-lg p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Edit Product</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Edit Product
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
             Update product information
           </p>
         </div>
       </div>
 
       {/* Steps */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <nav aria-label="Progress">
           <ol className="flex items-center justify-between">
             {STEPS.map((step, index) => (
@@ -137,7 +146,9 @@ export default function EditProductPage() {
                 {index !== STEPS.length - 1 && (
                   <div
                     className={`absolute left-1/2 top-5 h-0.5 w-full ${
-                      currentStep > step.id ? "bg-blue-600" : "bg-gray-300"
+                      currentStep > step.id
+                        ? "bg-blue-600"
+                        : "bg-gray-300 dark:bg-gray-600"
                     }`}
                   />
                 )}
@@ -146,8 +157,8 @@ export default function EditProductPage() {
                     currentStep > step.id
                       ? "border-blue-600 bg-blue-600 text-white"
                       : currentStep === step.id
-                      ? "border-blue-600 bg-white text-blue-600"
-                      : "border-gray-300 bg-white text-gray-400"
+                      ? "border-blue-600 bg-white dark:bg-gray-800 text-blue-600"
+                      : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-400"
                   }`}
                 >
                   {currentStep > step.id ? (
@@ -159,12 +170,14 @@ export default function EditProductPage() {
                 <div className="mt-2 text-center">
                   <div
                     className={`text-sm font-medium ${
-                      currentStep >= step.id ? "text-gray-900" : "text-gray-500"
+                      currentStep >= step.id
+                        ? "text-gray-900 dark:text-white"
+                        : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     {step.name}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
                     {step.description}
                   </div>
                 </div>
@@ -175,68 +188,44 @@ export default function EditProductPage() {
       </div>
 
       {/* Form Content */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         {/* Step 1: Basic Info */}
         {currentStep === 1 && (
           <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="edit-product-name"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Product Name *
-              </label>
-              <input
-                id="edit-product-name"
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+            <FormInput
+              id="edit-product-name"
+              label="Product Name"
+              required
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+            />
+
+            <SlugInput
+              value={formData.slug}
+              sourceText={formData.name}
+              onChange={(slug: string) => setFormData({ ...formData, slug })}
+            />
+
+            <FormInput
+              id="edit-product-price"
+              label="Price (₹)"
+              type="number"
+              required
+              min={0}
+              step={0.01}
+              value={formData.price}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  price: parseFloat(e.target.value),
+                })
+              }
+            />
 
             <div>
-              <SlugInput
-                value={formData.slug}
-                sourceText={formData.name}
-                onChange={(slug: string) => setFormData({ ...formData, slug })}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="edit-product-price"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Price (₹) *
-              </label>
-              <input
-                id="edit-product-price"
-                type="number"
-                required
-                min="0"
-                step="0.01"
-                value={formData.price}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    price: parseFloat(e.target.value),
-                  })
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-
-            <div id="edit-product-category-wrapper">
-              <label
-                htmlFor="edit-product-category-wrapper"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Category *
-              </label>
+              <FormLabel required>Category</FormLabel>
               <CategorySelectorWithCreate
                 value={formData.categoryId}
                 onChange={(categoryId) =>
@@ -252,149 +241,126 @@ export default function EditProductPage() {
         {/* Step 2: Details */}
         {currentStep === 2 && (
           <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="edit-product-description"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Description
-              </label>
-              <textarea
-                id="edit-product-description"
-                rows={6}
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+            <FormTextarea
+              id="edit-product-description"
+              label="Description"
+              rows={6}
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+            />
 
-            <div>
-              <label
-                htmlFor="edit-product-condition"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Condition *
-              </label>
-              <select
-                id="edit-product-condition"
-                value={formData.condition}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    condition: e.target.value as any,
-                  })
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="new">New</option>
-                <option value="refurbished">Refurbished</option>
-                <option value="used">Used</option>
-              </select>
-            </div>
+            <FormSelect
+              id="edit-product-condition"
+              label="Condition"
+              required
+              value={formData.condition}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  condition: e.target.value as ProductCondition,
+                })
+              }
+              options={[
+                { value: "new", label: "New" },
+                { value: "refurbished", label: "Refurbished" },
+                { value: "used", label: "Used" },
+              ]}
+            />
           </div>
         )}
 
         {/* Step 3: Inventory */}
         {currentStep === 3 && (
           <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="edit-product-stock"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Stock Count *
-              </label>
-              <input
-                id="edit-product-stock"
-                type="number"
-                required
-                min="0"
-                value={formData.stockCount}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    stockCount: parseInt(e.target.value),
-                  })
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+            <FormInput
+              id="edit-product-stock"
+              label="Stock Count"
+              type="number"
+              required
+              min={0}
+              value={formData.stockCount}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  stockCount: parseInt(e.target.value),
+                })
+              }
+            />
 
-            <div>
-              <label
-                htmlFor="edit-product-sku"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                SKU (Optional)
-              </label>
-              <input
-                id="edit-product-sku"
-                type="text"
-                value={formData.sku}
-                onChange={(e) =>
-                  setFormData({ ...formData, sku: e.target.value })
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+            <FormInput
+              id="edit-product-sku"
+              label="SKU"
+              helperText="Optional product identifier"
+              value={formData.sku}
+              onChange={(e) =>
+                setFormData({ ...formData, sku: e.target.value })
+              }
+            />
 
-            <div>
-              <label
-                htmlFor="edit-product-status"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Status *
-              </label>
-              <select
-                id="edit-product-status"
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value as any })
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-                <option value="archived">Archived</option>
-              </select>
-            </div>
+            <FormSelect
+              id="edit-product-status"
+              label="Status"
+              required
+              value={formData.status}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  status: e.target.value as ProductStatus,
+                })
+              }
+              options={[
+                { value: "draft", label: "Draft" },
+                { value: "published", label: "Published" },
+                { value: "archived", label: "Archived" },
+              ]}
+            />
           </div>
         )}
 
         {/* Step 4: Save Changes */}
         {currentStep === 4 && (
           <div className="space-y-4">
-            <div className="rounded-lg bg-blue-50 p-4">
-              <h3 className="text-sm font-medium text-blue-900">
+            <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-4">
+              <h3 className="text-sm font-medium text-blue-900 dark:text-blue-300">
                 Ready to Save
               </h3>
-              <p className="mt-1 text-sm text-blue-700">
+              <p className="mt-1 text-sm text-blue-700 dark:text-blue-400">
                 Click the button below to save your changes.
               </p>
             </div>
 
-            <div className="space-y-3 border-t border-gray-200 pt-4">
+            <div className="space-y-3 border-t border-gray-200 dark:border-gray-700 pt-4">
               <div>
-                <dt className="text-sm font-medium text-gray-500">Name</dt>
-                <dd className="mt-1 text-sm text-gray-900">{formData.name}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Price</dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  ₹{formData.price.toLocaleString()}
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Name
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 dark:text-white">
+                  {formData.name}
                 </dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">Stock</dt>
-                <dd className="mt-1 text-sm text-gray-900">
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Price
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 dark:text-white">
+                  <Price amount={formData.price} />
+                </dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Stock
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 dark:text-white">
                   {formData.stockCount}
                 </dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">Status</dt>
-                <dd className="mt-1 text-sm text-gray-900 capitalize">
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Status
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 dark:text-white capitalize">
                   {formData.status}
                 </dd>
               </div>
@@ -403,12 +369,12 @@ export default function EditProductPage() {
         )}
 
         {/* Navigation Buttons */}
-        <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
+        <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
           <button
             type="button"
             onClick={handlePrevious}
             disabled={currentStep === 1}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ArrowLeft className="h-4 w-4" />
             Previous

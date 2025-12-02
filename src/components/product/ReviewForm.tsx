@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Star, Image as ImageIcon } from "lucide-react";
+import { FormInput, FormLabel, FormTextarea } from "@/components/forms";
 import { reviewsService } from "@/services/reviews.service";
 import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
@@ -123,12 +124,9 @@ export default function ReviewForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Rating */}
       <div>
-        <label
-          id="rating-label"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Your Rating *
-        </label>
+        <FormLabel id="rating-label" required>
+          Your Rating
+        </FormLabel>
         <div
           className="flex items-center gap-2"
           role="radiogroup"
@@ -166,53 +164,35 @@ export default function ReviewForm({
 
       {/* Title */}
       <div>
-        <label
-          htmlFor="title"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Review Title (Optional)
-        </label>
-        <input
-          type="text"
+        <FormInput
           id="title"
+          label="Review Title (Optional)"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="What's most important to know?"
           maxLength={100}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         <p className="mt-1 text-xs text-gray-500">{title.length}/100</p>
       </div>
 
       {/* Comment */}
       <div>
-        <label
-          htmlFor="comment"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Your Review *
-        </label>
-        <textarea
+        <FormTextarea
           id="comment"
+          label="Your Review"
+          required
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Share your experience with this product..."
           rows={5}
           maxLength={1000}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
         />
         <p className="mt-1 text-xs text-gray-500">{comment.length}/1000</p>
       </div>
 
       {/* Images */}
       <div>
-        <label
-          id="media-label"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Add Photos/Videos (Optional)
-        </label>
+        <FormLabel id="media-label">Add Photos/Videos (Optional)</FormLabel>
         <p className="text-xs text-gray-500 mb-3">
           Upload up to 5 photos or videos to help others see your experience.
           You can also use your camera!

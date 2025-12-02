@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { Price, DateDisplay } from "@/components/common/values";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import {
   UnifiedFilterSidebar,
@@ -88,13 +89,6 @@ export default function SellerReturnsPage() {
     } finally {
       setProcessingId(null);
     }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-    }).format(amount);
   };
 
   const getStatusColor = (status: string) => {
@@ -267,20 +261,22 @@ export default function SellerReturnsPage() {
                                   Amount:
                                 </span>
                                 <span className="font-semibold text-gray-900 dark:text-white">
-                                  {returnItem.refundAmount
-                                    ? formatCurrency(returnItem.refundAmount)
-                                    : "N/A"}
+                                  {returnItem.refundAmount ? (
+                                    <Price amount={returnItem.refundAmount} />
+                                  ) : (
+                                    "N/A"
+                                  )}
                                 </span>
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-gray-500 dark:text-gray-400">
                                   Date:
                                 </span>
-                                <span className="text-gray-900 dark:text-white">
-                                  {new Date(
-                                    returnItem.createdAt
-                                  ).toLocaleDateString()}
-                                </span>
+                                <DateDisplay
+                                  date={returnItem.createdAt}
+                                  format="short"
+                                  className="text-gray-900 dark:text-white"
+                                />
                               </div>
                             </div>
 
@@ -390,9 +386,11 @@ export default function SellerReturnsPage() {
                                 </div>
                               </td>
                               <td className="px-6 py-4 text-sm font-semibold">
-                                {returnItem.refundAmount
-                                  ? formatCurrency(returnItem.refundAmount)
-                                  : "N/A"}
+                                {returnItem.refundAmount ? (
+                                  <Price amount={returnItem.refundAmount} />
+                                ) : (
+                                  "N/A"
+                                )}
                               </td>
                               <td className="px-6 py-4">
                                 <span
@@ -404,9 +402,10 @@ export default function SellerReturnsPage() {
                                 </span>
                               </td>
                               <td className="px-6 py-4 text-sm text-gray-500">
-                                {new Date(
-                                  returnItem.createdAt
-                                ).toLocaleDateString()}
+                                <DateDisplay
+                                  date={returnItem.createdAt}
+                                  format="short"
+                                />
                               </td>
                               <td className="px-6 py-4 text-sm space-x-2">
                                 {returnItem.status === "requested" && (

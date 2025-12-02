@@ -29,6 +29,7 @@ import {
   FileText,
 } from "lucide-react";
 import { apiService } from "@/services/api.service";
+import { FormLabel } from "@/components/forms";
 import { FormInput, FormSelect } from "@/components/forms";
 
 interface EmailSettings {
@@ -400,9 +401,7 @@ export default function AdminEmailSettingsPage() {
                     }
                   />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Password
-                    </label>
+                    <FormLabel htmlFor="smtp-password">Password</FormLabel>
                     <div className="relative">
                       <input
                         type={showPassword ? "text" : "password"}
@@ -458,9 +457,7 @@ export default function AdminEmailSettingsPage() {
                   API Configuration
                 </h2>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    API Key
-                  </label>
+                  <FormLabel htmlFor="api-key">API Key</FormLabel>
                   <div className="relative">
                     <input
                       type={showApiKey ? "text" : "password"}

@@ -21,7 +21,12 @@ import {
   settingsService,
   type GeneralSettings,
 } from "@/services/settings.service";
-import { FormInput, FormTextarea, FormCheckbox } from "@/components/forms";
+import {
+  FormInput,
+  FormTextarea,
+  FormCheckbox,
+  FormLabel,
+} from "@/components/forms";
 
 export default function AdminGeneralSettingsPage() {
   const router = useRouter();
@@ -385,9 +390,9 @@ export default function AdminGeneralSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <FormLabel htmlFor="maintenance-message">
                 Maintenance Message
-              </label>
+              </FormLabel>
               <textarea
                 value={settings.maintenanceMessage}
                 onChange={(e) =>

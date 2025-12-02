@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
+import { DateDisplay } from "@/components/common/values";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
 
@@ -168,7 +169,14 @@ export default function TicketDetailsPage() {
             </div>
             <div className="text-sm text-gray-500">
               <p>Ticket #{ticketId.slice(0, 8)}</p>
-              <p>Created {new Date(ticket.createdAt).toLocaleDateString()}</p>
+              <p>
+                Created{" "}
+                <DateDisplay
+                  date={ticket.createdAt}
+                  format="short"
+                  className="inline"
+                />
+              </p>
             </div>
           </div>
 

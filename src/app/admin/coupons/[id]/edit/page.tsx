@@ -6,6 +6,12 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { couponsService } from "@/services/coupons.service";
 import { toast } from "@/components/admin/Toast";
 import { ArrowLeft, Save } from "lucide-react";
+import {
+  FormInput,
+  FormSelect,
+  FormTextarea,
+  FormLabel,
+} from "@/components/forms";
 
 export default function EditCouponPage() {
   const router = useRouter();
@@ -141,230 +147,133 @@ export default function EditCouponPage() {
             className="bg-white rounded-lg shadow p-6 space-y-6"
           >
             {/* Coupon Code */}
-            <div>
-              <label
-                htmlFor="edit-coupon-code"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Coupon Code *
-              </label>
-              <input
-                id="edit-coupon-code"
-                type="text"
-                name="code"
-                value={formData.code}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 font-mono uppercase"
-                placeholder="SUMMER2024"
-                required
-                disabled
-                title="Coupon code cannot be changed"
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                Coupon code cannot be changed after creation
-              </p>
-            </div>
+            <FormInput
+              label="Coupon Code"
+              required
+              name="code"
+              value={formData.code}
+              onChange={handleChange}
+              className="font-mono uppercase"
+              placeholder="SUMMER2024"
+              disabled
+              helperText="Coupon code cannot be changed after creation"
+            />
 
             {/* Description */}
-            <div>
-              <label
-                htmlFor="edit-coupon-description"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Description
-              </label>
-              <textarea
-                id="edit-coupon-description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={3}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                placeholder="Save 20% on all items"
-              />
-            </div>
+            <FormTextarea
+              label="Description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={3}
+              placeholder="Save 20% on all items"
+            />
 
             {/* Discount Type & Value */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="edit-coupon-type"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Discount Type *
-                </label>
-                <select
-                  id="edit-coupon-type"
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  required
-                >
-                  <option value="percentage">Percentage Off</option>
-                  <option value="flat">Flat Discount (₹)</option>
-                  <option value="free-shipping">Free Shipping</option>
-                </select>
-              </div>
+              <FormSelect
+                label="Discount Type"
+                required
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                options={[
+                  { value: "percentage", label: "Percentage Off" },
+                  { value: "flat", label: "Flat Discount (₹)" },
+                  { value: "free-shipping", label: "Free Shipping" },
+                ]}
+              />
 
               {formData.type !== "free-shipping" && (
-                <div>
-                  <label
-                    htmlFor="edit-coupon-value"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Discount Value *
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="edit-coupon-value"
-                      type="number"
-                      name="value"
-                      value={formData.value}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                      min="0"
-                      step={formData.type === "percentage" ? "1" : "0.01"}
-                      required
-                    />
-                    <span className="absolute right-3 top-2 text-gray-500">
-                      {formData.type === "percentage" ? "%" : "₹"}
-                    </span>
-                  </div>
-                </div>
+                <FormInput
+                  label="Discount Value"
+                  required
+                  type="number"
+                  name="value"
+                  value={formData.value}
+                  onChange={handleChange}
+                  min={0}
+                  step={formData.type === "percentage" ? 1 : 0.01}
+                  rightAddon={formData.type === "percentage" ? "%" : "₹"}
+                />
               )}
             </div>
 
             {/* Minimum Order Value */}
-            <div>
-              <label
-                htmlFor="edit-coupon-min-order"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Minimum Order Value (₹)
-              </label>
-              <input
-                id="edit-coupon-min-order"
-                type="number"
-                name="minOrderValue"
-                value={formData.minOrderValue}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                min="0"
-                step="0.01"
-              />
-            </div>
+            <FormInput
+              label="Minimum Order Value (₹)"
+              type="number"
+              name="minOrderValue"
+              value={formData.minOrderValue}
+              onChange={handleChange}
+              min={0}
+              step={0.01}
+            />
 
             {/* Usage Limits */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="edit-coupon-max-uses"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Total Usage Limit
-                </label>
-                <input
-                  id="edit-coupon-max-uses"
-                  type="number"
-                  name="maxUses"
-                  value={formData.maxUses || ""}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setFormData((prev) => ({
-                      ...prev,
-                      maxUses: value ? parseInt(value) : null,
-                    }));
-                  }}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  min="1"
-                  placeholder="Unlimited"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  Leave empty for unlimited uses
-                </p>
-              </div>
+              <FormInput
+                label="Total Usage Limit"
+                type="number"
+                name="maxUses"
+                value={formData.maxUses || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData((prev) => ({
+                    ...prev,
+                    maxUses: value ? parseInt(value) : null,
+                  }));
+                }}
+                min={1}
+                placeholder="Unlimited"
+                helperText="Leave empty for unlimited uses"
+              />
 
-              <div>
-                <label
-                  htmlFor="edit-coupon-per-user"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Uses Per User *
-                </label>
-                <input
-                  id="edit-coupon-per-user"
-                  type="number"
-                  name="maxUsesPerUser"
-                  value={formData.maxUsesPerUser}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  min="1"
-                  required
-                />
-              </div>
+              <FormInput
+                label="Uses Per User"
+                required
+                type="number"
+                name="maxUsesPerUser"
+                value={formData.maxUsesPerUser}
+                onChange={handleChange}
+                min={1}
+              />
             </div>
 
             {/* Valid Date Range */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="edit-coupon-valid-from"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Valid From *
-                </label>
-                <input
-                  id="edit-coupon-valid-from"
-                  type="date"
-                  name="validFrom"
-                  value={formData.validFrom}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  required
-                />
-              </div>
+              <FormInput
+                label="Valid From"
+                required
+                type="date"
+                name="validFrom"
+                value={formData.validFrom}
+                onChange={handleChange}
+              />
 
-              <div>
-                <label
-                  htmlFor="edit-coupon-valid-to"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Valid Until *
-                </label>
-                <input
-                  id="edit-coupon-valid-to"
-                  type="date"
-                  name="validTo"
-                  value={formData.validTo}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  min={formData.validFrom}
-                  required
-                />
-              </div>
+              <FormInput
+                label="Valid Until"
+                required
+                type="date"
+                name="validTo"
+                value={formData.validTo}
+                onChange={handleChange}
+                min={formData.validFrom}
+              />
             </div>
 
             {/* Applicable To */}
-            <div>
-              <label
-                htmlFor="edit-coupon-applicable"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Applicable To
-              </label>
-              <select
-                id="edit-coupon-applicable"
-                name="applicableTo"
-                value={formData.applicableTo}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="all">All Products</option>
-                <option value="category">Specific Categories</option>
-                <option value="product">Specific Products</option>
-              </select>
-            </div>
+            <FormSelect
+              label="Applicable To"
+              name="applicableTo"
+              value={formData.applicableTo}
+              onChange={handleChange}
+              options={[
+                { value: "all", label: "All Products" },
+                { value: "category", label: "Specific Categories" },
+                { value: "product", label: "Specific Products" },
+              ]}
+            />
 
             {/* Active Status */}
             <div className="flex items-center gap-2">

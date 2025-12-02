@@ -11,6 +11,7 @@ import {
 import { payoutsService } from "@/services/payouts.service";
 import { toast } from "@/components/admin/Toast";
 import { Eye, CheckCircle, XCircle } from "lucide-react";
+import { DateDisplay } from "@/components/common/values";
 
 export default function AdminPayoutsPage() {
   const router = useRouter();
@@ -360,7 +361,7 @@ export default function AdminPayoutsPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                          {new Date(payout.createdAt).toLocaleDateString()}
+                          <DateDisplay date={payout.createdAt} format="short" />
                         </td>
                         <td className="px-6 py-4 text-sm space-x-2">
                           {payout.status === "pending" && (

@@ -76,7 +76,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={generateJSONLD(websiteSchema)}
         />
       </head>
-      <body className={inter.className}>
+      <body
+        className={`${inter.className} bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}
+      >
         <ThemeProvider defaultTheme="dark" enableStorage>
           <AuthProvider>
             <ComparisonProvider>

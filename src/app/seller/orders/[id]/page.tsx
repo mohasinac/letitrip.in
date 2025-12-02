@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { DateDisplay } from "@/components/common/values";
+import { FormInput, FormSelect } from "@/components/forms";
 import { ordersService } from "@/services/orders.service";
 import { notFound } from "@/lib/error-redirects";
 import {
@@ -301,9 +303,10 @@ export default function SellerOrderDetailPage() {
                           Estimated Delivery
                         </p>
                         <p className="font-semibold">
-                          {new Date(
-                            order.estimatedDelivery
-                          ).toLocaleDateString()}
+                          <DateDisplay
+                            date={order.estimatedDelivery}
+                            format="medium"
+                          />
                         </p>
                       </div>
                     )}
@@ -311,7 +314,10 @@ export default function SellerOrderDetailPage() {
                       <div>
                         <p className="text-sm text-gray-600">Delivered On</p>
                         <p className="font-semibold">
-                          {new Date(order.deliveredAt).toLocaleDateString()}
+                          <DateDisplay
+                            date={order.deliveredAt}
+                            format="medium"
+                          />
                         </p>
                       </div>
                     )}
@@ -492,81 +498,61 @@ export default function SellerOrderDetailPage() {
                     Add Shipping Information
                   </h2>
                   <form onSubmit={handleAddShipping} className="space-y-4">
-                    <div>
-                      <label
-                        htmlFor="order-tracking-number"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Tracking Number *
-                      </label>
-                      <input
-                        id="order-tracking-number"
-                        type="text"
-                        value={shippingData.trackingNumber}
-                        onChange={(e) =>
-                          setShippingData((prev) => ({
-                            ...prev,
-                            trackingNumber: e.target.value,
-                          }))
-                        }
-                        required
-                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                        placeholder="Enter tracking number"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="order-shipping-provider"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Shipping Provider *
-                      </label>
-                      <select
-                        id="order-shipping-provider"
-                        value={shippingData.shippingProvider}
-                        onChange={(e) =>
-                          setShippingData((prev) => ({
-                            ...prev,
-                            shippingProvider: e.target.value,
-                          }))
-                        }
-                        required
-                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="">Select provider</option>
-                        <option value="BlueDart">BlueDart</option>
-                        <option value="Delhivery">Delhivery</option>
-                        <option value="DTDC">DTDC</option>
-                        <option value="FedEx">FedEx</option>
-                        <option value="India Post">India Post</option>
-                        <option value="Professional Courier">
-                          Professional Courier
-                        </option>
-                        <option value="Trackon">Trackon</option>
-                        <option value="Xpressbees">Xpressbees</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="order-estimated-delivery"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Estimated Delivery
-                      </label>
-                      <input
-                        id="order-estimated-delivery"
-                        type="date"
-                        value={shippingData.estimatedDelivery}
-                        onChange={(e) =>
-                          setShippingData((prev) => ({
-                            ...prev,
-                            estimatedDelivery: e.target.value,
-                          }))
-                        }
-                        min={new Date().toISOString().split("T")[0]}
-                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
+                    <FormInput
+                      id="order-tracking-number"
+                      label="Tracking Number"
+                      required
+                      value={shippingData.trackingNumber}
+                      onChange={(e) =>
+                        setShippingData((prev) => ({
+                          ...prev,
+                          trackingNumber: e.target.value,
+                        }))
+                      }
+                      placeholder="Enter tracking number"
+                    />
+
+                    <FormSelect
+                      id="order-shipping-provider"
+                      label="Shipping Provider"
+                      required
+                      value={shippingData.shippingProvider}
+                      onChange={(e) =>
+                        setShippingData((prev) => ({
+                          ...prev,
+                          shippingProvider: e.target.value,
+                        }))
+                      }
+                      placeholder="Select provider"
+                      options={[
+                        { value: "BlueDart", label: "BlueDart" },
+                        { value: "Delhivery", label: "Delhivery" },
+                        { value: "DTDC", label: "DTDC" },
+                        { value: "FedEx", label: "FedEx" },
+                        { value: "India Post", label: "India Post" },
+                        {
+                          value: "Professional Courier",
+                          label: "Professional Courier",
+                        },
+                        { value: "Trackon", label: "Trackon" },
+                        { value: "Xpressbees", label: "Xpressbees" },
+                      ]}
+                    />
+
+                    <FormInput
+                      id="order-estimated-delivery"
+                      label="Estimated Delivery"
+                      type="date"
+                      value={shippingData.estimatedDelivery}
+                      onChange={(e) =>
+                        setShippingData((prev) => ({
+                          ...prev,
+                          estimatedDelivery: e.target.value,
+                        }))
+                      }
+                      min={new Date().toISOString().split("T")[0]}
+                    />
+
                     <div className="flex gap-2">
                       <button
                         type="submit"

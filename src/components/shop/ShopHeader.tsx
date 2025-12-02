@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Star, MapPin, Heart, Share2 } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { DateDisplay } from "@/components/common/values";
 import type { ShopFE, ShopCardFE } from "@/types/frontend/shop.types";
 import { shopsService } from "@/services/shops.service";
 
@@ -183,12 +184,11 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
                   <span className="text-gray-600 dark:text-gray-400">
                     Joined{" "}
                   </span>
-                  <span className="font-semibold text-gray-900 dark:text-white">
-                    {new Date(shop.createdAt).toLocaleDateString("en-IN", {
-                      year: "numeric",
-                      month: "long",
-                    })}
-                  </span>
+                  <DateDisplay
+                    date={shop.createdAt}
+                    format="long"
+                    className="font-semibold text-gray-900 dark:text-white"
+                  />
                 </div>
               )}
             </div>

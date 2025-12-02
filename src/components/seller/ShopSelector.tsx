@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { FormSelect } from "@/components/forms";
 import { shopsService } from "@/services/shops.service";
 
 interface Option {
@@ -47,16 +48,15 @@ export default function ShopSelector({
     load();
   }, []);
 
+  const selectOptions = includeAllOption
+    ? [{ value: "", label: "All Shops" }, ...options]
+    : options;
+
   return (
     <div className={className}>
-      <label
-        htmlFor="shop-selector"
-        className="block text-sm font-medium text-gray-700 mb-1"
-      >
-        Shop
-      </label>
-      <select
+      <FormSelect
         id="shop-selector"
+        label="Shop"
         value={value || ""}
         onChange={(e) => {
           const val = e.target.value || undefined;
@@ -64,15 +64,8 @@ export default function ShopSelector({
           onChange(val, sel?.slug);
         }}
         disabled={disabled || loading}
-        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-      >
-        {includeAllOption && <option value="">All Shops</option>}
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
+        options={selectOptions}
+      />
     </div>
   );
 }

@@ -5,6 +5,12 @@ import { Loader2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import TagInput from "@/components/common/TagInput";
+import {
+  FormInput,
+  FormLabel,
+  FormTextarea,
+  FormSelect,
+} from "@/components/forms";
 import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";
 import { CouponType, CouponApplicability } from "@/types/shared/common.types";
 import { couponsService } from "@/services/coupons.service";
@@ -177,12 +183,9 @@ export default function CouponForm({
 
         {/* Coupon Code */}
         <div>
-          <label
-            htmlFor="coupon-code"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Coupon Code *
-          </label>
+          <FormLabel htmlFor="coupon-code" required>
+            Coupon Code
+          </FormLabel>
           <div className="relative">
             <input
               id="coupon-code"
@@ -221,12 +224,9 @@ export default function CouponForm({
 
         {/* Coupon Name */}
         <div>
-          <label
-            htmlFor="coupon-name"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Display Name *
-          </label>
+          <FormLabel htmlFor="coupon-name" required>
+            Display Name
+          </FormLabel>
           <input
             id="coupon-name"
             type="text"
@@ -241,12 +241,7 @@ export default function CouponForm({
 
         {/* Description */}
         <div>
-          <label
-            htmlFor="coupon-description"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Description
-          </label>
+          <FormLabel htmlFor="coupon-description">Description</FormLabel>
           <textarea
             id="coupon-description"
             rows={3}
@@ -269,12 +264,9 @@ export default function CouponForm({
 
         {/* Coupon Type */}
         <div id="discount-type-group">
-          <label
-            htmlFor="discount-type-group"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
-            Discount Type *
-          </label>
+          <FormLabel htmlFor="discount-type-group" required>
+            Discount Type
+          </FormLabel>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {COUPON_TYPES.map((type) => (
               <label
@@ -315,13 +307,9 @@ export default function CouponForm({
         {(formData.type === "percentage" || formData.type === "flat") && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label
-                htmlFor="discount-value"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Discount Value *{" "}
-                {formData.type === "percentage" ? "(%)" : "(₹)"}
-              </label>
+              <FormLabel htmlFor="discount-value" required>
+                Discount Value {formData.type === "percentage" ? "(%)" : "(₹)"}
+              </FormLabel>
               <input
                 id="discount-value"
                 type="number"
@@ -342,12 +330,9 @@ export default function CouponForm({
 
             {formData.type === "percentage" && (
               <div>
-                <label
-                  htmlFor="max-discount-amount"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
+                <FormLabel htmlFor="max-discount-amount">
                   Max Discount Amount (₹)
-                </label>
+                </FormLabel>
                 <input
                   id="max-discount-amount"
                   type="number"
@@ -383,12 +368,9 @@ export default function CouponForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Minimum Purchase */}
           <div>
-            <label
-              htmlFor="min-purchase-amount"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
+            <FormLabel htmlFor="min-purchase-amount">
               Minimum Purchase Amount (₹)
-            </label>
+            </FormLabel>
             <input
               id="min-purchase-amount"
               type="number"
@@ -407,12 +389,7 @@ export default function CouponForm({
 
           {/* Minimum Quantity */}
           <div>
-            <label
-              htmlFor="min-quantity"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Minimum Quantity
-            </label>
+            <FormLabel htmlFor="min-quantity">Minimum Quantity</FormLabel>
             <input
               id="min-quantity"
               type="number"
@@ -438,12 +415,9 @@ export default function CouponForm({
 
         {/* Applicability Type */}
         <div id="applicability-type-group">
-          <label
-            htmlFor="applicability-type-group"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
-            Applies To *
-          </label>
+          <FormLabel htmlFor="applicability-type-group" required>
+            Applies To
+          </FormLabel>
           <div className="space-y-2">
             {APPLICABILITY_OPTIONS.map((option) => (
               <label
@@ -479,12 +453,9 @@ export default function CouponForm({
         {/* Category/Product Selection */}
         {formData.applicability === "category" && (
           <div id="applicable-categories-wrapper">
-            <label
-              htmlFor="applicable-categories-wrapper"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
+            <FormLabel htmlFor="applicable-categories-wrapper">
               Applicable Categories
-            </label>
+            </FormLabel>
             <TagInput
               value={formData.applicableCategories || []}
               onChange={(tags: string[]) =>
@@ -500,12 +471,9 @@ export default function CouponForm({
 
         {formData.applicability === "product" && (
           <div id="applicable-products-wrapper">
-            <label
-              htmlFor="applicable-products-wrapper"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
+            <FormLabel htmlFor="applicable-products-wrapper">
               Applicable Products
-            </label>
+            </FormLabel>
             <TagInput
               value={formData.applicableProducts || []}
               onChange={(tags: string[]) =>
@@ -529,12 +497,7 @@ export default function CouponForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Total Usage Limit */}
           <div>
-            <label
-              htmlFor="usage-limit"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Total Usage Limit
-            </label>
+            <FormLabel htmlFor="usage-limit">Total Usage Limit</FormLabel>
             <input
               id="usage-limit"
               type="number"
@@ -558,12 +521,9 @@ export default function CouponForm({
 
           {/* Per User Limit */}
           <div>
-            <label
-              htmlFor="usage-limit-per-user"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Usage Limit Per User *
-            </label>
+            <FormLabel htmlFor="usage-limit-per-user" required>
+              Usage Limit Per User
+            </FormLabel>
             <input
               id="usage-limit-per-user"
               type="number"
@@ -591,12 +551,9 @@ export default function CouponForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Start Date */}
           <div id="coupon-start-date-wrapper">
-            <label
-              htmlFor="coupon-start-date-wrapper"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Start Date *
-            </label>
+            <FormLabel htmlFor="coupon-start-date-wrapper" required>
+              Start Date
+            </FormLabel>
             <DateTimePicker
               value={formData.startDate}
               onChange={(date: Date | null) => {
@@ -608,12 +565,9 @@ export default function CouponForm({
 
           {/* End Date */}
           <div id="coupon-end-date-wrapper">
-            <label
-              htmlFor="coupon-end-date-wrapper"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              End Date *
-            </label>
+            <FormLabel htmlFor="coupon-end-date-wrapper" required>
+              End Date
+            </FormLabel>
             <DateTimePicker
               value={formData.endDate}
               onChange={(date: Date | null) => {

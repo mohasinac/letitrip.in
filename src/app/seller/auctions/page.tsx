@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { AuctionCard } from "@/components/cards/AuctionCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -42,6 +43,7 @@ import { useIsMobile } from "@/hooks/useMobile";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
+import { Price, DateDisplay } from "@/components/common/values";
 import { formatDistanceToNow } from "date-fns";
 
 export default function SellerAuctionsPage() {
@@ -523,12 +525,13 @@ export default function SellerAuctionsPage() {
                             {/* Current Bid */}
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="font-medium text-gray-900">
-                                ₹
-                                {(
-                                  auction.currentBid ||
-                                  auction.startingBid ||
-                                  0
-                                ).toLocaleString("en-IN")}
+                                <Price
+                                  amount={
+                                    auction.currentBid ||
+                                    auction.startingBid ||
+                                    0
+                                  }
+                                />
                               </div>
                             </td>
 
@@ -539,16 +542,16 @@ export default function SellerAuctionsPage() {
 
                             {/* Time */}
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                              {auction.status === AuctionStatus.ACTIVE
-                                ? formatDistanceToNow(
-                                    new Date(auction.endTime),
-                                    {
-                                      addSuffix: true,
-                                    }
-                                  )
-                                : new Date(
-                                    auction.endTime
-                                  ).toLocaleDateString()}
+                              {auction.status === AuctionStatus.ACTIVE ? (
+                                formatDistanceToNow(new Date(auction.endTime), {
+                                  addSuffix: true,
+                                })
+                              ) : (
+                                <DateDisplay
+                                  date={auction.endTime}
+                                  format="short"
+                                />
+                              )}
                             </td>
 
                             {/* Status */}
@@ -597,86 +600,34 @@ export default function SellerAuctionsPage() {
             {view === "grid" && (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {auctions.map((auction) => (
-                  <div
+                  <AuctionCard
                     key={auction.id}
-                    className="overflow-hidden rounded-lg border border-gray-200 bg-white hover:shadow-lg transition-shadow"
-                  >
-                    {auction.images && auction.images[0] && (
-                      <div className="aspect-video w-full overflow-hidden bg-gray-100 relative">
-                        <OptimizedImage
-                          src={auction.images[0]}
-                          alt={auction.name || "Auction"}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <div className="flex items-start justify-between gap-2">
-                        <h3 className="font-medium text-gray-900 line-clamp-2">
-                          {auction.name}
-                        </h3>
-                        {getStatusBadge(auction.status)}
-                      </div>
-                      <div className="mt-3 space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600">Current Bid:</span>
-                          <span className="font-semibold text-gray-900">
-                            ₹
-                            {(
-                              auction.currentBid ||
-                              auction.startingBid ||
-                              0
-                            ).toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600">Total Bids:</span>
-                          <span className="text-gray-900">
-                            {auction.bidCount}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600">Ends:</span>
-                          <span className="text-gray-900">
-                            {auction.status === AuctionStatus.ACTIVE
-                              ? formatDistanceToNow(new Date(auction.endTime), {
-                                  addSuffix: true,
-                                })
-                              : new Date(auction.endTime).toLocaleDateString()}
-                          </span>
-                        </div>
-                        {auction.featured && (
-                          <div className="flex items-center gap-1 text-sm text-yellow-600">
-                            <span>★</span>
-                            <span>Featured</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="mt-4 flex gap-2">
-                        <Link
-                          href={`/auctions/${auction.slug}`}
-                          className="flex-1 flex items-center justify-center gap-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                        >
-                          <Eye className="h-4 w-4" />
-                          View
-                        </Link>
-                        <Link
-                          href={`/seller/auctions/${auction.slug}/edit`}
-                          className="flex-1 flex items-center justify-center gap-1 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary/90"
-                        >
-                          <Edit className="h-4 w-4" />
-                          Edit
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(auction.id)}
-                          className="rounded-lg border border-red-300 px-3 py-2 text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                    auction={{
+                      id: auction.id,
+                      name: auction.name,
+                      slug: auction.slug,
+                      images: auction.images || [],
+                      currentBid: auction.currentBid || 0,
+                      startingBid: auction.startingBid || 0,
+                      bidCount: auction.bidCount || 0,
+                      endTime: auction.endTime,
+                      status: auction.status as any,
+                      featured: auction.featured,
+                    }}
+                    variant="seller"
+                    onEdit={(slug) =>
+                      router.push(`/seller/auctions/${slug}/edit`)
+                    }
+                    onDelete={(id) => setDeleteId(id)}
+                    isSelected={selectedIds.includes(auction.id)}
+                    onSelect={(id, selected) => {
+                      if (selected) {
+                        setSelectedIds((prev) => [...prev, id]);
+                      } else {
+                        setSelectedIds((prev) => prev.filter((i) => i !== id));
+                      }
+                    }}
+                  />
                 ))}
               </div>
             )}

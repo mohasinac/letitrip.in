@@ -5,32 +5,11 @@ import Link from "next/link";
 import { Clock, Trash2, X, ShoppingBag } from "lucide-react";
 import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { formatCurrency } from "@/lib/formatters";
+import { Price, RelativeDate } from "@/components/common/values";
 
 export default function HistoryPage() {
   const { history, removeFromHistory, clearHistory } = useViewingHistory();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
-
-  const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) {
-      return "Today";
-    } else if (diffDays === 1) {
-      return "Yesterday";
-    } else if (diffDays < 7) {
-      return `${diffDays} days ago`;
-    } else {
-      return date.toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
-    }
-  };
 
   if (history.length === 0) {
     return (
@@ -152,11 +131,12 @@ export default function HistoryPage() {
 
                 <div className="flex items-center justify-between mt-2">
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    {formatCurrency(item.price)}
+                    <Price amount={item.price} />
                   </span>
-                  <span className="text-xs text-gray-400 dark:text-gray-500">
-                    {formatDate(item.viewed_at)}
-                  </span>
+                  <RelativeDate
+                    date={item.viewed_at}
+                    className="text-xs text-gray-400 dark:text-gray-500"
+                  />
                 </div>
               </div>
             </Link>

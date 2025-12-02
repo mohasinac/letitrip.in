@@ -15,6 +15,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { Price } from "@/components/common/values";
 import {
   Gavel,
   TrendingUp,
@@ -365,7 +366,7 @@ function TopAuctionsTable({ loading }: { loading: boolean }) {
                   </div>
                 </td>
                 <td className="py-3 pr-4 text-sm font-medium text-gray-900 dark:text-white">
-                  ₹{auction.currentBid.toLocaleString()}
+                  <Price amount={auction.currentBid} />
                 </td>
                 <td className="py-3">
                   <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">

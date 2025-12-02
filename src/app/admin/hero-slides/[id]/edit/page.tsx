@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
-import { FormInput, FormCheckbox } from "@/components/forms";
+import { FormInput, FormCheckbox, FormLabel } from "@/components/forms";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import MediaUploader from "@/components/media/MediaUploader";
 import {
@@ -203,9 +203,7 @@ export default function EditHeroSlidePage() {
 
           {/* Subtitle */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Subtitle (Rich Text)
-            </label>
+            <FormLabel htmlFor="slide-subtitle">Subtitle (Rich Text)</FormLabel>
             <RichTextEditor
               value={formData.subtitle}
               onChange={(value: string) =>
@@ -219,9 +217,9 @@ export default function EditHeroSlidePage() {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <FormLabel htmlFor="slide-description">
               Description (Rich Text)
-            </label>
+            </FormLabel>
             <RichTextEditor
               value={formData.description}
               onChange={(value: string) =>
@@ -234,9 +232,9 @@ export default function EditHeroSlidePage() {
 
           {/* Image */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Image <span className="text-red-500">*</span>
-            </label>
+            <FormLabel htmlFor="slide-image" required>
+              Image
+            </FormLabel>
 
             {formData.image && !uploadedFiles.length && (
               <div className="mb-4 relative w-full h-48">

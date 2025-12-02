@@ -178,7 +178,8 @@
 /* ============================================
  * Dark Theme Overrides
  * ============================================ */
-[data-theme="dark"] {
+[data-theme="dark"],
+.dark {
   /* Background */
   --color-bg-primary: #111827; /* gray-900 */
   --color-bg-secondary: #1f2937; /* gray-800 */

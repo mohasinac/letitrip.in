@@ -6,6 +6,7 @@ import CategorySelector, {
   Category as CategoryType,
 } from "@/components/common/CategorySelector";
 import SlugInput from "@/components/common/SlugInput";
+import { FormInput, FormTextarea, FormLabel } from "@/components/forms";
 import { categoriesService } from "@/services/categories.service";
 
 interface CategorySelectorWithCreateProps {
@@ -236,51 +237,29 @@ export default function CategorySelectorWithCreate({
             {/* Form */}
             <div className="px-6 py-4 space-y-4">
               {/* Name */}
-              <div>
-                <label
-                  htmlFor="create-category-name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Category Name{" "}
-                  {required && <span className="text-red-500">*</span>}
-                </label>
-                <input
-                  id="create-category-name"
-                  type="text"
-                  value={createForm.name}
-                  onChange={(e) => {
-                    setCreateForm((prev) => ({
-                      ...prev,
-                      name: e.target.value,
-                    }));
-                    setCreateErrors((prev) => ({ ...prev, name: "" }));
-                  }}
-                  className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    createErrors.name ? "border-red-500" : "border-gray-300"
-                  }`}
-                  placeholder="e.g., Electronics, Fashion"
-                  maxLength={100}
-                  autoFocus
-                  disabled={creating}
-                />
-                {createErrors.name && (
-                  <p className="mt-1 text-xs text-red-600">
-                    {createErrors.name}
-                  </p>
-                )}
-                <p className="mt-1 text-xs text-gray-500">
-                  {createForm.name.length}/100 characters
-                </p>
-              </div>
+              <FormInput
+                id="create-category-name"
+                label="Category Name"
+                required={required}
+                value={createForm.name}
+                onChange={(e) => {
+                  setCreateForm((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }));
+                  setCreateErrors((prev) => ({ ...prev, name: "" }));
+                }}
+                error={createErrors.name}
+                placeholder="e.g., Electronics, Fashion"
+                maxLength={100}
+                showCharCount
+                autoFocus
+                disabled={creating}
+              />
 
               {/* Slug */}
-              <div id="create-category-slug-wrapper">
-                <label
-                  htmlFor="create-category-slug-wrapper"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  URL Slug {required && <span className="text-red-500">*</span>}
-                </label>
+              <div>
+                <FormLabel required={required}>URL Slug</FormLabel>
                 <SlugInput
                   sourceText={createForm.name}
                   value={createForm.slug}
@@ -295,32 +274,23 @@ export default function CategorySelectorWithCreate({
               </div>
 
               {/* Description (Optional) */}
-              <div>
-                <label
-                  htmlFor="create-category-description"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Description (Optional)
-                </label>
-                <textarea
-                  id="create-category-description"
-                  value={createForm.description}
-                  onChange={(e) =>
-                    setCreateForm((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  rows={3}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Brief description of this category"
-                  maxLength={500}
-                  disabled={creating}
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  {createForm.description.length}/500 characters
-                </p>
-              </div>
+              <FormTextarea
+                id="create-category-description"
+                label="Description"
+                helperText="Optional brief description of this category"
+                value={createForm.description}
+                onChange={(e) =>
+                  setCreateForm((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                rows={3}
+                placeholder="Brief description of this category"
+                maxLength={500}
+                showCharCount
+                disabled={creating}
+              />
 
               {/* Info */}
               <div className="rounded-lg bg-blue-50 p-3">

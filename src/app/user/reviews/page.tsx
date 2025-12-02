@@ -19,6 +19,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { DateDisplay } from "@/components/common/values";
 import { reviewsService } from "@/services/reviews.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import type { ReviewFE } from "@/types/frontend/review.types";
@@ -56,7 +57,9 @@ function Stars({
         <Star
           key={star}
           className={`${sizeClasses} ${
-            star <= rating ? "text-yellow-400 fill-current" : "text-gray-300"
+            star <= rating
+              ? "text-yellow-400 fill-current"
+              : "text-gray-300 dark:text-gray-600"
           }`}
         />
       ))}
@@ -74,31 +77,23 @@ function ReviewCard({
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-IN", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
             <CheckCircle className="h-3 w-3" /> Approved
           </span>
         );
       case "pending":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400">
             <Clock className="h-3 w-3" /> Pending
           </span>
         );
       case "rejected":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
             <AlertCircle className="h-3 w-3" /> Rejected
           </span>
         );
@@ -125,13 +120,13 @@ function ReviewCard({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-sm transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-sm transition-shadow">
       {/* Header */}
-      <div className="p-4 border-b border-gray-100">
+      <div className="p-4 border-b border-gray-100 dark:border-gray-700">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             {/* Product/Auction Image */}
-            <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
+            <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
               {review.images && review.images.length > 0 ? (
                 <OptimizedImage
                   src={review.images[0]}
@@ -150,15 +145,17 @@ function ReviewCard({
             <div>
               <Link
                 href={getItemLink()}
-                className="font-medium text-gray-900 hover:text-blue-600 line-clamp-1"
+                className="font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 line-clamp-1"
               >
                 {review.productId ? "Product Review" : "Shop Review"}
               </Link>
               <div className="flex items-center gap-2 mt-1">
                 <Stars rating={review.rating} />
-                <span className="text-sm text-gray-500">
-                  {formatDate(review.createdAt)}
-                </span>
+                <DateDisplay
+                  date={review.createdAt}
+                  format="medium"
+                  className="text-sm text-gray-500 dark:text-gray-400"
+                />
               </div>
             </div>
           </div>
@@ -169,9 +166,13 @@ function ReviewCard({
       {/* Content */}
       <div className="p-4">
         {review.title && (
-          <h4 className="font-medium text-gray-900 mb-2">{review.title}</h4>
+          <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+            {review.title}
+          </h4>
         )}
-        <p className="text-gray-600 text-sm line-clamp-3">{review.comment}</p>
+        <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
+          {review.comment}
+        </p>
 
         {/* Review Images */}
         {review.images && review.images.length > 0 && (
@@ -179,7 +180,7 @@ function ReviewCard({
             {review.images.slice(0, 4).map((image, index) => (
               <div
                 key={index}
-                className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100"
+                className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700"
               >
                 <OptimizedImage
                   src={image}
@@ -202,13 +203,13 @@ function ReviewCard({
         )}
 
         {/* Stats */}
-        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-gray-100 text-sm text-gray-500">
+        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-1">
             <ThumbsUp className="h-4 w-4" />
             <span>{review.helpfulCount || 0} helpful</span>
           </div>
           {review.verifiedPurchase && (
-            <div className="flex items-center gap-1 text-green-600">
+            <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
               <CheckCircle className="h-4 w-4" />
               <span>Verified Purchase</span>
             </div>
@@ -217,27 +218,29 @@ function ReviewCard({
 
         {/* Seller Response */}
         {review.replyText && (
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <p className="text-xs font-medium text-blue-800 mb-1">
+          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <p className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
               Seller Response:
             </p>
-            <p className="text-sm text-blue-700">{review.replyText}</p>
+            <p className="text-sm text-blue-700 dark:text-blue-200">
+              {review.replyText}
+            </p>
           </div>
         )}
       </div>
 
       {/* Actions */}
-      <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-2">
+      <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700 flex items-center justify-end gap-2">
         <button
           onClick={() => onEdit(review.id)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
         >
           <Edit className="h-4 w-4" />
           Edit
         </button>
         <button
           onClick={() => onDelete(review.id)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
         >
           <Trash2 className="h-4 w-4" />
           Delete
@@ -366,11 +369,11 @@ export default function UserReviewsPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-          <h3 className="text-lg font-medium text-gray-900">
+          <AlertCircle className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-3" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
             Sign in to view your reviews
           </h3>
-          <p className="mt-1 text-gray-500">
+          <p className="mt-1 text-gray-500 dark:text-gray-400">
             You need to be signed in to access your reviews.
           </p>
           <Link
@@ -400,37 +403,43 @@ export default function UserReviewsPage() {
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">My Reviews</h1>
-          <p className="mt-1 text-gray-600">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            My Reviews
+          </h1>
+          <p className="mt-1 text-gray-600 dark:text-gray-400">
             Manage reviews you&apos;ve submitted for products and auctions
           </p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <p className="text-sm text-gray-500">Total Reviews</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Total Reviews
+            </p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
               {stats.total}
             </p>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <p className="text-sm text-gray-500">Approved</p>
-            <p className="text-2xl font-bold text-green-600 mt-1">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Approved</p>
+            <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
               {stats.approved}
             </p>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <p className="text-sm text-gray-500">Pending</p>
-            <p className="text-2xl font-bold text-yellow-600 mt-1">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Pending</p>
+            <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">
               {stats.pending}
             </p>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <p className="text-sm text-gray-500">Average Rating</p>
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Average Rating
+            </p>
             <div className="flex items-center gap-1 mt-1">
               <Star className="h-5 w-5 text-yellow-400 fill-current" />
-              <span className="text-2xl font-bold text-gray-900">
+              <span className="text-2xl font-bold text-gray-900 dark:text-white">
                 {stats.averageRating}
               </span>
             </div>
@@ -438,17 +447,17 @@ export default function UserReviewsPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search reviews..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
@@ -456,7 +465,7 @@ export default function UserReviewsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               {STATUS_FILTERS.map((filter) => (
                 <option key={filter.value} value={filter.value}>
@@ -469,7 +478,7 @@ export default function UserReviewsPage() {
             <select
               value={ratingFilter}
               onChange={(e) => setRatingFilter(Number(e.target.value))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               {RATING_FILTERS.map((filter) => (
                 <option key={filter.value} value={filter.value}>
@@ -486,12 +495,12 @@ export default function UserReviewsPage() {
             <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
           </div>
         ) : filteredReviews.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
-            <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-            <h3 className="text-lg font-medium text-gray-900">
+          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+            <MessageSquare className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-3" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
               No reviews yet
             </h3>
-            <p className="mt-1 text-gray-500">
+            <p className="mt-1 text-gray-500 dark:text-gray-400">
               {searchQuery || statusFilter !== "all" || ratingFilter > 0
                 ? "No reviews match your filters"
                 : "You haven't written any reviews yet"}

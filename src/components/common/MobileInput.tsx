@@ -9,6 +9,7 @@ import {
   PHONE_LENGTH,
 } from "@/constants/location";
 import { locationService } from "@/services/location.service";
+import { FormLabel } from "@/components/forms";
 
 export interface MobileInputProps {
   value: string;
@@ -68,13 +69,9 @@ export const MobileInput = forwardRef<HTMLInputElement, MobileInputProps>(
     return (
       <div className={`space-y-1 ${className}`}>
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-          >
+          <FormLabel htmlFor={inputId} required={required}>
             {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
-          </label>
+          </FormLabel>
         )}
 
         <div className="flex">

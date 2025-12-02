@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { StatsCard } from "@/components/common/StatsCard";
 import { EmptyState } from "@/components/common/EmptyState";
+import { Price, DateDisplay } from "@/components/common/values";
 import { ordersService } from "@/services/orders.service";
 import { useAuth } from "@/contexts/AuthContext";
 import type { OrderCardFE } from "@/types/frontend/order.types";
@@ -220,19 +221,12 @@ export default function UserDashboardPage() {
                             order.id.slice(0, 8).toUpperCase()}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {new Date(order.createdAt || 0).toLocaleDateString(
-                            "en-IN",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )}
+                          <DateDisplay date={order.createdAt} format="medium" />
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-gray-900 dark:text-white">
-                          ₹{order.total.toLocaleString("en-IN")}
+                          <Price amount={order.total} />
                         </p>
                         <span
                           data-testid={`order-status-${order.id}`}

@@ -30,6 +30,7 @@ import {
   Activity,
 } from "lucide-react";
 import { analyticsService } from "@/services/analytics.service";
+import { Price, DateDisplay } from "@/components/common/values";
 import type { CustomerAnalyticsFE } from "@/types/frontend/analytics.types";
 
 // Period selector
@@ -296,13 +297,13 @@ function TopCustomersTable({
                   {customer.totalOrders}
                 </td>
                 <td className="py-3 pr-4 text-sm font-medium text-gray-900 dark:text-white">
-                  ₹{customer.totalSpent.toLocaleString()}
+                  <Price amount={customer.totalSpent} />
                 </td>
                 <td className="py-3 pr-4 text-sm text-gray-600 dark:text-gray-400">
-                  ₹{customer.averageOrderValue.toLocaleString()}
+                  <Price amount={customer.averageOrderValue} />
                 </td>
                 <td className="py-3 text-sm text-gray-500 dark:text-gray-400">
-                  {new Date(customer.lastOrderDate).toLocaleDateString()}
+                  <DateDisplay date={customer.lastOrderDate} format="short" />
                 </td>
               </tr>
             ))}

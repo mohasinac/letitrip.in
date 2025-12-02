@@ -16,6 +16,7 @@ import {
   Database,
   Bell,
   Wallet,
+  MessageSquare,
 } from "lucide-react";
 import {
   COMPANY_NAME,
@@ -43,7 +44,6 @@ export default function MainNavBar({
     messagesCount,
     ripLimitBalance,
     hasUnpaidAuctions,
-    totalNotifications,
   } = useHeaderStats();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
@@ -289,19 +289,37 @@ export default function MainNavBar({
           {/* Theme Toggle - Visible on all screen sizes */}
           <ThemeToggle size="sm" />
 
+          {/* Messages - Mobile/Tablet version */}
+          {isAuthenticated && (
+            <Link
+              href="/user/messages"
+              className="lg:hidden relative hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded"
+              aria-label={`Messages${
+                messagesCount > 0 ? ` (${messagesCount} unread)` : ""
+              }`}
+            >
+              <MessageSquare className="w-6 h-6" />
+              {messagesCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-extrabold">
+                  {messagesCount > 99 ? "99+" : messagesCount}
+                </span>
+              )}
+            </Link>
+          )}
+
           {/* Notifications - Mobile/Tablet version */}
           {isAuthenticated && (
             <Link
               href="/user/notifications"
               className="lg:hidden relative hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded"
               aria-label={`Notifications${
-                totalNotifications > 0 ? ` (${totalNotifications} unread)` : ""
+                notificationCount > 0 ? ` (${notificationCount} unread)` : ""
               }`}
             >
               <Bell className="w-6 h-6" />
-              {totalNotifications > 0 && (
+              {notificationCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-extrabold">
-                  {totalNotifications > 99 ? "99+" : totalNotifications}
+                  {notificationCount > 99 ? "99+" : notificationCount}
                 </span>
               )}
             </Link>
@@ -327,19 +345,37 @@ export default function MainNavBar({
             </Link>
           )}
 
+          {/* Messages - Desktop version */}
+          {isAuthenticated && (
+            <Link
+              href="/user/messages"
+              className="hidden lg:flex relative hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded"
+              aria-label={`Messages${
+                messagesCount > 0 ? ` (${messagesCount} unread)` : ""
+              }`}
+            >
+              <MessageSquare className="w-6 h-6" />
+              {messagesCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-extrabold">
+                  {messagesCount > 99 ? "99+" : messagesCount}
+                </span>
+              )}
+            </Link>
+          )}
+
           {/* Notifications - Desktop version */}
           {isAuthenticated && (
             <Link
               href="/user/notifications"
               className="hidden lg:flex relative hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded"
               aria-label={`Notifications${
-                totalNotifications > 0 ? ` (${totalNotifications} unread)` : ""
+                notificationCount > 0 ? ` (${notificationCount} unread)` : ""
               }`}
             >
               <Bell className="w-6 h-6" />
-              {totalNotifications > 0 && (
+              {notificationCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-extrabold">
-                  {totalNotifications > 99 ? "99+" : totalNotifications}
+                  {notificationCount > 99 ? "99+" : notificationCount}
                 </span>
               )}
             </Link>

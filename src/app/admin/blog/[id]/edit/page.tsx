@@ -9,7 +9,14 @@ import { ArrowLeft, Save, Eye, Loader2, Upload, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { blogService, type BlogPost } from "@/services/blog.service";
+import { DateDisplay } from "@/components/common/values";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
+import {
+  FormInput,
+  FormSelect,
+  FormTextarea,
+  FormLabel,
+} from "@/components/forms";
 
 export default function EditBlogPostPage() {
   const router = useRouter();
@@ -308,84 +315,43 @@ export default function EditBlogPostPage() {
       {/* Form */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 space-y-6">
         {/* Title */}
-        <div>
-          <label
-            htmlFor="blog-title"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Title <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="blog-title"
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            placeholder="Enter post title"
-            className={`w-full rounded-lg border ${
-              errors.title ? "border-red-500" : "border-gray-300"
-            } px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500`}
-          />
-          {errors.title && (
-            <p className="mt-1 text-sm text-red-600">{errors.title}</p>
-          )}
-        </div>
+        <FormInput
+          label="Title"
+          required
+          name="title"
+          value={formData.title}
+          onChange={handleInputChange}
+          placeholder="Enter post title"
+          error={errors.title}
+        />
 
         {/* Slug */}
-        <div>
-          <label
-            htmlFor="blog-slug"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Slug <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="blog-slug"
-            type="text"
-            name="slug"
-            value={formData.slug}
-            onChange={handleInputChange}
-            placeholder="post-slug"
-            className="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 cursor-not-allowed"
-            disabled
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            URL: /blog/{formData.slug}
-          </p>
-          <p className="mt-1 text-sm text-yellow-600">
-            Note: Slug cannot be changed after creation to maintain permalinks
-          </p>
-        </div>
+        <FormInput
+          label="Slug"
+          required
+          name="slug"
+          value={formData.slug}
+          onChange={handleInputChange}
+          placeholder="post-slug"
+          disabled
+          helperText={`URL: /blog/${formData.slug} • Note: Slug cannot be changed after creation to maintain permalinks`}
+        />
 
         {/* Excerpt */}
-        <div>
-          <label
-            htmlFor="blog-excerpt"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Excerpt <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            id="blog-excerpt"
-            name="excerpt"
-            value={formData.excerpt}
-            onChange={handleInputChange}
-            rows={3}
-            placeholder="Brief description of the post (shown in listings)"
-            className={`w-full rounded-lg border ${
-              errors.excerpt ? "border-red-500" : "border-gray-300"
-            } px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500`}
-          />
-          {errors.excerpt && (
-            <p className="mt-1 text-sm text-red-600">{errors.excerpt}</p>
-          )}
-        </div>
+        <FormTextarea
+          label="Excerpt"
+          required
+          name="excerpt"
+          value={formData.excerpt}
+          onChange={handleInputChange}
+          rows={3}
+          placeholder="Brief description of the post (shown in listings)"
+          error={errors.excerpt}
+        />
 
         {/* Featured Image */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Featured Image
-          </label>
+          <FormLabel htmlFor="blog-featured-image">Featured Image</FormLabel>
           {currentFeaturedImage ? (
             <div className="relative inline-block h-48">
               <OptimizedImage
@@ -427,9 +393,9 @@ export default function EditBlogPostPage() {
 
         {/* Content */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Content <span className="text-red-500">*</span>
-          </label>
+          <FormLabel htmlFor="blog-content" required>
+            Content
+          </FormLabel>
           <RichTextEditor
             value={formData.content}
             onChange={(value) =>
@@ -443,12 +409,9 @@ export default function EditBlogPostPage() {
 
         {/* Category */}
         <div>
-          <label
-            htmlFor="blog-category"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Category <span className="text-red-500">*</span>
-          </label>
+          <FormLabel htmlFor="blog-category" required>
+            Category
+          </FormLabel>
           <div className="flex gap-2">
             <select
               id="blog-category"
@@ -482,9 +445,7 @@ export default function EditBlogPostPage() {
 
         {/* Tags */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Tags
-          </label>
+          <FormLabel htmlFor="blog-tags">Tags</FormLabel>
           <div className="flex gap-2 mb-2">
             <input
               type="text"
@@ -524,22 +485,7 @@ export default function EditBlogPostPage() {
           )}
         </div>
 
-        {/* Status */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Status
-          </label>
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleInputChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-          >
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="archived">Archived</option>
-          </select>
-        </div>
+        {/* Status */}\n        <FormSelect\n          label=\"Status\"\n          name=\"status\"\n          value={formData.status}\n          onChange={handleInputChange}\n          options={[\n            { value: \"draft\", label: \"Draft\" },\n            { value: \"published\", label: \"Published\" },\n            { value: \"archived\", label: \"Archived\" },\n          ]}\n        />
 
         {/* Options */}
         <div className="space-y-3">
@@ -578,7 +524,7 @@ export default function EditBlogPostPage() {
             <div>
               <span className="text-gray-500">Created:</span>
               <span className="ml-2 font-medium text-gray-900">
-                {new Date(post.createdAt).toLocaleDateString()}
+                <DateDisplay date={post.createdAt} format="short" />
               </span>
             </div>
           </div>

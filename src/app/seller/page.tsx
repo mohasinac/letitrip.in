@@ -15,6 +15,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { StatsCard } from "@/components/common/StatsCard";
+import { CompactPrice, Price } from "@/components/common/values";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { analyticsService } from "@/services/analytics.service";
@@ -183,10 +184,12 @@ export default function SellerDashboardPage() {
         />
         <StatsCard
           title="Revenue (This Month)"
-          value={`₹${(stats.revenue.thisMonth / 1000).toFixed(1)}K`}
-          description={`₹${(stats.revenue.lastMonth / 1000).toFixed(
-            1,
-          )}K last month`}
+          value={<CompactPrice amount={stats.revenue.thisMonth} />}
+          description={
+            <>
+              <CompactPrice amount={stats.revenue.lastMonth} /> last month
+            </>
+          }
           icon={<DollarSign className="h-6 w-6 text-blue-600" />}
           trend={{
             value:
@@ -195,8 +198,8 @@ export default function SellerDashboardPage() {
                     stats.revenue.lastMonth) *
                   100
                 : stats.revenue.thisMonth > 0
-                  ? 100
-                  : 0,
+                ? 100
+                : 0,
             isPositive: stats.revenue.thisMonth > stats.revenue.lastMonth,
           }}
         />
@@ -286,15 +289,15 @@ export default function SellerDashboardPage() {
                   </div>
                   <div className="text-right">
                     <p className="font-medium text-gray-900">
-                      ₹{order.amount.toLocaleString()}
+                      <Price amount={order.amount} />
                     </p>
                     <span
                       className={`inline-block mt-1 rounded-full px-2 py-1 text-xs font-medium ${
                         order.status === "pending"
                           ? "bg-yellow-100 text-yellow-800"
                           : order.status === "confirmed"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-green-100 text-green-800"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-green-100 text-green-800"
                       }`}
                     >
                       {order.status}
@@ -341,7 +344,7 @@ export default function SellerDashboardPage() {
                   </div>
                   <div className="text-right">
                     <p className="font-medium text-gray-900">
-                      ₹{(product.revenue / 1000).toFixed(1)}K
+                      <CompactPrice amount={product.revenue} />
                     </p>
                     <p className="text-xs text-gray-500">revenue</p>
                   </div>

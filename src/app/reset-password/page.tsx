@@ -12,6 +12,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import { FormLabel } from "@/components/forms";
 import { apiService } from "@/services/api.service";
 
 function ResetPasswordForm() {
@@ -168,12 +169,7 @@ function ResetPasswordForm() {
 
           <div className="space-y-4">
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                New Password
-              </label>
+              <FormLabel htmlFor="password">New Password</FormLabel>
               <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
@@ -204,12 +200,9 @@ function ResetPasswordForm() {
             </div>
 
             <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
+              <FormLabel htmlFor="confirmPassword">
                 Confirm New Password
-              </label>
+              </FormLabel>
               <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />

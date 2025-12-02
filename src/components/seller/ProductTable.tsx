@@ -8,6 +8,7 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 import { DataTable, Column } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { Price } from "@/components/common/values";
 import { FormModal } from "@/components/common/FormModal";
 import { ProductInlineForm } from "./ProductInlineForm";
 import { productsService } from "@/services/products.service";
@@ -119,12 +120,12 @@ export default function ProductTable({
       render: (_, ProductCardFE) => (
         <div className="min-w-[100px]">
           <div className="font-medium text-gray-900 dark:text-white">
-            ₹{ProductCardFE.price?.toLocaleString("en-IN") || "0"}
+            <Price amount={ProductCardFE.price || 0} />
           </div>
           {ProductCardFE.originalPrice &&
             ProductCardFE.originalPrice > ProductCardFE.price && (
               <div className="text-xs text-gray-500 dark:text-gray-400 line-through">
-                ₹{ProductCardFE.originalPrice.toLocaleString("en-IN")}
+                <Price amount={ProductCardFE.originalPrice} />
               </div>
             )}
         </div>

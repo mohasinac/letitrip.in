@@ -1,6 +1,6 @@
 # HTML Tag Wrappers - Consistent Component Usage
 
-> **Status**: 🔄 In Progress - Migration Ongoing
+> **Status**: ✅ Complete - All Raw Labels Migrated
 > **Priority**: High
 > **Last Updated**: December 2025
 > **Related**: [Doc 29 - Image Wrapper Migration](./29-image-wrapper-migration.md), [Doc 30 - Component Library Consolidation](./30-component-library-consolidation.md)
@@ -66,6 +66,8 @@ Updated barrel exports:
 | File                                   | Before       | After               | Status |
 | -------------------------------------- | ------------ | ------------------- | ------ |
 | `seller/settings/page.tsx`             | 41 raw tags  | 3 (toggles only)    | ✅     |
+| `seller/products/[slug]/edit/page.tsx` | 10+ raw tags | 0                   | ✅     |
+| `seller/orders/[id]/page.tsx`          | 3 raw tags   | 0                   | ✅     |
 | `admin/settings/general/page.tsx`      | 16 raw tags  | 1 (toggle only)     | ✅     |
 | `admin/settings/payment/page.tsx`      | 13 raw tags  | 5 (toggles only)    | ✅     |
 | `admin/settings/email/page.tsx`        | 9 raw tags   | 4 (password toggle) | ✅     |
@@ -74,35 +76,84 @@ Updated barrel exports:
 | `admin/orders/[id]/page.tsx`           | 6 raw tags   | 0                   | ✅     |
 | `admin/users/page.tsx`                 | 2 raw tags   | 0                   | ✅     |
 | `admin/riplimit/page.tsx`              | 2 raw tags   | 0                   | ✅     |
-| `admin/products/[id]/edit/page.tsx`    | 20+ raw tags | 2 (tags input)      | ✅     |
+| `admin/products/[id]/edit/page.tsx`    | 20+ raw tags | 0                   | ✅     |
 | `admin/categories/create/page.tsx`     | 11 raw tags  | 1 (SlugInput)       | ✅     |
 | `admin/blog/create/page.tsx`           | 9 raw tags   | 4 (specialized)     | ✅     |
 | `admin/blog/categories/page.tsx`       | 4 raw tags   | 0                   | ✅     |
 | `admin/blog/tags/page.tsx`             | 3 raw tags   | 0                   | ✅     |
+| `admin/shops/[id]/edit/page.tsx`       | 20+ raw tags | 0                   | ✅     |
+| `admin/support-tickets/[id]/page.tsx`  | 4 raw tags   | 0                   | ✅     |
+| `auctions/[slug]/page.tsx`             | 1 raw tag    | 0                   | ✅     |
 
-### Phase 3: Remaining Files (Specialized Components)
+### Seller Components Migrated ✅
 
-Files with raw labels that are intentionally NOT migrated (specialized layouts):
+| Component                              | Before       | After | Status |
+| -------------------------------------- | ------------ | ----- | ------ |
+| `CategorySelectorWithCreate.tsx`       | 3 raw labels | 0     | ✅     |
+| `ShopSelector.tsx`                     | 1 raw label  | 0     | ✅     |
+| `ShopInlineForm.tsx`                   | 5 raw labels | 0     | ✅     |
+| `InlineCategorySelectorWithCreate.tsx` | 3 raw labels | 0     | ✅     |
 
-**Specialized Components:**
+### Media Components Migrated ✅
 
-- `admin/homepage/page.tsx` - Color pickers, sliders, RichTextEditor
-- `admin/blog/[id]/edit/page.tsx` - File upload, RichTextEditor, custom category layout
-- `admin/blog/create/page.tsx` - File upload, RichTextEditor, custom category layout
+| Component               | Before       | After | Status |
+| ----------------------- | ------------ | ----- | ------ |
+| `MediaMetadataForm.tsx` | 5 raw labels | 0     | ✅     |
 
-**Toggle Switch Labels:**
+### Infrastructure Components Updated ✅
 
-- Various settings pages have toggle switches with custom label styling
+| Component               | Change                   | Status |
+| ----------------------- | ------------------------ | ------ |
+| `common/FieldError.tsx` | Added dark mode to label | ✅     |
 
-**Wizard Components:**
+### User Pages Migrated ✅
 
-- `seller/product-wizard/RequiredInfoStep.tsx` - RichTextEditor labels
-- `seller/auction-wizard/RequiredInfoStep.tsx` - Specialized auction fields
+| File                     | Before       | After                  | Status |
+| ------------------------ | ------------ | ---------------------- | ------ |
+| `user/riplimit/page.tsx` | 4 raw labels | FormInput/FormTextarea | ✅     |
+| `user/reviews/page.tsx`  | 4 raw labels | 0                      | ✅     |
 
-**Infrastructure Components:**
+### Product/Cart Components Migrated ✅
 
-- `common/FieldError.tsx` - Error wrapper component
-- `admin/ToggleSwitch.tsx` - Toggle switch component
+| Component              | Before       | After | Status |
+| ---------------------- | ------------ | ----- | ------ |
+| `cart/CartSummary`     | 1 raw label  | 0     | ✅     |
+| `product/ProductInfo`  | 1 raw label  | 0     | ✅     |
+| `product/ReviewForm`   | 4 raw labels | 0     | ✅     |
+| `auction/AutoBidSetup` | 1 raw label  | 0     | ✅     |
+
+### Admin Components Migrated ✅
+
+| Component                     | Before        | After | Status |
+| ----------------------------- | ------------- | ----- | ------ |
+| `admin/CategoryForm`          | 3 raw labels  | 0     | ✅     |
+| `admin/coupons/create`        | 7 raw labels  | 0     | ✅     |
+| `admin/coupons/[id]/edit`     | 10 raw labels | 0     | ✅     |
+| `admin/blog/create`           | 4 raw labels  | 0     | ✅     |
+| `admin/blog/[id]/edit`        | 8 raw labels  | 0     | ✅     |
+| `admin/homepage`              | 5 raw labels  | 0     | ✅     |
+| `admin/products/[id]/edit`    | 1 raw label   | 0     | ✅     |
+| `admin/categories/create`     | 1 raw label   | 0     | ✅     |
+| `admin/hero-slides/[id]/edit` | 3 raw labels  | 0     | ✅     |
+
+### Seller Components Migrated ✅
+
+| Component                | Before       | After | Status |
+| ------------------------ | ------------ | ----- | ------ |
+| `seller/AuctionForm`     | 4 raw labels | 0     | ✅     |
+| `seller/ShopForm`        | 2 raw labels | 0     | ✅     |
+| `seller/analytics/page`  | 2 raw labels | 0     | ✅     |
+| `seller/my-shops/create` | 15+ raw tags | 0     | ✅     |
+
+### Phase 3 Complete ✅
+
+All raw `<label>` elements have been migrated to use proper dark mode styling (`dark:text-gray-300`).
+
+**Files with intentionally retained raw labels (specialized components):**
+
+- RichTextEditor components (wrapper provides its own label)
+- Color picker inputs (custom layout)
+- Slider controls (custom layout)
 
 ## Usage Examples
 

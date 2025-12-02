@@ -2,6 +2,14 @@
 
 import { ChevronDown, ChevronUp, Info } from "lucide-react";
 import DateTimePicker from "@/components/common/DateTimePicker";
+import {
+  FormInput,
+  FormTextarea,
+  FormSelect,
+  FormLabel,
+  FormCheckbox,
+} from "@/components/forms";
+import { Price } from "@/components/common/values";
 import type { OptionalStepProps } from "./types";
 
 export function OptionalDetailsStep({
@@ -50,102 +58,59 @@ export function OptionalDetailsStep({
         {expandedSections.bidding && (
           <div className="p-4 pt-0 space-y-4 border-t border-gray-200 dark:border-gray-700">
             {/* Description */}
-            <div>
-              <label
-                htmlFor="auction-description"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Description
-              </label>
-              <textarea
-                id="auction-description"
-                value={formData.description}
-                onChange={(e) => handleChange("description", e.target.value)}
-                rows={4}
-                className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                placeholder="Provide detailed description including condition, history, specifications..."
-              />
-              <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                {formData.description.length}/1000 characters
-              </p>
-            </div>
+            <FormTextarea
+              id="auction-description"
+              label="Description"
+              value={formData.description}
+              onChange={(e) => handleChange("description", e.target.value)}
+              rows={4}
+              placeholder="Provide detailed description including condition, history, specifications..."
+              showCharCount
+              maxLength={1000}
+            />
 
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Bid Increment */}
-              <div>
-                <label
-                  htmlFor="auction-bid-increment"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Bid Increment (₹)
-                </label>
-                <input
-                  id="auction-bid-increment"
-                  type="number"
-                  value={formData.bidIncrement}
-                  onChange={(e) => handleChange("bidIncrement", e.target.value)}
-                  min="1"
-                  step="1"
-                  className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  placeholder="100"
-                />
-                <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                  Minimum amount to increase each bid
-                </p>
-              </div>
+              <FormInput
+                id="auction-bid-increment"
+                label="Bid Increment (₹)"
+                type="number"
+                value={formData.bidIncrement}
+                onChange={(e) => handleChange("bidIncrement", e.target.value)}
+                min={1}
+                step={1}
+                placeholder="100"
+                helpText="Minimum amount to increase each bid"
+              />
 
               {/* Reserve Price (for reserve auctions) */}
               {formData.auctionType === "reserve" && (
-                <div>
-                  <label
-                    htmlFor="auction-reserve-price"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Reserve Price (₹)
-                  </label>
-                  <input
-                    id="auction-reserve-price"
-                    type="number"
-                    value={formData.reservePrice}
-                    onChange={(e) =>
-                      handleChange("reservePrice", e.target.value)
-                    }
-                    min="0"
-                    step="1"
-                    className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                    placeholder="5000"
-                  />
-                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                    Minimum price for item to be sold (hidden from buyers)
-                  </p>
-                </div>
+                <FormInput
+                  id="auction-reserve-price"
+                  label="Reserve Price (₹)"
+                  type="number"
+                  value={formData.reservePrice}
+                  onChange={(e) => handleChange("reservePrice", e.target.value)}
+                  min={0}
+                  step={1}
+                  placeholder="5000"
+                  helpText="Minimum price for item to be sold (hidden from buyers)"
+                />
               )}
 
               {/* Buy Now Price (for buyNow auctions) */}
               {formData.auctionType === "buyNow" && (
-                <div>
-                  <label
-                    htmlFor="auction-buy-now-price"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Buy Now Price (₹)
-                  </label>
-                  <input
-                    id="auction-buy-now-price"
-                    type="number"
-                    value={formData.buyNowPrice}
-                    onChange={(e) =>
-                      handleChange("buyNowPrice", e.target.value)
-                    }
-                    min="0"
-                    step="1"
-                    className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                    placeholder="10000"
-                  />
-                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                    Price to end auction and purchase immediately
-                  </p>
-                </div>
+                <FormInput
+                  id="auction-buy-now-price"
+                  label="Buy Now Price (₹)"
+                  type="number"
+                  value={formData.buyNowPrice}
+                  onChange={(e) => handleChange("buyNowPrice", e.target.value)}
+                  min={0}
+                  step={1}
+                  placeholder="10000"
+                  helpText="Price to end auction and purchase immediately"
+                />
               )}
             </div>
           </div>
@@ -173,12 +138,7 @@ export function OptionalDetailsStep({
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Start Time */}
               <div>
-                <label
-                  htmlFor="auction-start-time"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Start Time
-                </label>
+                <FormLabel>Start Time</FormLabel>
                 <DateTimePicker
                   id="auction-start-time"
                   value={formData.startTime}
@@ -192,12 +152,7 @@ export function OptionalDetailsStep({
 
               {/* End Time */}
               <div>
-                <label
-                  htmlFor="auction-end-time"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  End Time
-                </label>
+                <FormLabel>End Time</FormLabel>
                 <DateTimePicker
                   id="auction-end-time"
                   value={formData.endTime}
@@ -211,30 +166,21 @@ export function OptionalDetailsStep({
             </div>
 
             {/* Auto Extend */}
-            <div>
-              <label
-                htmlFor="auction-auto-extend"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Auto-Extend Minutes
-              </label>
-              <select
-                id="auction-auto-extend"
-                value={formData.autoExtendMinutes}
-                onChange={(e) =>
-                  handleChange("autoExtendMinutes", e.target.value)
-                }
-                className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="0">No auto-extend</option>
-                <option value="2">2 minutes</option>
-                <option value="5">5 minutes</option>
-                <option value="10">10 minutes</option>
-              </select>
-              <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                Extend auction if bid placed in final minutes
-              </p>
-            </div>
+            <FormSelect
+              id="auction-auto-extend"
+              label="Auto-Extend Minutes"
+              value={formData.autoExtendMinutes}
+              onChange={(e) =>
+                handleChange("autoExtendMinutes", e.target.value)
+              }
+              options={[
+                { value: "0", label: "No auto-extend" },
+                { value: "2", label: "2 minutes" },
+                { value: "5", label: "5 minutes" },
+                { value: "10", label: "10 minutes" },
+              ]}
+              helpText="Extend auction if bid placed in final minutes"
+            />
 
             {/* Duration Info */}
             {duration > 0 && (
@@ -269,84 +215,61 @@ export function OptionalDetailsStep({
         {expandedSections.shipping && (
           <div className="p-4 pt-0 space-y-4 border-t border-gray-200 dark:border-gray-700">
             {/* Shipping Terms */}
-            <div>
-              <label
-                htmlFor="auction-shipping-terms"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Shipping Terms
-              </label>
-              <textarea
-                id="auction-shipping-terms"
-                value={formData.shippingTerms}
-                onChange={(e) => handleChange("shippingTerms", e.target.value)}
-                rows={3}
-                className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                placeholder="Describe shipping options, costs, and delivery timeframes..."
-              />
-            </div>
+            <FormTextarea
+              id="auction-shipping-terms"
+              label="Shipping Terms"
+              value={formData.shippingTerms}
+              onChange={(e) => handleChange("shippingTerms", e.target.value)}
+              rows={3}
+              placeholder="Describe shipping options, costs, and delivery timeframes..."
+            />
 
             {/* Return Policy */}
-            <div>
-              <label
-                htmlFor="auction-return-policy"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Return Policy
-              </label>
-              <select
-                id="auction-return-policy"
-                value={formData.returnPolicy}
-                onChange={(e) => handleChange("returnPolicy", e.target.value)}
-                className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="no-returns">No Returns</option>
-                <option value="7-days">7 Days Return</option>
-                <option value="14-days">14 Days Return</option>
-                <option value="30-days">30 Days Return</option>
-              </select>
-            </div>
+            <FormSelect
+              id="auction-return-policy"
+              label="Return Policy"
+              value={formData.returnPolicy}
+              onChange={(e) => handleChange("returnPolicy", e.target.value)}
+              options={[
+                { value: "no-returns", label: "No Returns" },
+                { value: "7-days", label: "7 Days Return" },
+                { value: "14-days", label: "14 Days Return" },
+                { value: "30-days", label: "30 Days Return" },
+              ]}
+            />
 
             {/* Status */}
-            <div>
-              <label
-                htmlFor="auction-status"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Publish Status
-              </label>
-              <select
-                id="auction-status"
-                value={formData.status}
-                onChange={(e) => handleChange("status", e.target.value)}
-                className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="draft">Draft (not visible)</option>
-                <option value="scheduled">
-                  Scheduled (will go live at start time)
-                </option>
-                <option value="live">Publish Immediately</option>
-              </select>
-            </div>
+            <FormSelect
+              id="auction-status"
+              label="Publish Status"
+              value={formData.status}
+              onChange={(e) => handleChange("status", e.target.value)}
+              options={[
+                { value: "draft", label: "Draft (not visible)" },
+                {
+                  value: "scheduled",
+                  label: "Scheduled (will go live at start time)",
+                },
+                { value: "live", label: "Publish Immediately" },
+              ]}
+            />
 
             {/* Featured */}
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="featured"
-                checked={formData.featured}
-                onChange={(e) => handleChange("featured", e.target.checked)}
-                className="mt-1 h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
-              />
-              <label htmlFor="featured" className="text-sm">
-                <span className="font-medium text-gray-900 dark:text-white">
-                  Feature this auction
-                </span>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Show this auction on the homepage and in featured sections
-                </p>
-              </label>
-            </div>
+            <FormCheckbox
+              id="featured"
+              checked={formData.featured}
+              onChange={(e) => handleChange("featured", e.target.checked)}
+              label={
+                <>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    Feature this auction
+                  </span>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Show this auction on the homepage and in featured sections
+                  </p>
+                </>
+              }
+            />
           </div>
         )}
       </div>
@@ -368,9 +291,11 @@ export function OptionalDetailsStep({
               Starting Bid:
             </span>{" "}
             <span className="ml-2 text-gray-900 dark:text-white font-medium">
-              {formData.startingBid
-                ? `₹${parseFloat(formData.startingBid).toLocaleString()}`
-                : "—"}
+              {formData.startingBid ? (
+                <Price amount={parseFloat(formData.startingBid)} />
+              ) : (
+                "—"
+              )}
             </span>
           </div>
           <div>

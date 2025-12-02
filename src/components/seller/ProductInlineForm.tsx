@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import SlugInput from "@/components/common/SlugInput";
+import { FormInput, FormTextarea } from "@/components/forms";
 import { productsService } from "@/services/products.service";
 import type { ProductFE, ProductCardFE } from "@/types/frontend/product.types";
 
@@ -106,32 +107,17 @@ export function ProductInlineForm({
 
       {/* Name */}
       <div>
-        <label
-          htmlFor="product-name"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
-          Product Name *
-        </label>
-        <input
+        <FormInput
           id="product-name"
-          type="text"
+          label="Product Name"
           required
           value={formData.name}
           onChange={(e) => {
             setFormData({ ...formData, name: e.target.value });
             clearError("name");
           }}
-          className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
-            errors.name
-              ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-              : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
-          }`}
+          error={errors.name}
         />
-        {errors.name && (
-          <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-            {errors.name}
-          </p>
-        )}
       </div>
 
       {/* Slug */}
@@ -153,94 +139,61 @@ export function ProductInlineForm({
 
       {/* Price */}
       <div>
-        <label
-          htmlFor="product-price"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
-          Price (₹) *
-        </label>
-        <input
+        <FormInput
           id="product-price"
+          label="Price (₹)"
           type="number"
           required
-          min="0"
-          step="0.01"
+          min={0}
+          step={0.01}
           value={formData.price}
           onChange={(e) => {
             setFormData({ ...formData, price: parseFloat(e.target.value) });
             clearError("price");
           }}
-          className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
-            errors.price
-              ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-              : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
-          }`}
+          error={errors.price}
         />
-        {errors.price && (
-          <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-            {errors.price}
-          </p>
-        )}
       </div>
 
       {/* Stock */}
       <div>
-        <label
-          htmlFor="product-stock"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
-          Stock Count *
-        </label>
-        <input
+        <FormInput
           id="product-stock"
+          label="Stock Count"
           type="number"
           required
-          min="0"
+          min={0}
           value={formData.stockCount}
           onChange={(e) =>
             setFormData({ ...formData, stockCount: parseInt(e.target.value) })
           }
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         />
       </div>
 
       {/* Category */}
       <div>
-        <label
-          htmlFor="product-category"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
-          Category ID *
-        </label>
-        <input
+        <FormInput
           id="product-category"
-          type="text"
+          label="Category ID"
           required
           value={formData.categoryId}
           onChange={(e) =>
             setFormData({ ...formData, categoryId: e.target.value })
           }
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           placeholder="e.g., electronics"
         />
       </div>
 
       {/* Description */}
       <div>
-        <label
-          htmlFor="product-description"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
-          Description
-        </label>
-        <textarea
+        <FormTextarea
           id="product-description"
+          label="Description"
           rows={3}
           value={formData.description}
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
           }
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         />
       </div>
 

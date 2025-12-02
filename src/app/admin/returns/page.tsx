@@ -18,6 +18,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/useMobile";
+import { DateDisplay } from "@/components/common/values";
 
 export default function AdminReturnsPage() {
   const router = useRouter();
@@ -221,13 +222,10 @@ export default function AdminReturnsPage() {
                           </button>
                           <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                             <Calendar className="h-4 w-4" />
-                            {new Date(returnItem.createdAt).toLocaleDateString(
-                              "en-IN",
-                              {
-                                day: "numeric",
-                                month: "short",
-                              }
-                            )}
+                            <DateDisplay
+                              date={returnItem.createdAt}
+                              format="short"
+                            />
                           </span>
                         </div>
 
@@ -373,7 +371,10 @@ export default function AdminReturnsPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                          {new Date(returnItem.createdAt).toLocaleDateString()}
+                          <DateDisplay
+                            date={returnItem.createdAt}
+                            format="short"
+                          />
                         </td>
                         <td className="px-6 py-4 text-sm space-x-2">
                           {returnItem.status === "pending" && (

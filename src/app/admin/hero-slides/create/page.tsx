@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { FormInput, FormCheckbox } from "@/components/forms";
+import { FormInput, FormCheckbox, FormLabel } from "@/components/forms";
 import MediaUploader from "@/components/media/MediaUploader";
 import { heroSlidesService } from "@/services/hero-slides.service";
 import RichTextEditor from "@/components/common/RichTextEditor";
@@ -134,9 +134,7 @@ export default function CreateHeroSlidePage() {
 
           {/* Subtitle */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Subtitle (Rich Text)
-            </label>
+            <FormLabel htmlFor="slide-subtitle">Subtitle (Rich Text)</FormLabel>
             <RichTextEditor
               value={formData.subtitle}
               onChange={(value: string) =>
@@ -150,9 +148,9 @@ export default function CreateHeroSlidePage() {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <FormLabel htmlFor="slide-description">
               Description (Rich Text)
-            </label>
+            </FormLabel>
             <RichTextEditor
               value={formData.description}
               onChange={(value: string) =>
@@ -165,9 +163,9 @@ export default function CreateHeroSlidePage() {
 
           {/* Image */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Image <span className="text-red-500">*</span>
-            </label>
+            <FormLabel htmlFor="slide-image" required>
+              Image
+            </FormLabel>
 
             {isUploading && (
               <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">

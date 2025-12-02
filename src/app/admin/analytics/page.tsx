@@ -17,6 +17,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { analyticsService } from "@/services/analytics.service";
+import { Price } from "@/components/common/values";
 import type {
   AnalyticsOverviewFE,
   SalesDataPointFE,
@@ -209,7 +210,7 @@ function TopProductsTable({ products }: { products: TopProductFE[] }) {
                 {product.sales.toLocaleString("en-IN")}
               </td>
               <td className="text-right py-3 px-4 text-sm font-medium text-gray-900 dark:text-white">
-                ₹{product.revenue.toLocaleString("en-IN")}
+                <Price amount={product.revenue} />
               </td>
               <td className="text-right py-3 px-4 text-sm text-gray-500 dark:text-gray-400">
                 {product.views.toLocaleString("en-IN")}
@@ -338,7 +339,7 @@ export default function AdminAnalyticsPage() {
                   Average Order Value
                 </h3>
                 <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-                  ₹{overview.averageOrderValue.toLocaleString("en-IN")}
+                  <Price amount={overview.averageOrderValue} />
                 </p>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">

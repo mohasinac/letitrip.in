@@ -28,10 +28,12 @@ import {
   Check,
   X,
 } from "lucide-react";
+import { FormInput, FormTextarea, FormLabel } from "@/components/forms";
 import { useAuth } from "@/contexts/AuthContext";
 import { ripLimitService } from "@/services/riplimit.service";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Price } from "@/components/common/values";
 import {
   RipLimitBalanceFE,
   RipLimitTransactionFE,
@@ -588,9 +590,7 @@ export default function UserRipLimitPage() {
 
             {/* Quick Amounts */}
             <div className="mb-6">
-              <span className="block text-sm font-medium text-gray-700 mb-3">
-                Quick Select
-              </span>
+              <FormLabel>Quick Select</FormLabel>
               <div className="grid grid-cols-5 gap-2">
                 {quickAmounts.map((amount) => (
                   <button
@@ -602,7 +602,7 @@ export default function UserRipLimitPage() {
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    ₹{amount.toLocaleString("en-IN")}
+                    <Price amount={amount} />
                   </button>
                 ))}
               </div>
@@ -610,27 +610,16 @@ export default function UserRipLimitPage() {
 
             {/* Custom Amount */}
             <div className="mb-6">
-              <label
-                htmlFor="riplimit-custom-amount"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Or enter custom amount
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
-                  ₹
-                </span>
-                <input
-                  id="riplimit-custom-amount"
-                  type="number"
-                  value={purchaseAmount}
-                  onChange={(e) => setPurchaseAmount(Number(e.target.value))}
-                  min={100}
-                  step={100}
-                  className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">Minimum: ₹100</p>
+              <FormInput
+                label="Or enter custom amount"
+                type="number"
+                value={purchaseAmount}
+                onChange={(e) => setPurchaseAmount(Number(e.target.value))}
+                min={100}
+                step={100}
+                prefix="₹"
+                helpText="Minimum: ₹100"
+              />
             </div>
 
             {/* Summary */}
@@ -661,7 +650,7 @@ export default function UserRipLimitPage() {
                 isLoading={processingPurchase}
                 onClick={handlePurchase}
               >
-                Pay ₹{purchaseAmount.toLocaleString("en-IN")}
+                Pay <Price amount={purchaseAmount} />
               </Button>
             </div>
           </div>
@@ -694,41 +683,27 @@ export default function UserRipLimitPage() {
 
             {/* Refund Amount */}
             <div className="mb-6">
-              <label
-                htmlFor="riplimit-refund-amount"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Refund Amount (RL)
-              </label>
-              <input
-                id="riplimit-refund-amount"
+              <FormInput
+                label="Refund Amount (RL)"
                 type="number"
                 value={refundAmount}
                 onChange={(e) => setRefundAmount(Number(e.target.value))}
                 max={balance?.availableBalance || 0}
                 min={1}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                helpText={`You will receive ₹${refundAmount.toLocaleString(
+                  "en-IN"
+                )}`}
               />
-              <p className="text-xs text-gray-500 mt-1">
-                You will receive ₹{refundAmount.toLocaleString("en-IN")}
-              </p>
             </div>
 
             {/* Reason */}
             <div className="mb-6">
-              <label
-                htmlFor="riplimit-refund-reason"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Reason (optional)
-              </label>
-              <textarea
-                id="riplimit-refund-reason"
+              <FormTextarea
+                label="Reason (optional)"
                 value={refundReason}
                 onChange={(e) => setRefundReason(e.target.value)}
                 placeholder="Why are you requesting a refund?"
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               />
             </div>
 

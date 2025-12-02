@@ -18,6 +18,7 @@ import {
 import { ProductCard } from "@/components/cards/ProductCard";
 import { SimilarCategories } from "@/components/category/SimilarCategories";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { Price } from "@/components/common/values";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
@@ -579,12 +580,12 @@ function CategoryDetailContent({ params }: PageProps) {
                               </td>
                               <td className="px-6 py-4">
                                 <div className="font-medium text-gray-900 dark:text-white">
-                                  ₹{product.price.toLocaleString()}
+                                  <Price amount={product.price} />
                                 </div>
                                 {product.originalPrice &&
                                   product.originalPrice > product.price && (
                                     <div className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                                      ₹{product.originalPrice.toLocaleString()}
+                                      <Price amount={product.originalPrice} />
                                     </div>
                                   )}
                               </td>

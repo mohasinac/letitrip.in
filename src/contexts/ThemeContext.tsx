@@ -167,9 +167,12 @@ export const ThemeScript = () => {
         var stored = localStorage.getItem('${THEME_STORAGE_KEY}');
         var theme = (stored === 'light' || stored === 'dark') ? stored : 'dark';
         
+        // Remove both classes first, then add the correct one
+        document.documentElement.classList.remove('light', 'dark');
         document.documentElement.classList.add(theme);
         document.documentElement.setAttribute('data-theme', theme);
       } catch (e) {
+        document.documentElement.classList.remove('light', 'dark');
         document.documentElement.classList.add('dark');
         document.documentElement.setAttribute('data-theme', 'dark');
       }

@@ -9,6 +9,7 @@ import { MobileDataTable } from "@/components/mobile/MobileDataTable";
 import { MobilePullToRefresh } from "@/components/mobile/MobilePullToRefresh";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
+import { Price, DateDisplay } from "@/components/common/values";
 import type { OrderCardFE } from "@/types/frontend/order.types";
 
 export const dynamic = "force-dynamic";
@@ -116,10 +117,9 @@ export default function OrdersPage() {
       key: "createdAt",
       header: "Date",
       sortable: true,
-      render: (order: any) =>
-        order.createdAt
-          ? new Date(order.createdAt).toLocaleDateString("en-IN")
-          : "N/A",
+      render: (order: any) => (
+        <DateDisplay date={order.createdAt} format="short" />
+      ),
     },
     {
       key: "shopName",
@@ -130,7 +130,7 @@ export default function OrdersPage() {
       key: "total",
       header: "Total",
       sortable: true,
-      render: (order: any) => `₹${order.total.toLocaleString()}`,
+      render: (order: any) => <Price amount={order.total} />,
     },
     {
       key: "status",
@@ -150,11 +150,11 @@ export default function OrdersPage() {
       <div className="flex items-start justify-between mb-2">
         <div>
           <p className="font-medium text-gray-900">#{order.orderNumber}</p>
-          <p className="text-sm text-gray-500">
-            {order.createdAt
-              ? new Date(order.createdAt).toLocaleDateString("en-IN")
-              : "N/A"}
-          </p>
+          <DateDisplay
+            date={order.createdAt}
+            format="short"
+            className="text-sm text-gray-500"
+          />
         </div>
         <StatusBadge status={order.status} />
       </div>
@@ -162,7 +162,7 @@ export default function OrdersPage() {
         <div>
           <p className="text-xs text-gray-500">{order.shopName || "N/A"}</p>
           <p className="font-semibold text-gray-900">
-            ₹{order.total.toLocaleString()}
+            <Price amount={order.total} />
           </p>
         </div>
         <StatusBadge status={order.paymentStatus} />
