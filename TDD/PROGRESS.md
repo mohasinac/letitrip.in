@@ -25,10 +25,12 @@ Before implementing ANY feature, read **[AI Agent Development Guide](/docs/ai/AI
 ### Wizard Forms & Component Splitting
 
 - [x] **Created Admin Wizard Components** (Blog, Category)
+
   - `src/components/admin/blog-wizard/` - 5 steps
   - `src/components/admin/category-wizard/` - 4 steps
 
 - [x] **Created Seller Shop Wizard Components**
+
   - `src/components/seller/shop-wizard/` - 5 steps
   - Integrated into `/seller/my-shops/create/page.tsx`
 
@@ -39,6 +41,7 @@ Before implementing ANY feature, read **[AI Agent Development Guide](/docs/ai/AI
 ### HTML Tag Wrapper Migrations
 
 - [x] **Form Component Migrations**
+
   - All raw `<input>`, `<select>`, `<textarea>` migrated to Form components
   - Deleted deprecated UI components (Input, Select)
   - Deleted deprecated Mobile components (MobileFormInput, MobileFormSelect, MobileTextarea)
@@ -51,6 +54,7 @@ Before implementing ANY feature, read **[AI Agent Development Guide](/docs/ai/AI
 ### Admin Page Updates
 
 - [x] **Analytics Pages**
+
   - `/admin/page.tsx` - Dashboard with Quantity
   - `/admin/analytics/page.tsx` - Overview with Quantity/DateDisplay
   - `/admin/analytics/sales/page.tsx` - Sales metrics
