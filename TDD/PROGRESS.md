@@ -13,10 +13,143 @@ Before implementing ANY feature, read **[AI Agent Development Guide](/docs/ai/AI
 
 ---
 
-## Current Session: 16
+## Current Session: 17
 
-**Date**: November 30, 2025
+**Date**: December 3, 2025
 **Status**: ✅ Complete
+
+---
+
+## Session 17 Checklist
+
+### Wizard Forms & Component Splitting
+
+- [x] **Created Admin Wizard Components** (Blog, Category)
+  - `src/components/admin/blog-wizard/` - 5 steps
+  - `src/components/admin/category-wizard/` - 4 steps
+
+- [x] **Created Seller Shop Wizard Components**
+  - `src/components/seller/shop-wizard/` - 5 steps
+  - Integrated into `/seller/my-shops/create/page.tsx`
+
+- [x] **Migrated Admin Pages to Wizards**
+  - `/admin/categories/create/page.tsx` - Uses category-wizard
+  - `/admin/blog/create/page.tsx` - Uses blog-wizard
+
+### HTML Tag Wrapper Migrations
+
+- [x] **Form Component Migrations**
+  - All raw `<input>`, `<select>`, `<textarea>` migrated to Form components
+  - Deleted deprecated UI components (Input, Select)
+  - Deleted deprecated Mobile components (MobileFormInput, MobileFormSelect, MobileTextarea)
+
+- [x] **Value Component Migrations**
+  - Date displays migrated to `DateDisplay` component
+  - Price displays migrated to `Price` component
+  - Quantity displays migrated to `Quantity` component
+
+### Admin Page Updates
+
+- [x] **Analytics Pages**
+  - `/admin/page.tsx` - Dashboard with Quantity
+  - `/admin/analytics/page.tsx` - Overview with Quantity/DateDisplay
+  - `/admin/analytics/sales/page.tsx` - Sales metrics
+  - `/admin/analytics/users/page.tsx` - User spending
+  - `/admin/analytics/auctions/page.tsx` - Auction bids
+
+- [x] **Moderation Pages**
+  - `/admin/auctions/moderation/page.tsx` - Price/DateDisplay
+  - `/admin/orders/[id]/page.tsx` - Price/DateDisplay/Quantity
+  - `/admin/homepage/page.tsx` - DateDisplay for last updated
+  - `/admin/support-tickets/page.tsx` - Quantity/DateDisplay
+
+### Documentation
+
+- [x] **Updated Progress Tracker** with Session 17
+- [x] **Updated Epic Status** in README.md
+- [x] **Added Component Library Docs** references
+
+---
+
+## Session Log
+
+### Session 17 - December 3, 2025
+
+**Completed - Wizard Forms & Component Splitting**:
+
+- ✅ Created admin wizard components (blog, category)
+- ✅ Created seller shop wizard components (5 steps)
+- ✅ Integrated wizards into create pages
+- ✅ Split large 400+ line files into modular 60-80 line components
+
+**Completed - HTML Tag Wrapper Migrations**:
+
+- ✅ Migrated all admin analytics pages to Form components
+- ✅ Migrated value displays (Price, DateDisplay, Quantity)
+- ✅ Deleted deprecated UI components
+- ✅ Updated barrel exports
+
+**Admin Pages Migrated**:
+
+| Page                                | Components Used               | Lines Reduced |
+| ----------------------------------- | ----------------------------- | ------------- |
+| `/admin/categories/create`          | category-wizard (4 steps)     | 460 → 265     |
+| `/admin/blog/create`                | blog-wizard (5 steps)         | 444 → 280     |
+| `/seller/my-shops/create`           | shop-wizard (5 steps)         | ~400 → ~280   |
+| `/admin/page.tsx`                   | Quantity component            | N/A           |
+| `/admin/analytics/page.tsx`         | Quantity/DateDisplay          | N/A           |
+| `/admin/analytics/sales/page.tsx`   | Price/DateDisplay             | N/A           |
+| `/admin/analytics/users/page.tsx`   | Price component               | N/A           |
+| `/admin/analytics/auctions/page.ts` | Price component               | N/A           |
+| `/admin/auctions/moderation`        | Price/DateDisplay             | N/A           |
+| `/admin/orders/[id]`                | Price/DateDisplay/Quantity    | N/A           |
+| `/admin/homepage`                   | DateDisplay                   | N/A           |
+| `/admin/support-tickets`            | Quantity/DateDisplay          | N/A           |
+| `/admin/riplimit/page.tsx`          | DataTable with ActionMenu fix | N/A           |
+
+**Wizard Components Created**:
+
+| Wizard          | Location                                | Steps |
+| --------------- | --------------------------------------- | ----- |
+| Category Wizard | `src/components/admin/category-wizard/` | 4     |
+| Blog Wizard     | `src/components/admin/blog-wizard/`     | 5     |
+| Shop Wizard     | `src/components/seller/shop-wizard/`    | 5     |
+
+**Component Splits**:
+
+- Category wizard: BasicInfo, Media, SEO, Display
+- Blog wizard: BasicInfo, Media, Content, CategoryTags
+- Shop wizard: BasicInfo, Branding, ContactLegal, Policies, Settings
+
+**Files Modified**:
+
+| File                                    | Changes                                 |
+| --------------------------------------- | --------------------------------------- |
+| `src/app/admin/categories/create`       | Uses category-wizard components         |
+| `src/app/admin/blog/create`             | Uses blog-wizard components             |
+| `src/app/seller/my-shops/create`        | Uses shop-wizard components             |
+| `src/app/admin/page.tsx`                | Quantity for stats                      |
+| `src/app/admin/analytics/page.tsx`      | Quantity/DateDisplay                    |
+| `src/app/admin/analytics/sales`         | Price/DateDisplay                       |
+| `src/app/admin/analytics/users`         | Price                                   |
+| `src/app/admin/analytics/auctions`      | Price                                   |
+| `src/app/admin/auctions/moderation`     | Price/DateDisplay                       |
+| `src/app/admin/orders/[id]`             | Price/DateDisplay/Quantity              |
+| `src/app/admin/homepage`                | DateDisplay                             |
+| `src/app/admin/support-tickets`         | Quantity/DateDisplay                    |
+| `src/app/admin/riplimit/page.tsx`       | Fixed DataTable/ActionMenu dark mode    |
+| `src/components/ui/index.ts`            | Removed deprecated Input/Select exports |
+| `src/components/mobile/index.ts`        | Removed deprecated exports              |
+| `src/components/seller/shop-wizard/`    | NEW - 5 step components + types         |
+| `src/components/admin/category-wizard/` | NEW - 4 step components + types         |
+| `src/components/admin/blog-wizard/`     | NEW - 5 step components + types         |
+
+**Code Quality Improvements**:
+
+- Total lines reduced: ~1,000+ lines
+- Components split from 400+ lines to 60-80 lines each
+- Improved maintainability with modular structure
+- Better testability with smaller components
 
 ---
 
