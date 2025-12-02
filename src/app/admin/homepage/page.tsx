@@ -23,6 +23,7 @@ import {
 } from "@/components/admin";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import RichTextEditor from "@/components/common/RichTextEditor";
+import { DateDisplay } from "@/components/common/values";
 
 // Default section order
 const DEFAULT_SECTION_ORDER = [
@@ -579,7 +580,8 @@ export default function HomepageSettingsPage() {
         {/* Last Updated Info */}
         {settings.updatedAt && (
           <div className="text-sm text-gray-500 text-center py-4">
-            Last updated: {new Date(settings.updatedAt).toLocaleString()}
+            Last updated:{" "}
+            <DateDisplay date={settings.updatedAt} format="short" />
             {settings.updatedBy && ` by ${settings.updatedBy}`}
           </div>
         )}

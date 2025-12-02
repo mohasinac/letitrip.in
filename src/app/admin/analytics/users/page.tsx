@@ -30,7 +30,7 @@ import {
   Activity,
 } from "lucide-react";
 import { analyticsService } from "@/services/analytics.service";
-import { Price, DateDisplay } from "@/components/common/values";
+import { Price, DateDisplay, Quantity } from "@/components/common/values";
 import type { CustomerAnalyticsFE } from "@/types/frontend/analytics.types";
 
 // Period selector
@@ -179,7 +179,7 @@ function UserSegmentChart({
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {total.toLocaleString()}
+                <Quantity value={total} />
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
             </div>
@@ -204,7 +204,7 @@ function UserSegmentChart({
             </div>
             <div className="text-right">
               <span className="text-sm font-medium text-gray-900 dark:text-white">
-                {segment.value.toLocaleString()}
+                <Quantity value={segment.value} />
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
                 ({((segment.value / total) * 100).toFixed(1)}%)

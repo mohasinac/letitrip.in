@@ -7,7 +7,7 @@
 
 ## Summary
 
-All raw HTML form tags (`<input>`, `<select>`, `<textarea>`, `<checkbox>`) have been migrated to Form components across the entire codebase. Remaining test files intentionally use raw HTML for mocking purposes.
+All raw HTML form tags (`<input>`, `<select>`, `<textarea>`, `<checkbox>`) have been migrated to Form components across the entire codebase. Wizard forms have been split into modular step components for better maintainability. Remaining test files intentionally use raw HTML for mocking purposes.
 
 ## ⚠️ CRITICAL RULE: Use ONLY These Form Components
 
@@ -81,8 +81,8 @@ Updated barrel exports:
 | `admin/users/page.tsx`                 | 2 raw tags                               | 0                   | ✅     |
 | `admin/riplimit/page.tsx`              | 2 raw tags                               | 0                   | ✅     |
 | `admin/products/[id]/edit/page.tsx`    | 20+ raw tags                             | 0                   | ✅     |
-| `admin/categories/create/page.tsx`     | 11 raw tags                              | 1 (SlugInput)       | ✅     |
-| `admin/blog/create/page.tsx`           | 9 raw tags                               | 4 (specialized)     | ✅     |
+| `admin/categories/create/page.tsx`     | 11 raw tags                              | 0 (wizard split)    | ✅     |
+| `admin/blog/create/page.tsx`           | 9 raw tags                               | 0 (wizard split)    | ✅     |
 | `admin/blog/categories/page.tsx`       | 4 raw tags                               | 0                   | ✅     |
 | `admin/blog/tags/page.tsx`             | 3 raw tags                               | 0                   | ✅     |
 | `admin/shops/[id]/edit/page.tsx`       | 20+ raw tags                             | 0                   | ✅     |

@@ -14,6 +14,7 @@ import {
   ArrowRight,
   Loader2,
 } from "lucide-react";
+import { Quantity } from "@/components/common/values";
 
 interface DashboardStats {
   totalUsers: number;
@@ -185,7 +186,7 @@ export default function AdminDashboardPage() {
                   {stat.title}
                 </h3>
                 <p className="mt-1 text-2xl font-bold text-gray-900">
-                  {stat.value.toLocaleString()}
+                  <Quantity value={stat.value} />
                 </p>
               </div>
             </div>

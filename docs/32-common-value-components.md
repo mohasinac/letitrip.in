@@ -55,6 +55,18 @@ All inline `new Date().toLocaleDateString()` patterns have been migrated to use 
 - `src/app/admin/tickets/[id]/page.tsx` - Message timestamps + metadata dates (Dec 2, 2025) ✅
 - `src/app/admin/returns/page.tsx` - Return dates
 
+**Admin Analytics Pages (December 3, 2025):**
+
+- `src/app/admin/page.tsx` - Dashboard stats with Quantity ✅
+- `src/app/admin/analytics/page.tsx` - Overview metrics with Quantity/DateDisplay ✅
+- `src/app/admin/support-tickets/page.tsx` - Ticket stats with Quantity, timestamps with DateDisplay ✅
+
+**Admin Pages (December 3, 2025):**
+
+- `src/app/admin/orders/[id]/page.tsx` - Dates via DateDisplay; amounts via Price; quantities via Quantity ✅
+- `src/app/admin/homepage/page.tsx` - Last updated uses DateDisplay ✅
+- `src/app/admin/auctions/moderation/page.tsx` - Starting bid uses Price; time columns use DateDisplay ✅
+
 ### Price Migration Updates (December 2, 2025)
 
 **Seller Pages:**
@@ -71,6 +83,12 @@ All inline `new Date().toLocaleDateString()` patterns have been migrated to use 
 - `src/components/product/ReviewList.tsx` - Review dates
 
 ### Migrated Files (December 2025)
+
+**Admin Analytics Pages (December 3, 2025):**
+
+- `src/app/admin/page.tsx` - Dashboard stats with Quantity
+- `src/app/admin/analytics/page.tsx` - Overview metrics with Quantity/DateDisplay
+- `src/app/admin/support-tickets/page.tsx` - Ticket stats with Quantity and DateDisplay
 
 **User Pages:**
 

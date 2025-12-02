@@ -10,6 +10,7 @@ import { AUCTION_FILTERS } from "@/constants/filters";
 import { auctionsService } from "@/services/auctions.service";
 import { AuctionStatus } from "@/types/shared/common.types";
 import { Eye, CheckCircle, XCircle, Edit, Flag, Clock } from "lucide-react";
+import { DateDisplay, Price } from "@/components/common/values";
 
 export default function AuctionModerationPage() {
   const router = useRouter();
@@ -90,17 +91,11 @@ export default function AuctionModerationPage() {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-    }).format(amount);
+    return amount;
   };
 
   const formatDateTime = (date: Date | string) => {
-    return new Date(date).toLocaleString("en-IN", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
+    return date as any;
   };
 
   const getStatusColor = (status: string) => {
@@ -260,20 +255,29 @@ export default function AuctionModerationPage() {
                           {auction.shopName || "N/A"}
                         </td>
                         <td className="px-6 py-4 text-sm font-semibold">
-                          {formatCurrency(auction.startingBid)}
+                          <Price amount={auction.startingBid} />
                         </td>
                         <td className="px-6 py-4 text-sm">
                           <div className="flex items-center text-gray-600">
                             <Clock className="w-4 h-4 mr-1" />
                             {auction.status === "pending" ||
-                            auction.status === "scheduled"
-                              ? `Starts in ${getTimeUntilStart(
-                                  auction.startTime
-                                )}`
-                              : formatDateTime(auction.startTime)}
+                            auction.status === "scheduled" ? (
+                              `Starts in ${getTimeUntilStart(
+                                auction.startTime
+                              )}`
+                            ) : (
+                              <DateDisplay
+                                date={auction.startTime}
+                                format="short"
+                              />
+                            )}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            Ends: {formatDateTime(auction.endTime)}
+                            Ends:{" "}
+                            <DateDisplay
+                              date={auction.endTime}
+                              format="short"
+                            />
                           </div>
                         </td>
                         <td className="px-6 py-4">

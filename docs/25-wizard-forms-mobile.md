@@ -46,13 +46,18 @@ This document outlines requirements for making wizard forms (product creation, a
 - Loading states for async actions
 - Dark mode support
 
+### Phase 3: Admin Pages Integrated (December 2025)
+
+| Page             | File                                | Status      |
+| ---------------- | ----------------------------------- | ----------- |
+| Create Category  | `/admin/categories/create/page.tsx` | ✅ Complete |
+| Create Blog Post | `/admin/blog/create/page.tsx`       | ✅ Complete |
+
 ## Remaining Pages (Future)
 
-| Page                  | File                                | Priority |
-| --------------------- | ----------------------------------- | -------- |
-| Create Shop           | `/seller/my-shops/create/page.tsx`  | 🟡 Med   |
-| Admin Category Create | `/admin/categories/create/page.tsx` | 🟢 Low   |
-| Admin Blog Create     | `/admin/blog/create/page.tsx`       | 🟢 Low   |
+| Page        | File                               | Priority |
+| ----------- | ---------------------------------- | -------- |
+| Create Shop | `/seller/my-shops/create/page.tsx` | 🟡 Med   |
 
 ---
 

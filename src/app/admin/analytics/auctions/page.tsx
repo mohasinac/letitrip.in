@@ -15,7 +15,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Price } from "@/components/common/values";
+import { Price, Quantity } from "@/components/common/values";
 import {
   Gavel,
   TrendingUp,
@@ -171,7 +171,7 @@ function AuctionStatusChart({
             Total Auctions
           </span>
           <span className="text-lg font-bold text-gray-900 dark:text-white">
-            {total.toLocaleString()}
+            <Quantity value={total} />
           </span>
         </div>
       </div>
@@ -522,14 +522,14 @@ export default function AdminAuctionsAnalyticsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
           title="Total Auctions"
-          value={stats.totalAuctions.toLocaleString()}
+          value={stats.totalAuctions}
           change={stats.auctionsGrowth}
           icon={Gavel}
           color="blue"
         />
         <StatCard
           title="Active Auctions"
-          value={stats.activeAuctions.toLocaleString()}
+          value={stats.activeAuctions}
           change={stats.activeGrowth}
           icon={Activity}
           color="green"
@@ -543,7 +543,7 @@ export default function AdminAuctionsAnalyticsPage() {
         />
         <StatCard
           title="Total Bids"
-          value={stats.totalBids.toLocaleString()}
+          value={stats.totalBids}
           change={stats.bidsGrowth}
           icon={Users}
           color="orange"
