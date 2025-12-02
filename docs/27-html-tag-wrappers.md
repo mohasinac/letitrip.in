@@ -85,18 +85,22 @@ Updated barrel exports:
 Files with raw labels that are intentionally NOT migrated (specialized layouts):
 
 **Specialized Components:**
+
 - `admin/homepage/page.tsx` - Color pickers, sliders, RichTextEditor
 - `admin/blog/[id]/edit/page.tsx` - File upload, RichTextEditor, custom category layout
 - `admin/blog/create/page.tsx` - File upload, RichTextEditor, custom category layout
 
 **Toggle Switch Labels:**
+
 - Various settings pages have toggle switches with custom label styling
 
 **Wizard Components:**
+
 - `seller/product-wizard/RequiredInfoStep.tsx` - RichTextEditor labels
 - `seller/auction-wizard/RequiredInfoStep.tsx` - Specialized auction fields
 
 **Infrastructure Components:**
+
 - `common/FieldError.tsx` - Error wrapper component
 - `admin/ToggleSwitch.tsx` - Toggle switch component
 
