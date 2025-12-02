@@ -80,7 +80,7 @@ export function OptionalDetailsStep({
                 min={1}
                 step={1}
                 placeholder="100"
-                helpText="Minimum amount to increase each bid"
+                helperText="Minimum amount to increase each bid"
               />
 
               {/* Reserve Price (for reserve auctions) */}
@@ -94,7 +94,7 @@ export function OptionalDetailsStep({
                   min={0}
                   step={1}
                   placeholder="5000"
-                  helpText="Minimum price for item to be sold (hidden from buyers)"
+                  helperText="Minimum price for item to be sold (hidden from buyers)"
                 />
               )}
 
@@ -109,7 +109,7 @@ export function OptionalDetailsStep({
                   min={0}
                   step={1}
                   placeholder="10000"
-                  helpText="Price to end auction and purchase immediately"
+                  helperText="Price to end auction and purchase immediately"
                 />
               )}
             </div>
@@ -179,7 +179,7 @@ export function OptionalDetailsStep({
                 { value: "5", label: "5 minutes" },
                 { value: "10", label: "10 minutes" },
               ]}
-              helpText="Extend auction if bid placed in final minutes"
+              helperText="Extend auction if bid placed in final minutes"
             />
 
             {/* Duration Info */}

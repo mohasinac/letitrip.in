@@ -28,7 +28,7 @@ export default function BottomNav() {
 
   // Get profile picture URL
   const getProfilePicture = () => {
-    return user?.photoURL || user?.avatar || null;
+    return user?.photoURL || null;
   };
 
   const navItems = [

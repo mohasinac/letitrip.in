@@ -84,7 +84,7 @@ export function RequiredInfoStep({
         value={formData.title}
         onChange={(e) => handleChange("title", e.target.value)}
         placeholder="e.g., Vintage Rolex Watch - Limited Edition"
-        helpText="Choose a clear, descriptive title that buyers will search for"
+        helperText="Choose a clear, descriptive title that buyers will search for"
       />
 
       {/* Slug */}
@@ -127,7 +127,7 @@ export function RequiredInfoStep({
         min={1}
         step={1}
         placeholder="1000"
-        helpText="The minimum bid required to start the auction"
+        helperText="The minimum bid required to start the auction"
       />
 
       {/* Auction Type */}

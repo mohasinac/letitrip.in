@@ -121,9 +121,9 @@ export default function SettingsPage() {
           {/* Current Avatar */}
           <div className="relative">
             <div className="w-24 h-24 rounded-full overflow-hidden bg-yellow-500 flex items-center justify-center">
-              {user?.photoURL || user?.avatar ? (
+              {user?.photoURL ? (
                 <Image
-                  src={user.photoURL || user.avatar}
+                  src={user.photoURL}
                   alt="Profile"
                   width={96}
                   height={96}

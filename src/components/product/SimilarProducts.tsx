@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { ChevronLeft, ChevronRight, Grid, X, Package } from "lucide-react";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { CardGrid } from "@/components/cards/CardGrid";
@@ -165,12 +166,12 @@ export function SimilarProducts({
           <p className="text-gray-600 dark:text-gray-400 mb-4 text-center">
             No similar products available right now
           </p>
-          <a
+          <Link
             href="/products"
             className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
           >
             View All Products
-          </a>
+          </Link>
         </div>
       </div>
     );
