@@ -40,6 +40,7 @@ Regular users can browse, buy, and interact with permission level 10.
 - Change password
 - Manage addresses
 - Set notification preferences
+- Switch language (i18n - planned)
 
 ### Shopping
 
@@ -73,6 +74,15 @@ Regular users can browse, buy, and interact with permission level 10.
 - Reply to own tickets
 - Close own tickets
 - Request returns
+
+### Product Discovery
+
+- View recently viewed products (auto-tracked)
+- Add products to comparison (max 4)
+- Compare products side-by-side
+- View comparison highlights
+- Remove from comparison
+- Clear viewing history
 
 ### Favorites
 
@@ -238,6 +248,38 @@ if (user.role === "user") {
 - ✅ RipLimit balance in header (if has balance)
 - ✅ Cart preview on hover
 - ✅ Notification dropdown
+
+### Product Comparison (E002)
+
+- ✅ Add up to 4 products to compare
+- ✅ Comparison bar shows selected products
+- ✅ Side-by-side comparison table
+- ✅ Highlights best values (price, rating, etc.)
+- ✅ Sync comparison list on login
+- ✅ Works with localStorage for guests
+
+### Viewing History (E002)
+
+- ✅ Auto-tracks product views
+- ✅ Recently viewed widget on homepage
+- ✅ Full viewing history page
+- ✅ Clear history option
+- ✅ 30-day expiry, max 50 items
+- ✅ Relative date formatting
+- ✅ Sync on login
+
+### Similar Categories (E013)
+
+- ✅ View similar categories on category pages
+- ✅ Carousel navigation
+- ✅ Quick navigation to related categories
+
+### Internationalization (E037 - Planned)
+
+- ⬜ Switch to preferred Indian language
+- ⬜ 10+ Indian languages supported
+- ⬜ RTL support (Urdu, etc.)
+- ⬜ Language preference saved
 
 ### Flexible Links (E034)
 

@@ -39,12 +39,28 @@ Unauthenticated visitors with permission level 0.
 - View shop pages
 - View approved reviews
 
+### Product Discovery (Local Only)
+
+- View recently viewed products (localStorage)
+- View recently viewed widget
+- Clear viewing history
+- Add to comparison (max 4, localStorage)
+- View comparison bar
+- Compare products side-by-side
+- Remove from comparison
+- Prompted to login to sync
+
 ### Favorites (Local Only)
 
 - Add to favorites (stored in browser localStorage)
 - View local favorites
 - Remove from local favorites
 - Prompted to login to sync
+
+### Preferences
+
+- Switch language (i18n - planned)
+- Theme preference (saved to localStorage)
 
 ### Authentication
 
@@ -216,6 +232,32 @@ Guest sees prompts when attempting:
 - ❌ Notification badge (requires login)
 - ❌ RipLimit balance (requires login)
 - ✅ Search accessible
+
+### Product Comparison (E002)
+
+- ✅ Add to comparison (localStorage, max 4)
+- ✅ View comparison bar
+- ✅ Side-by-side comparison
+- ✅ Prompt to login to sync
+
+### Viewing History (E002)
+
+- ✅ Auto-track views (localStorage)
+- ✅ Recently viewed widget
+- ✅ Clear history
+- ✅ 30-day expiry
+
+### Similar Categories (E013)
+
+- ✅ View similar categories
+- ✅ Carousel navigation
+- ✅ Navigate to related categories
+
+### Internationalization (E037 - Planned)
+
+- ⬜ Switch language (saved to localStorage)
+- ⬜ 10+ Indian languages
+- ⬜ RTL support
 
 ### Flexible Links (E034)
 
