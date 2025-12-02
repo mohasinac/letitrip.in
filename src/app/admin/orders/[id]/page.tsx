@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
+import { FormSelect, FormInput, FormTextarea } from "@/components/forms";
 import { ordersService } from "@/services/orders.service";
 import type { OrderFE } from "@/types/frontend/order.types";
 import { OrderStatus } from "@/types/shared/common.types";
@@ -582,36 +583,27 @@ export default function OrderDetailPage() {
         isLoading={saving}
       >
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              New Status
-            </label>
-            <select
-              value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="processing">Processing</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="refunded">Refunded</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Internal Notes (Optional)
-            </label>
-            <textarea
-              value={internalNotes}
-              onChange={(e) => setInternalNotes(e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-              placeholder="Add any internal notes about this status change..."
-            />
-          </div>
+          <FormSelect
+            label="New Status"
+            value={newStatus}
+            onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
+            options={[
+              { value: "pending", label: "Pending" },
+              { value: "confirmed", label: "Confirmed" },
+              { value: "processing", label: "Processing" },
+              { value: "shipped", label: "Shipped" },
+              { value: "delivered", label: "Delivered" },
+              { value: "cancelled", label: "Cancelled" },
+              { value: "refunded", label: "Refunded" },
+            ]}
+          />
+          <FormTextarea
+            label="Internal Notes (Optional)"
+            value={internalNotes}
+            onChange={(e) => setInternalNotes(e.target.value)}
+            rows={3}
+            placeholder="Add any internal notes about this status change..."
+          />
         </div>
       </ConfirmDialog>
 
@@ -626,41 +618,26 @@ export default function OrderDetailPage() {
         isLoading={saving}
       >
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tracking Number *
-            </label>
-            <input
-              type="text"
-              value={trackingNumber}
-              onChange={(e) => setTrackingNumber(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="Enter tracking number"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Shipping Provider *
-            </label>
-            <input
-              type="text"
-              value={shippingProvider}
-              onChange={(e) => setShippingProvider(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="e.g., India Post, Delhivery, Blue Dart"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Estimated Delivery (Optional)
-            </label>
-            <input
-              type="date"
-              value={estimatedDelivery}
-              onChange={(e) => setEstimatedDelivery(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-          </div>
+          <FormInput
+            label="Tracking Number"
+            required
+            value={trackingNumber}
+            onChange={(e) => setTrackingNumber(e.target.value)}
+            placeholder="Enter tracking number"
+          />
+          <FormInput
+            label="Shipping Provider"
+            required
+            value={shippingProvider}
+            onChange={(e) => setShippingProvider(e.target.value)}
+            placeholder="e.g., India Post, Delhivery, Blue Dart"
+          />
+          <FormInput
+            label="Estimated Delivery (Optional)"
+            type="date"
+            value={estimatedDelivery}
+            onChange={(e) => setEstimatedDelivery(e.target.value)}
+          />
         </div>
       </ConfirmDialog>
 
@@ -679,18 +656,14 @@ export default function OrderDetailPage() {
             Are you sure you want to cancel this order? This action cannot be
             undone.
           </p>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Cancellation Reason *
-            </label>
-            <textarea
-              value={cancelReason}
-              onChange={(e) => setCancelReason(e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-              placeholder="Explain why this order is being cancelled..."
-            />
-          </div>
+          <FormTextarea
+            label="Cancellation Reason"
+            required
+            value={cancelReason}
+            onChange={(e) => setCancelReason(e.target.value)}
+            rows={3}
+            placeholder="Explain why this order is being cancelled..."
+          />
         </div>
       </ConfirmDialog>
     </div>

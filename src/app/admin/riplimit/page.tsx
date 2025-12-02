@@ -35,6 +35,7 @@ import {
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
+import { FormInput, FormTextarea } from "@/components/forms";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -814,32 +815,25 @@ export default function AdminRipLimitPage() {
 
               {/* Adjustment Amount */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Adjustment Amount (RL)
-                </label>
-                <input
+                <FormInput
+                  label="Adjustment Amount (RL)"
                   type="number"
                   value={adjustAmount}
                   onChange={(e) => setAdjustAmount(Number(e.target.value))}
                   placeholder="Enter positive to add, negative to deduct"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  helperText="Positive values add RipLimit, negative values deduct"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Positive values add RipLimit, negative values deduct
-                </p>
               </div>
 
               {/* Reason */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Reason *
-                </label>
-                <textarea
+                <FormTextarea
+                  label="Reason"
+                  required
                   value={adjustReason}
                   onChange={(e) => setAdjustReason(e.target.value)}
                   placeholder="Enter reason for adjustment..."
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 />
               </div>
 

@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { FormInput, FormSelect, FormTextarea } from "@/components/forms";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { productsService } from "@/services/products.service";
 import { categoriesService } from "@/services/categories.service";
@@ -363,24 +364,15 @@ export default function AdminEditProductPage() {
               Basic Information
             </h2>
             <div className="space-y-4">
-              <div>
-                <label
-                  htmlFor="product-name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Product Name *
-                </label>
-                <input
-                  id="product-name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
+              <FormInput
+                id="product-name"
+                label="Product Name"
+                required
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
 
               <div>
                 <SlugInput
@@ -390,47 +382,31 @@ export default function AdminEditProductPage() {
                 />
               </div>
 
-              <div>
-                <label
-                  htmlFor="short-description"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Short Description
-                </label>
-                <textarea
-                  id="short-description"
-                  rows={2}
-                  value={formData.shortDescription}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      shortDescription: e.target.value,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  placeholder="Brief product summary..."
-                />
-              </div>
+              <FormTextarea
+                id="short-description"
+                label="Short Description"
+                rows={2}
+                value={formData.shortDescription}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    shortDescription: e.target.value,
+                  })
+                }
+                placeholder="Brief product summary..."
+              />
 
-              <div>
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Description *
-                </label>
-                <textarea
-                  id="description"
-                  rows={6}
-                  required
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  placeholder="Detailed product description..."
-                />
-              </div>
+              <FormTextarea
+                id="description"
+                label="Description"
+                rows={6}
+                required
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="Detailed product description..."
+              />
             </div>
           </div>
 
@@ -484,73 +460,49 @@ export default function AdminEditProductPage() {
               Pricing
             </h2>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <label
-                  htmlFor="selling-price"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Selling Price (₹) *
-                </label>
-                <input
-                  id="selling-price"
-                  type="number"
-                  required
-                  min="0"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      price: parseFloat(e.target.value),
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="original-price"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Original Price (₹)
-                </label>
-                <input
-                  id="original-price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.originalPrice}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      originalPrice: parseFloat(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="cost-price"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Cost Price (₹)
-                </label>
-                <input
-                  id="cost-price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.costPrice}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      costPrice: parseFloat(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
+              <FormInput
+                id="selling-price"
+                label="Selling Price (₹)"
+                type="number"
+                required
+                min={0}
+                step={0.01}
+                value={formData.price}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    price: parseFloat(e.target.value),
+                  })
+                }
+              />
+              <FormInput
+                id="original-price"
+                label="Original Price (₹)"
+                type="number"
+                min={0}
+                step={0.01}
+                value={formData.originalPrice}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    originalPrice: parseFloat(e.target.value) || 0,
+                  })
+                }
+              />
+              <FormInput
+                id="cost-price"
+                label="Cost Price (₹)"
+                type="number"
+                min={0}
+                step={0.01}
+                value={formData.costPrice}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    costPrice: parseFloat(e.target.value) || 0,
+                  })
+                }
+              />
             </div>
           </div>
 
@@ -560,66 +512,41 @@ export default function AdminEditProductPage() {
               Inventory
             </h2>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <label
-                  htmlFor="stock-count"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Stock Count *
-                </label>
-                <input
-                  id="stock-count"
-                  type="number"
-                  required
-                  min="0"
-                  value={formData.stockCount}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      stockCount: parseInt(e.target.value),
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="low-stock-threshold"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Low Stock Threshold
-                </label>
-                <input
-                  id="low-stock-threshold"
-                  type="number"
-                  min="0"
-                  value={formData.lowStockThreshold}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      lowStockThreshold: parseInt(e.target.value),
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="sku"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  SKU
-                </label>
-                <input
-                  id="sku"
-                  type="text"
-                  value={formData.sku}
-                  onChange={(e) =>
-                    setFormData({ ...formData, sku: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
+              <FormInput
+                id="stock-count"
+                label="Stock Count"
+                type="number"
+                required
+                min={0}
+                value={formData.stockCount}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    stockCount: parseInt(e.target.value),
+                  })
+                }
+              />
+              <FormInput
+                id="low-stock-threshold"
+                label="Low Stock Threshold"
+                type="number"
+                min={0}
+                value={formData.lowStockThreshold}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    lowStockThreshold: parseInt(e.target.value),
+                  })
+                }
+              />
+              <FormInput
+                id="sku"
+                label="SKU"
+                value={formData.sku}
+                onChange={(e) =>
+                  setFormData({ ...formData, sku: e.target.value })
+                }
+              />
             </div>
           </div>
 
@@ -629,101 +556,70 @@ export default function AdminEditProductPage() {
               Product Details
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Condition *
-                </label>
-                <select
-                  value={formData.condition}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      condition: e.target.value as ProductCondition,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                >
-                  <option value="new">New</option>
-                  <option value="refurbished">Refurbished</option>
-                  <option value="used">Used</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Shipping Class
-                </label>
-                <select
-                  value={formData.shippingClass}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      shippingClass: e.target.value as any,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                >
-                  <option value="standard">Standard</option>
-                  <option value="express">Express</option>
-                  <option value="heavy">Heavy</option>
-                  <option value="fragile">Fragile</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Brand
-                </label>
-                <input
-                  type="text"
-                  value={formData.brand}
-                  onChange={(e) =>
-                    setFormData({ ...formData, brand: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Manufacturer
-                </label>
-                <input
-                  type="text"
-                  value={formData.manufacturer}
-                  onChange={(e) =>
-                    setFormData({ ...formData, manufacturer: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Country of Origin
-                </label>
-                <input
-                  type="text"
-                  value={formData.countryOfOrigin}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      countryOfOrigin: e.target.value,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Warranty
-                </label>
-                <input
-                  type="text"
-                  value={formData.warranty}
-                  onChange={(e) =>
-                    setFormData({ ...formData, warranty: e.target.value })
-                  }
-                  placeholder="e.g., 1 Year"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
+              <FormSelect
+                label="Condition"
+                required
+                value={formData.condition}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    condition: e.target.value as ProductCondition,
+                  })
+                }
+                options={[
+                  { value: "new", label: "New" },
+                  { value: "refurbished", label: "Refurbished" },
+                  { value: "used", label: "Used" },
+                ]}
+              />
+              <FormSelect
+                label="Shipping Class"
+                value={formData.shippingClass}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    shippingClass: e.target.value as any,
+                  })
+                }
+                options={[
+                  { value: "standard", label: "Standard" },
+                  { value: "express", label: "Express" },
+                  { value: "heavy", label: "Heavy" },
+                  { value: "fragile", label: "Fragile" },
+                ]}
+              />
+              <FormInput
+                label="Brand"
+                value={formData.brand}
+                onChange={(e) =>
+                  setFormData({ ...formData, brand: e.target.value })
+                }
+              />
+              <FormInput
+                label="Manufacturer"
+                value={formData.manufacturer}
+                onChange={(e) =>
+                  setFormData({ ...formData, manufacturer: e.target.value })
+                }
+              />
+              <FormInput
+                label="Country of Origin"
+                value={formData.countryOfOrigin}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    countryOfOrigin: e.target.value,
+                  })
+                }
+              />
+              <FormInput
+                label="Warranty"
+                value={formData.warranty}
+                onChange={(e) =>
+                  setFormData({ ...formData, warranty: e.target.value })
+                }
+                placeholder="e.g., 1 Year"
+              />
             </div>
           </div>
 
