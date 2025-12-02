@@ -20,6 +20,7 @@ import { AdminPageHeader, LoadingSpinner, toast } from "@/components/admin";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
+import { FormInput, FormTextarea } from "@/components/forms";
 
 // Types
 interface BlogTag {
@@ -97,36 +98,22 @@ function TagModal({
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tag Name *
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => handleNameChange(e.target.value)}
-              required
-              placeholder="Enter tag name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+          <FormInput
+            label="Tag Name"
+            required
+            value={name}
+            onChange={(e) => handleNameChange(e.target.value)}
+            placeholder="Enter tag name"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Slug *
-            </label>
-            <input
-              type="text"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              required
-              placeholder="tag-slug"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              URL-friendly identifier (auto-generated from name)
-            </p>
-          </div>
+          <FormInput
+            label="Slug"
+            required
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            placeholder="tag-slug"
+            helperText="URL-friendly identifier (auto-generated from name)"
+          />
 
           <div className="flex gap-3 pt-4">
             <button
@@ -196,22 +183,14 @@ function BulkAddModal({
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tag Names
-            </label>
-            <textarea
-              value={tagsText}
-              onChange={(e) => setTagsText(e.target.value)}
-              rows={6}
-              placeholder="Enter tags separated by commas or new lines:&#10;tag1&#10;tag2, tag3&#10;tag4"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Separate tags with commas or new lines. Slugs will be
-              auto-generated.
-            </p>
-          </div>
+          <FormTextarea
+            label="Tag Names"
+            value={tagsText}
+            onChange={(e) => setTagsText(e.target.value)}
+            rows={6}
+            placeholder="Enter tags separated by commas or new lines:&#10;tag1&#10;tag2, tag3&#10;tag4"
+            helperText="Separate tags with commas or new lines. Slugs will be auto-generated."
+          />
 
           <div className="flex gap-3 pt-4">
             <button
