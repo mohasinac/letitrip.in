@@ -573,36 +573,233 @@ This document defines the test data requirements for all resources in the JustFo
 
 ## Test System Settings
 
-| Field                   | Value                                  |
-| ----------------------- | -------------------------------------- |
-| id                      | `site_settings`                        |
-| general.siteName        | LET IT RIP                             |
-| general.siteDescription | Your Gateway to Authentic Collectibles |
-| general.contactEmail    | contact@test.jfv.in                    |
-| general.contactPhone    | +919876543210                          |
-| general.currency        | INR                                    |
-| general.timezone        | Asia/Kolkata                           |
-| seo.defaultTitle        | LET IT RIP - Buy Collectibles in India |
-| seo.googleAnalyticsId   | GA-TEST-123                            |
-| maintenance.enabled     | false                                  |
-| maintenance.message     | Site under maintenance                 |
-| updatedAt               | `2024-11-28T00:00:00Z`                 |
-| updatedBy               | `test_admin_001`                       |
+### General Settings
+
+| Field           | Value                                                      |
+| --------------- | ---------------------------------------------------------- |
+| collection      | `site_settings/general`                                    |
+| siteName        | LET IT RIP - JustForView.in                                |
+| siteDescription | India's Premier Platform for Beyblades, TCG & Collectibles |
+| siteTagline     | Your Gateway to Authentic Collectibles                     |
+| contactEmail    | contact@test.jfv.in                                        |
+| contactPhone    | +919876543210                                              |
+| supportEmail    | support@test.jfv.in                                        |
+| currency        | INR                                                        |
+| timezone        | Asia/Kolkata                                               |
+| locale          | en-IN                                                      |
+| updatedAt       | `2024-11-28T00:00:00Z`                                     |
+| updatedBy       | `test_admin_001`                                           |
+
+### SEO Settings
+
+| Field                 | Value                                                 |
+| --------------------- | ----------------------------------------------------- |
+| collection            | `site_settings/seo`                                   |
+| defaultTitle          | LET IT RIP - Buy Collectibles in India                |
+| defaultDescription    | India's most trusted platform for collectibles        |
+| defaultKeywords       | ['beyblades', 'tcg', 'trading cards', 'collectibles'] |
+| googleAnalyticsId     | GA-TEST-123                                           |
+| googleTagManagerId    | GTM-TEST-123                                          |
+| facebookPixelId       | FB-TEST-123                                           |
+| structuredDataEnabled | `true`                                                |
+
+### Maintenance Mode
+
+| Field         | Value                           |
+| ------------- | ------------------------------- |
+| collection    | `site_settings/maintenance`     |
+| enabled       | `false`                         |
+| message       | We're upgrading our platform... |
+| title         | Site Under Maintenance          |
+| allowedIps    | ['127.0.0.1', '::1']            |
+| showCountdown | `false`                         |
+
+---
+
+## Test Payment Settings
+
+### Razorpay Configuration
+
+| Field              | Value                         |
+| ------------------ | ----------------------------- |
+| collection         | `payment_settings/razorpay`   |
+| enabled            | `true`                        |
+| displayName        | Razorpay                      |
+| apiKey             | `DEMO_rzp_test_xxxx`          |
+| testMode           | `true`                        |
+| supportedMethods   | ['card', 'upi', 'netbanking'] |
+| minAmount          | 100                           |
+| maxAmount          | 1000000                       |
+| platformCommission | 2.0% + 18% GST                |
+
+### COD Settings
+
+| Field                | Value                  |
+| -------------------- | ---------------------- |
+| collection           | `payment_settings/cod` |
+| enabled              | `true`                 |
+| minOrderAmount       | 500                    |
+| maxOrderAmount       | 50000                  |
+| codFee               | 50                     |
+| excludedPincodes     | ['110001', '400001']   |
+| verificationRequired | `true`                 |
+
+---
+
+## Test Shipping Settings
+
+### Shipping Zones
+
+| Zone Name           | States         | Base Rate | Free Shipping | Estimated Days |
+| ------------------- | -------------- | --------- | ------------- | -------------- |
+| Mumbai Metropolitan | Maharashtra    | ₹50       | ₹999+         | 1-2 days       |
+| Delhi NCR           | Delhi, Haryana | ₹60       | ₹999+         | 1-2 days       |
+| Metro Cities        | KA, TN, WB, TG | ₹80       | ₹1,499+       | 2-4 days       |
+| Tier 1 Cities       | GJ, RJ, MH, UP | ₹100      | ₹1,999+       | 3-5 days       |
+| Rest of India       | All            | ₹150      | ₹2,499+       | 5-7 days       |
+
+### Shipping Carriers
+
+| Carrier    | Code      | Tracking URL                             | API Enabled |
+| ---------- | --------- | ---------------------------------------- | ----------- |
+| Delhivery  | DELHIVERY | https://www.delhivery.com/track/package/ | `true`      |
+| Blue Dart  | BLUEDART  | https://www.bluedart.com/tracking/       | `true`      |
+| DTDC       | DTDC      | https://www.dtdc.in/tracking.asp         | `true`      |
+| India Post | INDIAPOST | https://www.indiapost.gov.in/tracking    | `false`     |
+
+---
+
+## Test Email Settings
+
+### Email Templates
+
+| Template ID        | Subject                                 | Use Case          |
+| ------------------ | --------------------------------------- | ----------------- |
+| welcome            | Welcome to JustForView - Let It Rip! 🌀 | User registration |
+| order_confirmation | Order Confirmed - {{orderNumber}}       | Order placed      |
+| order_shipped      | Your Order is On the Way! 📦            | Shipping update   |
+| order_delivered    | Order Delivered ✅                      | Delivery confirm  |
+| auction_won        | Congratulations! You Won the Auction 🏆 | Auction winner    |
+| bid_outbid         | You've Been Outbid! ⚠️                  | Outbid alert      |
+| payout_processed   | Payout Processed - ₹{{amount}}          | Seller payout     |
+| password_reset     | Reset Your Password                     | Password reset    |
+
+### SMTP Configuration
+
+| Field     | Value                    |
+| --------- | ------------------------ |
+| provider  | resend                   |
+| host      | smtp.resend.com          |
+| port      | 587                      |
+| fromEmail | noreply@justforview.in   |
+| fromName  | LET IT RIP - JustForView |
+| replyTo   | support@justforview.in   |
+| testMode  | `true`                   |
+
+---
+
+## Test Notification Settings
+
+### Push Notifications
+
+| Field     | Value                   |
+| --------- | ----------------------- |
+| enabled   | `true`                  |
+| provider  | firebase                |
+| projectId | `DEMO_justforview-demo` |
+
+### In-App Notifications
+
+| Type            | Enabled | Sound   | Badge   |
+| --------------- | ------- | ------- | ------- |
+| order_updates   | `true`  | `true`  | `true`  |
+| auction_updates | `true`  | `true`  | `true`  |
+| messages        | `true`  | `true`  | `true`  |
+| promotions      | `true`  | `false` | `false` |
+| price_drops     | `true`  | `false` | `true`  |
+| back_in_stock   | `true`  | `false` | `true`  |
+
+### SMS Notifications
+
+| Field      | Value         |
+| ---------- | ------------- |
+| enabled    | `false`       |
+| provider   | twilio        |
+| fromNumber | +911234567890 |
 
 ---
 
 ## Test Feature Flags
 
-| Feature            | Value   |
-| ------------------ | ------- |
-| auctions           | `true`  |
-| reviews            | `true`  |
-| cod                | `true`  |
-| guestCheckout      | `false` |
-| wishlist           | `true`  |
-| blog               | `true`  |
-| sellerRegistration | `true`  |
-| maintenanceMode    | `false` |
+| Feature            | Value   | Description                   |
+| ------------------ | ------- | ----------------------------- |
+| auctions           | `true`  | Enable auction functionality  |
+| reviews            | `true`  | Enable product reviews        |
+| cod                | `true`  | Cash on delivery option       |
+| guestCheckout      | `false` | Allow checkout without login  |
+| wishlist           | `true`  | User wishlist/favorites       |
+| blog               | `true`  | Blog/content system           |
+| sellerRegistration | `true`  | Allow new seller registration |
+| messaging          | `true`  | Buyer-seller messaging        |
+| riplimit           | `true`  | RipLimit virtual currency     |
+| autoRenewal        | `true`  | Auto-renew subscriptions      |
+| socialLogin        | `true`  | Social media login            |
+| twoFactorAuth      | `false` | 2FA authentication            |
+| advancedSearch     | `true`  | Advanced search filters       |
+| productComparison  | `true`  | Product comparison feature    |
+| viewingHistory     | `true`  | Track viewing history         |
+| recommendations    | `true`  | AI-powered recommendations    |
+| liveChat           | `false` | Live chat support             |
+| affiliateProgram   | `false` | Affiliate marketing program   |
+
+---
+
+## Test Business Rules
+
+| Rule                    | Value       |
+| ----------------------- | ----------- |
+| minProductPrice         | ₹100        |
+| maxProductPrice         | ₹10,000,000 |
+| minAuctionPrice         | ₹500        |
+| minBidIncrement         | ₹50         |
+| auctionExtensionMinutes | 5           |
+| maxImagesPerProduct     | 10          |
+| maxVideosPerProduct     | 3           |
+| platformCommission      | 10%         |
+| defaultReturnWindow     | 7 days      |
+| maxReturnWindow         | 30 days     |
+
+---
+
+## Test RipLimit Settings (E028)
+
+| Field                | Value                        |
+| -------------------- | ---------------------------- |
+| enabled              | `true`                       |
+| conversionRate       | 100 (1 INR = 100 RipLimit)   |
+| minPurchase          | 100 RipLimit (₹1)            |
+| maxPurchase          | 1,000,000 RipLimit (₹10,000) |
+| bidBlockAmount       | 5,000 RipLimit per bid       |
+| refundOnOutbid       | `true`                       |
+| expiryDays           | 365                          |
+| bonusOnFirstPurchase | 1,000 RipLimit               |
+| bonusOnReferral      | 500 RipLimit                 |
+
+---
+
+## Test Analytics Settings (E017)
+
+| Field             | Value  |
+| ----------------- | ------ |
+| enabled           | `true` |
+| dataRetentionDays | 90     |
+| trackPageViews    | `true` |
+| trackEvents       | `true` |
+| trackUserBehavior | `true` |
+| trackConversions  | `true` |
+| anonymizeIp       | `true` |
+| exportEnabled     | `true` |
+| realtimeEnabled   | `true` |
 
 ---
 
@@ -649,7 +846,7 @@ export const createTestOrder = (overrides?: Partial<Order>): Order => ({
 });
 
 export const createTestBlogPost = (
-  overrides?: Partial<BlogPost>,
+  overrides?: Partial<BlogPost>
 ): BlogPost => ({
   id: `test_blog_${Date.now()}`,
   title: "Test Blog Post",
@@ -669,7 +866,7 @@ export const createTestBlogPost = (
 });
 
 export const createTestFavorite = (
-  overrides?: Partial<Favorite>,
+  overrides?: Partial<Favorite>
 ): Favorite => ({
   id: `test_fav_${Date.now()}`,
   userId: "test_user_001",
@@ -692,7 +889,7 @@ export const createTestFavorite = (
 });
 
 export const createTestConversation = (
-  overrides?: Partial<Conversation>,
+  overrides?: Partial<Conversation>
 ): Conversation => ({
   id: `test_conv_${Date.now()}`,
   type: "buyer_seller",

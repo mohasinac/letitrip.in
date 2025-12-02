@@ -133,6 +133,23 @@ export async function GET() {
       });
     }
 
+    // Count settings collections
+    const [
+      siteSettings,
+      paymentSettings,
+      shippingZones,
+      emailTemplates,
+      featureFlags,
+    ] = await Promise.all([
+      db.collection("site_settings").get(),
+      db.collection("payment_settings").get(),
+      db.collection("shipping_zones").get(),
+      db.collection("email_templates").get(),
+      db.collection("feature_flags").get(),
+    ]);
+
+    const settings = siteSettings.size + paymentSettings.size + shippingZones.size + emailTemplates.size + featureFlags.size;
+
     return NextResponse.json({
       exists: true,
       summary: {
@@ -151,6 +168,7 @@ export async function GET() {
         favorites,
         carts,
         notifications,
+        settings,
         createdAt: latestCreatedAt
           ? (safeToISOString(latestCreatedAt) ?? new Date().toISOString())
           : new Date().toISOString(),

@@ -70,8 +70,8 @@ export default function AuctionDetailPage() {
       const data = await auctionsService.getBySlug(slug);
       setAuction(data);
 
-      // Load bids
-      const bidsResponse = await auctionsService.getBids(data.id, 20, null);
+      // Load bids using slug
+      const bidsResponse = await auctionsService.getBids(slug, 20, null);
       setBids(bidsResponse.data || []);
 
       // Load shop
@@ -87,7 +87,7 @@ export default function AuctionDetailPage() {
             limit: 6,
           });
           setShopAuctions(
-            (shopAuctionsData.data || []).filter((a) => a.id !== data.id)
+            (shopAuctionsData.data || []).filter((a) => a.slug !== slug)
           );
         } catch (error) {
           console.error("Failed to load shop:", error);
@@ -102,7 +102,7 @@ export default function AuctionDetailPage() {
           limit: 6,
         });
         setSimilarAuctions(
-          (similarData.data || []).filter((a) => a.id !== data.id)
+          (similarData.data || []).filter((a) => a.slug !== slug)
         );
       } catch (error) {
         console.error("Failed to load similar auctions:", error);
@@ -140,7 +140,7 @@ export default function AuctionDetailPage() {
       setIsPlacingBid(true);
       setBidError("");
 
-      await auctionsService.placeBid(auction.id, { amount, isAutoBid: false });
+      await auctionsService.placeBid(slug, { amount, isAutoBid: false });
 
       // Reload auction and bids
       await loadAuction();
@@ -169,7 +169,7 @@ export default function AuctionDetailPage() {
     if (!auction) return;
 
     try {
-      const result = await auctionsService.toggleWatch(auction.id);
+      const result = await auctionsService.toggleWatch(slug);
       setIsWatching(result.watching);
     } catch (error) {
       console.error("Failed to toggle watch:", error);
