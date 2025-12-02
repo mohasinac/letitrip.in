@@ -105,24 +105,28 @@ interface HeroSlideBE {
 Implemented admin-curated featured sections:
 
 **Batch APIs Created**:
+
 - `POST /api/products/batch` - Fetch multiple products by IDs
 - `POST /api/auctions/batch` - Fetch multiple auctions by IDs
 - `POST /api/shops/batch` - Fetch multiple shops by IDs
 - `POST /api/categories/batch` - Fetch multiple categories by IDs
 
 **Service Methods**:
+
 - `productsService.getByIds(ids)` - Batch fetch products
 - `auctionsService.getByIds(ids)` - Batch fetch auctions
 - `shopsService.getByIds(ids)` - Batch fetch shops
 - `categoriesService.getByIds(ids)` - Batch fetch categories
 
 **Components Updated**:
+
 - `FeaturedProductsSection` - Checks admin-curated items first, falls back to `featured: true`
 - `FeaturedAuctionsSection` - Uses curated items from `/homepage` API
 - `FeaturedShopsSection` - Fetches curated shops + products per shop
 - `FeaturedCategoriesSection` - Fetches curated categories + products per category
 
 **Section Ordering**:
+
 - Homepage sections render dynamically based on `sectionOrder` from settings
 - Admin can reorder sections using up/down arrows in `/admin/homepage`
 - Section order saved to settings and persists
@@ -132,14 +136,17 @@ Implemented admin-curated featured sections:
 Standardized camelCase ↔ snake_case transformations:
 
 **Service Transformers**:
+
 - `hero-slides.service.ts` - Added `toApiFormat()` and `fromApiFormat()`
 - `homepage.service.ts` - Added `transformSlide()` for public carousel
 
 **Field Mappings**:
+
 - Frontend: `image`, `ctaLink`, `ctaText`, `isActive`, `order`
 - API/Database: `image_url`, `link_url`, `cta_text`, `is_active`, `position`
 
 **Files Changed**:
+
 - `src/services/hero-slides.service.ts` - Transformation methods
 - `src/services/homepage.service.ts` - Public carousel transformer
 - `src/app/admin/hero-slides/create/page.tsx` - Uses camelCase consistently
@@ -152,11 +159,13 @@ Standardized camelCase ↔ snake_case transformations:
 Implemented tabbed navigation system:
 
 **Components Created**:
+
 - `src/components/navigation/TabNav.tsx` - Tab navigation component (3 variants: underline, pills, default)
 - `src/components/navigation/TabbedLayout.tsx` - Layout wrapper
 - `src/constants/tabs.ts` - All tab definitions
 
 **Layouts Implemented**:
+
 - `src/app/admin/settings/layout.tsx` - Settings tabs (general, payment, shipping, email, notifications)
 - `src/app/admin/auctions/layout.tsx` - Auctions tabs (all, live, moderation)
 - `src/app/admin/blog/layout.tsx` - Blog tabs (all, create, categories, tags)
@@ -164,6 +173,7 @@ Implemented tabbed navigation system:
 - `src/app/seller/auctions/layout.tsx` - Auctions tabs
 
 **Features**:
+
 - Route-based active state detection
 - Horizontally scrollable on mobile
 - Touch-friendly tap targets

@@ -221,6 +221,7 @@ className =
 **Doc Reference**: docs/24-mobile-page-audit.md
 
 **Admin Pages Made Mobile-Friendly**:
+
 - `/admin/users/page.tsx` - Mobile cards with user info, role badges, actions
 - `/admin/coupons/page.tsx` - Mobile cards with coupon details, expiry, actions
 - `/admin/tickets/page.tsx` - Mobile cards with priority colors, status badges
@@ -229,27 +230,32 @@ className =
 - `/admin/orders/page.tsx` - Mobile cards with order details, status
 
 **Seller Pages Made Mobile-Friendly**:
+
 - `/seller/returns/page.tsx` - Mobile cards with return status, actions
 - `/seller/orders/page.tsx` - Mobile cards with process/ship actions
 - `/seller/auctions/page.tsx` - Grid view toggle working on mobile
 - `/seller/coupons/page.tsx` - Grid view working on mobile
 
 **Pattern Used**:
+
 ```tsx
 const isMobile = useIsMobile();
 
-{isMobile ? (
-  <div className="space-y-4">
-    {items.map(item => (
-      <MobileItemCard key={item.id} item={item} />
-    ))}
-  </div>
-) : (
-  <DataTable columns={columns} data={items} />
-)}
+{
+  isMobile ? (
+    <div className="space-y-4">
+      {items.map((item) => (
+        <MobileItemCard key={item.id} item={item} />
+      ))}
+    </div>
+  ) : (
+    <DataTable columns={columns} data={items} />
+  );
+}
 ```
 
 **Mobile Card Pattern**:
+
 - Header with image/icon and title
 - Grid layout for key info (2 columns)
 - Status badges with color coding
@@ -261,6 +267,7 @@ const isMobile = useIsMobile();
 **Doc References**: docs/03-form-ux-improvements.md, docs/04-component-consolidation.md
 
 **Wizard Simplification**:
+
 - Reduced product wizard from 4 steps → 2 steps (required info, optional details)
 - Reduced auction wizard from 5 steps → 3 steps
 - Step indicators show progress clearly
@@ -268,6 +275,7 @@ const isMobile = useIsMobile();
 - Validation errors shown inline per field
 
 **Error Handling Patterns**:
+
 ```tsx
 <FormInput
   label="Product Name"
@@ -278,10 +286,67 @@ const isMobile = useIsMobile();
 ```
 
 **Component Consolidation Audit**:
+
 - Analyzed all components for consolidation opportunities
 - Determined many components should stay separate (shop vs. seller-shop has different purposes)
 - Fixed dark mode issues found during audit
-- Result: Faster product/auction creation with better error feedback
+**Result**: Faster product/auction creation with better error feedback
+
+#### Image Wrapper Migration (doc 29)
+
+**Doc Reference**: docs/29-image-wrapper-migration.md
+
+**Status**: ✅ Complete (Phase 1 & 2)
+
+**Strategy**: Replace all raw `<img>` tags with `OptimizedImage` component for consistent optimization, lazy loading, error handling, and focus point support.
+
+**Component**:
+- `src/components/common/OptimizedImage.tsx` - Wrapper using Next.js Image
+
+**Features**:
+- Automatic WebP/AVIF format conversion
+- Lazy loading by default
+- Blur placeholder during load
+- Error handling with fallback image
+- Focus point support for smart cropping (`focusX`, `focusY` props)
+- Object-fit control via prop
+
+**Migration Completed**:
+
+*App Pages (40+ files)*:
+- User pages: reviews, orders, settings, won-auctions, bids, favorites
+- Seller pages: products, reviews, auctions, my-shops, orders
+- Admin pages: users, products, shops, categories, auctions, blog, hero-slides, orders
+- Public pages: products, categories, auctions, shops
+- Auth pages: login, register, contact, checkout
+
+*Components (11 files)*:
+- `SearchBar.tsx`, `PaymentLogo.tsx`, `CategoryForm.tsx`
+- `ShopHeader.tsx`, `ShopCard.tsx`, `ProductTable.tsx`
+- `ProductImageManager.tsx`, `ReviewList.tsx`
+- `ShopsNav.tsx`, `MobileSidebar.tsx`
+- `InlineImageUpload.tsx`, `ShopOrderSummary.tsx`
+- `SimilarCategories.tsx`, `CameraCapture.tsx`
+
+**Pattern**:
+```tsx
+// Before (raw img)
+<img src="/product.jpg" alt="Product" className="w-full h-48 object-cover rounded" />
+
+// After (OptimizedImage)
+<OptimizedImage
+  src="/product.jpg"
+  alt="Product"
+  width={400}
+  height={300}
+  className="rounded"
+  objectFit="cover"
+  focusX={50}
+  focusY={35}
+/>
+```
+
+**Remaining**: Add ESLint rule to prevent new raw `<img>` tags from being added
 
 ---
 

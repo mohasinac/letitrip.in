@@ -119,9 +119,11 @@ interface CategoryBE {
 Created `SimilarCategories` component to show sibling categories on category detail pages:
 
 **Component Created**:
+
 - `src/components/category/SimilarCategories.tsx` - Displays categories at same tree level with same parent
 
 **Features Implemented**:
+
 - Fetches sibling categories via existing API `/api/categories/[slug]/similar`
 - Horizontal scrollable carousel with category cards
 - Scroll navigation buttons (left/right arrows)
@@ -132,9 +134,11 @@ Created `SimilarCategories` component to show sibling categories on category det
 - Dark mode support
 
 **Files Changed**:
+
 - `src/app/categories/[slug]/page.tsx` - Added `<SimilarCategories>` section after subcategories
 
 **API Used**:
+
 - Existing endpoint returns sibling categories (same parent)
 - For root categories, returns other root categories
 - Service method: `categoriesService.getSimilarCategories(slug, { limit })`
