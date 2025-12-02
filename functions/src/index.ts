@@ -4,14 +4,14 @@
  * Scheduled Functions:
  * - processAuctions: Runs every minute to process ended auctions
  * - rebuildCategoryTree: Runs every hour to rebuild category tree cache
- * 
+ *
  * Trigger Functions:
  * - onCategoryWrite: Rebuilds tree when categories are modified
  */
 
 import * as functions from "firebase-functions/v1";
 import * as admin from "firebase-admin";
-import { notificationService } from "./services/notification.service";
+import {notificationService} from "./services/notification.service";
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -146,7 +146,7 @@ async function processEndedAuctions(): Promise<{
   console.log(`[Auction Cron] Found ${snapshot.size} auctions to process`);
 
   if (snapshot.empty) {
-    return { processed: 0, successful: 0, failed: 0 };
+    return {processed: 0, successful: 0, failed: 0};
   }
 
   // Process each ended auction in batches
@@ -225,13 +225,13 @@ async function closeAuction(auctionId: string): Promise<void> {
           auctionName: auction.name as string,
           auctionSlug: auction.slug as string,
           auctionImage:
-            Array.isArray(auction.images) && auction.images.length > 0
-              ? (auction.images[0] as string)
-              : undefined,
+            Array.isArray(auction.images) && auction.images.length > 0 ?
+              (auction.images[0] as string) :
+              undefined,
           startingBid: auction.starting_bid as number,
-          reservePrice: auction.reserve_price
-            ? (auction.reserve_price as number)
-            : undefined,
+          reservePrice: auction.reserve_price ?
+            (auction.reserve_price as number) :
+            undefined,
           seller: {
             email: seller.email as string,
             name: (seller.name as string) || (seller.email as string),
@@ -283,9 +283,9 @@ async function closeAuction(auctionId: string): Promise<void> {
           auctionName: auction.name as string,
           auctionSlug: auction.slug as string,
           auctionImage:
-            Array.isArray(auction.images) && auction.images.length > 0
-              ? (auction.images[0] as string)
-              : undefined,
+            Array.isArray(auction.images) && auction.images.length > 0 ?
+              (auction.images[0] as string) :
+              undefined,
           startingBid: auction.starting_bid as number,
           reservePrice: auction.reserve_price as number,
           finalBid,
@@ -299,7 +299,7 @@ async function closeAuction(auctionId: string): Promise<void> {
           },
         });
         console.log(
-          `[Auction Cron] Notified seller and bidder of reserve not met`,
+          "[Auction Cron] Notified seller and bidder of reserve not met",
         );
       }
     } catch (error) {
@@ -356,9 +356,9 @@ async function closeAuction(auctionId: string): Promise<void> {
         auctionName: auction.name as string,
         auctionSlug: auction.slug as string,
         auctionImage:
-          Array.isArray(auction.images) && auction.images.length > 0
-            ? (auction.images[0] as string)
-            : undefined,
+          Array.isArray(auction.images) && auction.images.length > 0 ?
+            (auction.images[0] as string) :
+            undefined,
         startingBid: auction.starting_bid as number,
         finalBid,
         seller: {
@@ -371,7 +371,7 @@ async function closeAuction(auctionId: string): Promise<void> {
         },
       });
       console.log(
-        `[Auction Cron] Notified winner and seller of auction completion`,
+        "[Auction Cron] Notified winner and seller of auction completion",
       );
     }
   } catch (error) {
@@ -560,14 +560,14 @@ export const rebuildCategoryTree = functions
   .timeZone("Asia/Kolkata")
   .onRun(async () => {
     console.log("[Category Tree] Starting scheduled rebuild...");
-    
+
     try {
       const result = await buildAndSaveCategoryTree();
       console.log(`[Category Tree] Scheduled rebuild complete: ${result.totalCount} categories`);
       return result;
     } catch (error) {
       console.error("[Category Tree] Scheduled rebuild failed:", error);
-      return { success: false, error: String(error) };
+      return {success: false, error: String(error)};
     }
   });
 
@@ -583,11 +583,11 @@ export const onCategoryWrite = functions
   .firestore.document("categories/{categoryId}")
   .onWrite(async (change, context) => {
     console.log(`[Category Tree] Category ${context.params.categoryId} changed, triggering rebuild...`);
-    
+
     // Debounce: Only rebuild if last update was more than 5 seconds ago
     const cacheRef = db.collection("cache").doc("category_tree");
     const cacheDoc = await cacheRef.get();
-    
+
     if (cacheDoc.exists) {
       const cache = cacheDoc.data() as CategoryTreeCache;
       const lastUpdate = cache.updatedAt?.toDate();
@@ -596,7 +596,7 @@ export const onCategoryWrite = functions
         return;
       }
     }
-    
+
     try {
       await buildAndSaveCategoryTree();
       console.log("[Category Tree] Trigger rebuild complete");
@@ -670,7 +670,7 @@ async function buildAndSaveCategoryTree(): Promise<{
 
   if (categoriesSnapshot.empty) {
     console.log("[Category Tree] No active categories found");
-    
+
     // Save empty cache
     await db.collection("cache").doc("category_tree").set({
       tree: [],
@@ -683,7 +683,7 @@ async function buildAndSaveCategoryTree(): Promise<{
       version: Date.now(),
     });
 
-    return { totalCount: 0, rootCount: 0, leafCount: 0, maxDepth: 0 };
+    return {totalCount: 0, rootCount: 0, leafCount: 0, maxDepth: 0};
   }
 
   // Build flat map first
@@ -717,13 +717,17 @@ async function buildAndSaveCategoryTree(): Promise<{
   });
 
   // Build tree recursively
-  function buildNode(catId: string, level: number, ancestors: Array<{ id: string; name: string; slug: string }>): CategoryNode {
+  function buildNode(
+    catId: string,
+    level: number,
+    ancestors: Array<{id: string; name: string; slug: string}>,
+  ): CategoryNode {
     const cat = categoryMap.get(catId)!;
     const childIds = childrenMap.get(catId) || [];
-    
+
     const currentAncestors = [
       ...ancestors,
-      { id: catId, name: cat.name, slug: cat.slug },
+      {id: catId, name: cat.name, slug: cat.slug},
     ];
 
     const children = childIds
@@ -759,7 +763,7 @@ async function buildAndSaveCategoryTree(): Promise<{
   // Build flat map without children for quick lookups
   const flat: Record<string, Omit<CategoryNode, "children">> = {};
   function flattenNode(node: CategoryNode) {
-    const { children, ...rest } = node;
+    const {children, ...rest} = node;
     flat[node.id] = rest;
     children.forEach(flattenNode);
   }
@@ -797,7 +801,10 @@ async function buildAndSaveCategoryTree(): Promise<{
 
   await db.collection("cache").doc("category_tree").set(cacheData);
 
-  console.log(`[Category Tree] Saved tree with ${categoryMap.size} categories, ${rootIds.length} roots, ${leaves.length} leaves, depth ${maxDepth}`);
+  console.log(
+    `[Category Tree] Saved tree with ${categoryMap.size} categories, ` +
+    `${rootIds.length} roots, ${leaves.length} leaves, depth ${maxDepth}`,
+  );
 
   return {
     totalCount: categoryMap.size,
@@ -825,7 +832,7 @@ export const onOrderStatusChange = functions
   .onUpdate(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
-    const { orderId } = context.params;
+    const {orderId} = context.params;
 
     // Skip if status hasn't changed
     if (before.status === after.status && before.order_status === after.order_status) {
@@ -939,7 +946,7 @@ export const onPaymentStatusChange = functions
   .onUpdate(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
-    const { paymentId } = context.params;
+    const {paymentId} = context.params;
 
     // Skip if payment status hasn't changed
     if (before.status === after.status) {
@@ -954,7 +961,7 @@ export const onPaymentStatusChange = functions
         if (after.order_id) {
           const orderRef = db.collection("orders").doc(after.order_id);
           const orderDoc = await orderRef.get();
-          
+
           if (orderDoc.exists) {
             const order = orderDoc.data();
             // Only update if order is still pending
@@ -1011,7 +1018,7 @@ export const onReturnStatusChange = functions
   .onUpdate(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
-    const { returnId } = context.params;
+    const {returnId} = context.params;
 
     // Skip if status hasn't changed
     if (before.status === after.status) {
@@ -1126,7 +1133,7 @@ export const onTicketStatusChange = functions
   .onUpdate(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
-    const { ticketId } = context.params;
+    const {ticketId} = context.params;
 
     // Skip if status hasn't changed
     if (before.status === after.status) {
@@ -1204,7 +1211,7 @@ export const onNewBid = functions
   .firestore.document("bids/{bidId}")
   .onCreate(async (snapshot, context) => {
     const bid = snapshot.data();
-    const { bidId } = context.params;
+    const {bidId} = context.params;
 
     console.log(`[Bid Trigger] New bid ${bidId} on auction ${bid.auction_id}`);
 
@@ -1279,7 +1286,7 @@ export const onNewReview = functions
   .firestore.document("reviews/{reviewId}")
   .onCreate(async (snapshot, context) => {
     const review = snapshot.data();
-    const { reviewId } = context.params;
+    const {reviewId} = context.params;
 
     console.log(`[Review Trigger] New review ${reviewId} for ${review.type || "product"}`);
 
@@ -1348,7 +1355,7 @@ async function updateShopRating(shopId: string): Promise<void> {
 
     console.log(`[Review Trigger] Updated shop ${shopId} rating to ${averageRating.toFixed(1)}`);
   } catch (error) {
-    console.error(`[Review Trigger] Error updating shop rating:`, error);
+    console.error("[Review Trigger] Error updating shop rating:", error);
   }
 }
 
@@ -1382,7 +1389,7 @@ async function updateProductRating(productId: string): Promise<void> {
 
     console.log(`[Review Trigger] Updated product ${productId} rating to ${averageRating.toFixed(1)}`);
   } catch (error) {
-    console.error(`[Review Trigger] Error updating product rating:`, error);
+    console.error("[Review Trigger] Error updating product rating:", error);
   }
 }
 
@@ -1418,7 +1425,7 @@ export const cleanupExpiredSessions = functions
 
       if (sessionsSnapshot.empty) {
         console.log("[Cleanup] No expired sessions found");
-        return { cleaned: 0 };
+        return {cleaned: 0};
       }
 
       const batch = db.batch();
@@ -1429,10 +1436,10 @@ export const cleanupExpiredSessions = functions
       await batch.commit();
       console.log(`[Cleanup] Deleted ${sessionsSnapshot.size} expired sessions`);
 
-      return { cleaned: sessionsSnapshot.size };
+      return {cleaned: sessionsSnapshot.size};
     } catch (error) {
       console.error("[Cleanup] Error cleaning sessions:", error);
-      return { error: String(error) };
+      return {error: String(error)};
     }
   });
 
@@ -1468,7 +1475,7 @@ export const cleanupAbandonedCarts = functions
 
       if (cartsSnapshot.empty) {
         console.log("[Cleanup] No abandoned carts found");
-        return { cleaned: 0 };
+        return {cleaned: 0};
       }
 
       const batch = db.batch();
@@ -1479,10 +1486,10 @@ export const cleanupAbandonedCarts = functions
       await batch.commit();
       console.log(`[Cleanup] Deleted ${cartsSnapshot.size} abandoned carts`);
 
-      return { cleaned: cartsSnapshot.size };
+      return {cleaned: cartsSnapshot.size};
     } catch (error) {
       console.error("[Cleanup] Error cleaning carts:", error);
-      return { error: String(error) };
+      return {error: String(error)};
     }
   });
 
@@ -1515,7 +1522,7 @@ export const expireCoupons = functions
 
       if (couponsSnapshot.empty) {
         console.log("[Cleanup] No coupons to expire");
-        return { expired: 0 };
+        return {expired: 0};
       }
 
       const batch = db.batch();
@@ -1529,9 +1536,9 @@ export const expireCoupons = functions
       await batch.commit();
       console.log(`[Cleanup] Expired ${couponsSnapshot.size} coupons`);
 
-      return { expired: couponsSnapshot.size };
+      return {expired: couponsSnapshot.size};
     } catch (error) {
       console.error("[Cleanup] Error expiring coupons:", error);
-      return { error: String(error) };
+      return {error: String(error)};
     }
   });
