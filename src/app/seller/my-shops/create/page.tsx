@@ -24,7 +24,13 @@ import {
 } from "@/components/forms";
 import SlugInput from "@/components/common/SlugInput";
 import { shopsService } from "@/services/shops.service";
-import { BasicInfoStep, BankingStep } from "@/components/seller/shop-wizard";
+import {
+  BasicInfoStep,
+  BrandingStep,
+  ContactLegalStep,
+  PoliciesStep,
+  SettingsStep,
+} from "@/components/seller/shop-wizard";
 
 export default function CreateShopWizardPage() {
   const router = useRouter();
@@ -40,6 +46,7 @@ export default function CreateShopWizardPage() {
     { id: 3, name: "Contact & Legal", icon: Phone },
     { id: 4, name: "Policies", icon: FileText },
     { id: 5, name: "Settings", icon: Settings },
+    { id: 6, name: "Review & Publish", icon: Check },
   ] as const;
 
   const [formData, setFormData] = useState({
@@ -69,6 +76,13 @@ export default function CreateShopWizardPage() {
     termsAndConditions: "",
 
     // Step 5: Settings
+    defaultShippingFee: undefined as number | undefined,
+    supportEmail: "",
+    enableCOD: false,
+    enableReturns: true,
+    showContact: true,
+
+    // Step 6: Review & Publish
     isActive: false,
     acceptsOrders: true,
   });
@@ -256,372 +270,60 @@ export default function CreateShopWizardPage() {
         <div className="rounded-lg border border-gray-200 bg-white p-6">
           {/* Step 1: Basic Info */}
           {currentStep === 1 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Basic Information
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                  Let's start with the basics about your shop
-                </p>
-              </div>
-
-              {/* Shop Name */}
-              <FormInput
-                label="Shop Name"
-                value={formData.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-                placeholder="e.g., Vintage Treasures Emporium"
-                helperText="Choose a unique, memorable name for your shop"
-                required
-              />
-
-              {/* Slug */}
-              <div>
-                <FormLabel htmlFor="shop-slug" required>
-                  Shop URL
-                </FormLabel>
-                <SlugInput
-                  id="shop-slug"
-                  sourceText={formData.name}
-                  value={formData.slug}
-                  onChange={(slug: string) => {
-                    handleChange("slug", slug);
-                    validateSlug(slug);
-                  }}
-                  prefix="shops/"
-                  error={slugError}
-                />
-              </div>
-
-              {/* Category */}
-              <FormSelect
-                id="shop-category"
-                label="Primary Category"
-                value={formData.category}
-                onChange={(e) => handleChange("category", e.target.value)}
-                helperText="Main category your shop focuses on"
-                options={[
-                  { value: "", label: "Select a category" },
-                  { value: "electronics", label: "Electronics" },
-                  { value: "fashion", label: "Fashion & Apparel" },
-                  { value: "home", label: "Home & Garden" },
-                  { value: "sports", label: "Sports & Outdoors" },
-                  { value: "collectibles", label: "Collectibles & Art" },
-                  { value: "automotive", label: "Automotive" },
-                  { value: "other", label: "Other" },
-                ]}
-              />
-
-              {/* Description */}
-              <FormTextarea
-                label="Shop Description"
-                value={formData.description}
-                onChange={(e) => handleChange("description", e.target.value)}
-                rows={5}
-                placeholder="Tell customers about your shop, what makes it unique, and what they can expect..."
-                helperText={`${formData.description.length}/500 characters (min 20)`}
-                required
-              />
-            </div>
-          )}
-
-          {/* Step 5: Settings - Banking */}
-          {currentStep === 5 && (
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
-              <BankingStep
+              <BasicInfoStep
                 formData={formData as any}
                 onChange={(field, value) => handleChange(field, value)}
               />
             </div>
           )}
+
           {/* Step 2: Branding */}
           {currentStep === 2 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Branding
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                  Set your shop's visuals and theme colors
-                </p>
-              </div>
-
-              {/* Logo URL */}
-              <FormInput
-                label="Logo URL"
-                type="url"
-                value={formData.logoUrl}
-                onChange={(e) => handleChange("logoUrl", e.target.value)}
-                placeholder="https://example.com/logo.png"
-                helperText="Square image recommended (512x512px)"
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+              <BrandingStep
+                formData={formData as any}
+                onChange={(field, value) => handleChange(field, value)}
+                errors={{}}
               />
-
-              {/* Banner URL */}
-              <FormInput
-                label="Banner URL"
-                type="url"
-                value={formData.bannerUrl}
-                onChange={(e) => handleChange("bannerUrl", e.target.value)}
-                placeholder="https://example.com/banner.jpg"
-                helperText="Wide image recommended (1200x400px or larger)"
-              />
-
-              {/* Banner Preview */}
-              {formData.bannerUrl && (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-800">
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Banner Preview
-                  </p>
-                  <div className="relative w-full h-32">
-                    <OptimizedImage
-                      src={formData.bannerUrl}
-                      alt="Banner preview"
-                      fill
-                      className="object-cover rounded-lg border border-gray-200 dark:border-gray-600"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Theme Colors */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <FormLabel htmlFor="shop-theme-color">
-                    Primary Theme Color
-                  </FormLabel>
-                  <div className="flex gap-2">
-                    <input
-                      id="shop-theme-color"
-                      type="color"
-                      value={formData.themeColor}
-                      onChange={(e) =>
-                        handleChange("themeColor", e.target.value)
-                      }
-                      className="h-10 w-16 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
-                    />
-                    <input
-                      type="text"
-                      value={formData.themeColor}
-                      onChange={(e) =>
-                        handleChange("themeColor", e.target.value)
-                      }
-                      className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      placeholder="#3B82F6"
-                    />
-                  </div>
-                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                    Main color for buttons and highlights
-                  </p>
-                </div>
-
-                <div>
-                  <FormLabel htmlFor="shop-accent-color">
-                    Accent Color
-                  </FormLabel>
-                  <div className="flex gap-2">
-                    <input
-                      id="shop-accent-color"
-                      type="color"
-                      value={formData.accentColor}
-                      onChange={(e) =>
-                        handleChange("accentColor", e.target.value)
-                      }
-                      className="h-10 w-16 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
-                    />
-                    <input
-                      type="text"
-                      value={formData.accentColor}
-                      onChange={(e) =>
-                        handleChange("accentColor", e.target.value)
-                      }
-                      className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      placeholder="#10B981"
-                    />
-                  </div>
-                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                    Secondary color for accents
-                  </p>
-                </div>
-              </div>
-
-              {/* Color Preview */}
-              <div className="rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4">
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                  Color Preview
-                </p>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    style={{ backgroundColor: formData.themeColor }}
-                    className="px-4 py-2 rounded-lg text-white font-medium"
-                  >
-                    Primary Button
-                  </button>
-                  <button
-                    type="button"
-                    style={{ backgroundColor: formData.accentColor }}
-                    className="px-4 py-2 rounded-lg text-white font-medium"
-                  >
-                    Accent Button
-                  </button>
-                </div>
-              </div>
             </div>
           )}
 
           {/* Step 3: Contact & Legal */}
           {currentStep === 3 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Contact & Legal Information
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                  How customers can reach you and legal details
-                </p>
-              </div>
-
-              <div className="grid gap-6 sm:grid-cols-2">
-                {/* Email */}
-                <FormInput
-                  label="Shop Email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  placeholder="shop@example.com"
-                  required
-                />
-
-                {/* Phone */}
-                <FormInput
-                  label="Shop Phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleChange("phone", e.target.value)}
-                  placeholder="+91 9876543210"
-                  required
-                />
-              </div>
-
-              {/* Location */}
-              <FormInput
-                label="Location"
-                value={formData.location}
-                onChange={(e) => handleChange("location", e.target.value)}
-                placeholder="Mumbai, Maharashtra"
-                helperText="City and state where your shop operates"
-                required
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+              <ContactLegalStep
+                formData={formData as any}
+                onChange={(field, value) => handleChange(field, value)}
+                errors={{}}
               />
-
-              {/* Address */}
-              <FormTextarea
-                label="Business Address"
-                value={formData.address}
-                onChange={(e) => handleChange("address", e.target.value)}
-                rows={3}
-                placeholder="Street address, building, area..."
-              />
-
-              {/* Legal Details */}
-              <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
-                <h3 className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-3">
-                  Legal Documents (Optional but Recommended)
-                </h3>
-                <div className="space-y-4">
-                  <FormInput
-                    label="Business Registration Number"
-                    value={formData.businessRegistration}
-                    onChange={(e) =>
-                      handleChange("businessRegistration", e.target.value)
-                    }
-                    placeholder="e.g., CIN, LLPIN, PAN"
-                  />
-
-                  <FormInput
-                    label="GST/Tax ID"
-                    value={formData.taxId}
-                    onChange={(e) => handleChange("taxId", e.target.value)}
-                    placeholder="GSTIN"
-                  />
-                </div>
-                <p className="mt-3 text-xs text-blue-800 dark:text-blue-400">
-                  Providing legal documents helps build trust and may be
-                  required for verification
-                </p>
-              </div>
             </div>
           )}
 
           {/* Step 4: Policies */}
           {currentStep === 4 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Shop Policies
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                  Set clear policies for shipping, returns, and terms
-                </p>
-              </div>
-
-              {/* Shipping Policy */}
-              <FormTextarea
-                label="Shipping Policy"
-                value={formData.shippingPolicy}
-                onChange={(e) => handleChange("shippingPolicy", e.target.value)}
-                rows={4}
-                placeholder="Describe your shipping methods, delivery times, charges, and coverage areas..."
-                helperText="Explain how you ship products and estimated delivery times"
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+              <PoliciesStep
+                formData={formData as any}
+                onChange={(field, value) => handleChange(field, value)}
+                errors={{}}
               />
-
-              {/* Return Policy */}
-              <FormSelect
-                id="shop-return-policy"
-                label="Return Policy"
-                value={formData.returnPolicy}
-                onChange={(e) => handleChange("returnPolicy", e.target.value)}
-                helperText="Choose a return window or define custom terms"
-                options={[
-                  { value: "no-returns", label: "No Returns" },
-                  { value: "7-days", label: "7 Days Return" },
-                  { value: "14-days", label: "14 Days Return" },
-                  { value: "30-days", label: "30 Days Return" },
-                  { value: "custom", label: "Custom Policy" },
-                ]}
-              />
-
-              {/* Terms and Conditions */}
-              <FormTextarea
-                label="Terms and Conditions"
-                value={formData.termsAndConditions}
-                onChange={(e) =>
-                  handleChange("termsAndConditions", e.target.value)
-                }
-                rows={6}
-                placeholder="Enter your shop's terms and conditions, including payment terms, warranties, and customer obligations..."
-                helperText="Legal terms customers agree to when purchasing from your shop"
-              />
-
-              {/* Policy Tips */}
-              <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4">
-                <h3 className="text-sm font-medium text-green-900 dark:text-green-300 mb-2">
-                  💡 Policy Tips
-                </h3>
-                <ul className="text-sm text-green-800 dark:text-green-400 space-y-1">
-                  <li>• Be clear and specific about shipping times</li>
-                  <li>• Explain who pays for return shipping</li>
-                  <li>
-                    • State conditions for returns (e.g., unopened, with tags)
-                  </li>
-                  <li>• Include your refund processing time</li>
-                </ul>
-              </div>
             </div>
           )}
 
-          {/* Step 5: Review & Publish */}
+          {/* Step 5: Settings */}
           {currentStep === 5 && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+              <SettingsStep
+                formData={formData as any}
+                onChange={(field, value) => handleChange(field, value)}
+                errors={{}}
+              />
+            </div>
+          )}
+
+          {/* Step 6: Review & Publish */}
+          {currentStep === 6 && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">

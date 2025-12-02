@@ -76,9 +76,73 @@ src/components/seller/shop-wizard/
 
 ---
 
+## Completed ✅ - Admin Pages (December 2025)
+
+### Category Wizard
+
+| Component       | Original File                       | New Location                            | Lines Reduced |
+| --------------- | ----------------------------------- | --------------------------------------- | ------------- |
+| Category Wizard | `/admin/categories/create/page.tsx` | `src/components/admin/category-wizard/` | 460 → 265     |
+
+**Component Structure:**
+
+```
+src/components/admin/category-wizard/
+├── types.ts              # CategoryFormData interface
+├── BasicInfoStep.tsx     # Name, parent, description
+├── MediaStep.tsx         # Image, icon
+├── SeoStep.tsx           # Slug, meta tags, preview
+├── DisplayStep.tsx       # Display order, featured, active
+└── index.ts              # Barrel exports
+```
+
+### Blog Wizard
+
+| Component   | Original File                 | New Location                        | Lines Reduced |
+| ----------- | ----------------------------- | ----------------------------------- | ------------- |
+| Blog Wizard | `/admin/blog/create/page.tsx` | `src/components/admin/blog-wizard/` | 444 → 280     |
+
+**Component Structure:**
+
+```
+src/components/admin/blog-wizard/
+├── types.ts              # BlogFormData interface
+├── BasicInfoStep.tsx     # Title, slug, excerpt
+├── MediaStep.tsx         # Featured image
+├── ContentStep.tsx       # Rich text editor
+├── CategoryTagsStep.tsx  # Category, tags, featured flag
+└── index.ts              # Barrel exports
+```
+
+### Seller Shop Wizard (December 3, 2025)
+
+| Component         | Original File                      | New Location                         |
+| ----------------- | ---------------------------------- | ------------------------------------ |
+| Shop Wizard Steps | `/seller/my-shops/create/page.tsx` | `src/components/seller/shop-wizard/` |
+
+Structure and wiring:
+
+```
+src/components/seller/shop-wizard/
+├── types.ts
+├── BasicInfoStep.tsx
+├── BrandingStep.tsx
+├── ContactLegalStep.tsx
+├── PoliciesStep.tsx
+├── SettingsStep.tsx
+└── index.ts
+```
+
+Page integration:
+
+- `src/app/seller/my-shops/create/page.tsx` uses steps 1–5, with step 6 as Review & Publish.
+- `formData` extended for settings (shipping fee, support email, toggles).
+
+---
+
 ## Pending - Admin Pages
 
-### Category Create/Edit
+### Category Edit
 
 | File                                     | Est. Lines | Priority |
 | ---------------------------------------- | ---------- | -------- |

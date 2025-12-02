@@ -4,98 +4,70 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { ArrowLeft, Save, Eye, Loader2, Upload, X } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import RichTextEditor from "@/components/common/RichTextEditor";
 import {
-  FormInput,
-  FormTextarea,
-  FormLabel,
-  FormSelect,
-} from "@/components/forms";
+  ArrowLeft,
+  Save,
+  Eye,
+  Loader2,
+  ArrowRight,
+  FileText,
+  Image as ImageIcon,
+  PenTool,
+  Tag,
+  Check,
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { blogService } from "@/services/blog.service";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
+import {
+  BasicInfoStep,
+  MediaStep,
+  ContentStep,
+  CategoryTagsStep,
+  type BlogFormData,
+} from "@/components/admin/blog-wizard";
+
+const STEPS = [
+  {
+    id: 1,
+    name: "Basic Info",
+    icon: FileText,
+    description: "Title, slug & excerpt",
+  },
+  { id: 2, name: "Media", icon: ImageIcon, description: "Featured image" },
+  { id: 3, name: "Content", icon: PenTool, description: "Post content" },
+  { id: 4, name: "Category & Tags", icon: Tag, description: "Organization" },
+];
 
 export default function CreateBlogPostPage() {
   const router = useRouter();
   const { isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [currentStep, setCurrentStep] = useState(1);
 
   // Form state
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BlogFormData>({
     title: "",
     slug: "",
     excerpt: "",
     content: "",
     category: "",
-    tags: [] as string[],
-    status: "draft" as "draft" | "published",
+    tags: [],
+    status: "draft",
     featured: false,
   });
-
-  const [tagInput, setTagInput] = useState("");
-  const [customCategory, setCustomCategory] = useState("");
 
   // Media upload
   const { getUploadedUrls, isUploading, uploadMedia, cleanupUploadedMedia } =
     useMediaUploadWithCleanup();
   const uploadedUrls = getUploadedUrls();
 
-  const categories = [
-    "News",
-    "Guides",
-    "Updates",
-    "Tips",
-    "Events",
-    "Announcements",
-    "Tutorials",
-    "Reviews",
-  ];
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    }));
-
-    // Auto-generate slug from title
-    if (name === "title") {
-      const slug = value
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-      setFormData((prev) => ({ ...prev, slug }));
+  const handleChange = (field: keyof BlogFormData, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
-
-    // Clear error for field
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  const handleAddTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        tags: [...prev.tags, tagInput.trim()],
-      }));
-      setTagInput("");
-    }
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      tags: prev.tags.filter((t) => t !== tag),
-    }));
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,46 +103,52 @@ export default function CreateBlogPostPage() {
     }
   };
 
-  const validateForm = () => {
+  const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.title.trim()) {
-      newErrors.title = "Title is required";
-    }
-    if (!formData.slug.trim()) {
-      newErrors.slug = "Slug is required";
-    }
-    if (!formData.excerpt.trim()) {
-      newErrors.excerpt = "Excerpt is required";
-    }
-    if (!formData.content.trim()) {
-      newErrors.content = "Content is required";
-    }
-    if (!formData.category && !customCategory) {
-      newErrors.category = "Category is required";
+    switch (step) {
+      case 1:
+        if (!formData.title.trim()) newErrors.title = "Title is required";
+        if (!formData.slug.trim()) newErrors.slug = "Slug is required";
+        if (!formData.excerpt.trim()) newErrors.excerpt = "Excerpt is required";
+        break;
+      case 3:
+        if (!formData.content.trim()) newErrors.content = "Content is required";
+        break;
+      case 4:
+        if (!formData.category.trim())
+          newErrors.category = "Category is required";
+        break;
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const nextStep = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
+    }
+  };
+
+  const prevStep = () => {
+    setErrors({});
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
+
   const handleSubmit = async (status: "draft" | "published") => {
-    if (!validateForm()) return;
+    if (!validateStep(currentStep)) return;
 
     try {
       setLoading(true);
 
-      const category = customCategory || formData.category;
-
       await blogService.create({
         ...formData,
-        category,
         status,
         featuredImage: uploadedUrls[0],
         publishedAt: status === "published" ? new Date() : undefined,
       });
 
-      // Don't cleanup on success - blog post now owns the images
       router.push("/admin/blog");
     } catch (error) {
       console.error("Failed to create blog post:", error);
@@ -211,247 +189,153 @@ export default function CreateBlogPostPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link
             href="/admin/blog"
-            className="rounded p-2 hover:bg-gray-100"
-            title="Back to blog posts"
+            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4" />
+            Back to Blog
           </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Create Blog Post
-            </h1>
-            <p className="text-sm text-gray-600">
-              Write and publish a new blog post
-            </p>
-          </div>
+          <h1 className="mt-4 text-2xl font-bold text-gray-900">
+            Create Blog Post
+          </h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Step {currentStep} of {STEPS.length}: {STEPS[currentStep - 1].name}
+          </p>
         </div>
       </div>
 
-      {/* Form */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 space-y-6">
-        {/* Title */}
-        <FormInput
-          label="Title"
-          required
-          name="title"
-          value={formData.title}
-          onChange={handleInputChange}
-          placeholder="Enter post title"
-          error={errors.title}
-        />
-
-        {/* Slug */}
-        <FormInput
-          label="Slug"
-          required
-          name="slug"
-          value={formData.slug}
-          onChange={handleInputChange}
-          placeholder="post-slug"
-          error={errors.slug}
-          helperText={`URL: /blog/${formData.slug || "post-slug"}`}
-        />
-
-        {/* Excerpt */}
-        <FormTextarea
-          label="Excerpt"
-          required
-          name="excerpt"
-          value={formData.excerpt}
-          onChange={handleInputChange}
-          rows={3}
-          placeholder="Brief description of the post (shown in listings)"
-          error={errors.excerpt}
-        />
-
-        {/* Featured Image */}
-        <div>
-          <FormLabel>Featured Image</FormLabel>
-          {uploadedUrls.length > 0 ? (
-            <div className="relative inline-block h-48">
-              <OptimizedImage
-                src={uploadedUrls[0]}
-                alt="Featured"
-                width={300}
-                height={192}
-                className="rounded-lg border border-gray-300"
-              />
-              <button
-                onClick={() => cleanupUploadedMedia()}
-                className="absolute -top-2 -right-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          ) : (
-            <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 hover:bg-gray-100">
-              <Upload className="h-8 w-8 text-gray-400 mb-2" />
-              <span className="text-sm text-gray-600">
-                {isUploading ? "Uploading..." : "Click to upload image"}
-              </span>
-              <span className="text-xs text-gray-500 mt-1">
-                PNG, JPG up to 5MB
-              </span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                disabled={isUploading}
-              />
-            </label>
-          )}
-          {errors.featuredImage && (
-            <p className="mt-1 text-sm text-red-600">{errors.featuredImage}</p>
-          )}
-        </div>
-
-        {/* Content */}
-        <div>
-          <FormLabel required>Content</FormLabel>
-          <RichTextEditor
-            value={formData.content}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, content: value }))
-            }
-            placeholder="Write your blog post content here..."
-            minHeight={400}
-            error={errors.content}
-          />
-        </div>
-
-        {/* Category */}
-        <div>
-          <FormLabel required>Category</FormLabel>
-          <div className="flex gap-2">
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleInputChange}
-              className={`flex-1 rounded-lg border ${
-                errors.category ? "border-red-500" : "border-gray-300"
-              } px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500`}
-            >
-              <option value="">Select category</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat.toLowerCase()}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-            <span className="text-gray-500 self-center">or</span>
-            <input
-              type="text"
-              placeholder="Custom category"
-              value={customCategory}
-              onChange={(e) => setCustomCategory(e.target.value)}
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-            />
-          </div>
-          {errors.category && (
-            <p className="mt-1 text-sm text-red-600">{errors.category}</p>
-          )}
-        </div>
-
-        {/* Tags */}
-        <div>
-          <FormLabel>Tags</FormLabel>
-          <div className="flex gap-2 mb-2">
-            <input
-              type="text"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyPress={(e) =>
-                e.key === "Enter" && (e.preventDefault(), handleAddTag())
-              }
-              placeholder="Add tag and press Enter"
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-            />
-            <button
-              type="button"
-              onClick={handleAddTag}
-              className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
-            >
-              Add
-            </button>
-          </div>
-          {formData.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {formData.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-3 py-1 text-sm text-purple-700"
-                >
-                  {tag}
-                  <button
-                    onClick={() => handleRemoveTag(tag)}
-                    className="hover:text-purple-900"
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        {/* Progress Bar */}
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="flex items-center justify-between">
+            {STEPS.map((step, index) => (
+              <div key={step.id} className="flex items-center">
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors ${
+                      currentStep > step.id
+                        ? "border-green-500 bg-green-500 text-white"
+                        : currentStep === step.id
+                        ? "border-purple-600 bg-purple-600 text-white"
+                        : "border-gray-300 bg-white text-gray-400"
+                    }`}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
+                    {currentStep > step.id ? (
+                      <Check className="h-5 w-5" />
+                    ) : (
+                      <step.icon className="h-5 w-5" />
+                    )}
+                  </div>
+                  <span className="mt-2 hidden text-xs font-medium text-gray-700 sm:block">
+                    {step.name}
+                  </span>
+                </div>
+                {index < STEPS.length - 1 && (
+                  <div
+                    className={`mx-2 h-0.5 w-16 transition-colors sm:w-24 ${
+                      currentStep > step.id ? "bg-green-500" : "bg-gray-300"
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Step Content */}
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          {currentStep === 1 && (
+            <BasicInfoStep
+              formData={formData}
+              onChange={handleChange}
+              errors={errors}
+            />
+          )}
+
+          {currentStep === 2 && (
+            <MediaStep
+              featuredImage={uploadedUrls[0]}
+              isUploading={isUploading}
+              onImageUpload={handleImageUpload}
+              onImageRemove={cleanupUploadedMedia}
+              error={errors.featuredImage}
+            />
+          )}
+
+          {currentStep === 3 && (
+            <ContentStep
+              formData={formData}
+              onChange={handleChange}
+              error={errors.content}
+            />
+          )}
+
+          {currentStep === 4 && (
+            <CategoryTagsStep
+              formData={formData}
+              onChange={handleChange}
+              error={errors.category}
+            />
           )}
         </div>
 
-        {/* Options */}
-        <div className="space-y-3">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="featured"
-              checked={formData.featured}
-              onChange={handleInputChange}
-              className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-            />
-            <span className="text-sm text-gray-700">
-              Feature this post (show in featured sections and homepage)
-            </span>
-          </label>
-        </div>
-      </div>
+        {/* Navigation */}
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={currentStep === 1 ? handleCancel : prevStep}
+            disabled={loading}
+            className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            {currentStep === 1 ? "Cancel" : "Previous"}
+          </button>
 
-      {/* Actions */}
-      <div className="flex items-center justify-between border-t border-gray-200 pt-6">
-        <button
-          onClick={handleCancel}
-          className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          disabled={loading}
-        >
-          Cancel
-        </button>
-        <div className="flex gap-3">
-          <button
-            onClick={() => handleSubmit("draft")}
-            disabled={loading}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-          >
-            {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+          <div className="flex gap-3">
+            {currentStep < STEPS.length ? (
+              <button
+                type="button"
+                onClick={nextStep}
+                disabled={loading}
+                className="inline-flex items-center gap-2 rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 disabled:opacity-50"
+              >
+                Next
+                <ArrowRight className="h-4 w-4" />
+              </button>
             ) : (
-              <Save className="h-4 w-4" />
+              <>
+                <button
+                  onClick={() => handleSubmit("draft")}
+                  disabled={loading}
+                  className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                  Save as Draft
+                </button>
+                <button
+                  onClick={() => handleSubmit("published")}
+                  disabled={loading}
+                  className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                  Publish
+                </button>
+              </>
             )}
-            Save as Draft
-          </button>
-          <button
-            onClick={() => handleSubmit("published")}
-            disabled={loading}
-            className="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 disabled:opacity-50"
-          >
-            {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-            Publish
-          </button>
+          </div>
         </div>
       </div>
     </div>

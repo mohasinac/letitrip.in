@@ -21,9 +21,9 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Status update
-  const [showStatusDialog, setShowStatusDialog] = useState(false);
-  const [newStatus, setNewStatus] = useState<OrderStatus>(OrderStatus.PENDING);
+          <p className="text-sm text-gray-600 mt-1">
+            Placed on <DateDisplay date={order.createdAt} format="long" />
+          </p>
   const [internalNotes, setInternalNotes] = useState("");
 
   // Shipment
@@ -82,15 +82,15 @@ export default function OrderDetailPage() {
       return;
     }
 
-    try {
-      setSaving(true);
-      const updated = await ordersService.createShipment(
+                    <p className="font-medium text-gray-900">
+                      <Price amount={item.price} />
+                    </p>
         order.id,
-        trackingNumber.trim(),
+                      Qty: <Quantity value={item.quantity} />
         shippingProvider.trim(),
-        estimatedDelivery ? new Date(estimatedDelivery) : undefined
-      );
-      setOrder(updated);
+                    <p className="text-sm font-semibold text-gray-900 mt-1">
+                      <Price amount={item.total} />
+                    </p>
       setShowShipmentDialog(false);
       setTrackingNumber("");
       setShippingProvider("");
@@ -99,37 +99,37 @@ export default function OrderDetailPage() {
       toast.error(err.message || "Failed to create shipment");
     } finally {
       setSaving(false);
-    }
-  };
-
+                <span className="text-gray-900">
+                  <Price amount={order.subtotal} />
+                </span>
   const handleCancelOrder = async () => {
     if (!order) return;
 
-    if (!cancelReason.trim()) {
-      toast.error("Please provide cancellation reason");
-      return;
+                <span className="text-gray-900">
+                  <Price amount={order.shipping || order.shippingCost} />
+                </span>
     }
 
     try {
-      setSaving(true);
-      const updated = await ordersService.cancel(order.id, cancelReason.trim());
-      setOrder(updated);
+                <span className="text-gray-900">
+                  <Price amount={order.tax} />
+                </span>
       setShowCancelDialog(false);
       setCancelReason("");
     } catch (err: any) {
       toast.error(err.message || "Failed to cancel order");
     } finally {
       setSaving(false);
-    }
-  };
-
+                  <span className="text-green-600">
+                    -<Price amount={order.discount} />
+                  </span>
   const handleDownloadInvoice = async () => {
     if (!order) return;
 
     try {
-      const blob = await ordersService.downloadInvoice(order.id);
-      const url = globalThis.URL?.createObjectURL(blob) || "";
-      const a = document.createElement("a");
+                <span className="text-gray-900">
+                  <Price amount={order.total} />
+                </span>
       a.href = url;
       a.download = `invoice-${order.orderNumber}.pdf`;
       document.body.appendChild(a);
@@ -156,17 +156,17 @@ export default function OrderDetailPage() {
       case "cancelled":
         return "bg-red-100 text-red-800";
       case "refunded":
-        return "bg-orange-100 text-orange-800";
-      default:
-        return "bg-gray-100 text-gray-800";
+                    <p className="font-medium text-gray-900">
+                      <DateDisplay date={order.estimatedDelivery} format="short" />
+                    </p>
     }
   };
 
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "paid":
+                    <p className="font-medium text-gray-900">
+                      <DateDisplay date={order.deliveredAt} format="short" />
+                    </p>
         return "bg-green-100 text-green-800";
       case "failed":
         return "bg-red-100 text-red-800";

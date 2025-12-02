@@ -8,6 +8,7 @@ import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { TICKET_FILTERS } from "@/constants/filters";
 import { supportService } from "@/services/support.service";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
+import { Quantity, DateDisplay } from "@/components/common/values";
 
 export default function SupportTicketsPage() {
   return (
@@ -132,16 +133,6 @@ function SupportTicketsContent() {
     return status.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("en-IN", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -162,7 +153,7 @@ function SupportTicketsContent() {
               Total Tickets
             </div>
             <div className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
-              {stats.total.toLocaleString()}
+              <Quantity value={stats.total} />
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
@@ -170,7 +161,7 @@ function SupportTicketsContent() {
               Open
             </div>
             <div className="mt-2 text-3xl font-bold text-blue-600 dark:text-blue-400">
-              {stats.open.toLocaleString()}
+              <Quantity value={stats.open} />
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
@@ -178,7 +169,7 @@ function SupportTicketsContent() {
               In Progress
             </div>
             <div className="mt-2 text-3xl font-bold text-purple-600 dark:text-purple-400">
-              {stats.inProgress.toLocaleString()}
+              <Quantity value={stats.inProgress} />
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
@@ -186,7 +177,7 @@ function SupportTicketsContent() {
               Resolved
             </div>
             <div className="mt-2 text-3xl font-bold text-green-600 dark:text-green-400">
-              {stats.resolved.toLocaleString()}
+              <Quantity value={stats.resolved} />
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
@@ -194,7 +185,7 @@ function SupportTicketsContent() {
               Urgent
             </div>
             <div className="mt-2 text-3xl font-bold text-red-600 dark:text-red-400">
-              {stats.urgent.toLocaleString()}
+              <Quantity value={stats.urgent} />
             </div>
           </div>
         </div>
@@ -352,7 +343,10 @@ function SupportTicketsContent() {
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                              {formatDate(ticket.createdAt)}
+                              <DateDisplay
+                                date={ticket.createdAt}
+                                includeTime
+                              />
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <div className="flex items-center space-x-2">

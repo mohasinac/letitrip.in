@@ -17,7 +17,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { analyticsService } from "@/services/analytics.service";
-import { Price } from "@/components/common/values";
+import { Price, Quantity, DateDisplay } from "@/components/common/values";
 import type {
   AnalyticsOverviewFE,
   SalesDataPointFE,
@@ -52,7 +52,7 @@ function StatCard({
           </p>
           <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
             {prefix}
-            {typeof value === "number" ? value.toLocaleString("en-IN") : value}
+            {typeof value === "number" ? <Quantity value={value} /> : value}
             {suffix}
           </p>
           {change !== undefined && (
@@ -142,17 +142,14 @@ function SalesChart({ data }: { data: SalesDataPointFE[] }) {
           <div
             key={i}
             className="flex-1 flex flex-col items-center gap-1"
-            title={`₹${point.revenue.toLocaleString("en-IN")} on ${point.date}`}
+            title={`Revenue on ${point.date}`}
           >
             <div
               className="w-full bg-indigo-500 rounded-t transition-all hover:bg-indigo-600"
               style={{ height: `${Math.max(height, 2)}%` }}
             />
             <span className="text-xs text-gray-500 truncate w-full text-center">
-              {new Date(point.date).toLocaleDateString("en-IN", {
-                day: "numeric",
-                month: "short",
-              })}
+              <DateDisplay date={point.date} format="short" />
             </span>
           </div>
         );
@@ -207,13 +204,13 @@ function TopProductsTable({ products }: { products: TopProductFE[] }) {
                 </div>
               </td>
               <td className="text-right py-3 px-4 text-sm text-gray-900 dark:text-white">
-                {product.sales.toLocaleString("en-IN")}
+                <Quantity value={product.sales} />
               </td>
               <td className="text-right py-3 px-4 text-sm font-medium text-gray-900 dark:text-white">
                 <Price amount={product.revenue} />
               </td>
               <td className="text-right py-3 px-4 text-sm text-gray-500 dark:text-gray-400">
-                {product.views.toLocaleString("en-IN")}
+                <Quantity value={product.views} />
               </td>
             </tr>
           ))}

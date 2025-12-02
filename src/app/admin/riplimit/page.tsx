@@ -39,6 +39,7 @@ import { FormInput, FormTextarea } from "@/components/forms";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useDebounce } from "@/hooks/useDebounce";
+import { Quantity } from "@/components/common/values";
 
 // Types for admin views
 interface RipLimitStats {
@@ -404,7 +405,7 @@ export default function AdminRipLimitPage() {
                 ) : (
                   <>
                     <p className="text-2xl font-bold text-gray-900 mt-1">
-                      {stats?.userCount?.toLocaleString("en-IN") || 0}
+                      <Quantity value={stats?.userCount || 0} />
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
                       with RipLimit accounts

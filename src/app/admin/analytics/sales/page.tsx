@@ -17,7 +17,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { analyticsService } from "@/services/analytics.service";
-import { Price } from "@/components/common/values";
+import { Price, Quantity, DateDisplay } from "@/components/common/values";
 import type {
   SalesDataPointFE,
   CategoryPerformanceFE,
@@ -112,10 +112,7 @@ function RevenueTrendChart({ data }: { data: SalesDataPointFE[] }) {
                 </div>
               </div>
               <span className="text-xs text-gray-500 truncate w-full text-center">
-                {new Date(point.date).toLocaleDateString("en-IN", {
-                  day: "numeric",
-                  month: "short",
-                })}
+                <DateDisplay date={point.date} format="short" />
               </span>
             </div>
           );
@@ -234,13 +231,13 @@ function DetailedProductsTable({ products }: { products: TopProductFE[] }) {
                   </span>
                 </td>
                 <td className="text-right py-3 px-4 text-sm text-gray-900 dark:text-white">
-                  {product.sales.toLocaleString("en-IN")}
+                  <Quantity value={product.sales} />
                 </td>
                 <td className="text-right py-3 px-4 text-sm font-medium text-green-600 dark:text-green-400">
                   <Price amount={product.revenue} />
                 </td>
                 <td className="text-right py-3 px-4 text-sm text-gray-500 dark:text-gray-400">
-                  {product.views.toLocaleString("en-IN")}
+                  <Quantity value={product.views} />
                 </td>
                 <td className="text-right py-3 px-4 text-sm">
                   <span
@@ -290,7 +287,7 @@ function StatCard({
           </p>
           <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
             {prefix}
-            {typeof value === "number" ? value.toLocaleString("en-IN") : value}
+            {typeof value === "number" ? <Quantity value={value} /> : value}
           </p>
           {change !== undefined && (
             <div className="mt-1 flex items-center gap-1">
