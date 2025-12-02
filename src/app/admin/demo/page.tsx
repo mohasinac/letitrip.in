@@ -262,6 +262,7 @@ export default function AdminDemoPage() {
     reviews: { status: "pending" },
     orders: { status: "pending" },
     extras: { status: "pending" },
+    settings: { status: "pending" },
   });
   const [generationState, setGenerationState] = useState<GenerationState>({});
 
@@ -278,6 +279,7 @@ export default function AdminDemoPage() {
     products: { status: "pending" },
     auctions: { status: "pending" },
     bids: { status: "pending" },
+    settings: { status: "pending" },
     reviews: { status: "pending" },
     orders: { status: "pending" },
     extras: { status: "pending" },
@@ -1125,7 +1127,7 @@ export default function AdminDemoPage() {
                 const isActive = currentStep === stepConfig.id;
                 const canRun =
                   index === 0 ||
-                  stepStatuses[GENERATION_STEPS[index - 1].id].status ===
+                  stepStatuses[GENERATION_STEPS[index - 1].id]?.status ===
                     "completed";
 
                 return (
@@ -1134,9 +1136,9 @@ export default function AdminDemoPage() {
                     className={`flex items-center justify-between p-3 rounded-lg border ${
                       isActive
                         ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                        : status.status === "completed"
+                        : status?.status === "completed"
                         ? "border-green-500 bg-green-50 dark:bg-green-900/20"
-                        : status.status === "error"
+                        : status?.status === "error"
                         ? "border-red-500 bg-red-50 dark:bg-red-900/20"
                         : "border-gray-200 dark:border-gray-700"
                     }`}
@@ -1144,20 +1146,20 @@ export default function AdminDemoPage() {
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          status.status === "completed"
+                          status?.status === "completed"
                             ? "bg-green-500"
-                            : status.status === "error"
+                            : status?.status === "error"
                             ? "bg-red-500"
-                            : status.status === "running"
+                            : status?.status === "running"
                             ? "bg-blue-500"
                             : "bg-gray-300 dark:bg-gray-600"
                         }`}
                       >
-                        {status.status === "completed" ? (
+                        {status?.status === "completed" ? (
                           <CheckCircle className="w-5 h-5 text-white" />
-                        ) : status.status === "error" ? (
+                        ) : status?.status === "error" ? (
                           <XCircle className="w-5 h-5 text-white" />
-                        ) : status.status === "running" ? (
+                        ) : status?.status === "running" ? (
                           <Loader2 className="w-5 h-5 text-white animate-spin" />
                         ) : (
                           <Icon className="w-4 h-4 text-gray-600 dark:text-gray-300" />
@@ -1168,9 +1170,9 @@ export default function AdminDemoPage() {
                           {stepConfig.label}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {status.status === "error"
+                          {status?.status === "error"
                             ? status.error
-                            : status.status === "completed" && status.count
+                            : status?.status === "completed" && status.count
                             ? `Created ${status.count.toLocaleString()} items`
                             : stepConfig.description}
                         </p>
@@ -1178,8 +1180,8 @@ export default function AdminDemoPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      {status.status !== "completed" &&
-                        status.status !== "running" && (
+                      {status?.status !== "completed" &&
+                        status?.status !== "running" && (
                           <button
                             onClick={() =>
                               handleGenerateSingleStep(stepConfig.id)
@@ -1187,12 +1189,12 @@ export default function AdminDemoPage() {
                             disabled={generating || cleaning || !canRun}
                             className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            {status.status === "error" ? (
+                            {status?.status === "error" ? (
                               <RefreshCw className="w-4 h-4" />
                             ) : (
                               <ChevronRight className="w-4 h-4" />
                             )}
-                            {status.status === "error" ? "Retry" : "Run"}
+                            {status?.status === "error" ? "Retry" : "Run"}
                           </button>
                         )}
                     </div>
@@ -1235,9 +1237,9 @@ export default function AdminDemoPage() {
                       className={`flex items-center justify-between p-3 rounded-lg border ${
                         isActive
                           ? "border-red-500 bg-red-50 dark:bg-red-900/20"
-                          : status.status === "completed"
+                          : status?.status === "completed"
                           ? "border-green-500 bg-green-50 dark:bg-green-900/20"
-                          : status.status === "error"
+                          : status?.status === "error"
                           ? "border-red-500 bg-red-50 dark:bg-red-900/20"
                           : "border-gray-200 dark:border-gray-700"
                       }`}
@@ -1245,20 +1247,20 @@ export default function AdminDemoPage() {
                       <div className="flex items-center gap-3">
                         <div
                           className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            status.status === "completed"
+                            status?.status === "completed"
                               ? "bg-green-500"
-                              : status.status === "error"
+                              : status?.status === "error"
                               ? "bg-red-500"
-                              : status.status === "running"
+                              : status?.status === "running"
                               ? "bg-red-500"
                               : "bg-gray-300 dark:bg-gray-600"
                           }`}
                         >
-                          {status.status === "completed" ? (
+                          {status?.status === "completed" ? (
                             <CheckCircle className="w-5 h-5 text-white" />
-                          ) : status.status === "error" ? (
+                          ) : status?.status === "error" ? (
                             <XCircle className="w-5 h-5 text-white" />
-                          ) : status.status === "running" ? (
+                          ) : status?.status === "running" ? (
                             <Loader2 className="w-5 h-5 text-white animate-spin" />
                           ) : (
                             <Icon className="w-4 h-4 text-gray-600 dark:text-gray-300" />
