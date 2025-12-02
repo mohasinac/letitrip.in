@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Generate reset link
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://justforview.in";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://letitrip.in";
     const resetLink = `${baseUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(email.toLowerCase())}`;
 
     // Send password reset email

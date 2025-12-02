@@ -6,8 +6,8 @@
  *
  * Environment Variables Required:
  * - RESEND_API_KEY: Resend API key
- * - EMAIL_FROM: Sender email address (default: noreply@justforview.in)
- * - EMAIL_FROM_NAME: Sender name (default: JustForView)
+ * - EMAIL_FROM: Sender email address (default: noreply@Letitrip.in)
+ * - EMAIL_FROM_NAME: Sender name (default: Letitrip)
  */
 
 import * as functions from "firebase-functions/v1";
@@ -40,13 +40,13 @@ export class NotificationService {
     const config = functions.config();
     this.apiKey = config.resend?.api_key || process.env.RESEND_API_KEY || "";
     this.fromEmail =
-      config.email?.from || process.env.EMAIL_FROM || "noreply@justforview.in";
+      config.email?.from || process.env.EMAIL_FROM || "noreply@letitrip.in";
     this.fromName =
-      config.email?.from_name || process.env.EMAIL_FROM_NAME || "JustForView";
+      config.email?.from_name || process.env.EMAIL_FROM_NAME || "Letitrip";
     this.baseUrl =
       config.app?.base_url ||
       process.env.NEXT_PUBLIC_BASE_URL ||
-      "https://justforview.in";
+      "https://letitrip.in";
 
     if (!this.apiKey) {
       console.warn(
@@ -150,10 +150,10 @@ You can:
 
 View Auction: ${auctionUrl}
 
-Thank you for using JustForView!
+Thank you for using Letitrip!
 
 Best regards,
-The JustForView Team
+The Letitrip Team
 `;
 
     const html = `
@@ -218,13 +218,13 @@ The JustForView Team
     </div>
     
     <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-      Thank you for using JustForView!<br>
-      <strong>The JustForView Team</strong>
+      Thank you for using Letitrip!<br>
+      <strong>The Letitrip Team</strong>
     </p>
   </div>
   
   <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
-    <p>© ${new Date().getFullYear()} JustForView. All rights reserved.</p>
+    <p>© ${new Date().getFullYear()} Letitrip. All rights reserved.</p>
     <p>You're receiving this email because you listed an auction on our platform.</p>
   </div>
 </body>
@@ -264,7 +264,7 @@ You can contact the highest bidder to negotiate, or re-list the auction with a l
 View Auction: ${auctionUrl}
 
 Best regards,
-The JustForView Team
+The Letitrip Team
 `;
 
     const sellerHtml = `
@@ -326,12 +326,12 @@ The JustForView Team
     
     <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
       Best regards,<br>
-      <strong>The JustForView Team</strong>
+      <strong>The Letitrip Team</strong>
     </p>
   </div>
   
   <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
-    <p>© ${new Date().getFullYear()} JustForView. All rights reserved.</p>
+    <p>© ${new Date().getFullYear()} Letitrip. All rights reserved.</p>
   </div>
 </body>
 </html>
@@ -353,10 +353,10 @@ The item was not sold. You may want to contact the seller to negotiate a deal, o
 
 View Auction: ${auctionUrl}
 
-Thank you for using JustForView!
+Thank you for using Letitrip!
 
 Best regards,
-The JustForView Team
+The Letitrip Team
 `;
 
     const bidderHtml = `
@@ -414,13 +414,13 @@ The JustForView Team
     </div>
     
     <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-      Thank you for using JustForView!<br>
-      <strong>The JustForView Team</strong>
+      Thank you for using Letitrip!<br>
+      <strong>The Letitrip Team</strong>
     </p>
   </div>
   
   <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
-    <p>© ${new Date().getFullYear()} JustForView. All rights reserved.</p>
+    <p>© ${new Date().getFullYear()} Letitrip. All rights reserved.</p>
   </div>
 </body>
 </html>
@@ -463,10 +463,10 @@ What's Next:
 
 View Your Order: ${ordersUrl}
 
-Thank you for using JustForView!
+Thank you for using Letitrip!
 
 Best regards,
-The JustForView Team
+The Letitrip Team
 `;
 
     const winnerHtml = `
@@ -526,13 +526,13 @@ The JustForView Team
     </div>
     
     <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-      Thank you for using JustForView!<br>
-      <strong>The JustForView Team</strong>
+      Thank you for using Letitrip!<br>
+      <strong>The Letitrip Team</strong>
     </p>
   </div>
   
   <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
-    <p>© ${new Date().getFullYear()} JustForView. All rights reserved.</p>
+    <p>© ${new Date().getFullYear()} Letitrip. All rights reserved.</p>
   </div>
 </body>
 </html>
@@ -553,10 +553,10 @@ An order has been created automatically. Once the buyer completes payment, you'l
 
 View Auction: ${auctionUrl}
 
-Thank you for using JustForView!
+Thank you for using Letitrip!
 
 Best regards,
-The JustForView Team
+The Letitrip Team
 `;
 
     const sellerHtml = `
@@ -614,13 +614,13 @@ The JustForView Team
     </div>
     
     <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-      Thank you for using JustForView!<br>
-      <strong>The JustForView Team</strong>
+      Thank you for using Letitrip!<br>
+      <strong>The Letitrip Team</strong>
     </p>
   </div>
   
   <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
-    <p>© ${new Date().getFullYear()} JustForView. All rights reserved.</p>
+    <p>© ${new Date().getFullYear()} Letitrip. All rights reserved.</p>
   </div>
 </body>
 </html>

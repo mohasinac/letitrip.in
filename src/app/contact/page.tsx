@@ -90,10 +90,10 @@ export default function ContactPage() {
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300">
                       <a
-                        href="mailto:support@justforview.in"
+                        href="mailto:support@letitrip.in"
                         className="text-blue-600 dark:text-blue-400 hover:underline"
                       >
-                        support@justforview.in
+                        support@letitrip.in
                       </a>
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">

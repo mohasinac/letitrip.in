@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
       await db.collection(COLLECTIONS.HERO_SLIDES).doc().set({
         title: `${DEMO_PREFIX}${heroSlideData[i].title}`,
         subtitle: heroSlideData[i].subtitle,
-        description: `Experience the best ${heroSlideData[i].title.toLowerCase()} at JustForView`,
+        description: `Experience the best ${heroSlideData[i].title.toLowerCase()} at Letitrip`,
         image_url: HERO_IMAGES[i % HERO_IMAGES.length],
         mobile_image_url: HERO_MOBILE_IMAGES[i % HERO_MOBILE_IMAGES.length],
         video_url: hasVideo ? HERO_VIDEOS[i % HERO_VIDEOS.length] : null,
@@ -317,7 +317,7 @@ export async function POST(request: NextRequest) {
           ticketNumber: `${DEMO_PREFIX}TKT-${String(t + 1).padStart(5, "0")}`,
           userId: buyers[t % buyers.length].id,
           userName: buyers[t % buyers.length].name,
-          userEmail: `${buyers[t % buyers.length].name.toLowerCase().replace(/\s/g, ".")}@demo.justforview.in`,
+          userEmail: `${buyers[t % buyers.length].name.toLowerCase().replace(/\s/g, ".")}@demo.letitrip.in`,
           category: ticketData.category,
           subject: ticketData.subject,
           description: `I need help with: ${ticketData.subject}. Please assist me as soon as possible.`,

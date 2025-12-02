@@ -1,5 +1,5 @@
 /**
- * Firebase Functions for JustForView.in
+ * Firebase Functions for Letitrip.in
  *
  * Scheduled Functions:
  * - processAuctions: Runs every minute to process ended auctions

@@ -118,11 +118,11 @@ export function ProductDescription({
                   <p>
                     Need help? Contact us at{" "}
                     <a
-                      href="mailto:support@justforview.in"
-                      className="text-primary hover:underline"
+                      href="mailto:support@letitrip.in"
+                      className="text-blue-600 hover:underline"
                     >
-                      support@justforview.in
-                    </a>{" "}
+                      support@letitrip.in
+                    </a>
                     or call{" "}
                     <a
                       href="tel:+918000000000"

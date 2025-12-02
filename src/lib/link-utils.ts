@@ -92,7 +92,7 @@ export function getBaseUrl(): string {
  * isInternalLink('/products') // true
  * isInternalLink('/products?q=test') // true
  * isInternalLink('#section') // true
- * isInternalLink('https://justforview.in/products') // true (same domain)
+ * isInternalLink('https://letitrip.in/products') // true (same domain)
  * isInternalLink('https://google.com') // false
  */
 export function isInternalLink(href: string): boolean {
@@ -134,7 +134,7 @@ export function isInternalLink(href: string): boolean {
  * @example
  * isExternalLink('https://google.com') // true
  * isExternalLink('/products') // false
- * isExternalLink('https://justforview.in/products') // false (same domain)
+ * isExternalLink('https://letitrip.in/products') // false (same domain)
  */
 export function isExternalLink(href: string): boolean {
   if (!href || typeof href !== 'string') {
@@ -232,9 +232,9 @@ export function getLinkType(href: string): LinkType {
  * @returns The fully resolved URL
  * 
  * @example
- * resolveUrl('/products') // 'https://justforview.in/products'
- * resolveUrl('/search?q=test') // 'https://justforview.in/search?q=test'
- * resolveUrl('#section') // 'https://justforview.in#section'
+ * resolveUrl('/products') // 'https://letitrip.in/products'
+ * resolveUrl('/search?q=test') // 'https://letitrip.in/search?q=test'
+ * resolveUrl('#section') // 'https://letitrip.in#section'
  * resolveUrl('https://google.com') // 'https://google.com' (unchanged)
  */
 export function resolveUrl(href: string, baseUrl?: string): string {

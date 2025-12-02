@@ -1,6 +1,6 @@
 {
   "name": "functions",
-  "description": "Firebase Functions for JustForView.in",
+  "description": "Firebase Functions for Letitrip.in",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "lintfix": "eslint --fix .",

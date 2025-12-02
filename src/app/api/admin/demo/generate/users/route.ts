@@ -78,7 +78,7 @@ export async function POST() {
         const firstName = INDIAN_FIRST_NAMES[userIndex % INDIAN_FIRST_NAMES.length];
         const lastName = INDIAN_LAST_NAMES[userIndex % INDIAN_LAST_NAMES.length];
         const fullName = `${firstName} ${lastName}`;
-        const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${userIndex}@demo.justforview.in`;
+        const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${userIndex}@demo.letitrip.in`;
         const city = INDIAN_CITIES[userIndex % INDIAN_CITIES.length];
 
         const userRef = db.collection(COLLECTIONS.USERS).doc();

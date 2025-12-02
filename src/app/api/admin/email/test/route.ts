@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     // Send test email
     const result = await emailService.send({
       to,
-      subject: "Test Email from JustForView - Resend Integration",
+      subject: "Test Email from Letitrip - Resend Integration",
       html: `
 <!DOCTYPE html>
 <html>
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
     
     <p style="font-size: 12px; color: #999; text-align: center;">
-      © ${new Date().getFullYear()} JustForView. All rights reserved.<br>
+      © ${new Date().getFullYear()} Letitrip. All rights reserved.<br>
       India's Premium Auction & Marketplace Platform
     </p>
   </div>

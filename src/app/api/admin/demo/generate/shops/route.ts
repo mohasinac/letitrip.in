@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
         slug: shopSlug,
         description: `Premium Beyblade shop - Attack, Defense, Stamina types and accessories. Authentic Takara Tomy and Hasbro products!`,
         tagline: ["Let it rip!", "Authentic Beyblades only", "Fast shipping worldwide", "Blader's choice"][i % 4],
-        email: `shop${i + 1}@demo.justforview.in`,
+        email: `shop${i + 1}@demo.letitrip.in`,
         phone: `+91-${8000000000 + i}`,
         whatsapp: `+91-${8000000000 + i}`,
         address: `${100 + i} ${STREETS[i % STREETS.length]}, ${city.city}, ${city.state} ${city.pincode}`,
