@@ -720,23 +720,28 @@ Fixed auction detail page to always show sections with helpful empty states:
 **Status**: Complete
 
 **Files Changed**:
+
 - `src/app/api/admin/demo/generate/auctions/route.ts` - Fixed date generation logic
 
 **Changes**:
+
 - All demo auctions are now **LIVE** (no ended auctions)
 - Start dates: 0-2 days in the past
 - End dates: **3-7 days in the future** (previously up to 14 days)
 - All auctions have "active" status
 - Bid counts: 1-15 for active auctions
-- Current bid: Starting bid * (1 + random 0-50%)
+- Current bid: Starting bid \* (1 + random 0-50%)
 
 **Before/After**:
+
 ```typescript
 // Before: 30% ended, 70% live with random dates up to 14 days
 const isEnded = Math.random() < 0.3;
 
 // After: All live, consistent timeframes
-const startDate = new Date(now - Math.floor(Math.random() * 2) * 24 * 60 * 60 * 1000);
+const startDate = new Date(
+  now - Math.floor(Math.random() * 2) * 24 * 60 * 60 * 1000
+);
 const daysUntilEnd = 3 + Math.floor(Math.random() * 5); // 3-7 days
 const endDate = new Date(now + daysUntilEnd * 24 * 60 * 60 * 1000);
 ```
@@ -748,6 +753,7 @@ const endDate = new Date(now + daysUntilEnd * 24 * 60 * 60 * 1000);
 **Status**: Complete (All Phases)
 
 **Components Created**:
+
 - `src/components/media/ImageEditor.tsx` - Crop, zoom, rotate with tabbed interface
 - `src/components/media/VideoThumbnailGenerator.tsx` - Client-side thumbnail generation
 - `src/components/media/MediaEditorModal.tsx` - Modal wrapper for editing
@@ -756,6 +762,7 @@ const endDate = new Date(now + daysUntilEnd * 24 * 60 * 60 * 1000);
 **Features Implemented**:
 
 1. **Image Editor**:
+
    - Crop with aspect ratio presets (1:1, 4:3, 16:9, free)
    - Zoom control (1-3x)
    - Rotation (90° increments)
@@ -763,6 +770,7 @@ const endDate = new Date(now + daysUntilEnd * 24 * 60 * 60 * 1000);
    - Uses `react-easy-crop` library
 
 2. **Focus Point Selection**:
+
    - Click/tap to set focus point on image
    - Visual crosshair indicator
    - Mobile preview showing cropped result
@@ -776,6 +784,7 @@ const endDate = new Date(now + daysUntilEnd * 24 * 60 * 60 * 1000);
    - Thumbnail saved to MediaMetadata
 
 **Type Updates**:
+
 ```typescript
 // EditorState type includes focusPoint
 interface EditorState {
@@ -792,6 +801,7 @@ interface MediaMetadata {
 ```
 
 **Integration**:
+
 - `MediaUploader` component has `enableEditing` prop
 - Edit button on `MediaPreviewCard` triggers editor
 - `onFileEdited` callback passes edited image and focus point

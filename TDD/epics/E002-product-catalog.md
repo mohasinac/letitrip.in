@@ -522,6 +522,7 @@ interface ProductBE {
 **Status**: Complete - Full implementation with localStorage sync
 
 **Files Implemented**:
+
 - `src/constants/comparison.ts` - Max 4 products, comparison fields
 - `src/services/comparison.service.ts` - Add/remove/clear comparison
 - `src/contexts/ComparisonContext.tsx` - React context provider
@@ -531,6 +532,7 @@ interface ProductBE {
 - `src/components/cards/ProductCard.tsx` - Integrated compare button
 
 **Features**:
+
 - Add up to 4 products to comparison
 - Floating comparison bar at bottom of screen
 - Side-by-side table with price/rating/specs comparison
@@ -544,6 +546,7 @@ interface ProductBE {
 **Status**: Complete - Auto-tracking with 30-day expiry
 
 **Files Implemented**:
+
 - `src/services/viewing-history.service.ts` - Track/fetch/clear history
 - `src/contexts/ViewingHistoryContext.tsx` - React context provider
 - `src/components/products/RecentlyViewedWidget.tsx` - Horizontal carousel widget
@@ -552,6 +555,7 @@ interface ProductBE {
 - `src/app/page.tsx` - Shows RecentlyViewedWidget on homepage
 
 **Features**:
+
 - Automatic tracking when viewing product detail pages
 - Recently viewed widget (horizontal scrollable, max 8 items)
 - Full history page with remove individual/clear all
@@ -615,11 +619,13 @@ Fixed `SimilarProducts` and `SellerProducts` components:
 **Status**: Phase 1 & 2 Complete
 
 **Strategy**: Use slug as Firestore document ID for SEO consistency
+
 - `doc.id === slug` for all entities
 - No need to query by slug - direct document access: `doc(slug).get()`
 - Eliminates id vs slug confusion
 
 **Files Changed**:
+
 - `src/app/api/products/route.ts` - Uses `doc(slug).set()` instead of `add()`
 - `src/app/api/products/[slug]/route.ts` - Direct doc fetch with query fallback
 - `src/app/api/shops/route.ts` - Uses `doc(slug).set()`
@@ -630,6 +636,7 @@ Fixed `SimilarProducts` and `SellerProducts` components:
 - `src/app/api/blog/route.ts` - Uses `doc(slug).set()`
 
 **Pattern**:
+
 ```typescript
 // Creating: Slug becomes document ID
 await collection.doc(slug).set({ ...data, slug });
@@ -637,7 +644,7 @@ await collection.doc(slug).set({ ...data, slug });
 // Fetching: Direct access first, fallback for old data
 let doc = await collection.doc(slug).get();
 if (!doc.exists) {
-  const snapshot = await collection.where('slug', '==', slug).limit(1).get();
+  const snapshot = await collection.where("slug", "==", slug).limit(1).get();
   doc = snapshot.docs[0];
 }
 ```
@@ -647,16 +654,19 @@ if (!doc.exists) {
 **Status**: Complete
 
 **Files Created**:
+
 - `src/constants/limits.ts` - All numeric limits (pagination, products, uploads)
 - `src/constants/statuses.ts` - All status enums with types, labels, colors
 
 **Benefits**:
+
 - Centralized limits (PAGINATION.DEFAULT_PAGE_SIZE, PRODUCT_LIMITS, UPLOAD_LIMITS)
 - Centralized statuses (PRODUCT_STATUS, ORDER_STATUS, AUCTION_STATUS)
 - Status labels and colors for consistent UI
 - Services now import from constants instead of hardcoding
 
 **Files Updated**:
+
 - Product, auction, blog services use LIMITS constants
 - All services use STATUS enums consistently
 - Replaced hardcoded pagination values
