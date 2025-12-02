@@ -17,7 +17,8 @@ type CleanupStep =
   | "bids"
   | "reviews"
   | "orders"
-  | "extras";
+  | "extras"
+  | "settings";
 
 export async function DELETE(
   request: NextRequest,
@@ -244,6 +245,37 @@ export async function DELETE(
         // Delete payouts by shop
         if (shopIds.length > 0) {
           deletedCount += await deleteByRelatedIds("payouts", "shopId", shopIds);
+        }
+        break;
+      }
+
+      case "settings": {
+        // Delete demo settings collections
+        const settingsCollections = [
+          "site_settings",
+          "payment_settings",
+          "shipping_zones",
+          "shipping_carriers",
+          "email_templates",
+          "email_settings",
+          "notification_settings",
+          "feature_flags",
+          "business_rules",
+          "riplimit_settings",
+          "analytics_settings",
+        ];
+
+        for (const collection of settingsCollections) {
+          const snapshot = await db.collection(collection).get();
+          let count = 0;
+          for (const doc of snapshot.docs) {
+            await doc.ref.delete();
+            count++;
+          }
+          if (count > 0) {
+            breakdown.push({ collection, count });
+            deletedCount += count;
+          }
         }
         break;
       }

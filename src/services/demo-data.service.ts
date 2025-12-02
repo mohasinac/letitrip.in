@@ -19,10 +19,12 @@ export type DemoStep =
   | "bids"
   | "reviews"
   | "orders"
-  | "extras";
+  | "extras"
+  | "settings";
 
 // Cleanup steps are in reverse order (to handle dependencies)
 export const CLEANUP_STEPS: DemoStep[] = [
+  "settings",
   "extras",
   "orders",
   "reviews",
@@ -44,6 +46,7 @@ export const GENERATION_STEPS: DemoStep[] = [
   "reviews",
   "orders",
   "extras",
+  "settings",
 ];
 
 export interface DemoDataSummary {
@@ -57,6 +60,11 @@ export interface DemoDataSummary {
   payments: number;
   shipments: number;
   reviews?: number;
+  heroSlides?: number;
+  favorites?: number;
+  carts?: number;
+  notifications?: number;
+  settings?: number;
   prefix: string;
   createdAt: string;
 }
@@ -142,6 +150,10 @@ class DemoDataService {
     products?: string[];
   }): Promise<StepResult> {
     return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("extras"), params);
+  }
+
+  async generateSettings(): Promise<StepResult> {
+    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("settings"), {});
   }
 
   /**

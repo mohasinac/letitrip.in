@@ -105,6 +105,12 @@ const GENERATION_STEPS: {
     icon: Settings,
     description: "Hero slides, carts, etc.",
   },
+  {
+    id: "settings",
+    label: "Settings",
+    icon: Settings,
+    description: "Admin content settings",
+  },
 ];
 
 // Cleanup steps configuration (reverse order for dependencies)
@@ -114,6 +120,12 @@ const CLEANUP_STEP_CONFIG: {
   icon: typeof Package;
   description: string;
 }[] = [
+  {
+    id: "settings",
+    label: "Settings",
+    icon: Settings,
+    description: "Admin content settings",
+  },
   {
     id: "extras",
     label: "Extras",
