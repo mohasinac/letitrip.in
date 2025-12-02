@@ -91,7 +91,7 @@ export default function CreateCategoryWizardPage() {
 
     if (!/^[a-z0-9-]+$/.test(slug)) {
       setSlugError(
-        "Slug can only contain lowercase letters, numbers, and hyphens",
+        "Slug can only contain lowercase letters, numbers, and hyphens"
       );
     } else {
       setSlugError("");
@@ -232,8 +232,8 @@ export default function CreateCategoryWizardPage() {
                       currentStep > step.id
                         ? "border-green-500 bg-green-500 text-white"
                         : currentStep === step.id
-                          ? "border-primary bg-primary text-white"
-                          : "border-gray-300 bg-white text-gray-400"
+                        ? "border-primary bg-primary text-white"
+                        : "border-gray-300 bg-white text-gray-400"
                     }`}
                   >
                     {currentStep > step.id ? (
@@ -384,10 +384,6 @@ export default function CreateCategoryWizardPage() {
                       alt="CategoryFE preview"
                       fill
                       className="object-cover rounded-lg border border-gray-200"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          "/placeholder-CategoryFE.png";
-                      }}
                     />
                   </div>
                 </div>
@@ -594,7 +590,7 @@ export default function CreateCategoryWizardPage() {
                     <p className="font-medium text-gray-900 mt-1">
                       {formData.parentCategory
                         ? categories.find(
-                            (c) => c.id === formData.parentCategory,
+                            (c) => c.id === formData.parentCategory
                           )?.name
                         : "Top Level"}
                     </p>

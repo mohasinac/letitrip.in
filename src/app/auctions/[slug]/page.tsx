@@ -298,7 +298,7 @@ export default function AuctionDetailPage() {
                 <div className="aspect-video w-full bg-gray-100 relative group">
                   <OptimizedImage
                     src={auction.images[selectedImage]}
-                    alt={auction.name}
+                    alt={auction.name || "Auction"}
                     fill
                     className="object-contain transition-transform duration-300 group-hover:scale-105"
                   />
@@ -410,7 +410,7 @@ export default function AuctionDetailPage() {
                       {a.images?.[0] && (
                         <OptimizedImage
                           src={a.images[0]}
-                          alt={a.name}
+                          alt={a.name || "Auction"}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-200"
                         />
@@ -458,7 +458,7 @@ export default function AuctionDetailPage() {
                       {a.images?.[0] && (
                         <OptimizedImage
                           src={a.images[0]}
-                          alt={a.name}
+                          alt={a.name || "Auction"}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-200"
                         />

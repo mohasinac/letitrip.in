@@ -75,7 +75,7 @@ export function PaymentLogo({
       width={50}
       height={20}
       className={className}
-      style={{ objectFit: "contain" }}
+      objectFit="contain"
       onError={() => setError(true)}
     />
   );

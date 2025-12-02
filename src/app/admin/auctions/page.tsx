@@ -545,7 +545,7 @@ export default function AdminAuctionsPage() {
                                 <div className="relative h-10 w-10">
                                   <OptimizedImage
                                     src={auction.images[0]}
-                                    alt={auction.name}
+                                    alt={auction.name || "Auction image"}
                                     fill
                                     className="rounded object-cover"
                                   />
@@ -658,7 +658,7 @@ export default function AdminAuctionsPage() {
                         <div className="relative w-full h-48">
                           <OptimizedImage
                             src={auction.images[0]}
-                            alt={auction.name}
+                            alt={auction.name || "Auction"}
                             fill
                             className="object-cover"
                           />

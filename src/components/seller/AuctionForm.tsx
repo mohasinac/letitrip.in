@@ -8,14 +8,13 @@ import RichTextEditor from "@/components/common/RichTextEditor";
 import type { ProductAuctionFormFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 import { auctionsService } from "@/services/auctions.service";
+import { Card, FormActions } from "@/components/ui";
 import {
-  Card,
-  Input,
-  Select,
-  Textarea,
-  FormActions,
-  SelectOption,
-} from "@/components/ui";
+  FormField,
+  FormInput,
+  FormSelect,
+  FormTextarea,
+} from "@/components/forms";
 
 interface AuctionFormProps {
   mode: "create" | "edit";
@@ -25,7 +24,7 @@ interface AuctionFormProps {
   isSubmitting?: boolean;
 }
 
-const STATUS_OPTIONS: SelectOption[] = [
+const STATUS_OPTIONS = [
   { value: AuctionStatus.DRAFT, label: "Draft" },
   { value: AuctionStatus.SCHEDULED, label: "Scheduled" },
   { value: AuctionStatus.ACTIVE, label: "Active" },
@@ -150,14 +149,14 @@ export default function AuctionForm({
       {/* Basic Information */}
       <Card title="Basic Information">
         <div className="space-y-4">
-          <Input
-            label="Auction Name"
-            required
-            value={formData.name}
-            onChange={(e) => handleChange("name", e.target.value)}
-            placeholder="e.g., Vintage Watch Collection"
-            disabled={isSubmitting}
-          />
+          <FormField label="Auction Name" required>
+            <FormInput
+              value={formData.name}
+              onChange={(e) => handleChange("name", e.target.value)}
+              placeholder="e.g., Vintage Watch Collection"
+              disabled={isSubmitting}
+            />
+          </FormField>
 
           <div id="auction-slug-wrapper">
             <label
@@ -205,31 +204,34 @@ export default function AuctionForm({
       {/* Bidding Details */}
       <Card title="Bidding Details">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Input
-            label="Starting Bid (₹)"
-            required
-            type="number"
-            value={formData.startingBid}
-            onChange={(e) =>
-              handleChange("startingBid", parseFloat(e.target.value))
-            }
-            min="1"
-            step="1"
-            disabled={isSubmitting}
-          />
+          <FormField label="Starting Bid (₹)" required>
+            <FormInput
+              type="number"
+              value={formData.startingBid}
+              onChange={(e) =>
+                handleChange("startingBid", parseFloat(e.target.value))
+              }
+              min={1}
+              step={1}
+              disabled={isSubmitting}
+            />
+          </FormField>
 
-          <Input
+          <FormField
             label="Reserve Price (₹)"
-            type="number"
-            value={formData.reservePrice}
-            onChange={(e) =>
-              handleChange("reservePrice", parseFloat(e.target.value) || 0)
-            }
-            min="0"
-            step="1"
-            helperText="Minimum price for the item to be sold (optional)"
-            disabled={isSubmitting}
-          />
+            hint="Minimum price for the item to be sold (optional)"
+          >
+            <FormInput
+              type="number"
+              value={formData.reservePrice}
+              onChange={(e) =>
+                handleChange("reservePrice", parseFloat(e.target.value) || 0)
+              }
+              min={0}
+              step={1}
+              disabled={isSubmitting}
+            />
+          </FormField>
         </div>
       </Card>
 
@@ -269,55 +271,55 @@ export default function AuctionForm({
       {/* Media */}
       <Card title="Media">
         <div className="space-y-4">
-          <Textarea
+          <FormField
             label="Images (URLs, comma-separated)"
-            value={formData.images.join(", ")}
-            onChange={(e) =>
-              handleChange(
-                "images",
-                e.target.value
-                  .split(",")
-                  .map((s) => s.trim())
-                  .filter(Boolean)
-              )
-            }
-            rows={3}
-            placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
-            helperText="Enter image URLs separated by commas (max 10)"
-            disabled={isSubmitting}
-          />
+            hint="Enter image URLs separated by commas (max 10)"
+          >
+            <FormTextarea
+              value={formData.images.join(", ")}
+              onChange={(e) =>
+                handleChange(
+                  "images",
+                  e.target.value
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean)
+                )
+              }
+              rows={3}
+              placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+              disabled={isSubmitting}
+            />
+          </FormField>
 
-          <Textarea
+          <FormField
             label="Videos (URLs, comma-separated)"
-            value={(formData.videos || []).join(", ")}
-            onChange={(e) =>
-              handleChange(
-                "videos",
-                e.target.value
-                  .split(",")
-                  .map((s) => s.trim())
-                  .filter(Boolean)
-              )
-            }
-            rows={2}
-            placeholder="https://example.com/video1.mp4"
-            helperText="Enter video URLs separated by commas (optional, max 3)"
-            disabled={isSubmitting}
-          />
+            hint="Enter video URLs separated by commas (optional, max 3)"
+          >
+            <FormTextarea
+              value={(formData.videos || []).join(", ")}
+              onChange={(e) =>
+                handleChange(
+                  "videos",
+                  e.target.value
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean)
+                )
+              }
+              rows={2}
+              placeholder="https://example.com/video1.mp4"
+              disabled={isSubmitting}
+            />
+          </FormField>
         </div>
       </Card>
 
       {/* Status */}
       <Card title="Status">
-        <Select
+        <FormField
           label="Auction Status"
-          value={formData.status}
-          onChange={(e) =>
-            handleChange("status", e.target.value as AuctionStatus)
-          }
-          options={STATUS_OPTIONS}
-          disabled={isSubmitting}
-          helperText={
+          hint={
             formData.status === AuctionStatus.DRAFT
               ? "Draft auctions are not visible to buyers"
               : formData.status === AuctionStatus.SCHEDULED
@@ -328,7 +330,16 @@ export default function AuctionForm({
               ? "Auction has ended"
               : "Auction has been cancelled"
           }
-        />
+        >
+          <FormSelect
+            value={formData.status}
+            onChange={(e) =>
+              handleChange("status", e.target.value as AuctionStatus)
+            }
+            options={STATUS_OPTIONS}
+            disabled={isSubmitting}
+          />
+        </FormField>
       </Card>
 
       {/* Submit Buttons */}

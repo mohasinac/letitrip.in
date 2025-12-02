@@ -270,7 +270,7 @@ const AuctionCardComponent = ({
         {currentImage ? (
           <OptimizedImage
             src={currentImage}
-            alt={auction.name}
+            alt={auction.name || "Auction"}
             fill
             quality={85}
             objectFit="cover"

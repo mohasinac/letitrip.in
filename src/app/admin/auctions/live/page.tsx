@@ -152,7 +152,7 @@ function LiveAuctionRow({
             {auction.images && auction.images[0] ? (
               <OptimizedImage
                 src={auction.images[0]}
-                alt={auction.name}
+                alt={auction.name || "Auction image"}
                 fill
                 className="object-cover"
               />

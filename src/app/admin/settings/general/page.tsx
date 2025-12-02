@@ -21,6 +21,7 @@ import {
   settingsService,
   type GeneralSettings,
 } from "@/services/settings.service";
+import { FormInput, FormTextarea, FormCheckbox } from "@/components/forms";
 
 export default function AdminGeneralSettingsPage() {
   const router = useRouter();
@@ -209,71 +210,44 @@ export default function AdminGeneralSettingsPage() {
               Basic Information
             </h2>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Site Name *
-              </label>
-              <input
-                type="text"
-                value={settings.siteName}
-                onChange={(e) => updateField("siteName", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
+            <FormInput
+              label="Site Name"
+              value={settings.siteName}
+              onChange={(e) => updateField("siteName", e.target.value)}
+              required
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Tagline
-              </label>
-              <input
-                type="text"
-                value={settings.siteTagline}
-                onChange={(e) => updateField("siteTagline", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="A short catchy tagline"
-              />
-            </div>
+            <FormInput
+              label="Tagline"
+              value={settings.siteTagline}
+              onChange={(e) => updateField("siteTagline", e.target.value)}
+              placeholder="A short catchy tagline"
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Site Description
-              </label>
-              <textarea
-                value={settings.siteDescription}
-                onChange={(e) => updateField("siteDescription", e.target.value)}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Brief description for SEO and meta tags"
-              />
-            </div>
+            <FormTextarea
+              label="Site Description"
+              value={settings.siteDescription}
+              onChange={(e) => updateField("siteDescription", e.target.value)}
+              rows={3}
+              placeholder="Brief description for SEO and meta tags"
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Logo URL
-                </label>
-                <input
-                  type="url"
-                  value={settings.logoUrl}
-                  onChange={(e) => updateField("logoUrl", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://example.com/logo.png"
-                />
-              </div>
+              <FormInput
+                label="Logo URL"
+                type="url"
+                value={settings.logoUrl}
+                onChange={(e) => updateField("logoUrl", e.target.value)}
+                placeholder="https://example.com/logo.png"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Favicon URL
-                </label>
-                <input
-                  type="url"
-                  value={settings.faviconUrl}
-                  onChange={(e) => updateField("faviconUrl", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://example.com/favicon.ico"
-                />
-              </div>
+              <FormInput
+                label="Favicon URL"
+                type="url"
+                value={settings.faviconUrl}
+                onChange={(e) => updateField("faviconUrl", e.target.value)}
+                placeholder="https://example.com/favicon.ico"
+              />
             </div>
           </div>
         )}
@@ -286,57 +260,37 @@ export default function AdminGeneralSettingsPage() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Contact Email *
-                </label>
-                <input
-                  type="email"
-                  value={settings.contactEmail}
-                  onChange={(e) => updateField("contactEmail", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
+              <FormInput
+                label="Contact Email"
+                type="email"
+                value={settings.contactEmail}
+                onChange={(e) => updateField("contactEmail", e.target.value)}
+                required
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Support Email
-                </label>
-                <input
-                  type="email"
-                  value={settings.supportEmail}
-                  onChange={(e) => updateField("supportEmail", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                value={settings.contactPhone}
-                onChange={(e) => updateField("contactPhone", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="+91 98765 43210"
+              <FormInput
+                label="Support Email"
+                type="email"
+                value={settings.supportEmail}
+                onChange={(e) => updateField("supportEmail", e.target.value)}
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Business Address
-              </label>
-              <textarea
-                value={settings.address}
-                onChange={(e) => updateField("address", e.target.value)}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter your business address"
-              />
-            </div>
+            <FormInput
+              label="Phone Number"
+              type="tel"
+              value={settings.contactPhone}
+              onChange={(e) => updateField("contactPhone", e.target.value)}
+              placeholder="+91 98765 43210"
+            />
+
+            <FormTextarea
+              label="Business Address"
+              value={settings.address}
+              onChange={(e) => updateField("address", e.target.value)}
+              rows={3}
+              placeholder="Enter your business address"
+            />
           </div>
         )}
 
@@ -348,79 +302,46 @@ export default function AdminGeneralSettingsPage() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  <span className="inline-flex items-center gap-2">
-                    <span>📘</span> Facebook
-                  </span>
-                </label>
-                <input
-                  type="url"
-                  value={settings.socialLinks.facebook}
-                  onChange={(e) => updateSocialLink("facebook", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://facebook.com/yourpage"
-                />
-              </div>
+              <FormInput
+                label="📘 Facebook"
+                type="url"
+                value={settings.socialLinks.facebook}
+                onChange={(e) => updateSocialLink("facebook", e.target.value)}
+                placeholder="https://facebook.com/yourpage"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  <span className="inline-flex items-center gap-2">
-                    <span>🐦</span> Twitter/X
-                  </span>
-                </label>
-                <input
-                  type="url"
-                  value={settings.socialLinks.twitter}
-                  onChange={(e) => updateSocialLink("twitter", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://twitter.com/yourhandle"
-                />
-              </div>
+              <FormInput
+                label="🐦 Twitter/X"
+                type="url"
+                value={settings.socialLinks.twitter}
+                onChange={(e) => updateSocialLink("twitter", e.target.value)}
+                placeholder="https://twitter.com/yourhandle"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  <span className="inline-flex items-center gap-2">
-                    <span>📸</span> Instagram
-                  </span>
-                </label>
-                <input
-                  type="url"
-                  value={settings.socialLinks.instagram}
-                  onChange={(e) =>
-                    updateSocialLink("instagram", e.target.value)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://instagram.com/yourprofile"
-                />
-              </div>
+              <FormInput
+                label="📸 Instagram"
+                type="url"
+                value={settings.socialLinks.instagram}
+                onChange={(e) =>
+                  updateSocialLink("instagram", e.target.value)
+                }
+                placeholder="https://instagram.com/yourprofile"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  <span className="inline-flex items-center gap-2">
-                    <span>💼</span> LinkedIn
-                  </span>
-                </label>
-                <input
-                  type="url"
-                  value={settings.socialLinks.linkedin}
-                  onChange={(e) => updateSocialLink("linkedin", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://linkedin.com/company/yourcompany"
-                />
-              </div>
+              <FormInput
+                label="💼 LinkedIn"
+                type="url"
+                value={settings.socialLinks.linkedin}
+                onChange={(e) => updateSocialLink("linkedin", e.target.value)}
+                placeholder="https://linkedin.com/company/yourcompany"
+              />
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  <span className="inline-flex items-center gap-2">
-                    <span>🎬</span> YouTube
-                  </span>
-                </label>
-                <input
+                <FormInput
+                  label="🎬 YouTube"
                   type="url"
                   value={settings.socialLinks.youtube}
                   onChange={(e) => updateSocialLink("youtube", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="https://youtube.com/@yourchannel"
                 />
               </div>

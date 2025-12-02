@@ -8,6 +8,7 @@ export interface FormTextareaProps
   label?: string;
   error?: string;
   helperText?: string;
+  leftIcon?: React.ReactNode;
   fullWidth?: boolean;
   showCharCount?: boolean;
   compact?: boolean;
@@ -19,6 +20,7 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
       label,
       error,
       helperText,
+      leftIcon,
       className,
       fullWidth = true,
       showCharCount = false,
@@ -46,36 +48,45 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
           </label>
         )}
 
-        <textarea
-          ref={ref}
-          id={textareaId}
-          rows={rows}
-          value={value}
-          maxLength={maxLength}
-          className={cn(
-            "w-full rounded-lg border text-sm transition-colors duration-200",
-            compact ? "px-3 py-1.5" : "px-3 py-2",
-            "focus:outline-none focus:ring-1",
-            error
-              ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-              : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500",
-            "bg-white dark:bg-gray-800 text-gray-900 dark:text-white",
-            "placeholder:text-gray-400 dark:placeholder:text-gray-500",
-            props.disabled &&
-              "bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-60",
-            "resize-y",
-            className
+        <div className="relative">
+          {leftIcon && (
+            <div className="absolute left-3 top-3 text-gray-400 dark:text-gray-500 pointer-events-none">
+              {leftIcon}
+            </div>
           )}
-          aria-invalid={!!error}
-          aria-describedby={
-            error
-              ? `${textareaId}-error`
-              : helperText
-              ? `${textareaId}-helper`
-              : undefined
-          }
-          {...props}
-        />
+
+          <textarea
+            ref={ref}
+            id={textareaId}
+            rows={rows}
+            value={value}
+            maxLength={maxLength}
+            className={cn(
+              "w-full rounded-lg border text-sm transition-colors duration-200",
+              compact ? "px-3 py-1.5" : "px-3 py-2",
+              "focus:outline-none focus:ring-1",
+              error
+                ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500",
+              "bg-white dark:bg-gray-800 text-gray-900 dark:text-white",
+              "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+              props.disabled &&
+                "bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-60",
+              "resize-y",
+              leftIcon && "pl-10",
+              className
+            )}
+            aria-invalid={!!error}
+            aria-describedby={
+              error
+                ? `${textareaId}-error`
+                : helperText
+                ? `${textareaId}-helper`
+                : undefined
+            }
+            {...props}
+          />
+        </div>
 
         {/* Error, Helper Text, or Char Count */}
         <div className="flex items-center justify-between mt-1">

@@ -157,14 +157,6 @@ export default function Footer() {
                     width={50}
                     height={20}
                     className="object-contain"
-                    onError={(e) => {
-                      // Fallback to text if image fails to load
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = "none";
-                      if (target.parentElement) {
-                        target.parentElement.textContent = method.name;
-                      }
-                    }}
                   />
                 ) : (
                   method.name
