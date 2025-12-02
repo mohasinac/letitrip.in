@@ -61,40 +61,44 @@ Updated barrel exports:
 - ✅ `src/components/ui/index.ts`
 - ✅ `src/components/mobile/index.ts`
 
-### Phase 2: Key Components Migrated ✅
+### Phase 2: Page Migrations Complete ✅
 
-| File                              | Before       | After            | Status |
-| --------------------------------- | ------------ | ---------------- | ------ |
-| `seller/settings/page.tsx`        | 41 raw tags  | 3 (toggles only) | ✅     |
-| `admin/settings/general/page.tsx` | 16 raw tags  | 1 (toggle only)  | ✅     |
-| `seller/ShopForm.tsx`             | ~10 raw tags | 0                | ✅     |
-| `seller/AuctionForm.tsx`          | ~10 raw tags | 0                | ✅     |
-| `admin/CategoryForm.tsx`          | ~8 raw tags  | 0                | ✅     |
+| File                                   | Before       | After               | Status |
+| -------------------------------------- | ------------ | ------------------- | ------ |
+| `seller/settings/page.tsx`             | 41 raw tags  | 3 (toggles only)    | ✅     |
+| `admin/settings/general/page.tsx`      | 16 raw tags  | 1 (toggle only)     | ✅     |
+| `admin/settings/payment/page.tsx`      | 13 raw tags  | 5 (toggles only)    | ✅     |
+| `admin/settings/email/page.tsx`        | 9 raw tags   | 4 (password toggle) | ✅     |
+| `admin/hero-slides/create/page.tsx`    | 7 raw tags   | 3 (RichText/Media)  | ✅     |
+| `admin/hero-slides/[id]/edit/page.tsx` | 6 raw tags   | 3 (RichText/Media)  | ✅     |
+| `admin/orders/[id]/page.tsx`           | 6 raw tags   | 0                   | ✅     |
+| `admin/users/page.tsx`                 | 2 raw tags   | 0                   | ✅     |
+| `admin/riplimit/page.tsx`              | 2 raw tags   | 0                   | ✅     |
+| `admin/products/[id]/edit/page.tsx`    | 20+ raw tags | 2 (tags input)      | ✅     |
+| `admin/categories/create/page.tsx`     | 11 raw tags  | 1 (SlugInput)       | ✅     |
+| `admin/blog/create/page.tsx`           | 9 raw tags   | 4 (specialized)     | ✅     |
+| `admin/blog/categories/page.tsx`       | 4 raw tags   | 0                   | ✅     |
+| `admin/blog/tags/page.tsx`             | 3 raw tags   | 0                   | ✅     |
 
-### Phase 3: Remaining Files (TODO)
+### Phase 3: Remaining Files (Specialized Components)
 
-Files still containing raw `<label>` + `<input>` patterns:
+Files with raw labels that are intentionally NOT migrated (specialized layouts):
 
-**High Priority (10+ raw tags):**
+**Specialized Components:**
+- `admin/homepage/page.tsx` - Color pickers, sliders, RichTextEditor
+- `admin/blog/[id]/edit/page.tsx` - File upload, RichTextEditor, custom category layout
+- `admin/blog/create/page.tsx` - File upload, RichTextEditor, custom category layout
 
-- `admin/settings/payment/page.tsx` - 13 raw tags
-- `admin/settings/email/page.tsx` - 9 raw tags
-- `admin/categories/create/page.tsx` - 11 raw tags
-- `seller/my-shops/[slug]/edit/page.tsx` - 39 raw tags
-- `seller/my-shops/create/page.tsx` - 39 raw tags
-- `seller/CouponForm.tsx` - 30 raw tags
+**Toggle Switch Labels:**
+- Various settings pages have toggle switches with custom label styling
 
-**Medium Priority (5-10 raw tags):**
+**Wizard Components:**
+- `seller/product-wizard/RequiredInfoStep.tsx` - RichTextEditor labels
+- `seller/auction-wizard/RequiredInfoStep.tsx` - Specialized auction fields
 
-- `admin/blog/create/page.tsx` - 9 raw tags
-- `admin/hero-slides/create/page.tsx` - 7 raw tags
-- `admin/homepage/page.tsx` - 6 raw tags
-
-**Lower Priority (specialized patterns):**
-
-- Filter components use labels for toggle styling
-- Wizard steps have specific layouts
-- Test files (FieldError.test.tsx, FormLayout.test.tsx)
+**Infrastructure Components:**
+- `common/FieldError.tsx` - Error wrapper component
+- `admin/ToggleSwitch.tsx` - Toggle switch component
 
 ## Usage Examples
 
