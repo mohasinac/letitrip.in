@@ -108,11 +108,47 @@ interface CategoryBE {
 }
 ```
 
+## Implementation Status
+
+### Session 17 - Similar Categories Component (December 2025)
+
+**Doc Reference**: docs/22-similar-categories.md
+
+#### Similar Categories Feature ✅
+
+Created `SimilarCategories` component to show sibling categories on category detail pages:
+
+**Component Created**:
+- `src/components/category/SimilarCategories.tsx` - Displays categories at same tree level with same parent
+
+**Features Implemented**:
+- Fetches sibling categories via existing API `/api/categories/[slug]/similar`
+- Horizontal scrollable carousel with category cards
+- Scroll navigation buttons (left/right arrows)
+- Loading skeleton during fetch
+- Empty state with Folder icon, message, "View All Categories" button
+- Shows category image or Folder icon fallback
+- Product count displayed per category
+- Dark mode support
+
+**Files Changed**:
+- `src/app/categories/[slug]/page.tsx` - Added `<SimilarCategories>` section after subcategories
+
+**API Used**:
+- Existing endpoint returns sibling categories (same parent)
+- For root categories, returns other root categories
+- Service method: `categoriesService.getSimilarCategories(slug, { limit })`
+
+**Result**: Users can easily discover related categories, improving navigation and product discovery
+
+---
+
 ## Related Epics
 
 - E002: Product Catalog (product categories)
 - E003: Auction System (auction categories)
 - E014: Homepage CMS (category display)
+- E036: Component Refactoring (SimilarCategories component)
 
 ---
 

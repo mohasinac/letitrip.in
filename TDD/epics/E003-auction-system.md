@@ -679,11 +679,41 @@ auctions/
 5. **No Self-Bidding**: Sellers cannot bid on own auctions
 6. **Concurrent Bids**: Server timestamp determines order
 
+## Implementation Status
+
+### Session 17 - Empty State Fallbacks (December 2025)
+
+**Doc Reference**: docs/21-empty-section-auctions.md
+
+#### Empty State Fallbacks ✅
+
+Fixed auction detail page to always show sections with helpful empty states:
+
+**Files Changed**:
+- `src/app/auctions/[slug]/page.tsx` - Added empty state cards for "More from this shop" and "Similar Auctions"
+
+**Shop Auctions Section**:
+- Always renders section with heading
+- Shows cards if `shopAuctions.length > 0`
+- Otherwise shows empty state with Store icon, message, "View All Auctions" button
+- Dashed border card styling with dark mode support
+
+**Similar Auctions Section**:
+- Always renders section with heading
+- Shows cards if `similarAuctions.length > 0`
+- Otherwise shows empty state with Gavel icon, message, "View All Auctions" button
+- Consistent styling with shop auctions empty state
+
+**Result**: Users always see helpful section headers with clear navigation, no disappearing sections
+
+---
+
 ## Related Epics
 
 - E002: Product Catalog (auction items)
 - E005: Order Management (won auction orders)
 - E011: Payment System (auction payments)
+- E036: Component Refactoring (empty state patterns)
 
 ---
 
