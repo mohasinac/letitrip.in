@@ -11,7 +11,7 @@ const DEMO_PREFIX = "DEMO_";
  * - Site settings (general, SEO, maintenance)
  * - Payment gateway settings
  * - Shipping settings
- * - Email/SMTP settings
+ * - Email/Resend settings
  * - Notification settings
  * - Feature flags
  */
@@ -318,16 +318,10 @@ export async function POST() {
       counts.emailTemplates++;
     }
 
-    // 9. SMTP Settings
-    await db.collection("email_settings").doc("smtp").set({
+    // 9. Email Settings (Resend)
+    await db.collection("email_settings").doc("resend").set({
       provider: "resend",
-      host: "smtp.resend.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: `${DEMO_PREFIX}demo@resend.dev`,
-        pass: `${DEMO_PREFIX}encrypted_smtp_password`,
-      },
+      apiKey: `${DEMO_PREFIX}re_demo_api_key_xxxxxxxxxxxx`,
       fromEmail: `${DEMO_PREFIX.toLowerCase()}noreply@justforview.in`,
       fromName: "LET IT RIP - JustForView",
       replyToEmail: `${DEMO_PREFIX.toLowerCase()}support@justforview.in`,
@@ -474,6 +468,117 @@ export async function POST() {
       createdAt: timestamp,
       updatedAt: timestamp,
     });
+
+    // 17. Homepage Featured Sections Settings (E014)
+    await db.collection("homepage_settings").doc("current").set({
+      heroCarousel: {
+        enabled: true,
+        autoPlay: true,
+        interval: 5000,
+        showArrows: true,
+        showDots: true,
+        transition: "slide",
+      },
+      sections: {
+        valueProposition: {
+          enabled: true,
+          order: 1,
+        },
+        featuredCategories: {
+          enabled: true,
+          order: 2,
+          displayCount: 8,
+          layout: "grid",
+        },
+        featuredProducts: {
+          enabled: true,
+          order: 3,
+          displayCount: 8,
+          layout: "grid",
+          title: "Featured Products",
+          subtitle: "Discover our handpicked selection of authentic collectibles",
+        },
+        newArrivals: {
+          enabled: true,
+          order: 4,
+          displayCount: 8,
+          layout: "carousel",
+          title: "New Arrivals",
+          subtitle: "Just landed - fresh from Japan",
+        },
+        bestSellers: {
+          enabled: true,
+          order: 5,
+          displayCount: 8,
+          layout: "grid",
+          title: "Best Sellers",
+          subtitle: "Most popular items this month",
+        },
+        onSale: {
+          enabled: true,
+          order: 6,
+          displayCount: 12,
+          layout: "grid",
+          title: "Hot Deals",
+          subtitle: "Limited time offers - grab them now!",
+        },
+        featuredAuctions: {
+          enabled: true,
+          order: 7,
+          displayCount: 6,
+          layout: "grid",
+          title: "Live Auctions",
+          subtitle: "Bid on exclusive collectibles and rare finds",
+        },
+        featuredShops: {
+          enabled: true,
+          order: 8,
+          displayCount: 8,
+          layout: "carousel",
+          title: "Featured Shops",
+          subtitle: "Shop from our trusted verified sellers",
+        },
+        featuredBlogs: {
+          enabled: true,
+          order: 9,
+          displayCount: 3,
+          layout: "grid",
+          title: "Latest from Our Blog",
+          subtitle: "Collecting tips, news, and insights",
+        },
+        featuredReviews: {
+          enabled: true,
+          order: 10,
+          displayCount: 6,
+          layout: "carousel",
+          title: "Customer Reviews",
+          subtitle: "See what our customers say about their purchases",
+        },
+        vintageCollection: {
+          enabled: false,
+          order: 11,
+          displayCount: 8,
+          layout: "grid",
+          title: "Vintage & Rare",
+          subtitle: "Classic collectibles from past generations",
+        },
+      },
+      sectionOrder: [
+        "valueProposition",
+        "featuredCategories",
+        "featuredProducts",
+        "newArrivals",
+        "bestSellers",
+        "onSale",
+        "featuredAuctions",
+        "featuredShops",
+        "featuredBlogs",
+        "featuredReviews",
+      ],
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    });
+    counts.settings++;
 
     return NextResponse.json({
       success: true,

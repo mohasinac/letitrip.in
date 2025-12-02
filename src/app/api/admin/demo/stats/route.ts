@@ -140,15 +140,17 @@ export async function GET() {
       shippingZones,
       emailTemplates,
       featureFlags,
+      homepageSettings,
     ] = await Promise.all([
       db.collection("site_settings").get(),
       db.collection("payment_settings").get(),
       db.collection("shipping_zones").get(),
       db.collection("email_templates").get(),
       db.collection("feature_flags").get(),
+      db.collection("homepage_settings").get(),
     ]);
 
-    const settings = siteSettings.size + paymentSettings.size + shippingZones.size + emailTemplates.size + featureFlags.size;
+    const settings = siteSettings.size + paymentSettings.size + shippingZones.size + emailTemplates.size + featureFlags.size + homepageSettings.size;
 
     return NextResponse.json({
       exists: true,

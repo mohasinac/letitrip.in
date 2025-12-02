@@ -803,6 +803,47 @@ This document defines the test data requirements for all resources in the JustFo
 
 ---
 
+## Test Homepage Featured Sections Settings (E014)
+
+### Hero Carousel Settings
+
+| Field      | Value   |
+| ---------- | ------- |
+| enabled    | `true`  |
+| autoPlay   | `true`  |
+| interval   | 5000 ms |
+| showArrows | `true`  |
+| showDots   | `true`  |
+| transition | slide   |
+
+### Section Configuration
+
+| Section            | Enabled | Order | Display | Layout   | Title                |
+| ------------------ | ------- | ----- | ------- | -------- | -------------------- |
+| valueProposition   | `true`  | 1     | N/A     | banner   | Trust Badges         |
+| featuredCategories | `true`  | 2     | 8       | grid     | Shop by Category     |
+| featuredProducts   | `true`  | 3     | 8       | grid     | Featured Products    |
+| newArrivals        | `true`  | 4     | 8       | carousel | New Arrivals         |
+| bestSellers        | `true`  | 5     | 8       | grid     | Best Sellers         |
+| onSale             | `true`  | 6     | 12      | grid     | Hot Deals            |
+| featuredAuctions   | `true`  | 7     | 6       | grid     | Live Auctions        |
+| featuredShops      | `true`  | 8     | 8       | carousel | Featured Shops       |
+| featuredBlogs      | `true`  | 9     | 3       | grid     | Latest from Our Blog |
+| featuredReviews    | `true`  | 10    | 6       | carousel | Customer Reviews     |
+| vintageCollection  | `false` | 11    | 8       | grid     | Vintage & Rare       |
+
+**Collection**: `homepage_settings/current`
+
+**Features**:
+
+- Enable/disable sections
+- Reorder sections
+- Customize titles/subtitles
+- Configure layout (grid, carousel, list)
+- Set display count per section
+
+---
+
 ## Test Data Generation Utilities
 
 ### TypeScript Test Data Factory
