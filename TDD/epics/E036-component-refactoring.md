@@ -290,7 +290,7 @@ const isMobile = useIsMobile();
 - Analyzed all components for consolidation opportunities
 - Determined many components should stay separate (shop vs. seller-shop has different purposes)
 - Fixed dark mode issues found during audit
-**Result**: Faster product/auction creation with better error feedback
+  **Result**: Faster product/auction creation with better error feedback
 
 #### Image Wrapper Migration (doc 29)
 
@@ -301,9 +301,11 @@ const isMobile = useIsMobile();
 **Strategy**: Replace all raw `<img>` tags with `OptimizedImage` component for consistent optimization, lazy loading, error handling, and focus point support.
 
 **Component**:
+
 - `src/components/common/OptimizedImage.tsx` - Wrapper using Next.js Image
 
 **Features**:
+
 - Automatic WebP/AVIF format conversion
 - Lazy loading by default
 - Blur placeholder during load
@@ -313,14 +315,16 @@ const isMobile = useIsMobile();
 
 **Migration Completed**:
 
-*App Pages (40+ files)*:
+_App Pages (40+ files)_:
+
 - User pages: reviews, orders, settings, won-auctions, bids, favorites
 - Seller pages: products, reviews, auctions, my-shops, orders
 - Admin pages: users, products, shops, categories, auctions, blog, hero-slides, orders
 - Public pages: products, categories, auctions, shops
 - Auth pages: login, register, contact, checkout
 
-*Components (11 files)*:
+_Components (11 files)_:
+
 - `SearchBar.tsx`, `PaymentLogo.tsx`, `CategoryForm.tsx`
 - `ShopHeader.tsx`, `ShopCard.tsx`, `ProductTable.tsx`
 - `ProductImageManager.tsx`, `ReviewList.tsx`
@@ -329,6 +333,7 @@ const isMobile = useIsMobile();
 - `SimilarCategories.tsx`, `CameraCapture.tsx`
 
 **Pattern**:
+
 ```tsx
 // Before (raw img)
 <img src="/product.jpg" alt="Product" className="w-full h-48 object-cover rounded" />

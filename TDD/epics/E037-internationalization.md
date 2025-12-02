@@ -37,6 +37,7 @@ Multi-language support for the platform, prioritizing Indian languages to serve 
 **Constants Defined**: `src/constants/footer.ts` contains language options (17 languages)
 
 **Not Yet Implemented**:
+
 - No i18n library installed (next-intl recommended)
 - No translation files
 - No language switcher UI
@@ -48,10 +49,10 @@ Multi-language support for the platform, prioritizing Indian languages to serve 
 ```typescript
 // src/constants/footer.ts:51-68
 export const LANGUAGES = [
-  { code: 'en', name: 'EN', fullName: 'English' },
-  { code: 'ja', name: '日本語', fullName: 'Japanese' },
-  { code: 'ko', name: '한국어', fullName: 'Korean' },
-  { code: 'zh-cn', name: '简体中文', fullName: 'Simplified Chinese' },
+  { code: "en", name: "EN", fullName: "English" },
+  { code: "ja", name: "日本語", fullName: "Japanese" },
+  { code: "ko", name: "한국어", fullName: "Korean" },
+  { code: "zh-cn", name: "简体中文", fullName: "Simplified Chinese" },
   // ... 13 more languages
 ];
 ```
@@ -65,6 +66,7 @@ export const LANGUAGES = [
 **Story**: As a user visiting the platform, I want to select my preferred language so that I can browse and shop comfortably in my native language.
 
 **Acceptance Criteria**:
+
 - Language switcher visible in header/footer
 - Selection persists across sessions (cookie/localStorage)
 - URL updates with locale prefix (e.g., `/hi/products` for Hindi)
@@ -80,6 +82,7 @@ export const LANGUAGES = [
 **Story**: As a developer adding new features, I want to manage translations in centralized JSON files so that adding new text is consistent and maintainable.
 
 **Acceptance Criteria**:
+
 - Translation files in `src/i18n/messages/[locale].json`
 - TypeScript types for translation keys
 - Fallback to English for missing translations
@@ -95,6 +98,7 @@ export const LANGUAGES = [
 **Story**: As an admin managing the platform for the Indian market, I want to prioritize Indian regional languages so that we serve our primary user base effectively.
 
 **Acceptance Criteria**:
+
 - Priority languages: English, Hindi, Tamil, Telugu, Bengali, Marathi
 - Language switcher shows Indian languages first
 - Proper native script rendering (Devanagari, Tamil, Bengali scripts)
@@ -109,6 +113,7 @@ export const LANGUAGES = [
 **Story**: As an admin, I want user-generated content (product names, descriptions) to be accessible in multiple languages so that users can discover products regardless of listing language.
 
 **Acceptance Criteria**:
+
 - Option to auto-translate product descriptions (Google Translate API)
 - Translate button shown for non-matching language content
 - Seller can provide multiple language versions of descriptions
@@ -123,12 +128,14 @@ export const LANGUAGES = [
 ### F037.1: Language Switcher
 
 **Components**:
+
 - `LanguageSwitcher.tsx` - Dropdown in header/footer
 - Flag icons or native language names
 - Keyboard accessible
 - Mobile-friendly
 
 **Functionality**:
+
 - Updates locale in URL
 - Sets cookie for persistence
 - Triggers page re-render with new translations
@@ -138,6 +145,7 @@ export const LANGUAGES = [
 ### F037.2: Translation Management
 
 **Structure**:
+
 ```
 src/i18n/
 ├── config.ts                    # Locale config, supported languages
@@ -153,6 +161,7 @@ src/i18n/
 ```
 
 **Translation Keys**:
+
 ```json
 {
   "common": {
@@ -178,6 +187,7 @@ src/i18n/
 ### F037.3: Locale-Based Routing
 
 **Route Structure**:
+
 ```
 src/app/
 └── [locale]/
@@ -190,6 +200,7 @@ src/app/
 ```
 
 **Middleware**:
+
 - Detects user's preferred locale
 - Redirects to appropriate `/[locale]/` route
 - Only adds prefix for non-default locales
@@ -199,6 +210,7 @@ src/app/
 ### F037.4: RTL Support (Optional)
 
 **For Arabic** (if included in language list):
+
 - Set `dir="rtl"` on `<html>` tag
 - Mirror layout with Tailwind RTL classes
 - Flip icons and directional UI elements
@@ -209,18 +221,18 @@ src/app/
 
 Given India-focused platform, prioritize these 10 languages:
 
-| Priority | Language   | Code | Native Name | Speakers (India) |
-|----------|------------|------|-------------|------------------|
-| 1        | English    | en   | English     | 125M+ (L2)       |
-| 2        | Hindi      | hi   | हिन्दी      | 528M+ (L1+L2)    |
-| 3        | Tamil      | ta   | தமிழ்       | 69M+             |
-| 4        | Telugu     | te   | తెలుగు      | 82M+             |
-| 5        | Bengali    | bn   | বাংলা       | 97M+             |
-| 6        | Marathi    | mr   | मराठी       | 83M+             |
-| 7        | Gujarati   | gu   | ગુજરાતી     | 56M+             |
-| 8        | Kannada    | kn   | ಕನ್ನಡ       | 44M+             |
-| 9        | Malayalam  | ml   | മലയാളം      | 38M+             |
-| 10       | Punjabi    | pa   | ਪੰਜਾਬੀ     | 33M+             |
+| Priority | Language  | Code | Native Name | Speakers (India) |
+| -------- | --------- | ---- | ----------- | ---------------- |
+| 1        | English   | en   | English     | 125M+ (L2)       |
+| 2        | Hindi     | hi   | हिन्दी      | 528M+ (L1+L2)    |
+| 3        | Tamil     | ta   | தமிழ்       | 69M+             |
+| 4        | Telugu    | te   | తెలుగు      | 82M+             |
+| 5        | Bengali   | bn   | বাংলা       | 97M+             |
+| 6        | Marathi   | mr   | मराठी       | 83M+             |
+| 7        | Gujarati  | gu   | ગુજરાતી     | 56M+             |
+| 8        | Kannada   | kn   | ಕನ್ನಡ       | 44M+             |
+| 9        | Malayalam | ml   | മലയാളം      | 38M+             |
+| 10       | Punjabi   | pa   | ਪੰਜਾਬੀ      | 33M+             |
 
 ---
 
@@ -277,6 +289,7 @@ Given India-focused platform, prioritize these 10 languages:
 ### Content Categories
 
 **Static UI** (Priority 1):
+
 - Navigation menus
 - Button labels
 - Form labels
@@ -284,12 +297,14 @@ Given India-focused platform, prioritize these 10 languages:
 - Common phrases
 
 **Page Content** (Priority 2):
+
 - Homepage sections
 - Product listing pages
 - Checkout flow
 - Auth pages
 
 **Admin/Seller** (Priority 3):
+
 - Dashboard labels
 - Management pages
 - Settings
@@ -302,34 +317,43 @@ Given India-focused platform, prioritize these 10 languages:
 
 ```typescript
 // src/i18n/config.ts
-export const locales = ['en', 'hi', 'ta', 'te', 'bn', 'mr', 'gu', 'kn', 'ml', 'pa'] as const;
-export type Locale = typeof locales[number];
-export const defaultLocale: Locale = 'en';
+export const locales = [
+  "en",
+  "hi",
+  "ta",
+  "te",
+  "bn",
+  "mr",
+  "gu",
+  "kn",
+  "ml",
+  "pa",
+] as const;
+export type Locale = (typeof locales)[number];
+export const defaultLocale: Locale = "en";
 ```
 
 ### Usage in Components
 
 ```tsx
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 function ProductButton() {
-  const t = useTranslations('product');
-  
-  return (
-    <button>{t('addToCart')}</button>
-  );
+  const t = useTranslations("product");
+
+  return <button>{t("addToCart")}</button>;
 }
 ```
 
 ### Server Components
 
 ```tsx
-import { getTranslations } from 'next-intl/server';
+import { getTranslations } from "next-intl/server";
 
 export default async function ProductPage() {
-  const t = await getTranslations('product');
-  
-  return <h1>{t('title')}</h1>;
+  const t = await getTranslations("product");
+
+  return <h1>{t("title")}</h1>;
 }
 ```
 
@@ -375,11 +399,13 @@ export default async function ProductPage() {
 ## Dependencies
 
 **External Libraries**:
+
 - `next-intl` - Internationalization for Next.js App Router
 - `@formatjs/intl-numberformat` (optional) - Number formatting
 - `date-fns` with locale support - Date formatting
 
 **Translation Services** (Optional):
+
 - Google Translate API - Auto-translation for dynamic content
 - Professional translation service - Quality translations
 

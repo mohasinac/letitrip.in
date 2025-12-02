@@ -47,8 +47,23 @@ Each feature must meet its acceptance criteria before being considered complete.
 - [x] Slug validation ensures uniqueness
 - [x] Bulk product operations work
 - [x] Out of stock products hidden from catalog
+- [x] ProductCard component supports 4 variants (public, admin, seller, compact)
+- [x] Empty state fallbacks show for SimilarProducts and SellerProducts
+- [x] Product comparison supports up to 4 products
+- [x] Comparison bar floats at bottom with thumbnails
+- [x] Side-by-side comparison table highlights best values
+- [x] Comparison data persists via localStorage
+- [x] Viewing history auto-tracks product views
+- [x] Recently viewed widget shows last 8 products
+- [x] Full history page with remove/clear all functionality
+- [x] History expires after 30 days, max 50 items
+- [x] Slug used as Firestore document ID for direct access
+- [x] Constants consolidated (limits, statuses) in dedicated files
+- [x] Services use centralized constants instead of hardcoded values
 
-**Tests**: `src/app/api/products/route.test.ts`, `src/app/api/products/[slug]/route.test.ts`, `src/lib/validation/product.test.ts`
+**Tests**: `src/app/api/products/route.test.ts`, `src/app/api/products/[slug]/route.test.ts`, `src/lib/validation/product.test.ts`  
+**Docs**: `docs/10-product-comparison.md`, `docs/11-viewing-history.md`, `docs/13-unified-component-cards.md`, `docs/16-route-fixes.md`, `docs/17-constants-consolidation.md`, `docs/20-empty-section-products.md`, `docs/23-productcard-variants.md`  
+**Resources**: `TDD/resources/products/COMPARISON.md`, `TDD/resources/products/VIEWING-HISTORY.md`
 
 ### E003: Auction System ✅ COMPLETE (Tested)
 
@@ -59,8 +74,21 @@ Each feature must meet its acceptance criteria before being considered complete.
 - [x] Watchlist notifications sent
 - [x] Won auctions flow to checkout
 - [x] Buy now ends auction immediately
+- [x] Empty state fallbacks show for "More from this shop" and "Similar Auctions"
+- [x] Demo auctions are all live (3-7 days future end dates)
+- [x] Demo auction dates consistent (started 0-2 days ago)
+- [x] Image editor supports crop with aspect ratio presets
+- [x] Image editor has zoom (1-3x) and rotation (90° increments)
+- [x] Focus point selection for mobile optimization
+- [x] OptimizedImage component uses object-position with focus point
+- [x] Video thumbnail generation via Canvas API
+- [x] Timeline scrubber allows frame selection for thumbnails
+- [x] MediaMetadata includes focusX, focusY, and thumbnail fields
+- [x] MediaUploader has enableEditing prop and onFileEdited callback
 
-**Tests**: `src/app/api/auctions/auctions.test.ts`, `src/app/api/auctions/route.test.ts`, `src/app/api/auctions/[id]/bid/route.test.ts`
+**Tests**: `src/app/api/auctions/auctions.test.ts`, `src/app/api/auctions/route.test.ts`, `src/app/api/auctions/[id]/bid/route.test.ts`  
+**Docs**: `docs/19-demo-auction-dates.md`, `docs/21-empty-section-auctions.md`, `docs/26-media-upload-enhancements.md`  
+**Resources**: `TDD/resources/auctions/MEDIA-UPLOAD.md`
 
 ### E004: Shopping Cart ✅ COMPLETE (Tested)
 
@@ -161,8 +189,16 @@ Each feature must meet its acceptance criteria before being considered complete.
 - [x] Category tree displays correctly
 - [x] Reordering persists
 - [x] Featured categories display
+- [x] SimilarCategories component shows sibling categories
+- [x] Horizontal scrollable carousel with navigation arrows
+- [x] Loading skeleton displays during fetch
+- [x] Empty state with Folder icon and "View All Categories" button
+- [x] Category cards show image or Folder icon fallback
+- [x] Product count displayed per category
+- [x] Dark mode support
 
-**Tests**: `src/app/api/categories/[slug]/route.test.ts`, `src/app/api/categories/tree/route.test.ts`, `src/app/api/categories/bulk/route.test.ts`
+**Tests**: `src/app/api/categories/[slug]/route.test.ts`, `src/app/api/categories/tree/route.test.ts`, `src/app/api/categories/bulk/route.test.ts`  
+**Docs**: `docs/22-similar-categories.md`
 
 ### E014: Homepage CMS ✅ COMPLETE (Tested)
 
@@ -171,8 +207,25 @@ Each feature must meet its acceptance criteria before being considered complete.
 - [x] Featured sections configurable
 - [x] Banner configuration works
 - [x] Reset to default works
+- [x] Batch APIs for products/auctions/shops/categories (getByIds)
+- [x] Featured sections check admin-curated items first
+- [x] Fallback to featured=true query if no curated items
+- [x] Components accept limit props (maxProducts, maxAuctions, etc.)
+- [x] Section ordering with drag-and-drop in admin
+- [x] sectionOrder saved to settings and persists
+- [x] Hero slides field naming standardized (camelCase ↔ snake_case)
+- [x] hero-slides.service has toApiFormat() and fromApiFormat()
+- [x] homepage.service has transformSlide() for public carousel
+- [x] Create/edit pages use camelCase consistently
+- [x] TabNav component with 3 variants (underline, pills, default)
+- [x] TabbedLayout wrapper component
+- [x] Tab constants in src/constants/tabs.ts
+- [x] Admin/seller layouts with tabs (settings, auctions, blog, products)
+- [x] Route-based active state detection
+- [x] Horizontal scroll on mobile with touch-friendly targets
 
-**Tests**: `src/app/api/hero-slides/route.test.ts`, `src/app/api/homepage/route.test.ts`, `src/components/layout/HeroCarousel.test.tsx`
+**Tests**: `src/app/api/hero-slides/route.test.ts`, `src/app/api/homepage/route.test.ts`, `src/components/layout/HeroCarousel.test.tsx`  
+**Docs**: `docs/14-homepage-sections-admin.md`, `docs/15-hero-slides-fix.md`, `docs/18-tabbed-navigation.md`
 
 ### E015: Search & Discovery ✅ COMPLETE (Tested)
 
@@ -540,10 +593,46 @@ Each feature must meet its acceptance criteria before being considered complete.
 - [x] Password visibility toggles on mobile
 - [x] ~2,400 lines of duplicate code eliminated
 - [x] 49 new components created (11 form, 20 value, 18 wizard steps)
+- [x] 6 admin pages mobile-optimized (users, coupons, tickets, categories, returns, orders)
+- [x] 4 seller pages mobile-optimized (returns, orders, auctions, coupons)
+- [x] Mobile card pattern with touch-friendly actions
+- [x] Product wizard simplified from 4 → 2 steps
+- [x] Auction wizard simplified from 5 → 3 steps
+- [x] Form validation errors shown inline per field
+- [x] OptimizedImage component wraps Next.js Image
+- [x] 40+ app pages migrated to OptimizedImage
+- [x] 11 components migrated to OptimizedImage
+- [x] Automatic WebP/AVIF conversion, lazy loading, blur placeholder
+- [x] Error handling with fallback images
+- [x] Focus point support for smart cropping
 
 **Tests**: `TDD/resources/refactoring/TEST-CASES.md` (94 test cases)  
-**Docs**: `docs/25-wizard-forms-mobile.md`, `docs/27-html-tag-wrappers.md`, `docs/28-component-splitting.md`, `docs/32-common-value-components.md`  
+**Docs**: `docs/03-form-ux-improvements.md`, `docs/04-component-consolidation.md`, `docs/24-mobile-page-audit.md`, `docs/25-wizard-forms-mobile.md`, `docs/27-html-tag-wrappers.md`, `docs/28-component-splitting.md`, `docs/29-image-wrapper-migration.md`, `docs/32-common-value-components.md`  
 **Summary**: `TDD/REFACTORING-SUMMARY.md`
+
+### E037: Internationalization (i18n) ⏸️ PLANNED
+
+- [ ] next-intl library installed and configured
+- [ ] Translation files created for 10+ Indian languages
+- [ ] Language switcher component in header/footer
+- [ ] Locale-based routing with [locale] structure
+- [ ] All static UI text uses useTranslations hook
+- [ ] Language preference persists in cookie
+- [ ] English fallback for missing translations
+- [ ] RTL support for Arabic (if included)
+- [ ] Date/number formatting follows locale
+- [ ] Currency always displays as ₹ (INR)
+- [ ] Priority languages: English, Hindi, Tamil, Telugu, Bengali, Marathi
+- [ ] Native script rendering (Devanagari, Tamil, Bengali)
+- [ ] Google Translate API integration for dynamic content (optional)
+- [ ] hreflang tags for SEO
+- [ ] Sitemap includes all locale URLs
+
+**Docs**: `docs/12-multi-language-i18n.md`  
+**Epic**: `TDD/epics/E037-internationalization.md`  
+**Status**: Constants defined, implementation pending
+
+---
 
 ### Accessibility 🟡 PARTIAL
 
