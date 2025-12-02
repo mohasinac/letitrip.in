@@ -24,56 +24,30 @@ import {
 } from "@/components/forms";
 import SlugInput from "@/components/common/SlugInput";
 import { shopsService } from "@/services/shops.service";
-
-// Step definitions
-const STEPS = [
-  {
-    id: 1,
-    name: "Basic Info",
-    icon: Store,
-    description: "Shop name & description",
-  },
-  {
-    id: 2,
-    name: "Branding",
-    icon: Palette,
-    description: "Logo, banner & colors",
-  },
-  {
-    id: 3,
-    name: "Contact & Legal",
-    icon: Phone,
-    description: "Contact details & docs",
-  },
-  {
-    id: 4,
-    name: "Policies",
-    icon: FileText,
-    description: "Shipping & returns",
-  },
-  {
-    id: 5,
-    name: "Review & Publish",
-    icon: Settings,
-    description: "Review & activate",
-  },
-];
+import { BasicInfoStep, BankingStep } from "@/components/seller/shop-wizard";
 
 export default function CreateShopWizardPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [slugError, setSlugError] = useState("");
   const [isValidatingSlug, setIsValidatingSlug] = useState(false);
+  const [slugError, setSlugError] = useState("");
+  const [error, setError] = useState("");
 
-  // Form data
+  const STEPS = [
+    { id: 1, name: "Basic Info", icon: Store },
+    { id: 2, name: "Branding", icon: Palette },
+    { id: 3, name: "Contact & Legal", icon: Phone },
+    { id: 4, name: "Policies", icon: FileText },
+    { id: 5, name: "Settings", icon: Settings },
+  ] as const;
+
   const [formData, setFormData] = useState({
     // Step 1: Basic Info
     name: "",
     slug: "",
-    description: "",
     category: "",
+    description: "",
 
     // Step 2: Branding
     logoUrl: "",
@@ -352,53 +326,40 @@ export default function CreateShopWizardPage() {
             </div>
           )}
 
+          {/* Step 5: Settings - Banking */}
+          {currentStep === 5 && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+              <BankingStep
+                formData={formData as any}
+                onChange={(field, value) => handleChange(field, value)}
+              />
+            </div>
+          )}
           {/* Step 2: Branding */}
           {currentStep === 2 && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Shop Branding
+                  Branding
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                  Customize the look and feel of your shop
+                  Set your shop's visuals and theme colors
                 </p>
               </div>
 
-              {/* Logo */}
+              {/* Logo URL */}
               <FormInput
-                label="Shop Logo URL"
+                label="Logo URL"
                 type="url"
                 value={formData.logoUrl}
                 onChange={(e) => handleChange("logoUrl", e.target.value)}
                 placeholder="https://example.com/logo.png"
-                helperText="Square image recommended (200x200px or larger)"
+                helperText="Square image recommended (512x512px)"
               />
 
-              {/* Logo Preview */}
-              {formData.logoUrl && (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-800">
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Logo Preview
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <div className="relative w-20 h-20">
-                      <OptimizedImage
-                        src={formData.logoUrl}
-                        alt="Logo preview"
-                        fill
-                        className="object-cover rounded-lg border border-gray-200 dark:border-gray-600"
-                      />
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Your logo will appear here
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Banner */}
+              {/* Banner URL */}
               <FormInput
-                label="Shop Banner URL"
+                label="Banner URL"
                 type="url"
                 value={formData.bannerUrl}
                 onChange={(e) => handleChange("bannerUrl", e.target.value)}
