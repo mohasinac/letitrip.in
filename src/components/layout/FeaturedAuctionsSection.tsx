@@ -133,6 +133,7 @@ export default function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
                 bidCount: auction.totalBids || auction.bidCount || 0,
                 endTime: auction.endTime,
                 featured: auction.featured,
+                status: auction.status || "active",
                 shop: auction.shopId
                   ? {
                       id: auction.shopId,
