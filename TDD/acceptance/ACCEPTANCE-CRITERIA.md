@@ -506,6 +506,45 @@ Each feature must meet its acceptance criteria before being considered complete.
 
 **Tests**: `src/hooks/useMobile.test.ts`, `src/components/layout/MobileSidebar.test.tsx`, `src/components/layout/BottomNav.test.tsx`
 
+### E036: Component Refactoring & Consolidation ✅ COMPLETE
+
+- [x] All wizard forms split into modular step components
+- [x] Each step component < 100 lines of code
+- [x] Product wizard: 898 → 297 lines (67% reduction)
+- [x] Auction wizard: 1251 → 403 lines (68% reduction)
+- [x] Category wizard: 460 → 265 lines (42% reduction)
+- [x] Blog wizard: 444 → 280 lines (37% reduction)
+- [x] Shop wizard: ~400 → ~280 lines (30% reduction)
+- [x] All raw HTML form tags migrated to Form components
+- [x] No `<input>`, `<select>`, `<textarea>`, `<label>` tags in production code
+- [x] 50+ pages migrated to Form components
+- [x] 15+ components migrated to Form components
+- [x] Deprecated UI components deleted (Input, Select)
+- [x] Deprecated Mobile components deleted (MobileFormInput, MobileFormSelect, MobileTextarea)
+- [x] All inline price formatting migrated to Price component
+- [x] All inline date formatting migrated to DateDisplay component
+- [x] 40+ pages use Price component
+- [x] 25+ pages use DateDisplay component
+- [x] 10+ pages use Quantity component
+- [x] 20+ value display components created
+- [x] All components support dark mode
+- [x] No malformed CSS classes (e.g., `hover:bg-gray-100:bg-gray-700`)
+- [x] DataTable has dark mode support
+- [x] MobileDataTable has dark mode support
+- [x] ActionMenu has dark mode support
+- [x] InlineEditor has dark mode support
+- [x] TagInput has dark mode support
+- [x] All mobile forms have 48px touch targets
+- [x] Proper inputMode on email/number/tel inputs
+- [x] Active states for touch feedback
+- [x] Password visibility toggles on mobile
+- [x] ~2,400 lines of duplicate code eliminated
+- [x] 49 new components created (11 form, 20 value, 18 wizard steps)
+
+**Tests**: `TDD/resources/refactoring/TEST-CASES.md` (94 test cases)  
+**Docs**: `docs/25-wizard-forms-mobile.md`, `docs/27-html-tag-wrappers.md`, `docs/28-component-splitting.md`, `docs/32-common-value-components.md`  
+**Summary**: `TDD/REFACTORING-SUMMARY.md`
+
 ### Accessibility 🟡 PARTIAL
 
 - [x] Keyboard navigation works (partial)

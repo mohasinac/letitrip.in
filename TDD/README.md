@@ -100,7 +100,8 @@ TDD/
 │   ├── E032-content-type-search-filter.md
 │   ├── E033-live-header-data.md
 │   ├── E034-flexible-link-fields.md
-│   └── E035-theme-mobile-homepage-integration.md
+│   ├── E035-theme-mobile-homepage-integration.md
+│   └── E036-component-refactoring.md
 │
 ├── rbac/
 │   ├── RBAC-OVERVIEW.md         # Role hierarchy & permissions matrix
@@ -273,6 +274,7 @@ TDD/
 
 - [x] E025: Mobile Component Integration - Mobile-optimized forms, pages
 - [x] E035: Theme & Mobile Homepage - Dark mode, SubNavbar, homepage mobile
+- [x] E036: Component Refactoring - Wizard forms, HTML tag wrappers, value components
 - [x] Wizard Forms - Split into modular step components
   - Product/Auction wizards (Session 14)
   - Category/Blog wizards (Session 17)
@@ -288,7 +290,8 @@ TDD/
   - DataTable, MobileDataTable, ActionMenu
   - InlineEditor, TagInput, Footer
 
-**See**: 
+**See**:
+
 - `docs/25-wizard-forms-mobile.md` - Wizard form specifications
 - `docs/27-html-tag-wrappers.md` - HTML tag wrapper migration
 - `docs/28-component-splitting.md` - Component splitting patterns
@@ -344,6 +347,7 @@ Acceptance Criteria:
 - E024-E025: Mobile PWA and integration
 - E026-E034: Platform enhancements (Pagination, Theming, RipLimit, etc.)
 - E035: Theme & Mobile Homepage Integration
+- E036: Component Refactoring & Consolidation
 - E024: Mobile PWA Experience (component creation)
 - E025: Mobile Component Integration (integration across app)
 - E026: Sieve-Style Pagination & Filtering
