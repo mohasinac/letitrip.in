@@ -8,14 +8,14 @@ Client-side product comparison feature allowing users to compare up to 4 product
 
 ### Core Implementation
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `src/constants/comparison.ts` | Comparison configuration constants | ~25 |
-| `src/services/comparison.service.ts` | Comparison data management | ~120 |
-| `src/contexts/ComparisonContext.tsx` | React context provider | ~85 |
-| `src/components/products/CompareButton.tsx` | Add/remove toggle button | ~65 |
-| `src/components/products/ComparisonBar.tsx` | Fixed bottom bar with thumbnails | ~150 |
-| `src/app/compare/page.tsx` | Side-by-side comparison page | ~280 |
+| File                                        | Purpose                            | Lines |
+| ------------------------------------------- | ---------------------------------- | ----- |
+| `src/constants/comparison.ts`               | Comparison configuration constants | ~25   |
+| `src/services/comparison.service.ts`        | Comparison data management         | ~120  |
+| `src/contexts/ComparisonContext.tsx`        | React context provider             | ~85   |
+| `src/components/products/CompareButton.tsx` | Add/remove toggle button           | ~65   |
+| `src/components/products/ComparisonBar.tsx` | Fixed bottom bar with thumbnails   | ~150  |
+| `src/app/compare/page.tsx`                  | Side-by-side comparison page       | ~280  |
 
 ### Integration Points
 
@@ -29,18 +29,18 @@ Client-side product comparison feature allowing users to compare up to 4 product
 export const COMPARISON_CONFIG = {
   MAX_PRODUCTS: 4,
   MIN_PRODUCTS: 2,
-  STORAGE_KEY: 'product_comparison',
+  STORAGE_KEY: "product_comparison",
 };
 
 export const COMPARISON_FIELDS = [
-  { key: 'price', label: 'Price' },
-  { key: 'condition', label: 'Condition' },
-  { key: 'category', label: 'Category' },
-  { key: 'brand', label: 'Brand' },
-  { key: 'rating', label: 'Rating' },
-  { key: 'seller', label: 'Seller' },
-  { key: 'location', label: 'Location' },
-  { key: 'warranty', label: 'Warranty' },
+  { key: "price", label: "Price" },
+  { key: "condition", label: "Condition" },
+  { key: "category", label: "Category" },
+  { key: "brand", label: "Brand" },
+  { key: "rating", label: "Rating" },
+  { key: "seller", label: "Seller" },
+  { key: "location", label: "Location" },
+  { key: "warranty", label: "Warranty" },
 ];
 ```
 
@@ -51,22 +51,22 @@ export const COMPARISON_FIELDS = [
 ```typescript
 class ComparisonService {
   // Add product to comparison
-  addToComparison(productId: string): boolean
-  
+  addToComparison(productId: string): boolean;
+
   // Remove product from comparison
-  removeFromComparison(productId: string): void
-  
+  removeFromComparison(productId: string): void;
+
   // Get all comparison product IDs
-  getComparisonProducts(): string[]
-  
+  getComparisonProducts(): string[];
+
   // Clear all products
-  clearComparison(): void
-  
+  clearComparison(): void;
+
   // Check if product is in comparison
-  isInComparison(productId: string): boolean
-  
+  isInComparison(productId: string): boolean;
+
   // Get count of products
-  getComparisonCount(): number
+  getComparisonCount(): number;
 }
 ```
 
@@ -88,12 +88,13 @@ interface ComparisonContextValue {
 ### CompareButton
 
 ```tsx
-import { CompareButton } from '@/components/products/CompareButton';
+import { CompareButton } from "@/components/products/CompareButton";
 
-<CompareButton productId={product.id} />
+<CompareButton productId={product.id} />;
 ```
 
 **Props**:
+
 - `productId: string` - Product ID to add/remove
 - `className?: string` - Additional CSS classes
 - `size?: 'sm' | 'md' | 'lg'` - Button size
@@ -101,13 +102,14 @@ import { CompareButton } from '@/components/products/CompareButton';
 ### ComparisonBar
 
 ```tsx
-import { ComparisonBar } from '@/components/products/ComparisonBar';
+import { ComparisonBar } from "@/components/products/ComparisonBar";
 
 // Automatically shown when products in comparison
-<ComparisonBar />
+<ComparisonBar />;
 ```
 
 **Features**:
+
 - Fixed bottom positioning
 - Product thumbnails with remove buttons
 - "Compare Now" button (enabled when 2+ products)
@@ -118,9 +120,11 @@ import { ComparisonBar } from '@/components/products/ComparisonBar';
 ## Comparison Page
 
 ### URL
+
 `/compare`
 
 ### Features
+
 - Side-by-side product table
 - Sticky product headers with images
 - Highlight differences:

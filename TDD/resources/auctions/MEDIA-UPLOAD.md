@@ -8,14 +8,14 @@ Advanced media upload features including image editing (crop, zoom, rotate), mob
 
 ### Core Implementation
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `src/components/media/ImageEditor.tsx` | Crop, zoom, rotate with tabbed UI | ~450 |
-| `src/components/media/VideoThumbnailGenerator.tsx` | Client-side thumbnail generation | ~280 |
-| `src/components/media/MediaEditorModal.tsx` | Modal wrapper for editing | ~150 |
-| `src/components/media/FocusPointSelector.tsx` | Mobile focus point UI | Integrated in ImageEditor |
-| `src/components/common/OptimizedImage.tsx` | Uses focus point for rendering | ~180 |
-| `src/types/media.ts` | Type definitions | ~60 |
+| File                                               | Purpose                           | Lines                     |
+| -------------------------------------------------- | --------------------------------- | ------------------------- |
+| `src/components/media/ImageEditor.tsx`             | Crop, zoom, rotate with tabbed UI | ~450                      |
+| `src/components/media/VideoThumbnailGenerator.tsx` | Client-side thumbnail generation  | ~280                      |
+| `src/components/media/MediaEditorModal.tsx`        | Modal wrapper for editing         | ~150                      |
+| `src/components/media/FocusPointSelector.tsx`      | Mobile focus point UI             | Integrated in ImageEditor |
+| `src/components/common/OptimizedImage.tsx`         | Uses focus point for rendering    | ~180                      |
+| `src/types/media.ts`                               | Type definitions                  | ~60                       |
 
 ### Dependencies
 
@@ -27,6 +27,7 @@ Advanced media upload features including image editing (crop, zoom, rotate), mob
 ### Features
 
 1. **Crop Tab**:
+
    - Freeform or preset aspect ratios (1:1, 4:3, 16:9, free)
    - Zoom control (1-3x scale)
    - Rotation (90° increments)
@@ -59,7 +60,7 @@ interface FocusPoint {
 ### Usage
 
 ```tsx
-import { ImageEditor } from '@/components/media/ImageEditor';
+import { ImageEditor } from "@/components/media/ImageEditor";
 
 const [editing, setEditing] = useState(false);
 const [imageFile, setImageFile] = useState<File | null>(null);
@@ -67,25 +68,27 @@ const [imageFile, setImageFile] = useState<File | null>(null);
 const handleSave = async (editedBlob: Blob, focusPoint?: FocusPoint) => {
   // Upload edited image
   const formData = new FormData();
-  formData.append('file', editedBlob, 'edited-image.jpg');
-  formData.append('focusX', String(focusPoint?.x || 50));
-  formData.append('focusY', String(focusPoint?.y || 50));
-  
+  formData.append("file", editedBlob, "edited-image.jpg");
+  formData.append("focusX", String(focusPoint?.x || 50));
+  formData.append("focusY", String(focusPoint?.y || 50));
+
   const response = await uploadMedia(formData);
   // Use response.url, response.focusX, response.focusY
-  
+
   setEditing(false);
 };
 
-{editing && (
-  <ImageEditor
-    image={imageFile}
-    aspectRatio={1} // Square crop
-    onSave={handleSave}
-    onCancel={() => setEditing(false)}
-    showFocusPoint={true}
-  />
-)}
+{
+  editing && (
+    <ImageEditor
+      image={imageFile}
+      aspectRatio={1} // Square crop
+      onSave={handleSave}
+      onCancel={() => setEditing(false)}
+      showFocusPoint={true}
+    />
+  );
+}
 ```
 
 ### UI Structure
@@ -125,7 +128,7 @@ On mobile screens, images display smaller. Instead of shrinking the entire image
   }}
 >
   <img src={imageUrl} alt="Preview" className="w-full h-full object-contain" />
-  
+
   {/* Crosshair indicator */}
   <div
     className="absolute w-8 h-8 border-2 border-white rounded-full -translate-x-1/2 -translate-y-1/2"
@@ -136,9 +139,11 @@ On mobile screens, images display smaller. Instead of shrinking the entire image
   >
     <Plus className="w-4 h-4 text-white" />
   </div>
-</div>
+</div>;
 
-{/* Mobile preview */}
+{
+  /* Mobile preview */
+}
 <div className="flex gap-4 mt-4">
   <div className="text-center">
     <p className="text-xs text-gray-500 mb-2">Desktop</p>
@@ -158,7 +163,7 @@ On mobile screens, images display smaller. Instead of shrinking the entire image
       />
     </div>
   </div>
-</div>
+</div>;
 ```
 
 ### Rendering with Focus Point
@@ -207,34 +212,38 @@ const VideoThumbnailGenerator: React.FC<VideoThumbnailGeneratorProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(1);
-  
+
   // Generate thumbnail from current frame
   const generateThumbnail = () => {
     const video = videoRef.current;
     if (!video) return;
-    
-    const canvas = document.createElement('canvas');
+
+    const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    
-    const ctx = canvas.getContext('2d');
+
+    const ctx = canvas.getContext("2d");
     ctx?.drawImage(video, 0, 0);
-    
-    canvas.toBlob((blob) => {
-      if (blob) onSave(blob, currentTime);
-    }, 'image/jpeg', 0.8);
+
+    canvas.toBlob(
+      (blob) => {
+        if (blob) onSave(blob, currentTime);
+      },
+      "image/jpeg",
+      0.8
+    );
   };
-  
+
   return (
     <div className="fixed inset-0 bg-black/90 z-50">
       {/* Video preview */}
       <video
         ref={videoRef}
-        src={typeof video === 'string' ? video : URL.createObjectURL(video)}
+        src={typeof video === "string" ? video : URL.createObjectURL(video)}
         onLoadedMetadata={() => setDuration(videoRef.current?.duration || 0)}
         className="w-full h-auto"
       />
-      
+
       {/* Timeline scrubber */}
       <input
         type="range"
@@ -249,7 +258,7 @@ const VideoThumbnailGenerator: React.FC<VideoThumbnailGeneratorProps> = ({
         }}
         className="w-full"
       />
-      
+
       {/* Actions */}
       <button onClick={generateThumbnail}>Use This Frame</button>
       <button onClick={onCancel}>Cancel</button>
@@ -270,13 +279,13 @@ interface MediaMetadata {
   width?: number;
   height?: number;
   duration?: number; // For videos
-  
+
   // New fields
   focusX?: number; // 0-100, percentage from left
   focusY?: number; // 0-100, percentage from top
   thumbnail?: string; // URL for video thumbnail
   thumbnailTimestamp?: number; // Seconds into video
-  
+
   // Editing metadata
   edited?: boolean;
   editedAt?: string; // ISO timestamp
@@ -301,17 +310,19 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
   ...props
 }) => {
   const [editing, setEditing] = useState<File | null>(null);
-  
+
   const handleEdit = (file: File) => {
     setEditing(file);
   };
-  
+
   const handleSaveEdit = (editedBlob: Blob, focusPoint?: FocusPoint) => {
-    const editedFile = new File([editedBlob], file.name, { type: 'image/jpeg' });
+    const editedFile = new File([editedBlob], file.name, {
+      type: "image/jpeg",
+    });
     onFileEdited?.(editedFile, focusPoint);
     setEditing(null);
   };
-  
+
   return (
     <>
       <div>
@@ -320,7 +331,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
           <button onClick={() => handleEdit(file)}>Edit</button>
         )}
       </div>
-      
+
       {editing && (
         <MediaEditorModal
           file={editing}
@@ -335,17 +346,17 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
 
 ## Aspect Ratio Presets by Context
 
-| Context | Recommended Ratios | Use Case |
-|---------|-------------------|----------|
-| Product Main | 1:1 (square) | Consistent grid display |
-| Product Gallery | 1:1 or 4:3 | Detail views |
-| Auction Image | 1:1 or 4:3 | Grid display |
-| Shop Logo | 1:1 (square) | Profile pictures |
-| Shop Banner | 16:9 or 3:1 | Wide header images |
-| Hero Slide | 16:9 or 21:9 | Full-width banners |
-| Blog Featured | 16:9 | Article headers |
-| Category Image | 1:1 or 4:3 | Category cards |
-| User Avatar | 1:1 (circle crop) | Profile pictures |
+| Context         | Recommended Ratios | Use Case                |
+| --------------- | ------------------ | ----------------------- |
+| Product Main    | 1:1 (square)       | Consistent grid display |
+| Product Gallery | 1:1 or 4:3         | Detail views            |
+| Auction Image   | 1:1 or 4:3         | Grid display            |
+| Shop Logo       | 1:1 (square)       | Profile pictures        |
+| Shop Banner     | 16:9 or 3:1        | Wide header images      |
+| Hero Slide      | 16:9 or 21:9       | Full-width banners      |
+| Blog Featured   | 16:9               | Article headers         |
+| Category Image  | 1:1 or 4:3         | Category cards          |
+| User Avatar     | 1:1 (circle crop)  | Profile pictures        |
 
 ## Business Rules
 
