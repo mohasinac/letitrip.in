@@ -29,6 +29,10 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
 import {
+  homepageSettingsService,
+  FeaturedItem,
+} from "@/services/homepage-settings.service";
+import {
   DndContext,
   closestCenter,
   KeyboardSensor,
@@ -46,19 +50,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-// Types
-interface FeaturedItem {
-  id: string;
-  type: "product" | "auction" | "shop" | "category";
-  itemId: string;
-  name: string;
-  image?: string;
-  position: number;
-  section: string;
-  active: boolean;
-  createdAt: string;
-}
-
+// Section configuration interface
 interface SectionConfig {
   key: string;
   title: string;
@@ -483,14 +475,8 @@ export default function FeaturedSectionsPage() {
   const loadFeaturedItems = async () => {
     try {
       setLoading(true);
-      // Load featured items from homepage settings
-      const response = await apiService.get<{
-        data: {
-          featuredItems?: Record<string, FeaturedItem[]>;
-        };
-      }>("/homepage");
-
-      const featuredItems = response.data?.featuredItems || {};
+      // Load featured items from homepage settings service
+      const featuredItems = await homepageSettingsService.getFeaturedItems();
 
       // Initialize with empty arrays for each section
       const initialized: Record<string, FeaturedItem[]> = {};
@@ -515,9 +501,8 @@ export default function FeaturedSectionsPage() {
   const saveChanges = async () => {
     try {
       setSaving(true);
-      await apiService.patch("/homepage", {
-        settings: { featuredItems: items },
-      });
+      // Use service to update featured items (handles cache invalidation)
+      await homepageSettingsService.updateFeaturedItems(items);
       setHasChanges(false);
       toast.success("Featured sections saved successfully!");
     } catch (error) {

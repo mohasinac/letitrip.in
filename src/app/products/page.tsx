@@ -36,11 +36,10 @@ function ProductsContent() {
 
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [filterOptions, setFilterOptions] = useState(PRODUCT_FILTERS);
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || ""
-  );
+  const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [initialized, setInitialized] = useState(false);
 
   // Initialize filters from URL on mount
   useEffect(() => {
@@ -61,18 +60,25 @@ function ProductsContent() {
     }
     if (params.get("status")) initialFilters.status = [params.get("status")];
     if (params.get("featured") === "true") initialFilters.featured = true;
-    if (params.get("search")) setSearchQuery(params.get("search") || "");
-    if (params.get("sortBy")) setSortBy(params.get("sortBy") || "createdAt");
-    if (params.get("sortOrder"))
-      setSortOrder((params.get("sortOrder") as "asc" | "desc") || "desc");
-    if (params.get("page")) setCurrentPage(Number(params.get("page")) || 1);
+
+    // Get search, sort, and page from URL
+    const urlSearch = params.get("search") || "";
+    const urlSortBy = params.get("sortBy") || "createdAt";
+    const urlSortOrder = (params.get("sortOrder") as "asc" | "desc") || "desc";
+    const urlPage = Number(params.get("page")) || 1;
+
+    setSearchQuery(urlSearch);
+    setSortBy(urlSortBy);
+    setSortOrder(urlSortOrder);
+    setCurrentPage(urlPage);
 
     if (Object.keys(initialFilters).length > 0) {
       setFilterValues(initialFilters);
     }
 
     loadFilterOptions();
-  }, []);
+    setInitialized(true);
+  }, [searchParams]);
 
   // Update URL when filters change - only on explicit apply
   const updateUrlAndLoad = useCallback(() => {
@@ -103,8 +109,10 @@ function ProductsContent() {
 
   // Load on mount and when sort/page changes
   useEffect(() => {
-    updateUrlAndLoad();
-  }, [sortBy, sortOrder, currentPage]);
+    if (initialized) {
+      updateUrlAndLoad();
+    }
+  }, [initialized, sortBy, sortOrder, currentPage]);
 
   const loadFilterOptions = async () => {
     try {
@@ -521,19 +529,19 @@ function ProductsContent() {
                         }
                       }}
                       disabled={currentPage === 1}
-                      className="px-6 py-3 min-h-[48px] border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 active:bg-gray-100 transition-colors touch-manipulation"
+                      className="px-6 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors touch-manipulation"
                     >
                       Previous
                     </button>
 
-                    <span className="text-sm text-gray-600 font-medium">
+                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                       Page {currentPage}
                     </span>
 
                     <button
                       onClick={() => setCurrentPage((p) => p + 1)}
                       disabled={!hasNextPage}
-                      className="px-6 py-3 min-h-[48px] border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 active:bg-gray-100 transition-colors touch-manipulation"
+                      className="px-6 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors touch-manipulation"
                     >
                       Next
                     </button>

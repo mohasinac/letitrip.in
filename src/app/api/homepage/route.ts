@@ -8,6 +8,18 @@ import {
 const HOMEPAGE_SETTINGS_DOC = "homepage_config";
 const SETTINGS_COLLECTION = "site_settings";
 
+interface FeaturedItem {
+  id: string;
+  type: "product" | "auction" | "shop" | "category";
+  itemId: string;
+  name: string;
+  image?: string;
+  position: number;
+  section: string;
+  active: boolean;
+  createdAt: string;
+}
+
 interface HomepageSettings {
   specialEventBanner: {
     enabled: boolean;
@@ -39,6 +51,7 @@ interface HomepageSettings {
     featuredReviews: { enabled: boolean; maxReviews: number };
   };
   sectionOrder: string[];
+  featuredItems?: Record<string, FeaturedItem[]>;
   updatedAt: string;
   updatedBy?: string;
 }
@@ -122,6 +135,11 @@ export async function GET(req: NextRequest) {
         ...DEFAULT_SETTINGS.specialEventBanner,
         ...(data?.specialEventBanner || {}),
       },
+      sections: {
+        ...DEFAULT_SETTINGS.sections,
+        ...(data?.sections || {}),
+      },
+      featuredItems: data?.featuredItems || {},
     } as HomepageSettings;
 
     return NextResponse.json({

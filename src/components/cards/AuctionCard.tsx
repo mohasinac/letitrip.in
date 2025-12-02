@@ -173,10 +173,16 @@ const AuctionCardComponent = ({
   // Determine urgency level for styling
   const isEndingSoon =
     timeRemaining.totalMs <= 24 * 60 * 60 * 1000 && !timeRemaining.isEnded;
-  const isEnded = timeRemaining.isEnded;
+
+  // Auction is ended if time has passed OR status is explicitly "ended"
+  const isEnded = timeRemaining.isEnded || auction.status === "ended";
 
   // Check if auction is truly live (status is active AND time hasn't passed)
-  const isTrulyLive = auction.status === "active" && !isEnded;
+  // Only show as live if BOTH conditions are met
+  const isTrulyLive = auction.status === "active" && !timeRemaining.isEnded;
+
+  // Auction is upcoming if status is pending
+  const isUpcoming = auction.status === "pending";
 
   // Status badge for admin/seller variants
   const statusBadge = isAdmin || isSeller ? auction.status : null;

@@ -1,6 +1,18 @@
 import { apiService } from "./api.service";
 import { HOMEPAGE_ROUTES } from "@/constants/api-routes";
 
+export interface FeaturedItem {
+  id: string;
+  type: "product" | "auction" | "shop" | "category";
+  itemId: string;
+  name: string;
+  image?: string;
+  position: number;
+  section: string;
+  active: boolean;
+  createdAt: string;
+}
+
 export interface HomepageSettings {
   specialEventBanner: {
     enabled: boolean;
@@ -46,6 +58,7 @@ export interface HomepageSettings {
     };
   };
   sectionOrder: string[];
+  featuredItems?: Record<string, FeaturedItem[]>;
   updatedAt: string;
   updatedBy?: string;
 }
@@ -56,6 +69,14 @@ interface HomepageSettingsResponse {
 }
 
 class HomepageSettingsService {
+  /**
+   * Invalidate cache for homepage settings
+   * Called after any mutation to ensure fresh data
+   */
+  private invalidateCache(): void {
+    apiService.invalidateCache("/homepage");
+  }
+
   // Get current homepage settings
   async getSettings(): Promise<HomepageSettingsResponse> {
     const response = await apiService.get<{
@@ -77,6 +98,7 @@ class HomepageSettingsService {
       HOMEPAGE_ROUTES.SETTINGS,
       { settings, userId },
     );
+    this.invalidateCache();
     return response.data;
   }
 
@@ -86,6 +108,7 @@ class HomepageSettingsService {
       HOMEPAGE_ROUTES.SETTINGS,
       {},
     );
+    this.invalidateCache();
     return response.data;
   }
 
@@ -137,6 +160,19 @@ class HomepageSettingsService {
     }
 
     throw new Error(`Section ${section} not found`);
+  }
+
+  // Get featured items (admin only)
+  async getFeaturedItems(): Promise<Record<string, FeaturedItem[]>> {
+    const response = await this.getSettings();
+    return response.settings.featuredItems || {};
+  }
+
+  // Update featured items (admin only)
+  async updateFeaturedItems(
+    featuredItems: Record<string, FeaturedItem[]>,
+  ): Promise<HomepageSettings> {
+    return this.updateSettings({ featuredItems });
   }
 }
 

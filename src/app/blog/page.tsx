@@ -10,15 +10,18 @@ export const metadata: Metadata = {
 
 export default function BlogPage() {
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Suspense
         fallback={
           <div className="container mx-auto px-4 py-8">
             <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-48"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="h-96 bg-gray-200 rounded-lg"></div>
+                  <div
+                    key={i}
+                    className="h-96 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                  ></div>
                 ))}
               </div>
             </div>
