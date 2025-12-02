@@ -175,6 +175,9 @@ const AuctionCardComponent = ({
     timeRemaining.totalMs <= 24 * 60 * 60 * 1000 && !timeRemaining.isEnded;
   const isEnded = timeRemaining.isEnded;
 
+  // Check if auction is truly live (status is active AND time hasn't passed)
+  const isTrulyLive = auction.status === "active" && !isEnded;
+
   // Status badge for admin/seller variants
   const statusBadge = isAdmin || isSeller ? auction.status : null;
 
@@ -293,6 +296,13 @@ const AuctionCardComponent = ({
             (isAdmin || isSeller) && onSelect ? "top-2 left-9" : "top-2 left-2"
           )}
         >
+          {/* Live Badge - shown for truly active auctions */}
+          {isTrulyLive && !statusBadge && (
+            <span className="bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+              Live
+            </span>
+          )}
           {/* Status Badge for Admin/Seller */}
           {statusBadge && statusBadge !== "active" && (
             <span
@@ -580,22 +590,27 @@ const AuctionCardComponent = ({
               e.preventDefault();
               // This would typically open a quick bid modal or navigate to details
             }}
+            disabled={isEnded}
             className={cn(
               "w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2",
               isEnded
-                ? "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
+                ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                : isTrulyLive
+                ? "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
+                : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
             )}
           >
             {isEnded ? (
-              <>
-                <Eye size={16} />
-                View Details
-              </>
-            ) : (
+              "Auction Ended"
+            ) : isTrulyLive ? (
               <>
                 <Gavel size={16} />
                 Place Bid
+              </>
+            ) : (
+              <>
+                <Eye size={16} />
+                View Details
               </>
             )}
           </button>

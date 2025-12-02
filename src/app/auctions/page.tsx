@@ -12,8 +12,7 @@ import {
   List,
   Filter as FilterIcon,
 } from "lucide-react";
-import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import AuctionCard from "@/components/cards/AuctionCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState, EmptyStates } from "@/components/common/EmptyState";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
@@ -23,7 +22,6 @@ import { useIsMobile } from "@/hooks/useMobile";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
-import { formatDistanceToNow } from "date-fns";
 
 function AuctionsContent() {
   const router = useRouter();
@@ -175,30 +173,6 @@ function AuctionsContent() {
         </button>
       </div>
     );
-  };
-
-  const getTimeRemaining = (endTime: Date | null | undefined) => {
-    if (!endTime) return "Ended";
-
-    const now = new Date();
-    const end = new Date(endTime);
-
-    // Check if date is valid
-    if (isNaN(end.getTime())) return "Ended";
-
-    const diff = end.getTime() - now.getTime();
-
-    if (diff <= 0) return "Ended";
-
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (hours < 24) {
-      return `${hours}h ${minutes}m left`;
-    }
-
-    const days = Math.floor(hours / 24);
-    return `${days}d ${hours % 24}h left`;
   };
 
   if (loading) {
@@ -360,7 +334,7 @@ function AuctionsContent() {
               </div>
             </div>
 
-            {/* Auctions Grid/List */}
+            {/* Auctions Grid/List - Using unified AuctionCard component */}
             {loading ? (
               <AuctionCardSkeletonGrid count={view === "grid" ? 12 : 8} />
             ) : auctions.length === 0 ? (
@@ -372,209 +346,39 @@ function AuctionsContent() {
                   }}
                 />
               </div>
-            ) : view === "grid" ? (
+            ) : (
               <CardGrid>
                 {auctions.map((auction) => (
-                  <Link
+                  <AuctionCard
                     key={auction.id}
-                    href={`/auctions/${auction.slug}`}
-                    className="group overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-primary hover:shadow-lg transition-all"
-                  >
-                    {/* Image */}
-                    {auction.images && auction.images[0] && (
-                      <div className="relative aspect-video w-full overflow-hidden bg-gray-100">
-                        <OptimizedImage
-                          src={auction.images[0]}
-                          alt={auction.name || "Auction"}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        {auction.featured && (
-                          <div className="absolute top-2 right-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
-                            ★ Featured
-                          </div>
-                        )}
-                        {auction.status === AuctionStatus.ACTIVE && (
-                          <div className="absolute top-2 left-2 rounded-full bg-green-500 px-2 py-1 text-xs font-medium text-white flex items-center gap-1">
-                            <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
-                            Live
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Content */}
-                    <div className="p-4">
-                      <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-primary transition-colors">
-                        {auction.name}
-                      </h3>
-
-                      {/* Bid Info */}
-                      <div className="mt-3 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Current Bid:
-                          </span>
-                          <span className="text-lg font-bold text-primary">
-                            ₹
-                            {(
-                              auction.currentBid ||
-                              auction.startingBid ||
-                              0
-                            ).toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600 dark:text-gray-400">
-                            Bids:
-                          </span>
-                          <span className="font-medium text-gray-900 dark:text-white">
-                            {auction.bidCount || 0}
-                          </span>
-                        </div>
-                        {auction.status === AuctionStatus.ACTIVE && (
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600 dark:text-gray-400">
-                              Time Left:
-                            </span>
-                            <span className="font-medium text-red-600 dark:text-red-400">
-                              {getTimeRemaining(auction.endTime)}
-                            </span>
-                          </div>
-                        )}
-                        {auction.status === "scheduled" && (
-                          <div className="text-sm text-blue-600 dark:text-blue-400">
-                            Starts{" "}
-                            {formatDistanceToNow(
-                              new Date(auction.startTime || 0),
-                              {
-                                addSuffix: true,
-                              }
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* CTA - Mobile Optimized */}
-                      <button
-                        className={`mt-4 w-full rounded-lg px-4 py-3 min-h-[48px] text-sm font-medium transition-colors touch-manipulation ${
-                          auction.status === AuctionStatus.ACTIVE
-                            ? "bg-primary text-white hover:bg-primary/90 active:bg-primary/80"
-                            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                        }`}
-                      >
-                        {auction.status === AuctionStatus.ACTIVE
-                          ? "Place Bid"
-                          : "View Details"}
-                      </button>
-                    </div>
-                  </Link>
+                    auction={{
+                      id: auction.id,
+                      name: auction.name || auction.productName || "",
+                      slug: auction.slug || auction.productSlug || "",
+                      images:
+                        auction.images ||
+                        (auction.productImage ? [auction.productImage] : []),
+                      currentBid:
+                        auction.currentBid ||
+                        auction.currentPrice ||
+                        auction.startingBid ||
+                        0,
+                      startingBid: auction.startingBid || 0,
+                      bidCount: auction.bidCount || auction.totalBids || 0,
+                      endTime: auction.endTime,
+                      status: auction.status as any,
+                      featured: auction.featured,
+                      shop: auction.shopId
+                        ? {
+                            id: auction.shopId,
+                            name: (auction as any).shopName || "Shop",
+                          }
+                        : undefined,
+                    }}
+                    showShopInfo={true}
+                  />
                 ))}
               </CardGrid>
-            ) : (
-              <div className="space-y-4">
-                {auctions.map((auction) => (
-                  <Link
-                    key={auction.id}
-                    href={`/auctions/${auction.slug}`}
-                    className="group flex flex-col sm:flex-row gap-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-primary hover:shadow-lg transition-all"
-                  >
-                    {/* Image */}
-                    {auction.images && auction.images[0] && (
-                      <div className="relative w-full sm:w-48 aspect-video sm:aspect-square overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
-                        <OptimizedImage
-                          src={auction.images[0]}
-                          alt={auction.name || "Auction"}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        {auction.featured && (
-                          <div className="absolute top-2 right-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
-                            ★ Featured
-                          </div>
-                        )}
-                        {auction.status === AuctionStatus.ACTIVE && (
-                          <div className="absolute top-2 left-2 rounded-full bg-green-500 px-2 py-1 text-xs font-medium text-white flex items-center gap-1">
-                            <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
-                            Live
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Content */}
-                    <div className="flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="font-semibold text-lg text-gray-900 dark:text-white line-clamp-1 group-hover:text-primary transition-colors">
-                          {auction.name}
-                        </h3>
-
-                        {/* Bid Info */}
-                        <div className="mt-3 flex flex-wrap gap-4">
-                          <div>
-                            <span className="text-xs text-gray-600 dark:text-gray-400">
-                              Current Bid
-                            </span>
-                            <p className="text-xl font-bold text-primary">
-                              ₹
-                              {(
-                                auction.currentBid ||
-                                auction.startingBid ||
-                                0
-                              ).toLocaleString()}
-                            </p>
-                          </div>
-                          <div>
-                            <span className="text-xs text-gray-600 dark:text-gray-400">
-                              Bids
-                            </span>
-                            <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                              {auction.bidCount || 0}
-                            </p>
-                          </div>
-                          {auction.status === AuctionStatus.ACTIVE && (
-                            <div>
-                              <span className="text-xs text-gray-600 dark:text-gray-400">
-                                Time Left
-                              </span>
-                              <p className="text-lg font-semibold text-red-600 dark:text-red-400">
-                                {getTimeRemaining(auction.endTime)}
-                              </p>
-                            </div>
-                          )}
-                          {auction.status === "scheduled" && (
-                            <div>
-                              <span className="text-xs text-gray-600 dark:text-gray-400">
-                                Starts
-                              </span>
-                              <p className="text-sm text-blue-600 dark:text-blue-400">
-                                {formatDistanceToNow(
-                                  new Date(auction.startTime || 0),
-                                  {
-                                    addSuffix: true,
-                                  }
-                                )}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <button
-                        className={`mt-4 sm:mt-0 sm:self-end rounded-lg px-6 py-3 min-h-[48px] text-sm font-medium transition-colors touch-manipulation ${
-                          auction.status === AuctionStatus.ACTIVE
-                            ? "bg-primary text-white hover:bg-primary/90 active:bg-primary/80"
-                            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                        }`}
-                      >
-                        {auction.status === AuctionStatus.ACTIVE
-                          ? "Place Bid"
-                          : "View Details"}
-                      </button>
-                    </div>
-                  </Link>
-                ))}
-              </div>
             )}
 
             {/* Pagination */}
