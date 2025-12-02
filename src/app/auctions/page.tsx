@@ -385,7 +385,7 @@ function AuctionsContent() {
                       <div className="relative aspect-video w-full overflow-hidden bg-gray-100">
                         <OptimizedImage
                           src={auction.images[0]}
-                          alt={auction.name}
+                          alt={auction.name || "Auction"}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
@@ -484,7 +484,7 @@ function AuctionsContent() {
                       <div className="relative w-full sm:w-48 aspect-video sm:aspect-square overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
                         <OptimizedImage
                           src={auction.images[0]}
-                          alt={auction.name}
+                          alt={auction.name || "Auction"}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />

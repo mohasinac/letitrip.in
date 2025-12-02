@@ -425,10 +425,6 @@ export default function CreateShopWizardPage() {
                         alt="Logo preview"
                         fill
                         className="object-cover rounded-lg border border-gray-200"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            "/placeholder-logo.png";
-                        }}
                       />
                     </div>
                     <p className="text-xs text-gray-500">
@@ -471,10 +467,6 @@ export default function CreateShopWizardPage() {
                       alt="Banner preview"
                       fill
                       className="object-cover rounded-lg border border-gray-200"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          "/placeholder-banner.png";
-                      }}
                     />
                   </div>
                 </div>

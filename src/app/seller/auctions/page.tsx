@@ -503,7 +503,7 @@ export default function SellerAuctionsPage() {
                                   <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 overflow-hidden relative">
                                     <OptimizedImage
                                       src={auction.images[0]}
-                                      alt={auction.name}
+                                      alt={auction.name || "Auction"}
                                       fill
                                       className="object-cover"
                                     />
@@ -605,7 +605,7 @@ export default function SellerAuctionsPage() {
                       <div className="aspect-video w-full overflow-hidden bg-gray-100 relative">
                         <OptimizedImage
                           src={auction.images[0]}
-                          alt={auction.name}
+                          alt={auction.name || "Auction"}
                           fill
                           className="object-cover"
                         />

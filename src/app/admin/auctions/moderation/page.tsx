@@ -240,7 +240,7 @@ export default function AuctionModerationPage() {
                               <div className="relative w-12 h-12 mr-3">
                                 <OptimizedImage
                                   src={auction.images[0]}
-                                  alt={auction.name}
+                                  alt={auction.name || "Auction"}
                                   fill
                                   className="object-cover rounded"
                                 />

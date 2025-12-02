@@ -12,7 +12,8 @@ import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { categoriesService } from "@/services/categories.service";
-import { Card, Input, Textarea, Checkbox, FormActions } from "@/components/ui";
+import { Card, Checkbox, FormActions } from "@/components/ui";
+import { FormField, FormInput, FormTextarea } from "@/components/forms";
 
 interface CategoryFormProps {
   initialData?: {
@@ -181,18 +182,17 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       <Card title="Basic Information">
         <div className="space-y-4">
           {/* Name */}
-          <Input
-            label="Category Name"
-            required
-            value={formData.name}
-            onChange={(e) => {
-              setFormData((prev) => ({ ...prev, name: e.target.value }));
-              setErrors((prev) => ({ ...prev, name: "" }));
-            }}
-            error={errors.name}
-            placeholder="Electronics, Fashion, etc."
-            disabled={loading}
-          />
+          <FormField label="Category Name" required error={errors.name}>
+            <FormInput
+              value={formData.name}
+              onChange={(e) => {
+                setFormData((prev) => ({ ...prev, name: e.target.value }));
+                setErrors((prev) => ({ ...prev, name: "" }));
+              }}
+              placeholder="Electronics, Fashion, etc."
+              disabled={loading}
+            />
+          </FormField>
 
           {/* Slug */}
           <div id="category-slug-wrapper">
@@ -260,21 +260,21 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
           </div>
 
           {/* Sort Order */}
-          <Input
-            label="Sort Order"
-            type="number"
-            value={formData.sort_order}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                sort_order: parseInt(e.target.value) || 0,
-              }))
-            }
-            placeholder="0"
-            min="0"
-            helperText="Lower numbers appear first"
-            disabled={loading}
-          />
+          <FormField label="Sort Order" hint="Lower numbers appear first">
+            <FormInput
+              type="number"
+              value={formData.sort_order}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  sort_order: parseInt(e.target.value) || 0,
+                }))
+              }
+              placeholder="0"
+              min={0}
+              disabled={loading}
+            />
+          </FormField>
         </div>
       </Card>
 
@@ -368,33 +368,39 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       {/* SEO Metadata */}
       <Card title="SEO Metadata">
         <div className="space-y-4">
-          <Input
+          <FormField
             label="Meta Title"
-            value={formData.meta_title}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, meta_title: e.target.value }))
-            }
-            placeholder="SEO title (defaults to category name)"
-            maxLength={60}
-            helperText={`${formData.meta_title.length} / 60 characters`}
-            disabled={loading}
-          />
+            hint={`${formData.meta_title.length} / 60 characters`}
+          >
+            <FormInput
+              value={formData.meta_title}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, meta_title: e.target.value }))
+              }
+              placeholder="SEO title (defaults to category name)"
+              maxLength={60}
+              disabled={loading}
+            />
+          </FormField>
 
-          <Textarea
+          <FormField
             label="Meta Description"
-            value={formData.meta_description}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                meta_description: e.target.value,
-              }))
-            }
-            rows={3}
-            placeholder="SEO description"
-            maxLength={160}
-            showCharCount
-            disabled={loading}
-          />
+            hint={`${formData.meta_description.length} / 160 characters`}
+          >
+            <FormTextarea
+              value={formData.meta_description}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  meta_description: e.target.value,
+                }))
+              }
+              rows={3}
+              placeholder="SEO description"
+              maxLength={160}
+              disabled={loading}
+            />
+          </FormField>
         </div>
       </Card>
 

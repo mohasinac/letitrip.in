@@ -1,18 +1,22 @@
 "use client";
 
-import { forwardRef, InputHTMLAttributes } from "react";
+import { forwardRef, InputHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export interface FormCheckboxProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
-  label: string;
+  label: string | ReactNode;
   description?: string;
   error?: string;
 }
 
 export const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
   ({ label, description, error, className, id, ...props }, ref) => {
-    const checkboxId = id || label.toLowerCase().replace(/\s+/g, "-");
+    const checkboxId =
+      id ||
+      (typeof label === "string"
+        ? label.toLowerCase().replace(/\s+/g, "-")
+        : `checkbox-${Math.random().toString(36).slice(2, 9)}`);
 
     return (
       <div className={cn("relative flex items-start", className)}>

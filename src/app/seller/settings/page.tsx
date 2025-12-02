@@ -36,6 +36,12 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
+import {
+  FormInput,
+  FormSelect,
+  FormCheckbox,
+  FormTextarea,
+} from "@/components/forms";
 
 interface SellerProfile {
   displayName: string;
@@ -270,71 +276,40 @@ export default function SellerSettingsPage() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="settings-display-name"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Display Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    id="settings-display-name"
-                    type="text"
-                    value={profile.displayName}
-                    onChange={(e) =>
-                      setProfile({ ...profile, displayName: e.target.value })
-                    }
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Your display name"
-                  />
-                </div>
-              </div>
+              <FormInput
+                id="settings-display-name"
+                label="Display Name"
+                value={profile.displayName}
+                onChange={(e) =>
+                  setProfile({ ...profile, displayName: e.target.value })
+                }
+                leftIcon={<User className="w-5 h-5" />}
+                placeholder="Your display name"
+              />
 
-              <div>
-                <label
-                  htmlFor="settings-email"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    id="settings-email"
-                    type="email"
-                    value={profile.email}
-                    onChange={(e) =>
-                      setProfile({ ...profile, email: e.target.value })
-                    }
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="you@example.com"
-                  />
-                </div>
-              </div>
+              <FormInput
+                id="settings-email"
+                label="Email Address"
+                type="email"
+                value={profile.email}
+                onChange={(e) =>
+                  setProfile({ ...profile, email: e.target.value })
+                }
+                leftIcon={<Mail className="w-5 h-5" />}
+                placeholder="you@example.com"
+              />
 
-              <div>
-                <label
-                  htmlFor="settings-phone"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Phone Number
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    id="settings-phone"
-                    type="tel"
-                    value={profile.phone}
-                    onChange={(e) =>
-                      setProfile({ ...profile, phone: e.target.value })
-                    }
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="+91 9876543210"
-                  />
-                </div>
-              </div>
+              <FormInput
+                id="settings-phone"
+                label="Phone Number"
+                type="tel"
+                value={profile.phone}
+                onChange={(e) =>
+                  setProfile({ ...profile, phone: e.target.value })
+                }
+                leftIcon={<Phone className="w-5 h-5" />}
+                placeholder="+91 9876543210"
+              />
             </div>
           </div>
         )}
@@ -347,107 +322,69 @@ export default function SellerSettingsPage() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="settings-business-name"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Business Name
-                </label>
-                <div className="relative">
-                  <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    id="settings-business-name"
-                    type="text"
-                    value={profile.businessName}
-                    onChange={(e) =>
-                      setProfile({ ...profile, businessName: e.target.value })
-                    }
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Your business name"
-                  />
-                </div>
-              </div>
+              <FormInput
+                id="settings-business-name"
+                label="Business Name"
+                value={profile.businessName}
+                onChange={(e) =>
+                  setProfile({ ...profile, businessName: e.target.value })
+                }
+                leftIcon={<Building2 className="w-5 h-5" />}
+                placeholder="Your business name"
+              />
+
+              <FormSelect
+                id="settings-business-type"
+                label="Business Type"
+                value={profile.businessType}
+                onChange={(e) =>
+                  setProfile({
+                    ...profile,
+                    businessType: e.target
+                      .value as SellerProfile["businessType"],
+                  })
+                }
+                options={[
+                  { value: "individual", label: "Individual" },
+                  { value: "company", label: "Company" },
+                  { value: "partnership", label: "Partnership" },
+                ]}
+              />
 
               <div>
-                <label
-                  htmlFor="settings-business-type"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Business Type
-                </label>
-                <select
-                  id="settings-business-type"
-                  value={profile.businessType}
+                <FormInput
+                  id="settings-gst"
+                  label="GST Number"
+                  value={profile.gstNumber}
                   onChange={(e) =>
                     setProfile({
                       ...profile,
-                      businessType: e.target
-                        .value as SellerProfile["businessType"],
+                      gstNumber: e.target.value.toUpperCase(),
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="individual">Individual</option>
-                  <option value="company">Company</option>
-                  <option value="partnership">Partnership</option>
-                </select>
+                  leftIcon={<FileText className="w-5 h-5" />}
+                  placeholder="22AAAAA0000A1Z5"
+                  maxLength={15}
+                  className="font-mono"
+                  helperText="Optional. Required for businesses with turnover over ₹40 lakhs"
+                />
               </div>
 
-              <div>
-                <label
-                  htmlFor="settings-gst"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  GST Number
-                </label>
-                <div className="relative">
-                  <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    id="settings-gst"
-                    type="text"
-                    value={profile.gstNumber}
-                    onChange={(e) =>
-                      setProfile({
-                        ...profile,
-                        gstNumber: e.target.value.toUpperCase(),
-                      })
-                    }
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-                    placeholder="22AAAAA0000A1Z5"
-                    maxLength={15}
-                  />
-                </div>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  Optional. Required for businesses with turnover over ₹40 lakhs
-                </p>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="settings-pan"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  PAN Number
-                </label>
-                <div className="relative">
-                  <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    id="settings-pan"
-                    type="text"
-                    value={profile.panNumber}
-                    onChange={(e) =>
-                      setProfile({
-                        ...profile,
-                        panNumber: e.target.value.toUpperCase(),
-                      })
-                    }
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-                    placeholder="ABCDE1234F"
-                    maxLength={10}
-                  />
-                </div>
-              </div>
+              <FormInput
+                id="settings-pan"
+                label="PAN Number"
+                value={profile.panNumber}
+                onChange={(e) =>
+                  setProfile({
+                    ...profile,
+                    panNumber: e.target.value.toUpperCase(),
+                  })
+                }
+                leftIcon={<FileText className="w-5 h-5" />}
+                placeholder="ABCDE1234F"
+                maxLength={10}
+                className="font-mono"
+              />
             </div>
 
             <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
@@ -456,109 +393,73 @@ export default function SellerSettingsPage() {
               </h3>
 
               <div className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="settings-street"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                  >
-                    Street Address
-                  </label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <textarea
-                      id="settings-street"
-                      value={profile.address.street}
-                      onChange={(e) =>
-                        setProfile({
-                          ...profile,
-                          address: {
-                            ...profile.address,
-                            street: e.target.value,
-                          },
-                        })
-                      }
-                      rows={2}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                      placeholder="Street address, building, floor"
-                    />
-                  </div>
-                </div>
+                <FormTextarea
+                  id="settings-street"
+                  label="Street Address"
+                  value={profile.address.street}
+                  onChange={(e) =>
+                    setProfile({
+                      ...profile,
+                      address: {
+                        ...profile.address,
+                        street: e.target.value,
+                      },
+                    })
+                  }
+                  rows={2}
+                  leftIcon={<MapPin className="w-5 h-5" />}
+                  placeholder="Street address, building, floor"
+                  className="resize-none"
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label
-                      htmlFor="settings-city"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
-                      City
-                    </label>
-                    <input
-                      id="settings-city"
-                      type="text"
-                      value={profile.address.city}
-                      onChange={(e) =>
-                        setProfile({
-                          ...profile,
-                          address: { ...profile.address, city: e.target.value },
-                        })
-                      }
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="City"
-                    />
-                  </div>
+                  <FormInput
+                    id="settings-city"
+                    label="City"
+                    value={profile.address.city}
+                    onChange={(e) =>
+                      setProfile({
+                        ...profile,
+                        address: { ...profile.address, city: e.target.value },
+                      })
+                    }
+                    placeholder="City"
+                  />
 
-                  <div>
-                    <label
-                      htmlFor="settings-state"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
-                      State
-                    </label>
-                    <input
-                      id="settings-state"
-                      type="text"
-                      value={profile.address.state}
-                      onChange={(e) =>
-                        setProfile({
-                          ...profile,
-                          address: {
-                            ...profile.address,
-                            state: e.target.value,
-                          },
-                        })
-                      }
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="State"
-                    />
-                  </div>
+                  <FormInput
+                    id="settings-state"
+                    label="State"
+                    value={profile.address.state}
+                    onChange={(e) =>
+                      setProfile({
+                        ...profile,
+                        address: {
+                          ...profile.address,
+                          state: e.target.value,
+                        },
+                      })
+                    }
+                    placeholder="State"
+                  />
 
-                  <div>
-                    <label
-                      htmlFor="settings-pincode"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
-                      PIN Code
-                    </label>
-                    <input
-                      id="settings-pincode"
-                      type="text"
-                      value={profile.address.pincode}
-                      onChange={(e) =>
-                        setProfile({
-                          ...profile,
-                          address: {
-                            ...profile.address,
-                            pincode: e.target.value
-                              .replace(/\D/g, "")
-                              .slice(0, 6),
-                          },
-                        })
-                      }
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="123456"
-                      maxLength={6}
-                    />
-                  </div>
+                  <FormInput
+                    id="settings-pincode"
+                    label="PIN Code"
+                    value={profile.address.pincode}
+                    onChange={(e) =>
+                      setProfile({
+                        ...profile,
+                        address: {
+                          ...profile.address,
+                          pincode: e.target.value
+                            .replace(/\D/g, "")
+                            .slice(0, 6),
+                        },
+                      })
+                    }
+                    placeholder="123456"
+                    maxLength={6}
+                  />
                 </div>
               </div>
             </div>
@@ -710,143 +611,90 @@ export default function SellerSettingsPage() {
 
             {payout.preferredMethod === "bank" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="payout-account-holder"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                  >
-                    Account Holder Name
-                  </label>
-                  <input
-                    id="payout-account-holder"
-                    type="text"
-                    value={payout.accountHolderName}
-                    onChange={(e) =>
-                      setPayout({
-                        ...payout,
-                        accountHolderName: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="As per bank records"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="payout-bank-name"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                  >
-                    Bank Name
-                  </label>
-                  <input
-                    id="payout-bank-name"
-                    type="text"
-                    value={payout.bankName}
-                    onChange={(e) =>
-                      setPayout({ ...payout, bankName: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Bank name"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="payout-account-number"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                  >
-                    Account Number
-                  </label>
-                  <input
-                    id="payout-account-number"
-                    type="text"
-                    value={payout.accountNumber}
-                    onChange={(e) =>
-                      setPayout({
-                        ...payout,
-                        accountNumber: e.target.value.replace(/\D/g, ""),
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-                    placeholder="Account number"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="payout-ifsc"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                  >
-                    IFSC Code
-                  </label>
-                  <input
-                    id="payout-ifsc"
-                    type="text"
-                    value={payout.ifscCode}
-                    onChange={(e) =>
-                      setPayout({
-                        ...payout,
-                        ifscCode: e.target.value.toUpperCase(),
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-                    placeholder="ABCD0001234"
-                    maxLength={11}
-                  />
-                </div>
-              </div>
-            )}
-
-            {payout.preferredMethod === "upi" && (
-              <div>
-                <label
-                  htmlFor="payout-upi"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  UPI ID
-                </label>
-                <input
-                  id="payout-upi"
-                  type="text"
-                  value={payout.upiId}
+                <FormInput
+                  id="payout-account-holder"
+                  label="Account Holder Name"
+                  value={payout.accountHolderName}
                   onChange={(e) =>
-                    setPayout({ ...payout, upiId: e.target.value })
+                    setPayout({
+                      ...payout,
+                      accountHolderName: e.target.value,
+                    })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="yourname@upi"
+                  placeholder="As per bank records"
+                />
+
+                <FormInput
+                  id="payout-bank-name"
+                  label="Bank Name"
+                  value={payout.bankName}
+                  onChange={(e) =>
+                    setPayout({ ...payout, bankName: e.target.value })
+                  }
+                  placeholder="Bank name"
+                />
+
+                <FormInput
+                  id="payout-account-number"
+                  label="Account Number"
+                  value={payout.accountNumber}
+                  onChange={(e) =>
+                    setPayout({
+                      ...payout,
+                      accountNumber: e.target.value.replace(/\D/g, ""),
+                    })
+                  }
+                  placeholder="Account number"
+                  className="font-mono"
+                />
+
+                <FormInput
+                  id="payout-ifsc"
+                  label="IFSC Code"
+                  value={payout.ifscCode}
+                  onChange={(e) =>
+                    setPayout({
+                      ...payout,
+                      ifscCode: e.target.value.toUpperCase(),
+                    })
+                  }
+                  placeholder="ABCD0001234"
+                  maxLength={11}
+                  className="font-mono"
                 />
               </div>
             )}
 
-            <div>
-              <label
-                htmlFor="payout-min-amount"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Minimum Payout Amount (₹)
-              </label>
-              <select
-                id="payout-min-amount"
-                value={payout.minPayoutAmount}
+            {payout.preferredMethod === "upi" && (
+              <FormInput
+                id="payout-upi"
+                label="UPI ID"
+                value={payout.upiId}
                 onChange={(e) =>
-                  setPayout({
-                    ...payout,
-                    minPayoutAmount: Number(e.target.value),
-                  })
+                  setPayout({ ...payout, upiId: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value={500}>₹500</option>
-                <option value={1000}>₹1,000</option>
-                <option value={2000}>₹2,000</option>
-                <option value={5000}>₹5,000</option>
-              </select>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Payouts will be processed only when your balance exceeds this
-                amount
-              </p>
-            </div>
+                placeholder="yourname@upi"
+              />
+            )}
+
+            <FormSelect
+              id="payout-min-amount"
+              label="Minimum Payout Amount (₹)"
+              value={payout.minPayoutAmount}
+              onChange={(e) =>
+                setPayout({
+                  ...payout,
+                  minPayoutAmount: Number(e.target.value),
+                })
+              }
+              options={[
+                { value: "500", label: "₹500" },
+                { value: "1000", label: "₹1,000" },
+                { value: "2000", label: "₹2,000" },
+                { value: "5000", label: "₹5,000" },
+              ]}
+              helperText="Payouts will be processed only when your balance exceeds this amount"
+            />
           </div>
         )}
 

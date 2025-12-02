@@ -8,9 +8,6 @@ export {
   createEditAction,
   createMoreAction,
 } from "./MobileSwipeActions";
-export { MobileFormInput } from "./MobileFormInput";
-export { MobileFormSelect } from "./MobileFormSelect";
-export { MobileTextarea } from "./MobileTextarea";
 export {
   MobileSkeleton,
   ProductCardSkeleton,

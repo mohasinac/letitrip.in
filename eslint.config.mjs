@@ -36,6 +36,30 @@ const eslintConfig = [
           allow: ["warn", "error", "info"],
         },
       ],
+      // Doc 30: Prevent usage of deprecated components
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["**/components/ui/Input", "**/components/ui/Select"],
+              message: "Use FormInput/FormSelect from @/components/forms instead (Doc 27 standard)",
+            },
+            {
+              group: ["**/components/mobile/MobileFormInput", "**/components/mobile/MobileFormSelect", "**/components/mobile/MobileTextarea"],
+              message: "Use FormInput/FormSelect/FormTextarea from @/components/forms instead (Doc 27 standard)",
+            },
+          ],
+        },
+      ],
+      // Doc 29: Warn on raw img tags (use OptimizedImage)
+      "no-restricted-syntax": [
+        "warn",
+        {
+          selector: 'JSXOpeningElement[name.name="img"]',
+          message: "Use OptimizedImage from @/components/common/OptimizedImage instead of raw <img> tag (Doc 29)",
+        },
+      ],
     },
   },
 ];

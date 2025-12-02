@@ -6,7 +6,8 @@ import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { useShopSlugValidation } from "@/lib/validation/slug";
 import type { ShopFE } from "@/types/frontend/shop.types";
-import { Card, Input, Button, FormActions } from "@/components/ui";
+import { Card, Button, FormActions } from "@/components/ui";
+import { FormField, FormInput } from "@/components/forms";
 
 interface ShopFormProps {
   shop?: ShopFE;
@@ -84,15 +85,14 @@ export default function ShopForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card title="Basic Information">
         <div className="space-y-4">
-          <Input
-            label="Shop Name"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            error={errors.name}
-            placeholder="Enter your shop name"
-            disabled={isSubmitting}
-          />
+          <FormField label="Shop Name" required error={errors.name}>
+            <FormInput
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your shop name"
+              disabled={isSubmitting}
+            />
+          </FormField>
 
           <div>
             <label
@@ -155,43 +155,44 @@ export default function ShopForm({
       <Card title="Contact Information">
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
-              placeholder="shop@example.com"
-              disabled={isSubmitting}
-            />
-            <Input
-              label="Phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              error={errors.phone}
-              placeholder="9876543210"
-              disabled={isSubmitting}
-            />
+            <FormField label="Email" error={errors.email}>
+              <FormInput
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="shop@example.com"
+                disabled={isSubmitting}
+              />
+            </FormField>
+            <FormField label="Phone" error={errors.phone}>
+              <FormInput
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="9876543210"
+                disabled={isSubmitting}
+              />
+            </FormField>
           </div>
 
-          <Input
-            label="Location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="City, State"
-            disabled={isSubmitting}
-          />
+          <FormField label="Location">
+            <FormInput
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="City, State"
+              disabled={isSubmitting}
+            />
+          </FormField>
 
-          <Input
-            label="Website"
-            type="url"
-            value={website}
-            onChange={(e) => setWebsite(e.target.value)}
-            error={errors.website}
-            placeholder="https://yourwebsite.com"
-            disabled={isSubmitting}
-          />
+          <FormField label="Website" error={errors.website}>
+            <FormInput
+              type="url"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              placeholder="https://yourwebsite.com"
+              disabled={isSubmitting}
+            />
+          </FormField>
         </div>
       </Card>
 

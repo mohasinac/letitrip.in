@@ -187,7 +187,7 @@ export default function AuctionQuickView({
                 {auction.images.length > 0 && (
                   <Image
                     src={auction.images[currentImageIndex]}
-                    alt={auction.name}
+                    alt={auction.name || "Auction"}
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 50vw"
