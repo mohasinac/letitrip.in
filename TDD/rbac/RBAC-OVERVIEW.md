@@ -274,6 +274,17 @@ Guest (Level 0)
 | Delete message       | ✅    | Own only | Own only | ❌    |
 | View all messages    | ✅    | ❌       | ❌       | ❌    |
 
+### Resource: Internationalization (E037 - Planned)
+
+| Action                  | Admin | Seller | User | Guest |
+| ----------------------- | ----- | ------ | ---- | ----- |
+| Switch language         | ✅    | ✅     | ✅   | ✅    |
+| Save language pref      | ✅    | ✅     | ✅   | ✅    |
+| Configure languages     | ✅    | ❌     | ❌   | ❌    |
+| Manage translations     | ✅    | ❌     | ❌   | ❌    |
+| Set default language    | ✅    | ❌     | ❌   | ❌    |
+| Enable/disable language | ✅    | ❌     | ❌   | ❌    |
+
 ### Resource: Settings
 
 | Action             | Admin | Seller | User | Guest |
@@ -285,6 +296,61 @@ Guest (Level 0)
 | Update email       | ✅    | ❌     | ❌   | ❌    |
 | Toggle features    | ✅    | ❌     | ❌   | ❌    |
 | Enable maintenance | ✅    | ❌     | ❌   | ❌    |
+
+### Resource: Product Comparison (E002)
+
+| Action               | Admin | Seller | User | Guest         |
+| -------------------- | ----- | ------ | ---- | ------------- |
+| Add to comparison    | ✅    | ✅     | ✅   | Local storage |
+| Remove from compare  | ✅    | ✅     | ✅   | Local storage |
+| View comparison bar  | ✅    | ✅     | ✅   | Local storage |
+| View full comparison | ✅    | ✅     | ✅   | Local storage |
+| Sync on login        | ✅    | ✅     | ✅   | N/A           |
+| Max 4 products       | ✅    | ✅     | ✅   | ✅            |
+
+### Resource: Viewing History (E002)
+
+| Action                 | Admin | Seller | User | Guest         |
+| ---------------------- | ----- | ------ | ---- | ------------- |
+| Auto-track views       | ✅    | ✅     | ✅   | Local storage |
+| View history widget    | ✅    | ✅     | ✅   | Local storage |
+| View full history page | ✅    | ✅     | ✅   | Local storage |
+| Clear history          | ✅    | ✅     | ✅   | Local storage |
+| Sync on login          | ✅    | ✅     | ✅   | N/A           |
+| Max 50 items           | ✅    | ✅     | ✅   | ✅            |
+| 30-day expiry          | ✅    | ✅     | ✅   | ✅            |
+
+### Resource: Homepage Sections (E014)
+
+| Action               | Admin | Seller | User   | Guest  |
+| -------------------- | ----- | ------ | ------ | ------ |
+| View sections        | ✅    | Active | Active | Active |
+| Create section       | ✅    | ❌     | ❌     | ❌     |
+| Update section       | ✅    | ❌     | ❌     | ❌     |
+| Delete section       | ✅    | ❌     | ❌     | ❌     |
+| Reorder sections     | ✅    | ❌     | ❌     | ❌     |
+| Configure products   | ✅    | ❌     | ❌     | ❌     |
+| Set display settings | ✅    | ❌     | ❌     | ❌     |
+
+### Resource: Similar Categories (E013)
+
+| Action              | Admin | Seller | User   | Guest  |
+| ------------------- | ----- | ------ | ------ | ------ |
+| View similar cats   | ✅    | ✅     | ✅     | ✅     |
+| Configure relations | ✅    | ❌     | ❌     | ❌     |
+| Set display count   | ✅    | ❌     | ❌     | ❌     |
+
+### Resource: Media Upload (E003)
+
+| Action              | Admin | Seller | User    | Guest |
+| ------------------- | ----- | ------ | ------- | ----- |
+| Upload image        | ✅    | ✅     | Limited | ❌    |
+| Crop/zoom image     | ✅    | ✅     | Limited | ❌    |
+| Rotate image        | ✅    | ✅     | Limited | ❌    |
+| Set focus point     | ✅    | ✅     | Limited | ❌    |
+| Upload video        | ✅    | ✅     | ❌      | ❌    |
+| Generate thumbnail  | ✅    | ✅     | ❌      | ❌    |
+| Select aspect ratio | ✅    | ✅     | Limited | ❌    |
 
 ### Resource: Search
 

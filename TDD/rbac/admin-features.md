@@ -78,10 +78,14 @@ Admin users have full platform access with permission level 100.
 ### Content Management
 
 - Manage categories (full CRUD)
-- Manage hero slides
-- Configure homepage
+- Configure similar category relations
+- Manage hero slides with route fixes
+- Configure homepage sections (featured, trending, etc.)
+- Manage tabbed navigation on homepage
 - Manage blog posts, categories, tags
 - Upload static assets
+- Advanced media uploads (crop, rotate, focus point)
+- Video thumbnail generation
 
 ### System Configuration
 
@@ -91,6 +95,8 @@ Admin users have full platform access with permission level 100.
 - Configure SMTP and email templates
 - Toggle feature flags
 - Enable/disable maintenance mode
+- Configure supported languages (i18n - planned)
+- Manage translations (i18n - planned)
 
 ### Messaging
 
@@ -190,9 +196,16 @@ if (user.role === "admin") {
 
 - ✅ Hero slides list as cards
 - ✅ Hero slide form mobile-optimized
+- ✅ Route fixing for hero slides
+- ✅ Homepage sections management
+- ✅ Section reordering via drag-drop
+- ✅ Tabbed navigation configuration
 - ✅ Blog posts list as cards
 - ✅ Blog editor mobile-optimized
 - ✅ Image upload touch-friendly
+- ✅ ImageEditor with crop/zoom/rotate
+- ✅ Focus point selection for mobile
+- ✅ Video thumbnail generation
 
 ### Mobile Financial
 
