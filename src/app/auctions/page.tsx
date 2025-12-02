@@ -56,28 +56,10 @@ function AuctionsContent() {
     loadAuctions();
   }, []);
 
-  // Update URL when sort/page changes (not filters - those wait for Apply)
+  // Reload when sort/page/filters change via URL
   useEffect(() => {
-    updateUrlAndLoad();
-  }, [sortBy, sortOrder, currentPage]);
-
-  const updateUrlAndLoad = useCallback(() => {
-    const params = new URLSearchParams();
-    if (filterValues.status) params.set("status", filterValues.status);
-    if (filterValues.categoryId)
-      params.set("categoryId", filterValues.categoryId);
-    if (filterValues.minBid) params.set("minBid", String(filterValues.minBid));
-    if (filterValues.maxBid) params.set("maxBid", String(filterValues.maxBid));
-    if (filterValues.featured) params.set("featured", "true");
-    if (sortBy !== "created_at") params.set("sortBy", sortBy);
-    if (sortOrder !== "desc") params.set("sortOrder", sortOrder);
-    if (currentPage > 1) params.set("page", String(currentPage));
-
-    const newUrl = params.toString() ? `?${params.toString()}` : "/auctions";
-    router.push(newUrl, { scroll: false });
-
     loadAuctions();
-  }, [filterValues, sortBy, sortOrder, currentPage]);
+  }, [sortBy, sortOrder, currentPage, status, featured]);
 
   const loadAuctions = async () => {
     try {
@@ -134,8 +116,9 @@ function AuctionsContent() {
     setShowFilters(false);
     setCurrentPage(1);
     setCursors([null]);
-    setTimeout(() => updateUrlAndLoad(), 0);
-  }, [updateUrlAndLoad]);
+    // Clear URL and reload
+    router.push("/auctions", { scroll: false });
+  }, [router]);
 
   const renderPagination = () => {
     if (!hasNextPage && currentPage === 1) return null;
@@ -212,7 +195,23 @@ function AuctionsContent() {
                 if (pendingValues) setFilterValues(pendingValues);
                 setCurrentPage(1);
                 setCursors([null]);
-                setTimeout(() => updateUrlAndLoad(), 0);
+                // Update URL with new filter values and reload
+                const params = new URLSearchParams();
+                if (pendingValues?.status)
+                  params.set("status", pendingValues.status);
+                if (pendingValues?.categoryId)
+                  params.set("categoryId", pendingValues.categoryId);
+                if (pendingValues?.minBid)
+                  params.set("minBid", String(pendingValues.minBid));
+                if (pendingValues?.maxBid)
+                  params.set("maxBid", String(pendingValues.maxBid));
+                if (pendingValues?.featured) params.set("featured", "true");
+                if (sortBy !== "created_at") params.set("sortBy", sortBy);
+                if (sortOrder !== "desc") params.set("sortOrder", sortOrder);
+                const newUrl = params.toString()
+                  ? `/auctions?${params.toString()}`
+                  : "/auctions";
+                router.push(newUrl, { scroll: false });
               }}
               onReset={handleResetFilters}
               isOpen={showFilters}
@@ -226,39 +225,84 @@ function AuctionsContent() {
 
           {/* Auctions Section */}
           <div className="flex-1">
-            {/* Controls - No Search (use main search bar) */}
-            <div className="mb-6 flex flex-col sm:flex-row gap-4">
-              {/* Filter Toggle Button */}
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center justify-center gap-2 px-4 py-3 min-h-[48px] rounded-lg bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
-              >
-                <FilterIcon className="h-5 w-5" />
-                <span>{showFilters ? "Hide" : "Show"} Filters</span>
-              </button>
+            {/* Controls */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* Sort Controls */}
+                <div className="flex gap-2 flex-wrap sm:flex-nowrap flex-1">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => {
+                      const newSortBy = e.target.value;
+                      // Update URL with new sort
+                      const params = new URLSearchParams(
+                        searchParams.toString()
+                      );
+                      params.set("sortBy", newSortBy);
+                      router.push(`/auctions?${params.toString()}`, {
+                        scroll: false,
+                      });
+                    }}
+                    className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
+                  >
+                    <option value="created_at">Newest</option>
+                    <option value="endTime">Ending Soon</option>
+                    <option value="currentPrice">Current Bid</option>
+                    <option value="totalBids">Most Bids</option>
+                  </select>
 
-              {/* View Toggle - Hidden on mobile */}
-              <div className="hidden md:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
-                <button
-                  onClick={() => setView("grid")}
-                  className={`px-4 py-3 min-h-[48px] touch-manipulation ${
-                    view === "grid"
-                      ? "bg-primary text-white"
-                      : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
-                  }`}
-                >
-                  <Grid className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setView("list")}
-                  className={`px-4 py-3 min-h-[48px] touch-manipulation ${
-                    view === "list"
-                      ? "bg-primary text-white"
-                      : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
-                  }`}
-                >
-                  <List className="w-5 h-5" />
-                </button>
+                  <select
+                    value={sortOrder}
+                    onChange={(e) => {
+                      const newSortOrder = e.target.value as "asc" | "desc";
+                      // Update URL with new sort order
+                      const params = new URLSearchParams(
+                        searchParams.toString()
+                      );
+                      params.set("sortOrder", newSortOrder);
+                      router.push(`/auctions?${params.toString()}`, {
+                        scroll: false,
+                      });
+                    }}
+                    className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
+                  >
+                    <option value="desc">High to Low</option>
+                    <option value="asc">Low to High</option>
+                  </select>
+
+                  {/* View Toggle - Hidden on mobile */}
+                  <div className="hidden md:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                    <button
+                      onClick={() => setView("grid")}
+                      className={`px-4 py-3 min-h-[48px] touch-manipulation ${
+                        view === "grid"
+                          ? "bg-blue-600 text-white"
+                          : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
+                      }`}
+                    >
+                      <Grid className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => setView("list")}
+                      className={`px-4 py-3 min-h-[48px] touch-manipulation ${
+                        view === "list"
+                          ? "bg-blue-600 text-white"
+                          : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
+                      }`}
+                    >
+                      <List className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Filter Toggle Button */}
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="px-4 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+                  >
+                    <FilterIcon className="h-5 w-5" />
+                    <span>{showFilters ? "Hide" : "Show"} Filters</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -399,7 +443,23 @@ function AuctionsContent() {
               setCurrentPage(1);
               setCursors([null]);
               setShowFilters(false);
-              setTimeout(() => updateUrlAndLoad(), 0);
+              // Update URL with new filter values and reload
+              const params = new URLSearchParams();
+              if (pendingValues?.status)
+                params.set("status", pendingValues.status);
+              if (pendingValues?.categoryId)
+                params.set("categoryId", pendingValues.categoryId);
+              if (pendingValues?.minBid)
+                params.set("minBid", String(pendingValues.minBid));
+              if (pendingValues?.maxBid)
+                params.set("maxBid", String(pendingValues.maxBid));
+              if (pendingValues?.featured) params.set("featured", "true");
+              if (sortBy !== "created_at") params.set("sortBy", sortBy);
+              if (sortOrder !== "desc") params.set("sortOrder", sortOrder);
+              const newUrl = params.toString()
+                ? `/auctions?${params.toString()}`
+                : "/auctions";
+              router.push(newUrl, { scroll: false });
             }}
             onReset={handleResetFilters}
             isOpen={showFilters}

@@ -19,6 +19,7 @@ import { auctionsService } from "@/services/auctions.service";
 import { notFound } from "@/lib/error-redirects";
 import { ShopHeader } from "@/components/shop/ShopHeader";
 import { ProductCard } from "@/components/cards/ProductCard";
+import AuctionCard from "@/components/cards/AuctionCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import {
@@ -611,167 +612,39 @@ export default function ShopPage({ params }: ShopPageProps) {
                   />
                 ) : (
                   <>
-                    <div className="mb-4 text-sm text-gray-600">
+                    <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
                       Showing {auctions.length} auction
                       {auctions.length !== 1 ? "s" : ""}
                     </div>
-                    {view === "grid" ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {auctions.map((auction) => (
-                          <Link
-                            key={auction.id}
-                            href={`/auctions/${auction.productSlug}`}
-                            className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-                          >
-                            {/* Auction Image */}
-                            <div className="relative h-48 bg-gray-100">
-                              {auction.productImage ? (
-                                <OptimizedImage
-                                  src={auction.productImage}
-                                  alt={auction.productName}
-                                  fill
-                                  className="object-cover group-hover:scale-105 transition-transform duration-200"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <Gavel className="w-12 h-12 text-gray-400" />
-                                </div>
-                              )}
-                              {/* Status Badge */}
-                              <div className="absolute top-2 right-2">
-                                <span
-                                  className={`px-2 py-1 rounded text-xs font-semibold ${
-                                    auction.status === "active"
-                                      ? "bg-green-500 text-white"
-                                      : auction.status === "scheduled"
-                                      ? "bg-blue-500 text-white"
-                                      : auction.status === "completed"
-                                      ? "bg-gray-500 text-white"
-                                      : "bg-yellow-500 text-white"
-                                  }`}
-                                >
-                                  {auction.status.toUpperCase()}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Auction Info */}
-                            <div className="p-4">
-                              <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-purple-600 transition-colors">
-                                {auction.productName}
-                              </h3>
-
-                              <div className="space-y-2">
-                                <div className="flex justify-between items-center">
-                                  <span className="text-sm text-gray-500">
-                                    Current Bid:
-                                  </span>
-                                  <span className="text-lg font-bold text-purple-600">
-                                    {auction.formattedCurrentPrice}
-                                  </span>
-                                </div>
-
-                                <div className="flex justify-between items-center text-sm">
-                                  <span className="text-gray-500">Bids:</span>
-                                  <span className="font-medium text-gray-900">
-                                    {auction.totalBids}
-                                  </span>
-                                </div>
-
-                                {auction.isActive && (
-                                  <div className="pt-2 border-t border-gray-200">
-                                    <span className="text-xs text-red-600 font-medium">
-                                      {auction.timeRemaining}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {auctions.map((auction) => (
-                          <Link
-                            key={auction.id}
-                            href={`/auctions/${auction.productSlug}`}
-                            className="group flex flex-col sm:flex-row gap-4 p-4 rounded-lg border border-gray-200 bg-white hover:border-purple-600 hover:shadow-lg transition-all"
-                          >
-                            {/* Image */}
-                            {auction.productImage && (
-                              <div className="relative w-full sm:w-48 aspect-video sm:aspect-square overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
-                                <OptimizedImage
-                                  src={auction.productImage}
-                                  alt={auction.productName}
-                                  fill
-                                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                                <div className="absolute top-2 right-2">
-                                  <span
-                                    className={`px-2 py-1 rounded text-xs font-semibold ${
-                                      auction.status === "active"
-                                        ? "bg-green-500 text-white"
-                                        : auction.status === "scheduled"
-                                        ? "bg-blue-500 text-white"
-                                        : auction.status === "completed"
-                                        ? "bg-gray-500 text-white"
-                                        : "bg-yellow-500 text-white"
-                                    }`}
-                                  >
-                                    {auction.status.toUpperCase()}
-                                  </span>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Content */}
-                            <div className="flex-1 flex flex-col justify-between">
-                              <div>
-                                <h3 className="font-semibold text-lg text-gray-900 line-clamp-1 group-hover:text-purple-600 transition-colors">
-                                  {auction.productName}
-                                </h3>
-
-                                <div className="mt-3 flex flex-wrap gap-4">
-                                  <div>
-                                    <span className="text-xs text-gray-600">
-                                      Current Bid
-                                    </span>
-                                    <p className="text-xl font-bold text-purple-600">
-                                      {auction.formattedCurrentPrice}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <span className="text-xs text-gray-600">
-                                      Bids
-                                    </span>
-                                    <p className="text-lg font-semibold text-gray-900">
-                                      {auction.totalBids}
-                                    </p>
-                                  </div>
-                                  {auction.isActive && (
-                                    <div>
-                                      <span className="text-xs text-gray-600">
-                                        Time Left
-                                      </span>
-                                      <p className="text-sm text-red-600 font-medium">
-                                        {auction.timeRemaining}
-                                      </p>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-
-                              <button className="mt-4 sm:mt-0 sm:self-end rounded-lg bg-purple-600 px-6 py-2 text-sm font-medium text-white hover:bg-purple-700 transition-colors">
-                                {auction.isActive
-                                  ? "Place Bid"
-                                  : "View Details"}
-                              </button>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {auctions.map((auction) => (
+                        <AuctionCard
+                          key={auction.id}
+                          auction={{
+                            id: auction.id,
+                            name: auction.productName || "",
+                            slug: auction.productSlug || "",
+                            images: auction.productImage
+                              ? [auction.productImage]
+                              : [],
+                            currentBid:
+                              auction.currentPrice || auction.startingBid || 0,
+                            startingBid: auction.startingBid || 0,
+                            bidCount: auction.totalBids || 0,
+                            endTime: auction.endTime,
+                            status: auction.status as any,
+                            featured: (auction as any).featured,
+                            shop: {
+                              id: shop.id,
+                              name: shop.name,
+                              logo: shop.logo || undefined,
+                              isVerified: shop.isVerified,
+                            },
+                          }}
+                          showShopInfo={false}
+                        />
+                      ))}
+                    </div>
                   </>
                 )}
               </div>
