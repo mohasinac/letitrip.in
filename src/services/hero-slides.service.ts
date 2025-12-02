@@ -103,6 +103,15 @@ class HeroSlidesService {
   private readonly BASE_PATH = "/api/hero-slides";
 
   /**
+   * Invalidate cache for hero slides and homepage
+   * Called after any mutation to ensure fresh data
+   */
+  private invalidateCache(): void {
+    apiService.invalidateCache("/hero-slides");
+    apiService.invalidateCache("/homepage");
+  }
+
+  /**
    * Get all hero slides with optional filters
    * Public: Returns only active slides
    * Admin: Returns all slides with full data
@@ -145,6 +154,7 @@ class HeroSlidesService {
       HERO_SLIDE_ROUTES.LIST,
       toApiFormat(data),
     );
+    this.invalidateCache();
     return fromApiFormat(response.slide);
   }
 
@@ -159,6 +169,7 @@ class HeroSlidesService {
       HERO_SLIDE_ROUTES.BY_ID(id),
       toApiFormat(data),
     );
+    this.invalidateCache();
     return fromApiFormat(response.slide);
   }
 
@@ -167,6 +178,7 @@ class HeroSlidesService {
    */
   async deleteHeroSlide(id: string): Promise<void> {
     await apiService.delete(HERO_SLIDE_ROUTES.BY_ID(id));
+    this.invalidateCache();
   }
 
   /**
@@ -177,6 +189,7 @@ class HeroSlidesService {
       action: "delete",
       ids,
     });
+    this.invalidateCache();
   }
 
   /**
@@ -191,6 +204,7 @@ class HeroSlidesService {
       ids,
       updates: toApiFormat(updates),
     });
+    this.invalidateCache();
   }
 
   /**
@@ -203,6 +217,7 @@ class HeroSlidesService {
       action: "reorder",
       slides: slideOrders.map(s => ({ id: s.id, position: s.order })),
     });
+    this.invalidateCache();
   }
 }
 

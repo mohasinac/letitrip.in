@@ -1542,3 +1542,216 @@ export const expireCoupons = functions
       return {error: String(error)};
     }
   });
+
+// ============================================================================
+// SHOP STATS UPDATE FUNCTIONS
+// ============================================================================
+
+/**
+ * Firestore trigger for product creation/deletion
+ * Updates shop product count
+ */
+export const onProductWrite = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "256MB",
+  })
+  .firestore.document("products/{productId}")
+  .onWrite(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    const {productId} = context.params;
+
+    // Determine if this is a create, delete, or update
+    const wasDeleted = !change.after.exists;
+    const wasCreated = !change.before.exists;
+    const shopChanged = before?.shop_id !== after?.shop_id;
+
+    console.log(`[Product Trigger] Product ${productId} ${wasCreated ? "created" : wasDeleted ? "deleted" : "updated"}`);
+
+    try {
+      // If shop changed, update both old and new shop counts
+      if (shopChanged && before?.shop_id && after?.shop_id) {
+        await Promise.all([
+          updateShopProductCount(before.shop_id),
+          updateShopProductCount(after.shop_id),
+        ]);
+      } else if (wasCreated && after?.shop_id) {
+        await updateShopProductCount(after.shop_id);
+      } else if (wasDeleted && before?.shop_id) {
+        await updateShopProductCount(before.shop_id);
+      } else if (after?.shop_id) {
+        // Status change might affect count
+        const statusChanged = before?.status !== after?.status;
+        if (statusChanged) {
+          await updateShopProductCount(after.shop_id);
+        }
+      }
+    } catch (error) {
+      console.error(`[Product Trigger] Error updating shop stats:`, error);
+    }
+  });
+
+/**
+ * Firestore trigger for auction creation/deletion
+ * Updates shop auction count
+ */
+export const onAuctionWrite = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "256MB",
+  })
+  .firestore.document("auctions/{auctionId}")
+  .onWrite(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    const {auctionId} = context.params;
+
+    const wasDeleted = !change.after.exists;
+    const wasCreated = !change.before.exists;
+    const shopChanged = before?.shop_id !== after?.shop_id;
+
+    console.log(`[Auction Trigger] Auction ${auctionId} ${wasCreated ? "created" : wasDeleted ? "deleted" : "updated"}`);
+
+    try {
+      if (shopChanged && before?.shop_id && after?.shop_id) {
+        await Promise.all([
+          updateShopAuctionCount(before.shop_id),
+          updateShopAuctionCount(after.shop_id),
+        ]);
+      } else if (wasCreated && after?.shop_id) {
+        await updateShopAuctionCount(after.shop_id);
+      } else if (wasDeleted && before?.shop_id) {
+        await updateShopAuctionCount(before.shop_id);
+      } else if (after?.shop_id) {
+        const statusChanged = before?.status !== after?.status;
+        if (statusChanged) {
+          await updateShopAuctionCount(after.shop_id);
+        }
+      }
+    } catch (error) {
+      console.error(`[Auction Trigger] Error updating shop stats:`, error);
+    }
+  });
+
+/**
+ * Update shop product count
+ */
+async function updateShopProductCount(shopId: string): Promise<void> {
+  try {
+    // Count active products for this shop
+    const productsSnapshot = await db
+      .collection("products")
+      .where("shop_id", "==", shopId)
+      .where("status", "==", "active")
+      .count()
+      .get();
+
+    const productCount = productsSnapshot.data().count;
+
+    await db.collection("shops").doc(shopId).update({
+      product_count: productCount,
+      updated_at: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log(`[Shop Stats] Updated shop ${shopId} product count to ${productCount}`);
+  } catch (error) {
+    console.error("[Shop Stats] Error updating product count:", error);
+  }
+}
+
+/**
+ * Update shop auction count
+ */
+async function updateShopAuctionCount(shopId: string): Promise<void> {
+  try {
+    // Count active/live auctions for this shop
+    const auctionsSnapshot = await db
+      .collection("auctions")
+      .where("shop_id", "==", shopId)
+      .where("status", "in", ["active", "live"])
+      .count()
+      .get();
+
+    const auctionCount = auctionsSnapshot.data().count;
+
+    await db.collection("shops").doc(shopId).update({
+      auction_count: auctionCount,
+      updated_at: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log(`[Shop Stats] Updated shop ${shopId} auction count to ${auctionCount}`);
+  } catch (error) {
+    console.error("[Shop Stats] Error updating auction count:", error);
+  }
+}
+
+// ============================================================================
+// CATEGORY STATS UPDATE FUNCTIONS  
+// ============================================================================
+
+/**
+ * Update category product/auction counts when products change
+ */
+export const onProductCategoryChange = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "256MB",
+  })
+  .firestore.document("products/{productId}")
+  .onWrite(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+
+    const oldCategoryId = before?.category_id;
+    const newCategoryId = after?.category_id;
+
+    // Only process if category changed or product created/deleted
+    if (oldCategoryId === newCategoryId && change.before.exists && change.after.exists) {
+      // Only status change
+      const statusChanged = before?.status !== after?.status;
+      if (statusChanged && newCategoryId) {
+        await updateCategoryProductCount(newCategoryId);
+      }
+      return;
+    }
+
+    try {
+      const updates: Promise<void>[] = [];
+      if (oldCategoryId) updates.push(updateCategoryProductCount(oldCategoryId));
+      if (newCategoryId && newCategoryId !== oldCategoryId) {
+        updates.push(updateCategoryProductCount(newCategoryId));
+      }
+      await Promise.all(updates);
+    } catch (error) {
+      console.error("[Category Stats] Error updating product counts:", error);
+    }
+  });
+
+/**
+ * Update category product count
+ */
+async function updateCategoryProductCount(categoryId: string): Promise<void> {
+  try {
+    const productsSnapshot = await db
+      .collection("products")
+      .where("category_id", "==", categoryId)
+      .where("status", "==", "active")
+      .count()
+      .get();
+
+    const productCount = productsSnapshot.data().count;
+
+    await db.collection("categories").doc(categoryId).update({
+      productCount: productCount,
+      updated_at: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log(`[Category Stats] Updated category ${categoryId} product count to ${productCount}`);
+  } catch (error) {
+    console.error("[Category Stats] Error updating product count:", error);
+  }
+}

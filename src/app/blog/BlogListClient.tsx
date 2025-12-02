@@ -140,8 +140,10 @@ export default function BlogListClient() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Blog</h1>
-        <p className="text-lg text-gray-600">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          Blog
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-400">
           Discover articles, guides, and stories about collectibles and auctions
         </p>
       </div>
@@ -193,7 +195,7 @@ export default function BlogListClient() {
       {/* Featured Posts Section */}
       {filters.page === 1 && !filters.search && !filters.category && (
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             Featured Posts
           </h2>
           {/* Featured posts would go here */}
@@ -202,11 +204,11 @@ export default function BlogListClient() {
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
-          <p className="text-red-800">{error}</p>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-8">
+          <p className="text-red-800 dark:text-red-400">{error}</p>
           <button
             onClick={fetchBlogs}
-            className="mt-2 text-red-600 hover:text-red-700 font-medium"
+            className="mt-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
           >
             Try Again
           </button>
@@ -218,11 +220,11 @@ export default function BlogListClient() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="animate-pulse">
-              <div className="aspect-[16/9] bg-gray-200 rounded-t-lg"></div>
+              <div className="aspect-[16/9] bg-gray-200 dark:bg-gray-700 rounded-t-lg"></div>
               <div className="p-4 space-y-3">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-20 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
               </div>
             </div>
           ))}
@@ -286,11 +288,11 @@ export default function BlogListClient() {
       {/* Empty State */}
       {!loading && blogs.length === 0 && (
         <div className="text-center py-12">
-          <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <Calendar className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
             No blog posts found
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
             {filters.search || filters.category
               ? "Try adjusting your filters"
               : "Check back later for new content"}

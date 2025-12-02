@@ -114,12 +114,15 @@ export default function MainNavBar({
   };
 
   return (
-    <nav id="main-navigation" className="bg-gray-800 text-white py-3 px-4">
+    <nav
+      id="main-navigation"
+      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white py-3 px-4 border-b border-gray-200 dark:border-gray-700 shadow-sm"
+    >
       <div className="container mx-auto flex items-center justify-between gap-4">
         {/* Mobile Menu Button */}
         <button
           onClick={onMobileMenuToggle}
-          className="lg:hidden p-2 hover:bg-gray-700 rounded focus-visible-ring touch-target"
+          className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded focus-visible-ring touch-target"
           aria-label="Toggle navigation menu"
           aria-expanded="false"
         >
@@ -128,8 +131,8 @@ export default function MainNavBar({
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="bg-white rounded px-3 py-1">
-            <span className="text-gray-800 font-bold text-xl">
+          <div className="bg-gray-800 dark:bg-white rounded px-3 py-1">
+            <span className="text-white dark:text-gray-800 font-bold text-xl">
               {COMPANY_NAME}
             </span>
           </div>
@@ -149,7 +152,7 @@ export default function MainNavBar({
                   setIsSellerMenuOpen(false);
                   setIsUserMenuOpen(false);
                 }}
-                className="flex items-center gap-1 text-sm hover:bg-gray-700 px-3 py-2 rounded focus-visible-ring"
+                className="flex items-center gap-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded focus-visible-ring"
                 aria-expanded={isAdminMenuOpen}
                 aria-haspopup="true"
                 aria-label="Admin menu"
@@ -210,7 +213,7 @@ export default function MainNavBar({
                   setIsAdminMenuOpen(false);
                   setIsUserMenuOpen(false);
                 }}
-                className="flex items-center gap-1 text-sm hover:bg-gray-700 px-3 py-2 rounded focus-visible-ring"
+                className="flex items-center gap-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded focus-visible-ring"
                 aria-expanded={isSellerMenuOpen}
                 aria-haspopup="true"
                 aria-label="Seller menu"
@@ -266,7 +269,7 @@ export default function MainNavBar({
           {isAuthenticated && isAdmin && (
             <Link
               href="/admin/demo"
-              className="hidden lg:flex items-center gap-2 text-sm hover:bg-gray-700 px-3 py-2 rounded"
+              className="hidden lg:flex items-center gap-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded"
               title="Demo Data & Workflows"
             >
               <Database className="w-5 h-5" />
@@ -277,7 +280,7 @@ export default function MainNavBar({
           {/* Search Icon */}
           <button
             onClick={onSearchClick}
-            className="hover:bg-gray-700 p-2 rounded focus-visible-ring touch-target"
+            className="hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded focus-visible-ring touch-target"
             aria-label="Search products"
           >
             <Search className="w-6 h-6" aria-hidden="true" />
@@ -290,7 +293,7 @@ export default function MainNavBar({
           {isAuthenticated && (
             <Link
               href="/user/notifications"
-              className="lg:hidden relative hover:bg-gray-700 p-2 rounded"
+              className="lg:hidden relative hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded"
               aria-label={`Notifications${
                 totalNotifications > 0 ? ` (${totalNotifications} unread)` : ""
               }`}
@@ -328,7 +331,7 @@ export default function MainNavBar({
           {isAuthenticated && (
             <Link
               href="/user/notifications"
-              className="hidden lg:flex relative hover:bg-gray-700 p-2 rounded"
+              className="hidden lg:flex relative hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded"
               aria-label={`Notifications${
                 totalNotifications > 0 ? ` (${totalNotifications} unread)` : ""
               }`}
@@ -346,7 +349,7 @@ export default function MainNavBar({
           <div className="hidden lg:block relative group">
             <Link
               href="/cart"
-              className="flex relative hover:bg-gray-700 p-2 rounded"
+              className="flex relative hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded"
             >
               <ShoppingCart className="w-6 h-6" />
               {cartCount > 0 && (
@@ -402,7 +405,7 @@ export default function MainNavBar({
                     setIsAdminMenuOpen(false);
                     setIsSellerMenuOpen(false);
                   }}
-                  className="flex items-center gap-2 hover:bg-gray-700 px-3 py-2 rounded"
+                  className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded"
                   aria-label="User menu"
                   aria-expanded={isUserMenuOpen}
                 >
@@ -491,9 +494,9 @@ export default function MainNavBar({
                   {/* Sign In Button - Clickable, navigates to login */}
                   <Link
                     href="/login"
-                    className="flex items-center gap-2 hover:bg-gray-700 px-3 py-2 rounded"
+                    className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded"
                   >
-                    <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
                       <User className="w-5 h-5" />
                     </div>
                     <span className="hidden sm:inline text-sm">Sign In</span>
@@ -506,7 +509,7 @@ export default function MainNavBar({
                       setIsAdminMenuOpen(false);
                       setIsSellerMenuOpen(false);
                     }}
-                    className="hover:bg-gray-700 p-2 rounded"
+                    className="hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded"
                     aria-label="User menu"
                   >
                     <ChevronDown className="w-4 h-4" />

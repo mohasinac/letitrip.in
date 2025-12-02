@@ -2,17 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, Save } from "lucide-react";
+import Image from "next/image";
+import { MapPin, Save, Camera, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { authService } from "@/services/auth.service";
 import { FormField, FormInput } from "@/components/forms";
+import MediaUploader from "@/components/media/MediaUploader";
+import { MediaFile } from "@/types/media";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAvatarUpload, setShowAvatarUpload] = useState(false);
+  const [avatarFiles, setAvatarFiles] = useState<MediaFile[]>([]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -30,9 +35,46 @@ export default function SettingsPage() {
     setFormData({
       name: user.fullName || "",
       email: user.email || "",
-      phone: "",
+      phone: user.phone || "",
     });
   }, [user]);
+
+  // Get user initials
+  const getUserInitials = () => {
+    if (!user) return "U";
+    const name = user.displayName || user.fullName || user.email;
+    if (!name) return "U";
+    const names = name.split(" ").filter((n: string) => n.length > 0);
+    if (names.length >= 2) {
+      return `${names[0][0]}${names[1][0]}`.toUpperCase();
+    }
+    return name[0].toUpperCase();
+  };
+
+  const handleAvatarUpload = async (files: MediaFile[]) => {
+    setAvatarFiles(files);
+    if (files.length > 0 && files[0].url) {
+      try {
+        setLoading(true);
+        await authService.updateProfile({
+          photoURL: files[0].url,
+        });
+        setSuccess(true);
+        setShowAvatarUpload(false);
+        // Refresh user data
+        if (refreshUser) {
+          await refreshUser();
+        }
+        setTimeout(() => setSuccess(false), 3000);
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to update avatar.";
+        setError(message);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,9 +86,13 @@ export default function SettingsPage() {
       await authService.updateProfile({
         fullName: formData.name,
         email: formData.email,
+        phone: formData.phone,
       });
 
       setSuccess(true);
+      if (refreshUser) {
+        await refreshUser();
+      }
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       const message =
@@ -64,6 +110,80 @@ export default function SettingsPage() {
       <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
         Account Settings
       </h1>
+
+      {/* Avatar Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+          Profile Picture
+        </h2>
+
+        <div className="flex flex-col sm:flex-row items-center gap-6">
+          {/* Current Avatar */}
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-yellow-500 flex items-center justify-center">
+              {user?.photoURL || user?.avatar ? (
+                <Image
+                  src={user.photoURL || user.avatar}
+                  alt="Profile"
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-gray-900 font-bold text-3xl">
+                  {getUserInitials()}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => setShowAvatarUpload(!showAvatarUpload)}
+              className="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-lg transition-colors"
+              title="Change avatar"
+            >
+              <Camera className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="text-center sm:text-left">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Upload a profile picture to personalize your account.
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              Recommended: Square image, at least 200x200 pixels
+            </p>
+          </div>
+        </div>
+
+        {/* Avatar Upload Section */}
+        {showAvatarUpload && (
+          <div className="mt-6 p-4 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
+            <MediaUploader
+              accept="image"
+              maxFiles={1}
+              resourceType="user"
+              multiple={false}
+              files={avatarFiles}
+              onFilesAdded={handleAvatarUpload}
+              onFileRemoved={() => setAvatarFiles([])}
+              enableCamera={true}
+              enableVideoRecording={false}
+              enableEditing={true}
+              className="min-h-[150px]"
+            />
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setShowAvatarUpload(false);
+                  setAvatarFiles([]);
+                }}
+                className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Profile Form */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6">
