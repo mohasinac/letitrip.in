@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import SlugInput from "@/components/common/SlugInput";
+import { FormInput, FormSelect, FormTextarea } from "@/components/forms";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
 
@@ -283,63 +284,37 @@ export default function CreateCategoryWizardPage() {
               </div>
 
               {/* CategoryFE Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  CategoryFE Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="e.g., Electronics, Fashion, Home & Garden"
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Choose a clear, descriptive name for the CategoryFE
-                </p>
-              </div>
+              <FormInput
+                label="CategoryFE Name"
+                required
+                value={formData.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                placeholder="e.g., Electronics, Fashion, Home & Garden"
+                helperText="Choose a clear, descriptive name for the CategoryFE"
+              />
 
               {/* Parent CategoryFE */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Parent CategoryFE
-                </label>
-                <select
-                  value={formData.parentCategory}
-                  onChange={(e) =>
-                    handleChange("parentCategory", e.target.value)
-                  }
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                >
-                  <option value="">None (Top Level CategoryFE)</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Select a parent to create a subcategory, or leave empty for a
-                  top-level CategoryFE
-                </p>
-              </div>
+              <FormSelect
+                label="Parent CategoryFE"
+                value={formData.parentCategory}
+                onChange={(e) => handleChange("parentCategory", e.target.value)}
+                placeholder="None (Top Level CategoryFE)"
+                options={categories.map((cat) => ({
+                  value: cat.id,
+                  label: cat.name,
+                }))}
+                helperText="Select a parent to create a subcategory, or leave empty for a top-level CategoryFE"
+              />
 
               {/* Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => handleChange("description", e.target.value)}
-                  rows={4}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="Brief description of this CategoryFE and what products it includes..."
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  {formData.description.length}/500 characters
-                </p>
-              </div>
+              <FormTextarea
+                label="Description"
+                value={formData.description}
+                onChange={(e) => handleChange("description", e.target.value)}
+                rows={4}
+                placeholder="Brief description of this CategoryFE and what products it includes..."
+                helperText={`${formData.description.length}/500 characters`}
+              />
             </div>
           )}
 
@@ -356,21 +331,14 @@ export default function CreateCategoryWizardPage() {
               </div>
 
               {/* CategoryFE Image */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  CategoryFE Image URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.imageUrl}
-                  onChange={(e) => handleChange("imageUrl", e.target.value)}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="https://example.com/CategoryFE-image.jpg"
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Square image recommended (400x400px or larger)
-                </p>
-              </div>
+              <FormInput
+                label="CategoryFE Image URL"
+                type="url"
+                value={formData.imageUrl}
+                onChange={(e) => handleChange("imageUrl", e.target.value)}
+                placeholder="https://example.com/CategoryFE-image.jpg"
+                helperText="Square image recommended (400x400px or larger)"
+              />
 
               {/* Image Preview */}
               {formData.imageUrl && (
@@ -390,22 +358,14 @@ export default function CreateCategoryWizardPage() {
               )}
 
               {/* Icon */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  CategoryFE Icon
-                </label>
-                <input
-                  type="text"
-                  value={formData.icon}
-                  onChange={(e) => handleChange("icon", e.target.value)}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="📁 or icon name"
-                  maxLength={50}
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Use emoji or Lucide icon name (e.g., 📱 for Electronics)
-                </p>
-              </div>
+              <FormInput
+                label="CategoryFE Icon"
+                value={formData.icon}
+                onChange={(e) => handleChange("icon", e.target.value)}
+                placeholder="📁 or icon name"
+                maxLength={50}
+                helperText="Use emoji or Lucide icon name (e.g., 📱 for Electronics)"
+              />
 
               {/* Icon Preview */}
               <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
@@ -489,46 +449,29 @@ export default function CreateCategoryWizardPage() {
               </div>
 
               {/* Meta Title */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Meta Title
-                </label>
-                <input
-                  type="text"
-                  value={formData.metaTitle}
-                  onChange={(e) => handleChange("metaTitle", e.target.value)}
-                  maxLength={60}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder={`${
-                    formData.name || "CategoryFE"
-                  } - Shop on JustForView`}
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  {formData.metaTitle.length}/60 characters • Leave empty to use
-                  CategoryFE name
-                </p>
-              </div>
+              <FormInput
+                label="Meta Title"
+                value={formData.metaTitle}
+                onChange={(e) => handleChange("metaTitle", e.target.value)}
+                maxLength={60}
+                placeholder={`${
+                  formData.name || "CategoryFE"
+                } - Shop on JustForView`}
+                helperText={`${formData.metaTitle.length}/60 characters • Leave empty to use CategoryFE name`}
+              />
 
               {/* Meta Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Meta Description
-                </label>
-                <textarea
-                  value={formData.metaDescription}
-                  onChange={(e) =>
-                    handleChange("metaDescription", e.target.value)
-                  }
-                  maxLength={160}
-                  rows={3}
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  placeholder="Browse our collection of quality products in this CategoryFE..."
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  {formData.metaDescription.length}/160 characters • Appears in
-                  search results
-                </p>
-              </div>
+              <FormTextarea
+                label="Meta Description"
+                value={formData.metaDescription}
+                onChange={(e) =>
+                  handleChange("metaDescription", e.target.value)
+                }
+                maxLength={160}
+                rows={3}
+                placeholder="Browse our collection of quality products in this CategoryFE..."
+                helperText={`${formData.metaDescription.length}/160 characters • Appears in search results`}
+              />
 
               {/* SEO Preview */}
               <div className="rounded-lg bg-green-50 border border-green-200 p-4">
@@ -605,21 +548,14 @@ export default function CreateCategoryWizardPage() {
               </div>
 
               {/* Display Order */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Display Order
-                </label>
-                <input
-                  type="number"
-                  value={formData.displayOrder}
-                  onChange={(e) => handleChange("displayOrder", e.target.value)}
-                  min="0"
-                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Lower numbers appear first (0 = highest priority)
-                </p>
-              </div>
+              <FormInput
+                label="Display Order"
+                type="number"
+                value={formData.displayOrder}
+                onChange={(e) => handleChange("displayOrder", e.target.value)}
+                min={0}
+                helperText="Lower numbers appear first (0 = highest priority)"
+              />
 
               {/* Visibility Options */}
               <div className="space-y-4">
