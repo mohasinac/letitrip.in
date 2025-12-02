@@ -49,16 +49,16 @@ describe("Admin Settings API", () => {
   });
 
   describe("PUT /api/admin/settings/email", () => {
-    it.todo("should update SMTP configuration");
-    it.todo("should validate SMTP credentials");
-    it.todo("should encrypt SMTP password");
+    it.todo("should update Resend configuration");
+    it.todo("should validate Resend API key");
+    it.todo("should encrypt API credentials");
     it.todo("should return 403 for non-admin users");
   });
 
   describe("POST /api/admin/settings/email/test", () => {
     it.todo("should send test email");
     it.todo("should return success if email sent");
-    it.todo("should return error if SMTP not configured");
+    it.todo("should return error if Resend not configured");
     it.todo("should return 403 for non-admin users");
   });
 

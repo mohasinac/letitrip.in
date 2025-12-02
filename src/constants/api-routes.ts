@@ -99,6 +99,12 @@ export const CATEGORY_ROUTES = {
   PARENTS: (slug: string) => `/categories/${slug}/parents`,
 } as const;
 
+// Email Routes
+export const EMAIL_ROUTES = {
+  SEND: "/email/send",
+  TEST: "/admin/email/test",
+} as const;
+
 // Shop Routes
 export const SHOP_ROUTES = {
   LIST: "/shops",

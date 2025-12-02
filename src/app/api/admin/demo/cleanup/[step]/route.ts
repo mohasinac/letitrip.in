@@ -263,6 +263,7 @@ export async function DELETE(
           "business_rules",
           "riplimit_settings",
           "analytics_settings",
+          "homepage_settings",
         ];
 
         for (const collection of settingsCollections) {

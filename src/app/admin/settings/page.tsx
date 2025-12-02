@@ -8,7 +8,7 @@
  * - General settings (site name, logo, contact info)
  * - Payment gateway configuration
  * - Shipping settings
- * - Email/SMTP configuration
+ * - Email/Resend configuration
  * - Feature flags
  * - Maintenance mode
  */
@@ -47,7 +47,7 @@ export default function AdminSettingsPage() {
       />
       <SettingsCard
         title="Email"
-        description="SMTP configuration and templates"
+        description="Resend API configuration and templates"
         href="/admin/settings/email"
         status="ready"
         icon="📧"

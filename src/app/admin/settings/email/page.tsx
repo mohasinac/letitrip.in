@@ -7,7 +7,7 @@
  * @epic E021 - System Configuration
  *
  * Manage email configuration:
- * - SMTP settings
+ * - Resend API settings
  * - Email templates
  * - Sender information
  */
@@ -33,17 +33,10 @@ import { FormLabel } from "@/components/forms";
 import { FormInput, FormSelect } from "@/components/forms";
 
 interface EmailSettings {
-  provider: "resend" | "smtp" | "sendgrid";
+  provider: "resend";
   fromEmail: string;
   fromName: string;
   replyToEmail: string;
-  smtp?: {
-    host: string;
-    port: number;
-    username: string;
-    password: string;
-    secure: boolean;
-  };
   apiKey?: string;
   templates: {
     orderConfirmation: boolean;
@@ -59,16 +52,9 @@ interface EmailSettings {
 
 const DEFAULT_SETTINGS: EmailSettings = {
   provider: "resend",
-  fromEmail: "",
-  fromName: "JustForView",
-  replyToEmail: "",
-  smtp: {
-    host: "",
-    port: 587,
-    username: "",
-    password: "",
-    secure: true,
-  },
+  fromEmail: "noreply@letitrip.in",
+  fromName: "Letitrip",
+  replyToEmail: "support@letitrip.in",
   templates: {
     orderConfirmation: true,
     shippingUpdate: true,
@@ -89,7 +75,6 @@ export default function AdminEmailSettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showApiKey, setShowApiKey] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [testEmail, setTestEmail] = useState("");
   const [activeTab, setActiveTab] = useState<"provider" | "templates">(
     "provider"
@@ -294,30 +279,18 @@ export default function AdminEmailSettingsPage() {
               <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Email Provider
               </h2>
-              <div className="grid md:grid-cols-3 gap-4">
-                {(["resend", "smtp", "sendgrid"] as const).map((provider) => (
-                  <button
-                    key={provider}
-                    type="button"
-                    onClick={() => setSettings({ ...settings, provider })}
-                    className={`p-4 rounded-lg border-2 transition-colors ${
-                      settings.provider === provider
-                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                        : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
-                    }`}
-                  >
-                    <p className="font-medium text-gray-900 dark:text-white capitalize">
-                      {provider === "smtp"
-                        ? "SMTP"
-                        : provider.charAt(0).toUpperCase() + provider.slice(1)}
+              <div className="p-4 rounded-lg border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20">
+                <div className="flex items-center gap-3">
+                  <Mail className="w-8 h-8 text-blue-600" />
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      Resend
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {provider === "resend" && "Modern email API"}
-                      {provider === "smtp" && "Custom SMTP server"}
-                      {provider === "sendgrid" && "SendGrid API"}
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Modern email API with excellent deliverability
                     </p>
-                  </button>
-                ))}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -358,131 +331,48 @@ export default function AdminEmailSettingsPage() {
               </div>
             </div>
 
-            {/* Provider-specific settings */}
-            {settings.provider === "smtp" && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                  SMTP Configuration
-                </h2>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <FormInput
-                    label="SMTP Host"
-                    value={settings.smtp?.host || ""}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        smtp: { ...settings.smtp!, host: e.target.value },
-                      })
-                    }
-                    placeholder="smtp.example.com"
-                  />
-                  <FormInput
-                    label="Port"
-                    type="number"
-                    value={settings.smtp?.port || 587}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        smtp: {
-                          ...settings.smtp!,
-                          port: parseInt(e.target.value) || 587,
-                        },
-                      })
-                    }
-                  />
-                  <FormInput
-                    label="Username"
-                    value={settings.smtp?.username || ""}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        smtp: { ...settings.smtp!, username: e.target.value },
-                      })
-                    }
-                  />
-                  <div>
-                    <FormLabel htmlFor="smtp-password">Password</FormLabel>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={settings.smtp?.password || ""}
-                        onChange={(e) =>
-                          setSettings({
-                            ...settings,
-                            smtp: {
-                              ...settings.smtp!,
-                              password: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <label className="flex items-center gap-2 mt-4">
+            {/* API Configuration */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Resend API Configuration
+              </h2>
+              <div>
+                <FormLabel htmlFor="api-key">API Key</FormLabel>
+                <div className="relative">
                   <input
-                    type="checkbox"
-                    checked={settings.smtp?.secure ?? true}
+                    type={showApiKey ? "text" : "password"}
+                    value={settings.apiKey || ""}
                     onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        smtp: { ...settings.smtp!, secure: e.target.checked },
-                      })
+                      setSettings({ ...settings, apiKey: e.target.value })
                     }
-                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                    placeholder="re_xxxxxxxxxxxxxxxxxxxx"
+                    className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Use TLS/SSL
-                  </span>
-                </label>
-              </div>
-            )}
-
-            {(settings.provider === "resend" ||
-              settings.provider === "sendgrid") && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                  API Configuration
-                </h2>
-                <div>
-                  <FormLabel htmlFor="api-key">API Key</FormLabel>
-                  <div className="relative">
-                    <input
-                      type={showApiKey ? "text" : "password"}
-                      value={settings.apiKey || ""}
-                      onChange={(e) =>
-                        setSettings({ ...settings, apiKey: e.target.value })
-                      }
-                      placeholder="Enter your API key"
-                      className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowApiKey(!showApiKey)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showApiKey ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showApiKey ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
                 </div>
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  Get your API key from{" "}
+                  <a
+                    href="https://resend.com/api-keys"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Resend Dashboard
+                  </a>
+                </p>
               </div>
-            )}
+            </div>
 
             {/* Test Email */}
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">

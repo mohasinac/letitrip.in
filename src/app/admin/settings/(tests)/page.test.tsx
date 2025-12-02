@@ -45,7 +45,7 @@ describe("Admin Settings Pages", () => {
   });
 
   describe("Email Settings (/admin/settings/email)", () => {
-    it.todo("should render SMTP configuration form");
+    it.todo("should render Resend API configuration form");
     it.todo("should allow testing email configuration");
     it.todo("should show email templates");
     it.todo("should allow editing templates");
