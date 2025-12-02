@@ -334,11 +334,11 @@ Guest (Level 0)
 
 ### Resource: Similar Categories (E013)
 
-| Action              | Admin | Seller | User   | Guest  |
-| ------------------- | ----- | ------ | ------ | ------ |
-| View similar cats   | ✅    | ✅     | ✅     | ✅     |
-| Configure relations | ✅    | ❌     | ❌     | ❌     |
-| Set display count   | ✅    | ❌     | ❌     | ❌     |
+| Action              | Admin | Seller | User | Guest |
+| ------------------- | ----- | ------ | ---- | ----- |
+| View similar cats   | ✅    | ✅     | ✅   | ✅    |
+| Configure relations | ✅    | ❌     | ❌   | ❌    |
+| Set display count   | ✅    | ❌     | ❌   | ❌    |
 
 ### Resource: Media Upload (E003)
 

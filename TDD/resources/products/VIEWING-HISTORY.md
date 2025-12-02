@@ -8,12 +8,12 @@ Automatic product viewing history tracking with localStorage persistence, 30-day
 
 ### Core Implementation
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `src/services/viewing-history.service.ts` | History data management | ~150 |
-| `src/contexts/ViewingHistoryContext.tsx` | React context provider | ~90 |
-| `src/components/products/RecentlyViewedWidget.tsx` | Horizontal carousel widget | ~180 |
-| `src/app/user/history/page.tsx` | Full history page | ~220 |
+| File                                               | Purpose                    | Lines |
+| -------------------------------------------------- | -------------------------- | ----- |
+| `src/services/viewing-history.service.ts`          | History data management    | ~150  |
+| `src/contexts/ViewingHistoryContext.tsx`           | React context provider     | ~90   |
+| `src/components/products/RecentlyViewedWidget.tsx` | Horizontal carousel widget | ~180  |
+| `src/app/user/history/page.tsx`                    | Full history page          | ~220  |
 
 ### Integration Points
 
@@ -28,7 +28,7 @@ Automatic product viewing history tracking with localStorage persistence, 30-day
 const HISTORY_CONFIG = {
   MAX_ITEMS: 50,
   EXPIRY_DAYS: 30,
-  STORAGE_KEY: 'viewing_history',
+  STORAGE_KEY: "viewing_history",
 };
 ```
 
@@ -48,22 +48,22 @@ interface ViewingHistoryItem {
 
 class ViewingHistoryService {
   // Add product to history (moves to top if exists)
-  addToHistory(item: ViewingHistoryItem): void
-  
+  addToHistory(item: ViewingHistoryItem): void;
+
   // Get all history items (newest first)
-  getHistory(limit?: number): ViewingHistoryItem[]
-  
+  getHistory(limit?: number): ViewingHistoryItem[];
+
   // Get recently viewed (default: 8 items)
-  getRecentlyViewed(limit?: number): ViewingHistoryItem[]
-  
+  getRecentlyViewed(limit?: number): ViewingHistoryItem[];
+
   // Remove single item
-  removeFromHistory(productId: string): void
-  
+  removeFromHistory(productId: string): void;
+
   // Clear all history
-  clearHistory(): void
-  
+  clearHistory(): void;
+
   // Internal: Remove expired items
-  private cleanExpiredItems(): void
+  private cleanExpiredItems(): void;
 }
 ```
 
@@ -85,11 +85,11 @@ interface ViewingHistoryContextValue {
 
 ```tsx
 // src/app/products/[slug]/page.tsx
-import { useViewingHistory } from '@/contexts/ViewingHistoryContext';
+import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 
 const ProductPage = ({ product }) => {
   const { addToHistory } = useViewingHistory();
-  
+
   useEffect(() => {
     if (product) {
       addToHistory({
@@ -102,7 +102,7 @@ const ProductPage = ({ product }) => {
       });
     }
   }, [product?.id]);
-  
+
   // ... rest of component
 };
 ```
@@ -110,23 +110,25 @@ const ProductPage = ({ product }) => {
 ### RecentlyViewedWidget
 
 ```tsx
-import { RecentlyViewedWidget } from '@/components/products/RecentlyViewedWidget';
+import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
 
 // On homepage or product page sidebar
 <RecentlyViewedWidget
   limit={8}
   excludeProductId={currentProduct?.id} // Optional: exclude current product
   title="Recently Viewed"
-/>
+/>;
 ```
 
 **Props**:
+
 - `limit?: number` - Max items to show (default: 8)
 - `excludeProductId?: string` - Product to exclude (usually current)
 - `title?: string` - Widget heading (default: "Recently Viewed")
 - `className?: string` - Additional CSS classes
 
 **Features**:
+
 - Horizontal scrollable carousel
 - Product cards with image, title, price
 - Quick actions: Add to cart, view details
@@ -136,6 +138,7 @@ import { RecentlyViewedWidget } from '@/components/products/RecentlyViewedWidget
 ### History Page (`/user/history`)
 
 **Features**:
+
 - Grid view of all viewed products (4 cols desktop, 2 mobile)
 - Relative date display: "Today", "Yesterday", "3 days ago"
 - Remove individual items (trash icon)
