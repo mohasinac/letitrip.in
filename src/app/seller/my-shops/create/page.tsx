@@ -273,7 +273,9 @@ export default function CreateShopWizardPage() {
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
               <BasicInfoStep
                 formData={formData as any}
-                onChange={(field, value) => handleChange(field, value)}
+                onChange={(field: string, value: any) =>
+                  handleChange(field, value)
+                }
               />
             </div>
           )}
@@ -283,7 +285,9 @@ export default function CreateShopWizardPage() {
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
               <BrandingStep
                 formData={formData as any}
-                onChange={(field, value) => handleChange(field, value)}
+                onChange={(field: string, value: any) =>
+                  handleChange(field, value)
+                }
                 errors={{}}
               />
             </div>
@@ -294,7 +298,9 @@ export default function CreateShopWizardPage() {
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
               <ContactLegalStep
                 formData={formData as any}
-                onChange={(field, value) => handleChange(field, value)}
+                onChange={(field: string, value: any) =>
+                  handleChange(field, value)
+                }
                 errors={{}}
               />
             </div>
@@ -305,7 +311,9 @@ export default function CreateShopWizardPage() {
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
               <PoliciesStep
                 formData={formData as any}
-                onChange={(field, value) => handleChange(field, value)}
+                onChange={(field: string, value: any) =>
+                  handleChange(field, value)
+                }
                 errors={{}}
               />
             </div>
@@ -316,7 +324,9 @@ export default function CreateShopWizardPage() {
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
               <SettingsStep
                 formData={formData as any}
-                onChange={(field, value) => handleChange(field, value)}
+                onChange={(field: string, value: any) =>
+                  handleChange(field, value)
+                }
                 errors={{}}
               />
             </div>
