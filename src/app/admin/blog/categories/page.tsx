@@ -21,6 +21,7 @@ import { AdminPageHeader, LoadingSpinner, toast } from "@/components/admin";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
+import { FormInput, FormTextarea, FormSelect } from "@/components/forms";
 
 // Types
 interface BlogCategory {
@@ -119,67 +120,41 @@ function CategoryModal({
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Name *
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => handleNameChange(e.target.value)}
-              required
-              placeholder="Category name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+          <FormInput
+            label="Name"
+            required
+            value={name}
+            onChange={(e) => handleNameChange(e.target.value)}
+            placeholder="Category name"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Slug *
-            </label>
-            <input
-              type="text"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              required
-              placeholder="category-slug"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              URL-friendly identifier (auto-generated from name)
-            </p>
-          </div>
+          <FormInput
+            label="Slug"
+            required
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            placeholder="category-slug"
+            helperText="URL-friendly identifier (auto-generated from name)"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              placeholder="Brief description of this category"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-            />
-          </div>
+          <FormTextarea
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+            placeholder="Brief description of this category"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Parent Category
-            </label>
-            <select
-              value={parentId}
-              onChange={(e) => setParentId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">None (Top Level)</option>
-              {availableParents.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <FormSelect
+            label="Parent Category"
+            value={parentId}
+            onChange={(e) => setParentId(e.target.value)}
+            placeholder="None (Top Level)"
+            options={availableParents.map((cat) => ({
+              value: cat.id,
+              label: cat.name,
+            }))}
+          />
 
           <div className="flex gap-3 pt-4">
             <button

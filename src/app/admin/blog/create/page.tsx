@@ -8,6 +8,7 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 import { ArrowLeft, Save, Eye, Loader2, Upload, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import RichTextEditor from "@/components/common/RichTextEditor";
+import { FormInput, FormTextarea } from "@/components/forms";
 import { blogService } from "@/services/blog.service";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 
@@ -230,67 +231,39 @@ export default function CreateBlogPostPage() {
       {/* Form */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 space-y-6">
         {/* Title */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Title <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            placeholder="Enter post title"
-            className={`w-full rounded-lg border ${
-              errors.title ? "border-red-500" : "border-gray-300"
-            } px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500`}
-          />
-          {errors.title && (
-            <p className="mt-1 text-sm text-red-600">{errors.title}</p>
-          )}
-        </div>
+        <FormInput
+          label="Title"
+          required
+          name="title"
+          value={formData.title}
+          onChange={handleInputChange}
+          placeholder="Enter post title"
+          error={errors.title}
+        />
 
         {/* Slug */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Slug <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            name="slug"
-            value={formData.slug}
-            onChange={handleInputChange}
-            placeholder="post-slug"
-            className={`w-full rounded-lg border ${
-              errors.slug ? "border-red-500" : "border-gray-300"
-            } px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500`}
-          />
-          {errors.slug && (
-            <p className="mt-1 text-sm text-red-600">{errors.slug}</p>
-          )}
-          <p className="mt-1 text-sm text-gray-500">
-            URL: /blog/{formData.slug || "post-slug"}
-          </p>
-        </div>
+        <FormInput
+          label="Slug"
+          required
+          name="slug"
+          value={formData.slug}
+          onChange={handleInputChange}
+          placeholder="post-slug"
+          error={errors.slug}
+          helperText={`URL: /blog/${formData.slug || "post-slug"}`}
+        />
 
         {/* Excerpt */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Excerpt <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            name="excerpt"
-            value={formData.excerpt}
-            onChange={handleInputChange}
-            rows={3}
-            placeholder="Brief description of the post (shown in listings)"
-            className={`w-full rounded-lg border ${
-              errors.excerpt ? "border-red-500" : "border-gray-300"
-            } px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500`}
-          />
-          {errors.excerpt && (
-            <p className="mt-1 text-sm text-red-600">{errors.excerpt}</p>
-          )}
-        </div>
+        <FormTextarea
+          label="Excerpt"
+          required
+          name="excerpt"
+          value={formData.excerpt}
+          onChange={handleInputChange}
+          rows={3}
+          placeholder="Brief description of the post (shown in listings)"
+          error={errors.excerpt}
+        />
 
         {/* Featured Image */}
         <div>
