@@ -1,5 +1,5 @@
 /**
- * Email Templates for JustForView
+ * Email Templates for Letitrip
  * 
  * Additional email templates for various user interactions
  */
@@ -118,7 +118,7 @@ export class EmailTemplates {
     </div>
     
     <div style="text-align: center; margin: 30px 0;">
-      <a href="https://justforview.in/user/orders/${data.orderNumber}" 
+      <a href="https://letitrip.in/user/orders/${data.orderNumber}" 
          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                 color: white; 
                 padding: 14px 30px; 
@@ -133,8 +133,8 @@ export class EmailTemplates {
     <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
     
     <p style="font-size: 12px; color: #999; text-align: center;">
-      © ${new Date().getFullYear()} JustForView. All rights reserved.<br>
-      Questions? Contact us at support@justforview.in
+      © ${new Date().getFullYear()} Letitrip. All rights reserved.<br>
+      Questions? Contact us at support@letitrip.in
     </p>
   </div>
 </body>
@@ -191,8 +191,8 @@ export class EmailTemplates {
     <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
     
     <p style="font-size: 12px; color: #999; text-align: center;">
-      © ${new Date().getFullYear()} JustForView. All rights reserved.<br>
-      Questions? Contact us at support@justforview.in
+      © ${new Date().getFullYear()} Letitrip. All rights reserved.<br>
+      Questions? Contact us at support@Letitrip.in
     </p>
   </div>
 </body>
@@ -250,8 +250,8 @@ export class EmailTemplates {
     <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
     
     <p style="font-size: 12px; color: #999; text-align: center;">
-      © ${new Date().getFullYear()} JustForView. All rights reserved.<br>
-      Questions? Contact us at support@justforview.in
+      © ${new Date().getFullYear()} Letitrip. All rights reserved.<br>
+      Questions? Contact us at support@Letitrip.in
     </p>
   </div>
 </body>
@@ -305,8 +305,8 @@ export class EmailTemplates {
     <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
     
     <p style="font-size: 12px; color: #999; text-align: center;">
-      © ${new Date().getFullYear()} JustForView. All rights reserved.<br>
-      Questions? Contact us at support@justforview.in
+      © ${new Date().getFullYear()} Letitrip. All rights reserved.<br>
+      Questions? Contact us at support@Letitrip.in
     </p>
   </div>
 </body>

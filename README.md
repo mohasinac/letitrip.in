@@ -1,4 +1,4 @@
-# JustForView.in - Auction & E-commerce Platform
+# Letitrip.in - Auction & E-commerce Platform
 
 > **Modern, scalable auction and e-commerce platform built for the Indian market**  
 > Zero-cost infrastructure | Production-ready | 100% Type-safe
@@ -8,7 +8,7 @@
 [![Firebase](https://img.shields.io/badge/Firebase-FREE%20Tier-orange)](https://firebase.google.com/)
 [![License](https://img.shields.io/badge/License-Proprietary-red)](LICENSE)
 
-**Repository**: https://github.com/mohasinac/justforview.in  
+**Repository**: https://github.com/mohasinac/letitrip.in  
 **Branch**: `fix-ui`  
 **Last Updated**: November 17, 2025  
 **Build Status**: ✅ Passing (164/164 pages)
@@ -89,8 +89,8 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/mohasinac/justforview.in.git
-cd justforview.in
+git clone https://github.com/mohasinac/letitrip.in.git
+cd letitrip.in
 
 # Install dependencies
 npm install
@@ -229,7 +229,7 @@ Replaced paid services with FREE alternatives:
 ## 📁 Project Structure
 
 ```
-justforview.in/
+letitrip.in/
 ├── src/
 │   ├── app/                    # Next.js App Router
 │   │   ├── api/               # API Routes (Backend)
@@ -520,7 +520,7 @@ npm run build
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/mohasinac/justforview.in/issues)
+- **Issues**: [GitHub Issues](https://github.com/mohasinac/letitrip.in/issues)
 - **Documentation**: [docs/](docs/)
 - **Discord**: Team notifications channel
 

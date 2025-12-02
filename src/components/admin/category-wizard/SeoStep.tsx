@@ -38,7 +38,7 @@ export default function SeoStep({
         value={formData.metaTitle}
         onChange={(e) => onChange("metaTitle", e.target.value)}
         maxLength={60}
-        placeholder={`${formData.name || "Category"} - Shop on JustForView`}
+        placeholder={`${formData.name || "Category"} - Shop on Letitrip`}
         helperText={`${formData.metaTitle.length}/60 characters • Leave empty to use category name`}
       />
 
@@ -58,11 +58,10 @@ export default function SeoStep({
         </p>
         <div className="text-sm">
           <p className="text-blue-600 font-medium truncate">
-            {formData.metaTitle || formData.name || "Category Name"} -
-            JustForView
+            {formData.metaTitle || formData.name || "Category Name"} - Letitrip
           </p>
           <p className="text-green-700 text-xs truncate">
-            justforview.in/categories/{formData.slug || "category-slug"}
+            letitrip.in/categories/{formData.slug || "category-slug"}
           </p>
           <p className="text-gray-600 mt-1 line-clamp-2">
             {formData.metaDescription ||

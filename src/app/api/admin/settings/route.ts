@@ -94,11 +94,11 @@ interface AllSettings {
 // Default settings structure
 const DEFAULT_SETTINGS: AllSettings = {
   general: {
-    siteName: "JustForView",
+    siteName: "Letitrip",
     siteTagline: "India's Premier Auction Platform",
     siteDescription: "Buy and sell unique items through live auctions",
-    contactEmail: "contact@justforview.in",
-    supportEmail: "support@justforview.in",
+    contactEmail: "contact@letitrip.in",
+    supportEmail: "support@letitrip.in",
     contactPhone: "",
     address: "",
     logoUrl: "",

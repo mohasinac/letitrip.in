@@ -29,13 +29,13 @@ export default function DemoCredentialsPage() {
   const adminAccounts = [
     {
       name: "Platform Admin",
-      email: "admin@justforview.in",
+      email: "admin@letitrip.in",
       password: "Admin@123",
       role: "Super Admin",
     },
     {
       name: "DEMO_Admin User",
-      email: "demo.admin@justforview.in",
+      email: "demo.admin@letitrip.in",
       password: defaultPassword,
       role: "Admin",
     },
@@ -44,12 +44,12 @@ export default function DemoCredentialsPage() {
   const moderatorAccounts = [
     {
       name: "DEMO_Moderator 1",
-      email: "demo.mod1@justforview.in",
+      email: "demo.mod1@letitrip.in",
       role: "Moderator",
     },
     {
       name: "DEMO_Moderator 2",
-      email: "demo.mod2@justforview.in",
+      email: "demo.mod2@letitrip.in",
       role: "Moderator",
     },
   ];
@@ -57,12 +57,12 @@ export default function DemoCredentialsPage() {
   const supportAccounts = [
     {
       name: "DEMO_Support Agent 1",
-      email: "demo.support1@justforview.in",
+      email: "demo.support1@letitrip.in",
       role: "Support",
     },
     {
       name: "DEMO_Support Agent 2",
-      email: "demo.support2@justforview.in",
+      email: "demo.support2@letitrip.in",
       role: "Support",
     },
   ];
@@ -70,36 +70,36 @@ export default function DemoCredentialsPage() {
   const sellerAccounts = [
     {
       name: "DEMO_Alex Chen",
-      email: "alex.chen@demo.justforview.in",
+      email: "alex.chen@demo.letitrip.in",
       shop: "DEMO_CollectorsHub - TCG & Collectibles",
       role: "Seller 1",
     },
     {
       name: "DEMO_Raj Patel",
-      email: "raj.patel@demo.justforview.in",
+      email: "raj.patel@demo.letitrip.in",
       shop: "DEMO_Anime Legends - Figure Paradise",
       role: "Seller 2",
     },
     {
       name: "DEMO_Storm Blader",
-      email: "storm.blader@demo.justforview.in",
+      email: "storm.blader@demo.letitrip.in",
       shop: "DEMO_Beyblade Arena Mumbai",
       role: "Seller 3",
     },
     {
       name: "DEMO_Galaxy Master",
-      email: "galaxy.master@demo.justforview.in",
+      email: "galaxy.master@demo.letitrip.in",
       shop: "DEMO_Metal Fight Stadium Delhi",
       role: "Seller 4",
     },
   ];
 
   const buyerAccounts = [
-    { name: "DEMO_Priya Sharma", email: "priya.sharma@demo.justforview.in" },
-    { name: "DEMO_John Smith", email: "john.smith@demo.justforview.in" },
-    { name: "DEMO_Maria Garcia", email: "maria.garcia@demo.justforview.in" },
-    { name: "DEMO_Kenji Tanaka", email: "kenji.tanaka@demo.justforview.in" },
-    { name: "DEMO_Sarah Johnson", email: "sarah.j@demo.justforview.in" },
+    { name: "DEMO_Priya Sharma", email: "priya.sharma@demo.letitrip.in" },
+    { name: "DEMO_John Smith", email: "john.smith@demo.letitrip.in" },
+    { name: "DEMO_Maria Garcia", email: "maria.garcia@demo.letitrip.in" },
+    { name: "DEMO_Kenji Tanaka", email: "kenji.tanaka@demo.letitrip.in" },
+    { name: "DEMO_Sarah Johnson", email: "sarah.j@demo.letitrip.in" },
   ];
 
   const CopyButton = ({ text, field }: { text: string; field: string }) => (

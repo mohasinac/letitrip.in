@@ -449,14 +449,14 @@ export default function SellerHelpPage() {
             </Link>
 
             <a
-              href="mailto:seller-support@justforview.in"
+              href="mailto:seller-support@letitrip.in"
               className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors"
             >
               <Mail className="h-6 w-6 text-blue-600" />
               <div>
                 <p className="font-medium text-gray-900">Email Us</p>
                 <p className="text-sm text-gray-500">
-                  seller-support@justforview.in
+                  seller-support@letitrip.in
                 </p>
               </div>
             </a>

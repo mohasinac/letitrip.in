@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
           orderNumber: `${DEMO_PREFIX}ORD-${String(orderCount + 1).padStart(6, "0")}`,
           buyerId: buyer.id,
           buyerName: `${DEMO_PREFIX}${buyer.name}`,
-          buyerEmail: `${buyer.name.toLowerCase().replace(/\s/g, ".")}@demo.justforview.in`,
+          buyerEmail: `${buyer.name.toLowerCase().replace(/\s/g, ".")}@demo.letitrip.in`,
           buyerPhone: `+91-${9000000000 + orderCount}`,
           shopId: shop.id,
           sellerId: shop.ownerId,
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
             status: "captured",
             fee: Math.round(total * 0.02 * 100), // 2% fee in paise
             tax: Math.round(total * 0.02 * 0.18 * 100), // GST on fee
-            email: `${buyer.name.toLowerCase().replace(/\s/g, ".")}@demo.justforview.in`,
+            email: `${buyer.name.toLowerCase().replace(/\s/g, ".")}@demo.letitrip.in`,
             contact: `+91-${9000000000 + orderCount}`,
             notes: { order_id: orderRef.id, shop_id: shop.id },
             receipt: `${DEMO_PREFIX}RCPT-${String(paymentCount + 1).padStart(6, "0")}`,

@@ -148,7 +148,7 @@ export default function UserRipLimitPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: purchaseData.amount * 100, // Razorpay expects paise
         currency: purchaseData.currency,
-        name: "JustForView",
+        name: "Letitrip",
         description: `Purchase ${purchaseData.ripLimitAmount} RipLimit`,
         order_id: purchaseData.razorpayOrderId,
         handler: async function (response: {

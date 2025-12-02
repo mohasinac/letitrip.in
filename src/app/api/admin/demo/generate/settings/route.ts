@@ -31,15 +31,15 @@ export async function POST() {
 
     // 1. Site Settings (General)
     await db.collection("site_settings").doc("general").set({
-      siteName: "LET IT RIP - JustForView.in",
+      siteName: "LET IT RIP - Letitrip.in",
       siteDescription: "India's Premier Platform for Beyblades, Trading Cards & Collectibles",
       siteTagline: "Your Gateway to Authentic Collectibles",
       logoLight: "/images/logo-light.png",
       logoDark: "/images/logo-dark.png",
       favicon: "/favicon.ico",
-      contactEmail: `${DEMO_PREFIX.toLowerCase()}contact@justforview.in`,
+      contactEmail: `${DEMO_PREFIX.toLowerCase()}contact@letitrip.in`,
       contactPhone: "+91-9876543210",
-      supportEmail: `${DEMO_PREFIX.toLowerCase()}support@justforview.in`,
+      supportEmail: `${DEMO_PREFIX.toLowerCase()}support@letitrip.in`,
       address: {
         street: "123 Collector's Avenue",
         city: "Mumbai",
@@ -48,11 +48,11 @@ export async function POST() {
         country: "India",
       },
       socialLinks: {
-        facebook: "https://facebook.com/justforview",
-        twitter: "https://twitter.com/justforview",
-        instagram: "https://instagram.com/justforview",
-        youtube: "https://youtube.com/@justforview",
-        linkedin: "https://linkedin.com/company/justforview",
+        facebook: "https://facebook.com/letitrip",
+        twitter: "https://twitter.com/letitrip",
+        instagram: "https://instagram.com/letitrip",
+        youtube: "https://youtube.com/@letitrip",
+        linkedin: "https://linkedin.com/company/letitrip",
       },
       businessHours: {
         monday: "9:00 AM - 6:00 PM",
@@ -81,13 +81,13 @@ export async function POST() {
       defaultKeywords: ["beyblades", "tcg", "trading cards", "collectibles", "auction", "india", "beyblade burst", "beyblade x"],
       ogImage: "/images/og-image.jpg",
       twitterCard: "summary_large_image",
-      twitterSite: "@justforview",
+      twitterSite: "@letitrip",
       googleAnalyticsId: `${DEMO_PREFIX}GA-XXXXXXXXX`,
       googleTagManagerId: `${DEMO_PREFIX}GTM-XXXXXXX`,
       facebookPixelId: `${DEMO_PREFIX}FB-XXXXXXXXXXXXX`,
       googleSiteVerification: `${DEMO_PREFIX}google-site-verification-code`,
       bingSiteVerification: `${DEMO_PREFIX}bing-site-verification-code`,
-      robotsTxt: `User-agent: *\nAllow: /\nSitemap: https://justforview.in/sitemap.xml`,
+      robotsTxt: `User-agent: *\nAllow: /\nSitemap: https://letitrip.in/sitemap.xml`,
       structuredDataEnabled: true,
       createdAt: timestamp,
       updatedAt: timestamp,
@@ -261,7 +261,7 @@ export async function POST() {
       {
         id: "welcome",
         name: "Welcome Email",
-        subject: "Welcome to JustForView - Let It Rip! 🌀",
+        subject: "Welcome to Letitrip - Let It Rip! 🌀",
         template: `<h1>Welcome {{name}}!</h1><p>Thanks for joining India's premier collectibles platform.</p>`,
       },
       {
@@ -322,9 +322,9 @@ export async function POST() {
     await db.collection("email_settings").doc("resend").set({
       provider: "resend",
       apiKey: `${DEMO_PREFIX}re_demo_api_key_xxxxxxxxxxxx`,
-      fromEmail: `${DEMO_PREFIX.toLowerCase()}noreply@justforview.in`,
-      fromName: "LET IT RIP - JustForView",
-      replyToEmail: `${DEMO_PREFIX.toLowerCase()}support@justforview.in`,
+      fromEmail: `${DEMO_PREFIX.toLowerCase()}noreply@letitrip.in`,
+      fromName: "LET IT RIP - Letitrip",
+      replyToEmail: `${DEMO_PREFIX.toLowerCase()}support@letitrip.in`,
       testMode: true,
       createdAt: timestamp,
       updatedAt: timestamp,
@@ -337,7 +337,7 @@ export async function POST() {
       provider: "firebase",
       firebaseConfig: {
         apiKey: `${DEMO_PREFIX}AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX`,
-        projectId: `${DEMO_PREFIX}justforview-demo`,
+        projectId: `${DEMO_PREFIX}letitrip-demo`,
         messagingSenderId: `${DEMO_PREFIX}123456789`,
         appId: `${DEMO_PREFIX}1:123456789:web:xxxxxxxxxxxxx`,
       },

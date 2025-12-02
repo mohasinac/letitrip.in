@@ -1,4 +1,4 @@
-# Firebase Functions for JustForView.in
+# Firebase Functions for Letitrip.in
 
 This directory contains Firebase Cloud Functions for background tasks and scheduled jobs.
 

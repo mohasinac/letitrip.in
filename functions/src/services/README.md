@@ -45,18 +45,18 @@ Add these to Firebase Functions config or environment:
 ```bash
 # Using Firebase CLI
 firebase functions:config:set resend.api_key="YOUR_RESEND_API_KEY"
-firebase functions:config:set email.from="noreply@justforview.in"
-firebase functions:config:set email.from_name="JustForView"
-firebase functions:config:set app.base_url="https://justforview.in"
+firebase functions:config:set email.from="noreply@letitrip.in"
+firebase functions:config:set email.from_name="Letitrip"
+firebase functions:config:set app.base_url="https://letitrip.in"
 ```
 
 Or use `.env` file in functions directory:
 
 ```env
 RESEND_API_KEY=re_your_api_key_here
-EMAIL_FROM=noreply@justforview.in
-EMAIL_FROM_NAME=JustForView
-NEXT_PUBLIC_BASE_URL=https://justforview.in
+EMAIL_FROM=noreply@letitrip.in
+EMAIL_FROM_NAME=Letitrip
+NEXT_PUBLIC_BASE_URL=https://letitrip.in
 ```
 
 ### Resend API Setup
@@ -293,6 +293,7 @@ async notifyBidPlaced(data: BidEmailData): Promise<boolean> {
    ```
 
 2. **Verify Domain:**
+
    - Log in to Resend dashboard
    - Ensure domain is verified
    - Or use `onboarding@resend.dev` for testing
