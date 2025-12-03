@@ -818,6 +818,7 @@ export default function AdminDemoPage() {
         reviews: { status: "pending" },
         orders: { status: "pending" },
         extras: { status: "pending" },
+        settings: { status: "pending" },
       });
       toast.success(`Cleanup complete! Deleted ${totalDeleted} documents.`);
     }
@@ -899,6 +900,7 @@ export default function AdminDemoPage() {
           reviews: { status: "pending" },
           orders: { status: "pending" },
           extras: { status: "pending" },
+          settings: { status: "pending" },
         });
         setDeletionResult({
           total: data.deleted,
