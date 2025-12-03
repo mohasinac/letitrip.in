@@ -18,45 +18,13 @@ import {
 } from "lucide-react";
 import { analyticsService } from "@/services/analytics.service";
 import { Price, Quantity, DateDisplay } from "@/components/common/values";
+import { PeriodSelector } from "@/components/common/PeriodSelector";
+import { StatCard } from "@/components/common/StatCard";
 import type {
   SalesDataPointFE,
   CategoryPerformanceFE,
   TopProductFE,
 } from "@/types/frontend/analytics.types";
-
-// Period selector
-function PeriodSelector({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  const periods = [
-    { label: "Today", value: "day" },
-    { label: "This Week", value: "week" },
-    { label: "This Month", value: "month" },
-    { label: "This Year", value: "year" },
-  ];
-
-  return (
-    <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1">
-      {periods.map((period) => (
-        <button
-          key={period.value}
-          onClick={() => onChange(period.value)}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-            value === period.value
-              ? "bg-indigo-600 text-white"
-              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          }`}
-        >
-          {period.label}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 // Revenue trend chart
 function RevenueTrendChart({ data }: { data: SalesDataPointFE[] }) {
@@ -245,8 +213,8 @@ function DetailedProductsTable({ products }: { products: TopProductFE[] }) {
                       conversionRate >= 5
                         ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-400"
                         : conversionRate >= 2
-                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400"
-                          : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
+                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400"
+                        : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
                     }`}
                   >
                     {conversionRate.toFixed(1)}%
@@ -257,64 +225,6 @@ function DetailedProductsTable({ products }: { products: TopProductFE[] }) {
           })}
         </tbody>
       </table>
-    </div>
-  );
-}
-
-// Stat card
-function StatCard({
-  title,
-  value,
-  change,
-  icon: Icon,
-  prefix = "",
-}: {
-  title: string;
-  value: number | string;
-  change?: number;
-  icon: React.ComponentType<{ className?: string }>;
-  prefix?: string;
-}) {
-  const isPositive = change && change > 0;
-  const isNegative = change && change < 0;
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            {title}
-          </p>
-          <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-            {prefix}
-            {typeof value === "number" ? <Quantity value={value} /> : value}
-          </p>
-          {change !== undefined && (
-            <div className="mt-1 flex items-center gap-1">
-              {isPositive ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
-              ) : isNegative ? (
-                <TrendingDown className="h-4 w-4 text-red-500" />
-              ) : null}
-              <span
-                className={`text-sm font-medium ${
-                  isPositive
-                    ? "text-green-600 dark:text-green-400"
-                    : isNegative
-                      ? "text-red-600 dark:text-red-400"
-                      : "text-gray-600 dark:text-gray-400"
-                }`}
-              >
-                {isPositive ? "+" : ""}
-                {change.toFixed(1)}%
-              </span>
-            </div>
-          )}
-        </div>
-        <div className="p-3 bg-indigo-100 dark:bg-indigo-900/40 rounded-lg">
-          <Icon className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-        </div>
-      </div>
     </div>
   );
 }
@@ -434,6 +344,7 @@ export default function AdminAnalyticsSalesPage() {
                 value={totalRevenue}
                 change={revenueGrowth}
                 icon={DollarSign}
+                color="green"
                 prefix="₹"
               />
               <StatCard
@@ -441,11 +352,13 @@ export default function AdminAnalyticsSalesPage() {
                 value={totalOrders}
                 change={ordersGrowth}
                 icon={ShoppingCart}
+                color="blue"
               />
               <StatCard
                 title="Avg Order Value"
                 value={Math.round(avgOrderValue)}
                 icon={TrendingUp}
+                color="indigo"
                 prefix="₹"
               />
             </div>
@@ -486,8 +399,8 @@ export default function AdminAnalyticsSalesPage() {
                         {salesData.length > 0
                           ? new Date(
                               salesData.reduce((best, day) =>
-                                day.revenue > best.revenue ? day : best,
-                              ).date,
+                                day.revenue > best.revenue ? day : best
+                              ).date
                             ).toLocaleDateString("en-IN", {
                               weekday: "long",
                               month: "short",
@@ -501,7 +414,7 @@ export default function AdminAnalyticsSalesPage() {
                         ₹
                         {salesData.length > 0
                           ? Math.max(
-                              ...salesData.map((d) => d.revenue),
+                              ...salesData.map((d) => d.revenue)
                             ).toLocaleString("en-IN")
                           : 0}
                       </p>
