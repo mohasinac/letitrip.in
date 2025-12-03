@@ -51,16 +51,14 @@ export function SubcategoryGrid({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"alphabetical" | "productCount">(
-    "alphabetical",
+    "alphabetical"
   );
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
 
   // Filter and sort subcategories
   const filteredSubcategories = subcategories
-    .filter((cat) =>
-      cat.name.toLowerCase().includes(searchQuery.toLowerCase()),
-    )
+    .filter((cat) => cat.name.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => {
       if (sortBy === "alphabetical") {
         return a.name.localeCompare(b.name);
@@ -104,7 +102,9 @@ export function SubcategoryGrid({
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 ${className}`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">

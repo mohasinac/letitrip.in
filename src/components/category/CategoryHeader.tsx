@@ -56,7 +56,9 @@ export function CategoryHeader({
   className = "",
 }: CategoryHeaderProps) {
   return (
-    <div className={`bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 ${className}`}
+    >
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Breadcrumb */}
         {parentCategory && (
@@ -101,12 +103,13 @@ export function CategoryHeader({
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 {name}
               </h1>
-              
+
               {/* Product Count Badge */}
               <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full flex-shrink-0">
                 <Package className="w-4 h-4" />
                 <span className="text-sm font-semibold">
-                  {productCount.toLocaleString()} {productCount === 1 ? "Product" : "Products"}
+                  {productCount.toLocaleString()}{" "}
+                  {productCount === 1 ? "Product" : "Products"}
                 </span>
               </div>
             </div>
