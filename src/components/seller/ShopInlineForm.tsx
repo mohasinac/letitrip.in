@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { logError } from "@/lib/firebase-error-logger";
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput, FormTextarea } from "@/components/forms";
 import { shopsService } from "@/services/shops.service";
@@ -49,7 +50,10 @@ export function ShopInlineForm({
 
       onSuccess();
     } catch (error) {
-      console.error("Failed to save shop:", error);
+      logError(error as Error, {
+        component: "ShopInlineForm.handleSubmit",
+        metadata: { shopSlug: formData.slug },
+      });
       toast.error("Failed to save shop");
     } finally {
       setLoading(false);

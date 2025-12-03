@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus, X, Loader2, ChevronDown } from "lucide-react";
+import { logError } from "@/lib/firebase-error-logger";
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput, FormLabel, FormTextarea } from "@/components/forms";
 import { categoriesService } from "@/services/categories.service";
@@ -69,7 +70,9 @@ export default function InlineCategorySelectorWithCreate({
         }));
       setCategories(leafCategories);
     } catch (error) {
-      console.error("Failed to load categories:", error);
+      logError(error as Error, {
+        component: "InlineCategorySelectorWithCreate.loadCategories",
+      });
     } finally {
       setLoading(false);
     }

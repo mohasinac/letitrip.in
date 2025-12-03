@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ShopCard } from "@/components/cards/ShopCard";
+import { logError } from "@/lib/firebase-error-logger";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { shopsService } from "@/services/shops.service";
@@ -94,10 +95,10 @@ export default function FeaturedShopsSection({
               products: productsData.data,
             };
           } catch (error) {
-            console.error(
-              `Error fetching products for shop ${shop.id}:`,
-              error,
-            );
+            logError(error as Error, {
+              component: "FeaturedShopsSection.fetchFeaturedShops",
+              metadata: { shopId: shop.id },
+            });
             return {
               shop,
               products: [],
@@ -110,7 +111,9 @@ export default function FeaturedShopsSection({
         shopsData2.filter((item: ShopWithProducts) => item.products.length > 0),
       );
     } catch (error) {
-      console.error("Error fetching featured shops:", error);
+      logError(error as Error, {
+        component: "FeaturedShopsSection.fetchFeaturedShops",
+      });
       setShopsWithProducts([]);
     } finally {
       setLoading(false);

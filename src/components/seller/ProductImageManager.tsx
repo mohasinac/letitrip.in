@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
+import { logError } from "@/lib/firebase-error-logger";
+import { toast } from "sonner";
 import {
   Upload,
   X,
@@ -251,7 +253,10 @@ export default function ProductImageManager({
       const allUrls = updatedList.map((img) => img.url).filter((url) => url);
       onImagesChange(allUrls);
     } catch (error) {
-      console.error("Upload error:", error);
+      logError(error as Error, {
+        component: "ProductImageManager.uploadImage",
+        metadata: { imageId: image.id },
+      });
       setProductImages((prev) =>
         prev.map((img) =>
           img.id === image.id

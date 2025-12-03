@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/cards/ProductCard";
+import { logError } from "@/lib/firebase-error-logger";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { productsService } from "@/services/products.service";
 import { homepageSettingsService } from "@/services/homepage-settings.service";
@@ -71,7 +72,9 @@ export default function FeaturedProductsSection({ maxProducts = 10 }: Props) {
 
       setProducts(response.data || []);
     } catch (error) {
-      console.error("Error fetching featured products:", error);
+      logError(error as Error, {
+        component: "FeaturedProductsSection.fetchFeaturedProducts",
+      });
       setProducts([]);
     } finally {
       setLoading(false);

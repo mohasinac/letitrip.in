@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/cards/ProductCard";
+import { logError } from "@/lib/firebase-error-logger";
 import { CategoryCard } from "@/components/cards/CategoryCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { categoriesService } from "@/services/categories.service";
@@ -91,10 +92,10 @@ export default function FeaturedCategoriesSection({
               products: productsData.data,
             };
           } catch (error) {
-            console.error(
-              `Error fetching products for category ${category.id}:`,
-              error,
-            );
+            logError(error as Error, {
+              component: "FeaturedCategoriesSection.fetchFeaturedCategories",
+              metadata: { categoryId: category.id },
+            });
             return {
               category,
               products: [],
@@ -109,7 +110,9 @@ export default function FeaturedCategoriesSection({
         ),
       );
     } catch (error) {
-      console.error("Error fetching featured categories:", error);
+      logError(error as Error, {
+        component: "FeaturedCategoriesSection.fetchFeaturedCategories",
+      });
       setCategoriesWithProducts([]);
     } finally {
       setLoading(false);

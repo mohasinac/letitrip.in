@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ReviewCard } from "@/components/cards/ReviewCard";
+import { logError } from "@/lib/firebase-error-logger";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { reviewsService } from "@/services/reviews.service";
 import type { ReviewFE } from "@/types/frontend/review.types";
@@ -20,7 +21,9 @@ export default function FeaturedReviewsSection() {
       const reviewsList = await reviewsService.getHomepage();
       setReviews(reviewsList.slice(0, 10));
     } catch (error) {
-      console.error("Error fetching featured reviews:", error);
+      logError(error as Error, {
+        component: "FeaturedReviewsSection.fetchFeaturedReviews",
+      });
       setReviews([]);
     } finally {
       setLoading(false);
