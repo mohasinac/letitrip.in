@@ -224,7 +224,9 @@ function FAQItem({
         onClick={onToggle}
         className="w-full flex items-center justify-between py-4 text-left hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
       >
-        <span className="font-medium text-gray-900 dark:text-white">{question}</span>
+        <span className="font-medium text-gray-900 dark:text-white">
+          {question}
+        </span>
         <ChevronDown
           className={`h-5 w-5 text-gray-400 transition-transform ${
             isOpen ? "rotate-180" : ""
@@ -277,7 +279,9 @@ function FAQCategory({
           <Icon className="h-5 w-5" />
         </div>
         <div className="flex-1 text-left">
-          <h3 className="font-semibold text-gray-900 dark:text-white">{category.title}</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white">
+            {category.title}
+          </h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {category.questions.length} questions
           </p>
@@ -310,7 +314,7 @@ export default function SellerHelpPage() {
   const { isSeller } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [openQuestions, setOpenQuestions] = useState<Record<string, number>>(
-    {},
+    {}
   );
 
   // Filter FAQs by search
@@ -320,7 +324,7 @@ export default function SellerHelpPage() {
         questions: cat.questions.filter(
           (q) =>
             q.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            q.a.toLowerCase().includes(searchQuery.toLowerCase()),
+            q.a.toLowerCase().includes(searchQuery.toLowerCase())
         ),
       })).filter((cat) => cat.questions.length > 0)
     : FAQ_CATEGORIES;
@@ -404,7 +408,9 @@ export default function SellerHelpPage() {
           {filteredCategories.length === 0 ? (
             <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
               <Search className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-              <p className="font-medium text-gray-900 dark:text-white">No results found</p>
+              <p className="font-medium text-gray-900 dark:text-white">
+                No results found
+              </p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Try different keywords or browse categories below
               </p>
@@ -441,7 +447,9 @@ export default function SellerHelpPage() {
             >
               <MessageSquare className="h-6 w-6 text-blue-600" />
               <div>
-                <p className="font-medium text-gray-900 dark:text-white">Submit a Ticket</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  Submit a Ticket
+                </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   Get help within 24 hours
                 </p>
@@ -454,7 +462,9 @@ export default function SellerHelpPage() {
             >
               <Mail className="h-6 w-6 text-blue-600" />
               <div>
-                <p className="font-medium text-gray-900 dark:text-white">Email Us</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  Email Us
+                </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   seller-support@letitrip.in
                 </p>
@@ -467,8 +477,12 @@ export default function SellerHelpPage() {
             >
               <Phone className="h-6 w-6 text-blue-600" />
               <div>
-                <p className="font-medium text-gray-900 dark:text-white">Call Us</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Mon-Sat, 9AM-6PM IST</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  Call Us
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Mon-Sat, 9AM-6PM IST
+                </p>
               </div>
             </a>
           </div>
