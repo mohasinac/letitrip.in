@@ -33,7 +33,7 @@ export default function SellerRevenuePage() {
     endDate: string;
   }>({
     startDate: toDateInputValue(
-      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     ),
     endDate: getTodayDateInputValue(),
   });
@@ -84,7 +84,7 @@ export default function SellerRevenuePage() {
           endDate: dateRange.endDate,
           period,
         },
-        format,
+        format
       );
       const url = globalThis.URL?.createObjectURL(blob) || "";
       const link = document.createElement("a");
@@ -227,7 +227,9 @@ export default function SellerRevenuePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-gray-600 dark:text-gray-400">Total Revenue</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Total Revenue
+                </div>
                 <DollarSign className="w-8 h-8 text-green-500" />
               </div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
@@ -242,7 +244,9 @@ export default function SellerRevenuePage() {
 
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-gray-600 dark:text-gray-400">Total Orders</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Total Orders
+                </div>
                 <ShoppingCart className="w-8 h-8 text-blue-500" />
               </div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
@@ -257,7 +261,9 @@ export default function SellerRevenuePage() {
 
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-gray-600 dark:text-gray-400">Average Order Value</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Average Order Value
+                </div>
                 <CreditCard className="w-8 h-8 text-purple-500" />
               </div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -267,7 +273,9 @@ export default function SellerRevenuePage() {
 
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-gray-600 dark:text-gray-400">Total Customers</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Total Customers
+                </div>
                 <Users className="w-8 h-8 text-orange-500" />
               </div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -278,7 +286,9 @@ export default function SellerRevenuePage() {
 
           {/* Sales Chart */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Sales Trend</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Sales Trend
+            </h2>
             {salesData.length === 0 ? (
               <div className="text-center text-gray-500 dark:text-gray-400 py-8">
                 No sales data available for the selected period
@@ -289,7 +299,7 @@ export default function SellerRevenuePage() {
                   <div className="h-64 flex items-end justify-between gap-2">
                     {salesData.map((data, index) => {
                       const maxRevenue = Math.max(
-                        ...salesData.map((d) => d.revenue),
+                        ...salesData.map((d) => d.revenue)
                       );
                       const height = (data.revenue / maxRevenue) * 100;
                       return (
@@ -329,7 +339,9 @@ export default function SellerRevenuePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Top Products */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Top Products</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Top Products
+              </h2>
               {topProducts.length === 0 ? (
                 <div className="text-center text-gray-500 dark:text-gray-400 py-8">
                   No product data available
@@ -367,13 +379,17 @@ export default function SellerRevenuePage() {
 
             {/* Quick Actions */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Quick Actions
+              </h2>
               <div className="space-y-3">
                 <button
                   onClick={() => router.push("/seller/orders")}
                   className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 >
-                  <span className="font-medium text-gray-900 dark:text-white">View Orders</span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    View Orders
+                  </span>
                   <ShoppingCart className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </button>
                 <button
@@ -399,13 +415,17 @@ export default function SellerRevenuePage() {
               {/* Additional Stats */}
               <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Conversion Rate</span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Conversion Rate
+                  </span>
                   <span className="font-semibold text-gray-900 dark:text-white">
                     {overview?.conversionRate?.toFixed(2) || 0}%
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Total Products</span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Total Products
+                  </span>
                   <span className="font-semibold text-gray-900 dark:text-white">
                     {formatNumber(overview?.totalProducts || 0)}
                   </span>

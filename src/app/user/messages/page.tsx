@@ -30,6 +30,7 @@ import {
   ParticipantType,
 } from "@/types/frontend/message.types";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { formatDistanceToNow } from "date-fns";
 
 // Participant type icons
@@ -168,13 +169,14 @@ function MessagesContent() {
   const [selectedConversation, setSelectedConversation] =
     useState<ConversationFE | null>(null);
   const [messages, setMessages] = useState<MessageFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [sendingMessage, setSendingMessage] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showArchived, setShowArchived] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   // Set user ID in service for transformations
   useEffect(() => {
@@ -185,20 +187,13 @@ function MessagesContent() {
 
   // Load conversations
   const loadConversations = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    await execute(async () => {
       const response = await messagesService.getConversations({
         status: showArchived ? "archived" : "active",
       });
       setConversations(response.conversations);
-    } catch (err) {
-      console.error("Failed to load conversations:", err);
-      setError("Failed to load conversations");
-    } finally {
-      setLoading(false);
-    }
-  }, [showArchived]);
+    });
+  }, [showArchived, execute]);
 
   useEffect(() => {
     loadConversations();
@@ -397,7 +392,7 @@ function MessagesContent() {
                   title="Refresh"
                 >
                   <RefreshCw
-                    className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+                    className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
                   />
                 </button>
               </div>
@@ -444,13 +439,15 @@ function MessagesContent() {
 
             {/* Conversation list */}
             <div className="flex-1 overflow-y-auto">
-              {loading ? (
+              {isLoading ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="h-6 w-6 animate-spin text-indigo-600 dark:text-indigo-400" />
                 </div>
               ) : error ? (
                 <div className="p-4 text-center">
-                  <p className="text-red-600 dark:text-red-400 mb-2">{error}</p>
+                  <p className="text-red-600 dark:text-red-400 mb-2">
+                    {error.message}
+                  </p>
                   <button
                     onClick={loadConversations}
                     className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"

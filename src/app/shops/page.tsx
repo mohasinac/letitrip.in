@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Loader2, Filter, Grid, List } from "lucide-react";
+import { Loader2, Filter, Grid, List, AlertCircle } from "lucide-react";
 import { FormSelect } from "@/components/forms";
 import { ShopCard } from "@/components/cards/ShopCard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { SHOP_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import { shopsService } from "@/services/shops.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 
 function ShopsContent() {
@@ -17,16 +18,18 @@ function ShopsContent() {
   const isMobile = useIsMobile();
 
   const [shops, setShops] = useState<ShopCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<string>(
-    searchParams.get("sortBy") || "rating",
+    searchParams.get("sortBy") || "rating"
   );
   const [sortOrder, setSortOrder] = useState<string>(
-    searchParams.get("sortOrder") || "desc",
+    searchParams.get("sortOrder") || "desc"
   );
   const [showFilters, setShowFilters] = useState(false);
   const [totalShops, setTotalShops] = useState(0);
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   // Cursor-based pagination
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
@@ -37,14 +40,8 @@ function ShopsContent() {
   // Unified filters
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
 
-  // Load on sort/page change
-  useEffect(() => {
-    loadShops();
-  }, [sortBy, sortOrder, currentPage]);
-
   const loadShops = useCallback(async () => {
-    try {
-      setLoading(true);
+    await execute(async () => {
       const startAfter = cursors[currentPage - 1];
 
       const response = await shopsService.list({
@@ -74,12 +71,13 @@ function ShopsContent() {
           }
         }
       }
-    } catch (error) {
-      console.error("Failed to load shops:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [cursors, currentPage, limit, sortBy, sortOrder, filterValues]);
+    });
+  }, [cursors, currentPage, limit, sortBy, sortOrder, filterValues, execute]);
+
+  // Load on sort/page change
+  useEffect(() => {
+    loadShops();
+  }, [loadShops]);
 
   const handleReset = useCallback(() => {
     setFilterValues({});
@@ -174,17 +172,30 @@ function ShopsContent() {
               isOpen={showFilters}
               onClose={() => setShowFilters(false)}
               searchable={true}
-              mobile={false}
+              mobile={true}
               resultCount={totalShops}
-              isLoading={loading}
+              isLoading={isLoading}
             />
           )}
 
           {/* Shops Grid */}
           <div className="flex-1">
-            {loading ? (
+            {error ? (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
+                <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">
+                  {error.message}
+                </p>
+                <button
+                  onClick={loadShops}
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Try again
+                </button>
+              </div>
+            ) : isLoading ? (
               <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                <Loader2 className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-spin" />
               </div>
             ) : shops.length === 0 ? (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
@@ -251,7 +262,7 @@ function ShopsContent() {
             )}
 
             {/* Pagination */}
-            {!loading &&
+            {!isLoading &&
               shops.length > 0 &&
               (hasNextPage || currentPage > 1) && (
                 <div className="flex items-center justify-center gap-4 mt-8">
@@ -311,7 +322,7 @@ function ShopsContent() {
             searchable={true}
             mobile={true}
             resultCount={totalShops}
-            isLoading={loading}
+            isLoading={isLoading}
           />
         )}
       </div>

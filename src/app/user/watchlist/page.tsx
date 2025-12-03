@@ -6,6 +6,7 @@ import { Heart, AlertCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { auctionsService } from "@/services/auctions.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import AuctionCard from "@/components/cards/AuctionCard";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
@@ -63,36 +64,11 @@ export default function WatchlistPage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <Loader2
-          className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400"
-          data-testid="loading-spinner"
-        />
-      </div>
-    );
+    return <PageState.Loading message="Loading watchlist..." />;
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-red-500 dark:text-red-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-            Error
-          </h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {error.message}
-          </p>
-          <button
-            onClick={retry}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
+    return <PageState.Error message={error.message} onRetry={retry} />;
   }
 
   return (

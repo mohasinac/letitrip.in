@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -20,6 +20,8 @@ import { OrderStatus } from "@/types";
 import { notFound } from "@/lib/error-redirects";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { Price, DateDisplay } from "@/components/common/values";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import type { OrderFE } from "@/types/frontend/order.types";
 
 interface OrderPageProps {
@@ -33,8 +35,10 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const [order, setOrder] = useState<OrderFE | null>(null);
-  const [loading, setLoading] = useState(true);
   const [orderId, setOrderId] = useState<string | null>(null);
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   // Success state from URL params
   const isSuccess = searchParams.get("success") === "true";
@@ -45,26 +49,19 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
     params.then((p) => setOrderId(p.id));
   }, [params]);
 
+  const loadOrder = useCallback(async () => {
+    if (!orderId) return;
+    await execute(async () => {
+      const data = await ordersService.getById(orderId);
+      setOrder(data);
+    });
+  }, [orderId, execute]);
+
   useEffect(() => {
     if (user && orderId) {
       loadOrder();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, orderId]);
-
-  const loadOrder = async () => {
-    if (!orderId) return;
-    try {
-      setLoading(true);
-      const data = await ordersService.getById(orderId);
-      setOrder(data);
-    } catch (error: any) {
-      console.error("Failed to load order:", error);
-      router.push(notFound.order(orderId, error));
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [user, orderId, loadOrder]);
 
   const handleDownloadInvoice = async () => {
     if (!orderId) return;
@@ -94,12 +91,12 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
     return null;
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-      </div>
-    );
+  if (error) {
+    return <PageState.Error message={error.message} onRetry={loadOrder} />;
+  }
+
+  if (isLoading) {
+    return <PageState.Loading message="Loading order details..." />;
   }
 
   if (!order) {
@@ -372,8 +369,8 @@ function OrderTimeline({ status }: { status: string }) {
                   isCurrent
                     ? "text-primary"
                     : isCompleted
-                      ? "text-gray-900"
-                      : "text-gray-400"
+                    ? "text-gray-900"
+                    : "text-gray-400"
                 }`}
               >
                 {step.label}

@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { analyticsService } from "@/services/analytics.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 
 interface DashboardData {
   stats: {
@@ -114,29 +115,17 @@ export default function SellerDashboardPage() {
 
   if (loading) {
     return (
-      <div
-        className="flex items-center justify-center min-h-[60vh]"
-        role="status"
-      >
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
-      </div>
+      <PageState.Loading message="Loading dashboard..." fullPage={false} />
     );
   }
 
   if (error || !data) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <AlertCircle className="h-12 w-12 text-red-500" />
-        <p className="text-lg text-gray-600 dark:text-gray-400">
-          {error?.message || String(error) || "Failed to load dashboard"}
-        </p>
-        <button
-          onClick={() => execute(loadDashboardData)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          Retry
-        </button>
-      </div>
+      <PageState.Error
+        message={error?.message || "Failed to load dashboard"}
+        onRetry={() => execute(loadDashboardData)}
+        fullPage={false}
+      />
     );
   }
 
@@ -146,7 +135,9 @@ export default function SellerDashboardPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Dashboard
+        </h1>
         <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           Welcome back! Here's what's happening with your business today.
         </p>
@@ -198,7 +189,9 @@ export default function SellerDashboardPage() {
 
       {/* Quick Actions */}
       <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Quick Actions</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Quick Actions
+        </h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             href="/seller/my-shops/create"
@@ -206,8 +199,12 @@ export default function SellerDashboardPage() {
           >
             <Store className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">Create Shop</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Set up a new shop</p>
+              <p className="font-medium text-gray-900 dark:text-white">
+                Create Shop
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Set up a new shop
+              </p>
             </div>
           </Link>
           <Link
@@ -216,8 +213,12 @@ export default function SellerDashboardPage() {
           >
             <Package className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">Add Product</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">List a new product</p>
+              <p className="font-medium text-gray-900 dark:text-white">
+                Add Product
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                List a new product
+              </p>
             </div>
           </Link>
           <Link
@@ -226,8 +227,12 @@ export default function SellerDashboardPage() {
           >
             <ShoppingCart className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">View Orders</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Manage your orders</p>
+              <p className="font-medium text-gray-900 dark:text-white">
+                View Orders
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Manage your orders
+              </p>
             </div>
           </Link>
           <Link
@@ -236,8 +241,12 @@ export default function SellerDashboardPage() {
           >
             <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">View Analytics</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Check your performance</p>
+              <p className="font-medium text-gray-900 dark:text-white">
+                View Analytics
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Check your performance
+              </p>
             </div>
           </Link>
         </div>
@@ -272,7 +281,9 @@ export default function SellerDashboardPage() {
                     <p className="font-medium text-gray-900 dark:text-white">
                       {order.orderNumber}
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{order.customer}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {order.customer}
+                    </p>
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {order.date}
@@ -321,7 +332,9 @@ export default function SellerDashboardPage() {
               <div key={product.id} className="px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900 dark:text-white">{product.name}</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {product.name}
+                    </p>
                     <div className="mt-1 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                       <span className="flex items-center gap-1">
                         <ShoppingCart className="h-3 w-3" />
@@ -337,7 +350,9 @@ export default function SellerDashboardPage() {
                     <p className="font-medium text-gray-900 dark:text-white">
                       <CompactPrice amount={product.revenue} />
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">revenue</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      revenue
+                    </p>
                   </div>
                 </div>
               </div>
@@ -363,7 +378,9 @@ export default function SellerDashboardPage() {
               >
                 <AlertCircle className="h-5 w-5 flex-shrink-0 text-orange-500" />
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900 dark:text-white">Low Stock Alert</p>
+                  <p className="font-medium text-gray-900 dark:text-white">
+                    Low Stock Alert
+                  </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {alerts.lowStock} products are running low on stock
                   </p>
@@ -378,7 +395,9 @@ export default function SellerDashboardPage() {
               >
                 <AlertCircle className="h-5 w-5 flex-shrink-0 text-blue-500" />
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900 dark:text-white">Pending Actions</p>
+                  <p className="font-medium text-gray-900 dark:text-white">
+                    Pending Actions
+                  </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {alerts.pendingShipment} orders waiting for shipment
                   </p>
@@ -394,7 +413,9 @@ export default function SellerDashboardPage() {
               >
                 <Star className="h-5 w-5 flex-shrink-0 text-yellow-500" />
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900 dark:text-white">New Reviews</p>
+                  <p className="font-medium text-gray-900 dark:text-white">
+                    New Reviews
+                  </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     You have {alerts.newReviews} new product reviews
                   </p>
@@ -406,7 +427,9 @@ export default function SellerDashboardPage() {
               alerts.pendingShipment === 0 &&
               alerts.newReviews === 0 && (
                 <div className="px-6 py-8 text-center">
-                  <p className="text-gray-500 dark:text-gray-400">No alerts at this time</p>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No alerts at this time
+                  </p>
                 </div>
               )}
           </div>
@@ -422,7 +445,9 @@ export default function SellerDashboardPage() {
           <div className="p-6 space-y-4">
             <div>
               <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-gray-600 dark:text-gray-400">Average Rating</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Average Rating
+                </span>
                 <span className="font-medium text-gray-900 dark:text-white flex items-center gap-1">
                   <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                   {shopPerformance.averageRating.toFixed(1)} / 5.0
@@ -442,7 +467,9 @@ export default function SellerDashboardPage() {
             </div>
             <div>
               <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-gray-600 dark:text-gray-400">Order Fulfillment</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Order Fulfillment
+                </span>
                 <span className="font-medium text-gray-900 dark:text-white">
                   {shopPerformance.orderFulfillment}%
                 </span>
@@ -456,7 +483,9 @@ export default function SellerDashboardPage() {
             </div>
             <div>
               <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-gray-600 dark:text-gray-400">Response Time</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Response Time
+                </span>
                 <span className="font-medium text-gray-900 dark:text-white">
                   {shopPerformance.responseTime}
                 </span>

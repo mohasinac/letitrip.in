@@ -14,6 +14,7 @@ export { UnifiedFilterSidebar } from "./UnifiedFilterSidebar";
 export { FilterSidebar } from "./FilterSidebar";
 export { default as ResourceListWrapper } from "./ResourceListWrapper";
 export { default as ResourceDetailWrapper } from "./ResourceDetailWrapper";
+export { PageState } from "./PageState";
 
 // Re-export types
 export type {

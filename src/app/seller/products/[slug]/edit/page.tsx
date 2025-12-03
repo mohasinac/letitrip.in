@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { WizardSteps } from "@/components/forms/WizardSteps";
+import { PageState } from "@/components/common/PageState";
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
 import {
   BasicInfoStep,
@@ -15,6 +16,7 @@ import {
   type ProductEditFormData,
 } from "@/components/seller/product-edit-wizard";
 import { productsService } from "@/services/products.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import type { ProductFE } from "@/types/frontend/product.types";
 import { ProductStatus, ProductCondition } from "@/types/shared/common.types";
 
@@ -35,7 +37,6 @@ export default function EditProductPage() {
   const slug = params.slug as string;
 
   const [currentStep, setCurrentStep] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [product, setProduct] = useState<ProductFE | null>(null);
   const [formData, setFormData] = useState<ProductEditFormData>({
@@ -50,13 +51,11 @@ export default function EditProductPage() {
     status: "draft" as ProductStatus,
   });
 
-  useEffect(() => {
-    loadProduct();
-  }, [slug]);
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
-  const loadProduct = async () => {
-    try {
-      setLoading(true);
+  const loadProduct = useCallback(async () => {
+    await execute(async () => {
       const data = await productsService.getBySlug(slug);
       setProduct(data);
       setFormData({
@@ -70,13 +69,12 @@ export default function EditProductPage() {
         condition: (data.condition || "new") as ProductCondition,
         status: data.status as ProductStatus,
       });
-    } catch (error) {
-      console.error("Failed to load product:", error);
-      toast.error("Failed to load product");
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
+  }, [slug, execute]);
+
+  useEffect(() => {
+    loadProduct();
+  }, [loadProduct]);
 
   const handleNext = () => {
     if (currentStep < STEPS.length - 1) {
@@ -103,12 +101,18 @@ export default function EditProductPage() {
     }
   };
 
-  if (loading) {
+  if (error) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
+      <PageState.Error
+        message={error.message}
+        onRetry={loadProduct}
+        fullPage={false}
+      />
     );
+  }
+
+  if (isLoading) {
+    return <PageState.Loading fullPage={false} />;
   }
 
   return (

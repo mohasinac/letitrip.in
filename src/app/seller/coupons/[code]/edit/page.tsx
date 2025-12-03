@@ -11,6 +11,7 @@ import { StatusBadge } from "@/components/common/StatusBadge";
 import { couponsService } from "@/services/coupons.service";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";
 
 export default function EditCouponPage() {
@@ -78,14 +79,7 @@ export default function EditCouponPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto" />
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Loading coupon...</p>
-        </div>
-      </div>
-    );
+    return <PageState.Loading message="Loading coupon..." />;
   }
 
   if (!coupon) {
@@ -129,7 +123,9 @@ export default function EditCouponPage() {
                 </h1>
                 <StatusBadge status={coupon.status} />
               </div>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{coupon.name}</p>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                {coupon.name}
+              </p>
             </div>
           </div>
         </div>
@@ -152,19 +148,25 @@ export default function EditCouponPage() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Times Used</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Times Used
+                </div>
                 <div className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
                   {coupon.usageCount || 0}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Total Limit</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Total Limit
+                </div>
                 <div className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
                   {coupon.usageLimit || "Unlimited"}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Per User Limit</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Per User Limit
+                </div>
                 <div className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
                   {coupon.usageLimitPerUser}
                 </div>

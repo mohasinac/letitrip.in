@@ -17,6 +17,7 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 import { Price } from "@/components/common/values";
 import { shopsService } from "@/services/shops.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
 interface ShopWithStats {
@@ -66,16 +67,7 @@ export default function ShopDashboardPage() {
   const stats = data?.stats || null;
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto" />
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Loading shop...
-          </p>
-        </div>
-      </div>
-    );
+    return <PageState.Loading message="Loading shop..." />;
   }
 
   if (!shop) {
@@ -299,8 +291,6 @@ export default function ShopDashboardPage() {
           </div>
 
           {/* Recent Orders Section */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-          {/* Recent Orders Section */}
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -317,7 +307,9 @@ export default function ShopDashboardPage() {
             {stats?.totalOrders === 0 ? (
               <div className="text-center py-8">
                 <ShoppingBag className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
-                <p className="text-sm text-gray-600 dark:text-gray-400">No orders yet</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  No orders yet
+                </p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -370,30 +362,42 @@ export default function ShopDashboardPage() {
             </h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Verification</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Verification
+                </span>
                 <span
                   className={`text-sm font-medium ${
-                    shop.isVerified ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"
+                    shop.isVerified
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-yellow-600 dark:text-yellow-400"
                   }`}
                 >
                   {shop.isVerified ? "✓ Verified" : "⏳ Pending"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Featured</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Featured
+                </span>
                 <span
                   className={`text-sm font-medium ${
-                    shop.featured ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-500"
+                    shop.featured
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-gray-500 dark:text-gray-500"
                   }`}
                 >
                   {shop.featured ? "⭐ Yes" : "No"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Featured Status</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Featured Status
+                </span>
                 <span
                   className={`text-sm font-medium ${
-                    shop.featured ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-500"
+                    shop.featured
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-gray-500 dark:text-gray-500"
                   }`}
                 >
                   {shop.featured ? "⭐ Featured" : "Not Featured"}

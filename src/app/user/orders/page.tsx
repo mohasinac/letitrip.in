@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,7 +9,9 @@ import { MobileDataTable } from "@/components/mobile/MobileDataTable";
 import { MobilePullToRefresh } from "@/components/mobile/MobilePullToRefresh";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
+import { PageState } from "@/components/common/PageState";
 import { Price, DateDisplay } from "@/components/common/values";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import type { OrderCardFE } from "@/types/frontend/order.types";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +22,9 @@ export default function OrdersPage() {
   const { user } = useAuth();
 
   const [orders, setOrders] = useState<OrderCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   // Cursor pagination state
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
@@ -34,25 +38,8 @@ export default function OrdersPage() {
     sortOrder: (searchParams.get("sortOrder") || "desc") as "asc" | "desc",
   });
 
-  useEffect(() => {
-    if (user) {
-      loadOrders();
-    }
-  }, [user, currentPage, filters]);
-
-  // Update URL when filters change
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (filters.status) params.set("status", filters.status);
-    if (filters.sortBy) params.set("sortBy", filters.sortBy);
-    if (filters.sortOrder) params.set("sortOrder", filters.sortOrder);
-
-    router.push(`/user/orders?${params.toString()}`, { scroll: false });
-  }, [filters]);
-
-  const loadOrders = async () => {
-    try {
-      setLoading(true);
+  const loadOrders = useCallback(async () => {
+    await execute(async () => {
       const startAfter = cursors[currentPage - 1];
       const response = await ordersService.list({
         ...filters,
@@ -78,12 +65,24 @@ export default function OrdersPage() {
           }
         }
       }
-    } catch (error) {
-      console.error("Failed to load orders:", error);
-    } finally {
-      setLoading(false);
+    });
+  }, [execute, cursors, currentPage, filters]);
+
+  useEffect(() => {
+    if (user) {
+      loadOrders();
     }
-  };
+  }, [user, loadOrders]);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.status) params.set("status", filters.status);
+    if (filters.sortBy) params.set("sortBy", filters.sortBy);
+    if (filters.sortOrder) params.set("sortOrder", filters.sortOrder);
+
+    router.push(`/user/orders?${params.toString()}`, { scroll: false });
+  }, [filters, router]);
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -184,6 +183,10 @@ export default function OrdersPage() {
     return null;
   }
 
+  if (error) {
+    return <PageState.Error message={error.message} onRetry={loadOrders} />;
+  }
+
   return (
     <MobilePullToRefresh onRefresh={handleRefresh} className="min-h-screen">
       <div className="bg-gray-50 dark:bg-gray-900 py-8">
@@ -201,7 +204,7 @@ export default function OrdersPage() {
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-            {loading ? (
+            {isLoading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2
                   className="w-8 h-8 text-primary animate-spin"
@@ -223,7 +226,7 @@ export default function OrdersPage() {
                   data={orders}
                   columns={columns}
                   keyExtractor={(order) => order.id}
-                  isLoading={loading}
+                  isLoading={isLoading}
                   onRowClick={(order) =>
                     router.push(`/user/orders/${order.id}`)
                   }
@@ -236,7 +239,7 @@ export default function OrdersPage() {
                     <div className="flex items-center justify-between">
                       <button
                         onClick={handlePrevPage}
-                        disabled={currentPage === 1 || loading}
+                        disabled={currentPage === 1 || isLoading}
                         className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-target"
                       >
                         <ChevronLeft className="w-4 h-4" />
@@ -249,7 +252,7 @@ export default function OrdersPage() {
 
                       <button
                         onClick={handleNextPage}
-                        disabled={!hasNextPage || loading}
+                        disabled={!hasNextPage || isLoading}
                         className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-target"
                       >
                         <span className="hidden sm:inline">Next</span>

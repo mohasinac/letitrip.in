@@ -12,7 +12,7 @@
  * - Track return progress
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -28,9 +28,13 @@ import {
   ChevronRight,
   Filter,
   Eye,
+  AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { returnsService } from "@/services/returns.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import type { ReturnCardFE } from "@/types/frontend/return.types";
 import { formatDistanceToNow } from "date-fns";
 
@@ -38,20 +42,15 @@ export default function UserReturnsPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [returns, setReturns] = useState<ReturnCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    if (user) {
-      loadReturns();
-    }
-  }, [user, statusFilter, currentPage]);
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
-  const loadReturns = async () => {
-    try {
-      setLoading(true);
+  const loadReturns = useCallback(async () => {
+    await execute(async () => {
       const filters: Record<string, unknown> = {
         page: currentPage,
         limit: 10,
@@ -64,12 +63,14 @@ export default function UserReturnsPage() {
       const response = await returnsService.list(filters);
       setReturns(response.data || []);
       setTotalPages(Math.ceil((response.count || 0) / 10));
-    } catch (error) {
-      console.error("Error loading returns:", error);
-    } finally {
-      setLoading(false);
+    });
+  }, [statusFilter, currentPage, execute]);
+
+  useEffect(() => {
+    if (user) {
+      loadReturns();
     }
-  };
+  }, [user, loadReturns]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -151,7 +152,7 @@ export default function UserReturnsPage() {
     { value: "completed", label: "Completed" },
   ];
 
-  if (loading && returns.length === 0) {
+  if (isLoading && returns.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="animate-pulse">
@@ -167,6 +168,10 @@ export default function UserReturnsPage() {
         </div>
       </div>
     );
+  }
+
+  if (error) {
+    return <PageState.Error message={error.message} onRetry={loadReturns} />;
   }
 
   return (
@@ -377,8 +382,8 @@ export default function UserReturnsPage() {
                           ].includes(returnItem.status)
                             ? "text-blue-600 dark:text-blue-400"
                             : returnItem.status === "rejected"
-                              ? "text-red-600 dark:text-red-400"
-                              : "text-gray-400"
+                            ? "text-red-600 dark:text-red-400"
+                            : "text-gray-400"
                         }`}
                       >
                         <div
@@ -391,8 +396,8 @@ export default function UserReturnsPage() {
                             ].includes(returnItem.status)
                               ? "bg-blue-100 dark:bg-blue-900/30"
                               : returnItem.status === "rejected"
-                                ? "bg-red-100 dark:bg-red-900/30"
-                                : "bg-gray-100 dark:bg-gray-700"
+                              ? "bg-red-100 dark:bg-red-900/30"
+                              : "bg-gray-100 dark:bg-gray-700"
                           }`}
                         >
                           {returnItem.status === "rejected" ? (
@@ -450,7 +455,7 @@ export default function UserReturnsPage() {
                       <div
                         className={`flex-1 h-0.5 mx-2 ${
                           ["refund-processed", "completed"].includes(
-                            returnItem.status,
+                            returnItem.status
                           )
                             ? "bg-blue-600 dark:bg-blue-400"
                             : "bg-gray-200 dark:bg-gray-600"
@@ -460,7 +465,7 @@ export default function UserReturnsPage() {
                       <div
                         className={`flex flex-col items-center ${
                           ["refund-processed", "completed"].includes(
-                            returnItem.status,
+                            returnItem.status
                           )
                             ? "text-green-600 dark:text-green-400"
                             : "text-gray-400"
@@ -469,7 +474,7 @@ export default function UserReturnsPage() {
                         <div
                           className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 ${
                             ["refund-processed", "completed"].includes(
-                              returnItem.status,
+                              returnItem.status
                             )
                               ? "bg-green-100 dark:bg-green-900/30"
                               : "bg-gray-100 dark:bg-gray-700"

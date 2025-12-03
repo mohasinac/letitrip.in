@@ -13,7 +13,7 @@
  * - Business information
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -33,9 +33,12 @@ import {
   Wallet,
   Building2,
   CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import {
   FormInput,
   FormSelect,
@@ -87,10 +90,12 @@ export default function SellerSettingsPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabId>("profile");
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   // Form states
   const [profile, setProfile] = useState<SellerProfile>({
@@ -133,13 +138,10 @@ export default function SellerSettingsPage() {
     loadSettings();
   }, [user]);
 
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     if (!user) return;
 
-    try {
-      setLoading(true);
-      setError(null);
-
+    await execute(async () => {
       // Load seller settings from API
       const response = await apiService.get<{
         profile: SellerProfile;
@@ -150,18 +152,13 @@ export default function SellerSettingsPage() {
       if (response.profile) setProfile(response.profile);
       if (response.notifications) setNotifications(response.notifications);
       if (response.payout) setPayout(response.payout);
-    } catch (err) {
-      console.error("Error loading settings:", err);
-      // Use defaults if API fails
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
+  }, [user, execute]);
 
   const handleSave = async () => {
     try {
       setSaving(true);
-      setError(null);
+      setSaveError(null);
       setSuccess(null);
 
       const data = {
@@ -180,7 +177,9 @@ export default function SellerSettingsPage() {
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error("Error saving settings:", err);
-      setError(err instanceof Error ? err.message : "Failed to save settings");
+      setSaveError(
+        err instanceof Error ? err.message : "Failed to save settings"
+      );
     } finally {
       setSaving(false);
     }
@@ -193,19 +192,12 @@ export default function SellerSettingsPage() {
     { id: "payout" as const, label: "Payout", icon: CreditCard },
   ];
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6" />
-          <div className="space-y-4">
-            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
-            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
-            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
-          </div>
-        </div>
-      </div>
-    );
+  if (error) {
+    return <PageState.Error message={error.message} onRetry={loadSettings} />;
+  }
+
+  if (isLoading) {
+    return <PageState.Loading message="Loading settings..." />;
   }
 
   return (
@@ -239,7 +231,14 @@ export default function SellerSettingsPage() {
       {/* Alerts */}
       {error && (
         <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <p className="text-red-800 dark:text-red-200">{error}</p>
+          <p className="text-red-800 dark:text-red-200">
+            {(error as Error).message}
+          </p>
+        </div>
+      )}
+      {saveError && (
+        <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <p className="text-red-800 dark:text-red-200">{saveError}</p>
         </div>
       )}
 

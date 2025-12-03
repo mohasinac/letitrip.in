@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Heart, Loader2, Store } from "lucide-react";
 import { shopsService } from "@/services/shops.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import { ShopCard } from "@/components/cards/ShopCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -31,19 +32,7 @@ export default function FollowingPage() {
   const shopsList = shops || [];
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <Loader2
-            className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400 mx-auto"
-            data-testid="loading-spinner"
-          />
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Loading followed shops...
-          </p>
-        </div>
-      </div>
-    );
+    return <PageState.Loading message="Loading followed shops..." />;
   }
 
   return (

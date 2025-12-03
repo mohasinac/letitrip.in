@@ -277,7 +277,7 @@ function SellerSupportTicketsContent() {
             searchable={true}
             mobile={false}
             resultCount={totalTickets}
-            isLoading={loading}
+            isLoading={isLoading}
             showInlineSearch={true}
             inlineSearchValue={searchQuery}
             onInlineSearchChange={setSearchQuery}
