@@ -41,7 +41,7 @@ export function SimilarAuctions({
 }: SimilarAuctionsProps) {
   // Filter out current auction
   const filteredAuctions = auctions.filter(
-    (auction) => auction.id !== currentAuctionId
+    (auction) => auction.id !== currentAuctionId,
   );
 
   if (loading) {

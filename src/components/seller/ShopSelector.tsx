@@ -49,7 +49,6 @@ export default function ShopSelector({
     });
   }, []);
 
-  const selectOptions = includeAllOption;
   const selectOptions = includeAllOption
     ? [{ value: "", label: "All Shops" }, ...(options || [])]
     : options || [];

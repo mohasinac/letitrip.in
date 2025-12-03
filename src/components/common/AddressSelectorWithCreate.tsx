@@ -39,7 +39,8 @@ export function AddressSelectorWithCreate({
     initialData: [],
     onLoadError: (error) => {
       logError(error, {
-        context: "AddressSelectorWithCreate.loadAddresses",
+        component: "AddressSelectorWithCreate",
+        action: "loadAddresses",
       });
       toast.error("Failed to load addresses");
     },

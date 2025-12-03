@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput, FormLabel } from "@/components/forms";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
-import { ShopSelector } from "@/components/seller/ShopSelector";
+import ShopSelector from "@/components/seller/ShopSelector";
 import { mediaService } from "@/services/media.service";
 import type { RequiredStepProps } from "./types";
 
@@ -90,9 +90,10 @@ export function RequiredInfoStep({
             onChange={(shopId) =>
               setFormData({ ...formData, shopId: shopId || "" })
             }
-            required
-            helperText="Select which shop this product belongs to"
           />
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Select which shop this product belongs to
+          </p>
         </div>
 
         <FormInput
