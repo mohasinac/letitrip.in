@@ -55,7 +55,7 @@ function EditProductContent({ params }: EditProductPageProps) {
       } catch (error: any) {
         console.error("Failed to load data:", error);
         setError(
-          error.message || "Failed to load product data. Please try again.",
+          error.message || "Failed to load product data. Please try again."
         );
       } finally {
         setLoading(false);
@@ -77,7 +77,7 @@ function EditProductContent({ params }: EditProductPageProps) {
     try {
       const updatedProduct = await productsService.update(
         product.slug,
-        formData,
+        formData
       );
       router.push(`/products/${updatedProduct.slug}`);
     } catch (error: any) {
@@ -172,7 +172,9 @@ function EditProductContent({ params }: EditProductPageProps) {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Product
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit Product</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Edit Product
+          </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
             Update your product details and settings.
           </p>
