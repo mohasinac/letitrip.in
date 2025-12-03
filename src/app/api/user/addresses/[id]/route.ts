@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "../../../lib/session";
 import { getFirestoreAdmin } from "../../../lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -14,7 +15,7 @@ export async function GET(
 
     const { id } = await params;
     const db = getFirestoreAdmin();
-    const addressDoc = await db.collection("addresses").doc(id).get();
+    const addressDoc = await db.collection(COLLECTIONS.ADDRESSES).doc(id).get();
 
     if (!addressDoc.exists) {
       return NextResponse.json({ error: "Address not found" }, { status: 404 });
@@ -33,14 +34,14 @@ export async function GET(
     console.error("Get address error:", error);
     return NextResponse.json(
       { error: "Failed to fetch address" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -50,7 +51,7 @@ export async function PATCH(
 
     const { id } = await params;
     const db = getFirestoreAdmin();
-    const addressRef = db.collection("addresses").doc(id);
+    const addressRef = db.collection(COLLECTIONS.ADDRESSES).doc(id);
     const addressDoc = await addressRef.get();
 
     if (!addressDoc.exists) {
@@ -69,7 +70,7 @@ export async function PATCH(
     // If setting as default, unset other defaults
     if (data.isDefault === true) {
       const defaultAddresses = await db
-        .collection("addresses")
+        .collection(COLLECTIONS.ADDRESSES)
         .where("userId", "==", user.id)
         .where("isDefault", "==", true)
         .get();
@@ -99,14 +100,14 @@ export async function PATCH(
     console.error("Update address error:", error);
     return NextResponse.json(
       { error: "Failed to update address" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -116,7 +117,7 @@ export async function DELETE(
 
     const { id } = await params;
     const db = getFirestoreAdmin();
-    const addressRef = db.collection("addresses").doc(id);
+    const addressRef = db.collection(COLLECTIONS.ADDRESSES).doc(id);
     const addressDoc = await addressRef.get();
 
     if (!addressDoc.exists) {
@@ -137,7 +138,7 @@ export async function DELETE(
     console.error("Delete address error:", error);
     return NextResponse.json(
       { error: "Failed to delete address" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

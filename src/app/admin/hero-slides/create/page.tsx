@@ -45,7 +45,6 @@ export default function CreateHeroSlidePage() {
       toast.error(`Upload failed: ${error}`);
     },
     onCleanupComplete: () => {
-      console.log("Uploaded media cleaned up");
       setUploadedFiles([]);
     },
   });

@@ -41,9 +41,12 @@ const participantIcons: Record<ParticipantType, React.ReactNode> = {
 
 // Conversation type colors
 const typeColors: Record<ConversationType, string> = {
-  buyer_seller: "bg-blue-100 text-blue-700",
-  order: "bg-purple-100 text-purple-700",
-  support: "bg-green-100 text-green-700",
+  buyer_seller:
+    "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  order:
+    "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+  support:
+    "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
 };
 
 function ConversationItem({
@@ -58,13 +61,13 @@ function ConversationItem({
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${
-        isSelected ? "bg-indigo-50" : ""
-      } ${conversation.isUnread ? "bg-blue-50/50" : ""}`}
+      className={`w-full text-left p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+        isSelected ? "bg-indigo-50 dark:bg-indigo-900/30" : ""
+      } ${conversation.isUnread ? "bg-blue-50/50 dark:bg-blue-900/20" : ""}`}
     >
       <div className="flex items-start gap-3">
         {/* Avatar */}
-        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
           {participantIcons[conversation.otherParticipant.type]}
         </div>
 
@@ -73,29 +76,33 @@ function ConversationItem({
           <div className="flex items-center justify-between gap-2">
             <span
               className={`font-medium truncate ${
-                conversation.isUnread ? "text-gray-900" : "text-gray-700"
+                conversation.isUnread
+                  ? "text-gray-900 dark:text-white"
+                  : "text-gray-700 dark:text-gray-300"
               }`}
             >
               {conversation.otherParticipant.name}
             </span>
-            <span className="flex-shrink-0 text-xs text-gray-500">
+            <span className="flex-shrink-0 text-xs text-gray-500 dark:text-gray-400">
               {conversation.timeAgo}
             </span>
           </div>
 
           {conversation.subject && (
-            <p className="text-sm font-medium text-gray-800 truncate mt-0.5">
+            <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate mt-0.5">
               {conversation.subject}
             </p>
           )}
 
           <p
             className={`text-sm truncate mt-0.5 ${
-              conversation.isUnread ? "text-gray-700" : "text-gray-500"
+              conversation.isUnread
+                ? "text-gray-700 dark:text-gray-300"
+                : "text-gray-500 dark:text-gray-400"
             }`}
           >
             {conversation.lastMessage.isFromMe && (
-              <span className="text-gray-400">You: </span>
+              <span className="text-gray-400 dark:text-gray-500">You: </span>
             )}
             {conversation.lastMessage.content}
           </p>
@@ -129,18 +136,20 @@ function MessageBubble({ message }: { message: MessageFE }) {
         className={`max-w-[75%] rounded-2xl px-4 py-2 ${
           message.isFromMe
             ? "bg-indigo-600 text-white rounded-br-sm"
-            : "bg-gray-100 text-gray-900 rounded-bl-sm"
+            : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-bl-sm"
         }`}
       >
         {!message.isFromMe && (
-          <p className="text-xs font-medium text-gray-600 mb-1">
+          <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
             {message.senderName}
           </p>
         )}
         <p className="text-sm whitespace-pre-wrap">{message.content}</p>
         <p
           className={`text-xs mt-1 ${
-            message.isFromMe ? "text-indigo-200" : "text-gray-500"
+            message.isFromMe
+              ? "text-indigo-200"
+              : "text-gray-500 dark:text-gray-400"
           }`}
         >
           {message.formattedTime}
@@ -208,8 +217,8 @@ function MessagesContent() {
         prev.map((c) =>
           c.id === conversationId
             ? { ...c, unreadCount: 0, isUnread: false }
-            : c,
-        ),
+            : c
+        )
       );
     } catch (err) {
       console.error("Failed to load messages:", err);
@@ -273,8 +282,8 @@ function MessagesContent() {
                 },
                 timeAgo: "just now",
               }
-            : c,
-        ),
+            : c
+        )
       );
     } catch (err) {
       console.error("Failed to send message:", err);
@@ -297,7 +306,7 @@ function MessagesContent() {
     try {
       await messagesService.archiveConversation(selectedConversation.id);
       setConversations((prev) =>
-        prev.filter((c) => c.id !== selectedConversation.id),
+        prev.filter((c) => c.id !== selectedConversation.id)
       );
       setSelectedConversation(null);
       setMessages([]);
@@ -377,7 +386,7 @@ function MessagesContent() {
               <div className="flex items-center justify-between mb-4">
                 <Link
                   href="/user"
-                  className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
+                  className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Back to Account
@@ -437,27 +446,27 @@ function MessagesContent() {
             <div className="flex-1 overflow-y-auto">
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                  <Loader2 className="h-6 w-6 animate-spin text-indigo-600 dark:text-indigo-400" />
                 </div>
               ) : error ? (
                 <div className="p-4 text-center">
-                  <p className="text-red-600 mb-2">{error}</p>
+                  <p className="text-red-600 dark:text-red-400 mb-2">{error}</p>
                   <button
                     onClick={loadConversations}
-                    className="text-sm text-indigo-600 hover:underline"
+                    className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
                   >
                     Try again
                   </button>
                 </div>
               ) : filteredConversations.length === 0 ? (
                 <div className="p-8 text-center">
-                  <MessageSquare className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-                  <p className="text-gray-500">
+                  <MessageSquare className="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+                  <p className="text-gray-500 dark:text-gray-400">
                     {searchQuery
                       ? "No conversations found"
                       : showArchived
-                        ? "No archived conversations"
-                        : "No messages yet"}
+                      ? "No archived conversations"
+                      : "No messages yet"}
                   </p>
                 </div>
               ) : (
@@ -484,7 +493,7 @@ function MessagesContent() {
                 {/* Thread header */}
                 <div className="hidden lg:flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                       {
                         participantIcons[
                           selectedConversation.otherParticipant.type
@@ -496,7 +505,7 @@ function MessagesContent() {
                         {selectedConversation.otherParticipant.name}
                       </h2>
                       {selectedConversation.subject && (
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                           {selectedConversation.subject}
                         </p>
                       )}
@@ -506,7 +515,7 @@ function MessagesContent() {
                     {selectedConversation.context?.orderId && (
                       <Link
                         href={`/user/orders/${selectedConversation.context.orderId}`}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg"
                       >
                         <Package className="h-4 w-4" />
                         View Order
@@ -526,7 +535,7 @@ function MessagesContent() {
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {messagesLoading ? (
                     <div className="flex items-center justify-center py-12">
-                      <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                      <Loader2 className="h-6 w-6 animate-spin text-indigo-600 dark:text-indigo-400" />
                     </div>
                   ) : (
                     messages.map((message) => (
@@ -569,11 +578,11 @@ function MessagesContent() {
             ) : (
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center">
-                  <MessageSquare className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                  <MessageSquare className="h-16 w-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                     Select a conversation
                   </h3>
-                  <p className="text-gray-500 max-w-sm">
+                  <p className="text-gray-500 dark:text-gray-400 max-w-sm">
                     Choose a conversation from the list to view messages
                   </p>
                 </div>

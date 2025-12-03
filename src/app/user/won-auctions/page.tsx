@@ -31,7 +31,7 @@ export default function WonAuctionsPage() {
     } catch (error) {
       console.error("Failed to load won auctions:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load won auctions",
+        error instanceof Error ? error.message : "Failed to load won auctions"
       );
     } finally {
       setLoading(false);
@@ -40,10 +40,10 @@ export default function WonAuctionsPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">
+          <AlertCircle className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
             Please log in to view your won auctions
           </h3>
         </div>
@@ -53,7 +53,7 @@ export default function WonAuctionsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
       </div>
     );
@@ -61,11 +61,15 @@ export default function WonAuctionsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">Error</h3>
-          <p className="mt-1 text-sm text-gray-500">{error}</p>
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+            Error
+          </h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {error}
+          </p>
           <button
             onClick={loadWonAuctions}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -79,25 +83,27 @@ export default function WonAuctionsPage() {
 
   const totalWinnings = auctions.reduce(
     (sum, auction) => sum + (auction.currentBid || 0),
-    0,
+    0
   );
   const pendingPayment = auctions.filter(
-    (a) => !(a as any).order_id || (a as any).order_status === "pending",
+    (a) => !(a as any).order_id || (a as any).order_status === "pending"
   );
   const completedOrders = auctions.filter(
-    (a) => (a as any).order_id && (a as any).order_status === "completed",
+    (a) => (a as any).order_id && (a as any).order_status === "completed"
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Trophy className="h-8 w-8 text-yellow-500" />
-            <h1 className="text-3xl font-bold text-gray-900">Won Auctions</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Won Auctions
+            </h1>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             Congratulations on winning these auctions! Complete payment to
             receive your items.
           </p>
@@ -105,22 +111,26 @@ export default function WonAuctionsPage() {
 
         {/* Stats */}
         {auctions.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div>
-                <div className="text-sm text-gray-500 mb-1">Total Won</div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  Total Won
+                </div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
                   {auctions.length}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500 mb-1">Total Value</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  Total Value
+                </div>
                 <div className="text-2xl font-bold text-green-600">
                   {formatCurrency(totalWinnings)}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500 mb-1">
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                   Pending Payment
                 </div>
                 <div className="text-2xl font-bold text-orange-600">
@@ -128,7 +138,9 @@ export default function WonAuctionsPage() {
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500 mb-1">Completed</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  Completed
+                </div>
                 <div className="text-2xl font-bold text-blue-600">
                   {completedOrders.length}
                 </div>
@@ -139,12 +151,12 @@ export default function WonAuctionsPage() {
 
         {/* Won Auctions List */}
         {auctions.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <Trophy className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
+            <Trophy className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
               No won auctions yet
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
               Keep bidding on auctions to win amazing items!
             </p>
             <Link
@@ -165,12 +177,12 @@ export default function WonAuctionsPage() {
               return (
                 <div
                   key={auction.id}
-                  className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"
                 >
                   <div className="p-6">
                     <div className="flex gap-4">
                       {/* Image */}
-                      <div className="relative w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                      <div className="relative w-32 h-32 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
                         {[auction.productImage]?.[0] ? (
                           <Image
                             src={auction.productImage}
@@ -179,7 +191,7 @@ export default function WonAuctionsPage() {
                             className="object-cover"
                           />
                         ) : (
-                          <div className="flex items-center justify-center h-full text-gray-400">
+                          <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500">
                             <Trophy size={40} />
                           </div>
                         )}
@@ -195,7 +207,7 @@ export default function WonAuctionsPage() {
                           <div className="flex-1 min-w-0">
                             <Link
                               href={`/auctions/${auction.productSlug}`}
-                              className="text-xl font-semibold text-gray-900 hover:text-blue-600 line-clamp-2"
+                              className="text-xl font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 line-clamp-2"
                             >
                               {auction.productName}
                             </Link>
@@ -210,7 +222,7 @@ export default function WonAuctionsPage() {
                                     className="rounded-full"
                                   />
                                 )}
-                                <span className="text-sm text-gray-600">
+                                <span className="text-sm text-gray-600 dark:text-gray-400">
                                   {(auction as any).shop.name}
                                 </span>
                               </div>
@@ -232,7 +244,7 @@ export default function WonAuctionsPage() {
                         {/* Auction Details */}
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4 text-sm">
                           <div>
-                            <div className="text-gray-500 mb-1">
+                            <div className="text-gray-500 dark:text-gray-400 mb-1">
                               Winning Bid
                             </div>
                             <div className="font-bold text-green-600 text-lg">
@@ -240,20 +252,26 @@ export default function WonAuctionsPage() {
                             </div>
                           </div>
                           <div>
-                            <div className="text-gray-500 mb-1">Total Bids</div>
-                            <div className="font-semibold text-gray-900">
+                            <div className="text-gray-500 dark:text-gray-400 mb-1">
+                              Total Bids
+                            </div>
+                            <div className="font-semibold text-gray-900 dark:text-white">
                               {auction.bidCount} bids
                             </div>
                           </div>
                           <div>
-                            <div className="text-gray-500 mb-1">Ended On</div>
-                            <div className="text-gray-900">
+                            <div className="text-gray-500 dark:text-gray-400 mb-1">
+                              Ended On
+                            </div>
+                            <div className="text-gray-900 dark:text-white">
                               {formatDate(auction.endTime, { format: "short" })}
                             </div>
                           </div>
                           {hasOrder && (auction as any).order_id && (
                             <div>
-                              <div className="text-gray-500 mb-1">Order ID</div>
+                              <div className="text-gray-500 dark:text-gray-400 mb-1">
+                                Order ID
+                              </div>
                               <Link
                                 href={`/user/orders/${
                                   (auction as any).order_id
@@ -270,7 +288,7 @@ export default function WonAuctionsPage() {
                         <div className="flex flex-wrap gap-3">
                           <Link
                             href={`/auctions/${auction.slug}`}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 text-sm font-medium"
                           >
                             View Details
                           </Link>
@@ -301,7 +319,7 @@ export default function WonAuctionsPage() {
                                   (auction as any).order_id
                                 }/invoice`}
                                 target="_blank"
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 text-sm font-medium"
                               >
                                 <Download size={16} />
                                 Download Invoice

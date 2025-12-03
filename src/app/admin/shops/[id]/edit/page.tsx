@@ -102,7 +102,7 @@ export default function AdminEditShopPage() {
   } = useMediaUploadWithCleanup({
     onUploadSuccess: (url) => {
       setShop((prev: ShopFE | null) =>
-        prev ? { ...prev, banner: url } : null,
+        prev ? { ...prev, banner: url } : null
       );
     },
   });
@@ -133,8 +133,8 @@ export default function AdminEditShopPage() {
       try {
         const statsData = await shopsService.getStats(shopId);
         setShopStats(statsData);
-      } catch (err) {
-        console.log("Stats not available");
+      } catch {
+        // Stats not available - silent fail
       }
 
       // Populate form with available fields from ShopFE
@@ -263,7 +263,7 @@ export default function AdminEditShopPage() {
     } catch (error) {
       console.error("Failed to delete shop:", error);
       toast.error(
-        "Failed to delete shop. It may have active products or orders.",
+        "Failed to delete shop. It may have active products or orders."
       );
       setShowDeleteDialog(false);
     } finally {

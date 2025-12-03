@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireRole } from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { ValidationError } from "@/lib/api-errors";
+import { COLLECTIONS } from "@/constants/database";
 
 // Build update object for each action (excluding delete which needs special handling)
 function buildTicketUpdate(
   action: string,
   now: Date,
-  updates?: any,
+  updates?: any
 ): Record<string, any> | null {
   switch (action) {
     case "update":
@@ -84,7 +85,9 @@ export async function POST(request: NextRequest) {
 
     for (const ticketId of ids) {
       try {
-        const ticketRef = db.collection("support_tickets").doc(ticketId);
+        const ticketRef = db
+          .collection(COLLECTIONS.SUPPORT_TICKETS)
+          .doc(ticketId);
         const ticketDoc = await ticketRef.get();
 
         if (!ticketDoc.exists) {
@@ -108,8 +111,8 @@ export async function POST(request: NextRequest) {
             action === "update"
               ? "Updates object required"
               : action === "assign"
-                ? "assignedTo field required"
-                : "Unknown action";
+              ? "assignedTo field required"
+              : "Unknown action";
           results.failed.push({ id: ticketId, error: errorMsg });
           continue;
         }
@@ -135,7 +138,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { error: error.message, errors: error.errors },
-        { status: 400 },
+        { status: 400 }
       );
     }
     console.error("Error in bulk ticket operation:", error);

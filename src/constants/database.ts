@@ -93,6 +93,9 @@ export const COLLECTIONS = {
   EVENT_OPTIONS: "event_options",
   OTP_VERIFICATIONS: "otp_verifications",
   USER_ACTIVITIES: "user_activities",
+
+  // Session & Auth Collections
+  SESSIONS: "sessions",
 } as const;
 
 /**
@@ -101,7 +104,9 @@ export const COLLECTIONS = {
 export const SUBCOLLECTIONS = {
   // Shop subcollections
   SHOP_FOLLOWERS: "followers",
+  SHOP_FOLLOWING: "following",
   SHOP_ANALYTICS: "analytics",
+  SHOP_SETTINGS: "settings",
 
   // Product subcollections
   PRODUCT_VARIANTS: "variants",
@@ -114,6 +119,12 @@ export const SUBCOLLECTIONS = {
   // User subcollections
   USER_SESSIONS: "sessions",
   USER_DEVICES: "devices",
+
+  // Review subcollections
+  REVIEW_HELPFUL_VOTES: "helpful_votes",
+
+  // Ticket subcollections
+  TICKET_MESSAGES: "messages",
 
   // RipLimit subcollections
   RIPLIMIT_BLOCKED_BIDS: "blocked_bids",

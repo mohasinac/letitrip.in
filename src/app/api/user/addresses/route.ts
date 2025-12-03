@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "../../lib/session";
 import { getFirestoreAdmin } from "../../lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     const db = getFirestoreAdmin();
     const addressesSnapshot = await db
-      .collection("addresses")
+      .collection(COLLECTIONS.ADDRESSES)
       .where("userId", "==", user.id)
       .orderBy("isDefault", "desc")
       .orderBy("createdAt", "desc")
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
     console.error("Get addresses error:", error);
     return NextResponse.json(
       { error: "Failed to fetch addresses" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
     // If this is set as default, unset other defaults
     if (isDefault) {
       const defaultAddresses = await db
-        .collection("addresses")
+        .collection(COLLECTIONS.ADDRESSES)
         .where("userId", "==", user.id)
         .where("isDefault", "==", true)
         .get();
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new address
-    const addressRef = db.collection("addresses").doc();
+    const addressRef = db.collection(COLLECTIONS.ADDRESSES).doc();
     const newAddress = {
       id: addressRef.id,
       userId: user.id,
@@ -110,7 +111,7 @@ export async function POST(request: NextRequest) {
     console.error("Create address error:", error);
     return NextResponse.json(
       { error: "Failed to create address" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
