@@ -205,17 +205,26 @@ export default function SellerOrdersPage() {
                 <StatsCard title="Total Orders" value={totalOrders} />
                 <StatsCard
                   title="Pending"
-                  value={orders.filter((o) => o.status === OrderStatus.PENDING).length}
+                  value={
+                    orders.filter((o) => o.status === OrderStatus.PENDING)
+                      .length
+                  }
                   className="[&_p:last-child]:!text-yellow-600 dark:[&_p:last-child]:!text-yellow-400"
                 />
                 <StatsCard
                   title="Processing"
-                  value={orders.filter((o) => o.status === OrderStatus.PROCESSING).length}
+                  value={
+                    orders.filter((o) => o.status === OrderStatus.PROCESSING)
+                      .length
+                  }
                   className="[&_p:last-child]:!text-blue-600 dark:[&_p:last-child]:!text-blue-400"
                 />
                 <StatsCard
                   title="Delivered"
-                  value={orders.filter((o) => o.status === OrderStatus.DELIVERED).length}
+                  value={
+                    orders.filter((o) => o.status === OrderStatus.DELIVERED)
+                      .length
+                  }
                   className="[&_p:last-child]:!text-green-600 dark:[&_p:last-child]:!text-green-400"
                 />
               </StatsCardGrid>
@@ -503,4 +512,3 @@ export default function SellerOrdersPage() {
     </AuthGuard>
   );
 }
-
