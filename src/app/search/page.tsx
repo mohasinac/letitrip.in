@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { productsService } from "@/services/products.service";
 import { ProductCard } from "@/components/cards/ProductCard";
@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 
 function SearchContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const query = searchParams?.get("q") || "";
   const contentType = searchParams?.get("type") || "all";
   const [activeTab, setActiveTab] = useState<
@@ -132,7 +133,7 @@ function SearchContent() {
             description="Type something in the search bar to find products, shops, auctions, and more."
             action={{
               label: "Browse Categories",
-              href: "/categories",
+              onClick: () => router.push("/categories"),
             }}
           />
         ) : results && results.total > 0 ? (
