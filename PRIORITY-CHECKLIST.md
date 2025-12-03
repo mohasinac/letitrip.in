@@ -480,6 +480,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Changes**:
   - Use ShopAbout, ShopStats, ShopProducts, ShopAuctions, ShopReviews, ShopPolicies
   - Remove inline section code
+- **Status**: N/A - Page doesn't exist yet
 
 ##### ⬜ 43-update-category-detail-page
 
@@ -487,6 +488,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Changes**:
   - Use CategoryHeader, SubcategoryGrid, CategoryProducts, CategoryStats, CategoryFeaturedSellers
   - Remove inline section code
+- **Status**: N/A - Page doesn't exist yet
 
 ##### ⬜ 44-update-auction-detail-page
 
@@ -494,6 +496,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Changes**:
   - Use AuctionGallery, AuctionInfo, AuctionDescription, AuctionSellerInfo, SimilarAuctions
   - Remove inline section code
+- **Status**: N/A - Page doesn't exist yet
 
 ---
 
@@ -501,10 +504,11 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 25.1: Update Zod Schemas (4-6 hours) ⚡ UI Priority
 
-##### ⬜ 45-update-address-schema
+##### ✅ 45-update-address-schema
 
 - **File**: `src/lib/validations/address.schema.ts`
 - **Changes**: Use VALIDATION_RULES and VALIDATION_MESSAGES constants
+- **Status**: Already complete - uses constants throughout
 - **Example**:
 
   ```ts
@@ -514,39 +518,45 @@ This checklist consolidates all tasks from project documentation into a prioriti
   // After
   z.string().min(
     VALIDATION_RULES.NAME.MIN_LENGTH,
-    VALIDATION_MESSAGES.NAME.TOO_SHORT
+    VALIDATION_MESSAGES.NAME.TOO_SHORT,
   );
   ```
 
-##### ⬜ 46-update-product-schema
+##### ✅ 46-update-product-schema
 
 - **File**: `src/lib/validations/product.schema.ts`
 - **Changes**: Use constants for all validation rules and messages
+- **Status**: Already complete - uses constants throughout
 
-##### ⬜ 47-update-shop-schema
+##### ✅ 47-update-shop-schema
 
 - **File**: `src/lib/validations/shop.schema.ts`
 - **Changes**: Use constants for all validation rules and messages
+- **Status**: Already complete - uses constants throughout
 
-##### ⬜ 48-update-auction-schema
+##### ✅ 48-update-auction-schema
 
 - **File**: `src/lib/validations/auction.schema.ts`
 - **Changes**: Use constants for all validation rules and messages
+- **Status**: Already complete - uses constants throughout
 
-##### ⬜ 49-update-category-schema
+##### ✅ 49-update-category-schema
 
 - **File**: `src/lib/validations/category.schema.ts`
 - **Changes**: Use constants for all validation rules and messages
+- **Status**: Already complete - uses constants throughout
 
-##### ⬜ 50-update-review-schema
+##### ✅ 50-update-review-schema
 
 - **File**: `src/lib/validations/review.schema.ts`
 - **Changes**: Use constants for all validation rules and messages
+- **Status**: Already complete - uses constants throughout
 
-##### ⬜ 51-update-user-schema
+##### ✅ 51-update-user-schema
 
 - **File**: `src/lib/validations/user.schema.ts`
 - **Changes**: Use constants for all validation rules and messages
+- **Status**: Already complete - uses constants throughout
 
 #### 25.2: Update Form Components (3-5 hours) ⚡ UI Priority
 
