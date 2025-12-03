@@ -20,6 +20,7 @@ import {
   isValidGSTIN,
   isValidPAN,
 } from "@/constants/validation-messages";
+import { logError } from "@/lib/firebase-error-logger";
 
 // Tax Details Interface
 export interface TaxDetails {
@@ -139,7 +140,9 @@ export function TaxDetailsSelectorWithCreate({
       // Mock data for now
       setTaxDetailsList([]);
     } catch (error) {
-      console.error("Failed to load tax details:", error);
+      logError(error as Error, {
+        context: "TaxDetailsSelectorWithCreate.loadTaxDetails",
+      });
       toast.error("Failed to load tax details");
     } finally {
       setLoading(false);
@@ -165,7 +168,9 @@ export function TaxDetailsSelectorWithCreate({
 
       toast.success("PAN and state code auto-filled from GSTIN");
     } catch (error) {
-      console.error("GSTIN extraction failed:", error);
+      logError(error as Error, {
+        context: "TaxDetailsSelectorWithCreate.extractFromGSTIN",
+      });
     } finally {
       setGstinLoading(false);
     }
@@ -204,7 +209,9 @@ export function TaxDetailsSelectorWithCreate({
       setShowForm(false);
       toast.success("Tax details added successfully");
     } catch (error) {
-      console.error("Failed to add tax details:", error);
+      logError(error as Error, {
+        context: "TaxDetailsSelectorWithCreate.addTaxDetails",
+      });
       toast.error("Failed to add tax details");
     } finally {
       setLoading(false);

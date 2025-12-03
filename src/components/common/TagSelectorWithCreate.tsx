@@ -17,14 +17,62 @@ export interface Tag {
 
 // Color Palette
 const TAG_COLORS = [
-  { name: "Blue", value: "#3B82F6", bg: "bg-blue-500", text: "text-blue-700", lightBg: "bg-blue-50 dark:bg-blue-900/20" },
-  { name: "Green", value: "#10B981", bg: "bg-green-500", text: "text-green-700", lightBg: "bg-green-50 dark:bg-green-900/20" },
-  { name: "Red", value: "#EF4444", bg: "bg-red-500", text: "text-red-700", lightBg: "bg-red-50 dark:bg-red-900/20" },
-  { name: "Yellow", value: "#F59E0B", bg: "bg-yellow-500", text: "text-yellow-700", lightBg: "bg-yellow-50 dark:bg-yellow-900/20" },
-  { name: "Purple", value: "#8B5CF6", bg: "bg-purple-500", text: "text-purple-700", lightBg: "bg-purple-50 dark:bg-purple-900/20" },
-  { name: "Pink", value: "#EC4899", bg: "bg-pink-500", text: "text-pink-700", lightBg: "bg-pink-50 dark:bg-pink-900/20" },
-  { name: "Indigo", value: "#6366F1", bg: "bg-indigo-500", text: "text-indigo-700", lightBg: "bg-indigo-50 dark:bg-indigo-900/20" },
-  { name: "Gray", value: "#6B7280", bg: "bg-gray-500", text: "text-gray-700", lightBg: "bg-gray-50 dark:bg-gray-900/20" },
+  {
+    name: "Blue",
+    value: "#3B82F6",
+    bg: "bg-blue-500",
+    text: "text-blue-700",
+    lightBg: "bg-blue-50 dark:bg-blue-900/20",
+  },
+  {
+    name: "Green",
+    value: "#10B981",
+    bg: "bg-green-500",
+    text: "text-green-700",
+    lightBg: "bg-green-50 dark:bg-green-900/20",
+  },
+  {
+    name: "Red",
+    value: "#EF4444",
+    bg: "bg-red-500",
+    text: "text-red-700",
+    lightBg: "bg-red-50 dark:bg-red-900/20",
+  },
+  {
+    name: "Yellow",
+    value: "#F59E0B",
+    bg: "bg-yellow-500",
+    text: "text-yellow-700",
+    lightBg: "bg-yellow-50 dark:bg-yellow-900/20",
+  },
+  {
+    name: "Purple",
+    value: "#8B5CF6",
+    bg: "bg-purple-500",
+    text: "text-purple-700",
+    lightBg: "bg-purple-50 dark:bg-purple-900/20",
+  },
+  {
+    name: "Pink",
+    value: "#EC4899",
+    bg: "bg-pink-500",
+    text: "text-pink-700",
+    lightBg: "bg-pink-50 dark:bg-pink-900/20",
+  },
+  {
+    name: "Indigo",
+    value: "#6366F1",
+    bg: "bg-indigo-500",
+    text: "text-indigo-700",
+    lightBg: "bg-indigo-50 dark:bg-indigo-900/20",
+  },
+  {
+    name: "Gray",
+    value: "#6B7280",
+    bg: "bg-gray-500",
+    text: "text-gray-700",
+    lightBg: "bg-gray-50 dark:bg-gray-900/20",
+  },
 ];
 
 export interface TagSelectorWithCreateProps {
@@ -78,11 +126,46 @@ export function TagSelectorWithCreate({
 
       // Mock data for now
       const mockTags: Tag[] = [
-        { id: "1", name: "New Arrival", slug: "new-arrival", color: "#3B82F6", entityType, usageCount: 45 },
-        { id: "2", name: "Best Seller", slug: "best-seller", color: "#10B981", entityType, usageCount: 32 },
-        { id: "3", name: "Limited Edition", slug: "limited-edition", color: "#EF4444", entityType, usageCount: 18 },
-        { id: "4", name: "Trending", slug: "trending", color: "#F59E0B", entityType, usageCount: 28 },
-        { id: "5", name: "Premium", slug: "premium", color: "#8B5CF6", entityType, usageCount: 15 },
+        {
+          id: "1",
+          name: "New Arrival",
+          slug: "new-arrival",
+          color: "#3B82F6",
+          entityType,
+          usageCount: 45,
+        },
+        {
+          id: "2",
+          name: "Best Seller",
+          slug: "best-seller",
+          color: "#10B981",
+          entityType,
+          usageCount: 32,
+        },
+        {
+          id: "3",
+          name: "Limited Edition",
+          slug: "limited-edition",
+          color: "#EF4444",
+          entityType,
+          usageCount: 18,
+        },
+        {
+          id: "4",
+          name: "Trending",
+          slug: "trending",
+          color: "#F59E0B",
+          entityType,
+          usageCount: 28,
+        },
+        {
+          id: "5",
+          name: "Premium",
+          slug: "premium",
+          color: "#8B5CF6",
+          entityType,
+          usageCount: 15,
+        },
       ];
       setAllTags(mockTags);
     } catch (error) {
@@ -169,7 +252,10 @@ export function TagSelectorWithCreate({
     if (newIndex < 0 || newIndex >= selectedTags.length) return;
 
     const newSelected = [...selectedTags];
-    [newSelected[index], newSelected[newIndex]] = [newSelected[newIndex], newSelected[index]];
+    [newSelected[index], newSelected[newIndex]] = [
+      newSelected[newIndex],
+      newSelected[index],
+    ];
     setSelectedTags(newSelected);
     onChange(newSelected.map((t) => t.id));
   };
@@ -380,7 +466,11 @@ export function TagSelectorWithCreate({
                       onClick={() => setNewTagColor(color.value)}
                       className={`
                         ${color.bg} h-10 rounded
-                        ${newTagColor === color.value ? "ring-2 ring-offset-2 ring-primary" : ""}
+                        ${
+                          newTagColor === color.value
+                            ? "ring-2 ring-offset-2 ring-primary"
+                            : ""
+                        }
                       `}
                       title={color.name}
                     />
@@ -395,7 +485,9 @@ export function TagSelectorWithCreate({
                     Preview
                   </label>
                   <div
-                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${getTagColorClass(newTagColor)}`}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${getTagColorClass(
+                      newTagColor
+                    )}`}
                   >
                     <Tag className="w-3 h-3" />
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">

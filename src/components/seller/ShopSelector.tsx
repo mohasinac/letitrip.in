@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { FormSelect } from "@/components/forms";
 import { shopsService } from "@/services/shops.service";
+import { logError } from "@/lib/firebase-error-logger";
+import { toast } from "sonner";
 
 interface Option {
   label: string;
@@ -40,7 +42,7 @@ export default function ShopSelector({
         }));
         setOptions(opts);
       } catch (e) {
-        console.error(e);
+        logError(e as Error, { context: "ShopSelector.loadShops" });
       } finally {
         setLoading(false);
       }

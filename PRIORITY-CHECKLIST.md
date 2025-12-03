@@ -132,7 +132,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Used in**: Product/blog create/edit, shop settings
 - **Lines**: ~200 lines
 
-##### ⬜ 09-create-shipping-method-selector
+##### ✅ 09-create-shipping-method-selector
 
 - **File**: `src/components/checkout/ShippingMethodSelector.tsx`
 - **Purpose**: Carrier comparison and shipping cost calculation
@@ -145,7 +145,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Used in**: Checkout, seller order fulfillment
 - **Lines**: ~250 lines
 
-##### ⬜ 10-create-payment-method-selector-with-create
+##### ✅ 10-create-payment-method-selector-with-create
 
 - **File**: `src/components/checkout/PaymentMethodSelectorWithCreate.tsx`
 - **Purpose**: Saved payment methods + inline add new
@@ -158,7 +158,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Used in**: Checkout, subscription payments
 - **Lines**: ~350 lines
 
-##### ⬜ 11-create-contact-selector-with-create
+##### ✅ 11-create-contact-selector-with-create
 
 - **File**: `src/components/common/ContactSelectorWithCreate.tsx`
 - **Purpose**: Emergency/business contacts with inline create
@@ -170,7 +170,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Used in**: User settings, order tracking, seller profile
 - **Lines**: ~150 lines
 
-##### ⬜ 12-create-document-selector-with-upload
+##### ✅ 12-create-document-selector-with-upload
 
 - **File**: `src/components/common/DocumentSelectorWithUpload.tsx`
 - **Purpose**: KYC documents with upload and verification tracking
@@ -183,7 +183,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Used in**: Seller onboarding, user verification, compliance
 - **Lines**: ~300 lines
 
-##### ⬜ 13-create-template-selector-with-create
+##### ✅ 13-create-template-selector-with-create
 
 - **File**: `src/components/admin/TemplateSelectorWithCreate.tsx`
 - **Purpose**: Email/SMS templates with variable insertion
