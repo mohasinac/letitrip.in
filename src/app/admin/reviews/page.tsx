@@ -9,6 +9,7 @@ import {
   TableCheckbox,
 } from "@/components/common/inline-edit";
 import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
+import { SimplePagination } from "@/components/common/Pagination";
 import { REVIEW_FILTERS } from "@/constants/filters";
 import { getReviewBulkActions } from "@/constants/bulk-actions";
 import { reviewsService } from "@/services/reviews.service";
@@ -363,33 +364,15 @@ export default function AdminReviewsPage() {
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-6 flex justify-center gap-2">
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 border rounded-lg disabled:opacity-50"
-                >
-                  Previous
-                </button>
-                <span className="px-4 py-2">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 border rounded-lg disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </div>
-            )}
+            <SimplePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              className="mt-6"
+            />
           </div>
         </div>
       </div>
     </AuthGuard>
   );
 }
-

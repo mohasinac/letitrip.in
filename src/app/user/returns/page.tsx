@@ -24,8 +24,6 @@ import {
   AlertTriangle,
   Truck,
   RefreshCw,
-  ChevronLeft,
-  ChevronRight,
   Filter,
   Eye,
   AlertCircle,
@@ -34,6 +32,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { returnsService } from "@/services/returns.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { SimplePagination } from "@/components/common/Pagination";
 import { PageState } from "@/components/common/PageState";
 import type { ReturnCardFE } from "@/types/frontend/return.types";
 import { formatDistanceToNow } from "date-fns";
@@ -494,29 +493,12 @@ export default function UserReturnsPage() {
       )}
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-6">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-
-          <span className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-      )}
+      <SimplePagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        className="mt-6"
+      />
     </div>
   );
 }
