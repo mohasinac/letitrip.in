@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { homepageService, type HeroSlide } from "@/services/homepage.service";
+import { logError } from "@/lib/firebase-error-logger";
 
 // Default slides for demo - would come from API
 const DEFAULT_SLIDES: HeroSlide[] = [
@@ -60,7 +61,9 @@ export default function HeroCarousel() {
           setSlides(slides);
         }
       } catch (error) {
-        console.error("Error fetching hero slides:", error);
+        logError(error as Error, {
+          component: "HeroCarousel.fetchSlides",
+        });
         // Keep default slides on error
       }
     };

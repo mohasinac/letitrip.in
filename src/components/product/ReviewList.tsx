@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Star, ThumbsUp, Check } from "lucide-react";
-import { logError } from "@/lib/error-logger";
+import { logError } from "@/lib/firebase-error-logger";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { DateDisplay } from "@/components/common/values";
 import { reviewsService } from "@/services/reviews.service";
@@ -102,7 +102,10 @@ export default function ReviewList({ productId }: ReviewListProps) {
         ),
       );
     } catch (error: any) {
-      console.error("Failed to mark as helpful:", error);
+      logError(error as Error, {
+        component: "ReviewList.handleMarkHelpful",
+        metadata: { reviewId },
+      });
     }
   };
 

@@ -21,6 +21,7 @@ import {
   WhereFilterOp,
   OrderByDirection,
 } from "firebase/firestore";
+import { logError } from "@/lib/firebase-error-logger";
 
 // ============================================================================
 // Types
@@ -486,7 +487,10 @@ export function encodeCursor(
     };
     return Buffer.from(JSON.stringify(cursorData)).toString("base64");
   } catch (error) {
-    console.error("Failed to encode cursor:", error);
+    logError(error as Error, {
+      component: "encodeCursor",
+      metadata: { cursorId: cursor.id },
+    });
     return "";
   }
 }
