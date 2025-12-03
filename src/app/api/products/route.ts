@@ -13,6 +13,10 @@ import {
   productsSieveConfig,
   createPaginationMeta,
 } from "@/app/api/lib/sieve";
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 // Extended Sieve config with field mappings for products
 const productsConfig = {
@@ -270,13 +274,16 @@ export async function POST(request: NextRequest) {
 
     // Validation
     const errors: Record<string, string> = {};
-    if (!shop_id) errors.shop_id = "Shop ID is required";
-    if (!name || name.trim().length < 3)
-      errors.name = "Name must be at least 3 characters";
-    if (!slug || slug.trim().length < 3)
-      errors.slug = "Slug must be at least 3 characters";
-    if (!price || price <= 0) errors.price = "Price must be greater than 0";
-    if (!category_id) errors.category_id = "Category is required";
+    if (!shop_id)
+      errors.shop_id = VALIDATION_MESSAGES.REQUIRED.FIELD("Shop ID");
+    if (!name || name.trim().length < VALIDATION_RULES.PRODUCT.NAME.MIN_LENGTH)
+      errors.name = VALIDATION_MESSAGES.PRODUCT.NAME_TOO_SHORT;
+    if (!slug || slug.trim().length < VALIDATION_RULES.SLUG.MIN_LENGTH)
+      errors.slug = VALIDATION_MESSAGES.SLUG.TOO_SHORT;
+    if (!price || price <= 0)
+      errors.price = VALIDATION_MESSAGES.PRODUCT.PRICE_TOO_LOW;
+    if (!category_id)
+      errors.category_id = VALIDATION_MESSAGES.PRODUCT.NO_CATEGORY;
 
     if (Object.keys(errors).length > 0) {
       throw new ValidationError("Validation failed", errors);
