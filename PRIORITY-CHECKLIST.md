@@ -1237,9 +1237,9 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 ##### 🔄 161-replace-console-statements-with-logger
 
-- **Files**: 60+ files with console.log/error
+- **Files**: 100+ files with console.log/error
 - **Changes**: Use firebase-error-logger
-- **Status**: IN PROGRESS - Completed 60 files:
+- **Status**: IN PROGRESS - Completed 73 files:
   - checkout page (6/6)
   - shops.service (1/1)
   - useSlugValidation (1/1)
@@ -1273,7 +1273,11 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - **BATCH 4**: Product components (1 file: ReviewList - updated import)
   - **BATCH 4**: Shop components (1 file: ShopHeader - added import)
   - **BATCH 4**: Hooks (1 file: useCart - completed both errors)
-- **Remaining**: Analytics service (console.log/debug only - intentional), error-logger test files (intentional), category-hierarchy (console.log only for rebuild - intentional)
+  - **BATCH 5**: Seller components (6 files: ShopInlineForm, ProductTable, ProductInlineForm, ProductImageManager, CouponInlineForm, InlineCategorySelectorWithCreate)
+  - **BATCH 5**: Wizards (1 file: RequiredInfoStep - product wizard)
+  - **BATCH 5**: Cards (1 file: ProductQuickView)
+  - **BATCH 5**: Featured sections (5 files: FeaturedShopsSection, FeaturedProductsSection, FeaturedReviewsSection, FeaturedCategoriesSection, FeaturedAuctionsSection)
+- **Remaining**: Analytics service (console.log/debug only - intentional), error-logger test files (intentional), category-hierarchy (console.log only for rebuild - intentional), a few more components to find
 
 ##### ⬜ 162-fix-unsafe-type-casts
 
