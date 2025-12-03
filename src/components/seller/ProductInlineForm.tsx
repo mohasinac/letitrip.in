@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { logError } from "@/lib/firebase-error-logger";
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput, FormTextarea } from "@/components/forms";
 import { productsService } from "@/services/products.service";
@@ -87,7 +89,10 @@ export function ProductInlineForm({
 
       onSuccess();
     } catch (error: any) {
-      console.error("Failed to save product:", error);
+      logError(error as Error, {
+        component: "ProductInlineForm.handleSubmit",
+        metadata: { productSlug: formData.slug },
+      });
       setErrors({ form: error.message || "Failed to save product" });
     } finally {
       setLoading(false);

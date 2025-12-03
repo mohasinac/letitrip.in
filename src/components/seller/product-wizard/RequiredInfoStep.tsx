@@ -33,7 +33,9 @@ export function RequiredInfoStep({
         images: [...prev.images, ...uploadedUrls],
       }));
     } catch (error) {
-      console.error("Image upload failed:", error);
+      logError(error as Error, {
+        component: "RequiredInfoStep.handleImageUpload",
+      });
       toast.error("Failed to upload images. Please try again.");
     } finally {
       setUploadingImages(false);

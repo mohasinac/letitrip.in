@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { logError } from "@/lib/firebase-error-logger";
 import { Eye, Edit, Trash2, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -42,7 +43,10 @@ export default function ProductTable({
       setSelectedProduct(null);
       onRefresh?.();
     } catch (error) {
-      console.error("Failed to delete ProductCardFE:", error);
+      logError(error as Error, {
+        component: "ProductTable.handleConfirmDelete",
+        metadata: { productSlug: selectedProduct.slug },
+      });
       toast.error("Failed to delete product. Please try again.");
     } finally {
       setIsDeleting(false);

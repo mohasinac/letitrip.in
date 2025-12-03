@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { logError } from "@/lib/firebase-error-logger";
+import { toast } from "sonner";
 import {
   X,
   Star,
@@ -117,7 +119,10 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
           url: `/products/${product.slug}`,
         });
       } catch (error) {
-        console.error("Error sharing:", error);
+        logError(error as Error, {
+          component: "ProductQuickView.handleShare",
+          metadata: { productSlug: product.slug },
+        });
       }
     }
   };

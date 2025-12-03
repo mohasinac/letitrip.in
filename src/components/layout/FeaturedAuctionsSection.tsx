@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import AuctionCard from "@/components/cards/AuctionCard";
+import { logError } from "@/lib/firebase-error-logger";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { auctionsService } from "@/services/auctions.service";
 import { apiService } from "@/services/api.service";
@@ -75,7 +76,9 @@ export default function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
 
       setAuctions(auctionsList);
     } catch (error) {
-      console.error("Error fetching featured auctions:", error);
+      logError(error as Error, {
+        component: "FeaturedAuctionsSection.fetchFeaturedAuctions",
+      });
       setAuctions([]);
     } finally {
       setLoading(false);

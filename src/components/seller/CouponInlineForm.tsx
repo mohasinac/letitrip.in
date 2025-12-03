@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { logError } from "@/lib/firebase-error-logger";
 import { FormInput, FormSelect } from "@/components/forms";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE } from "@/types/frontend/coupon.types";
@@ -104,7 +106,10 @@ export function CouponInlineForm({
 
       onSuccess();
     } catch (error: any) {
-      console.error("Failed to save coupon:", error);
+      logError(error as Error, {
+        component: "CouponInlineForm.handleSubmit",
+        metadata: { couponCode: formData.code },
+      });
       setErrors({ form: error.message || "Failed to save coupon" });
     } finally {
       setLoading(false);
