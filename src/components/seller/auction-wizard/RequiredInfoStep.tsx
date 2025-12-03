@@ -110,9 +110,7 @@ export function RequiredInfoStep({
         <FormLabel required>Category</FormLabel>
         <CategorySelectorWithCreate
           value={formData.category}
-          onChange={(categoryId) =>
-            handleChange("category", categoryId || "")
-          }
+          onChange={(categoryId) => handleChange("category", categoryId || "")}
           placeholder="Select or create a category"
           required
         />
