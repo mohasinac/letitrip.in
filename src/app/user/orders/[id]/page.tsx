@@ -369,14 +369,16 @@ function OrderTimeline({ status }: { status: string }) {
                   isCurrent
                     ? "text-primary"
                     : isCompleted
-                    ? "text-gray-900"
-                    : "text-gray-400"
+                    ? "text-gray-900 dark:text-white"
+                    : "text-gray-400 dark:text-gray-500"
                 }`}
               >
                 {step.label}
               </p>
               {isCurrent && (
-                <p className="text-sm text-gray-600 mt-1">In progress</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  In progress
+                </p>
               )}
             </div>
 
@@ -384,7 +386,7 @@ function OrderTimeline({ status }: { status: string }) {
             {index < steps.length - 1 && (
               <div
                 className={`absolute left-6 w-0.5 h-16 ${
-                  isCompleted ? "bg-primary" : "bg-gray-200"
+                  isCompleted ? "bg-primary" : "bg-gray-200 dark:bg-gray-600"
                 }`}
                 style={{ top: `${(index + 1) * 80}px` }}
               />
