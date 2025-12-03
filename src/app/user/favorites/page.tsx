@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Heart, Package, Store, Folder, Gavel, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { Price } from "@/components/common/values";
 import Link from "next/link";
 import Image from "next/image";
@@ -22,33 +23,26 @@ interface FavoriteItem {
 export default function FavoritesPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<FavoriteType>("product");
-  const [items, setItems] = useState<FavoriteItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const {
+    data: items,
+    isLoading: loading,
+    error,
+    execute,
+    setData: setItems,
+  } = useLoadingState<FavoriteItem[]>({ initialData: [] });
+
+  const fetchFavorites = useCallback(async () => {
+    const response = await fetch(`/api/favorites/list/${activeTab}`);
+    if (!response.ok) throw new Error("Failed to fetch favorites");
+    const data = await response.json();
+    return data.data || [];
+  }, [activeTab]);
 
   useEffect(() => {
     if (user) {
-      fetchFavorites();
+      execute(fetchFavorites);
     }
-  }, [user, activeTab]);
-
-  const fetchFavorites = async () => {
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await fetch(`/api/favorites/list/${activeTab}`);
-      if (!response.ok) throw new Error("Failed to fetch favorites");
-
-      const data = await response.json();
-      setItems(data.data || []);
-    } catch (err) {
-      console.error("Fetch favorites error:", err);
-      setError("Failed to load favorites");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [user, execute, fetchFavorites]);
 
   const handleRemove = async (itemId: string) => {
     try {
@@ -58,11 +52,14 @@ export default function FavoritesPage() {
 
       if (!response.ok) throw new Error("Failed to remove");
 
-      setItems(items.filter((item) => item.id !== itemId));
+      setItems((items || []).filter((item) => item.id !== itemId));
     } catch (err) {
       console.error("Remove favorite error:", err);
     }
   };
+
+  // Safe access to items array
+  const itemsList = items || [];
 
   const tabs = [
     { type: "product" as FavoriteType, label: "Products", icon: Package },
@@ -166,9 +163,9 @@ export default function FavoritesPage() {
         </div>
       ) : error ? (
         <div className="text-center py-16 text-red-600 dark:text-red-400">
-          {error}
+          {error.message}
         </div>
-      ) : items.length === 0 ? (
+      ) : itemsList.length === 0 ? (
         <div className="text-center py-16">
           <Heart className="h-16 w-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
           <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
@@ -189,7 +186,7 @@ export default function FavoritesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {items.map((item) => (
+          {itemsList.map((item) => (
             <div
               key={item.id}
               className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow bg-white dark:bg-gray-800"
