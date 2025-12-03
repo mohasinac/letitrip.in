@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import {
   Store,
   Package,
@@ -19,6 +19,7 @@ import { CompactPrice, Price } from "@/components/common/values";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { analyticsService } from "@/services/analytics.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 interface DashboardData {
   stats: {
@@ -57,67 +58,59 @@ interface DashboardData {
 
 export default function SellerDashboardPage() {
   const { user } = useAuth();
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  const {
+    data,
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState<DashboardData | null>({ initialData: null });
+
+  const loadDashboardData = useCallback(async () => {
+    // API will automatically use the user's primary shop from session
+    const analyticsData = await analyticsService.getOverview();
+
+    // Map analytics data to seller dashboard format
+    return {
+      stats: {
+        shops: {
+          total: (analyticsData as any).totalShops || 1,
+          active: (analyticsData as any).activeShops || 1,
+        },
+        products: {
+          total: analyticsData.totalProducts || 0,
+          active: (analyticsData as any).activeProducts || 0,
+        },
+        orders: {
+          pending: (analyticsData as any).pendingOrders || 0,
+          total: analyticsData.totalOrders || 0,
+        },
+        revenue: {
+          thisMonth: analyticsData.totalRevenue || 0,
+          lastMonth: (analyticsData as any).lastMonthRevenue || 0,
+        },
+      },
+      recentOrders: (analyticsData as any).recentOrders || [],
+      topProducts: (analyticsData as any).topProducts || [],
+      shopPerformance: (analyticsData as any).shopPerformance || {
+        averageRating: 0,
+        totalRatings: 0,
+        orderFulfillment: 0,
+        responseTime: "N/A",
+      },
+      alerts: (analyticsData as any).alerts || {
+        lowStock: 0,
+        pendingShipment: 0,
+        newReviews: 0,
+      },
+    };
+  }, []);
 
   useEffect(() => {
-    loadDashboardData();
-  }, [user]);
-
-  const loadDashboardData = async () => {
-    if (!user) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      // API will automatically use the user's primary shop from session
-      const analyticsData = await analyticsService.getOverview();
-
-      // Map analytics data to seller dashboard format
-      setData({
-        stats: {
-          shops: {
-            total: (analyticsData as any).totalShops || 1,
-            active: (analyticsData as any).activeShops || 1,
-          },
-          products: {
-            total: analyticsData.totalProducts || 0,
-            active: (analyticsData as any).activeProducts || 0,
-          },
-          orders: {
-            pending: (analyticsData as any).pendingOrders || 0,
-            total: analyticsData.totalOrders || 0,
-          },
-          revenue: {
-            thisMonth: analyticsData.totalRevenue || 0,
-            lastMonth: (analyticsData as any).lastMonthRevenue || 0,
-          },
-        },
-        recentOrders: (analyticsData as any).recentOrders || [],
-        topProducts: (analyticsData as any).topProducts || [],
-        shopPerformance: (analyticsData as any).shopPerformance || {
-          averageRating: 0,
-          totalRatings: 0,
-          orderFulfillment: 0,
-          responseTime: "N/A",
-        },
-        alerts: (analyticsData as any).alerts || {
-          lowStock: 0,
-          pendingShipment: 0,
-          newReviews: 0,
-        },
-      });
-    } catch (err) {
-      console.error("Error loading dashboard:", err);
-      setError(err instanceof Error ? err.message : "Failed to load dashboard");
-
-      // Don't set data on error - let the error UI show
-    } finally {
-      setLoading(false);
+    if (user) {
+      execute(loadDashboardData);
     }
-  };
+  }, [user, execute, loadDashboardData]);
 
   if (loading) {
     return (
@@ -125,7 +118,7 @@ export default function SellerDashboardPage() {
         className="flex items-center justify-center min-h-[60vh]"
         role="status"
       >
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
       </div>
     );
   }
@@ -134,11 +127,11 @@ export default function SellerDashboardPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <AlertCircle className="h-12 w-12 text-red-500" />
-        <p className="text-lg text-gray-600">
-          {error || "Failed to load dashboard"}
+        <p className="text-lg text-gray-600 dark:text-gray-400">
+          {error?.message || String(error) || "Failed to load dashboard"}
         </p>
         <button
-          onClick={loadDashboardData}
+          onClick={() => execute(loadDashboardData)}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           Retry
@@ -153,8 +146,8 @@ export default function SellerDashboardPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-600">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           Welcome back! Here's what's happening with your business today.
         </p>
       </div>
@@ -186,7 +179,7 @@ export default function SellerDashboardPage() {
           title="Revenue (This Month)"
           value={`₹${stats.revenue.thisMonth.toLocaleString("en-IN")}`}
           description={`₹${stats.revenue.lastMonth.toLocaleString(
-            "en-IN",
+            "en-IN"
           )} last month`}
           icon={<DollarSign className="h-6 w-6 text-blue-600" />}
           trend={{
@@ -196,55 +189,55 @@ export default function SellerDashboardPage() {
                     stats.revenue.lastMonth) *
                   100
                 : stats.revenue.thisMonth > 0
-                  ? 100
-                  : 0,
+                ? 100
+                : 0,
             isPositive: stats.revenue.thisMonth > stats.revenue.lastMonth,
           }}
         />
       </div>
 
       {/* Quick Actions */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+      <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Quick Actions</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             href="/seller/my-shops/create"
-            className="flex items-center gap-3 rounded-lg border border-gray-200 p-4 transition-colors hover:border-blue-500 hover:bg-blue-50"
+            className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 p-4 transition-colors hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
           >
-            <Store className="h-6 w-6 text-blue-600" />
+            <Store className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             <div>
-              <p className="font-medium text-gray-900">Create Shop</p>
-              <p className="text-sm text-gray-600">Set up a new shop</p>
+              <p className="font-medium text-gray-900 dark:text-white">Create Shop</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Set up a new shop</p>
             </div>
           </Link>
           <Link
             href="/seller/my-shops"
-            className="flex items-center gap-3 rounded-lg border border-gray-200 p-4 transition-colors hover:border-blue-500 hover:bg-blue-50"
+            className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 p-4 transition-colors hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
           >
-            <Package className="h-6 w-6 text-blue-600" />
+            <Package className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             <div>
-              <p className="font-medium text-gray-900">Add Product</p>
-              <p className="text-sm text-gray-600">List a new product</p>
+              <p className="font-medium text-gray-900 dark:text-white">Add Product</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">List a new product</p>
             </div>
           </Link>
           <Link
             href="/seller/orders"
-            className="flex items-center gap-3 rounded-lg border border-gray-200 p-4 transition-colors hover:border-blue-500 hover:bg-blue-50"
+            className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 p-4 transition-colors hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
           >
-            <ShoppingCart className="h-6 w-6 text-blue-600" />
+            <ShoppingCart className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             <div>
-              <p className="font-medium text-gray-900">View Orders</p>
-              <p className="text-sm text-gray-600">Manage your orders</p>
+              <p className="font-medium text-gray-900 dark:text-white">View Orders</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Manage your orders</p>
             </div>
           </Link>
           <Link
             href="/seller/revenue"
-            className="flex items-center gap-3 rounded-lg border border-gray-200 p-4 transition-colors hover:border-blue-500 hover:bg-blue-50"
+            className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 p-4 transition-colors hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
           >
-            <TrendingUp className="h-6 w-6 text-blue-600" />
+            <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             <div>
-              <p className="font-medium text-gray-900">View Analytics</p>
-              <p className="text-sm text-gray-600">Check your performance</p>
+              <p className="font-medium text-gray-900 dark:text-white">View Analytics</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Check your performance</p>
             </div>
           </Link>
         </div>
@@ -252,41 +245,41 @@ export default function SellerDashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Orders */}
-        <div className="rounded-lg border border-gray-200 bg-white">
-          <div className="border-b border-gray-200 px-6 py-4">
+        <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+          <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Recent Orders
               </h2>
               <Link
                 href="/seller/orders"
-                className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700"
+                className="flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
               >
                 View All
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {recentOrders.map((order) => (
               <Link
                 key={order.id}
                 href={`/seller/orders/${order.id}`}
-                className="block px-6 py-4 hover:bg-gray-50 transition-colors"
+                className="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 dark:text-white">
                       {order.orderNumber}
                     </p>
-                    <p className="text-sm text-gray-600">{order.customer}</p>
-                    <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{order.customer}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {order.date}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 dark:text-white">
                       <Price amount={order.amount} />
                     </p>
                     <span
@@ -294,8 +287,8 @@ export default function SellerDashboardPage() {
                         order.status === "pending"
                           ? "bg-yellow-100 text-yellow-800"
                           : order.status === "confirmed"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-green-100 text-green-800"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-green-100 text-green-800"
                       }`}
                     >
                       {order.status}
@@ -308,28 +301,28 @@ export default function SellerDashboardPage() {
         </div>
 
         {/* Top Products */}
-        <div className="rounded-lg border border-gray-200 bg-white">
-          <div className="border-b border-gray-200 px-6 py-4">
+        <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+          <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Top Products
               </h2>
               <Link
                 href="/seller/products"
-                className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700"
+                className="flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
               >
                 View All
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {topProducts.map((product) => (
               <div key={product.id} className="px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">{product.name}</p>
-                    <div className="mt-1 flex items-center gap-4 text-sm text-gray-600">
+                    <p className="font-medium text-gray-900 dark:text-white">{product.name}</p>
+                    <div className="mt-1 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                       <span className="flex items-center gap-1">
                         <ShoppingCart className="h-3 w-3" />
                         {product.sales} sales
@@ -341,10 +334,10 @@ export default function SellerDashboardPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 dark:text-white">
                       <CompactPrice amount={product.revenue} />
                     </p>
-                    <p className="text-xs text-gray-500">revenue</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">revenue</p>
                   </div>
                 </div>
               </div>
@@ -356,86 +349,86 @@ export default function SellerDashboardPage() {
       {/* Alerts & Performance */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Alerts & Notifications */}
-        <div className="rounded-lg border border-gray-200 bg-white">
-          <div className="border-b border-gray-200 px-6 py-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+          <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Alerts & Notifications
             </h2>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {alerts.lowStock > 0 && (
               <Link
                 href="/seller/products?filter=lowStock"
-                className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
+                className="flex gap-3 px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <AlertCircle className="h-5 w-5 flex-shrink-0 text-orange-500" />
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900">Low Stock Alert</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-medium text-gray-900 dark:text-white">Low Stock Alert</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     {alerts.lowStock} products are running low on stock
                   </p>
                 </div>
-                <ArrowRight className="h-5 w-5 text-gray-400" />
+                <ArrowRight className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </Link>
             )}
             {alerts.pendingShipment > 0 && (
               <Link
                 href="/seller/orders?status=confirmed"
-                className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
+                className="flex gap-3 px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <AlertCircle className="h-5 w-5 flex-shrink-0 text-blue-500" />
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900">Pending Actions</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-medium text-gray-900 dark:text-white">Pending Actions</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     {alerts.pendingShipment} orders waiting for shipment
                   </p>
                 </div>
-                <ArrowRight className="h-5 w-5 text-gray-400" />
+                <ArrowRight className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </Link>
             )}
             {alerts.newReviews > 0 && (
               // NOTE: /seller/reviews does not exist - link to admin reviews page for now
               <Link
                 href="/reviews"
-                className="flex gap-3 px-6 py-4 hover:bg-gray-50 transition-colors"
+                className="flex gap-3 px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <Star className="h-5 w-5 flex-shrink-0 text-yellow-500" />
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900">New Reviews</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-medium text-gray-900 dark:text-white">New Reviews</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     You have {alerts.newReviews} new product reviews
                   </p>
                 </div>
-                <ArrowRight className="h-5 w-5 text-gray-400" />
+                <ArrowRight className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </Link>
             )}
             {alerts.lowStock === 0 &&
               alerts.pendingShipment === 0 &&
               alerts.newReviews === 0 && (
                 <div className="px-6 py-8 text-center">
-                  <p className="text-gray-500">No alerts at this time</p>
+                  <p className="text-gray-500 dark:text-gray-400">No alerts at this time</p>
                 </div>
               )}
           </div>
         </div>
 
         {/* Shop Performance */}
-        <div className="rounded-lg border border-gray-200 bg-white">
-          <div className="border-b border-gray-200 px-6 py-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+          <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Shop Performance
             </h2>
           </div>
           <div className="p-6 space-y-4">
             <div>
               <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-gray-600">Average Rating</span>
-                <span className="font-medium text-gray-900 flex items-center gap-1">
+                <span className="text-gray-600 dark:text-gray-400">Average Rating</span>
+                <span className="font-medium text-gray-900 dark:text-white flex items-center gap-1">
                   <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                   {shopPerformance.averageRating.toFixed(1)} / 5.0
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div
                   className="bg-yellow-500 h-2 rounded-full"
                   style={{
@@ -443,18 +436,18 @@ export default function SellerDashboardPage() {
                   }}
                 ></div>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Based on {shopPerformance.totalRatings} ratings
               </p>
             </div>
             <div>
               <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-gray-600">Order Fulfillment</span>
-                <span className="font-medium text-gray-900">
+                <span className="text-gray-600 dark:text-gray-400">Order Fulfillment</span>
+                <span className="font-medium text-gray-900 dark:text-white">
                   {shopPerformance.orderFulfillment}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div
                   className="bg-green-500 h-2 rounded-full"
                   style={{ width: `${shopPerformance.orderFulfillment}%` }}
@@ -463,22 +456,22 @@ export default function SellerDashboardPage() {
             </div>
             <div>
               <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-gray-600">Response Time</span>
-                <span className="font-medium text-gray-900">
+                <span className="text-gray-600 dark:text-gray-400">Response Time</span>
+                <span className="font-medium text-gray-900 dark:text-white">
                   {shopPerformance.responseTime}
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div
                   className="bg-blue-500 h-2 rounded-full"
                   style={{ width: "85%" }}
                 ></div>
               </div>
             </div>
-            <div className="pt-4 border-t border-gray-200">
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               <Link
                 href="/seller/analytics"
-                className="flex items-center justify-center gap-2 w-full py-2 text-sm font-medium text-blue-600 hover:text-blue-700"
+                className="flex items-center justify-center gap-2 w-full py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
               >
                 View Detailed Analytics
                 <ArrowRight className="h-4 w-4" />
