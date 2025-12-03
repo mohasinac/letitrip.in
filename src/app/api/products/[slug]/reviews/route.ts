@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 // GET /api/products/[slug]/reviews
 export async function GET(
@@ -85,15 +89,25 @@ export async function POST(
       ? body.media.slice(0, 5)
       : [];
 
-    if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
+    if (
+      !Number.isFinite(rating) ||
+      rating < VALIDATION_RULES.REVIEW.RATING.MIN ||
+      rating > VALIDATION_RULES.REVIEW.RATING.MAX
+    ) {
       return NextResponse.json(
-        { success: false, error: "Rating must be 1-5" },
+        { success: false, error: VALIDATION_MESSAGES.REVIEW.RATING_INVALID },
         { status: 400 },
       );
     }
-    if (!comment || comment.length < 5) {
+    if (
+      !comment ||
+      comment.length < VALIDATION_RULES.REVIEW.CONTENT.MIN_LENGTH
+    ) {
       return NextResponse.json(
-        { success: false, error: "Comment must be at least 5 characters" },
+        {
+          success: false,
+          error: VALIDATION_MESSAGES.REVIEW.CONTENT_TOO_SHORT,
+        },
         { status: 400 },
       );
     }

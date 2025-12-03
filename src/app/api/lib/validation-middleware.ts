@@ -9,6 +9,10 @@ import {
   getValidationSchema,
   validateBulkAction,
 } from "@/lib/validation/inline-edit-schemas";
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 export interface ValidationError {
   field: string;

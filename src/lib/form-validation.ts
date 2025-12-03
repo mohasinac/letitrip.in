@@ -6,6 +6,12 @@
  */
 
 import type { FormField, FieldValidator } from "@/constants/form-fields";
+import {
+  isValidEmail,
+  isValidPhone,
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 export interface ValidationError {
   field: string;
@@ -61,9 +67,8 @@ export function validateField(value: any, field: FormField): string | null {
 
   // Email validation
   if (field.type === "email") {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(String(value))) {
-      return `${field.label} must be a valid email address`;
+    if (!isValidEmail(String(value))) {
+      return VALIDATION_MESSAGES.EMAIL.INVALID;
     }
   }
 
@@ -78,9 +83,8 @@ export function validateField(value: any, field: FormField): string | null {
 
   // Phone validation (basic)
   if (field.type === "tel") {
-    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-    if (!phoneRegex.test(String(value))) {
-      return `${field.label} must be a valid phone number`;
+    if (!isValidPhone(String(value))) {
+      return VALIDATION_MESSAGES.PHONE.INVALID;
     }
   }
 
@@ -121,9 +125,8 @@ function validateWithValidator(
       break;
 
     case "email":
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(String(value))) {
-        return validator.message || `${fieldLabel} must be a valid email`;
+      if (!isValidEmail(String(value))) {
+        return validator.message || VALIDATION_MESSAGES.EMAIL.INVALID;
       }
       break;
 
@@ -136,11 +139,8 @@ function validateWithValidator(
       break;
 
     case "phone":
-      const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-      if (!phoneRegex.test(String(value))) {
-        return (
-          validator.message || `${fieldLabel} must be a valid phone number`
-        );
+      if (!isValidPhone(String(value))) {
+        return validator.message || VALIDATION_MESSAGES.PHONE.INVALID;
       }
       break;
 
