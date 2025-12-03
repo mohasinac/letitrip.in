@@ -27,6 +27,7 @@ import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { Price } from "@/components/common/values";
 import { ORDER_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 
 export default function AdminOrdersPage() {
   const searchParams = useSearchParams();
@@ -291,63 +292,36 @@ export default function AdminOrdersPage() {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid gap-6 md:grid-cols-4">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Orders</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.totalOrders || 0}
-                </p>
-              </div>
-              <div className="rounded-full bg-purple-100 p-3">
-                <ShoppingCart className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  <Price amount={stats.totalRevenue || 0} />
-                </p>
-              </div>
-              <div className="rounded-full bg-green-100 p-3">
-                <DollarSign className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Avg Order Value</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  <Price amount={stats.averageOrderValue || 0} />
-                </p>
-              </div>
-              <div className="rounded-full bg-blue-100 p-3">
-                <TrendingUp className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Pending Orders</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.pendingOrders || 0}
-                </p>
-              </div>
-              <div className="rounded-full bg-yellow-100 p-3">
-                <Package className="h-6 w-6 text-yellow-600" />
-              </div>
-            </div>
-          </div>
-        </div>
+        <StatsCardGrid columns={4}>
+          <StatsCard
+            title="Total Orders"
+            value={stats.totalOrders || 0}
+            icon={ShoppingCart}
+            iconClassName="text-purple-600"
+            className="[&>div:first-child]:bg-purple-100 dark:[&>div:first-child]:bg-purple-900/30"
+          />
+          <StatsCard
+            title="Total Revenue"
+            value={<Price amount={stats.totalRevenue || 0} />}
+            icon={DollarSign}
+            iconClassName="text-green-600"
+            className="[&>div:first-child]:bg-green-100 dark:[&>div:first-child]:bg-green-900/30"
+          />
+          <StatsCard
+            title="Avg Order Value"
+            value={<Price amount={stats.averageOrderValue || 0} />}
+            icon={TrendingUp}
+            iconClassName="text-blue-600"
+            className="[&>div:first-child]:bg-blue-100 dark:[&>div:first-child]:bg-blue-900/30"
+          />
+          <StatsCard
+            title="Pending Orders"
+            value={stats.pendingOrders || 0}
+            icon={Package}
+            iconClassName="text-yellow-600"
+            className="[&>div:first-child]:bg-yellow-100 dark:[&>div:first-child]:bg-yellow-900/30"
+          />
+        </StatsCardGrid>
       )}
 
       {/* Mobile Filter Toggle */}
