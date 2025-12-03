@@ -20,6 +20,11 @@ import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { FormInput } from "@/components/forms";
 import { DateDisplay } from "@/components/common/values";
+import { AuctionGallery } from "@/components/auction/AuctionGallery";
+import { AuctionInfo } from "@/components/auction/AuctionInfo";
+import { AuctionDescription } from "@/components/auction/AuctionDescription";
+import { AuctionSellerInfo } from "@/components/auction/AuctionSellerInfo";
+import { SimilarAuctions } from "@/components/auction/SimilarAuctions";
 import { auctionsService } from "@/services/auctions.service";
 import { shopsService } from "@/services/shops.service";
 import { notFound } from "@/lib/error-redirects";
@@ -295,60 +300,20 @@ export default function AuctionDetailPage() {
         {/* Left Column - Images & Description */}
         <div className="lg:col-span-2 space-y-6">
           {/* Image Gallery */}
-          <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
-            {auction.images && auction.images.length > 0 && (
-              <>
-                <div className="aspect-video w-full bg-gray-100 relative group">
-                  <OptimizedImage
-                    src={auction.images[selectedImage]}
-                    alt={auction.name || "Auction"}
-                    fill
-                    className="object-contain transition-transform duration-300 group-hover:scale-105"
-                  />
-                  {auction.featured && (
-                    <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      ★ Featured
-                    </div>
-                  )}
-                </div>
-                {auction.images.length > 1 && (
-                  <div className="grid grid-cols-5 gap-2 p-4 bg-gray-50">
-                    {auction.images.map((img, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedImage(idx)}
-                        className={`aspect-square rounded-lg overflow-hidden border-2 transition-all relative ${
-                          selectedImage === idx
-                            ? "border-primary ring-2 ring-primary ring-offset-2"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      >
-                        <OptimizedImage
-                          src={img}
-                          alt={`${auction.name} ${idx + 1}`}
-                          fill
-                          className="object-cover"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+          <AuctionGallery
+            media={(auction.images || []).map((url) => ({
+              url,
+              type: "image" as const,
+            }))}
+            productName={auction.name || "Auction"}
+          />
 
           {/* Description */}
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
-              Description
-            </h2>
-            <div
-              className="prose prose-sm max-w-none"
-              dangerouslySetInnerHTML={{
-                __html: auction.description || auction.productDescription,
-              }}
-            />
-          </div>
+          <AuctionDescription
+            description={
+              auction.description || auction.productDescription || ""
+            }
+          />
 
           {/* Bid History */}
           <div className="rounded-lg border border-gray-200 bg-white p-6">
@@ -445,61 +410,11 @@ export default function AuctionDetailPage() {
           </div>
 
           {/* Similar Auctions Section */}
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
-              Similar Auctions
-            </h2>
-            {similarAuctions.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {similarAuctions.map((a) => (
-                  <Link
-                    key={a.id}
-                    href={`/auctions/${a.slug}`}
-                    className="group"
-                  >
-                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-2 relative">
-                      {a.images?.[0] && (
-                        <OptimizedImage
-                          src={a.images[0]}
-                          alt={a.name || "Auction"}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-200"
-                        />
-                      )}
-                      {a.status === AuctionStatus.ACTIVE && (
-                        <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                          Live
-                        </div>
-                      )}
-                    </div>
-                    <h3 className="font-medium text-sm text-gray-900 line-clamp-2 group-hover:text-primary">
-                      {a.name}
-                    </h3>
-                    <p className="text-sm font-semibold text-primary mt-1">
-                      <Price amount={a.currentBid || a.currentPrice} />
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {a.bidCount || a.totalBids}{" "}
-                      {(a.bidCount || a.totalBids) === 1 ? "bid" : "bids"}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                <Gavel className="w-10 h-10 text-gray-400 mb-3" />
-                <p className="text-gray-500 mb-4 text-sm">
-                  No similar auctions available
-                </p>
-                <Link
-                  href="/auctions"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-                >
-                  View All Auctions
-                </Link>
-              </div>
-            )}
-          </div>
+          <SimilarAuctions
+            auctions={similarAuctions}
+            currentAuctionId={auction.id}
+            loading={false}
+          />
         </div>
 
         {/* Right Column - Bidding Panel */}
@@ -650,83 +565,28 @@ export default function AuctionDetailPage() {
 
           {/* Shop Info Sidebar */}
           {shop && (
-            <div className="rounded-lg border border-gray-200 bg-white p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                Seller Information
-              </h3>
-              <div className="space-y-4">
-                {/* Shop Logo */}
-                {shop.logo && (
-                  <div className="flex justify-center">
-                    <div className="relative h-20 w-20">
-                      <OptimizedImage
-                        src={shop.logo}
-                        alt={shop.name}
-                        fill
-                        className="rounded-full object-cover border-2 border-gray-200"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Shop Name */}
-                <div className="text-center">
-                  <h4 className="font-semibold text-gray-900">{shop.name}</h4>
-                  {shop.isVerified && (
-                    <span className="inline-flex items-center gap-1 text-xs text-green-600 mt-1">
-                      ✓ Verified Seller
-                    </span>
-                  )}
-                </div>
-
-                {/* Rating */}
-                {shop.rating > 0 && (
-                  <div className="flex items-center justify-center gap-2 text-sm">
-                    <div className="flex items-center gap-1 text-yellow-500">
-                      {"★".repeat(Math.round(shop.rating))}
-                      {"☆".repeat(5 - Math.round(shop.rating))}
-                    </div>
-                    <span className="text-gray-600">
-                      {shop.rating.toFixed(1)} ({shop.reviewCount || 0})
-                    </span>
-                  </div>
-                )}
-
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-200">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-gray-900">
-                      {shop.productCount || 0}
-                    </p>
-                    <p className="text-xs text-gray-600">Products</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-purple-600">
-                      {shopAuctions.length + 1}
-                    </p>
-                    <p className="text-xs text-gray-600">Auctions</p>
-                  </div>
-                </div>
-
-                {/* Visit Shop Button */}
-                <Link
-                  href={`/shops/${shop.slug}`}
-                  className="block w-full text-center rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
-                >
-                  Visit Shop
-                </Link>
-
-                {/* Contact Seller Button */}
-                {shop.email && (
-                  <a
-                    href={`mailto:${shop.email}`}
-                    className="block w-full text-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    Contact Seller
-                  </a>
-                )}
-              </div>
-            </div>
+            <AuctionSellerInfo
+              sellerId={shop.id}
+              sellerName={shop.name}
+              sellerAvatar={shop.logo || undefined}
+              sellerRating={shop.rating}
+              sellerReviewCount={shop.reviewCount || 0}
+              memberSince={
+                shop.createdAt
+                  ? typeof shop.createdAt === "string"
+                    ? shop.createdAt
+                    : shop.createdAt.toISOString()
+                  : ""
+              }
+              shopId={shop.id}
+              shopName={shop.name}
+              shopSlug={shop.slug}
+              onContactSeller={() => {
+                if (shop.email) {
+                  window.location.href = `mailto:${shop.email}`;
+                }
+              }}
+            />
           )}
         </div>
       </div>
