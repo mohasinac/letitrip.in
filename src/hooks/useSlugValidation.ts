@@ -114,14 +114,18 @@ export function useSlugValidation({
 
         setIsAvailable(data.available);
       } catch (err) {
-        console.error("Slug validation error:", err);
+        logError(err, {
+          component: "useSlugValidation.validate",
+          slug: slugToCheck,
+          endpoint,
+        });
         setError(err instanceof Error ? err.message : "Validation failed");
         setIsAvailable(null);
       } finally {
         setIsValidating(false);
       }
     },
-    [endpoint, params, excludeId],
+    [endpoint, params, excludeId]
   );
 
   // Debounced validation
@@ -138,7 +142,7 @@ export function useSlugValidation({
         setError(null);
       }
     },
-    [debouncedValidate],
+    [debouncedValidate]
   );
 
   // Reset function

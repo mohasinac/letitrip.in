@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { logError } from "@/lib/firebase-error-logger";
 import { cartService } from "@/services/cart.service";
 import { useAuth } from "@/contexts/AuthContext";
 import type { CartItemFE, CartFE } from "@/types";
@@ -51,7 +52,7 @@ export function useCart() {
         };
       });
     },
-    [],
+    []
   );
 
   // Load cart data
@@ -72,7 +73,7 @@ export function useCart() {
         // For guest cart, create a minimal CartFE-like structure
         const subtotal = transformedItems.reduce(
           (sum, item) => sum + item.total,
-          0,
+          0
         );
         const tax = subtotal * 0.18;
         const total = subtotal + tax;
@@ -84,7 +85,7 @@ export function useCart() {
           items: transformedItems,
           itemCount: transformedItems.reduce(
             (sum, item) => sum + item.quantity,
-            0,
+            0
           ),
           subtotal,
           discount: 0,
@@ -129,7 +130,7 @@ export function useCart() {
         image: string;
         shopId: string;
         shopName: string;
-      },
+      }
     ) => {
       try {
         if (user) {
@@ -156,11 +157,16 @@ export function useCart() {
           await loadCart();
         }
       } catch (err: any) {
-        console.error("Failed to add item:", err);
+        logError(err, {
+          component: "useCart.addItem",
+          productId,
+          quantity,
+          variantId,
+        });
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Update item quantity
@@ -177,11 +183,11 @@ export function useCart() {
           await loadCart();
         }
       } catch (err: any) {
-        console.error("Failed to update item:", err);
+        logError(err, { component: "useCart.updateItem", itemId, quantity });
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Remove item
@@ -198,11 +204,11 @@ export function useCart() {
           await loadCart();
         }
       } catch (err: any) {
-        console.error("Failed to remove item:", err);
+        logError(err, { component: "useCart.removeItem", itemId });
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Clear cart
@@ -218,7 +224,7 @@ export function useCart() {
         await loadCart();
       }
     } catch (err: any) {
-      console.error("Failed to clear cart:", err);
+      logError(err, { component: "useCart.clearCart" });
       throw err;
     }
   }, [user, loadCart]);
@@ -246,11 +252,11 @@ export function useCart() {
 
         return result;
       } catch (err: any) {
-        console.error("Failed to apply coupon:", err);
+        logError(err, { component: "useCart.applyCoupon", code });
         throw err;
       }
     },
-    [user, cart],
+    [user, cart]
   );
 
   // Remove coupon
@@ -273,7 +279,7 @@ export function useCart() {
         });
       }
     } catch (err: any) {
-      console.error("Failed to remove coupon:", err);
+      logError(err, { component: "useCart.removeCoupon" });
       throw err;
     }
   }, [user, cart]);
@@ -296,7 +302,7 @@ export function useCart() {
           productId: item.productId,
           quantity: item.quantity,
           variantId: item.variantId,
-        })) as any as CartItemFE[],
+        })) as any as CartItemFE[]
       );
 
       // Clear guest cart after merge

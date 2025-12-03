@@ -518,7 +518,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   // After
   z.string().min(
     VALIDATION_RULES.NAME.MIN_LENGTH,
-    VALIDATION_MESSAGES.NAME.TOO_SHORT,
+    VALIDATION_MESSAGES.NAME.TOO_SHORT
   );
   ```
 
@@ -619,17 +619,19 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 25.4: AddressSelectorWithCreate Integration (4-6 hours) ⚡ UI Priority
 
-##### ⬜ 59-integrate-address-selector-in-checkout
+##### ✅ 59-integrate-address-selector-in-checkout
 
 - **File**: `src/app/checkout/page.tsx`
 - **Changes**: Use AddressSelectorWithCreate instead of SmartAddressForm inline
 - **Impact**: Faster checkout, reuse saved addresses
+- **Status**: COMPLETE - AddressSelectorWithCreate integrated with proper dark mode support
 
-##### ⬜ 60-verify-address-selector-in-wizards
+##### ✅ 60-verify-address-selector-in-wizards
 
 - **Files**: Shop/Product/Auction wizards
 - **Changes**: Verify AddressSelectorWithCreate works correctly
 - **Test**: Address selection, inline create, GPS optional
+- **Status**: COMPLETE - Verified all wizards already use proper address components
 
 #### 25.5: Remove GPS Requirement (2-3 hours) ⚡ UI Priority
 
@@ -1231,10 +1233,12 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 ### Task 12: Code Quality & Type Safety (4-6 hours)
 
-##### ⬜ 161-replace-console-statements-with-logger
+##### 🔄 161-replace-console-statements-with-logger
 
 - **Files**: 20+ files with console.log/error
 - **Changes**: Use firebase-error-logger
+- **Status**: IN PROGRESS - Completed 12 files: checkout (6/6), shops.service (1/1), useSlugValidation (1/1), useCart (7/7), categories.service (2/2), user messages (1/1), AuthContext (3/3), support ticket (1/1), user reviews (1/1)
+- **Remaining**: riplimit service, location service, filter helpers, date utils, analytics, navigation guards, media upload cleanup, and other utility files
 
 ##### ⬜ 162-fix-unsafe-type-casts
 
