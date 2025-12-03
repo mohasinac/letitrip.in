@@ -1237,8 +1237,25 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 - **Files**: 20+ files with console.log/error
 - **Changes**: Use firebase-error-logger
-- **Status**: IN PROGRESS - Completed 12 files: checkout (6/6), shops.service (1/1), useSlugValidation (1/1), useCart (7/7), categories.service (2/2), user messages (1/1), AuthContext (3/3), support ticket (1/1), user reviews (1/1)
-- **Remaining**: riplimit service, location service, filter helpers, date utils, analytics, navigation guards, media upload cleanup, and other utility files
+- **Status**: IN PROGRESS - Completed 20 files:
+  * checkout page (6/6)
+  * shops.service (1/1)
+  * useSlugValidation (1/1)
+  * useCart (7/7)
+  * categories.service (2/2)
+  * user messages (1/1)
+  * AuthContext (3/3)
+  * support ticket (1/1)
+  * user reviews (1/1)
+  * riplimit.service (1/1)
+  * location.service (1/1)
+  * filter-helpers (2/3)
+  * useNavigationGuard (2/2)
+  * date-utils (2/2)
+  * useMediaUploadWithCleanup (1/2)
+  * useFilters (1/2)
+  * useSafeLoad (2 removed debug logs, 1 replaced)
+- **Remaining**: Analytics, category-hierarchy, payment logos, error-logger test files, and non-critical utilities
 
 ##### ⬜ 162-fix-unsafe-type-casts
 

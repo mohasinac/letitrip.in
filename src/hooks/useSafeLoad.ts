@@ -54,13 +54,11 @@ export function useSafeLoad(
 
     // Skip if already loading (prevents concurrent calls)
     if (isLoading) {
-      console.log("[useSafeLoad] Already loading, skipping...");
       return;
     }
 
     // Skip if already loaded and skipIfLoaded is true
     if (skipIfLoaded && hasLoaded) {
-      console.log("[useSafeLoad] Already loaded, skipping...");
       return;
     }
 
@@ -69,7 +67,7 @@ export function useSafeLoad(
       await loadFn();
       setHasLoaded(true);
     } catch (error) {
-      console.error("[useSafeLoad] Error:", error);
+      logError(error, { component: "useSafeLoad.safeLoad" });
       setHasLoaded(false);
       // Don't throw - let the component handle errors gracefully
     } finally {

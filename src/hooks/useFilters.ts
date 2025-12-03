@@ -60,7 +60,10 @@ export function useFilters<T extends Record<string, any>>(
           return { ...initialFilters, ...JSON.parse(stored) };
         }
       } catch (error) {
-        console.error("Failed to load filters from localStorage:", error);
+        logError(error, {
+          component: "useFilters.loadInitialFilters",
+          storageKey,
+        });
       }
     }
 

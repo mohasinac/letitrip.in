@@ -2,6 +2,7 @@
  * Filter Utility Functions
  * Helper functions for filter operations and query building
  */
+import { logError } from "@/lib/firebase-error-logger";
 
 /**
  * Build a query object from filter values
@@ -92,7 +93,7 @@ export function persistFilters<T extends Record<string, any>>(
   try {
     localStorage.setItem(key, JSON.stringify(filters));
   } catch (error) {
-    console.error("Failed to persist filters:", error);
+    logError(error, { component: "filterHelpers.persistFilters", key });
   }
 }
 
@@ -111,7 +112,7 @@ export function loadPersistedFilters<T extends Record<string, any>>(
       return { ...initialFilters, ...JSON.parse(stored) };
     }
   } catch (error) {
-    console.error("Failed to load persisted filters:", error);
+    logError(error, { component: "filterHelpers.loadPersistedFilters", key });
   }
 
   return initialFilters;
@@ -126,7 +127,7 @@ export function clearPersistedFilters(key: string): void {
   try {
     localStorage.removeItem(key);
   } catch (error) {
-    console.error("Failed to clear persisted filters:", error);
+    logError(error, { component: "filterHelpers.clearPersistedFilters", key });
   }
 }
 

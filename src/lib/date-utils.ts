@@ -23,7 +23,7 @@ export function safeToISOString(date: any): string | null {
     if (isNaN(d.getTime())) return null;
     return d.toISOString();
   } catch (error) {
-    console.error("Error converting date to ISO string:", error);
+    logError(error, { component: "dateUtils.toISOStringOrNull", date });
     return null;
   }
 }
@@ -84,7 +84,7 @@ export function safeToDate(date: any): Date | null {
     if (isNaN(d.getTime())) return null;
     return d;
   } catch (error) {
-    console.error("Error converting to Date:", error);
+    logError(error, { component: "dateUtils.toDate", date });
     return null;
   }
 }

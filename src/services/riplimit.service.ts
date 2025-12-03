@@ -7,6 +7,7 @@
  */
 
 import { apiService } from "./api.service";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   RipLimitBalanceFE,
   RipLimitTransactionHistoryFE,
@@ -57,7 +58,7 @@ class RipLimitService {
 
       return toFERipLimitBalance(response.data);
     } catch (error) {
-      console.error("Error getting RipLimit balance:", error);
+      logError(error, { component: "RipLimitService.getBalance" });
       return createEmptyBalance();
     }
   }

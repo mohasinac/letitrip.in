@@ -168,7 +168,10 @@ export function useMediaUploadWithCleanup(
       // Delete all uploaded files from Firebase Storage
       const deletePromises = mediaToCleanup.map((media) =>
         mediaService.deleteByUrl(media.url).catch((error) => {
-          console.error(`Failed to delete ${media.url}:`, error);
+          logError(error, {
+            component: "useMediaUploadWithCleanup.cleanup",
+            url: media.url,
+          });
           // Don't throw, continue with other deletions
         }),
       );
@@ -181,7 +184,9 @@ export function useMediaUploadWithCleanup(
 
       onCleanupComplete?.();
     } catch (error) {
-      console.error("Cleanup error:", error);
+      logError(error, {
+        component: "useMediaUploadWithCleanup.cleanup.general",
+      });
     } finally {
       setIsCleaning(false);
     }

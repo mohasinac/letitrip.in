@@ -52,7 +52,7 @@ export function useCart() {
         };
       });
     },
-    []
+    [],
   );
 
   // Load cart data
@@ -73,7 +73,7 @@ export function useCart() {
         // For guest cart, create a minimal CartFE-like structure
         const subtotal = transformedItems.reduce(
           (sum, item) => sum + item.total,
-          0
+          0,
         );
         const tax = subtotal * 0.18;
         const total = subtotal + tax;
@@ -85,7 +85,7 @@ export function useCart() {
           items: transformedItems,
           itemCount: transformedItems.reduce(
             (sum, item) => sum + item.quantity,
-            0
+            0,
           ),
           subtotal,
           discount: 0,
@@ -130,7 +130,7 @@ export function useCart() {
         image: string;
         shopId: string;
         shopName: string;
-      }
+      },
     ) => {
       try {
         if (user) {
@@ -166,7 +166,7 @@ export function useCart() {
         throw err;
       }
     },
-    [user, loadCart]
+    [user, loadCart],
   );
 
   // Update item quantity
@@ -187,7 +187,7 @@ export function useCart() {
         throw err;
       }
     },
-    [user, loadCart]
+    [user, loadCart],
   );
 
   // Remove item
@@ -208,7 +208,7 @@ export function useCart() {
         throw err;
       }
     },
-    [user, loadCart]
+    [user, loadCart],
   );
 
   // Clear cart
@@ -256,7 +256,7 @@ export function useCart() {
         throw err;
       }
     },
-    [user, cart]
+    [user, cart],
   );
 
   // Remove coupon
@@ -302,7 +302,7 @@ export function useCart() {
           productId: item.productId,
           quantity: item.quantity,
           variantId: item.variantId,
-        })) as any as CartItemFE[]
+        })) as any as CartItemFE[],
       );
 
       // Clear guest cart after merge
