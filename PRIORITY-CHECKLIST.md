@@ -250,7 +250,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Verify WizardActionBar is present
 - **Impact**: Tree view for categories, auto-load shops
 
-##### ⬜ 19-update-auction-wizard-category-shop-selectors
+##### ✅ 19-update-auction-wizard-category-shop-selectors
 
 - **File**: `src/components/seller/auction-wizard/RequiredInfoStep.tsx`
 - **Changes**:
@@ -259,7 +259,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Verify WizardActionBar is present
 - **Impact**: Consistent wizard UX
 
-##### ⬜ 20-add-address-selector-to-product-wizard
+##### ✅ 20-add-address-selector-to-product-wizard
 
 - **File**: `src/components/seller/product-wizard/ShippingStep.tsx`
 - **Changes**:
@@ -267,7 +267,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Filter by addressType="work" or "all"
 - **Impact**: Reuse saved addresses
 
-##### ⬜ 21-add-address-selector-to-auction-wizard
+##### ✅ 21-add-address-selector-to-auction-wizard
 
 - **File**: `src/components/seller/auction-wizard/PickupStep.tsx`
 - **Changes**:
@@ -276,7 +276,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 23.5: Create Reusable Wizard Step Components (4-6 hours)
 
-##### ⬜ 22-create-contact-info-step-component
+##### ✅ 22-create-contact-info-step-component
 
 - **File**: `src/components/wizards/ContactInfoStep.tsx`
 - **Purpose**: Reusable contact section with MobileInput
@@ -286,7 +286,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Reusable across Shop/Product/Auction wizards
 - **Lines**: ~100 lines
 
-##### ⬜ 23-create-business-address-step-component
+##### ✅ 23-create-business-address-step-component
 
 - **File**: `src/components/wizards/BusinessAddressStep.tsx`
 - **Purpose**: Reusable address section with SmartAddressForm inline mode
@@ -296,7 +296,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - State selector
 - **Lines**: ~150 lines
 
-##### ⬜ 24-create-category-selection-step-component
+##### ✅ 24-create-category-selection-step-component
 
 - **File**: `src/components/wizards/CategorySelectionStep.tsx`
 - **Purpose**: Reusable category selection with inline create
@@ -307,7 +307,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Leaf-only selection for products
 - **Lines**: ~120 lines
 
-##### ⬜ 25-create-shop-selection-step-component
+##### ✅ 25-create-shop-selection-step-component
 
 - **File**: `src/components/wizards/ShopSelectionStep.tsx`
 - **Purpose**: Reusable shop selection for multi-shop sellers
@@ -323,7 +323,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 24.1: Shop Detail Components (3-5 hours)
 
-##### ⬜ 26-create-shop-about-component
+##### ✅ 26-create-shop-about-component
 
 - **File**: `src/components/shop/ShopAbout.tsx`
 - **Purpose**: Shop description, policies, contact info
@@ -335,7 +335,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Policy tabs/accordion
 - **Lines**: ~150 lines
 
-##### ⬜ 27-create-shop-stats-component
+##### ✅ 27-create-shop-stats-component
 
 - **File**: `src/components/shop/ShopStats.tsx`
 - **Purpose**: Product count, followers, sales, rating metrics
@@ -346,7 +346,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Responsive layout (2x2 → 4x2)
 - **Lines**: ~100 lines
 
-##### ⬜ 28-extract-shop-products-component
+##### ✅ 28-extract-shop-products-component
 
 - **File**: `src/components/shop/ShopProducts.tsx`
 - **Source**: Extract from `src/app/shops/[slug]/page.tsx`
@@ -358,14 +358,14 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - View mode toggle
 - **Lines**: ~200 lines
 
-##### ⬜ 29-extract-shop-auctions-component
+##### ✅ 29-extract-shop-auctions-component
 
 - **File**: `src/components/shop/ShopAuctions.tsx`
 - **Source**: Extract from `src/app/shops/[slug]/page.tsx`
 - **Purpose**: Auction grid with filters (already in page)
 - **Lines**: ~180 lines
 
-##### ⬜ 30-create-shop-reviews-component
+##### ✅ 30-create-shop-reviews-component
 
 - **File**: `src/components/shop/ShopReviews.tsx`
 - **Purpose**: Shop review list and form
@@ -377,7 +377,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Average rating breakdown
 - **Lines**: ~200 lines
 
-##### ⬜ 31-create-shop-policies-component
+##### ✅ 31-create-shop-policies-component
 
 - **File**: `src/components/shop/ShopPolicies.tsx`
 - **Purpose**: Return, shipping, warranty policies
@@ -385,7 +385,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 24.2: Category Detail Components (2-4 hours)
 
-##### ⬜ 32-create-category-header-component
+##### ✅ 32-create-category-header-component
 
 - **File**: `src/components/category/CategoryHeader.tsx`
 - **Purpose**: Category name, image, description
@@ -396,21 +396,21 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Parent category link
 - **Lines**: ~80 lines
 
-##### ⬜ 33-extract-subcategory-grid-component
+##### ✅ 33-extract-subcategory-grid-component
 
 - **File**: `src/components/category/SubcategoryGrid.tsx`
 - **Source**: Extract from `src/app/categories/[slug]/page.tsx`
 - **Purpose**: Child categories grid (already in page)
 - **Lines**: ~120 lines
 
-##### ⬜ 34-extract-category-products-component
+##### ✅ 34-extract-category-products-component
 
 - **File**: `src/components/category/CategoryProducts.tsx`
 - **Source**: Extract from `src/app/categories/[slug]/page.tsx`
 - **Purpose**: Product grid with filters (already in page)
 - **Lines**: ~180 lines
 
-##### ⬜ 35-create-category-stats-component
+##### ✅ 35-create-category-stats-component
 
 - **File**: `src/components/category/CategoryStats.tsx`
 - **Purpose**: Product count, seller count, price range
@@ -421,7 +421,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Popular brands in category
 - **Lines**: ~100 lines
 
-##### ⬜ 36-create-category-featured-sellers-component
+##### ✅ 36-create-category-featured-sellers-component
 
 - **File**: `src/components/category/CategoryFeaturedSellers.tsx`
 - **Purpose**: Top sellers in this category
@@ -429,7 +429,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 24.3: Auction Detail Components (3-5 hours)
 
-##### ⬜ 37-create-auction-info-component
+##### ✅ 37-create-auction-info-component
 
 - **File**: `src/components/auction/AuctionInfo.tsx`
 - **Purpose**: Current bid, time left, reserve, bid button
@@ -442,7 +442,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Watch button
 - **Lines**: ~200 lines
 
-##### ⬜ 38-create-auction-seller-info-component
+##### ✅ 38-create-auction-seller-info-component
 
 - **File**: `src/components/auction/AuctionSellerInfo.tsx`
 - **Purpose**: Seller info, shop link, contact
@@ -454,19 +454,19 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Contact seller button
 - **Lines**: ~120 lines
 
-##### ⬜ 39-create-similar-auctions-component
+##### ✅ 39-create-similar-auctions-component
 
 - **File**: `src/components/auction/SimilarAuctions.tsx`
 - **Purpose**: Similar ongoing auctions
 - **Lines**: ~150 lines
 
-##### ⬜ 40-create-auction-gallery-alias
+##### ✅ 40-create-auction-gallery-alias
 
 - **File**: `src/components/auction/AuctionGallery.tsx`
 - **Purpose**: Reuse ProductGallery for auctions
 - **Action**: Create export alias: `export { ProductGallery as AuctionGallery } from '../product/ProductGallery'`
 
-##### ⬜ 41-create-auction-description-alias
+##### ✅ 41-create-auction-description-alias
 
 - **File**: `src/components/auction/AuctionDescription.tsx`
 - **Purpose**: Reuse ProductDescription for auctions

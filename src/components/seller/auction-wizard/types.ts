@@ -23,6 +23,7 @@ export interface AuctionFormData {
   autoExtendMinutes: string;
 
   // Shipping & Terms (Step 2 Optional)
+  pickupAddressId?: string;
   shippingTerms: string;
   returnPolicy: string;
   status: string;
