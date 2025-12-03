@@ -143,8 +143,11 @@ class LocationService {
         data: ReverseGeocodeResult;
       }>(`/location/geocode?lat=${coords.latitude}&lng=${coords.longitude}`);
       return response.data;
-    } catch (error) {
-      logError(error, { component: "LocationService.reverseGeocode", coords });
+    } catch (error: any) {
+      logError(error, {
+        component: "LocationService.reverseGeocode",
+        metadata: { coords },
+      });
       return null;
     }
   }

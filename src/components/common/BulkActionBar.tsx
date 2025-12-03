@@ -93,7 +93,7 @@ export function BulkActionBar({
                 onClick={() => handleActionClick(action)}
                 disabled={loading || actionLoading || action.disabled}
                 className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${getVariantClasses(
-                  action.variant,
+                  action.variant
                 )}`}
                 type="button"
               >
@@ -132,7 +132,7 @@ export function BulkActionBar({
                   onClick={() => handleActionClick(action)}
                   disabled={loading || actionLoading || action.disabled}
                   className={`inline-flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${getVariantClasses(
-                    action.variant,
+                    action.variant
                   )}`}
                   type="button"
                 >
@@ -165,8 +165,8 @@ export function BulkActionBar({
             confirmAction.variant === "danger"
               ? "danger"
               : confirmAction.variant === "warning"
-                ? "warning"
-                : "info"
+              ? "warning"
+              : "info"
           }
           onConfirm={() => executeAction(confirmAction, inputValue)}
           onClose={() => {

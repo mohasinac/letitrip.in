@@ -15,13 +15,15 @@ export function useFilters<T extends Record<string, any>>(
   options: {
     /** Persist filters to localStorage (optional) */
     persist?: boolean;
+    /** Optional key to use for localStorage persistence */
+    persistKey?: string;
     /** localStorage key for persistence */
     storageKey?: string;
     /** Sync filters with URL search params */
     syncWithUrl?: boolean;
     /** Callback when filters change */
     onChange?: (filters: T) => void;
-  } = {},
+  } = {}
 ) {
   const router = useRouter();
   const pathname = usePathname();
@@ -92,7 +94,7 @@ export function useFilters<T extends Record<string, any>>(
         : pathname;
       router.push(newUrl, { scroll: false });
     },
-    [syncWithUrl, pathname, router],
+    [syncWithUrl, pathname, router]
   );
 
   // Persist filters to localStorage
@@ -101,15 +103,15 @@ export function useFilters<T extends Record<string, any>>(
       if (!persist || typeof window === "undefined") return;
 
       try {
-        localStorage.setItem(persistKey, JSON.stringify(filters));
+        localStorage.setItem(storageKey, JSON.stringify(filters));
       } catch (error) {
         logError(error as Error, {
           component: "useFilters.useEffect",
-          metadata: { persistKey },
+          metadata: { storageKey },
         });
       }
     },
-    [persist, storageKey],
+    [persist, storageKey]
   );
 
   // Update filters (without applying)
@@ -141,7 +143,7 @@ export function useFilters<T extends Record<string, any>>(
       delete newFilters[key];
       setFilters(newFilters);
     },
-    [filters],
+    [filters]
   );
 
   // Check if filters are active

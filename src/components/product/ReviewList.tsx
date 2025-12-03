@@ -83,7 +83,10 @@ export default function ReviewList({ productId }: ReviewListProps) {
         });
       }
     } catch (error) {
-      logError(error, { component: "ReviewList.loadReviews", productId });
+      logError(error as Error, {
+        component: "ReviewList.loadReviews",
+        metadata: { productId },
+      });
       setReviews([]);
       setStats(null);
     } finally {

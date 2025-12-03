@@ -57,7 +57,7 @@ class RipLimitService {
       }
 
       return toFERipLimitBalance(response.data);
-    } catch (error) {
+    } catch (error: any) {
       logError(error, { component: "RipLimitService.getBalance" });
       return createEmptyBalance();
     }

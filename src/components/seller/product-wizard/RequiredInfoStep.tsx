@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { toast } from "sonner";
+import { logError } from "@/lib/firebase-error-logger";
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput, FormLabel } from "@/components/forms";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";

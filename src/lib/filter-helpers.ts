@@ -92,8 +92,11 @@ export function persistFilters<T extends Record<string, any>>(
 
   try {
     localStorage.setItem(key, JSON.stringify(filters));
-  } catch (error) {
-    logError(error, { component: "filterHelpers.persistFilters", key });
+  } catch (error: any) {
+    logError(error, {
+      component: "filterHelpers.persistFilters",
+      metadata: { key },
+    });
   }
 }
 
@@ -111,8 +114,11 @@ export function loadPersistedFilters<T extends Record<string, any>>(
     if (stored) {
       return { ...initialFilters, ...JSON.parse(stored) };
     }
-  } catch (error) {
-    logError(error, { component: "filterHelpers.loadPersistedFilters", key });
+  } catch (error: any) {
+    logError(error, {
+      component: "filterHelpers.loadPersistedFilters",
+      metadata: { key },
+    });
   }
 
   return initialFilters;
@@ -126,8 +132,11 @@ export function clearPersistedFilters(key: string): void {
 
   try {
     localStorage.removeItem(key);
-  } catch (error) {
-    logError(error, { component: "filterHelpers.clearPersistedFilters", key });
+  } catch (error: any) {
+    logError(error, {
+      component: "filterHelpers.clearPersistedFilters",
+      metadata: { key },
+    });
   }
 }
 
