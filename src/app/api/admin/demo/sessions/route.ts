@@ -20,7 +20,7 @@ export async function GET() {
       if (data.demoSession && !sessionsMap.has(data.demoSession)) {
         sessionsMap.set(
           data.demoSession,
-          data.createdAt?.toDate() || new Date()
+          data.createdAt?.toDate() || new Date(),
         );
       }
     });
@@ -29,13 +29,13 @@ export async function GET() {
       ([sessionId, createdAt]) => ({
         sessionId,
         createdAt: createdAt.toISOString(),
-      })
+      }),
     );
 
     // Sort by newest first
     sessions.sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
     return NextResponse.json({ sessions });

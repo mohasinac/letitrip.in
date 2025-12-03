@@ -60,7 +60,7 @@ export default function UserTicketsPage() {
         category: filter.category as any,
         startAfter,
         limit: 20,
-      } as any)
+      } as any),
     );
 
     if (response) {

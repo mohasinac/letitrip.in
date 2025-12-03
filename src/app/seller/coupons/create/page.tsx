@@ -25,7 +25,7 @@ export default function CreateCouponPage() {
     } catch (error: any) {
       console.error("Failed to create coupon:", error);
       toast.error(
-        error.message || "Failed to create coupon. Please try again."
+        error.message || "Failed to create coupon. Please try again.",
       );
     } finally {
       setIsSubmitting(false);

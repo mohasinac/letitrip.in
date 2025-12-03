@@ -178,7 +178,7 @@ export default function SellerSettingsPage() {
     } catch (err) {
       console.error("Error saving settings:", err);
       setSaveError(
-        err instanceof Error ? err.message : "Failed to save settings"
+        err instanceof Error ? err.message : "Failed to save settings",
       );
     } finally {
       setSaving(false);

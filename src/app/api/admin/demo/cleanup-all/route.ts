@@ -287,7 +287,7 @@ export async function DELETE() {
         success: false,
         error: message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -304,7 +304,7 @@ function checkForDemoData(data: any, prefixes: string[]): boolean {
   }
   if (data && typeof data === "object") {
     return Object.values(data).some((value) =>
-      checkForDemoData(value, prefixes)
+      checkForDemoData(value, prefixes),
     );
   }
   return false;

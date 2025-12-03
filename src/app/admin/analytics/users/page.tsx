@@ -186,8 +186,8 @@ function TopCustomersTable({
                             index === 0
                               ? "text-yellow-500"
                               : index === 1
-                              ? "text-gray-400"
-                              : "text-orange-400"
+                                ? "text-gray-400"
+                                : "text-orange-400"
                           }`}
                         />
                       ) : (

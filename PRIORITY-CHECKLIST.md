@@ -518,7 +518,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   // After
   z.string().min(
     VALIDATION_RULES.NAME.MIN_LENGTH,
-    VALIDATION_MESSAGES.NAME.TOO_SHORT
+    VALIDATION_MESSAGES.NAME.TOO_SHORT,
   );
   ```
 
@@ -599,20 +599,23 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Changes**: Replace hardcoded validation with constants
 - **Status**: Already complete - uses VALIDATION constants
 
-##### ⬜ 56-update-shop-api-routes
+##### ✅ 56-update-shop-api-routes
 
 - **Files**: `src/app/api/shops/*.ts`
 - **Changes**: Replace hardcoded validation with constants
+- **Status**: Complete - uses VALIDATION_RULES and VALIDATION_MESSAGES
 
-##### ⬜ 57-update-auction-api-routes
+##### ✅ 57-update-auction-api-routes
 
 - **Files**: `src/app/api/auctions/*.ts`
 - **Changes**: Replace hardcoded validation with constants
+- **Status**: Complete - uses VALIDATION_RULES and VALIDATION_MESSAGES
 
-##### ⬜ 58-update-user-api-routes
+##### ✅ 58-update-user-api-routes
 
 - **Files**: `src/app/api/users/*.ts`, `src/app/api/auth/*.ts`
 - **Changes**: Replace hardcoded validation with constants
+- **Status**: Complete - uses VALIDATION_RULES, VALIDATION_MESSAGES, and isValidEmail
 
 #### 25.4: AddressSelectorWithCreate Integration (4-6 hours) ⚡ UI Priority
 

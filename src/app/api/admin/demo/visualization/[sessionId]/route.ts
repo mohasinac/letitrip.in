@@ -5,7 +5,7 @@ import { COLLECTIONS } from "@/constants/database";
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ sessionId: string }> }
+  { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -36,7 +36,7 @@ export async function GET(
       ([date, revenue]) => ({
         date,
         revenue: Math.round(revenue as number),
-      })
+      }),
     );
 
     // Category distribution
@@ -56,7 +56,7 @@ export async function GET(
       .get();
 
     const categoriesMap = new Map(
-      categoriesSnap.docs.map((doc) => [doc.id, doc.data().name])
+      categoriesSnap.docs.map((doc) => [doc.id, doc.data().name]),
     );
 
     const categoryDistribution = products.reduce((acc: any, product: any) => {
@@ -69,7 +69,7 @@ export async function GET(
       ([name, count]) => ({
         name,
         count,
-      })
+      }),
     );
 
     // Order status pie chart
@@ -83,7 +83,7 @@ export async function GET(
       ([status, count]) => ({
         status,
         count,
-      })
+      }),
     );
 
     // Payment method distribution
@@ -97,7 +97,7 @@ export async function GET(
       ([method, count]) => ({
         method,
         count,
-      })
+      }),
     );
 
     return NextResponse.json({

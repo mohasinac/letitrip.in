@@ -5,7 +5,7 @@ import { COLLECTIONS } from "@/constants/database";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -34,14 +34,14 @@ export async function GET(
     console.error("Get address error:", error);
     return NextResponse.json(
       { error: "Failed to fetch address" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -100,14 +100,14 @@ export async function PATCH(
     console.error("Update address error:", error);
     return NextResponse.json(
       { error: "Failed to update address" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);
@@ -138,7 +138,7 @@ export async function DELETE(
     console.error("Delete address error:", error);
     return NextResponse.json(
       { error: "Failed to delete address" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

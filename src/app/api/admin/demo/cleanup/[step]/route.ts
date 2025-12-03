@@ -23,7 +23,7 @@ type CleanupStep =
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ step: string }> }
+  { params }: { params: Promise<{ step: string }> },
 ) {
   try {
     const { step } = await params;
@@ -62,7 +62,7 @@ export async function DELETE(
     const deleteByRelatedIds = async (
       collection: string,
       field: string,
-      relatedIds: string[]
+      relatedIds: string[],
     ) => {
       let count = 0;
       // Firestore 'in' query supports max 30 values
@@ -91,7 +91,7 @@ export async function DELETE(
     // Get IDs for related cleanup
     const getDemoIds = async (
       collection: string,
-      field: string
+      field: string,
     ): Promise<string[]> => {
       const ids: string[] = [];
       for (const prefix of PREFIXES) {
@@ -133,7 +133,7 @@ export async function DELETE(
           deletedCount = await deleteByRelatedIds(
             "bids",
             "auctionId",
-            auctionIds
+            auctionIds,
           );
         }
         // Also delete by bidderName prefix
@@ -149,7 +149,7 @@ export async function DELETE(
           deletedCount = await deleteByRelatedIds(
             "reviews",
             "product_id",
-            productIds
+            productIds,
           );
         }
         // Also delete by user_name prefix
@@ -171,14 +171,14 @@ export async function DELETE(
           const shipmentCount = await deleteByRelatedIds(
             "shipments",
             "orderId",
-            orderIds
+            orderIds,
           );
           deletedCount += shipmentCount;
         }
         // Also try by trackingNumber prefix
         const shipmentPrefixCount = await deleteByPrefix(
           "shipments",
-          "trackingNumber"
+          "trackingNumber",
         );
         deletedCount += shipmentPrefixCount;
 
@@ -212,7 +212,7 @@ export async function DELETE(
           deletedCount += await deleteByRelatedIds(
             "favorites",
             "user_id",
-            userIds
+            userIds,
           );
         }
 
@@ -221,7 +221,7 @@ export async function DELETE(
           deletedCount += await deleteByRelatedIds(
             "notifications",
             "userId",
-            userIds
+            userIds,
           );
         }
 
@@ -230,7 +230,7 @@ export async function DELETE(
           deletedCount += await deleteByRelatedIds(
             "support_tickets",
             "userId",
-            userIds
+            userIds,
           );
         }
 
@@ -239,7 +239,7 @@ export async function DELETE(
           deletedCount += await deleteByRelatedIds(
             "returns",
             "user_id",
-            userIds
+            userIds,
           );
         }
 
@@ -281,7 +281,7 @@ export async function DELETE(
           deletedCount += await deleteByRelatedIds(
             "payouts",
             "shopId",
-            shopIds
+            shopIds,
           );
         }
         break;
@@ -322,7 +322,7 @@ export async function DELETE(
       default:
         return NextResponse.json(
           { success: false, error: `Unknown step: ${step}` },
-          { status: 400 }
+          { status: 400 },
         );
     }
 
@@ -339,7 +339,7 @@ export async function DELETE(
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
       { success: false, error: message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

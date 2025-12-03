@@ -110,7 +110,7 @@ function TicketDetailContent() {
       let uploadedUrls: string[] = [];
       if (attachments.length > 0) {
         uploadedUrls = await Promise.all(
-          attachments.map((file) => supportService.uploadAttachment(file))
+          attachments.map((file) => supportService.uploadAttachment(file)),
         ).then((results) => results.map((r) => r.url));
       }
 
@@ -351,7 +351,7 @@ function TicketDetailContent() {
                   <dd className="mt-1">
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded-md border ${getStatusColor(
-                        ticket.status
+                        ticket.status,
                       )}`}
                     >
                       {formatStatus(ticket.status)}
@@ -365,7 +365,7 @@ function TicketDetailContent() {
                   <dd className="mt-1">
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
-                        ticket.priority
+                        ticket.priority,
                       )}`}
                     >
                       {formatStatus(ticket.priority)}
@@ -525,8 +525,8 @@ function TicketDetailContent() {
                         message.isInternal
                           ? "bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700"
                           : message.senderRole === "admin"
-                          ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700"
-                          : "bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600"
+                            ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700"
+                            : "bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600"
                       }`}
                     >
                       <div className="flex items-start justify-between mb-2">
@@ -565,7 +565,7 @@ function TicketDetailContent() {
                                 >
                                   📎 Attachment {index + 1}
                                 </a>
-                              )
+                              ),
                             )}
                           </div>
                         )}

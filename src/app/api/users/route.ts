@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
         query = query.where(
           dbField,
           filter.operator as FirebaseFirestore.WhereFilterOp,
-          filter.value
+          filter.value,
         );
       }
     }
@@ -140,14 +140,14 @@ export async function GET(request: NextRequest) {
         (user: any) =>
           user.email?.toLowerCase().includes(searchLower) ||
           user.name?.toLowerCase().includes(searchLower) ||
-          user.phone?.includes(search)
+          user.phone?.includes(search),
       );
     }
 
     // Build response with Sieve pagination meta
     const pagination = createPaginationMeta(
       search ? data.length : totalCount,
-      sieveQuery
+      sieveQuery,
     );
 
     return NextResponse.json({
@@ -164,7 +164,7 @@ export async function GET(request: NextRequest) {
     console.error("Failed to fetch users:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch users" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -202,7 +202,7 @@ export async function POST(request: NextRequest) {
     if (Object.keys(errors).length > 0) {
       return NextResponse.json(
         { success: false, error: "Validation failed", errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -215,7 +215,7 @@ export async function POST(request: NextRequest) {
     if (!existingUser.empty) {
       return NextResponse.json(
         { success: false, error: "Email already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -240,14 +240,14 @@ export async function POST(request: NextRequest) {
         message: "User created successfully",
         data: { id: docRef.id, ...userDoc.data() },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Failed to create user:", error);
 
     return NextResponse.json(
       { success: false, error: "Failed to create user" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

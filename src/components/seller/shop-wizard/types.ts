@@ -48,6 +48,6 @@ export interface ShopFormData {
 
 export type OnChange = (
   field: keyof ShopFormData,
-  value: string | number | boolean | undefined
+  value: string | number | boolean | undefined,
 ) => void;
 export type OnShopChange = OnChange;

@@ -485,7 +485,7 @@ export function isValidPassword(password: string): {
  */
 export function validateFile(
   file: File,
-  type: "image" | "video" | "document"
+  type: "image" | "video" | "document",
 ): { valid: boolean; error?: string } {
   const rules =
     VALIDATION_RULES.FILE[

@@ -17,7 +17,7 @@ import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const authResult = await requireAuth(request);
@@ -52,7 +52,7 @@ export async function POST(
     if (!canReadResource(user, "tickets", ticketData)) {
       return NextResponse.json(
         { error: "You don't have permission to reply to this ticket" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -103,7 +103,7 @@ export async function POST(
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { error: error.message, errors: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
     console.error("Error posting reply:", error);
