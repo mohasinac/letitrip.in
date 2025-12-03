@@ -39,11 +39,15 @@ import { DateDisplay } from "@/components/common/values";
 export default function AdminCouponsPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
-  const { data: coupons, loading, execute: loadCoupons } = useLoadingState<any[]>([]);
+  const {
+    data: coupons,
+    loading,
+    execute: loadCoupons,
+  } = useLoadingState<any[]>([]);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCoupons, setSelectedCoupons] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -82,25 +86,25 @@ export default function AdminCouponsPage() {
         case "activate":
           await Promise.all(
             couponIds.map((id) =>
-              couponsService.update(id, { is_active: true } as any),
-            ),
+              couponsService.update(id, { is_active: true } as any)
+            )
           );
           toast.success(
             `${couponIds.length} coupon${
               couponIds.length > 1 ? "s" : ""
-            } activated successfully`,
+            } activated successfully`
           );
           break;
         case "deactivate":
           await Promise.all(
             couponIds.map((id) =>
-              couponsService.update(id, { is_active: false } as any),
-            ),
+              couponsService.update(id, { is_active: false } as any)
+            )
           );
           toast.success(
             `${couponIds.length} coupon${
               couponIds.length > 1 ? "s" : ""
-            } deactivated successfully`,
+            } deactivated successfully`
           );
           break;
         case "delete":
@@ -108,7 +112,7 @@ export default function AdminCouponsPage() {
             !confirm(
               `Delete ${couponIds.length} coupon${
                 couponIds.length > 1 ? "s" : ""
-              }?`,
+              }?`
             )
           )
             return;
@@ -116,7 +120,7 @@ export default function AdminCouponsPage() {
           toast.success(
             `${couponIds.length} coupon${
               couponIds.length > 1 ? "s" : ""
-            } deleted successfully`,
+            } deleted successfully`
           );
           break;
       }
@@ -231,8 +235,7 @@ export default function AdminCouponsPage() {
               <StatsCard
                 label="Expired"
                 value={
-                  coupons.filter((c) => new Date(c.validTo) < new Date())
-                    .length
+                  coupons.filter((c) => new Date(c.validTo) < new Date()).length
                 }
                 className="[&_p:last-child]:!text-red-600"
               />
@@ -525,7 +528,7 @@ export default function AdminCouponsPage() {
                               try {
                                 await couponsService.update(
                                   coupon.id,
-                                  values as any,
+                                  values as any
                                 );
                                 setEditingId(null);
                                 loadCoupons(fetchCoupons);

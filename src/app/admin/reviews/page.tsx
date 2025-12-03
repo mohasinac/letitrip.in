@@ -18,7 +18,11 @@ import { useLoadingState } from "@/hooks/useLoadingState";
 
 export default function AdminReviewsPage() {
   const router = useRouter();
-  const { data: reviews, loading, execute: loadReviews } = useLoadingState<any[]>([]);
+  const {
+    data: reviews,
+    loading,
+    execute: loadReviews,
+  } = useLoadingState<any[]>([]);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedReviews, setSelectedReviews] = useState<Set<string>>(

@@ -16,7 +16,11 @@ import { useLoadingState } from "@/hooks/useLoadingState";
 
 export default function AuctionModerationPage() {
   const router = useRouter();
-  const { data: auctions, loading, execute: loadAuctions } = useLoadingState<any[]>([]);
+  const {
+    data: auctions,
+    loading,
+    execute: loadAuctions,
+  } = useLoadingState<any[]>([]);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({
     status: ["pending"],
   });
