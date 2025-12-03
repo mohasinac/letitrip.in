@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import {
@@ -8,19 +8,24 @@ import {
   BulkActionBar,
   TableCheckbox,
 } from "@/components/common/inline-edit";
+import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
 import { payoutsService } from "@/services/payouts.service";
 import { toast } from "@/components/admin/Toast";
 import { Eye, CheckCircle, XCircle } from "lucide-react";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { DateDisplay } from "@/components/common/values";
 
 export default function AdminPayoutsPage() {
   const router = useRouter();
-  const [payouts, setPayouts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: payouts,
+    loading,
+    execute: loadPayouts,
+  } = useLoadingState<any[]>([]);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPayouts, setSelectedPayouts] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -52,42 +57,35 @@ export default function AdminPayoutsPage() {
     },
   ];
 
-  useEffect(() => {
-    loadPayouts();
+  const fetchPayouts = useCallback(async () => {
+    const response = await payoutsService.getPayouts({
+      ...filterValues,
+      search: searchQuery || undefined,
+      page: currentPage,
+      limit: 20,
+    });
+    setTotalPages(Math.ceil(response.total / response.limit));
+    setTotalPayouts(response.total);
+
+    // Load stats
+    const statsData = await payoutsService.getPayoutStats();
+    setStats({
+      total:
+        statsData.totalCompleted +
+        statsData.totalPending +
+        statsData.totalProcessing +
+        statsData.totalFailed,
+      pending: statsData.totalPending,
+      processed: statsData.totalCompleted,
+      rejected: statsData.totalFailed,
+      totalAmount: statsData.completedAmount,
+    });
+    return response.payouts || [];
   }, [filterValues, currentPage, searchQuery]);
 
-  const loadPayouts = async () => {
-    try {
-      setLoading(true);
-      const response = await payoutsService.getPayouts({
-        ...filterValues,
-        search: searchQuery || undefined,
-        page: currentPage,
-        limit: 20,
-      });
-      setPayouts(response.payouts || []);
-      setTotalPages(Math.ceil(response.total / response.limit));
-      setTotalPayouts(response.total);
-
-      // Load stats
-      const statsData = await payoutsService.getPayoutStats();
-      setStats({
-        total:
-          statsData.totalCompleted +
-          statsData.totalPending +
-          statsData.totalProcessing +
-          statsData.totalFailed,
-        pending: statsData.totalPending,
-        processed: statsData.totalCompleted,
-        rejected: statsData.totalFailed,
-        totalAmount: statsData.completedAmount,
-      });
-    } catch (error: any) {
-      // toast.error(error.message || "Failed to load payouts");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    loadPayouts(fetchPayouts);
+  }, [fetchPayouts, loadPayouts]);
 
   const handleProcessPayout = async (id: string) => {
     if (!confirm("Process this payout?")) return;
@@ -98,7 +96,7 @@ export default function AdminPayoutsPage() {
 
       await payoutsService.processPayout(id, transactionId);
       toast.success("Payout processed");
-      loadPayouts();
+      loadPayouts(fetchPayouts);
     } catch (error: any) {
       toast.error(error.message || "Failed to process payout");
     }
@@ -111,7 +109,7 @@ export default function AdminPayoutsPage() {
     try {
       await payoutsService.cancelPayout(id, reason);
       toast.success("Payout rejected");
-      loadPayouts();
+      loadPayouts(fetchPayouts);
     } catch (error: any) {
       toast.error(error.message || "Failed to reject payout");
     }
@@ -127,13 +125,13 @@ export default function AdminPayoutsPage() {
 
     try {
       const result = await payoutsService.bulkProcess(
-        Array.from(selectedPayouts),
+        Array.from(selectedPayouts)
       );
       toast.success(
-        `${result.success} payouts processed, ${result.failed} failed`,
+        `${result.success} payouts processed, ${result.failed} failed`
       );
       setSelectedPayouts(new Set());
-      loadPayouts();
+      loadPayouts(fetchPayouts);
     } catch (error: any) {
       toast.error(error.message || "Bulk processing failed");
     }
@@ -192,48 +190,28 @@ export default function AdminPayoutsPage() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Total Requests
-                </div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats.total}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Pending
-                </div>
-                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                  {stats.pending}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Processed
-                </div>
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {stats.processed}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Rejected
-                </div>
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                  {stats.rejected}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Total Amount
-                </div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {formatCurrency(stats.totalAmount)}
-                </div>
-              </div>
-            </div>
+            <StatsCardGrid columns={5} className="mb-6">
+              <StatsCard title="Total Requests" value={stats.total} />
+              <StatsCard
+                label="Pending"
+                value={stats.pending}
+                className="[&_p:last-child]:!text-yellow-600 dark:[&_p:last-child]:!text-yellow-400"
+              />
+              <StatsCard
+                label="Processed"
+                value={stats.processed}
+                className="[&_p:last-child]:!text-green-600 dark:[&_p:last-child]:!text-green-400"
+              />
+              <StatsCard
+                label="Rejected"
+                value={stats.rejected}
+                className="[&_p:last-child]:!text-red-600 dark:[&_p:last-child]:!text-red-400"
+              />
+              <StatsCard
+                label="Total Amount"
+                value={formatCurrency(stats.totalAmount)}
+              />
+            </StatsCardGrid>
 
             {/* Bulk Action Bar */}
             {selectedPayouts.size > 0 && (
@@ -281,7 +259,7 @@ export default function AdminPayoutsPage() {
                               setSelectedPayouts(new Set());
                             } else {
                               setSelectedPayouts(
-                                new Set(payouts.map((p) => p.id)),
+                                new Set(payouts.map((p) => p.id))
                               );
                             }
                           }}
@@ -353,8 +331,8 @@ export default function AdminPayoutsPage() {
                               payout.status === "processed"
                                 ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
                                 : payout.status === "rejected"
-                                  ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
-                                  : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
+                                ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
+                                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
                             }`}
                           >
                             {payout.status}
@@ -429,3 +407,4 @@ export default function AdminPayoutsPage() {
     </AuthGuard>
   );
 }
+

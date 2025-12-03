@@ -186,7 +186,7 @@ export default function SellerReturnsPage() {
               </h1>
 
               <StatsCardGrid columns={4} className="mb-6">
-                <StatsCard label="Total Returns" value={totalReturns} />
+                <StatsCard title="Total Returns" value={totalReturns} />
                 <StatsCard
                   label="Pending Review"
                   value={returns.filter((r) => r.status === "requested").length}
@@ -492,3 +492,4 @@ export default function SellerReturnsPage() {
     </AuthGuard>
   );
 }
+

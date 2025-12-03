@@ -226,7 +226,7 @@ export default function AdminCouponsPage() {
 
             {/* Stats Cards */}
             <StatsCardGrid columns={4} className="mb-6">
-              <StatsCard label="Total Coupons" value={totalCoupons} />
+              <StatsCard title="Total Coupons" value={totalCoupons} />
               <StatsCard
                 label="Active"
                 value={coupons.filter((c) => c.isActive).length}
@@ -667,3 +667,4 @@ export default function AdminCouponsPage() {
     </AuthGuard>
   );
 }
+

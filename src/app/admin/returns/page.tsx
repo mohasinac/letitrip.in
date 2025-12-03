@@ -106,7 +106,7 @@ export default function AdminReturnsPage() {
             </h1>
 
             <StatsCardGrid columns={4} className="mb-6">
-              <StatsCard label="Total Returns" value={totalReturns} />
+              <StatsCard title="Total Returns" value={totalReturns} />
               <StatsCard
                 label="Pending"
                 value={returns.filter((r) => r.status === "pending").length}
@@ -422,3 +422,4 @@ export default function AdminReturnsPage() {
     </AuthGuard>
   );
 }
+
