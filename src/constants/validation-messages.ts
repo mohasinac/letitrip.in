@@ -261,6 +261,14 @@ export const VALIDATION_MESSAGES = {
     TAKEN: "This slug is already taken",
   },
 
+  // Bank validation
+  BANK: {
+    ACCOUNT_NUMBER_INVALID: "Please enter a valid account number",
+    IFSC_INVALID: "Please enter a valid IFSC code",
+    HOLDER_NAME_INVALID: "Please enter account holder name",
+    BANK_NAME_INVALID: "Please enter bank name",
+  },
+
   // Product validation
   PRODUCT: {
     NAME_TOO_SHORT: `Product name must be at least ${VALIDATION_RULES.PRODUCT.NAME.MIN_LENGTH} characters`,

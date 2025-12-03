@@ -518,7 +518,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   // After
   z.string().min(
     VALIDATION_RULES.NAME.MIN_LENGTH,
-    VALIDATION_MESSAGES.NAME.TOO_SHORT,
+    VALIDATION_MESSAGES.NAME.TOO_SHORT
   );
   ```
 
@@ -560,15 +560,17 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 25.2: Update Form Components (3-5 hours) ⚡ UI Priority
 
-##### ⬜ 52-update-form-validation-utilities
+##### ✅ 52-update-form-validation-utilities
 
 - **File**: `src/lib/form-validation.ts`
 - **Changes**: Use validation helpers (isValidEmail, isValidPhone, etc.) from constants
+- **Status**: Already complete - uses validation helpers from constants throughout
 
 ##### ⬜ 53-update-form-components-with-helpers
 
 - **Files**: `src/components/forms/*.tsx`, `src/components/checkout/*.tsx`
 - **Changes**: Replace inline validation with centralized helpers
+- **Status**: N/A - Form components are presentational only, use validation via schemas
 - **Example**:
 
   ```ts
@@ -585,15 +587,17 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 25.3: Update API Routes (2-4 hours) ⚡ Backend Priority
 
-##### ⬜ 54-update-api-validation-middleware
+##### ✅ 54-update-api-validation-middleware
 
 - **File**: `src/app/api/lib/validation-middleware.ts`
 - **Changes**: Use VALIDATION_RULES and VALIDATION_MESSAGES
+- **Status**: Already complete - imports and uses VALIDATION constants
 
-##### ⬜ 55-update-product-api-routes
+##### ✅ 55-update-product-api-routes
 
 - **Files**: `src/app/api/products/*.ts`
 - **Changes**: Replace hardcoded validation with constants
+- **Status**: Already complete - uses VALIDATION constants
 
 ##### ⬜ 56-update-shop-api-routes
 

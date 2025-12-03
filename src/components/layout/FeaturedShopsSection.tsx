@@ -96,18 +96,18 @@ export default function FeaturedShopsSection({
           } catch (error) {
             console.error(
               `Error fetching products for shop ${shop.id}:`,
-              error
+              error,
             );
             return {
               shop,
               products: [],
             };
           }
-        })
+        }),
       );
 
       setShopsWithProducts(
-        shopsData2.filter((item: ShopWithProducts) => item.products.length > 0)
+        shopsData2.filter((item: ShopWithProducts) => item.products.length > 0),
       );
     } catch (error) {
       console.error("Error fetching featured shops:", error);

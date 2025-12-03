@@ -11,6 +11,10 @@ import {
   shopsSieveConfig,
   createPaginationMeta,
 } from "@/app/api/lib/sieve";
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 // Extended Sieve config with field mappings for shops
 const shopsConfig = {
@@ -80,7 +84,7 @@ export async function GET(request: NextRequest) {
               error: "Invalid query parameters",
               details: errors,
             },
-            { status: 400 },
+            { status: 400 }
           );
         }
 
@@ -130,7 +134,7 @@ export async function GET(request: NextRequest) {
             query = query.where(
               dbField,
               filter.operator as FirebaseFirestore.WhereFilterOp,
-              filter.value,
+              filter.value
             );
           }
         }
@@ -164,7 +168,7 @@ export async function GET(request: NextRequest) {
         // Execute query
         const snapshot = await query.get();
         const shops = snapshot.docs.map((doc) =>
-          transformShop(doc.id, doc.data()),
+          transformShop(doc.id, doc.data())
         );
 
         // Check if user can create more shops
@@ -175,7 +179,7 @@ export async function GET(request: NextRequest) {
           const userShopsQuery = Collections.shops().where(
             "owner_id",
             "==",
-            userId,
+            userId
           );
           const userShopsSnapshot = await userShopsQuery.get();
           canCreateMore = userShopsSnapshot.size === 0;
@@ -208,11 +212,11 @@ export async function GET(request: NextRequest) {
             details:
               process.env.NODE_ENV === "development" ? error?.stack : undefined,
           },
-          { status: 500 },
+          { status: 500 }
         );
       }
     },
-    { ttl: 180 },
+    { ttl: 180 }
   );
 }
 
@@ -231,7 +235,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Only sellers and admins can create shops",
         },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -243,7 +247,7 @@ export async function POST(request: NextRequest) {
       const userShopsQuery = Collections.shops().where(
         "owner_id",
         "==",
-        userId,
+        userId
       );
       const userShopsSnapshot = await userShopsQuery.get();
 
@@ -253,7 +257,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "You can only create 1 shop. Please contact admin for more.",
           },
-          { status: 403 },
+          { status: 403 }
         );
       }
     }
@@ -261,13 +265,42 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
 
     // Validate required fields
-    if (!data.name || !data.slug || !data.description) {
+    const errors: Record<string, string> = {};
+
+    if (!data.name) {
+      errors.name = VALIDATION_MESSAGES.REQUIRED.FIELD("Shop name");
+    } else if (
+      data.name.length < VALIDATION_RULES.SHOP.NAME.MIN_LENGTH ||
+      data.name.length > VALIDATION_RULES.SHOP.NAME.MAX_LENGTH
+    ) {
+      errors.name = `Shop name must be between ${VALIDATION_RULES.SHOP.NAME.MIN_LENGTH} and ${VALIDATION_RULES.SHOP.NAME.MAX_LENGTH} characters`;
+    }
+
+    if (!data.slug) {
+      errors.slug = VALIDATION_MESSAGES.REQUIRED.FIELD("Slug");
+    } else if (
+      data.slug.length < VALIDATION_RULES.SLUG.MIN_LENGTH ||
+      data.slug.length > VALIDATION_RULES.SLUG.MAX_LENGTH
+    ) {
+      errors.slug = `Slug must be between ${VALIDATION_RULES.SLUG.MIN_LENGTH} and ${VALIDATION_RULES.SLUG.MAX_LENGTH} characters`;
+    }
+
+    if (!data.description) {
+      errors.description = VALIDATION_MESSAGES.REQUIRED.FIELD("Description");
+    } else if (
+      data.description.length < VALIDATION_RULES.SHOP.DESCRIPTION.MIN_LENGTH
+    ) {
+      errors.description = `Description must be at least ${VALIDATION_RULES.SHOP.DESCRIPTION.MIN_LENGTH} characters`;
+    }
+
+    if (Object.keys(errors).length > 0) {
       return NextResponse.json(
         {
           success: false,
-          error: "Missing required fields: name, slug, description",
+          error: "Validation failed",
+          errors,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -275,7 +308,7 @@ export async function POST(request: NextRequest) {
     const existingShopQuery = Collections.shops().where(
       "slug",
       "==",
-      data.slug,
+      data.slug
     );
     const existingShopSnapshot = await existingShopQuery.get();
 
@@ -285,7 +318,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Shop slug already exists. Please choose a different slug.",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -333,7 +366,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: "Failed to create shop",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

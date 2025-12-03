@@ -470,16 +470,11 @@ export default function CreateShopWizardPage() {
 
         {/* Wizard Action Bar */}
         <WizardActionBar
-          currentStep={currentStep}
-          totalSteps={STEPS.length}
-          onPrevious={prevStep}
-          onNext={nextStep}
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
-          isFirstStep={currentStep === 1}
-          isLastStep={currentStep === STEPS.length}
-          submitButtonText="Create Shop"
-          loadingText="Creating Shop..."
+          submitLabel="Create Shop"
+          showSaveDraft={false}
+          showValidate={false}
         />
       </div>
     </div>

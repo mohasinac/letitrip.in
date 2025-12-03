@@ -107,7 +107,7 @@ export function SearchInput({
         onChange(newValue);
       }
     },
-    [debounceMs, onChange]
+    [debounceMs, onChange],
   );
 
   const handleClear = useCallback(() => {

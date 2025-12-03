@@ -4,6 +4,7 @@ export interface AuctionFormData {
   // Basic Info (Step 1 Required)
   title: string;
   slug: string;
+  shopId: string;
   category: string;
   auctionType: string;
   description: string;
