@@ -197,36 +197,36 @@ export default function SellerOrdersPage() {
             />
 
             <div className="flex-1 p-4 sm:p-6">
-              <h1 className="text-xl sm:text-3xl font-bold text-gray-900 mb-6">
+              <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
                 My Orders
               </h1>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600">Total Orders</div>
-                  <div className="text-2xl font-bold">{totalOrders}</div>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Total Orders</div>
+                  <div className="text-2xl font-bold dark:text-white">{totalOrders}</div>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600">Pending</div>
-                  <div className="text-2xl font-bold text-yellow-600">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Pending</div>
+                  <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                     {
                       orders.filter((o) => o.status === OrderStatus.PENDING)
                         .length
                     }
                   </div>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600">Processing</div>
-                  <div className="text-2xl font-bold text-blue-600">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Processing</div>
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                     {
                       orders.filter((o) => o.status === OrderStatus.PROCESSING)
                         .length
                     }
                   </div>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600">Delivered</div>
-                  <div className="text-2xl font-bold text-green-600">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Delivered</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                     {
                       orders.filter((o) => o.status === OrderStatus.DELIVERED)
                         .length
@@ -235,13 +235,13 @@ export default function SellerOrdersPage() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                 {loading ? (
                   <div className="p-8 text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                   </div>
                 ) : orders.length === 0 ? (
-                  <div className="p-8 text-center text-gray-500">
+                  <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                     No orders found
                   </div>
                 ) : (
@@ -353,50 +353,50 @@ export default function SellerOrdersPage() {
 
                     {/* Desktop Table */}
                     <div className={isMobile ? "hidden" : ""}>
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className="bg-gray-50 dark:bg-gray-700">
                           <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                               Order ID
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                               Customer
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                               Items
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                               Total
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                               Status
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                               Date
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                               Actions
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                           {orders.map((order) => (
-                            <tr key={order.id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 text-sm font-mono">
+                            <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                              <td className="px-6 py-4 text-sm font-mono dark:text-white">
                                 {order.id}
                               </td>
                               <td className="px-6 py-4 text-sm">
-                                <div>
+                                <div className="dark:text-white">
                                   {order.shippingAddress?.name || "N/A"}
                                 </div>
-                                <div className="text-gray-500">
+                                <div className="text-gray-500 dark:text-gray-400">
                                   {order.shippingAddress?.phone || "N/A"}
                                 </div>
                               </td>
-                              <td className="px-6 py-4 text-sm">
+                              <td className="px-6 py-4 text-sm dark:text-gray-300">
                                 {order.itemCount} items
                               </td>
-                              <td className="px-6 py-4 text-sm font-semibold">
+                              <td className="px-6 py-4 text-sm font-semibold dark:text-white">
                                 {formatCurrency(order.total)}
                               </td>
                               <td className="px-6 py-4">
@@ -418,7 +418,7 @@ export default function SellerOrdersPage() {
                                   {order.status}
                                 </span>
                               </td>
-                              <td className="px-6 py-4 text-sm text-gray-500">
+                              <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                 {order.orderDate}
                               </td>
                               <td className="px-6 py-4 text-sm space-x-2">
@@ -430,7 +430,7 @@ export default function SellerOrdersPage() {
                                         OrderStatus.PROCESSING,
                                       )
                                     }
-                                    className="text-blue-600 hover:text-blue-900"
+                                    className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
                                     title="Start Processing"
                                   >
                                     <Package className="w-5 h-5" />
@@ -444,7 +444,7 @@ export default function SellerOrdersPage() {
                                         OrderStatus.SHIPPED,
                                       )
                                     }
-                                    className="text-purple-600 hover:text-purple-900"
+                                    className="text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300"
                                     title="Mark as Shipped"
                                   >
                                     <Truck className="w-5 h-5" />
@@ -454,7 +454,7 @@ export default function SellerOrdersPage() {
                                   onClick={() =>
                                     router.push(`/seller/orders/${order.id}`)
                                   }
-                                  className="text-indigo-600 hover:text-indigo-900"
+                                  className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"
                                   title="View Details"
                                 >
                                   <Eye className="w-5 h-5" />
