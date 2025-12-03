@@ -219,12 +219,12 @@ function FAQItem({
   onToggle: () => void;
 }) {
   return (
-    <div className="border-b border-gray-100 last:border-0">
+    <div className="border-b border-gray-100 dark:border-gray-700 last:border-0">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between py-4 text-left hover:text-blue-600 transition-colors"
+        className="w-full flex items-center justify-between py-4 text-left hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
       >
-        <span className="font-medium text-gray-900">{question}</span>
+        <span className="font-medium text-gray-900 dark:text-white">{question}</span>
         <ChevronDown
           className={`h-5 w-5 text-gray-400 transition-transform ${
             isOpen ? "rotate-180" : ""
@@ -232,7 +232,7 @@ function FAQItem({
         />
       </button>
       {isOpen && (
-        <div className="pb-4 text-gray-600 text-sm leading-relaxed">
+        <div className="pb-4 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
           {answer}
         </div>
       )}
@@ -264,10 +264,10 @@ function FAQCategory({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
       >
         <div
           className={`w-10 h-10 rounded-lg flex items-center justify-center ${
@@ -277,8 +277,8 @@ function FAQCategory({
           <Icon className="h-5 w-5" />
         </div>
         <div className="flex-1 text-left">
-          <h3 className="font-semibold text-gray-900">{category.title}</h3>
-          <p className="text-sm text-gray-500">
+          <h3 className="font-semibold text-gray-900 dark:text-white">{category.title}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             {category.questions.length} questions
           </p>
         </div>
@@ -290,7 +290,7 @@ function FAQCategory({
       </button>
 
       {isExpanded && (
-        <div className="px-4 border-t border-gray-100">
+        <div className="px-4 border-t border-gray-100 dark:border-gray-700">
           {category.questions.map((item, index) => (
             <FAQItem
               key={index}
@@ -402,10 +402,10 @@ export default function SellerHelpPage() {
           </h2>
 
           {filteredCategories.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+            <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
               <Search className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-              <p className="font-medium text-gray-900">No results found</p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="font-medium text-gray-900 dark:text-white">No results found</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Try different keywords or browse categories below
               </p>
               <button
@@ -430,19 +430,19 @@ export default function SellerHelpPage() {
         </div>
 
         {/* Contact Section */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Still need help?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               href="/support/create"
-              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors"
+              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
             >
               <MessageSquare className="h-6 w-6 text-blue-600" />
               <div>
-                <p className="font-medium text-gray-900">Submit a Ticket</p>
-                <p className="text-sm text-gray-500">
+                <p className="font-medium text-gray-900 dark:text-white">Submit a Ticket</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   Get help within 24 hours
                 </p>
               </div>
@@ -450,12 +450,12 @@ export default function SellerHelpPage() {
 
             <a
               href="mailto:seller-support@letitrip.in"
-              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors"
+              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
             >
               <Mail className="h-6 w-6 text-blue-600" />
               <div>
-                <p className="font-medium text-gray-900">Email Us</p>
-                <p className="text-sm text-gray-500">
+                <p className="font-medium text-gray-900 dark:text-white">Email Us</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   seller-support@letitrip.in
                 </p>
               </div>
@@ -463,12 +463,12 @@ export default function SellerHelpPage() {
 
             <a
               href="tel:+918001234567"
-              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors"
+              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
             >
               <Phone className="h-6 w-6 text-blue-600" />
               <div>
-                <p className="font-medium text-gray-900">Call Us</p>
-                <p className="text-sm text-gray-500">Mon-Sat, 9AM-6PM IST</p>
+                <p className="font-medium text-gray-900 dark:text-white">Call Us</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Mon-Sat, 9AM-6PM IST</p>
               </div>
             </a>
           </div>

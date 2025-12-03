@@ -64,7 +64,7 @@ export default function StaticAssetsPage() {
         await uploadAsset(
           file,
           selectedType,
-          selectedType === "payment-logo" ? "payment-methods" : "default",
+          selectedType === "payment-logo" ? "payment-methods" : "default"
         );
       }
 
@@ -161,10 +161,10 @@ export default function StaticAssetsPage() {
                   selectedType === "payment-logo"
                     ? "image/svg+xml,image/png"
                     : selectedType === "video"
-                      ? "video/*"
-                      : selectedType === "document"
-                        ? ".pdf,.doc,.docx,.xls,.xlsx,.txt"
-                        : "image/*"
+                    ? "video/*"
+                    : selectedType === "document"
+                    ? ".pdf,.doc,.docx,.xls,.xlsx,.txt"
+                    : "image/*"
                 }
                 onChange={handleUpload}
                 disabled={uploading}
@@ -178,11 +178,15 @@ export default function StaticAssetsPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading assets...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">
+              Loading assets...
+            </p>
           </div>
         ) : assets.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
-            <p className="text-gray-500 dark:text-gray-400 text-lg">No assets found</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">
+              No assets found
+            </p>
             <p className="text-gray-400 dark:text-gray-500 mt-2">
               Upload your first {selectedType.replace("-", " ")}
             </p>

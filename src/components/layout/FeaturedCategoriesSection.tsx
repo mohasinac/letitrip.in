@@ -93,20 +93,20 @@ export default function FeaturedCategoriesSection({
           } catch (error) {
             console.error(
               `Error fetching products for category ${category.id}:`,
-              error,
+              error
             );
             return {
               category,
               products: [],
             };
           }
-        }),
+        })
       );
 
       setCategoriesWithProducts(
         categoriesData.filter(
-          (item: CategoryWithProducts) => item.products.length > 0,
-        ),
+          (item: CategoryWithProducts) => item.products.length > 0
+        )
       );
     } catch (error) {
       console.error("Error fetching featured categories:", error);

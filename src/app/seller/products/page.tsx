@@ -304,7 +304,7 @@ export default function ProductsPage() {
                         {product.categoryId}
                       </p>
                       <div className="mt-3 flex items-center justify-between">
-                        <span className="text-lg font-semibold text-gray-900">
+                        <span className="text-lg font-semibold text-gray-900 dark:text-white">
                           <Price amount={product.price} />
                         </span>
                         <StatusBadge status={product.status} />
@@ -559,10 +559,10 @@ export default function ProductsPage() {
                                   )}
                                 </div>
                                 <div>
-                                  <div className="font-medium text-gray-900">
+                                  <div className="font-medium text-gray-900 dark:text-white">
                                     {product.name}
                                   </div>
-                                  <div className="text-xs text-gray-500 mt-1">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                     {product.slug}
                                   </div>
                                 </div>
@@ -571,12 +571,12 @@ export default function ProductsPage() {
 
                             {/* Price */}
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="font-medium text-gray-900">
+                              <div className="font-medium text-gray-900 dark:text-white">
                                 <Price amount={product.price || 0} />
                               </div>
                               {product.originalPrice &&
                                 product.originalPrice > product.price && (
-                                  <div className="text-xs text-gray-500 line-through">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 line-through">
                                     <Price amount={product.originalPrice} />
                                   </div>
                                 )}
@@ -587,10 +587,10 @@ export default function ProductsPage() {
                               <span
                                 className={`font-medium ${
                                   isOutOfStock
-                                    ? "text-red-600"
+                                    ? "text-red-600 dark:text-red-400"
                                     : isLowStock
-                                    ? "text-yellow-600"
-                                    : "text-gray-900"
+                                    ? "text-yellow-600 dark:text-yellow-400"
+                                    : "text-gray-900 dark:text-white"
                                 }`}
                               >
                                 {product.stockCount}
@@ -608,7 +608,7 @@ export default function ProductsPage() {
                             </td>
 
                             {/* Category */}
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                               {category?.name || "Uncategorized"}
                             </td>
 
