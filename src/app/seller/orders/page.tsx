@@ -117,7 +117,7 @@ export default function SellerOrdersPage() {
 
   const handleFilterChange = (
     key: string,
-    value: string | number | boolean | undefined,
+    value: string | number | boolean | undefined
   ) => {
     setFilterValues((prev) => ({
       ...prev,
@@ -135,7 +135,7 @@ export default function SellerOrdersPage() {
       logComponentError(
         "SellerOrdersPage",
         "handleUpdateStatus",
-        error as Error,
+        error as Error
       );
     }
   };
@@ -203,11 +203,17 @@ export default function SellerOrdersPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Total Orders</div>
-                  <div className="text-2xl font-bold dark:text-white">{totalOrders}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Total Orders
+                  </div>
+                  <div className="text-2xl font-bold dark:text-white">
+                    {totalOrders}
+                  </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Pending</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Pending
+                  </div>
                   <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                     {
                       orders.filter((o) => o.status === OrderStatus.PENDING)
@@ -216,7 +222,9 @@ export default function SellerOrdersPage() {
                   </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Processing</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Processing
+                  </div>
                   <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                     {
                       orders.filter((o) => o.status === OrderStatus.PROCESSING)
@@ -225,7 +233,9 @@ export default function SellerOrdersPage() {
                   </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Delivered</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Delivered
+                  </div>
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                     {
                       orders.filter((o) => o.status === OrderStatus.DELIVERED)
@@ -268,12 +278,12 @@ export default function SellerOrdersPage() {
                                   order.status === OrderStatus.DELIVERED
                                     ? "bg-green-100 text-green-800"
                                     : order.status === OrderStatus.SHIPPED
-                                      ? "bg-blue-100 text-blue-800"
-                                      : order.status === OrderStatus.PROCESSING
-                                        ? "bg-purple-100 text-purple-800"
-                                        : order.status === OrderStatus.CANCELLED
-                                          ? "bg-red-100 text-red-800"
-                                          : "bg-yellow-100 text-yellow-800"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : order.status === OrderStatus.PROCESSING
+                                    ? "bg-purple-100 text-purple-800"
+                                    : order.status === OrderStatus.CANCELLED
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-yellow-100 text-yellow-800"
                                 }`}
                               >
                                 {order.status}
@@ -313,7 +323,7 @@ export default function SellerOrdersPage() {
                                   onClick={() =>
                                     handleUpdateStatus(
                                       order.id,
-                                      OrderStatus.PROCESSING,
+                                      OrderStatus.PROCESSING
                                     )
                                   }
                                   className="flex-1 py-2 text-center text-blue-600 font-medium border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors text-sm flex items-center justify-center gap-1"
@@ -327,7 +337,7 @@ export default function SellerOrdersPage() {
                                   onClick={() =>
                                     handleUpdateStatus(
                                       order.id,
-                                      OrderStatus.SHIPPED,
+                                      OrderStatus.SHIPPED
                                     )
                                   }
                                   className="flex-1 py-2 text-center text-purple-600 font-medium border border-purple-300 rounded-lg hover:bg-purple-50 transition-colors text-sm flex items-center justify-center gap-1"
@@ -381,7 +391,10 @@ export default function SellerOrdersPage() {
                         </thead>
                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                           {orders.map((order) => (
-                            <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <tr
+                              key={order.id}
+                              className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                            >
                               <td className="px-6 py-4 text-sm font-mono dark:text-white">
                                 {order.id}
                               </td>
@@ -405,14 +418,12 @@ export default function SellerOrdersPage() {
                                     order.status === OrderStatus.DELIVERED
                                       ? "bg-green-100 text-green-800"
                                       : order.status === OrderStatus.SHIPPED
-                                        ? "bg-blue-100 text-blue-800"
-                                        : order.status ===
-                                            OrderStatus.PROCESSING
-                                          ? "bg-purple-100 text-purple-800"
-                                          : order.status ===
-                                              OrderStatus.CANCELLED
-                                            ? "bg-red-100 text-red-800"
-                                            : "bg-yellow-100 text-yellow-800"
+                                      ? "bg-blue-100 text-blue-800"
+                                      : order.status === OrderStatus.PROCESSING
+                                      ? "bg-purple-100 text-purple-800"
+                                      : order.status === OrderStatus.CANCELLED
+                                      ? "bg-red-100 text-red-800"
+                                      : "bg-yellow-100 text-yellow-800"
                                   }`}
                                 >
                                   {order.status}
@@ -427,7 +438,7 @@ export default function SellerOrdersPage() {
                                     onClick={() =>
                                       handleUpdateStatus(
                                         order.id,
-                                        OrderStatus.PROCESSING,
+                                        OrderStatus.PROCESSING
                                       )
                                     }
                                     className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
@@ -441,7 +452,7 @@ export default function SellerOrdersPage() {
                                     onClick={() =>
                                       handleUpdateStatus(
                                         order.id,
-                                        OrderStatus.SHIPPED,
+                                        OrderStatus.SHIPPED
                                       )
                                     }
                                     className="text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300"

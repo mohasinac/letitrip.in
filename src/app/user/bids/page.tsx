@@ -119,8 +119,12 @@ export default function MyBidsPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">Error</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{error.message}</p>
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+            Error
+          </h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {error.message}
+          </p>
           <button
             onClick={() => execute(loadBids)}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -143,7 +147,9 @@ export default function MyBidsPage() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Gavel className="h-8 w-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Bids</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              My Bids
+            </h1>
           </div>
           <p className="text-gray-600 dark:text-gray-400">
             Track all your auction bids in one place
@@ -155,25 +161,33 @@ export default function MyBidsPage() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Total Bids</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  Total Bids
+                </div>
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">
                   {bidsList.length}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Winning</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  Winning
+                </div>
                 <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {winningBids.length}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Outbid</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  Outbid
+                </div>
                 <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                   {outbidBids.length}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Ended</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  Ended
+                </div>
                 <div className="text-2xl font-bold text-gray-600 dark:text-gray-300">
                   {endedBids.length}
                 </div>
@@ -257,13 +271,17 @@ export default function MyBidsPage() {
                       {/* Bid Info */}
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                         <div>
-                          <div className="text-gray-500 dark:text-gray-400 mb-1">Your Bid</div>
+                          <div className="text-gray-500 dark:text-gray-400 mb-1">
+                            Your Bid
+                          </div>
                           <div className="font-semibold text-gray-900 dark:text-white">
                             {formatCurrency(bid.amount)}
                           </div>
                         </div>
                         <div>
-                          <div className="text-gray-500 dark:text-gray-400 mb-1">Current Bid</div>
+                          <div className="text-gray-500 dark:text-gray-400 mb-1">
+                            Current Bid
+                          </div>
                           <div className="font-semibold text-gray-900 dark:text-white">
                             {formatCurrency(
                               bid.auction?.currentBid || bid.amount
@@ -271,7 +289,9 @@ export default function MyBidsPage() {
                           </div>
                         </div>
                         <div>
-                          <div className="text-gray-500 dark:text-gray-400 mb-1">Bid Time</div>
+                          <div className="text-gray-500 dark:text-gray-400 mb-1">
+                            Bid Time
+                          </div>
                           <div className="text-gray-900 dark:text-gray-200">
                             {formatDate(bid.created_at, {
                               format: "short",
@@ -280,7 +300,9 @@ export default function MyBidsPage() {
                           </div>
                         </div>
                         <div>
-                          <div className="text-gray-500 dark:text-gray-400 mb-1">Total Bids</div>
+                          <div className="text-gray-500 dark:text-gray-400 mb-1">
+                            Total Bids
+                          </div>
                           <div className="text-gray-900 dark:text-gray-200">
                             {bid.auction?.bidCount || 0} bids
                           </div>
