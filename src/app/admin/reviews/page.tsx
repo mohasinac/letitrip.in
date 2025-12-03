@@ -161,10 +161,10 @@ export default function AdminReviewsPage() {
           {/* Main Content */}
           <div className="flex-1 p-6">
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 Reviews Management
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
                 Moderate product and shop reviews
               </p>
             </div>
@@ -218,7 +218,7 @@ export default function AdminReviewsPage() {
             )}
 
             {/* Reviews Table */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
               {loading ? (
                 <div className="p-8 text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
@@ -228,8 +228,8 @@ export default function AdminReviewsPage() {
                   <p>No reviews found</p>
                 </div>
               ) : (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
                       <th className="px-6 py-3 text-left">
                         <TableCheckbox
@@ -319,12 +319,12 @@ export default function AdminReviewsPage() {
                           <span
                             className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                               review.status === "approved"
-                                ? "bg-green-100 text-green-800"
+                                ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
                                 : review.status === "rejected"
-                                  ? "bg-red-100 text-red-800"
+                                  ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
                                   : review.status === "flagged"
-                                    ? "bg-orange-100 text-orange-800"
-                                    : "bg-yellow-100 text-yellow-800"
+                                    ? "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200"
+                                    : "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
                             }`}
                           >
                             {review.status}

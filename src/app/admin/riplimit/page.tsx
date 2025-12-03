@@ -251,16 +251,16 @@ export default function AdminRipLimitPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
               <Wallet className="w-8 h-8 text-blue-600" />
               RipLimit Administration
             </h1>
-            <p className="text-gray-600 mt-1">Manage bidding currency system</p>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage bidding currency system</p>
           </div>
           <div className="flex gap-3 mt-4 md:mt-0">
             <Button
@@ -346,17 +346,17 @@ export default function AdminRipLimitPage() {
           <Card>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-gray-500 text-sm font-medium">
+                <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
                   Total Circulation
                 </p>
                 {loadingStats ? (
-                  <div className="h-8 w-32 bg-gray-200 animate-pulse rounded mt-1" />
+                  <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 animate-pulse rounded mt-1" />
                 ) : (
                   <>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                       {formatRL(stats?.totalCirculation || 0)}
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       ≈ {formatINR(stats?.totalCirculation || 0)}
                     </p>
                   </>
@@ -372,15 +372,15 @@ export default function AdminRipLimitPage() {
           <Card>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-gray-500 text-sm font-medium">Net Revenue</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Net Revenue</p>
                 {loadingStats ? (
-                  <div className="h-8 w-32 bg-gray-200 animate-pulse rounded mt-1" />
+                  <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 animate-pulse rounded mt-1" />
                 ) : (
                   <>
                     <p className="text-2xl font-bold text-green-600 mt-1">
                       {formatINR(stats?.netRevenue || 0)}
                     </p>
-                    <div className="flex gap-4 text-xs text-gray-500 mt-1">
+                    <div className="flex gap-4 text-xs text-gray-500 dark:text-gray-400 mt-1">
                       <span>↑ {formatINR(stats?.totalRevenue || 0)}</span>
                       <span>↓ {formatINR(stats?.totalRefunded || 0)}</span>
                     </div>
@@ -397,17 +397,17 @@ export default function AdminRipLimitPage() {
           <Card>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-gray-500 text-sm font-medium">
+                <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
                   Active Users
                 </p>
                 {loadingStats ? (
-                  <div className="h-8 w-20 bg-gray-200 animate-pulse rounded mt-1" />
+                  <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 animate-pulse rounded mt-1" />
                 ) : (
                   <>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                       <Quantity value={stats?.userCount || 0} />
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       with RipLimit accounts
                     </p>
                   </>
@@ -423,23 +423,23 @@ export default function AdminRipLimitPage() {
           <Card>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-gray-500 text-sm font-medium">
+                <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
                   Unpaid Auctions
                 </p>
                 {loadingStats ? (
-                  <div className="h-8 w-16 bg-gray-200 animate-pulse rounded mt-1" />
+                  <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 animate-pulse rounded mt-1" />
                 ) : (
                   <>
                     <p
                       className={`text-2xl font-bold mt-1 ${
                         (stats?.unpaidUserCount || 0) > 0
                           ? "text-red-600"
-                          : "text-gray-900"
+                          : "text-gray-900 dark:text-white"
                       }`}
                     >
                       {stats?.unpaidUserCount || 0}
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       users with unpaid wins
                     </p>
                   </>
@@ -471,24 +471,24 @@ export default function AdminRipLimitPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-green-500" />
-                  <span className="text-gray-600">Available Balance</span>
+                  <span className="text-gray-600 dark:text-gray-400">Available Balance</span>
                 </div>
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-gray-900 dark:text-white">
                   {formatRL(stats?.totalAvailable || 0)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-orange-500" />
-                  <span className="text-gray-600">Blocked (Active Bids)</span>
+                  <span className="text-gray-600 dark:text-gray-400">Blocked (Active Bids)</span>
                 </div>
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-gray-900 dark:text-white">
                   {formatRL(stats?.totalBlocked || 0)}
                 </span>
               </div>
               {stats && (
                 <div className="mt-4">
-                  <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden flex">
+                  <div className="w-full h-4 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden flex">
                     <div
                       className="h-full bg-green-500"
                       style={{
@@ -519,7 +519,7 @@ export default function AdminRipLimitPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <ArrowDownLeft className="w-4 h-4 text-green-500" />
-                  <span className="text-gray-600">Total Purchases</span>
+                  <span className="text-gray-600 dark:text-gray-400">Total Purchases</span>
                 </div>
                 <span className="font-semibold text-green-600">
                   +{formatINR(stats?.totalRevenue || 0)}
@@ -528,14 +528,14 @@ export default function AdminRipLimitPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <ArrowUpRight className="w-4 h-4 text-red-500" />
-                  <span className="text-gray-600">Total Refunds</span>
+                  <span className="text-gray-600 dark:text-gray-400">Total Refunds</span>
                 </div>
                 <span className="font-semibold text-red-600">
                   -{formatINR(stats?.totalRefunded || 0)}
                 </span>
               </div>
-              <div className="border-t pt-4 flex items-center justify-between">
-                <span className="font-medium text-gray-900">Net Revenue</span>
+              <div className="border-t dark:border-gray-700 pt-4 flex items-center justify-between">
+                <span className="font-medium text-gray-900 dark:text-white">Net Revenue</span>
                 <span className="text-xl font-bold text-green-600">
                   {formatINR(stats?.netRevenue || 0)}
                 </span>
@@ -595,7 +595,7 @@ export default function AdminRipLimitPage() {
             <>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
+                  <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         User
@@ -617,9 +617,9 @@ export default function AdminRipLimitPage() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {filteredUsers.map((u) => (
-                      <tr key={u.userId} className="hover:bg-gray-50">
+                      <tr key={u.userId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                         {/* User Info */}
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -641,10 +641,10 @@ export default function AdminRipLimitPage() {
                               </div>
                             )}
                             <div>
-                              <div className="font-medium text-gray-900">
+                              <div className="font-medium text-gray-900 dark:text-white">
                                 {u.user?.displayName || "No name"}
                               </div>
-                              <div className="text-sm text-gray-500">
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
                                 {u.user?.email || u.userId}
                               </div>
                             </div>
@@ -667,7 +667,7 @@ export default function AdminRipLimitPage() {
 
                         {/* Total Balance */}
                         <td className="px-6 py-4 text-right">
-                          <span className="font-bold text-gray-900">
+                          <span className="font-bold text-gray-900 dark:text-white">
                             {formatRL(u.availableBalance + u.blockedBalance)}
                           </span>
                         </td>
@@ -728,25 +728,25 @@ export default function AdminRipLimitPage() {
 
               {/* Pagination */}
               {pagination && pagination.totalPages > 1 && (
-                <div className="border-t border-gray-200 px-6 py-4">
+                <div className="border-t border-gray-200 dark:border-gray-700 px-6 py-4">
                   <div className="flex items-center justify-between">
                     <button
                       onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                       disabled={!pagination.hasPreviousPage || loadingUsers}
-                      className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4" />
                       Previous
                     </button>
 
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                       Page {currentPage} of {pagination.totalPages}
                     </span>
 
                     <button
                       onClick={() => setCurrentPage((p) => p + 1)}
                       disabled={!pagination.hasNextPage || loadingUsers}
-                      className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
                       <ChevronRight className="w-4 h-4" />
@@ -761,9 +761,9 @@ export default function AdminRipLimitPage() {
         {/* Adjust Balance Modal */}
         {showAdjustModal && selectedUser && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-            <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                   Adjust Balance
                 </h2>
                 <button
@@ -780,33 +780,33 @@ export default function AdminRipLimitPage() {
               </div>
 
               {/* User Info */}
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span className="text-blue-600 font-semibold text-sm">
+                  <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                    <span className="text-blue-600 dark:text-blue-300 font-semibold text-sm">
                       {(selectedUser.user?.displayName ||
                         selectedUser.user?.email ||
                         "U")[0].toUpperCase()}
                     </span>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 dark:text-white">
                       {selectedUser.user?.displayName || "No name"}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       {selectedUser.user?.email}
                     </p>
                   </div>
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-gray-500">Available</p>
+                    <p className="text-gray-500 dark:text-gray-400">Available</p>
                     <p className="font-semibold text-green-600">
                       {formatRL(selectedUser.availableBalance)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-gray-500">Blocked</p>
+                    <p className="text-gray-500 dark:text-gray-400">Blocked</p>
                     <p className="font-semibold text-orange-600">
                       {formatRL(selectedUser.blockedBalance)}
                     </p>
@@ -840,8 +840,8 @@ export default function AdminRipLimitPage() {
 
               {/* Preview */}
               {adjustAmount !== 0 && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                  <p className="text-sm text-blue-800">
+                <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-blue-800 dark:text-blue-300">
                     New balance will be:{" "}
                     <strong>
                       {formatRL(selectedUser.availableBalance + adjustAmount)}

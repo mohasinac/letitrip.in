@@ -65,8 +65,8 @@ export default function FeaturedShopsSection({
           const shopIds = activeItems.map((item) => item.itemId);
           curatedShops = await shopsService.getByIds(shopIds);
         }
-      } catch (err) {
-        console.log("No curated shops, falling back to featured flag");
+      } catch {
+        // No curated shops, fallback to featured query
       }
 
       // Use curated shops or fallback to featured query

@@ -187,7 +187,7 @@ export default function EditHeroSlidePage() {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg border p-6">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div className="space-y-6">
           {/* Title */}
           <FormInput

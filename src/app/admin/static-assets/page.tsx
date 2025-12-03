@@ -107,21 +107,21 @@ export default function StaticAssetsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             Static Assets Manager
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
             Upload and manage payment logos, icons, and other static files with
             Firebase Storage CDN
           </p>
         </div>
 
         {/* Type Filter & Upload */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div className="flex gap-2 flex-wrap">
               {ASSET_TYPES.map((type) => (
@@ -131,7 +131,7 @@ export default function StaticAssetsPage() {
                   className={`px-4 py-2 rounded-lg font-medium transition ${
                     selectedType === type.value
                       ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
                   {type.label}
@@ -178,12 +178,12 @@ export default function StaticAssetsPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">Loading assets...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading assets...</p>
           </div>
         ) : assets.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <p className="text-gray-500 text-lg">No assets found</p>
-            <p className="text-gray-400 mt-2">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
+            <p className="text-gray-500 dark:text-gray-400 text-lg">No assets found</p>
+            <p className="text-gray-400 dark:text-gray-500 mt-2">
               Upload your first {selectedType.replace("-", " ")}
             </p>
           </div>
@@ -192,10 +192,10 @@ export default function StaticAssetsPage() {
             {assets.map((asset) => (
               <div
                 key={asset.id}
-                className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition"
               >
                 {/* Preview */}
-                <div className="aspect-video bg-gray-100 flex items-center justify-center p-4 relative">
+                <div className="aspect-video bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-4 relative">
                   {asset.contentType.startsWith("image/") ? (
                     <OptimizedImage
                       src={asset.url}
@@ -254,16 +254,16 @@ export default function StaticAssetsPage() {
                   ) : (
                     <>
                       <h3
-                        className="font-medium text-gray-900 truncate"
+                        className="font-medium text-gray-900 dark:text-white truncate"
                         title={asset.name}
                       >
                         {asset.name}
                       </h3>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {(asset.size / 1024).toFixed(1)} KB
                       </p>
                       {asset.category && (
-                        <span className="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                        <span className="inline-block mt-2 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded">
                           {asset.category}
                         </span>
                       )}
@@ -275,13 +275,13 @@ export default function StaticAssetsPage() {
                 <div className="px-4 pb-4 flex gap-2">
                   <button
                     onClick={() => copyUrl(asset.url)}
-                    className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-sm font-medium"
+                    className="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-sm font-medium"
                   >
                     Copy URL
                   </button>
                   <button
                     onClick={() => setEditingAsset(asset)}
-                    className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                    className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-600"
                     title="Edit"
                   >
                     <svg
@@ -324,11 +324,11 @@ export default function StaticAssetsPage() {
         )}
 
         {/* Info Box */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="font-semibold text-blue-900 mb-2">
+        <div className="mt-8 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+          <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">
             📦 CDN-Backed Storage
           </h3>
-          <ul className="text-blue-800 text-sm space-y-1">
+          <ul className="text-blue-800 dark:text-blue-300 text-sm space-y-1">
             <li>
               • All files are uploaded to Firebase Storage with automatic CDN
               distribution
