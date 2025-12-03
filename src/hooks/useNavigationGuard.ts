@@ -88,7 +88,9 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
           try {
             await onNavigate();
           } catch (error) {
-            console.error("Navigation cleanup error:", error);
+            logError(error, {
+              component: "useNavigationGuard.onNavigate.beforeUnload",
+            });
           }
         }
 
@@ -136,7 +138,9 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
           try {
             await onNavigate();
           } catch (error) {
-            console.error("Navigation cleanup error:", error);
+            logError(error, {
+              component: "useNavigationGuard.onNavigate.confirmNavigation",
+            });
           }
         }
 

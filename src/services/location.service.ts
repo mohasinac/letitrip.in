@@ -6,6 +6,7 @@
  */
 
 import { apiService } from "./api.service";
+import { logError } from "@/lib/firebase-error-logger";
 import type {
   PincodeLookupResult,
   GeoCoordinates,
@@ -143,7 +144,7 @@ class LocationService {
       }>(`/location/geocode?lat=${coords.latitude}&lng=${coords.longitude}`);
       return response.data;
     } catch (error) {
-      console.error("Reverse geocoding error:", error);
+      logError(error, { component: "LocationService.reverseGeocode", coords });
       return null;
     }
   }

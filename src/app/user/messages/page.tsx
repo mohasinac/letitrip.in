@@ -213,8 +213,8 @@ function MessagesContent() {
         prev.map((c) =>
           c.id === conversationId
             ? { ...c, unreadCount: 0, isUnread: false }
-            : c
-        )
+            : c,
+        ),
       );
     } catch (err) {
       console.error("Failed to load messages:", err);
@@ -278,8 +278,8 @@ function MessagesContent() {
                 },
                 timeAgo: "just now",
               }
-            : c
-        )
+            : c,
+        ),
       );
     } catch (err) {
       console.error("Failed to send message:", err);
@@ -302,7 +302,7 @@ function MessagesContent() {
     try {
       await messagesService.archiveConversation(selectedConversation.id);
       setConversations((prev) =>
-        prev.filter((c) => c.id !== selectedConversation.id)
+        prev.filter((c) => c.id !== selectedConversation.id),
       );
       setSelectedConversation(null);
       setMessages([]);
@@ -463,8 +463,8 @@ function MessagesContent() {
                     {searchQuery
                       ? "No conversations found"
                       : showArchived
-                      ? "No archived conversations"
-                      : "No messages yet"}
+                        ? "No archived conversations"
+                        : "No messages yet"}
                   </p>
                 </div>
               ) : (
