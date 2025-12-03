@@ -192,7 +192,11 @@ function NotificationsContent() {
         ),
       );
     } catch (err) {
-      console.error("Failed to mark as read:", err);
+      logError(err as Error, {
+        component: "NotificationsPage.handleMarkAsRead",
+        metadata: { notificationId },
+      });
+      toast.error("Failed to mark notification as read");
     }
   };
 
@@ -204,7 +208,10 @@ function NotificationsContent() {
         prev.map((n) => ({ ...n, read: true, readAt: new Date() })),
       );
     } catch (err) {
-      console.error("Failed to mark all as read:", err);
+      logError(err as Error, {
+        component: "NotificationsPage.handleMarkAllAsRead",
+      });
+      toast.error("Failed to mark all as read");
     } finally {
       setActionLoading(false);
     }
@@ -215,7 +222,11 @@ function NotificationsContent() {
       await notificationService.delete(id);
       setNotifications((prev) => prev.filter((n) => n.id !== id));
     } catch (err) {
-      console.error("Failed to delete notification:", err);
+      logError(err as Error, {
+        component: "NotificationsPage.handleDelete",
+        metadata: { notificationId },
+      });
+      toast.error("Failed to delete notification");
     }
   };
 
@@ -225,7 +236,10 @@ function NotificationsContent() {
       await notificationService.deleteRead();
       setNotifications((prev) => prev.filter((n) => !n.read));
     } catch (err) {
-      console.error("Failed to delete read notifications:", err);
+      logError(err as Error, {
+        component: "NotificationsPage.handleDeleteRead",
+      });
+      toast.error("Failed to delete read notifications");
     } finally {
       setActionLoading(false);
     }

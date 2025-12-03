@@ -23,7 +23,7 @@ import type {
 class CategoriesService {
   // List categories
   async list(
-    filters?: Record<string, any>,
+    filters?: Record<string, any>
   ): Promise<PaginatedResponseFE<CategoryFE>> {
     const params = new URLSearchParams();
 
@@ -38,8 +38,9 @@ class CategoriesService {
     const queryString = params.toString();
     const endpoint = queryString ? `/categories?${queryString}` : "/categories";
 
-    const response =
-      await apiService.get<PaginatedResponseBE<CategoryBE>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<CategoryBE>>(
+      endpoint
+    );
 
     return {
       data: toFECategories(response.data || []),
@@ -102,7 +103,7 @@ class CategoriesService {
   // Update category (admin only)
   async update(
     slug: string,
-    formData: Partial<CategoryFormFE>,
+    formData: Partial<CategoryFormFE>
   ): Promise<CategoryFE> {
     const request = toBECreateCategoryRequest(formData as CategoryFormFE);
     const response = await apiService.patch<{
@@ -120,7 +121,7 @@ class CategoriesService {
   // Add parent to category (admin only)
   async addParent(
     slug: string,
-    parentId: string,
+    parentId: string
   ): Promise<{ message: string }> {
     const response = await apiService.post<{
       success: boolean;
@@ -132,7 +133,7 @@ class CategoriesService {
   // Remove parent from category (admin only)
   async removeParent(
     slug: string,
-    parentId: string,
+    parentId: string
   ): Promise<{ message: string }> {
     const response = await apiService.post<{
       success: boolean;
@@ -188,7 +189,7 @@ class CategoriesService {
 
   // Reorder categories (admin only)
   async reorder(
-    orders: { id: string; sortOrder: number }[],
+    orders: { id: string; sortOrder: number }[]
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/categories/reorder", {
       orders,
@@ -203,7 +204,7 @@ class CategoriesService {
       limit?: number;
       includeSubcategories?: boolean;
       [key: string]: any;
-    },
+    }
   ): Promise<PaginatedResponseFE<ProductCardFE>> {
     const params = new URLSearchParams();
     if (filters) {
@@ -219,8 +220,9 @@ class CategoriesService {
       ? `/categories/${slug}/products?${qs}`
       : `/categories/${slug}/products`;
 
-    const res =
-      await apiService.get<PaginatedResponseBE<ProductListItemBE>>(endpoint);
+    const res = await apiService.get<PaginatedResponseBE<ProductListItemBE>>(
+      endpoint
+    );
     return {
       data: res.data.map(toFEProductCard),
       count: res.count,
@@ -231,7 +233,7 @@ class CategoriesService {
   // Get immediate subcategories of a category
   async getSubcategories(slug: string): Promise<CategoryFE[]> {
     const res = await apiService.get<{ data: CategoryBE[] }>(
-      `/categories/${slug}/subcategories`,
+      `/categories/${slug}/subcategories`
     );
     return toFECategories(res.data || []);
   }
@@ -239,7 +241,7 @@ class CategoriesService {
   // Get similar categories (siblings or related)
   async getSimilarCategories(
     slug: string,
-    limit?: number,
+    limit?: number
   ): Promise<CategoryFE[]> {
     const params = new URLSearchParams();
     if (limit) params.append("limit", String(limit));
@@ -256,7 +258,7 @@ class CategoriesService {
   // Get full category hierarchy path (breadcrumb)
   async getCategoryHierarchy(slug: string): Promise<CategoryFE[]> {
     const res = await apiService.get<{ data: CategoryBE[] }>(
-      `/categories/${slug}/hierarchy`,
+      `/categories/${slug}/hierarchy`
     );
     return toFECategories(res.data || []);
   }
@@ -326,7 +328,7 @@ class CategoriesService {
 
   async bulkUpdate(
     ids: string[],
-    updates: Partial<CategoryFormFE>,
+    updates: Partial<CategoryFormFE>
   ): Promise<void> {
     await apiService.post("/categories/bulk", {
       action: "update",
