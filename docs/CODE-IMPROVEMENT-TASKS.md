@@ -3,9 +3,9 @@
 > **Generated**: December 3, 2025
 > **Last Updated**: December 4, 2025
 > **Status**: ✅ BUILD PASSING - Ready for Release
-> **Estimated Total Effort**: 180-268 hours
-> **Potential Lines Saved**: ~13,000 lines via shared components
-> **Total Tasks**: 22 improvement areas identified
+> **Estimated Total Effort**: 208-310 hours
+> **Potential Lines Saved**: ~16,000 lines via shared components
+> **Total Tasks**: 23 improvement areas identified
 
 ## 🎉 BUILD STATUS: PASSING
 
@@ -14,7 +14,7 @@ The application successfully builds and is ready for release. All critical type 
 ### Recent Fixes Applied (December 3, 2025)
 
 | Issue                          | File(s)                                                                   | Resolution                                                                                                                                                                                                                               |
-| ------------------------------ | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ------------------------------ | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ----------- |
 | Email service architecture     | `src/services/email.service.ts`, `src/app/api/lib/email/email.service.ts` | Separated frontend/backend email services properly                                                                                                                                                                                       |
 | Missing DemoStep settings      | `src/app/admin/demo/page.tsx`                                             | Added `settings` step to all status objects (4 locations)                                                                                                                                                                                |
 | EmptyState prop type           | `src/app/search/page.tsx`                                                 | Changed `href` to `onClick` with router.push                                                                                                                                                                                             |
@@ -31,8 +31,8 @@ The application successfully builds and is ready for release. All critical type 
 | **StatsCard Dark Mode**        | `src/components/common/StatsCard.tsx`                                     | ✅ Added dark mode support and StatsCardGrid component                                                                                                                                                                                   |
 | **StatsCardGrid Migration**    | 15 pages                                                                  | ✅ Migrated to StatsCardGrid: admin/tickets, support-tickets, returns, reviews, auctions/moderation, coupons, payouts + seller/orders, returns + user/page, user/bids, user/won-auctions, user/watchlist, user/reviews + seller/page     |
 | **SimplePagination Migration** | 7 pages                                                                   | ✅ Migrated to SimplePagination: admin/reviews, auctions/moderation, payouts, support-tickets + seller/returns + user/returns + seller/reviews                                                                                           |
-| **useLoadingState Fixes**      | 5 pages                                                                   | ✅ Fixed useLoadingState destructuring: admin/returns, admin/coupons, admin/auctions/moderation, admin/reviews, seller/returns (isLoading: loading alias, { initialData: [] } options)                                                  |
-| **Null Safety Fixes**          | 5 pages                                                                   | ✅ Fixed null safety for arrays: admin/returns, admin/coupons, admin/auctions/moderation, admin/reviews, seller/returns (array || []) pattern                                                                                            |
+| **useLoadingState Fixes**      | 5 pages                                                                   | ✅ Fixed useLoadingState destructuring: admin/returns, admin/coupons, admin/auctions/moderation, admin/reviews, seller/returns (isLoading: loading alias, { initialData: [] } options)                                                   |
+| **Null Safety Fixes**          | 5 pages                                                                   | ✅ Fixed null safety for arrays: admin/returns, admin/coupons, admin/auctions/moderation, admin/reviews, seller/returns (array                                                                                                           |     | []) pattern |
 
 ---
 
@@ -458,6 +458,7 @@ This document identifies code quality issues, refactoring opportunities, and imp
 20. [Task 20: Firestore Indexes & Query Optimization](#task-20-firestore-indexes--query-optimization-new)
 21. [Task 21: Navigation Component Cleanup & Refactoring](#task-21-navigation-component-cleanup--refactoring-new)
 22. [Task 22: Reusable Hooks, Contexts & Functions](#task-22-reusable-hooks-contexts--functions-analysis-new) ⭐ NEW
+23. [Task 23: Form & Wizard Component Reusability](#task-23-form--wizard-component-reusability-new) ⭐ NEW
 
 ---
 
@@ -2409,6 +2410,985 @@ const dashboardLinks = [
 
 ---
 
+## Task 23: Form & Wizard Component Reusability (NEW)
+
+**Priority**: HIGH
+**Effort**: 12-18 hours
+**Goal**: Maximize reuse of existing complex form components in wizards and eliminate duplicate address/contact/email form code
+
+### 🎯 Problem Statement
+
+Wizards and forms are currently split into steps but are NOT leveraging the powerful reusable components that already exist:
+
+1. **SmartAddressForm** exists but shop wizard uses basic textarea for address
+2. **MobileInput** exists but shop wizard uses basic input for phone
+3. **PincodeInput** exists but not used anywhere in wizards
+4. **StateSelector** exists but shop wizard doesn't use it
+5. **CategorySelectorWithCreate** exists but wizards use basic dropdowns
+6. **ShopSelector** exists but product/auction wizards use basic dropdowns
+7. Required fields scattered across multiple steps instead of consolidated in Step 1
+8. Submit button not always visible - need mandatory finish button at bottom
+
+### 🔍 Current Issues Analysis
+
+#### Issue 1: Shop Wizard ContactLegalStep NOT Using Reusable Components
+
+**Current Code** (`src/components/seller/shop-wizard/ContactLegalStep.tsx`):
+
+```tsx
+// ❌ WRONG: Using basic FormTextarea for address
+<FormField label="Address" id="address" required error={errors.address}>
+  <FormTextarea
+    value={formData.address || ""}
+    onChange={(e) => onChange("address", e.target.value)}
+    placeholder="Street, City, State, Pincode"
+  />
+</FormField>
+
+// ❌ WRONG: Using basic FormInput for phone
+<FormField label="Phone" id="phone" required error={errors.phone}>
+  <FormInput
+    value={formData.phone || ""}
+    onChange={(e) => onChange("phone", e.target.value)}
+    placeholder="+91 98765 43210"
+  />
+</FormField>
+
+// ❌ WRONG: Using basic FormInput for email
+<FormField label="Email" id="email" required error={errors.email}>
+  <FormInput
+    type="email"
+    value={formData.email || ""}
+    onChange={(e) => onChange("email", e.target.value)}
+    placeholder="you@example.com"
+  />
+</FormField>
+```
+
+**Should Be**:
+
+```tsx
+import { SmartAddressForm } from "@/components/common/SmartAddressForm";
+import { MobileInput } from "@/components/common/MobileInput";
+
+// ✅ CORRECT: Use SmartAddressForm inline mode
+<div className="space-y-4">
+  <h3>Business Address</h3>
+  <SmartAddressForm
+    mode="inline"
+    showGPS={true}
+    initialData={{
+      fullName: formData.businessName,
+      mobileNumber: formData.phone,
+      email: formData.email,
+      // ... other fields
+    }}
+    onSuccess={(address) => {
+      // Update formData with smart address
+      onChange("addressLine1", address.addressLine1);
+      onChange("city", address.city);
+      onChange("state", address.state);
+      onChange("pincode", address.postalCode);
+    }}
+  />
+</div>;
+```
+
+#### Issue 2: Required Fields NOT in Step 1
+
+**Current**: Shop wizard has required fields in Step 3 (Contact & Legal)
+**Should Be**: All required fields in Step 1 (Basic Info)
+
+Move these to BasicInfoStep:
+
+- ✅ Shop Name (already there)
+- ✅ Slug (already there)
+- ✅ Description (already there)
+- ⚠️ **Category** (already there but optional - make required)
+- ❌ **Email** (currently in Step 3 - MOVE to Step 1)
+- ❌ **Phone** (currently in Step 3 - MOVE to Step 1)
+- ❌ **Business Address** (currently in Step 3 - MOVE to Step 1)
+
+#### Issue 3: No Always-Visible Finish Button
+
+**Current**: WizardActionBar only at bottom, users need to scroll to submit
+**Should**: Sticky WizardActionBar with finish button always visible
+
+The `WizardActionBar` component exists but not all wizards use it properly:
+
+```tsx
+// ✅ Product Wizard - CORRECT (uses WizardActionBar)
+<WizardActionBar
+  onSaveDraft={handleSaveDraft}
+  onValidate={handleValidate}
+  onSubmit={handleSubmit}
+  isSubmitting={loading}
+  isSaving={isSaving}
+  isValid={isFormValid}
+  submitLabel="Create Product"
+/>
+
+// ❌ Shop Wizard - WRONG (manual buttons, not sticky)
+<div className="flex items-center justify-between">
+  <button onClick={prevStep}>Previous</button>
+  <button onClick={nextStep}>Next</button>
+</div>
+```
+
+#### Issue 4: Category Selection Using Basic Dropdown
+
+**Current**: Product/Auction wizards use basic `FormSelect` for categories
+**Should Use**: `CategorySelectorWithCreate` for better UX
+
+```tsx
+// ❌ WRONG: Basic dropdown in shop wizard BasicInfoStep
+<FormSelect
+  id="shop-category"
+  label="Primary Category"
+  value={formData.category}
+  onChange={(e) => onChange("category", e.target.value)}
+  options={[
+    { value: "", label: "Select a category" },
+    { value: "electronics", label: "Electronics" },
+    { value: "fashion", label: "Fashion" },
+    // ... hardcoded categories
+  ]}
+/>;
+
+// ✅ CORRECT: Use CategorySelectorWithCreate
+import { CategorySelectorWithCreate } from "@/components/seller/CategorySelectorWithCreate";
+
+<CategorySelectorWithCreate
+  value={formData.categoryId}
+  onChange={(categoryId, category) => {
+    onChange("categoryId", categoryId);
+    if (category) {
+      onChange("categoryName", category.name);
+    }
+  }}
+  required
+  error={errors.categoryId}
+  placeholder="Select or create a category"
+  onCategoryCreated={(newCategory) => {
+    // Auto-select newly created category
+    onChange("categoryId", newCategory.id);
+  }}
+/>;
+```
+
+**Benefits**:
+
+- ✅ Tree view showing category hierarchy
+- ✅ Search across all categories
+- ✅ Inline category creation (no page navigation)
+- ✅ Breadcrumb display of selected path
+- ✅ Leaf-only selection for products (seller mode)
+- ✅ Real-time category validation
+
+#### Issue 5: Shop Selection Using Basic Dropdown
+
+**Current**: Product/Auction wizards don't have shop selector or use manual logic
+**Should Use**: `ShopSelector` for multi-shop sellers
+
+```tsx
+// ❌ CURRENT: No shop selection in product/auction wizards
+// Assumes single shop or uses hardcoded shopId
+
+// ✅ CORRECT: Use ShopSelector
+import ShopSelector from "@/components/seller/ShopSelector";
+
+<ShopSelector
+  value={formData.shopId}
+  onChange={(shopId, slug) => {
+    onChange("shopId", shopId);
+    if (slug) {
+      onChange("shopSlug", slug);
+    }
+  }}
+  includeAllOption={false}
+  disabled={loading}
+  className="flex-1"
+/>;
+```
+
+**Benefits**:
+
+- ✅ Auto-loads user's shops
+- ✅ Handles multi-shop sellers
+- ✅ Auto-selects if only one shop
+- ✅ Returns both ID and slug
+- ✅ Consistent shop selection across wizards
+- ✅ Loading state handled internally
+
+### 📋 Existing Reusable Components Available
+
+| Component                    | Location                                               | Features                                        | Used In Wizards? |
+| ---------------------------- | ------------------------------------------------------ | ----------------------------------------------- | ---------------- |
+| `SmartAddressForm`           | `src/components/common/SmartAddressForm.tsx`           | GPS, pincode lookup, state selector, validation | ❌ NO            |
+| `MobileInput`                | `src/components/common/MobileInput.tsx`                | Country code picker, validation, WhatsApp/Call  | ❌ NO            |
+| `PincodeInput`               | `src/components/common/PincodeInput.tsx`               | Auto-lookup, area selector, validation          | ❌ NO            |
+| `StateSelector`              | `src/components/common/StateSelector.tsx`              | Searchable Indian states dropdown               | ❌ NO            |
+| `CategorySelector`           | `src/components/common/CategorySelector.tsx`           | Tree view, search, breadcrumb, leaf-only        | ⚠️ Partial       |
+| `CategorySelectorWithCreate` | `src/components/seller/CategorySelectorWithCreate.tsx` | CategorySelector + inline create dialog         | ❌ NO            |
+| `ShopSelector`               | `src/components/seller/ShopSelector.tsx`               | Searchable shop dropdown with auto-load         | ❌ NO            |
+| `Email` (display)            | `src/components/common/values/Email.tsx`               | Email formatting with mailto link               | ⚠️ Display only  |
+| `PhoneNumber` (display)      | `src/components/common/values/PhoneNumber.tsx`         | Phone formatting with click-to-call             | ⚠️ Display only  |
+| `Address` (display)          | `src/components/common/values/Address.tsx`             | Address formatting                              | ⚠️ Display only  |
+| `GPSButton`                  | `src/components/common/GPSButton.tsx`                  | GPS location detection                          | ❌ NO            |
+| `WizardActionBar`            | `src/components/forms/WizardActionBar.tsx`             | Sticky action bar with save/validate/submit     | ✅ YES (partial) |
+| `FormField`                  | `src/components/forms/FormField.tsx`                   | Label + input + error wrapper                   | ✅ YES           |
+| `FormInput`                  | `src/components/forms/FormInput.tsx`                   | Basic input wrapper                             | ✅ YES           |
+| `FormSelect`                 | `src/components/forms/FormSelect.tsx`                  | Select dropdown wrapper                         | ✅ YES           |
+
+### 🔧 Wizards Requiring Updates
+
+| Wizard                        | Location                                   | Issues to Fix                                                                                                                                     |
+| ----------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Shop Creation Wizard**      | `src/app/seller/my-shops/create/page.tsx`  | 1. Use SmartAddressForm<br>2. Use MobileInput<br>3. Use CategorySelectorWithCreate<br>4. Move required fields to Step 1<br>5. Add WizardActionBar |
+| **Product Creation Wizard**   | `src/app/seller/products/create/page.tsx`  | 1. Use CategorySelectorWithCreate<br>2. Use ShopSelector<br>✅ Already uses WizardActionBar                                                       |
+| **Auction Creation Wizard**   | `src/app/seller/auctions/create/page.tsx`  | 1. Use CategorySelectorWithCreate<br>2. Use ShopSelector<br>✅ Already uses WizardActionBar                                                       |
+| **Category Creation Wizard**  | `src/app/admin/categories/create/page.tsx` | Check if needs WizardActionBar                                                                                                                    |
+| **Blog Post Creation Wizard** | `src/app/admin/blog/create/page.tsx`       | Check if needs WizardActionBar                                                                                                                    |
+| **Coupon Creation Form**      | `src/components/seller/CouponForm.tsx`     | 1. Use ShopSelector<br>2. Consider wizardizing if complex                                                                                         |
+
+### 🎯 Implementation Plan
+
+#### Phase 1: Shop Wizard Refactoring (6-8 hours)
+
+**Step 1: Restructure BasicInfoStep** (Add required fields)
+
+```tsx
+// src/components/seller/shop-wizard/BasicInfoStep.tsx
+import { FormInput, FormTextarea, FormSelect } from "@/components/forms";
+import { MobileInput } from "@/components/common/MobileInput";
+import SlugInput from "@/components/common/SlugInput";
+
+export default function BasicInfoStep({
+  formData,
+  onChange,
+  errors,
+}: BasicInfoStepProps) {
+  return (
+    <div className="space-y-6">
+      {/* Section 1: Basic Shop Info */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Shop Information</h3>
+
+        <FormInput
+          label="Shop Name"
+          value={formData.name}
+          onChange={(e) => onChange("name", e.target.value)}
+          required
+          error={errors.name}
+        />
+
+        <SlugInput
+          label="Shop URL Slug"
+          value={formData.slug}
+          onChange={(v) => onChange("slug", v)}
+          required
+          error={errors.slug}
+        />
+
+        <FormTextarea
+          label="Description"
+          value={formData.description}
+          onChange={(e) => onChange("description", e.target.value)}
+          required
+          helperText={`${
+            formData.description?.length || 0
+          }/500 characters (min 20)`}
+          error={errors.description}
+        />
+
+        <FormSelect
+          label="Primary Category"
+          value={formData.category}
+          onChange={(e) => onChange("category", e.target.value)}
+          required
+          error={errors.category}
+          options={[
+            { value: "", label: "Select a category" },
+            { value: "electronics", label: "Electronics" },
+            { value: "fashion", label: "Fashion" },
+            // ... more categories
+          ]}
+        />
+      </div>
+
+      {/* Section 2: Contact Info (MOVED FROM STEP 3) */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Contact Information</h3>
+
+        <MobileInput
+          label="Primary Contact Number"
+          value={formData.phone || ""}
+          onChange={(v) => onChange("phone", v)}
+          countryCode={formData.countryCode || "+91"}
+          onCountryCodeChange={(code) => onChange("countryCode", code)}
+          required
+          error={errors.phone}
+        />
+
+        <FormInput
+          label="Business Email"
+          type="email"
+          value={formData.email || ""}
+          onChange={(e) => onChange("email", e.target.value)}
+          required
+          error={errors.email}
+          placeholder="contact@yourshop.com"
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+**Step 2: Update ContactLegalStep** (Use SmartAddressForm inline mode)
+
+```tsx
+// src/components/seller/shop-wizard/ContactLegalStep.tsx
+import { SmartAddressForm } from "@/components/common/SmartAddressForm";
+import { FormInput } from "@/components/forms";
+
+export default function ContactLegalStep({
+  formData,
+  onChange,
+  errors,
+}: ContactLegalStepProps) {
+  return (
+    <div className="space-y-6">
+      {/* Business Address - Use SmartAddressForm */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Business Address</h3>
+        <SmartAddressForm
+          mode="inline"
+          showGPS={true}
+          initialData={{
+            fullName: formData.businessName || formData.name,
+            mobileNumber: formData.phone,
+            addressLine1: formData.addressLine1,
+            city: formData.city,
+            state: formData.state,
+            pincode: formData.pincode,
+            type: "work" as const,
+          }}
+          onSuccess={(address) => {
+            onChange("addressLine1", address.addressLine1);
+            onChange("addressLine2", address.addressLine2);
+            onChange("city", address.city);
+            onChange("state", address.state);
+            onChange("pincode", address.postalCode);
+          }}
+        />
+      </div>
+
+      {/* Legal Info */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Legal Information (Optional)</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormInput
+            label="GSTIN"
+            value={formData.gstin || ""}
+            onChange={(e) => onChange("gstin", e.target.value)}
+            placeholder="22AAAAA0000A1Z5"
+          />
+          <FormInput
+            label="PAN"
+            value={formData.pan || ""}
+            onChange={(e) => onChange("pan", e.target.value)}
+            placeholder="ABCDE1234F"
+          />
+          <FormInput
+            label="CIN"
+            value={formData.cin || ""}
+            onChange={(e) => onChange("cin", e.target.value)}
+            placeholder="U12345DL2020PTC123456"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+**Step 3: Update Shop Wizard Page** (Add WizardActionBar)
+
+```tsx
+// src/app/seller/my-shops/create/page.tsx
+import { WizardActionBar } from "@/components/forms/WizardActionBar";
+
+export default function CreateShopWizardPage() {
+  // ... existing state
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24">
+      {/* ... existing header and progress bar */}
+
+      {/* Step Content */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ... step components */}
+      </div>
+
+      {/* ✅ ADD: Sticky Action Bar (always visible) */}
+      <WizardActionBar
+        onSaveDraft={handleSaveDraft}
+        onValidate={handleValidate}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        isSaving={isSaving}
+        isValid={isFormValid}
+        submitLabel="Create Shop"
+        showSaveDraft={true}
+        showValidate={true}
+      />
+    </div>
+  );
+}
+```
+
+**Step 4: Update ShopFormData Type**
+
+```tsx
+// src/components/seller/shop-wizard/types.ts
+export interface ShopFormData {
+  // Step 1: Basic Info (ALL REQUIRED FIELDS)
+  name: string;
+  slug: string;
+  description: string;
+  category: string; // REQUIRED
+  phone: string; // MOVED from Step 3
+  email: string; // MOVED from Step 3
+  countryCode?: string;
+
+  // Step 2: Branding (optional)
+  logoUrl?: string;
+  bannerUrl?: string;
+  themeColor?: string;
+  tagline?: string;
+  about?: string;
+
+  // Step 3: Contact & Legal (now mostly optional)
+  addressLine1?: string; // From SmartAddressForm
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  gstin?: string;
+  pan?: string;
+  cin?: string;
+
+  // Step 4: Banking (optional)
+  bankName?: string;
+  accountHolderName?: string;
+  accountNumber?: string;
+  ifsc?: string;
+
+  // Step 5: Policies (optional)
+  returnPolicy?: string;
+  shippingPolicy?: string;
+  tos?: string;
+  privacy?: string;
+
+  // Step 6: Settings (optional)
+  defaultShippingFee?: number;
+  supportEmail?: string;
+  enableCOD?: boolean;
+  enableReturns?: boolean;
+  showContact?: boolean;
+}
+```
+
+#### Phase 2: Validate Other Wizards (2-4 hours)
+
+**Check List**:
+
+- [ ] Product Wizard - Already good ✅
+- [ ] Auction Wizard - Already good ✅
+- [ ] Category Wizard - Needs WizardActionBar check
+- [ ] Blog Wizard - Needs WizardActionBar check
+- [ ] Coupon Form - Evaluate if needs wizard structure
+
+#### Phase 3: Create Reusable Wizard Step Components (4-6 hours)
+
+These can be shared across multiple wizards:
+
+**ContactInfoStep** (Reusable contact section)
+
+```tsx
+// src/components/wizards/ContactInfoStep.tsx
+import { MobileInput } from "@/components/common/MobileInput";
+import { FormInput } from "@/components/forms";
+
+interface ContactInfoStepProps {
+  phone: string;
+  email: string;
+  countryCode?: string;
+  onPhoneChange: (phone: string) => void;
+  onEmailChange: (email: string) => void;
+  onCountryCodeChange: (code: string) => void;
+  errors?: {
+    phone?: string;
+    email?: string;
+  };
+}
+
+export function ContactInfoStep({ ... }: ContactInfoStepProps) {
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">Contact Information</h3>
+
+      <MobileInput
+        label="Mobile Number"
+        value={phone}
+        onChange={onPhoneChange}
+        countryCode={countryCode}
+        onCountryCodeChange={onCountryCodeChange}
+        required
+        error={errors?.phone}
+      />
+
+      <FormInput
+        label="Email Address"
+        type="email"
+        value={email}
+        onChange={(e) => onEmailChange(e.target.value)}
+        required
+        error={errors?.email}
+      />
+    </div>
+  );
+}
+```
+
+**BusinessAddressStep** (Reusable address section)
+
+```tsx
+// src/components/wizards/BusinessAddressStep.tsx
+import { SmartAddressForm } from "@/components/common/SmartAddressForm";
+
+interface BusinessAddressStepProps {
+  businessName: string;
+  phone: string;
+  email: string;
+  initialAddress?: {
+    addressLine1?: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
+  };
+  onAddressChange: (address: {
+    addressLine1: string;
+    addressLine2: string;
+    city: string;
+    state: string;
+    pincode: string;
+  }) => void;
+}
+
+export function BusinessAddressStep({ ... }: BusinessAddressStepProps) {
+  return (
+    <div>
+      <h3 className="text-lg font-semibold mb-4">Business Address</h3>
+      <SmartAddressForm
+        mode="inline"
+        showGPS={true}
+        initialData={{
+          fullName: businessName,
+          mobileNumber: phone,
+          type: "work" as const,
+          ...initialAddress,
+        }}
+        onSuccess={(address) => {
+          onAddressChange({
+            addressLine1: address.addressLine1,
+            addressLine2: address.addressLine2 || "",
+            city: address.city,
+            state: address.state,
+            pincode: address.postalCode,
+          });
+        }}
+      />
+    </div>
+  );
+}
+```
+
+#### Phase 4: Create Reusable Dropdown Components with Inline Create (6-8 hours)
+
+These dropdown components should be created to provide consistent UX across wizards, inline forms, and checkout:
+
+**AddressSelectorWithCreate** (Reusable saved address dropdown + inline create)
+
+```tsx
+// src/components/common/AddressSelectorWithCreate.tsx
+import { useState, useEffect } from "react";
+import { Plus, MapPin, CheckCircle } from "lucide-react";
+import { SmartAddressForm } from "@/components/common/SmartAddressForm";
+import { addressService } from "@/services/address.service";
+import type { AddressFE } from "@/types/frontend/address.types";
+
+interface AddressSelectorWithCreateProps {
+  value: string | null; // addressId
+  onChange: (addressId: string | null, address: AddressFE | null) => void;
+  userId: string;
+  addressType?: "home" | "work" | "other" | "all"; // Filter by type
+  placeholder?: string;
+  error?: string;
+  required?: boolean;
+  className?: string;
+  showCreateButton?: boolean;
+}
+
+export function AddressSelectorWithCreate({
+  value,
+  onChange,
+  userId,
+  addressType = "all",
+  placeholder = "Select saved address",
+  error,
+  required = false,
+  className = "",
+  showCreateButton = true,
+}: AddressSelectorWithCreateProps) {
+  const [addresses, setAddresses] = useState<AddressFE[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    loadAddresses();
+  }, [userId, addressType]);
+
+  const loadAddresses = async () => {
+    try {
+      setLoading(true);
+      const allAddresses = await addressService.list();
+
+      // Filter by type if specified
+      const filtered =
+        addressType === "all"
+          ? allAddresses
+          : allAddresses.filter((addr) => addr.addressType === addressType);
+
+      setAddresses(filtered);
+
+      // Auto-select default address if no selection
+      if (!value && filtered.length > 0) {
+        const defaultAddr = filtered.find((a) => a.isDefault) || filtered[0];
+        onChange(defaultAddr.id, defaultAddr);
+      }
+    } catch (error) {
+      console.error("Failed to load addresses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateSuccess = (newAddress: AddressFE) => {
+    setAddresses((prev) => [...prev, newAddress]);
+    onChange(newAddress.id, newAddress);
+    setShowCreateDialog(false);
+  };
+
+  const selectedAddress = addresses.find((addr) => addr.id === value);
+
+  return (
+    <>
+      <div className={`relative ${className}`}>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Delivery Address {required && <span className="text-red-500">*</span>}
+        </label>
+
+        <div className="flex gap-2">
+          {/* Dropdown */}
+          <div className="flex-1 relative">
+            <button
+              type="button"
+              onClick={() => setIsOpen(!isOpen)}
+              className={`w-full px-4 py-3 text-left border rounded-lg flex items-center justify-between
+                ${
+                  error
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
+                }
+                bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700`}
+            >
+              {selectedAddress ? (
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-gray-400" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      {selectedAddress.fullName}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      {selectedAddress.addressLine1}, {selectedAddress.city}
+                    </p>
+                  </div>
+                  {selectedAddress.isDefault && (
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                  )}
+                </div>
+              ) : (
+                <span className="text-sm text-gray-500">{placeholder}</span>
+              )}
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {/* Dropdown Menu */}
+            {isOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setIsOpen(false)}
+                />
+                <div className="absolute z-20 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto">
+                  {addresses.length === 0 ? (
+                    <div className="p-4 text-center text-sm text-gray-500">
+                      No saved addresses found. Create one to continue.
+                    </div>
+                  ) : (
+                    addresses.map((addr) => (
+                      <button
+                        key={addr.id}
+                        type="button"
+                        onClick={() => {
+                          onChange(addr.id, addr);
+                          setIsOpen(false);
+                        }}
+                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b last:border-b-0
+                          ${
+                            addr.id === value
+                              ? "bg-blue-50 dark:bg-blue-900/20"
+                              : ""
+                          }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                {addr.fullName}
+                              </p>
+                              {addr.isDefault && (
+                                <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-0.5 rounded">
+                                  Default
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                              {addr.addressLine1}
+                              {addr.addressLine2 && `, ${addr.addressLine2}`}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-500">
+                              {addr.city}, {addr.state} - {addr.postalCode}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                              {addr.phoneNumber}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Create Button */}
+          {showCreateButton && (
+            <button
+              type="button"
+              onClick={() => setShowCreateDialog(true)}
+              className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
+              title="Add new address"
+            >
+              <Plus className="w-5 h-5" />
+              <span className="text-sm font-medium hidden sm:inline">New</span>
+            </button>
+          )}
+        </div>
+
+        {error && (
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
+        )}
+      </div>
+
+      {/* Create Address Dialog */}
+      {showCreateDialog && (
+        <SmartAddressForm
+          onClose={() => setShowCreateDialog(false)}
+          onSuccess={handleCreateSuccess}
+          mode="modal"
+          showGPS={true}
+        />
+      )}
+    </>
+  );
+}
+```
+
+**Usage Examples**:
+
+```tsx
+// In Shop Wizard (save business address to user's addresses)
+<AddressSelectorWithCreate
+  value={formData.businessAddressId}
+  onChange={(id, address) => {
+    onChange("businessAddressId", id);
+    if (address) {
+      onChange("addressLine1", address.addressLine1);
+      onChange("city", address.city);
+      // ... update form fields
+    }
+  }}
+  userId={user.uid}
+  addressType="work"
+  required
+/>
+
+// In Checkout Page
+<AddressSelectorWithCreate
+  value={selectedAddressId}
+  onChange={(id, address) => setSelectedAddress(address)}
+  userId={user.uid}
+  addressType="all"
+  placeholder="Select delivery address"
+  required
+/>
+
+// In Product/Auction Create (pickup address)
+<AddressSelectorWithCreate
+  value={formData.pickupAddressId}
+  onChange={(id) => onChange("pickupAddressId", id)}
+  userId={user.uid}
+  addressType="all"
+  showCreateButton={true}
+/>
+```
+
+**Key Benefits**:
+
+- ✅ Reuses user's saved addresses across ALL wizards and forms
+- ✅ Addresses saved to same location (user addresses collection)
+- ✅ Inline create with SmartAddressForm (GPS, pincode lookup)
+- ✅ Visual preview of each address
+- ✅ Default address auto-selection
+- ✅ Filter by address type (home/work/other)
+- ✅ Consistent UX in checkout, wizards, and inline forms
+
+**Similar Components to Create**:
+
+1. **CategorySelectorWithCreate** ✅ Already exists
+2. **ShopSelectorWithCreate** (for multi-shop sellers)
+3. **AddressSelectorWithCreate** ⭐ New (detailed above)
+4. **PaymentMethodSelectorWithCreate** (saved cards/UPI)
+5. **ShippingMethodSelector** (with carrier options)
+
+### 📊 Benefits Summary
+
+| Improvement                            | Impact                                     | Lines Saved     |
+| -------------------------------------- | ------------------------------------------ | --------------- |
+| Use SmartAddressForm                   | GPS, validation, UX                        | ~200 lines      |
+| Use MobileInput                        | Country codes, WhatsApp                    | ~100 lines      |
+| Use PincodeInput                       | Auto-lookup, validation                    | ~150 lines      |
+| Use CategorySelectorWithCreate         | Tree view, search, inline create           | ~300 lines      |
+| Use ShopSelector                       | Auto-load shops, consistent UX             | ~100 lines      |
+| Use AddressSelectorWithCreate          | Saved addresses, inline create, checkout   | ~400 lines      |
+| Consolidate required fields            | Better UX, less back-nav                   | N/A             |
+| Add WizardActionBar everywhere         | Consistent UX                              | ~50 lines       |
+| Create reusable wizard step components | Cross-wizard reuse                         | ~500 lines      |
+| Create reusable dropdown components    | Consistent address/category/shop selection | ~600 lines      |
+| **Total**                              | -                                          | **~2400 lines** |
+
+### ✅ Validation & Testing Checklist
+
+- [ ] Shop wizard Step 1 has all required fields
+- [ ] SmartAddressForm works in inline mode
+- [ ] MobileInput country code persists
+- [ ] PincodeInput auto-fills city/state
+- [ ] CategorySelectorWithCreate shows tree view
+- [ ] CategorySelectorWithCreate inline create works
+- [ ] ShopSelector auto-loads user's shops
+- [ ] ShopSelector auto-selects if only one shop
+- [ ] WizardActionBar stays visible on scroll
+- [ ] Save draft works at any step
+- [ ] Validate button checks all steps
+- [ ] Submit button only enabled when valid
+- [ ] Mobile responsive (test on iPhone/Android)
+- [ ] Dark mode works in all steps
+- [ ] Form data persists when navigating steps
+- [ ] GPS button works in SmartAddressForm
+- [ ] WhatsApp/Call buttons work in MobileInput
+- [ ] Category tree navigation works properly
+- [ ] Shop dropdown shows all user's shops
+
+### 🎯 Success Criteria
+
+1. ✅ Shop wizard uses SmartAddressForm in ContactLegalStep
+2. ✅ Shop wizard uses MobileInput in BasicInfoStep
+3. ✅ Shop wizard uses CategorySelectorWithCreate in BasicInfoStep
+4. ✅ Product/Auction wizards use CategorySelectorWithCreate
+5. ✅ Product/Auction wizards use ShopSelector
+6. ✅ All required fields in Step 1 of all wizards
+7. ✅ WizardActionBar used in all wizards (sticky at bottom)
+8. ✅ No duplicate address/phone/email/category/shop form code
+9. ✅ GPS, pincode lookup, state selector available in all address forms
+10. ✅ Category tree view with search and inline create works
+11. ✅ Shop dropdown auto-loads and handles multi-shop sellers
+12. ✅ Validation works consistently across all wizards
+13. ✅ Mobile UX improved with proper touch targets
+
+### 📝 Files to Modify
+
+| File                                                        | Changes                                                 |
+| ----------------------------------------------------------- | ------------------------------------------------------- |
+| `src/app/seller/my-shops/create/page.tsx`                   | Add WizardActionBar, CategorySelectorWithCreate         |
+| `src/components/seller/shop-wizard/BasicInfoStep.tsx`       | Add phone/email, use CategorySelectorWithCreate         |
+| `src/components/seller/shop-wizard/ContactLegalStep.tsx`    | Replace textarea with SmartAddressForm                  |
+| `src/components/seller/shop-wizard/types.ts`                | Update ShopFormData with address fields                 |
+| `src/app/seller/products/create/page.tsx`                   | Add CategorySelectorWithCreate, ShopSelector            |
+| `src/components/seller/product-wizard/RequiredInfoStep.tsx` | Use CategorySelectorWithCreate, ShopSelector            |
+| `src/app/seller/auctions/create/page.tsx`                   | Add CategorySelectorWithCreate, ShopSelector            |
+| `src/components/seller/auction-wizard/RequiredInfoStep.tsx` | Use CategorySelectorWithCreate, ShopSelector            |
+| `src/components/wizards/ContactInfoStep.tsx`                | CREATE - Reusable contact section with MobileInput      |
+| `src/components/wizards/BusinessAddressStep.tsx`            | CREATE - Reusable address section with SmartAddressForm |
+| `src/components/wizards/CategorySelectionStep.tsx`          | CREATE - Reusable category selection with create option |
+| `src/components/wizards/ShopSelectionStep.tsx`              | CREATE - Reusable shop selection for multi-shop sellers |
+| `src/components/common/AddressSelectorWithCreate.tsx`       | CREATE - Saved address dropdown + inline create         |
+| `src/components/common/PaymentMethodSelectorWithCreate.tsx` | CREATE - Saved payment methods dropdown + inline create |
+| `src/app/checkout/page.tsx`                                 | Update to use AddressSelectorWithCreate                 |
+| `src/app/seller/my-shops/create/page.tsx` (updated)         | Use AddressSelectorWithCreate for business address      |
+| `src/app/admin/categories/create/page.tsx`                  | Verify WizardActionBar usage                            |
+| `src/app/admin/blog/create/page.tsx`                        | Verify WizardActionBar usage                            |
+
+### 🚀 Estimated Effort Breakdown
+
+| Phase                                 | Hours     |
+| ------------------------------------- | --------- |
+| Phase 1: Shop Wizard Refactoring      | 6-8       |
+| Phase 2: Validate Other Wizards       | 2-4       |
+| Phase 3: Reusable Step Components     | 4-6       |
+| Phase 4: Reusable Dropdown Components | 6-8       |
+| **Total**                             | **18-26** |
+
+---
+
 ## Updated Summary Statistics
 
 | Task                                      | Priority     | Effort (hours) | Status |
@@ -2435,7 +3415,8 @@ const dashboardLinks = [
 | **Task 20: Firestore Indexes**            | **HIGH**     | **2-4**        | ✅     |
 | **Task 21: Navigation Cleanup**           | **HIGH**     | **6-12**       | ⬜     |
 | **Task 22: Hooks/Contexts Consolidation** | **HIGH**     | **16-24**      | ⬜     |
-| **TOTAL**                                 | -            | **196-292**    | -      |
+| **Task 23: Form/Wizard Reusability**      | **HIGH**     | **12-18**      | ⬜     |
+| **TOTAL**                                 | -            | **208-310**    | -      |
 
 ### Progress Summary
 
