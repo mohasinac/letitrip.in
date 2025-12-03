@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput, FormSelect, FormLabel } from "@/components/forms";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
-import { ShopSelector } from "@/components/seller/ShopSelector";
+import ShopSelector from "@/components/seller/ShopSelector";
 import { mediaService } from "@/services/media.service";
 import type { RequiredStepProps } from "./types";
 

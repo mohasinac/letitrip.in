@@ -12,12 +12,25 @@ import {
 } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useIsMobile } from "@/hooks/useMobile";
-import {
-  InlineEditRow,
-  BulkActionBar,
-  TableCheckbox,
-} from "@/components/common/inline-edit";
-import type { InlineField, BulkActionConfig } from "@/constants/form-fields";
+import { BulkActionBar } from "@/components/common/BulkActionBar";
+import { TableCheckbox } from "@/components/common/TableCheckbox";
+
+// Define inline types since they're not exported
+interface InlineField {
+  name: string;
+  label: string;
+  type: string;
+  required?: boolean;
+  options?: Array<{ value: string; label: string }>;
+}
+
+interface BulkActionConfig {
+  id: string;
+  label: string;
+  icon?: string;
+  variant?: "default" | "danger";
+  requiresConfirmation?: boolean;
+}
 
 export interface AdminResourcePageProps<T> {
   // Resource Configuration
@@ -309,10 +322,10 @@ export function AdminResourcePage<T extends { id: string }>({
         <BulkActionBar
           selectedCount={selectedIds.length}
           actions={bulkActions}
-          onAction={(actionId) => {
+          onAction={async (actionId) => {
             const action = bulkActions.find((a) => a.id === actionId);
             if (action && action.handler) {
-              action.handler(selectedIds);
+              await action.handler(selectedIds);
             }
           }}
           onClearSelection={() => setSelectedIds([])}
@@ -370,36 +383,22 @@ export function AdminResourcePage<T extends { id: string }>({
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
               {items.map((item) => (
-                <InlineEditRow
-                  key={item.id}
-                  id={item.id}
-                  data={item}
-                  fields={fields}
-                  isEditing={editingId === item.id}
-                  isSelected={selectedIds.includes(item.id)}
-                  onEdit={() => setEditingId(item.id)}
-                  onCancel={() => setEditingId(null)}
-                  onSave={(data) => handleSave(item.id, data as Partial<T>)}
-                  onSelect={() => handleSelectOne(item.id)}
-                  renderView={() => (
-                    <>
-                      <td className="w-12 px-4 py-3">
-                        <TableCheckbox
-                          checked={selectedIds.includes(item.id)}
-                          onChange={() => handleSelectOne(item.id)}
-                        />
-                      </td>
-                      {columns.map((column) => (
-                        <td
-                          key={column.key}
-                          className="px-4 py-3 text-sm text-gray-900 dark:text-white"
-                        >
-                          {column.render(item)}
-                        </td>
-                      ))}
-                    </>
-                  )}
-                />
+                <tr key={item.id}>
+                  <td className="w-12 px-4 py-3">
+                    <TableCheckbox
+                      checked={selectedIds.includes(item.id)}
+                      onChange={() => handleSelectOne(item.id)}
+                    />
+                  </td>
+                  {columns.map((column) => (
+                    <td
+                      key={column.key}
+                      className="px-4 py-3 text-sm text-gray-900 dark:text-white"
+                    >
+                      {column.render(item)}
+                    </td>
+                  ))}
+                </tr>
               ))}
             </tbody>
           </table>

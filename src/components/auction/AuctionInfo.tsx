@@ -69,7 +69,7 @@ export function AuctionInfo({
   className = "",
 }: AuctionInfoProps) {
   const [bidAmount, setBidAmount] = useState(
-    currentBid > 0 ? currentBid + minBidIncrement : startingBid
+    currentBid > 0 ? currentBid + minBidIncrement : startingBid,
   );
   const [placing, setPlacing] = useState(false);
 
@@ -82,7 +82,7 @@ export function AuctionInfo({
 
     if (bidAmount < currentBid + minBidIncrement && currentBid > 0) {
       toast.error(
-        `Bid must be at least ₹${minBidIncrement.toLocaleString()} higher`
+        `Bid must be at least ₹${minBidIncrement.toLocaleString()} higher`,
       );
       return;
     }
@@ -120,7 +120,7 @@ export function AuctionInfo({
     try {
       await onToggleWatch();
       toast.success(
-        isWatching ? "Removed from watchlist" : "Added to watchlist"
+        isWatching ? "Removed from watchlist" : "Added to watchlist",
       );
     } catch (error: any) {
       toast.error(error.message || "Failed to update watchlist");

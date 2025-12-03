@@ -51,7 +51,7 @@ export function SubcategoryGrid({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"alphabetical" | "productCount">(
-    "alphabetical"
+    "alphabetical",
   );
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
