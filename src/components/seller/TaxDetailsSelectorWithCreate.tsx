@@ -58,7 +58,7 @@ const TaxDetailsSchema = z.object({
     .refine(
       (val) =>
         !val || /^[A-Z]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/.test(val),
-      "Invalid CIN format"
+      "Invalid CIN format",
     ),
   registeredAddress: z
     .string()
@@ -131,7 +131,7 @@ export function TaxDetailsSelectorWithCreate({
   useEffect(() => {
     if (autoSelectDefault && (taxDetailsList || []).length > 0 && !selectedId) {
       const defaultTaxDetails = (taxDetailsList || []).find(
-        (tax) => tax.isDefault
+        (tax) => tax.isDefault,
       );
       if (defaultTaxDetails) {
         setSelectedId(defaultTaxDetails.id);

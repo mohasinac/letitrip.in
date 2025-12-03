@@ -274,11 +274,11 @@ export function TagSelectorWithCreate({
   };
 
   const filteredTags = (allTags || []).filter((tag) =>
-    tag.name.toLowerCase().includes(searchQuery.toLowerCase())
+    tag.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const availableTags = filteredTags.filter(
-    (tag) => !selectedTags.find((t) => t.id === tag.id)
+    (tag) => !selectedTags.find((t) => t.id === tag.id),
   );
 
   if (loading) {
@@ -494,7 +494,7 @@ export function TagSelectorWithCreate({
                   </label>
                   <div
                     className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${getTagColorClass(
-                      newTagColor
+                      newTagColor,
                     )}`}
                   >
                     <Tag className="w-3 h-3" />

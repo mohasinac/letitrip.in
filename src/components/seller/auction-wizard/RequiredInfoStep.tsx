@@ -122,9 +122,10 @@ export function RequiredInfoStep({
         <ShopSelector
           value={formData.shopId || ""}
           onChange={(shopId) => handleChange("shopId", shopId || "")}
-          required
-          helperText="Select which shop this auction belongs to"
         />
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Select which shop this auction belongs to
+        </p>
       </div>
 
       {/* Starting Bid */}

@@ -98,7 +98,7 @@ export function BusinessAddressStep({
         console.error("GPS error:", error);
         toast.error("Failed to get GPS location");
         setLoadingGPS(false);
-      }
+      },
     );
   };
 

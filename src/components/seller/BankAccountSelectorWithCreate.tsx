@@ -128,7 +128,7 @@ export function BankAccountSelectorWithCreate({
 
   // Auto-select default account
   useEffect(() => {
-    if (autoSelectDefault && accounts.length > 0 && !selectedId) {
+    if (autoSelectDefault && accounts && accounts.length > 0 && !selectedId) {
       const defaultAccount = accounts.find((acc) => acc.isDefault);
       if (defaultAccount) {
         setSelectedId(defaultAccount.id);
@@ -155,7 +155,8 @@ export function BankAccountSelectorWithCreate({
       {
         onError: (error) => {
           logError(error, {
-            context: "BankAccountSelectorWithCreate.loadBankAccounts",
+            component: "BankAccountSelectorWithCreate",
+            action: "loadBankAccounts",
           });
           toast.error("Failed to load bank accounts");
         },

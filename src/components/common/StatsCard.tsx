@@ -20,7 +20,7 @@ import { ReactNode } from "react";
 
 export interface StatsCardProps {
   title: string;
-  value: string | number;
+  value: string | number | ReactNode;
   icon?: ReactNode;
   trend?: {
     value: number;

@@ -121,7 +121,7 @@ export function ProductVariantSelector({
             ? Math.round(
                 ((variant.compareAtPrice - variant.price) /
                   variant.compareAtPrice) *
-                  100
+                  100,
               )
             : 0;
 

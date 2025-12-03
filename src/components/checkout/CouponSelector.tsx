@@ -68,7 +68,7 @@ export function CouponSelector({
       });
 
       const coupons = (response.data || []).filter(
-        (c) => c.status === "active"
+        (c) => c.status === "active",
       );
 
       // Find best coupon
@@ -147,7 +147,7 @@ export function CouponSelector({
       if (validation.valid) {
         // Find the coupon details
         const coupon = (availableCoupons || []).find(
-          (c) => c.code === manualCode.trim().toUpperCase()
+          (c) => c.code === manualCode.trim().toUpperCase(),
         );
         if (coupon) {
           onApply(coupon, validation.discount);
@@ -169,7 +169,7 @@ export function CouponSelector({
 
   const isExpiringSoon = (expiryDate: Date): boolean => {
     const daysUntilExpiry = Math.ceil(
-      (new Date(expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      (new Date(expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
     );
     return daysUntilExpiry <= 3;
   };
@@ -266,8 +266,8 @@ export function CouponSelector({
                     isApplied
                       ? "border-green-500 bg-green-50 dark:bg-green-900/20"
                       : isEligible
-                      ? "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
-                      : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 opacity-60"
+                        ? "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 opacity-60"
                   }
                 `}
               >

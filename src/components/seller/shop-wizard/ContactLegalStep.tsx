@@ -26,7 +26,7 @@ export default function ContactLegalStep({
           if (addressData) {
             onChange(
               "address",
-              `${addressData.line1}, ${addressData.city}, ${addressData.state}, ${addressData.pincode}`
+              `${addressData.line1}, ${addressData.city}, ${addressData.state}, ${addressData.pincode}`,
             );
           }
         }}

@@ -141,7 +141,7 @@ export function ShippingMethodSelector({
         const available = loadedMethods.filter((m) => m.available);
         if (available.length > 0) {
           const cheapest = available.reduce((prev, current) =>
-            current.cost < prev.cost ? current : prev
+            current.cost < prev.cost ? current : prev,
           );
           setSelectedId(cheapest.id);
           onChange(cheapest.id, cheapest);
@@ -174,7 +174,7 @@ export function ShippingMethodSelector({
     };
     return `${startDate.toLocaleDateString(
       "en-IN",
-      options
+      options,
     )} - ${endDate.toLocaleDateString("en-IN", options)}`;
   };
 
@@ -191,7 +191,7 @@ export function ShippingMethodSelector({
     }
 
     const hoursLeft = Math.floor(
-      (cutoff.getTime() - now.getTime()) / (1000 * 60 * 60)
+      (cutoff.getTime() - now.getTime()) / (1000 * 60 * 60),
     );
     if (hoursLeft <= 2) {
       return `Order within ${hoursLeft}h to get this delivery option`;
@@ -306,7 +306,7 @@ export function ShippingMethodSelector({
                       {method.estimatedDays === 0
                         ? "Delivery today"
                         : `Delivery by ${getDeliveryDateRange(
-                            method.estimatedDays
+                            method.estimatedDays,
                           )}`}
                     </span>
                   </div>

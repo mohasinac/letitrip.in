@@ -11,6 +11,10 @@ import {
   auctionsSieveConfig,
   createPaginationMeta,
 } from "@/app/api/lib/sieve";
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 // Extended Sieve config with field mappings for auctions
 const auctionsConfig = {
@@ -79,7 +83,7 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -142,7 +146,7 @@ export async function GET(request: NextRequest) {
         query = query.where(
           dbField,
           filter.operator as FirebaseFirestore.WhereFilterOp,
-          filter.value,
+          filter.value
         );
       }
     }
@@ -190,7 +194,7 @@ export async function GET(request: NextRequest) {
     // Execute query
     const snapshot = await query.get();
     const data = snapshot.docs.map((doc) =>
-      transformAuction(doc.id, doc.data()),
+      transformAuction(doc.id, doc.data())
     );
 
     // Build response with Sieve pagination meta
@@ -224,7 +228,7 @@ export async function GET(request: NextRequest) {
           details: error instanceof Error ? error.message : String(error),
         }),
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -245,16 +249,52 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Only sellers and admins can create auctions",
         },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
     const body = await request.json();
     const { shop_id, name, slug, starting_bid, end_time, category_id } = body;
-    if (!shop_id || !name || !slug || starting_bid == null || !end_time) {
+
+    // Validate required fields
+    const errors: Record<string, string> = {};
+
+    if (!shop_id) {
+      errors.shop_id = VALIDATION_MESSAGES.REQUIRED.FIELD("Shop ID");
+    }
+
+    if (!name) {
+      errors.name = VALIDATION_MESSAGES.REQUIRED.FIELD("Auction name");
+    } else if (
+      name.length < VALIDATION_RULES.AUCTION.NAME.MIN_LENGTH ||
+      name.length > VALIDATION_RULES.AUCTION.NAME.MAX_LENGTH
+    ) {
+      errors.name = `Auction name must be between ${VALIDATION_RULES.AUCTION.NAME.MIN_LENGTH} and ${VALIDATION_RULES.AUCTION.NAME.MAX_LENGTH} characters`;
+    }
+
+    if (!slug) {
+      errors.slug = VALIDATION_MESSAGES.REQUIRED.FIELD("Slug");
+    } else if (
+      slug.length < VALIDATION_RULES.SLUG.MIN_LENGTH ||
+      slug.length > VALIDATION_RULES.SLUG.MAX_LENGTH
+    ) {
+      errors.slug = `Slug must be between ${VALIDATION_RULES.SLUG.MIN_LENGTH} and ${VALIDATION_RULES.SLUG.MAX_LENGTH} characters`;
+    }
+
+    if (starting_bid == null) {
+      errors.starting_bid = VALIDATION_MESSAGES.REQUIRED.FIELD("Starting bid");
+    } else if (starting_bid < VALIDATION_RULES.AUCTION.START_PRICE.MIN) {
+      errors.starting_bid = `Starting bid must be at least ₹${VALIDATION_RULES.AUCTION.START_PRICE.MIN}`;
+    }
+
+    if (!end_time) {
+      errors.end_time = VALIDATION_MESSAGES.REQUIRED.FIELD("End time");
+    }
+
+    if (Object.keys(errors).length > 0) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields" },
-        { status: 400 },
+        { success: false, error: "Validation failed", errors },
+        { status: 400 }
       );
     }
 
@@ -263,7 +303,7 @@ export async function POST(request: NextRequest) {
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Cannot create auction for this shop" },
-          { status: 403 },
+          { status: 403 }
         );
       }
       // Limit: 5 active auctions per shop
@@ -278,7 +318,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "Active auction limit reached for this shop",
           },
-          { status: 400 },
+          { status: 400 }
         );
       }
     }
@@ -288,7 +328,7 @@ export async function POST(request: NextRequest) {
     if (existingDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Auction slug already exists" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -323,13 +363,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { success: true, data: { id: slug, ...auctionData } },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Error creating auction:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create auction" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
