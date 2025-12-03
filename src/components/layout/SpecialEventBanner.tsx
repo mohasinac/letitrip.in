@@ -4,6 +4,7 @@ import Link from "next/link";
 import { X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { homepageService } from "@/services/homepage.service";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 export default function SpecialEventBanner() {
   const [isVisible, setIsVisible] = useState(true);
@@ -13,6 +14,12 @@ export default function SpecialEventBanner() {
     link?: string;
     backgroundColor?: string;
     textColor?: string;
+    backgroundImage?: string;
+    gradient?: {
+      from: string;
+      to: string;
+      direction?: string;
+    };
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,9 +44,21 @@ export default function SpecialEventBanner() {
   const defaultBgColor = "#2563eb"; // blue-600
   const defaultTextColor = "#ffffff";
 
-  // Use custom colors if provided, otherwise use defaults
-  const bgColor = bannerSettings.backgroundColor || defaultBgColor;
-  const textColor = bannerSettings.textColor || defaultTextColor;
+  // Build style object
+  const bannerStyle: React.CSSProperties = {};
+
+  // Apply gradient if specified
+  if (bannerSettings.gradient) {
+    const direction = bannerSettings.gradient.direction || "to right";
+    bannerStyle.backgroundImage = `linear-gradient(${direction}, ${bannerSettings.gradient.from}, ${bannerSettings.gradient.to})`;
+  } else if (bannerSettings.backgroundColor) {
+    bannerStyle.backgroundColor = bannerSettings.backgroundColor;
+  } else {
+    bannerStyle.backgroundColor = defaultBgColor;
+  }
+
+  // Apply text color
+  bannerStyle.color = bannerSettings.textColor || defaultTextColor;
 
   const BannerContent = () => (
     <div
@@ -54,13 +73,24 @@ export default function SpecialEventBanner() {
   return (
     <div
       id="special-event-banner"
-      className="py-2 px-4 relative"
-      style={{
-        backgroundColor: bgColor,
-        color: textColor,
-      }}
+      className="py-2 px-4 relative overflow-hidden"
+      style={bannerStyle}
     >
-      <div className="container mx-auto flex items-center justify-center gap-2 text-sm md:text-base">
+      {/* Background Image */}
+      {bannerSettings.backgroundImage && (
+        <div className="absolute inset-0 z-0">
+          <OptimizedImage
+            src={bannerSettings.backgroundImage}
+            alt="Banner background"
+            fill
+            objectFit="cover"
+            className="opacity-20"
+          />
+        </div>
+      )}
+
+      {/* Content */}
+      <div className="container mx-auto flex items-center justify-center gap-2 text-sm md:text-base relative z-10">
         {bannerSettings.link ? (
           <Link href={bannerSettings.link} className="hover:underline">
             <BannerContent />

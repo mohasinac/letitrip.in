@@ -35,20 +35,22 @@ interface HomepageSettings {
   };
   sections: {
     valueProposition: { enabled: boolean };
+    latestProducts: { enabled: boolean; maxProducts: number };
+    hotAuctions: { enabled: boolean; maxAuctions: number };
     featuredCategories: {
       enabled: boolean;
       maxCategories: number;
       productsPerCategory: number;
     };
-    featuredProducts: { enabled: boolean; maxProducts: number };
-    featuredAuctions: { enabled: boolean; maxAuctions: number };
     featuredShops: {
       enabled: boolean;
       maxShops: number;
       productsPerShop: number;
     };
+    featuredProducts: { enabled: boolean; maxProducts: number };
+    featuredAuctions: { enabled: boolean; maxAuctions: number };
+    recentReviews: { enabled: boolean; maxReviews: number };
     featuredBlogs: { enabled: boolean; maxBlogs: number };
-    featuredReviews: { enabled: boolean; maxReviews: number };
   };
   sectionOrder: string[];
   featuredItems?: Record<string, FeaturedItem[]>;
@@ -72,33 +74,33 @@ const DEFAULT_SETTINGS: HomepageSettings = {
   },
   sections: {
     valueProposition: { enabled: true },
+    latestProducts: { enabled: true, maxProducts: 10 },
+    hotAuctions: { enabled: true, maxAuctions: 10 },
     featuredCategories: {
       enabled: true,
-      maxCategories: 5,
+      maxCategories: 6,
       productsPerCategory: 10,
+    },
+    featuredShops: {
+      enabled: true,
+      maxShops: 4,
+      productsPerShop: 10,
     },
     featuredProducts: { enabled: true, maxProducts: 10 },
     featuredAuctions: { enabled: true, maxAuctions: 10 },
-    featuredShops: {
-      enabled: true,
-      maxShops: 5,
-      productsPerShop: 10,
-    },
+    recentReviews: { enabled: true, maxReviews: 10 },
     featuredBlogs: { enabled: true, maxBlogs: 10 },
-    featuredReviews: { enabled: true, maxReviews: 10 },
   },
   sectionOrder: [
-    "hero-section",
-    "value-proposition",
-    "featured-categories-icons",
-    "featured-categories",
-    "featured-products",
-    "featured-auctions",
-    "shops-nav",
-    "featured-shops",
-    "featured-blogs",
-    "featured-reviews",
-    "faq-section",
+    "valueProposition",
+    "latestProducts",
+    "hotAuctions",
+    "featuredCategories",
+    "featuredShops",
+    "featuredProducts",
+    "featuredAuctions",
+    "recentReviews",
+    "featuredBlogs",
   ],
   updatedAt: new Date().toISOString(),
 };

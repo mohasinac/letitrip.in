@@ -143,8 +143,6 @@ export default function AdminAuctionsPage() {
         start: { status: "live" as AuctionStatus },
         end: { status: "ended" as AuctionStatus },
         cancel: { status: "cancelled" as AuctionStatus },
-        feature: { featured: true },
-        unfeature: { featured: false },
       };
 
       if (actionId === "delete") {
@@ -455,10 +453,10 @@ export default function AdminAuctionsPage() {
         {/* Table/Grid Content */}
         <div className="flex-1 min-w-0">
           {view === "table" ? (
-            <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
                       <th className="w-12 px-4 py-3">
                         <TableCheckbox
@@ -503,7 +501,7 @@ export default function AdminAuctionsPage() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {auctions.length === 0 ? (
                       <tr>
                         <td
@@ -521,7 +519,7 @@ export default function AdminAuctionsPage() {
                       auctions.map((auction) => (
                         <tr
                           key={auction.id}
-                          className="hover:bg-gray-50 transition-colors"
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
                           <td className="px-4 py-3">
                             <TableCheckbox
@@ -558,11 +556,6 @@ export default function AdminAuctionsPage() {
                                 >
                                   {auction.name}
                                 </Link>
-                                {auction.featured && (
-                                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    Featured
-                                  </span>
-                                )}
                               </div>
                             </div>
                           </td>
@@ -651,7 +644,7 @@ export default function AdminAuctionsPage() {
                 auctions.map((auction) => (
                   <div
                     key={auction.id}
-                    className="rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-md transition-shadow"
+                    className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden hover:shadow-md transition-shadow"
                   >
                     <div className="relative">
                       {auction.images && auction.images[0] ? (
@@ -664,7 +657,7 @@ export default function AdminAuctionsPage() {
                           />
                         </div>
                       ) : (
-                        <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
+                        <div className="w-full h-48 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                           <Gavel className="h-12 w-12 text-gray-400" />
                         </div>
                       )}
@@ -682,13 +675,6 @@ export default function AdminAuctionsPage() {
                           }}
                         />
                       </div>
-                      {auction.featured && (
-                        <div className="absolute top-2 left-2">
-                          <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-400 text-yellow-900">
-                            Featured
-                          </span>
-                        </div>
-                      )}
                       <div className="absolute bottom-2 left-2">
                         <span
                           className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(
@@ -762,7 +748,7 @@ export default function AdminAuctionsPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-6 flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg">
+            <div className="mt-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 sm:px-6 rounded-lg">
               <div className="flex flex-1 justify-between sm:hidden">
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}

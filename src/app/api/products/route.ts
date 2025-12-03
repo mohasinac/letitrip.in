@@ -101,6 +101,7 @@ export async function GET(request: NextRequest) {
         const featured = searchParams.get("featured");
         const slug = searchParams.get("slug");
         const search = searchParams.get("search");
+        const inStock = searchParams.get("inStock");
 
         // Apply direct query params (backward compatibility)
         if (shopId) {
@@ -117,6 +118,9 @@ export async function GET(request: NextRequest) {
         }
         if (slug) {
           query = query.where("slug", "==", slug);
+        }
+        if (inStock === "true") {
+          query = query.where("stock_count", ">", 0);
         }
 
         // Apply Sieve filters

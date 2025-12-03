@@ -199,7 +199,7 @@ const BEYBLADE_PRODUCTS: Record<string, string[]> = {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { shops, categoryMap } = body;
+    const { shops, categoryMap, scale = 10 } = body;
 
     if (!shops || !Array.isArray(shops) || shops.length === 0) {
       return NextResponse.json({ success: false, error: "Shops data required" }, { status: 400 });
@@ -232,7 +232,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create products - distribute evenly across categories and shops
-    const totalProducts = Math.min(shops.length * 20, 1000);
+    // Scale × 100 products (100 for scale 10, 1000 for scale 10, 10000 for scale 100)
+    const totalProducts = scale * 100;
     let productIndex = 0;
     
     for (let i = 0; i < totalProducts; i++) {

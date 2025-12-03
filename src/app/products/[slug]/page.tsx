@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Loader2, Star, Store } from "lucide-react";
+import { Loader2, Star, Store } from "lucide-react";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductInfo } from "@/components/product/ProductInfo";
 import { ProductDescription } from "@/components/product/ProductDescription";
@@ -141,13 +141,36 @@ export default function ProductPage({ params }: ProductPageProps) {
       {/* Breadcrumbs */}
       <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-3">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5" />
-            Back
-          </button>
+          <nav className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <Link
+              href="/"
+              className="hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              Home
+            </Link>
+            <span>/</span>
+            <Link
+              href="/products"
+              className="hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              Products
+            </Link>
+            {product.category && (
+              <>
+                <span>/</span>
+                <Link
+                  href={`/categories/${product.category.slug}`}
+                  className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
+                  {product.category.name}
+                </Link>
+              </>
+            )}
+            <span>/</span>
+            <span className="text-gray-900 dark:text-white truncate max-w-xs">
+              {product.name}
+            </span>
+          </nav>
         </div>
       </div>
 

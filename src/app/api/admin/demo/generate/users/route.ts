@@ -63,11 +63,25 @@ const AVATAR_IMAGES = [
   "https://images.unsplash.com/photo-1557862921-37829c790f19?w=150&h=150&fit=crop",
 ];
 
-// Role distribution for 100 users
-const USER_ROLES = { admin: 2, moderator: 3, support: 5, seller: 50, user: 40 };
+// Role distribution percentages (for 10 users base)
+// Admin is always 1 (Mohsin) regardless of scale
+const USER_ROLES_BASE = { admin: 1, moderator: 3, support: 5, seller: 5, user: 4 };
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    const body = await request.json();
+    const scale = body.scale || 10;
+    
+    // Calculate actual user counts based on scale
+    // Admin is always 1 (Mohsin) regardless of scale
+    const USER_ROLES = {
+      admin: 1, // Always 1 admin - Mohsin
+      moderator: Math.max(1, Math.round(USER_ROLES_BASE.moderator * scale / 10)),
+      support: Math.max(1, Math.round(USER_ROLES_BASE.support * scale / 10)),
+      seller: Math.max(1, Math.round(USER_ROLES_BASE.seller * scale / 10)),
+      user: Math.max(1, Math.round(USER_ROLES_BASE.user * scale / 10)),
+    };
+    
     const db = getFirestoreAdmin();
     const timestamp = new Date();
     const createdUsers: Array<{ id: string; role: string; name: string; email: string; password: string }> = [];
@@ -75,10 +89,14 @@ export async function POST() {
     let userIndex = 0;
     for (const [role, count] of Object.entries(USER_ROLES)) {
       for (let i = 0; i < count; i++) {
-        const firstName = INDIAN_FIRST_NAMES[userIndex % INDIAN_FIRST_NAMES.length];
-        const lastName = INDIAN_LAST_NAMES[userIndex % INDIAN_LAST_NAMES.length];
+        // Use Mohsin for the admin account, random names for others
+        const isAdmin = role === "admin";
+        const firstName = isAdmin ? "Mohsin" : INDIAN_FIRST_NAMES[userIndex % INDIAN_FIRST_NAMES.length];
+        const lastName = isAdmin ? "AC" : INDIAN_LAST_NAMES[userIndex % INDIAN_LAST_NAMES.length];
         const fullName = `${firstName} ${lastName}`;
-        const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${userIndex}@demo.letitrip.in`;
+        const email = isAdmin 
+          ? "admin@demo.letitrip.in" 
+          : `${firstName.toLowerCase()}.${lastName.toLowerCase()}${userIndex}@demo.letitrip.in`;
         const city = INDIAN_CITIES[userIndex % INDIAN_CITIES.length];
 
         const userRef = db.collection(COLLECTIONS.USERS).doc();

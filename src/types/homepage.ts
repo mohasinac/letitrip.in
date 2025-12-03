@@ -18,16 +18,14 @@ export interface HomepageSettings {
   };
   sections: {
     valueProposition: SectionConfig;
+    latestProducts: SectionConfig;
+    hotAuctions: SectionConfig;
     featuredCategories: SectionConfig;
-    featuredProducts: SectionConfig;
-    newArrivals: SectionConfig;
-    bestSellers: SectionConfig;
-    onSale: SectionConfig;
-    featuredAuctions: SectionConfig;
     featuredShops: SectionConfig;
+    featuredProducts: SectionConfig;
+    featuredAuctions: SectionConfig;
+    recentReviews: SectionConfig;
     featuredBlogs: SectionConfig;
-    featuredReviews: SectionConfig;
-    vintageCollection?: SectionConfig;
   };
   sectionOrder: string[];
   createdAt: Date | string;
@@ -36,13 +34,12 @@ export interface HomepageSettings {
 
 export const DEFAULT_SECTION_ORDER = [
   "valueProposition",
+  "latestProducts",
+  "hotAuctions",
   "featuredCategories",
-  "featuredProducts",
-  "newArrivals",
-  "bestSellers",
-  "onSale",
-  "featuredAuctions",
   "featuredShops",
+  "featuredProducts",
+  "featuredAuctions",
+  "recentReviews",
   "featuredBlogs",
-  "featuredReviews",
 ];

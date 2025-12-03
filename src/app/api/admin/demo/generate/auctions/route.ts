@@ -87,7 +87,7 @@ const AUCTION_ITEMS = [
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { shops, productsByShop, categoryMap } = body;
+    const { shops, productsByShop, categoryMap, scale = 10 } = body;
 
     if (!shops || !Array.isArray(shops) || shops.length === 0) {
       return NextResponse.json({ success: false, error: "Shops data required" }, { status: 400 });
@@ -104,9 +104,9 @@ export async function POST(request: NextRequest) {
     // Track auction counts per category: { categoryId: { live, ended } }
     const auctionStats: Record<string, { live: number; ended: number }> = {};
 
-    // Create 250 auctions (5 per shop for 50 shops)
-    const auctionsPerShop = 5;
-    const totalAuctions = Math.min(shops.length * auctionsPerShop, 250);
+    // Create auctions based on scale (scale × 25)
+    const auctionsPerShop = Math.ceil(scale * 25 / shops.length);
+    const totalAuctions = scale * 25;
 
     for (let i = 0; i < totalAuctions; i++) {
       const shopIndex = Math.floor(i / auctionsPerShop);

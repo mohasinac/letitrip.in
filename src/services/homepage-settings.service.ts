@@ -30,10 +30,23 @@ export interface HomepageSettings {
     valueProposition: {
       enabled: boolean;
     };
+    latestProducts: {
+      enabled: boolean;
+      maxProducts: number;
+    };
+    hotAuctions: {
+      enabled: boolean;
+      maxAuctions: number;
+    };
     featuredCategories: {
       enabled: boolean;
       maxCategories: number;
       productsPerCategory: number;
+    };
+    featuredShops: {
+      enabled: boolean;
+      maxShops: number;
+      productsPerShop: number;
     };
     featuredProducts: {
       enabled: boolean;
@@ -43,18 +56,13 @@ export interface HomepageSettings {
       enabled: boolean;
       maxAuctions: number;
     };
-    featuredShops: {
+    recentReviews: {
       enabled: boolean;
-      maxShops: number;
-      productsPerShop: number;
+      maxReviews: number;
     };
     featuredBlogs: {
       enabled: boolean;
       maxBlogs: number;
-    };
-    featuredReviews: {
-      enabled: boolean;
-      maxReviews: number;
     };
   };
   sectionOrder: string[];

@@ -66,32 +66,37 @@ const GENERATION_STEPS: {
     id: "users",
     label: "Users",
     icon: Users,
-    description: "Create 100 users with roles",
+    description: "Create users with roles (scale × 10)",
   },
-  { id: "shops", label: "Shops", icon: Store, description: "Create 50 shops" },
+  {
+    id: "shops",
+    label: "Shops",
+    icon: Store,
+    description: "Create shops (scale ÷ 2)",
+  },
   {
     id: "products",
     label: "Products",
     icon: Package,
-    description: "Create 1,000 products",
+    description: "Create products (scale × 100)",
   },
   {
     id: "auctions",
     label: "Auctions",
     icon: Gavel,
-    description: "Create 250 auctions",
+    description: "Create auctions (scale × 25)",
   },
   {
     id: "bids",
     label: "Bids",
     icon: DollarSign,
-    description: "Create 2,500+ bids",
+    description: "Create bids (scale × 250+)",
   },
   {
     id: "reviews",
     label: "Reviews",
     icon: Star,
-    description: "Create 1,500+ reviews",
+    description: "Create reviews (scale × 150+)",
   },
   {
     id: "orders",
@@ -248,6 +253,9 @@ export default function AdminDemoPage() {
   const pausedRef = useRef(false);
   const cleanupPausedRef = useRef(false);
 
+  // Scale control for data generation (default: 10)
+  const [scale, setScale] = useState<number>(10);
+
   // Step-by-step generation state
   const [currentStep, setCurrentStep] = useState<DemoStep | null>(null);
   const [stepStatuses, setStepStatuses] = useState<
@@ -391,7 +399,7 @@ export default function AdminDemoPage() {
 
         switch (step) {
           case "categories":
-            result = await demoDataService.generateCategories();
+            result = await demoDataService.generateCategories(scale);
             if (result.success && result.data) {
               state.categoryMap = result.data.categoryMap;
               updateStepStatus(step, {
@@ -402,7 +410,7 @@ export default function AdminDemoPage() {
             break;
 
           case "users":
-            result = await demoDataService.generateUsers();
+            result = await demoDataService.generateUsers(scale);
             if (result.success && result.data) {
               state.sellers = result.data.sellers;
               state.buyers = result.data.buyers;
@@ -418,7 +426,7 @@ export default function AdminDemoPage() {
           case "shops":
             if (!state.sellers)
               throw new Error("Users must be generated first");
-            result = await demoDataService.generateShops(state.sellers);
+            result = await demoDataService.generateShops(state.sellers, scale);
             if (result.success && result.data) {
               state.shops = result.data.shops;
               updateStepStatus(step, {
@@ -433,7 +441,8 @@ export default function AdminDemoPage() {
               throw new Error("Shops and categories required");
             result = await demoDataService.generateProducts(
               state.shops,
-              state.categoryMap
+              state.categoryMap,
+              scale
             );
             if (result.success && result.data) {
               state.products = result.data.products;
@@ -450,7 +459,8 @@ export default function AdminDemoPage() {
               throw new Error("Shops and products required");
             result = await demoDataService.generateAuctions(
               state.shops,
-              state.productsByShop
+              state.productsByShop,
+              scale
             );
             if (result.success && result.data) {
               state.auctions = result.data.auctions;
@@ -466,7 +476,8 @@ export default function AdminDemoPage() {
               throw new Error("Auctions and buyers required");
             result = await demoDataService.generateBids(
               state.auctions,
-              state.buyers
+              state.buyers,
+              scale
             );
             if (result.success && result.data) {
               updateStepStatus(step, {
@@ -481,7 +492,8 @@ export default function AdminDemoPage() {
               throw new Error("Products and buyers required");
             result = await demoDataService.generateReviews(
               state.products,
-              state.buyers
+              state.buyers,
+              scale
             );
             if (result.success && result.data) {
               updateStepStatus(step, {
@@ -497,7 +509,8 @@ export default function AdminDemoPage() {
             result = await demoDataService.generateOrders(
               state.shops,
               state.buyers,
-              state.productsByShop
+              state.productsByShop,
+              scale
             );
             if (result.success && result.data) {
               updateStepStatus(step, {
@@ -516,6 +529,7 @@ export default function AdminDemoPage() {
               buyers: state.buyers,
               users: state.users,
               products: state.products,
+              scale,
             });
             if (result.success && result.data) {
               const totalExtras = Object.values(result.data).reduce(
@@ -525,6 +539,16 @@ export default function AdminDemoPage() {
               updateStepStatus(step, {
                 status: "completed",
                 count: totalExtras,
+              });
+            }
+            break;
+
+          case "settings":
+            result = await demoDataService.generateSettings(scale);
+            if (result.success && result.data) {
+              updateStepStatus(step, {
+                status: "completed",
+                count: result.data.count || 1,
               });
             }
             break;
@@ -1046,6 +1070,53 @@ export default function AdminDemoPage() {
             </div>
           </div>
 
+          {/* Scale Control */}
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                  Data Scale
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Control the amount of demo data generated
+                </p>
+              </div>
+              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {scale}x
+              </span>
+            </div>
+            <div className="space-y-2">
+              <input
+                type="range"
+                min="1"
+                max="100"
+                step="1"
+                value={scale}
+                onChange={(e) => setScale(Number(e.target.value))}
+                disabled={generating || cleaning}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                <span>1x (Minimal)</span>
+                <span>10x (Default)</span>
+                <span>100x (Maximum)</span>
+              </div>
+              <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded text-xs space-y-1">
+                <p className="font-medium text-gray-700 dark:text-gray-300">
+                  Expected counts for scale {scale}:
+                </p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-gray-600 dark:text-gray-400">
+                  <span>• Users: {scale * 10}</span>
+                  <span>• Shops: {Math.ceil(scale / 2)}</span>
+                  <span>• Products: {scale * 100}</span>
+                  <span>• Auctions: {Math.ceil(scale * 25)}</span>
+                  <span>• Bids: {scale * 250}+</span>
+                  <span>• Reviews: {scale * 150}+</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Progress Bar */}
           {generating && (
             <div>
@@ -1271,9 +1342,9 @@ export default function AdminDemoPage() {
                             {stepConfig.label}
                           </p>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {status.status === "error"
+                            {status?.status === "error"
                               ? status.error
-                              : status.status === "completed" && status.count
+                              : status?.status === "completed" && status.count
                               ? `Deleted ${status.count.toLocaleString()} items`
                               : stepConfig.description}
                           </p>
@@ -1281,8 +1352,8 @@ export default function AdminDemoPage() {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        {status.status !== "completed" &&
-                          status.status !== "running" && (
+                        {status?.status !== "completed" &&
+                          status?.status !== "running" && (
                             <button
                               onClick={() =>
                                 handleCleanupSingleStep(stepConfig.id)
@@ -1293,12 +1364,12 @@ export default function AdminDemoPage() {
                               }
                               className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-md hover:bg-red-200 dark:hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              {status.status === "error" ? (
+                              {status?.status === "error" ? (
                                 <RefreshCw className="w-4 h-4" />
                               ) : (
                                 <Trash2 className="w-4 h-4" />
                               )}
-                              {status.status === "error" ? "Retry" : "Delete"}
+                              {status?.status === "error" ? "Retry" : "Delete"}
                             </button>
                           )}
                       </div>

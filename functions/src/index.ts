@@ -1398,6 +1398,125 @@ async function updateProductRating(productId: string): Promise<void> {
 // ============================================================================
 
 /**
+ * Scheduled function to clean up old bids (older than 1 month)
+ * Preserves winning bids, deletes all others
+ * Runs daily at 2 AM IST
+ */
+export const cleanupOldBids = functions
+  .region("asia-south1")
+  .runWith({
+    timeoutSeconds: 540,
+    memory: "1GB",
+    minInstances: 0,
+    maxInstances: 1,
+    serviceAccount,
+  })
+  .pubsub.schedule("0 2 * * *") // 2 AM daily
+  .timeZone("Asia/Kolkata")
+  .onRun(async () => {
+    console.log("[Cleanup] Starting old bids cleanup...");
+
+    try {
+      // Calculate cutoff date (1 month ago)
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+      const cutoffTimestamp = admin.firestore.Timestamp.fromDate(oneMonthAgo);
+
+      console.log(`[Cleanup] Cleaning bids older than ${oneMonthAgo.toISOString()}`);
+
+      // Step 1: Get all ended auctions with winning bids
+      const auctionsSnapshot = await db
+        .collection("auctions")
+        .where("status", "==", "ended")
+        .select("winner_id", "final_bid")
+        .get();
+
+      const winningBidInfo: Record<string, {bidderId: string; amount: number}> = {};
+
+      auctionsSnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.winner_id && data.final_bid) {
+          winningBidInfo[doc.id] = {
+            bidderId: data.winner_id,
+            amount: data.final_bid,
+          };
+        }
+      });
+
+      console.log(`[Cleanup] Found ${Object.keys(winningBidInfo).length} auctions with winning bids`);
+
+      // Step 2: Get all old bids
+      const oldBidsSnapshot = await db
+        .collection("bids")
+        .where("createdAt", "<", cutoffTimestamp)
+        .limit(1000) // Process in batches
+        .get();
+
+      console.log(`[Cleanup] Found ${oldBidsSnapshot.size} bids older than 1 month`);
+
+      if (oldBidsSnapshot.empty) {
+        console.log("[Cleanup] No old bids to clean");
+        return {deleted: 0, preserved: 0};
+      }
+
+      // Step 3: Delete non-winning bids
+      let deletedCount = 0;
+      let preservedCount = 0;
+      const batch = db.batch();
+      let batchCount = 0;
+      const MAX_BATCH_SIZE = 500;
+
+      for (const bidDoc of oldBidsSnapshot.docs) {
+        const bidData = bidDoc.data();
+        const auctionId = bidData.auction_id || bidData.auctionId;
+        const bidderId = bidData.user_id || bidData.bidderId;
+        const bidAmount = bidData.amount;
+
+        // Check if this is a winning bid
+        const isWinningBid =
+          winningBidInfo[auctionId] &&
+          winningBidInfo[auctionId].bidderId === bidderId &&
+          winningBidInfo[auctionId].amount === bidAmount;
+
+        if (isWinningBid) {
+          // Preserve winning bids
+          preservedCount++;
+          console.log(`[Cleanup] Preserving winning bid ${bidDoc.id} for auction ${auctionId}`);
+        } else {
+          // Delete non-winning bids
+          batch.delete(bidDoc.ref);
+          batchCount++;
+          deletedCount++;
+
+          // Commit batch when it reaches max size
+          if (batchCount >= MAX_BATCH_SIZE) {
+            await batch.commit();
+            console.log(`[Cleanup] Committed batch of ${batchCount} deletions`);
+            batchCount = 0;
+          }
+        }
+      }
+
+      // Commit remaining batch
+      if (batchCount > 0) {
+        await batch.commit();
+        console.log(`[Cleanup] Committed final batch of ${batchCount} deletions`);
+      }
+
+      console.log(`[Cleanup] Bid cleanup complete: deleted ${deletedCount}, preserved ${preservedCount}`);
+
+      return {
+        deleted: deletedCount,
+        preserved: preservedCount,
+        cutoffDate: oneMonthAgo.toISOString(),
+      };
+    } catch (error) {
+      console.error("[Cleanup] Error cleaning old bids:", error);
+      return {error: String(error)};
+    }
+  });
+
+/**
  * Scheduled function to clean up expired sessions
  * Runs every hour
  */

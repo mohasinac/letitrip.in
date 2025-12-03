@@ -146,16 +146,6 @@ export default function AdminShopsPage() {
             case "unverify":
               await shopsService.verify(shop.slug, { isVerified: false });
               break;
-            case "feature":
-              await shopsService.setFeatureFlags(shop.slug, {
-                featured: true,
-              });
-              break;
-            case "unfeature":
-              await shopsService.setFeatureFlags(shop.slug, {
-                featured: false,
-              });
-              break;
             case "ban":
               await shopsService.ban(shop.slug, {
                 isBanned: true,
@@ -357,7 +347,7 @@ export default function AdminShopsPage() {
               {shops.map((shop) => (
                 <div
                   key={shop.id}
-                  className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
+                  className="group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden hover:shadow-lg transition-shadow"
                 >
                   <div className="aspect-video bg-gradient-to-br from-purple-50 to-blue-50 relative">
                     {shop.logo ? (
@@ -397,18 +387,6 @@ export default function AdminShopsPage() {
                           {shop.location || "No location"}
                         </p>
                       </div>
-                    </div>
-                    <div className="mt-3 flex items-center gap-2 text-sm">
-                      {shop.featured && (
-                        <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
-                          Featured
-                        </span>
-                      )}
-                      {shop.featured && (
-                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                          Homepage
-                        </span>
-                      )}
                     </div>
                     <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
                       <span>
@@ -456,10 +434,10 @@ export default function AdminShopsPage() {
 
           {/* Table View */}
           {view === "table" && (
-            <div className="rounded-lg border border-gray-200 bg-white">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
               <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b border-gray-200 bg-gray-50">
+                <table className="min-w-full">
+                  <thead className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                     <tr>
                       <th
                         className="w-12 px-6 py-3"
@@ -504,7 +482,7 @@ export default function AdminShopsPage() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                     {shops.map((shop) => {
                       const isEditing = editingId === shop.id;
 
@@ -570,7 +548,7 @@ export default function AdminShopsPage() {
                       return (
                         <tr
                           key={shop.id}
-                          className="hover:bg-gray-50"
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700"
                           onDoubleClick={() => setEditingId(shop.id)}
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -638,20 +616,6 @@ export default function AdminShopsPage() {
                             <div>⭐ {shop.rating.toFixed(1)}</div>
                             <div className="text-xs text-gray-500">
                               {shop.productCount} products
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex flex-col gap-1">
-                              {shop.featured && (
-                                <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
-                                  Featured
-                                </span>
-                              )}
-                              {shop.featured && (
-                                <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                                  Homepage
-                                </span>
-                              )}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm">

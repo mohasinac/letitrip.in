@@ -40,7 +40,7 @@ const STREETS = ["Marine Drive", "MG Road", "Park Street", "Anna Salai", "FC Roa
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { shops, buyers, productsByShop } = body;
+    const { shops, buyers, productsByShop, scale = 10 } = body;
 
     if (!shops || !Array.isArray(shops) || shops.length === 0) {
       return NextResponse.json({ success: false, error: "Shops data required" }, { status: 400 });
@@ -61,7 +61,8 @@ export async function POST(request: NextRequest) {
     let shipmentCount = 0;
 
     for (const buyer of buyers) {
-      const numOrders = 2 + Math.floor(Math.random() * 4);
+      // Number of orders per buyer scales with scale (2-6 orders at scale 10)
+      const numOrders = Math.max(1, Math.ceil(scale / 10 * (2 + Math.floor(Math.random() * 4))));
       
       for (let o = 0; o < numOrders; o++) {
         const shop = shops[(buyers.indexOf(buyer) + o) % shops.length];
