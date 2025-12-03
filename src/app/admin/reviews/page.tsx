@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import {
@@ -8,16 +8,17 @@ import {
   BulkActionBar,
   TableCheckbox,
 } from "@/components/common/inline-edit";
+import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
 import { REVIEW_FILTERS } from "@/constants/filters";
 import { getReviewBulkActions } from "@/constants/bulk-actions";
 import { reviewsService } from "@/services/reviews.service";
 import { toast } from "@/components/admin/Toast";
 import { Star, Eye, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 export default function AdminReviewsPage() {
   const router = useRouter();
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: reviews, loading, execute: loadReviews } = useLoadingState<any[]>([]);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedReviews, setSelectedReviews] = useState<Set<string>>(
@@ -27,29 +28,21 @@ export default function AdminReviewsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalReviews, setTotalReviews] = useState(0);
 
-  useEffect(() => {
-    loadReviews();
+  const fetchReviews = useCallback(async () => {
+    const response = await reviewsService.list({
+      ...filterValues,
+      search: searchQuery || undefined,
+      page: currentPage,
+      limit: 20,
+    });
+    setTotalPages(Math.ceil((response.count || 0) / 20));
+    setTotalReviews(response.count || 0);
+    return response.data || [];
   }, [filterValues, currentPage, searchQuery]);
 
-  const loadReviews = async () => {
-    try {
-      setLoading(true);
-      const response = await reviewsService.list({
-        ...filterValues,
-        search: searchQuery || undefined,
-        page: currentPage,
-        limit: 20,
-      });
-      setReviews(response.data || []);
-      // Calculate total pages from count
-      setTotalPages(Math.ceil((response.count || 0) / 20));
-      setTotalReviews(response.count || 0);
-    } catch (error: any) {
-      // toast.error(error.message || "Failed to load reviews");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    loadReviews(fetchReviews);
+  }, [fetchReviews, loadReviews]);
 
   const handleBulkAction = async (actionId: string) => {
     if (selectedReviews.size === 0) {
@@ -98,7 +91,7 @@ export default function AdminReviewsPage() {
       }
 
       setSelectedReviews(new Set());
-      loadReviews();
+      loadReviews(fetchReviews);
     } catch (error: any) {
       toast.error(error.message || "Bulk action failed");
     }
@@ -108,7 +101,7 @@ export default function AdminReviewsPage() {
     try {
       await reviewsService.moderate(id, { isApproved: status === "approved" });
       toast.success(`Review ${status}`);
-      loadReviews();
+      loadReviews(fetchReviews);
     } catch (error: any) {
       toast.error(error.message || "Failed to moderate review");
     }
@@ -170,38 +163,24 @@ export default function AdminReviewsPage() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Total Reviews
-                </div>
-                <div className="text-2xl font-bold">{totalReviews}</div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Pending
-                </div>
-                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-500">
-                  {reviews.filter((r) => r.status === "pending").length}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Approved
-                </div>
-                <div className="text-2xl font-bold text-green-600 dark:text-green-500">
-                  {reviews.filter((r) => r.status === "approved").length}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Flagged
-                </div>
-                <div className="text-2xl font-bold text-red-600 dark:text-red-500">
-                  {reviews.filter((r) => r.status === "flagged").length}
-                </div>
-              </div>
-            </div>
+            <StatsCardGrid columns={4} className="mb-6">
+              <StatsCard label="Total Reviews" value={totalReviews} />
+              <StatsCard
+                label="Pending"
+                value={reviews.filter((r) => r.status === "pending").length}
+                className="[&_p:last-child]:!text-yellow-600 dark:[&_p:last-child]:!text-yellow-500"
+              />
+              <StatsCard
+                label="Approved"
+                value={reviews.filter((r) => r.status === "approved").length}
+                className="[&_p:last-child]:!text-green-600 dark:[&_p:last-child]:!text-green-500"
+              />
+              <StatsCard
+                label="Flagged"
+                value={reviews.filter((r) => r.status === "flagged").length}
+                className="[&_p:last-child]:!text-red-600 dark:[&_p:last-child]:!text-red-500"
+              />
+            </StatsCardGrid>
 
             {/* Bulk Action Bar */}
             {selectedReviews.size > 0 && (

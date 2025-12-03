@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { TICKET_FILTERS } from "@/constants/filters";
 import { supportService } from "@/services/support.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
-import { Quantity, DateDisplay } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values";
 
 export default function SupportTicketsPage() {
   return (
@@ -19,57 +21,54 @@ export default function SupportTicketsPage() {
 }
 
 function SupportTicketsContent() {
-  const [tickets, setTickets] = useState<SupportTicketFE[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: ticketsData,
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState<{
+    tickets: SupportTicketFE[];
+    totalPages: number;
+    stats: {
+      total: number;
+      open: number;
+      inProgress: number;
+      resolved: number;
+      urgent: number;
+    };
+  }>();
 
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  const [stats, setStats] = useState({
+  const tickets = ticketsData?.tickets || [];
+  const totalPages = ticketsData?.totalPages || 1;
+  const stats = ticketsData?.stats || {
     total: 0,
     open: 0,
     inProgress: 0,
     resolved: 0,
     urgent: 0,
-  });
+  };
+
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [closingTicket, setClosingTicket] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadTickets();
-    loadStats();
-  }, [filterValues, currentPage, searchQuery]);
-
-  const loadTickets = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await supportService.listTickets({
+  const loadData = useCallback(async () => {
+    const [ticketsRes, statsData] = await Promise.all([
+      supportService.listTickets({
         ...filterValues,
         search: searchQuery || undefined,
         page: currentPage,
         limit: 20,
-      });
+      }),
+      supportService.getStats(filterValues),
+    ]);
 
-      setTickets(response.data);
-      // Calculate total pages from count
-      setTotalPages(Math.ceil((response.count || 0) / 20));
-    } catch (err: any) {
-      console.error("Failed to load tickets:", err);
-      setError(err.message || "Failed to load support tickets");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadStats = async () => {
-    try {
-      const statsData = await supportService.getStats(filterValues);
-      setStats({
+    return {
+      tickets: ticketsRes.data,
+      totalPages: Math.ceil((ticketsRes.count || 0) / 20),
+      stats: {
         total: statsData.totalTickets || 0,
         open: statsData.openTickets || 0,
         inProgress:
@@ -78,11 +77,13 @@ function SupportTicketsContent() {
             statsData.resolvedTickets || 0,
         resolved: statsData.resolvedTickets || 0,
         urgent: statsData.ticketsByPriority?.urgent || 0,
-      });
-    } catch (err) {
-      console.error("Failed to load stats:", err);
-    }
-  };
+      },
+    };
+  }, [filterValues, currentPage, searchQuery]);
+
+  useEffect(() => {
+    execute(loadData);
+  }, [execute, loadData]);
 
   const handleCloseTicket = async (ticketId: string) => {
     if (!confirm("Are you sure you want to close this ticket?")) return;
@@ -90,8 +91,7 @@ function SupportTicketsContent() {
     try {
       setClosingTicket(ticketId);
       await supportService.closeTicket(ticketId);
-      await loadTickets();
-      await loadStats();
+      await execute(loadData);
     } catch (err: any) {
       toast.error(err.message || "Failed to close ticket");
     } finally {
@@ -147,48 +147,29 @@ function SupportTicketsContent() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Total Tickets
-            </div>
-            <div className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
-              <Quantity value={stats.total} />
-            </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Open
-            </div>
-            <div className="mt-2 text-3xl font-bold text-blue-600 dark:text-blue-400">
-              <Quantity value={stats.open} />
-            </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              In Progress
-            </div>
-            <div className="mt-2 text-3xl font-bold text-purple-600 dark:text-purple-400">
-              <Quantity value={stats.inProgress} />
-            </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Resolved
-            </div>
-            <div className="mt-2 text-3xl font-bold text-green-600 dark:text-green-400">
-              <Quantity value={stats.resolved} />
-            </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Urgent
-            </div>
-            <div className="mt-2 text-3xl font-bold text-red-600 dark:text-red-400">
-              <Quantity value={stats.urgent} />
-            </div>
-          </div>
-        </div>
+        <StatsCardGrid columns={5} className="mb-8">
+          <StatsCard title="Total Tickets" value={stats.total} />
+          <StatsCard
+            title="Open"
+            value={stats.open}
+            className="[&_p:last-child]:!text-blue-600 dark:[&_p:last-child]:!text-blue-400"
+          />
+          <StatsCard
+            title="In Progress"
+            value={stats.inProgress}
+            className="[&_p:last-child]:!text-purple-600 dark:[&_p:last-child]:!text-purple-400"
+          />
+          <StatsCard
+            title="Resolved"
+            value={stats.resolved}
+            className="[&_p:last-child]:!text-green-600 dark:[&_p:last-child]:!text-green-400"
+          />
+          <StatsCard
+            title="Urgent"
+            value={stats.urgent}
+            className="[&_p:last-child]:!text-red-600 dark:[&_p:last-child]:!text-red-400"
+          />
+        </StatsCardGrid>
 
         <div className="flex gap-6">
           {/* Filter Sidebar */}
@@ -220,7 +201,7 @@ function SupportTicketsContent() {
           <div className="flex-1">
             {error && (
               <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-800 dark:text-red-300">
-                {error}
+                {error.message || "Failed to load support tickets"}
               </div>
             )}
 
@@ -316,7 +297,7 @@ function SupportTicketsContent() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
-                                  ticket.priority,
+                                  ticket.priority
                                 )}`}
                               >
                                 {formatStatus(ticket.priority)}
@@ -325,7 +306,7 @@ function SupportTicketsContent() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 text-xs font-medium rounded-md border ${getStatusColor(
-                                  ticket.status,
+                                  ticket.status
                                 )}`}
                               >
                                 {formatStatus(ticket.status)}

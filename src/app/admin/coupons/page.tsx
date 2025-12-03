@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import {
@@ -10,6 +10,7 @@ import {
   InlineEditRow,
   QuickCreateRow,
 } from "@/components/common/inline-edit";
+import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
 import { COUPON_FILTERS } from "@/constants/filters";
 import { getCouponBulkActions } from "@/constants/bulk-actions";
 import { couponsService } from "@/services/coupons.service";
@@ -32,13 +33,13 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { DateDisplay } from "@/components/common/values";
 
 export default function AdminCouponsPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
-  const [coupons, setCoupons] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: coupons, loading, execute: loadCoupons } = useLoadingState<any[]>([]);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCoupons, setSelectedCoupons] = useState<Set<string>>(
@@ -52,29 +53,21 @@ export default function AdminCouponsPage() {
   // Get inline fields for table context
   const fields = toInlineFields(getFieldsForContext(COUPON_FIELDS, "table"));
 
-  useEffect(() => {
-    loadCoupons();
+  const fetchCoupons = useCallback(async () => {
+    const response = await couponsService.list({
+      ...filterValues,
+      search: searchQuery || undefined,
+      page: currentPage,
+      limit: 20,
+    });
+    setTotalPages(Math.ceil((response.count || 0) / 20));
+    setTotalCoupons(response.count || 0);
+    return response.data || [];
   }, [filterValues, currentPage, searchQuery]);
 
-  const loadCoupons = async () => {
-    try {
-      setLoading(true);
-      const response = await couponsService.list({
-        ...filterValues,
-        search: searchQuery || undefined,
-        page: currentPage,
-        limit: 20,
-      });
-      setCoupons(response.data || []);
-      // Calculate total pages from count
-      setTotalPages(Math.ceil((response.count || 0) / 20));
-      setTotalCoupons(response.count || 0);
-    } catch (error: any) {
-      // toast.error(error.message || "Failed to load coupons");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    loadCoupons(fetchCoupons);
+  }, [fetchCoupons, loadCoupons]);
 
   const handleBulkAction = async (actionId: string) => {
     if (selectedCoupons.size === 0) {
@@ -129,7 +122,7 @@ export default function AdminCouponsPage() {
       }
 
       setSelectedCoupons(new Set());
-      loadCoupons();
+      loadCoupons(fetchCoupons);
     } catch (error: any) {
       toast.error(error.message || "Bulk action failed");
     }
@@ -146,7 +139,7 @@ export default function AdminCouponsPage() {
     try {
       await couponsService.delete(id);
       toast.success("Coupon deleted successfully");
-      loadCoupons();
+      loadCoupons(fetchCoupons);
     } catch (error: any) {
       toast.error(error.message || "Failed to delete coupon");
     }
@@ -228,33 +221,26 @@ export default function AdminCouponsPage() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Total Coupons</div>
-                <div className="text-2xl font-bold">{totalCoupons}</div>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Active</div>
-                <div className="text-2xl font-bold text-green-600">
-                  {coupons.filter((c) => c.isActive).length}
-                </div>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Expired</div>
-                <div className="text-2xl font-bold text-red-600">
-                  {
-                    coupons.filter((c) => new Date(c.validTo) < new Date())
-                      .length
-                  }
-                </div>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Total Uses</div>
-                <div className="text-2xl font-bold">
-                  {coupons.reduce((sum, c) => sum + (c.usageCount || 0), 0)}
-                </div>
-              </div>
-            </div>
+            <StatsCardGrid columns={4} className="mb-6">
+              <StatsCard label="Total Coupons" value={totalCoupons} />
+              <StatsCard
+                label="Active"
+                value={coupons.filter((c) => c.isActive).length}
+                className="[&_p:last-child]:!text-green-600"
+              />
+              <StatsCard
+                label="Expired"
+                value={
+                  coupons.filter((c) => new Date(c.validTo) < new Date())
+                    .length
+                }
+                className="[&_p:last-child]:!text-red-600"
+              />
+              <StatsCard
+                label="Total Uses"
+                value={coupons.reduce((sum, c) => sum + (c.usageCount || 0), 0)}
+              />
+            </StatsCardGrid>
 
             {/* Bulk Action Bar */}
             {selectedCoupons.size > 0 && (
@@ -512,7 +498,7 @@ export default function AdminCouponsPage() {
                       onSave={async (values) => {
                         try {
                           await couponsService.create(values as any);
-                          loadCoupons();
+                          loadCoupons(fetchCoupons);
                         } catch (error: any) {
                           throw error;
                         }
@@ -542,7 +528,7 @@ export default function AdminCouponsPage() {
                                   values as any,
                                 );
                                 setEditingId(null);
-                                loadCoupons();
+                                loadCoupons(fetchCoupons);
                               } catch (error: any) {
                                 throw error;
                               }

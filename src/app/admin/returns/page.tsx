@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
 import { RETURN_FILTERS } from "@/constants/filters";
 import { returnsService } from "@/services/returns.service";
 import { toast } from "@/components/admin/Toast";
@@ -18,40 +19,32 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { DateDisplay } from "@/components/common/values";
 
 export default function AdminReturnsPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
-  const [returns, setReturns] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: returns, loading, execute: loadReturns } = useLoadingState<any[]>([]);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalReturns, setTotalReturns] = useState(0);
 
-  useEffect(() => {
-    loadReturns();
+  const fetchReturns = useCallback(async () => {
+    const response = await returnsService.list({
+      ...filterValues,
+      page: currentPage,
+      limit: 20,
+    } as any);
+    setTotalPages(Math.ceil((response.count || 0) / 20));
+    setTotalReturns(response.count || 0);
+    return response.data || [];
   }, [filterValues, currentPage]);
 
-  const loadReturns = async () => {
-    try {
-      setLoading(true);
-      const response = await returnsService.list({
-        ...filterValues,
-        page: currentPage,
-        limit: 20,
-      } as any);
-      setReturns(response.data || []);
-      // Calculate total pages from count
-      setTotalPages(Math.ceil((response.count || 0) / 20));
-      setTotalReturns(response.count || 0);
-    } catch (error: any) {
-      // toast.error(error.message || "Failed to load returns");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    loadReturns(fetchReturns);
+  }, [fetchReturns, loadReturns]);
 
   const handleApprove = async (id: string) => {
     if (!confirm("Approve this return request?")) return;
@@ -59,7 +52,7 @@ export default function AdminReturnsPage() {
     try {
       await returnsService.approve(id, { approved: true });
       toast.success("Return approved");
-      loadReturns();
+      loadReturns(fetchReturns);
     } catch (error: any) {
       toast.error(error.message || "Failed to approve return");
     }
@@ -72,7 +65,7 @@ export default function AdminReturnsPage() {
     try {
       await returnsService.approve(id, { approved: false, notes: reason });
       toast.success("Return rejected");
-      loadReturns();
+      loadReturns(fetchReturns);
     } catch (error: any) {
       toast.error(error.message || "Failed to reject return");
     }
@@ -108,40 +101,24 @@ export default function AdminReturnsPage() {
               Returns Management
             </h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Total Returns
-                </div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {totalReturns}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Pending
-                </div>
-                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                  {returns.filter((r) => r.status === "pending").length}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Approved
-                </div>
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {returns.filter((r) => r.status === "approved").length}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Completed
-                </div>
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {returns.filter((r) => r.status === "completed").length}
-                </div>
-              </div>
-            </div>
+            <StatsCardGrid columns={4} className="mb-6">
+              <StatsCard label="Total Returns" value={totalReturns} />
+              <StatsCard
+                label="Pending"
+                value={returns.filter((r) => r.status === "pending").length}
+                className="[&_p:last-child]:!text-yellow-600 dark:[&_p:last-child]:!text-yellow-400"
+              />
+              <StatsCard
+                label="Approved"
+                value={returns.filter((r) => r.status === "approved").length}
+                className="[&_p:last-child]:!text-green-600 dark:[&_p:last-child]:!text-green-400"
+              />
+              <StatsCard
+                label="Completed"
+                value={returns.filter((r) => r.status === "completed").length}
+                className="[&_p:last-child]:!text-blue-600 dark:[&_p:last-child]:!text-blue-400"
+              />
+            </StatsCardGrid>
 
             {/* Mobile Return Cards */}
             {isMobile && (
