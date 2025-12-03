@@ -67,13 +67,13 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const db = getFirestoreAdmin();
     let query: FirebaseFirestore.Query = db.collection(
-      COLLECTIONS.SUPPORT_TICKETS
+      COLLECTIONS.SUPPORT_TICKETS,
     );
 
     // Legacy query params support (for backward compatibility)
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
       if (!user) {
         return NextResponse.json(
           { error: "Authentication required" },
-          { status: 401 }
+          { status: 401 },
         );
       }
       query = query.where("userId", "==", user.uid);
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
       if (!shopId) {
         return NextResponse.json(
           { error: "Shop ID required for seller" },
-          { status: 400 }
+          { status: 400 },
         );
       }
       query = query.where("shopId", "==", shopId);
@@ -124,7 +124,7 @@ export async function GET(request: NextRequest) {
         query = query.where(
           dbField,
           filter.operator as FirebaseFirestore.WhereFilterOp,
-          filter.value
+          filter.value,
         );
       }
     }
@@ -157,7 +157,7 @@ export async function GET(request: NextRequest) {
     // Execute query
     const snapshot = await query.get();
     const data = snapshot.docs.map((doc) =>
-      transformTicket(doc.id, doc.data())
+      transformTicket(doc.id, doc.data()),
     );
 
     // Get statistics (admin only)
@@ -304,7 +304,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { error: error.message, errors: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
     console.error("Error creating support ticket:", error);

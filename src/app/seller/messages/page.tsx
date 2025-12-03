@@ -66,7 +66,7 @@ export default function SellerMessagesPage() {
         // Filter to only show conversations where seller is a participant
         // and the other party is a buyer (user type)
         const sellerConversations = result.conversations.filter(
-          (c) => c.otherParticipant.type === "user"
+          (c) => c.otherParticipant.type === "user",
         );
 
         if (pageNum === 1) {
@@ -80,7 +80,7 @@ export default function SellerMessagesPage() {
         setRefreshing(false);
       });
     },
-    [user, execute]
+    [user, execute],
   );
 
   useEffect(() => {
@@ -288,7 +288,7 @@ export default function SellerMessagesPage() {
                               new Date(conv.lastMessage.sentAt),
                               {
                                 addSuffix: true,
-                              }
+                              },
                             )
                           : "No messages"}
                       </div>

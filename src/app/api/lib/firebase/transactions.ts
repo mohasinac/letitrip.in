@@ -12,7 +12,7 @@ import { COLLECTIONS } from "@/constants/database";
  * Run a transaction
  */
 export async function runTransaction<T>(
-  callback: (transaction: FirebaseFirestore.Transaction) => Promise<T>
+  callback: (transaction: FirebaseFirestore.Transaction) => Promise<T>,
 ): Promise<T> {
   const db = getFirestoreAdmin();
   return db.runTransaction(callback);
@@ -73,7 +73,7 @@ export function deleteField() {
  */
 export async function createOrderWithItems(
   orderData: any,
-  orderItems: any[]
+  orderItems: any[],
 ): Promise<string> {
   const db = getFirestoreAdmin();
 
@@ -106,7 +106,7 @@ export async function createOrderWithItems(
  */
 export async function updateProductStock(
   productId: string,
-  quantityChange: number
+  quantityChange: number,
 ): Promise<void> {
   const db = getFirestoreAdmin();
   const productRef = db.collection(COLLECTIONS.PRODUCTS).doc(productId);
@@ -138,7 +138,7 @@ export async function updateProductStock(
 export async function placeBid(
   auctionId: string,
   userId: string,
-  bidAmount: number
+  bidAmount: number,
 ): Promise<string> {
   const db = getFirestoreAdmin();
   const auctionRef = db.collection(COLLECTIONS.AUCTIONS).doc(auctionId);
@@ -197,7 +197,7 @@ export async function placeBid(
 export async function processRefund(
   returnId: string,
   refundAmount: number,
-  refundData: any
+  refundData: any,
 ): Promise<string> {
   const db = getFirestoreAdmin();
   const returnRef = db.collection(COLLECTIONS.RETURNS).doc(returnId);
@@ -237,7 +237,7 @@ export async function processRefund(
  */
 export async function transferCartToOrder(
   userId: string,
-  orderId: string
+  orderId: string,
 ): Promise<void> {
   const db = getFirestoreAdmin();
 

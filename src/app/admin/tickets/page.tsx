@@ -46,7 +46,7 @@ export default function AdminTicketsPage() {
         status: filter.status as any,
         category: filter.category as any,
         priority: filter.priority as any,
-      })
+      }),
     );
   }, [filter, execute]);
 
@@ -193,10 +193,10 @@ export default function AdminTicketsPage() {
                             ticket.priority === "urgent"
                               ? "text-red-600"
                               : ticket.priority === "high"
-                              ? "text-orange-600"
-                              : ticket.priority === "medium"
-                              ? "text-yellow-600"
-                              : "text-gray-600"
+                                ? "text-orange-600"
+                                : ticket.priority === "medium"
+                                  ? "text-yellow-600"
+                                  : "text-gray-600"
                           }`}
                         >
                           {ticket.priority}

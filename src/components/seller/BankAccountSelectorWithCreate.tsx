@@ -19,6 +19,7 @@ import {
   VALIDATION_MESSAGES,
   isValidIFSC,
 } from "@/constants/validation-messages";
+import { logError } from "@/lib/error-logger";
 import { useLoadingState } from "@/hooks/useLoadingState";
 
 // Bank Account Interface
@@ -47,15 +48,15 @@ const BankAccountSchema = z
       .string()
       .min(
         VALIDATION_RULES.BANK_ACCOUNT.MIN_LENGTH,
-        "Account number must be at least 9 digits"
+        "Account number must be at least 9 digits",
       )
       .max(
         VALIDATION_RULES.BANK_ACCOUNT.MAX_LENGTH,
-        "Account number must be at most 18 digits"
+        "Account number must be at most 18 digits",
       )
       .regex(
         VALIDATION_RULES.BANK_ACCOUNT.PATTERN,
-        "Account number must contain only digits"
+        "Account number must contain only digits",
       ),
     confirmAccountNumber: z.string(),
     accountType: z.enum(["savings", "current"]),
@@ -105,6 +106,7 @@ export function BankAccountSelectorWithCreate({
   const [showForm, setShowForm] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(value || null);
   const [ifscLoading, setIfscLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -145,23 +147,21 @@ export function BankAccountSelectorWithCreate({
   }, [ifscCode]);
 
   const loadBankAccounts = () =>
-    execute(
-      async () => {
+    execute(async () => {
+      try {
         // TODO: Implement actual API call
         // const data = await bankAccountsService.getAll();
         // return data;
         return [];
-      },
-      {
-        onError: (error) => {
-          logError(error, {
-            component: "BankAccountSelectorWithCreate",
-            action: "loadBankAccounts",
-          });
-          toast.error("Failed to load bank accounts");
-        },
+      } catch (error) {
+        logError(error as Error, {
+          component: "BankAccountSelectorWithCreate",
+          action: "loadBankAccounts",
+        });
+        toast.error("Failed to load bank accounts");
+        return [];
       }
-    );
+    });
 
   const lookupIFSC = async (ifsc: string) => {
     try {
@@ -186,7 +186,8 @@ export function BankAccountSelectorWithCreate({
       }
     } catch (error) {
       logError(error as Error, {
-        context: "BankAccountSelectorWithCreate.lookupIFSC",
+        component: "BankAccountSelectorWithCreate",
+        action: "lookupIFSC",
       });
     } finally {
       setIfscLoading(false);
@@ -200,7 +201,7 @@ export function BankAccountSelectorWithCreate({
 
   const onSubmit = async (data: BankAccountFormData) => {
     try {
-      setLoading(true);
+      setIsSubmitting(true);
 
       // TODO: Implement actual API call
       // const newAccount = await bankAccountsService.create(data);
@@ -220,18 +221,20 @@ export function BankAccountSelectorWithCreate({
         updatedAt: new Date(),
       };
 
-      setAccounts((prev) => [...prev, newAccount]);
+      const updatedAccounts = [...(accounts || []), newAccount];
+      setAccounts(updatedAccounts);
       setSelectedId(newAccount.id);
       onChange(newAccount.id, newAccount);
       setShowForm(false);
       toast.success("Bank account added successfully");
     } catch (error) {
       logError(error as Error, {
-        context: "BankAccountSelectorWithCreate.addAccount",
+        component: "BankAccountSelectorWithCreate",
+        action: "addAccount",
       });
       toast.error("Failed to add bank account");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -252,7 +255,7 @@ export function BankAccountSelectorWithCreate({
     );
   };
 
-  if (loading && accounts.length === 0) {
+  if (loading && (!accounts || accounts.length === 0)) {
     return (
       <div className={`space-y-2 ${className}`}>
         {label && (
@@ -283,7 +286,7 @@ export function BankAccountSelectorWithCreate({
 
       {/* Account Cards */}
       <div className="space-y-3">
-        {accounts.length === 0 ? (
+        {!accounts || accounts.length === 0 ? (
           <div className="text-center p-6 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
             <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
@@ -300,7 +303,7 @@ export function BankAccountSelectorWithCreate({
           </div>
         ) : (
           <>
-            {accounts.map((account) => (
+            {accounts?.map((account) => (
               <button
                 key={account.id}
                 type="button"
@@ -445,10 +448,13 @@ export function BankAccountSelectorWithCreate({
                 required
                 error={errors.accountType?.message}
               >
-                <FormSelect {...register("accountType")}>
-                  <option value="savings">Savings</option>
-                  <option value="current">Current</option>
-                </FormSelect>
+                <FormSelect
+                  {...register("accountType")}
+                  options={[
+                    { value: "savings", label: "Savings" },
+                    { value: "current", label: "Current" },
+                  ]}
+                />
               </FormField>
 
               {/* IFSC Code */}

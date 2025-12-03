@@ -57,13 +57,13 @@ export default function UserDashboardPage() {
     // Calculate stats
     const totalOrders = orders.length;
     const pendingOrders = orders.filter(
-      (o) => o.status === "pending" || o.status === "confirmed"
+      (o) => o.status === "pending" || o.status === "confirmed",
     ).length;
     const completedOrders = orders.filter(
-      (o) => o.status === "delivered"
+      (o) => o.status === "delivered",
     ).length;
     const cancelledOrders = orders.filter(
-      (o) => o.status === "cancelled"
+      (o) => o.status === "cancelled",
     ).length;
 
     return {
@@ -256,8 +256,8 @@ export default function UserDashboardPage() {
                             order.status === "delivered"
                               ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                               : order.status === "cancelled"
-                              ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-                              : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+                                ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
                           }`}
                         >
                           {order.status.charAt(0).toUpperCase() +

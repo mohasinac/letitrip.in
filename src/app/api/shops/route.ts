@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
               error: "Invalid query parameters",
               details: errors,
             },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
             query = query.where(
               dbField,
               filter.operator as FirebaseFirestore.WhereFilterOp,
-              filter.value
+              filter.value,
             );
           }
         }
@@ -168,7 +168,7 @@ export async function GET(request: NextRequest) {
         // Execute query
         const snapshot = await query.get();
         const shops = snapshot.docs.map((doc) =>
-          transformShop(doc.id, doc.data())
+          transformShop(doc.id, doc.data()),
         );
 
         // Check if user can create more shops
@@ -179,7 +179,7 @@ export async function GET(request: NextRequest) {
           const userShopsQuery = Collections.shops().where(
             "owner_id",
             "==",
-            userId
+            userId,
           );
           const userShopsSnapshot = await userShopsQuery.get();
           canCreateMore = userShopsSnapshot.size === 0;
@@ -212,11 +212,11 @@ export async function GET(request: NextRequest) {
             details:
               process.env.NODE_ENV === "development" ? error?.stack : undefined,
           },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
-    { ttl: 180 }
+    { ttl: 180 },
   );
 }
 
@@ -235,7 +235,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Only sellers and admins can create shops",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -247,7 +247,7 @@ export async function POST(request: NextRequest) {
       const userShopsQuery = Collections.shops().where(
         "owner_id",
         "==",
-        userId
+        userId,
       );
       const userShopsSnapshot = await userShopsQuery.get();
 
@@ -257,7 +257,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "You can only create 1 shop. Please contact admin for more.",
           },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -300,7 +300,7 @@ export async function POST(request: NextRequest) {
           error: "Validation failed",
           errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -308,7 +308,7 @@ export async function POST(request: NextRequest) {
     const existingShopQuery = Collections.shops().where(
       "slug",
       "==",
-      data.slug
+      data.slug,
     );
     const existingShopSnapshot = await existingShopQuery.get();
 
@@ -318,7 +318,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Shop slug already exists. Please choose a different slug.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -366,7 +366,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: "Failed to create shop",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

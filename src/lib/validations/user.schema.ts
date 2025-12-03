@@ -45,20 +45,20 @@ export const changePasswordSchema = z
       .string()
       .min(
         VALIDATION_RULES.PASSWORD.MIN_LENGTH,
-        VALIDATION_MESSAGES.PASSWORD.TOO_SHORT
+        VALIDATION_MESSAGES.PASSWORD.TOO_SHORT,
       )
       .regex(/[A-Z]/, VALIDATION_MESSAGES.PASSWORD.REQUIRE_UPPERCASE)
       .regex(/[a-z]/, VALIDATION_MESSAGES.PASSWORD.REQUIRE_LOWERCASE)
       .regex(/[0-9]/, VALIDATION_MESSAGES.PASSWORD.REQUIRE_NUMBER)
       .regex(
         VALIDATION_RULES.PASSWORD.SPECIAL_CHARS,
-        VALIDATION_MESSAGES.PASSWORD.REQUIRE_SPECIAL
+        VALIDATION_MESSAGES.PASSWORD.REQUIRE_SPECIAL,
       ),
     confirmPassword: z
       .string()
       .min(
         VALIDATION_RULES.PASSWORD.MIN_LENGTH,
-        VALIDATION_MESSAGES.REQUIRED.FIELD("Confirm password")
+        VALIDATION_MESSAGES.REQUIRED.FIELD("Confirm password"),
       ),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
@@ -82,26 +82,26 @@ export const registerSchema = z
       .email(VALIDATION_MESSAGES.EMAIL.INVALID)
       .max(
         VALIDATION_RULES.EMAIL.MAX_LENGTH,
-        VALIDATION_MESSAGES.EMAIL.TOO_LONG
+        VALIDATION_MESSAGES.EMAIL.TOO_LONG,
       ),
     password: z
       .string()
       .min(
         VALIDATION_RULES.PASSWORD.MIN_LENGTH,
-        VALIDATION_MESSAGES.PASSWORD.TOO_SHORT
+        VALIDATION_MESSAGES.PASSWORD.TOO_SHORT,
       )
       .regex(/[A-Z]/, VALIDATION_MESSAGES.PASSWORD.REQUIRE_UPPERCASE)
       .regex(/[a-z]/, VALIDATION_MESSAGES.PASSWORD.REQUIRE_LOWERCASE)
       .regex(/[0-9]/, VALIDATION_MESSAGES.PASSWORD.REQUIRE_NUMBER)
       .regex(
         VALIDATION_RULES.PASSWORD.SPECIAL_CHARS,
-        VALIDATION_MESSAGES.PASSWORD.REQUIRE_SPECIAL
+        VALIDATION_MESSAGES.PASSWORD.REQUIRE_SPECIAL,
       ),
     confirmPassword: z
       .string()
       .min(
         VALIDATION_RULES.PASSWORD.MIN_LENGTH,
-        VALIDATION_MESSAGES.REQUIRED.FIELD("Confirm password")
+        VALIDATION_MESSAGES.REQUIRED.FIELD("Confirm password"),
       ),
     agreeToTerms: z.boolean().refine((val) => val === true, {
       message: "You must agree to the terms and conditions",

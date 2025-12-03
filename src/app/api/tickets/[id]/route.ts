@@ -17,7 +17,7 @@ import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const authResult = await requireAuth(request);
@@ -42,7 +42,7 @@ export async function GET(
     if (!canReadResource(user, "tickets", ticketData)) {
       return NextResponse.json(
         { error: "You don't have permission to view this ticket" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -112,7 +112,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const authResult = await requireAuth(request);
@@ -140,7 +140,7 @@ export async function PATCH(
     if (!canWriteResource(user, "tickets", ticketData as any)) {
       return NextResponse.json(
         { error: "You don't have permission to update this ticket" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -164,7 +164,7 @@ export async function PATCH(
       if (ticketData?.status !== "open") {
         return NextResponse.json(
           { error: "Can only update open tickets" },
-          { status: 403 }
+          { status: 403 },
         );
       }
       if (subject) updates.subject = subject;
@@ -192,7 +192,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const roleResult = await requireRole(request, ["admin"]);

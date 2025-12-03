@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     if (!idToken) {
       return NextResponse.json(
         { success: false, error: "ID token is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       console.error("Failed to verify ID token:", error);
       return NextResponse.json(
         { success: false, error: "Invalid ID token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     if (!email) {
       return NextResponse.json(
         { success: false, error: "Email is required from Google account" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
       error instanceof Error ? error.message : "Authentication failed";
     return NextResponse.json(
       { success: false, error: message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

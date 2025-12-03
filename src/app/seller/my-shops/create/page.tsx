@@ -97,7 +97,7 @@ export default function CreateShopWizardPage() {
 
     if (!/^[a-z0-9-]+$/.test(slug)) {
       setSlugError(
-        "Slug can only contain lowercase letters, numbers, and hyphens"
+        "Slug can only contain lowercase letters, numbers, and hyphens",
       );
     } else {
       setSlugError("");
@@ -231,8 +231,8 @@ export default function CreateShopWizardPage() {
                       currentStep > step.id
                         ? "border-green-500 bg-green-500 text-white"
                         : currentStep === step.id
-                        ? "border-primary bg-primary text-white"
-                        : "border-gray-300 bg-white text-gray-400"
+                          ? "border-primary bg-primary text-white"
+                          : "border-gray-300 bg-white text-gray-400"
                     }`}
                   >
                     {currentStep > step.id ? (

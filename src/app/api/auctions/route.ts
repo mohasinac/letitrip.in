@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -146,7 +146,7 @@ export async function GET(request: NextRequest) {
         query = query.where(
           dbField,
           filter.operator as FirebaseFirestore.WhereFilterOp,
-          filter.value
+          filter.value,
         );
       }
     }
@@ -194,7 +194,7 @@ export async function GET(request: NextRequest) {
     // Execute query
     const snapshot = await query.get();
     const data = snapshot.docs.map((doc) =>
-      transformAuction(doc.id, doc.data())
+      transformAuction(doc.id, doc.data()),
     );
 
     // Build response with Sieve pagination meta
@@ -228,7 +228,7 @@ export async function GET(request: NextRequest) {
           details: error instanceof Error ? error.message : String(error),
         }),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -249,7 +249,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Only sellers and admins can create auctions",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -294,7 +294,7 @@ export async function POST(request: NextRequest) {
     if (Object.keys(errors).length > 0) {
       return NextResponse.json(
         { success: false, error: "Validation failed", errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -303,7 +303,7 @@ export async function POST(request: NextRequest) {
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Cannot create auction for this shop" },
-          { status: 403 }
+          { status: 403 },
         );
       }
       // Limit: 5 active auctions per shop
@@ -318,7 +318,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "Active auction limit reached for this shop",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -328,7 +328,7 @@ export async function POST(request: NextRequest) {
     if (existingDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Auction slug already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -363,13 +363,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { success: true, data: { id: slug, ...auctionData } },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error creating auction:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create auction" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -44,10 +44,10 @@ export function DemoStepCard({
         isActive
           ? activeColor
           : status?.status === "completed"
-          ? "border-green-500 bg-green-50 dark:bg-green-900/20"
-          : status?.status === "error"
-          ? "border-red-500 bg-red-50 dark:bg-red-900/20"
-          : "border-gray-200 dark:border-gray-700"
+            ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+            : status?.status === "error"
+              ? "border-red-500 bg-red-50 dark:bg-red-900/20"
+              : "border-gray-200 dark:border-gray-700"
       }`}
     >
       <div className="flex items-center gap-3">
@@ -56,12 +56,12 @@ export function DemoStepCard({
             status?.status === "completed"
               ? "bg-green-500"
               : status?.status === "error"
-              ? "bg-red-500"
-              : status?.status === "running"
-              ? isCleanup
                 ? "bg-red-500"
-                : "bg-blue-500"
-              : "bg-gray-300 dark:bg-gray-600"
+                : status?.status === "running"
+                  ? isCleanup
+                    ? "bg-red-500"
+                    : "bg-blue-500"
+                  : "bg-gray-300 dark:bg-gray-600"
           }`}
         >
           {status?.status === "completed" ? (
@@ -82,10 +82,10 @@ export function DemoStepCard({
             {status?.status === "error"
               ? status.error
               : status?.status === "completed" && status.count
-              ? `${
-                  isCleanup ? "Deleted" : "Created"
-                } ${status.count.toLocaleString()} items`
-              : stepConfig.description}
+                ? `${
+                    isCleanup ? "Deleted" : "Created"
+                  } ${status.count.toLocaleString()} items`
+                : stepConfig.description}
           </p>
         </div>
       </div>
@@ -107,8 +107,8 @@ export function DemoStepCard({
             {status?.status === "error"
               ? "Retry"
               : isCleanup
-              ? "Delete"
-              : "Run"}
+                ? "Delete"
+                : "Run"}
           </button>
         )}
       </div>

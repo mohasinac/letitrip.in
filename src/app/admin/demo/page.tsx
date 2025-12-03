@@ -54,16 +54,18 @@ export default function AdminDemoPage() {
 
   // Step-by-step generation state
   const [currentStep, setCurrentStep] = useState<DemoStep | null>(null);
-  const [stepStatuses, setStepStatuses] = useState<Record<DemoStep, StepStatus>>(
-    getInitialStepStatuses()
-  );
+  const [stepStatuses, setStepStatuses] = useState<
+    Record<DemoStep, StepStatus>
+  >(getInitialStepStatuses());
   const [generationState, setGenerationState] = useState<GenerationState>({});
 
   // Step-by-step cleanup state
-  const [currentCleanupStep, setCurrentCleanupStep] = useState<DemoStep | null>(null);
-  const [cleanupStepStatuses, setCleanupStepStatuses] = useState<Record<DemoStep, StepStatus>>(
-    getInitialStepStatuses()
+  const [currentCleanupStep, setCurrentCleanupStep] = useState<DemoStep | null>(
+    null,
   );
+  const [cleanupStepStatuses, setCleanupStepStatuses] = useState<
+    Record<DemoStep, StepStatus>
+  >(getInitialStepStatuses());
 
   // Refresh stats function
   const refreshStats = useCallback(async () => {
@@ -73,7 +75,7 @@ export default function AdminDemoPage() {
       setSummary(
         data.exists && data.summary
           ? (data.summary as ExtendedSummary)
-          : getEmptySummary()
+          : getEmptySummary(),
       );
     } catch {
       // Keep existing summary on error
@@ -90,7 +92,7 @@ export default function AdminDemoPage() {
         setSummary(
           data.exists && data.summary
             ? (data.summary as ExtendedSummary)
-            : getEmptySummary()
+            : getEmptySummary(),
         );
       } catch {
         setSummary(getEmptySummary());
@@ -120,7 +122,7 @@ export default function AdminDemoPage() {
   const runStep = useCallback(
     async (
       step: DemoStep,
-      state: GenerationState
+      state: GenerationState,
     ): Promise<{ success: boolean; state: GenerationState }> => {
       setCurrentStep(step);
       updateStepStatus(step, { status: "running" });
@@ -133,7 +135,10 @@ export default function AdminDemoPage() {
             result = await demoDataService.generateCategories(scale);
             if (result.success && result.data) {
               state.categoryMap = result.data.categoryMap;
-              updateStepStatus(step, { status: "completed", count: result.data.count });
+              updateStepStatus(step, {
+                status: "completed",
+                count: result.data.count,
+              });
             }
             break;
 
@@ -144,16 +149,23 @@ export default function AdminDemoPage() {
               state.buyers = result.data.buyers;
               state.users = [...result.data.sellers, ...result.data.buyers];
               state.credentials = result.data.credentials;
-              updateStepStatus(step, { status: "completed", count: result.data.count });
+              updateStepStatus(step, {
+                status: "completed",
+                count: result.data.count,
+              });
             }
             break;
 
           case "shops":
-            if (!state.sellers) throw new Error("Users must be generated first");
+            if (!state.sellers)
+              throw new Error("Users must be generated first");
             result = await demoDataService.generateShops(state.sellers, scale);
             if (result.success && result.data) {
               state.shops = result.data.shops;
-              updateStepStatus(step, { status: "completed", count: result.data.count });
+              updateStepStatus(step, {
+                status: "completed",
+                count: result.data.count,
+              });
             }
             break;
 
@@ -163,12 +175,15 @@ export default function AdminDemoPage() {
             result = await demoDataService.generateProducts(
               state.shops,
               state.categoryMap,
-              scale
+              scale,
             );
             if (result.success && result.data) {
               state.products = result.data.products;
               state.productsByShop = result.data.productsByShop;
-              updateStepStatus(step, { status: "completed", count: result.data.count });
+              updateStepStatus(step, {
+                status: "completed",
+                count: result.data.count,
+              });
             }
             break;
 
@@ -178,29 +193,46 @@ export default function AdminDemoPage() {
             result = await demoDataService.generateAuctions(
               state.shops,
               state.productsByShop,
-              scale
+              scale,
             );
             if (result.success && result.data) {
               state.auctions = result.data.auctions;
-              updateStepStatus(step, { status: "completed", count: result.data.count });
+              updateStepStatus(step, {
+                status: "completed",
+                count: result.data.count,
+              });
             }
             break;
 
           case "bids":
             if (!state.auctions || !state.buyers)
               throw new Error("Auctions and buyers required");
-            result = await demoDataService.generateBids(state.auctions, state.buyers, scale);
+            result = await demoDataService.generateBids(
+              state.auctions,
+              state.buyers,
+              scale,
+            );
             if (result.success && result.data) {
-              updateStepStatus(step, { status: "completed", count: result.data.count });
+              updateStepStatus(step, {
+                status: "completed",
+                count: result.data.count,
+              });
             }
             break;
 
           case "reviews":
             if (!state.products || !state.buyers)
               throw new Error("Products and buyers required");
-            result = await demoDataService.generateReviews(state.products, state.buyers, scale);
+            result = await demoDataService.generateReviews(
+              state.products,
+              state.buyers,
+              scale,
+            );
             if (result.success && result.data) {
-              updateStepStatus(step, { status: "completed", count: result.data.count });
+              updateStepStatus(step, {
+                status: "completed",
+                count: result.data.count,
+              });
             }
             break;
 
@@ -211,12 +243,15 @@ export default function AdminDemoPage() {
               state.shops,
               state.buyers,
               state.productsByShop,
-              scale
+              scale,
             );
             if (result.success && result.data) {
               updateStepStatus(step, {
                 status: "completed",
-                count: result.data.orders + result.data.payments + result.data.shipments,
+                count:
+                  result.data.orders +
+                  result.data.payments +
+                  result.data.shipments,
               });
             }
             break;
@@ -232,16 +267,22 @@ export default function AdminDemoPage() {
             if (result.success && result.data) {
               const totalExtras = Object.values(result.data).reduce(
                 (a: number, b: unknown) => a + (typeof b === "number" ? b : 0),
-                0
+                0,
               );
-              updateStepStatus(step, { status: "completed", count: totalExtras });
+              updateStepStatus(step, {
+                status: "completed",
+                count: totalExtras,
+              });
             }
             break;
 
           case "settings":
             result = await demoDataService.generateSettings(scale);
             if (result.success && result.data) {
-              updateStepStatus(step, { status: "completed", count: result.data.count || 1 });
+              updateStepStatus(step, {
+                status: "completed",
+                count: result.data.count || 1,
+              });
             }
             break;
 
@@ -255,12 +296,13 @@ export default function AdminDemoPage() {
 
         return { success: true, state };
       } catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
+        const message =
+          error instanceof Error ? error.message : "Unknown error";
         updateStepStatus(step, { status: "error", error: message });
         return { success: false, state };
       }
     },
-    [scale, updateStepStatus]
+    [scale, updateStepStatus],
   );
 
   const handleGenerateAll = async () => {
@@ -293,11 +335,16 @@ export default function AdminDemoPage() {
           return;
         }
 
-        const { success, state: newState } = await runStep(stepConfig.id, state);
+        const { success, state: newState } = await runStep(
+          stepConfig.id,
+          state,
+        );
         state = newState;
 
         if (!success) {
-          toast.error(`Failed at step: ${stepConfig.label}. You can retry from this step.`);
+          toast.error(
+            `Failed at step: ${stepConfig.label}. You can retry from this step.`,
+          );
           return;
         }
       }
@@ -353,9 +400,12 @@ export default function AdminDemoPage() {
     }
   };
 
-  const updateCleanupStepStatus = useCallback((step: DemoStep, status: StepStatus) => {
-    setCleanupStepStatuses((prev) => ({ ...prev, [step]: status }));
-  }, []);
+  const updateCleanupStepStatus = useCallback(
+    (step: DemoStep, status: StepStatus) => {
+      setCleanupStepStatuses((prev) => ({ ...prev, [step]: status }));
+    },
+    [],
+  );
 
   const runCleanupStep = useCallback(
     async (step: DemoStep): Promise<{ success: boolean; count: number }> => {
@@ -365,25 +415,32 @@ export default function AdminDemoPage() {
       try {
         const result = await demoDataService.cleanupStep(step);
         if (result.success && result.data) {
-          updateCleanupStepStatus(step, { status: "completed", count: result.data.count });
+          updateCleanupStepStatus(step, {
+            status: "completed",
+            count: result.data.count,
+          });
           return { success: true, count: result.data.count };
         } else {
-          updateCleanupStepStatus(step, { status: "error", error: result.error || "Unknown error" });
+          updateCleanupStepStatus(step, {
+            status: "error",
+            error: result.error || "Unknown error",
+          });
           return { success: false, count: 0 };
         }
       } catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
+        const message =
+          error instanceof Error ? error.message : "Unknown error";
         updateCleanupStepStatus(step, { status: "error", error: message });
         return { success: false, count: 0 };
       }
     },
-    [updateCleanupStepStatus]
+    [updateCleanupStepStatus],
   );
 
   const handleStepByStepCleanup = async () => {
     if (
       !confirm(
-        `Are you sure you want to delete ALL demo data with ${DEMO_PREFIX} prefix? This will delete data step by step.`
+        `Are you sure you want to delete ALL demo data with ${DEMO_PREFIX} prefix? This will delete data step by step.`,
       )
     ) {
       return;
@@ -451,7 +508,9 @@ export default function AdminDemoPage() {
       const result = await runCleanupStep(step);
 
       if (result.success) {
-        toast.success(`${step} cleaned successfully! Deleted ${result.count} items.`);
+        toast.success(
+          `${step} cleaned successfully! Deleted ${result.count} items.`,
+        );
         await refreshStats();
       } else {
         toast.error(`Failed to clean ${step}`);
@@ -491,10 +550,10 @@ export default function AdminDemoPage() {
 
   // Calculate progress
   const completedSteps = Object.values(stepStatuses).filter(
-    (s) => s.status === "completed"
+    (s) => s.status === "completed",
   ).length;
   const completedCleanupSteps = Object.values(cleanupStepStatuses).filter(
-    (s) => s.status === "completed"
+    (s) => s.status === "completed",
   ).length;
 
   if (loading) {
@@ -503,7 +562,9 @@ export default function AdminDemoPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-            <p className="text-gray-600 dark:text-gray-400">Loading demo data...</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Loading demo data...
+            </p>
           </div>
         </div>
       </div>
@@ -518,7 +579,8 @@ export default function AdminDemoPage() {
           Demo Data Generator
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Generate comprehensive demo data step-by-step (all resources prefixed with{" "}
+          Generate comprehensive demo data step-by-step (all resources prefixed
+          with{" "}
           <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">
             {DEMO_PREFIX}
           </code>
@@ -539,8 +601,9 @@ export default function AdminDemoPage() {
                   Step-by-Step Generation
                 </h3>
                 <p className="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
-                  Generate data incrementally. If something breaks, you can rollback and retry
-                  from any step. Each step depends on previous ones.
+                  Generate data incrementally. If something breaks, you can
+                  rollback and retry from any step. Each step depends on
+                  previous ones.
                 </p>
               </div>
             </div>
@@ -588,7 +651,8 @@ export default function AdminDemoPage() {
                   isActive={currentStep === stepConfig.id}
                   canRun={
                     index === 0 ||
-                    stepStatuses[GENERATION_STEPS[index - 1].id]?.status === "completed"
+                    stepStatuses[GENERATION_STEPS[index - 1].id]?.status ===
+                      "completed"
                   }
                   disabled={generating || cleaning}
                   onRun={handleGenerateSingleStep}
@@ -622,7 +686,9 @@ export default function AdminDemoPage() {
                     isActive={currentCleanupStep === stepConfig.id}
                     canRun={true}
                     isCleanup
-                    disabled={generating || (cleaning && currentCleanupStep !== null)}
+                    disabled={
+                      generating || (cleaning && currentCleanupStep !== null)
+                    }
                     onRun={handleCleanupSingleStep}
                   />
                 ))}
@@ -632,7 +698,10 @@ export default function AdminDemoPage() {
 
           {/* Deletion Result */}
           {deletionResult && (
-            <DemoDeletionResult total={deletionResult.total} breakdown={deletionResult.breakdown} />
+            <DemoDeletionResult
+              total={deletionResult.total}
+              breakdown={deletionResult.breakdown}
+            />
           )}
 
           {/* Test Credentials */}

@@ -314,7 +314,7 @@ export default function SellerHelpPage() {
   const { isSeller } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [openQuestions, setOpenQuestions] = useState<Record<string, number>>(
-    {}
+    {},
   );
 
   // Filter FAQs by search
@@ -324,7 +324,7 @@ export default function SellerHelpPage() {
         questions: cat.questions.filter(
           (q) =>
             q.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            q.a.toLowerCase().includes(searchQuery.toLowerCase())
+            q.a.toLowerCase().includes(searchQuery.toLowerCase()),
         ),
       })).filter((cat) => cat.questions.length > 0)
     : FAQ_CATEGORIES;

@@ -143,7 +143,7 @@ function SellerSupportTicketsContent() {
     const now = new Date();
     const ticketDate = new Date(date);
     const diffInMinutes = Math.floor(
-      (now.getTime() - ticketDate.getTime()) / 60000
+      (now.getTime() - ticketDate.getTime()) / 60000,
     );
 
     if (diffInMinutes < 1) return "Just now";
@@ -373,7 +373,7 @@ function SellerSupportTicketsContent() {
                       <StatusBadge status={ticket.status} />
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getPriorityColor(
-                          ticket.priority
+                          ticket.priority,
                         )}`}
                       >
                         {ticket.priority}

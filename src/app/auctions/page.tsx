@@ -262,7 +262,7 @@ function AuctionsContent() {
                       const newSortBy = e.target.value;
                       // Update URL with new sort
                       const params = new URLSearchParams(
-                        searchParams.toString()
+                        searchParams.toString(),
                       );
                       params.set("sortBy", newSortBy);
                       router.push(`/auctions?${params.toString()}`, {
@@ -283,7 +283,7 @@ function AuctionsContent() {
                       const newSortOrder = e.target.value as "asc" | "desc";
                       // Update URL with new sort order
                       const params = new URLSearchParams(
-                        searchParams.toString()
+                        searchParams.toString(),
                       );
                       params.set("sortOrder", newSortOrder);
                       router.push(`/auctions?${params.toString()}`, {
@@ -355,7 +355,7 @@ function AuctionsContent() {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {
                         auctions.filter(
-                          (a) => a.status === AuctionStatus.ACTIVE
+                          (a) => a.status === AuctionStatus.ACTIVE,
                         ).length
                       }
                     </p>

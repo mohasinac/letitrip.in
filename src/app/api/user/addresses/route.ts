@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     console.error("Get addresses error:", error);
     return NextResponse.json(
       { error: "Failed to fetch addresses" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     console.error("Create address error:", error);
     return NextResponse.json(
       { error: "Failed to create address" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

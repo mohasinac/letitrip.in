@@ -44,7 +44,7 @@ export async function createSession(
   userId: string,
   email: string,
   role: string,
-  req?: NextRequest
+  req?: NextRequest,
 ): Promise<{ sessionId: string; token: string }> {
   const sessionId = generateSessionId();
   const now = new Date();
@@ -83,7 +83,7 @@ export async function createSession(
     SESSION_SECRET,
     {
       expiresIn: SESSION_MAX_AGE,
-    }
+    },
   );
 
   return { sessionId, token };
@@ -93,7 +93,7 @@ export async function createSession(
  * Verify and decode a session token
  */
 export async function verifySession(
-  token: string
+  token: string,
 ): Promise<SessionData | null> {
   try {
     // Verify JWT
@@ -165,7 +165,7 @@ export async function deleteAllUserSessions(userId: string): Promise<void> {
  * Get all active sessions for a user
  */
 export async function getUserSessions(
-  userId: string
+  userId: string,
 ): Promise<SessionDocument[]> {
   const sessionsSnapshot = await adminDb
     .collection(COLLECTIONS.SESSIONS)
@@ -281,7 +281,7 @@ export async function cleanupExpiredSessions(): Promise<number> {
  * Returns user data if authenticated, null otherwise
  */
 export async function getCurrentUser(
-  request: NextRequest
+  request: NextRequest,
 ): Promise<UserData | null> {
   const token = getSessionToken(request);
   if (!token) return null;

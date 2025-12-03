@@ -48,7 +48,7 @@ class EmailService {
 
     if (!this.isConfigured) {
       console.warn(
-        "⚠️ Email service not configured. Set RESEND_API_KEY in environment variables."
+        "⚠️ Email service not configured. Set RESEND_API_KEY in environment variables.",
       );
     }
   }
@@ -136,7 +136,7 @@ class EmailService {
   async sendVerificationEmail(
     email: string,
     name: string,
-    verificationLink: string
+    verificationLink: string,
   ): Promise<EmailResult> {
     const html = getVerificationEmailTemplate(name, verificationLink);
     const text = getVerificationEmailText(name, verificationLink);
@@ -155,7 +155,7 @@ class EmailService {
   async sendPasswordResetEmail(
     email: string,
     name: string,
-    resetLink: string
+    resetLink: string,
   ): Promise<EmailResult> {
     const html = getPasswordResetEmailTemplate(name, resetLink);
     const text = getPasswordResetEmailText(name, resetLink);

@@ -103,7 +103,7 @@ export default function AdminProductsPage() {
     } catch (error) {
       console.error("Failed to load products:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load products"
+        error instanceof Error ? error.message : "Failed to load products",
       );
     } finally {
       setLoading(false);
@@ -119,7 +119,7 @@ export default function AdminProductsPage() {
 
   // Fields configuration for inline edit - using centralized config
   const fields: InlineField[] = toInlineFields(
-    getFieldsForContext(PRODUCT_FIELDS, "table")
+    getFieldsForContext(PRODUCT_FIELDS, "table"),
   );
 
   // Bulk actions configuration
@@ -144,7 +144,7 @@ export default function AdminProductsPage() {
             if (product) {
               await productsService.delete(product.slug);
             }
-          })
+          }),
         );
       } else {
         // Update products
@@ -154,7 +154,7 @@ export default function AdminProductsPage() {
             if (product) {
               await productsService.update(product.slug, actionMap[actionId]);
             }
-          })
+          }),
         );
       }
 
@@ -205,7 +205,7 @@ export default function AdminProductsPage() {
     ]);
 
     const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
-      "\n"
+      "\n",
     );
 
     // Download CSV
@@ -382,7 +382,7 @@ export default function AdminProductsPage() {
                   isSelected={selectedIds.includes(product.id)}
                   onSelect={(id, selected) => {
                     setSelectedIds((prev) =>
-                      selected ? [...prev, id] : prev.filter((i) => i !== id)
+                      selected ? [...prev, id] : prev.filter((i) => i !== id),
                     );
                   }}
                 />
@@ -409,7 +409,7 @@ export default function AdminProductsPage() {
                           }
                           onChange={(checked) => {
                             setSelectedIds(
-                              checked ? products.map((p) => p.id) : []
+                              checked ? products.map((p) => p.id) : [],
                             );
                           }}
                           aria-label="Select all products"
@@ -456,29 +456,29 @@ export default function AdminProductsPage() {
                                 // Validate form fields
                                 const fieldsToValidate = getFieldsForContext(
                                   PRODUCT_FIELDS,
-                                  "table"
+                                  "table",
                                 );
                                 const { isValid } = validateForm(
                                   values,
-                                  fieldsToValidate
+                                  fieldsToValidate,
                                 );
 
                                 if (!isValid) {
                                   throw new Error(
-                                    "Please fix validation errors"
+                                    "Please fix validation errors",
                                   );
                                 }
 
                                 await productsService.update(
                                   product.slug,
-                                  values
+                                  values,
                                 );
                                 await loadProducts();
                                 setEditingId(null);
                               } catch (error) {
                                 console.error(
                                   "Failed to update product:",
-                                  error
+                                  error,
                                 );
                                 throw error;
                               }
@@ -502,7 +502,7 @@ export default function AdminProductsPage() {
                                 setSelectedIds((prev) =>
                                   checked
                                     ? [...prev, product.id]
-                                    : prev.filter((id) => id !== product.id)
+                                    : prev.filter((id) => id !== product.id),
                                 );
                               }}
                               aria-label={`Select ${product.name}`}
@@ -549,9 +549,9 @@ export default function AdminProductsPage() {
                                 product.stockCount === 0
                                   ? "text-red-600"
                                   : product.stockCount <
-                                    (product.lowStockThreshold || 10)
-                                  ? "text-yellow-600"
-                                  : "text-green-600"
+                                      (product.lowStockThreshold || 10)
+                                    ? "text-yellow-600"
+                                    : "text-green-600"
                               }`}
                             >
                               {product.stockCount}

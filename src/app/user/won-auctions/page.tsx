@@ -68,13 +68,13 @@ export default function WonAuctionsPage() {
 
   const totalWinnings = auctionsList.reduce(
     (sum, auction) => sum + (auction.currentBid || 0),
-    0
+    0,
   );
   const pendingPayment = auctionsList.filter(
-    (a) => !(a as any).order_id || (a as any).order_status === "pending"
+    (a) => !(a as any).order_id || (a as any).order_status === "pending",
   );
   const completedOrders = auctionsList.filter(
-    (a) => (a as any).order_id && (a as any).order_status === "completed"
+    (a) => (a as any).order_id && (a as any).order_status === "completed",
   );
 
   return (
