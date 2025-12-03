@@ -93,7 +93,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Used in**: Shop creation, invoice generation, tax filing
 - **Lines**: ~200 lines
 
-##### ⬜ 06-create-product-variant-selector
+##### ✅ 06-create-product-variant-selector
 
 - **File**: `src/components/common/ProductVariantSelector.tsx`
 - **Purpose**: Show alternative products from same leaf category (cross-seller)
@@ -106,7 +106,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Used in**: Product detail page ("Similar Products" section)
 - **Lines**: ~250 lines
 
-##### ⬜ 07-create-coupon-selector
+##### ✅ 07-create-coupon-selector
 
 - **File**: `src/components/checkout/CouponSelector.tsx`
 - **Purpose**: Apply discounts during checkout (NOT with create - sellers create in dashboard)
@@ -119,7 +119,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Used in**: Checkout, cart
 - **Lines**: ~200 lines
 
-##### ⬜ 08-create-tag-selector-with-create
+##### ✅ 08-create-tag-selector-with-create
 
 - **File**: `src/components/common/TagSelectorWithCreate.tsx`
 - **Purpose**: Multi-select tags with inline create (sellers only)
@@ -198,7 +198,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 23.3: Update Shop Wizard to Use Components (6-8 hours)
 
-##### ⬜ 14-update-shop-wizard-basic-info-step
+##### ✅ 14-update-shop-wizard-basic-info-step
 
 - **File**: `src/components/seller/shop-wizard/BasicInfoStep.tsx`
 - **Changes**:
@@ -209,7 +209,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Move required fields from Step 3 to Step 1
 - **Impact**: All required fields in first step
 
-##### ⬜ 15-update-shop-wizard-contact-legal-step
+##### ✅ 15-update-shop-wizard-contact-legal-step
 
 - **File**: `src/components/seller/shop-wizard/ContactLegalStep.tsx`
 - **Changes**:
@@ -219,7 +219,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Keep legal info (GST/PAN/CIN) as optional
 - **Impact**: Faster address selection, reuse saved addresses
 
-##### ⬜ 16-add-wizard-action-bar-to-shop-wizard
+##### ✅ 16-add-wizard-action-bar-to-shop-wizard
 
 - **File**: `src/app/seller/my-shops/create/page.tsx`
 - **Changes**:
@@ -229,7 +229,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Include submit button (always visible)
 - **Impact**: Consistent wizard UX, always visible submit button
 
-##### ⬜ 17-update-shop-form-data-types
+##### ✅ 17-update-shop-form-data-types
 
 - **File**: `src/components/seller/shop-wizard/types.ts`
 - **Changes**:
@@ -241,7 +241,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 23.4: Update Product/Auction Wizards (4-6 hours)
 
-##### ⬜ 18-update-product-wizard-category-shop-selectors
+##### ✅ 18-update-product-wizard-category-shop-selectors
 
 - **File**: `src/components/seller/product-wizard/RequiredInfoStep.tsx`
 - **Changes**:
@@ -514,7 +514,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   // After
   z.string().min(
     VALIDATION_RULES.NAME.MIN_LENGTH,
-    VALIDATION_MESSAGES.NAME.TOO_SHORT
+    VALIDATION_MESSAGES.NAME.TOO_SHORT,
   );
   ```
 
