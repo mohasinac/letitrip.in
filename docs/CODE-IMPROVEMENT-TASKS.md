@@ -3,9 +3,57 @@
 > **Generated**: December 3, 2025
 > **Last Updated**: December 4, 2025
 > **Status**: ✅ BUILD PASSING - Ready for Release
-> **Estimated Total Effort**: 208-310 hours
-> **Potential Lines Saved**: ~16,000 lines via shared components
-> **Total Tasks**: 23 improvement areas identified
+> **Estimated Total Effort**: 254-378 hours
+> **Potential Lines Saved**: ~17,500 lines via shared components
+> **Total Tasks**: 25 improvement areas identified
+
+## 🚀 IMPLEMENTATION PRIORITY ORDER
+
+### Priority #1: Create All Components (Current Phase)
+
+**Focus**: Build all reusable components with mobile and dark mode support
+
+- ✅ Task 23: Form/Wizard selector components (AddressSelectorWithCreate, etc.)
+- ✅ Task 24: Detail page section components (ShopAbout, CategoryHeader, etc.)
+- ✅ Task 25: Validation constants (Already created)
+- Component requirements:
+  - Dark mode support (all components)
+  - Mobile responsive (all components)
+  - Descriptive comment explaining purpose
+  - Merge similar functionality where possible
+
+### Priority #2: Split Large Files
+
+**Focus**: Break down large files to use new components
+
+- Task 1: Large File Splitting
+- Update files to use newly created components
+- Extract inline logic to components
+
+### Priority #3: Navigation Changes
+
+**Focus**: Navigation improvements and cleanup
+
+- Task 21: Navigation Cleanup
+- Consolidate navigation components
+- Improve mobile navigation
+
+### Priority #4: Dark Mode & Mobile Responsiveness
+
+**Focus**: Complete dark mode and mobile support
+
+- Task 11: Mobile/Dark Mode
+- Task 18: Nav/Filter/Dark
+- Fix remaining dark mode issues
+- Complete mobile responsiveness
+
+### Priority #5: Remaining Tasks
+
+**Focus**: All other improvement tasks
+
+- Tasks 2-10, 12-20, 22
+- Performance, accessibility, testing
+- API improvements, hooks consolidation
 
 ## 🎉 BUILD STATUS: PASSING
 
@@ -3299,24 +3347,385 @@ export function AddressSelectorWithCreate({
 3. **AddressSelectorWithCreate** ⭐ New (detailed above)
 4. **PaymentMethodSelectorWithCreate** (saved cards/UPI)
 5. **ShippingMethodSelector** (with carrier options)
+6. **BankAccountSelectorWithCreate** (saved bank accounts for payouts)
+7. **TaxDetailsSelectorWithCreate** (saved GST/PAN details)
+8. **ProductVariantSelector** (size, color, etc. with inline add)
+9. **CouponSelector** (apply existing coupons - sellers create in dashboard)
+10. **TagSelectorWithCreate** (product tags with inline create)
+
+---
+
+#### Phase 5: Additional Reusable Selector Components (8-12 hours)
+
+**BankAccountSelectorWithCreate** (For seller payouts)
+
+```tsx
+// src/components/seller/BankAccountSelectorWithCreate.tsx
+interface BankAccount {
+  id: string;
+  accountHolderName: string;
+  bankName: string;
+  accountNumber: string;
+  ifscCode: string;
+  accountType: "savings" | "current";
+  isDefault: boolean;
+  isPrimary: boolean;
+}
+
+interface BankAccountSelectorWithCreateProps {
+  value: string | null;
+  onChange: (accountId: string | null, account: BankAccount | null) => void;
+  sellerId: string;
+  required?: boolean;
+  error?: string;
+}
+
+// Features:
+// - Load saved bank accounts from seller profile
+// - Inline create with bank account form
+// - IFSC code validation and auto-fill bank details
+// - Set default/primary account
+// - Verification status indicator
+// - Used in: Seller onboarding, payout requests, shop settings
+```
+
+**TaxDetailsSelectorWithCreate** (For business compliance)
+
+```tsx
+// src/components/seller/TaxDetailsSelectorWithCreate.tsx
+interface TaxDetails {
+  id: string;
+  gstin: string;
+  pan: string;
+  cin?: string;
+  businessName: string;
+  businessType: "individual" | "proprietorship" | "partnership" | "company";
+  isVerified: boolean;
+  isDefault: boolean;
+}
+
+interface TaxDetailsSelectorWithCreateProps {
+  value: string | null;
+  onChange: (detailsId: string | null, details: TaxDetails | null) => void;
+  sellerId: string;
+  required?: boolean;
+  showVerificationStatus?: boolean;
+}
+
+// Features:
+// - Load saved tax details (GST/PAN/CIN)
+// - Inline create with validation
+// - GSTIN format validation (22AAAAA0000A1Z5)
+// - PAN format validation (ABCDE1234F)
+// - Auto-fetch business details from GSTIN API
+// - Verification status badge
+// - Used in: Shop creation, invoice generation, tax filing
+```
+
+**ProductVariantSelector** (For selecting alternative products from same category)
+
+```tsx
+// src/components/common/ProductVariantSelector.tsx
+interface ProductVariant {
+  id: string; // Product ID
+  productId: string;
+  name: string; // Product name
+  shopId: string;
+  shopName: string;
+  sellerId: string;
+  sellerName: string;
+  categoryId: string; // Same leaf category as current product
+  price: number;
+  originalPrice?: number; // For discount display
+  stock: number;
+  rating?: number;
+  reviewCount?: number;
+  images: string[];
+  attributes?: {
+    color?: string;
+    size?: string;
+    brand?: string;
+    [key: string]: string | undefined;
+  };
+  shippingTime?: string; // "2-3 days"
+  isFulfillmentByPlatform?: boolean;
+}
+
+interface ProductVariantSelectorProps {
+  currentProductId: string;
+  categoryId: string; // Leaf category to find variants from
+  selectedVariantId: string | null;
+  onChange: (variantId: string, variant: ProductVariant) => void;
+  maxVariants?: number; // Default 10
+  sortBy?: "price" | "rating" | "shipping"; // Default: price
+}
+
+// Features:
+// - Loads all products from same leaf category (cross-seller)
+// - Small card layout (Amazon-style "Other Sellers on Amazon")
+// - Shows: Product image, price, seller name, rating, shipping time
+// - Price comparison (lowest price highlighted)
+// - Stock availability indicator
+// - Seller rating/trust badge
+// - Fast shipping badge (FBP - Fulfillment by Platform)
+// - Discount percentage display
+// - Click card to navigate to that product page
+// - Used in: Product detail page (as "Similar Products" or "Other Options")
+// Note: Products A, B, C under leaf category "ball" are variants of each other
+// Example: If viewing Product A, shows B and C as alternatives from any seller
+```
+
+**CouponSelector** (For applying discounts during checkout)
+
+```tsx
+// src/components/checkout/CouponSelector.tsx
+interface Coupon {
+  id: string;
+  code: string;
+  discountType: "percentage" | "fixed" | "freeShipping";
+  discountValue: number;
+  minOrderValue?: number;
+  maxDiscount?: number;
+  validFrom: Date;
+  validUntil: Date;
+  usageLimit?: number;
+  usedCount: number;
+  isActive: boolean;
+}
+
+interface CouponSelectorProps {
+  value: string | null; // couponId or code
+  onChange: (couponId: string | null, coupon: Coupon | null) => void;
+  orderValue: number;
+  userId?: string;
+  shopId?: string;
+}
+
+// Features:
+// - Load applicable coupons (user-specific, shop-specific, global)
+// - Manual code entry with validation
+// - Display discount calculation preview
+// - Expiry warning (expires soon badge)
+// - Usage limit indicator
+// - Invalid code error handling
+// - Auto-apply best coupon suggestion
+// - Remove applied coupon button
+// - Used in: Checkout, cart
+// Note: Sellers create coupons in dashboard (src/app/seller/coupons), not inline
+```
+
+**TagSelectorWithCreate** (For product/blog tags)
+
+```tsx
+// src/components/common/TagSelectorWithCreate.tsx
+interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+  color?: string;
+  usageCount?: number;
+}
+
+interface TagSelectorWithCreateProps {
+  value: string[]; // Array of tag IDs
+  onChange: (tagIds: string[], tags: Tag[]) => void;
+  entityType: "product" | "blog" | "shop";
+  maxTags?: number;
+  allowCreate?: boolean;
+  suggestions?: Tag[];
+}
+
+// Features:
+// - Multi-select tag picker with chips
+// - Tag suggestions based on entity type
+// - Inline tag creation (name → auto-slug)
+// - Color picker for tags
+// - Popular tags display
+// - Tag usage count indicator
+// - Drag-to-reorder selected tags
+// - Max tags limit enforcement
+// - Used in: Product create/edit, blog create/edit, shop settings
+```
+
+**ShippingMethodSelector** (For checkout and order fulfillment)
+
+```tsx
+// src/components/checkout/ShippingMethodSelector.tsx
+interface ShippingMethod {
+  id: string;
+  carrier: string; // "Delhivery", "BlueDart", "India Post"
+  service: string; // "Standard", "Express", "Same Day"
+  estimatedDays: { min: number; max: number };
+  cost: number;
+  isFree: boolean;
+  features: string[]; // ["Tracking", "Insurance", "Signature Required"]
+  cutoffTime?: string; // "5:00 PM"
+}
+
+interface ShippingMethodSelectorProps {
+  methods: ShippingMethod[];
+  selectedMethodId: string | null;
+  onChange: (methodId: string, method: ShippingMethod) => void;
+  deliveryAddress: string; // For calculating rates
+  orderWeight?: number;
+  orderValue?: number;
+}
+
+// Features:
+// - Visual shipping method cards
+// - Delivery time estimation
+// - Cost comparison
+// - Features display (tracking, insurance)
+// - Free shipping badge
+// - Cutoff time warning
+// - Recommended option highlight
+// - Real-time rate calculation
+// - Used in: Checkout, seller order fulfillment
+```
+
+**PaymentMethodSelectorWithCreate** (For checkout)
+
+```tsx
+// src/components/checkout/PaymentMethodSelectorWithCreate.tsx
+interface SavedPaymentMethod {
+  id: string;
+  type: "card" | "upi" | "netbanking" | "wallet";
+  displayName: string; // "HDFC •••• 4242"
+  last4?: string; // For cards
+  upiId?: string; // For UPI
+  bankName?: string; // For netbanking
+  walletProvider?: string; // "Paytm", "PhonePe"
+  expiryMonth?: number;
+  expiryYear?: number;
+  isDefault: boolean;
+}
+
+interface PaymentMethodSelectorWithCreateProps {
+  value: string | null; // payment method ID
+  onChange: (
+    methodId: string | null,
+    method: SavedPaymentMethod | null
+  ) => void;
+  userId: string;
+  orderValue: number;
+  allowNewMethod?: boolean;
+  supportedTypes?: Array<"card" | "upi" | "netbanking" | "wallet" | "cod">;
+}
+
+// Features:
+// - Load saved payment methods
+// - Visual method cards with icons
+// - CVV re-entry for saved cards
+// - Inline add new payment method
+// - Payment method type selector
+// - Expiry date validation
+// - Default method auto-select
+// - Security badges (PCI DSS, SSL)
+// - COD availability check
+// - Used in: Checkout, subscription payments
+```
+
+**ContactSelectorWithCreate** (For support/emergency contacts)
+
+```tsx
+// src/components/common/ContactSelectorWithCreate.tsx
+interface Contact {
+  id: string;
+  name: string;
+  relationship?: string; // "Emergency", "Alternate", "Business"
+  phone: string;
+  email?: string;
+  isPrimary: boolean;
+}
+
+// Features:
+// - Load saved contacts
+// - Inline contact creation with MobileInput
+// - Phone number validation
+// - Set primary contact
+// - Contact type/relationship
+// - Used in: User settings, order tracking, seller profile
+```
+
+**DocumentSelectorWithUpload** (For KYC/verification documents)
+
+```tsx
+// src/components/common/DocumentSelectorWithUpload.tsx
+interface Document {
+  id: string;
+  type: "aadhar" | "pan" | "gstin" | "license" | "passport";
+  documentNumber: string;
+  uploadedUrl: string;
+  verificationStatus: "pending" | "verified" | "rejected";
+  expiryDate?: Date;
+  uploadedAt: Date;
+}
+
+// Features:
+// - Load uploaded documents
+// - Document type selector
+// - File upload with preview
+// - OCR for auto-filling details
+// - Verification status badge
+// - Expiry date tracking
+// - Document viewer
+// - Re-upload functionality
+// - Used in: Seller onboarding, user verification, compliance
+```
+
+**TemplateSelectorWithCreate** (For email/message templates)
+
+```tsx
+// src/components/admin/TemplateSelectorWithCreate.tsx
+interface Template {
+  id: string;
+  name: string;
+  category: "email" | "sms" | "notification" | "invoice";
+  subject?: string;
+  content: string;
+  variables: string[]; // ["{{customerName}}", "{{orderNumber}}"]
+  isDefault: boolean;
+}
+
+// Features:
+// - Load saved templates
+// - Category filtering
+// - Template preview with variables
+// - Inline template editor
+// - Variable insertion helper
+// - Rich text editor
+// - Template duplication
+// - Used in: Email settings, bulk messaging, order notifications
+```
 
 ### 📊 Benefits Summary
 
-| Improvement                            | Impact                                     | Lines Saved     |
-| -------------------------------------- | ------------------------------------------ | --------------- |
-| Use SmartAddressForm                   | GPS, validation, UX                        | ~200 lines      |
-| Use MobileInput                        | Country codes, WhatsApp                    | ~100 lines      |
-| Use PincodeInput                       | Auto-lookup, validation                    | ~150 lines      |
-| Use CategorySelectorWithCreate         | Tree view, search, inline create           | ~300 lines      |
-| Use ShopSelector                       | Auto-load shops, consistent UX             | ~100 lines      |
-| Use AddressSelectorWithCreate          | Saved addresses, inline create, checkout   | ~400 lines      |
-| Consolidate required fields            | Better UX, less back-nav                   | N/A             |
-| Add WizardActionBar everywhere         | Consistent UX                              | ~50 lines       |
-| Create reusable wizard step components | Cross-wizard reuse                         | ~500 lines      |
-| Create reusable dropdown components    | Consistent address/category/shop selection | ~600 lines      |
-| **Total**                              | -                                          | **~2400 lines** |
+| Improvement                            | Impact                                   | Lines Saved     |
+| -------------------------------------- | ---------------------------------------- | --------------- |
+| Use SmartAddressForm                   | GPS, validation, UX                      | ~200 lines      |
+| Use MobileInput                        | Country codes, WhatsApp                  | ~100 lines      |
+| Use PincodeInput                       | Auto-lookup, validation                  | ~150 lines      |
+| Use CategorySelectorWithCreate         | Tree view, search, inline create         | ~300 lines      |
+| Use ShopSelector                       | Auto-load shops, consistent UX           | ~100 lines      |
+| Use AddressSelectorWithCreate          | Saved addresses, inline create, checkout | ~400 lines      |
+| Use BankAccountSelectorWithCreate      | Saved bank accounts, IFSC validation     | ~300 lines      |
+| Use TaxDetailsSelectorWithCreate       | GST/PAN validation, compliance           | ~300 lines      |
+| Use ProductVariantSelector             | Cross-seller alternatives, price compare | ~250 lines      |
+| Use CouponSelector                     | Discount calculation, auto-apply         | ~200 lines      |
+| Use TagSelectorWithCreate              | Multi-select, suggestions, inline create | ~200 lines      |
+| Use ShippingMethodSelector             | Carrier comparison, rate calculation     | ~250 lines      |
+| Use PaymentMethodSelectorWithCreate    | Saved cards/UPI, security                | ~350 lines      |
+| Use ContactSelectorWithCreate          | Emergency contacts, validation           | ~150 lines      |
+| Use DocumentSelectorWithUpload         | KYC, OCR, verification tracking          | ~300 lines      |
+| Use TemplateSelectorWithCreate         | Email/SMS templates, variable insertion  | ~250 lines      |
+| Consolidate required fields            | Better UX, less back-nav                 | N/A             |
+| Add WizardActionBar everywhere         | Consistent UX                            | ~50 lines       |
+| Create reusable wizard step components | Cross-wizard reuse                       | ~500 lines      |
+| **Total**                              | -                                        | **~4250 lines** |
 
 ### ✅ Validation & Testing Checklist
+
+**Basic Wizard Components**:
 
 - [ ] Shop wizard Step 1 has all required fields
 - [ ] SmartAddressForm works in inline mode
@@ -3338,7 +3747,23 @@ export function AddressSelectorWithCreate({
 - [ ] Category tree navigation works properly
 - [ ] Shop dropdown shows all user's shops
 
+**New Selector Components**:
+
+- [ ] AddressSelectorWithCreate loads saved addresses
+- [ ] BankAccountSelectorWithCreate validates IFSC codes
+- [ ] TaxDetailsSelectorWithCreate validates GST/PAN formats
+- [ ] ProductVariantSelector loads same-category products cross-seller
+- [ ] CouponSelector validates coupon codes and calculates discount
+- [ ] TagSelectorWithCreate enforces max tags limit
+- [ ] ShippingMethodSelector displays delivery estimates
+- [ ] PaymentMethodSelectorWithCreate handles CVV re-entry
+- [ ] ContactSelectorWithCreate validates phone numbers
+- [ ] DocumentSelectorWithUpload previews uploaded files
+- [ ] TemplateSelectorWithCreate substitutes variables correctly
+
 ### 🎯 Success Criteria
+
+**Wizard Integration**:
 
 1. ✅ Shop wizard uses SmartAddressForm in ContactLegalStep
 2. ✅ Shop wizard uses MobileInput in BasicInfoStep
@@ -3354,69 +3779,1079 @@ export function AddressSelectorWithCreate({
 12. ✅ Validation works consistently across all wizards
 13. ✅ Mobile UX improved with proper touch targets
 
+**New Selector Components**:
+
+14. ✅ AddressSelectorWithCreate used in checkout and wizards
+15. ✅ BankAccountSelectorWithCreate used in seller onboarding
+16. ✅ TaxDetailsSelectorWithCreate used in shop creation
+17. ✅ ProductVariantSelector shows alternatives from same leaf category (cross-seller)
+18. ✅ CouponSelector used in checkout for applying existing coupons
+19. ✅ TagSelectorWithCreate used in product/blog creation (sellers only)
+20. ✅ ShippingMethodSelector used in checkout
+21. ✅ PaymentMethodSelectorWithCreate used in checkout
+22. ✅ ContactSelectorWithCreate used in user settings
+23. ✅ DocumentSelectorWithUpload used in seller verification
+24. ✅ TemplateSelectorWithCreate used in admin settings
+25. ✅ All selectors save data to shared collections
+26. ✅ Inline create only available for user-owned resources
+27. ✅ All selectors work in dark mode
+
 ### 📝 Files to Modify
 
-| File                                                        | Changes                                                 |
-| ----------------------------------------------------------- | ------------------------------------------------------- |
-| `src/app/seller/my-shops/create/page.tsx`                   | Add WizardActionBar, CategorySelectorWithCreate         |
-| `src/components/seller/shop-wizard/BasicInfoStep.tsx`       | Add phone/email, use CategorySelectorWithCreate         |
-| `src/components/seller/shop-wizard/ContactLegalStep.tsx`    | Replace textarea with SmartAddressForm                  |
-| `src/components/seller/shop-wizard/types.ts`                | Update ShopFormData with address fields                 |
-| `src/app/seller/products/create/page.tsx`                   | Add CategorySelectorWithCreate, ShopSelector            |
-| `src/components/seller/product-wizard/RequiredInfoStep.tsx` | Use CategorySelectorWithCreate, ShopSelector            |
-| `src/app/seller/auctions/create/page.tsx`                   | Add CategorySelectorWithCreate, ShopSelector            |
-| `src/components/seller/auction-wizard/RequiredInfoStep.tsx` | Use CategorySelectorWithCreate, ShopSelector            |
-| `src/components/wizards/ContactInfoStep.tsx`                | CREATE - Reusable contact section with MobileInput      |
-| `src/components/wizards/BusinessAddressStep.tsx`            | CREATE - Reusable address section with SmartAddressForm |
-| `src/components/wizards/CategorySelectionStep.tsx`          | CREATE - Reusable category selection with create option |
-| `src/components/wizards/ShopSelectionStep.tsx`              | CREATE - Reusable shop selection for multi-shop sellers |
-| `src/components/common/AddressSelectorWithCreate.tsx`       | CREATE - Saved address dropdown + inline create         |
-| `src/components/common/PaymentMethodSelectorWithCreate.tsx` | CREATE - Saved payment methods dropdown + inline create |
-| `src/app/checkout/page.tsx`                                 | Update to use AddressSelectorWithCreate                 |
-| `src/app/seller/my-shops/create/page.tsx` (updated)         | Use AddressSelectorWithCreate for business address      |
-| `src/app/admin/categories/create/page.tsx`                  | Verify WizardActionBar usage                            |
-| `src/app/admin/blog/create/page.tsx`                        | Verify WizardActionBar usage                            |
+**Existing Wizard Updates**:
+
+| File                                                        | Changes                                         |
+| ----------------------------------------------------------- | ----------------------------------------------- |
+| `src/app/seller/my-shops/create/page.tsx`                   | Add WizardActionBar, CategorySelectorWithCreate |
+| `src/components/seller/shop-wizard/BasicInfoStep.tsx`       | Add phone/email, use CategorySelectorWithCreate |
+| `src/components/seller/shop-wizard/ContactLegalStep.tsx`    | Replace textarea with SmartAddressForm          |
+| `src/components/seller/shop-wizard/types.ts`                | Update ShopFormData with address fields         |
+| `src/app/seller/products/create/page.tsx`                   | Add CategorySelectorWithCreate, ShopSelector    |
+| `src/components/seller/product-wizard/RequiredInfoStep.tsx` | Use CategorySelectorWithCreate, ShopSelector    |
+| `src/app/seller/auctions/create/page.tsx`                   | Add CategorySelectorWithCreate, ShopSelector    |
+| `src/components/seller/auction-wizard/RequiredInfoStep.tsx` | Use CategorySelectorWithCreate, ShopSelector    |
+| `src/app/admin/categories/create/page.tsx`                  | Verify WizardActionBar usage                    |
+| `src/app/admin/blog/create/page.tsx`                        | Verify WizardActionBar usage                    |
+
+**New Reusable Wizard Step Components**:
+
+| File                                               | Purpose                                        |
+| -------------------------------------------------- | ---------------------------------------------- |
+| `src/components/wizards/ContactInfoStep.tsx`       | Reusable contact section with MobileInput      |
+| `src/components/wizards/BusinessAddressStep.tsx`   | Reusable address section with SmartAddressForm |
+| `src/components/wizards/CategorySelectionStep.tsx` | Reusable category selection with create option |
+| `src/components/wizards/ShopSelectionStep.tsx`     | Reusable shop selection for multi-shop sellers |
+
+**New Selector Components (Phase 4 & 5)**:
+
+| File                                                          | Purpose                                           |
+| ------------------------------------------------------------- | ------------------------------------------------- |
+| `src/components/common/AddressSelectorWithCreate.tsx`         | Saved address dropdown + inline create            |
+| `src/components/checkout/PaymentMethodSelectorWithCreate.tsx` | Saved payment methods dropdown + inline create    |
+| `src/components/seller/BankAccountSelectorWithCreate.tsx`     | Saved bank accounts + IFSC validation             |
+| `src/components/seller/TaxDetailsSelectorWithCreate.tsx`      | GST/PAN validation + inline create                |
+| `src/components/common/ProductVariantSelector.tsx`            | Cross-seller alternative products (same category) |
+| `src/components/checkout/CouponSelector.tsx`                  | Coupon code input + discount calculation          |
+| `src/components/common/TagSelectorWithCreate.tsx`             | Multi-select tags + inline create (sellers)       |
+| `src/components/checkout/ShippingMethodSelector.tsx`          | Carrier comparison + rate calculation             |
+| `src/components/common/ContactSelectorWithCreate.tsx`         | Emergency contacts + MobileInput                  |
+| `src/components/common/DocumentSelectorWithUpload.tsx`        | KYC documents + OCR + verification tracking       |
+| `src/components/admin/TemplateSelectorWithCreate.tsx`         | Email/SMS templates + variable insertion          |
+
+**Pages Using New Selectors**:
+
+| File                                         | Selectors to Add                                                           |
+| -------------------------------------------- | -------------------------------------------------------------------------- |
+| `src/app/checkout/page.tsx`                  | AddressSelectorWithCreate, PaymentMethodSelectorWithCreate, CouponSelector |
+| `src/app/seller/my-shops/create/page.tsx`    | AddressSelectorWithCreate, BankAccountSelectorWithCreate                   |
+| `src/app/seller/onboarding/page.tsx`         | TaxDetailsSelectorWithCreate, DocumentSelectorWithUpload                   |
+| `src/app/seller/products/create/page.tsx`    | TagSelectorWithCreate                                                      |
+| `src/app/seller/products/[id]/edit/page.tsx` | TagSelectorWithCreate                                                      |
+| `src/app/products/[id]/page.tsx`             | ProductVariantSelector (show alternatives from same category)              |
+| `src/app/admin/blog/create/page.tsx`         | TagSelectorWithCreate                                                      |
+| `src/app/admin/settings/templates/page.tsx`  | TemplateSelectorWithCreate                                                 |
+| `src/app/user/settings/contacts/page.tsx`    | ContactSelectorWithCreate                                                  |
 
 ### 🚀 Estimated Effort Breakdown
 
-| Phase                                 | Hours     |
-| ------------------------------------- | --------- |
-| Phase 1: Shop Wizard Refactoring      | 6-8       |
-| Phase 2: Validate Other Wizards       | 2-4       |
-| Phase 3: Reusable Step Components     | 4-6       |
-| Phase 4: Reusable Dropdown Components | 6-8       |
-| **Total**                             | **18-26** |
+| Phase                                      | Hours     |
+| ------------------------------------------ | --------- |
+| Phase 1: Shop Wizard Refactoring           | 6-8       |
+| Phase 2: Validate Other Wizards            | 2-4       |
+| Phase 3: Reusable Step Components          | 4-6       |
+| Phase 4: Core Reusable Dropdown Components | 6-8       |
+| Phase 5: Advanced Selector Components      | 8-12      |
+| Phase 6: Integration & Testing             | 4-6       |
+| **Total**                                  | **30-44** |
+
+---
+
+## Task 24: Detail Page Section Components 📄
+
+### 🎯 Problem Statement
+
+Detail pages (Product, Shop, Category, Auction) contain reusable sections that could be componentized and shared across different detail pages and contexts. Currently, these sections are partially implemented but lack consistency and reusability across the platform.
+
+### 🔍 Current Issues
+
+1. **Product detail sections exist** but are not documented as reusable
+2. **Shop detail page** only has ShopHeader, missing other sections
+3. **Category detail page** has no dedicated section components
+4. **Auction detail page** lacks structured section components
+5. **Inconsistent section structure** across different detail pages
+6. **Similar sections reimplemented** instead of reused (e.g., reviews, related items)
+7. **No standardized section layout** for detail pages
+
+### 📦 Existing Product Detail Components
+
+| Component              | Path                                            | Purpose                             | Status |
+| ---------------------- | ----------------------------------------------- | ----------------------------------- | ------ |
+| **ProductGallery**     | `src/components/product/ProductGallery.tsx`     | Image/video gallery with thumbnails | ✅     |
+| **ProductInfo**        | `src/components/product/ProductInfo.tsx`        | Price, stock, seller, actions       | ✅     |
+| **ProductDescription** | `src/components/product/ProductDescription.tsx` | Description, specs, features        | ✅     |
+| **ProductReviews**     | `src/components/product/ProductReviews.tsx`     | Review list and form                | ✅     |
+| **ProductVariants**    | `src/components/product/ProductVariants.tsx`    | Cross-seller alternatives           | ✅     |
+| **SellerProducts**     | `src/components/product/SellerProducts.tsx`     | More from this seller               | ✅     |
+| **SimilarProducts**    | `src/components/product/SimilarProducts.tsx`    | Similar/recommended products        | ✅     |
+
+### 🏪 Shop Detail Components (Needed)
+
+| Component        | Path                                   | Purpose                                     | Status     |
+| ---------------- | -------------------------------------- | ------------------------------------------- | ---------- |
+| **ShopHeader**   | `src/components/shop/ShopHeader.tsx`   | Shop banner, logo, name, rating, follow     | ✅         |
+| **ShopAbout**    | `src/components/shop/ShopAbout.tsx`    | Description, policies, contact              | ❌ CREATE  |
+| **ShopStats**    | `src/components/shop/ShopStats.tsx`    | Products count, followers, sales, rating    | ❌ CREATE  |
+| **ShopProducts** | `src/components/shop/ShopProducts.tsx` | Product grid with filters (already in page) | 🔄 EXTRACT |
+| **ShopAuctions** | `src/components/shop/ShopAuctions.tsx` | Auction grid with filters (already in page) | 🔄 EXTRACT |
+| **ShopReviews**  | `src/components/shop/ShopReviews.tsx`  | Shop review list and form                   | ❌ CREATE  |
+| **ShopPolicies** | `src/components/shop/ShopPolicies.tsx` | Return, shipping, warranty policies         | ❌ CREATE  |
+
+### 📂 Category Detail Components (Needed)
+
+| Component                   | Path                                                  | Purpose                                     | Status     |
+| --------------------------- | ----------------------------------------------------- | ------------------------------------------- | ---------- |
+| **CategoryHeader**          | `src/components/category/CategoryHeader.tsx`          | Category name, image, description           | ❌ CREATE  |
+| **CategoryBreadcrumb**      | `src/components/category/CategoryBreadcrumb.tsx`      | Breadcrumb navigation (use existing)        | ✅ EXISTS  |
+| **SubcategoryGrid**         | `src/components/category/SubcategoryGrid.tsx`         | Child categories grid (already in page)     | 🔄 EXTRACT |
+| **CategoryProducts**        | `src/components/category/CategoryProducts.tsx`        | Product grid with filters (already in page) | 🔄 EXTRACT |
+| **CategoryStats**           | `src/components/category/CategoryStats.tsx`           | Product count, seller count, price range    | ❌ CREATE  |
+| **SimilarCategories**       | `src/components/category/SimilarCategories.tsx`       | Related categories                          | ✅ EXISTS  |
+| **CategoryFeaturedSellers** | `src/components/category/CategoryFeaturedSellers.tsx` | Top sellers in category                     | ❌ CREATE  |
+
+### 🔨 Auction Detail Components (Needed)
+
+| Component              | Path                                            | Purpose                                                  | Status    |
+| ---------------------- | ----------------------------------------------- | -------------------------------------------------------- | --------- |
+| **AuctionGallery**     | `src/components/auction/AuctionGallery.tsx`     | Image/video gallery (reuse ProductGallery)               | 🔄 REUSE  |
+| **AuctionInfo**        | `src/components/auction/AuctionInfo.tsx`        | Current bid, time left, reserve, bid button              | ❌ CREATE |
+| **LiveCountdown**      | `src/components/auction/LiveCountdown.tsx`      | Real-time countdown timer                                | ✅ EXISTS |
+| **LiveBidHistory**     | `src/components/auction/LiveBidHistory.tsx`     | Live bid feed with real-time updates                     | ✅ EXISTS |
+| **AutoBidSetup**       | `src/components/auction/AutoBidSetup.tsx`       | Auto-bid configuration                                   | ✅ EXISTS |
+| **AuctionDescription** | `src/components/auction/AuctionDescription.tsx` | Description, condition, specs (reuse ProductDescription) | 🔄 REUSE  |
+| **AuctionReviews**     | `src/components/auction/AuctionReviews.tsx`     | Seller reviews (reuse ShopReviews)                       | 🔄 REUSE  |
+| **AuctionSellerInfo**  | `src/components/auction/AuctionSellerInfo.tsx`  | Seller info, shop link, contact                          | ❌ CREATE |
+| **SimilarAuctions**    | `src/components/auction/SimilarAuctions.tsx`    | Similar ongoing auctions                                 | ❌ CREATE |
+
+### 🎨 Implementation Plan
+
+#### Phase 1: Extract Existing Inline Sections (4-6 hours)
+
+**Shop Page Sections** (`src/app/shops/[slug]/page.tsx`):
+
+- Extract products tab content → `ShopProducts.tsx`
+- Extract auctions tab content → `ShopAuctions.tsx`
+- Add filter and view mode props
+
+**Category Page Sections** (`src/app/categories/[slug]/page.tsx`):
+
+- Extract subcategories section → `SubcategoryGrid.tsx`
+- Extract products section → `CategoryProducts.tsx`
+- Add filter and sort props
+
+#### Phase 2: Create Missing Shop Components (3-5 hours)
+
+```tsx
+// src/components/shop/ShopAbout.tsx
+interface ShopAboutProps {
+  description: string;
+  established?: Date;
+  location?: string;
+  policies: {
+    returnPolicy?: string;
+    shippingPolicy?: string;
+    warrantyPolicy?: string;
+  };
+  contactInfo: {
+    email?: string;
+    phone?: string;
+    whatsapp?: string;
+  };
+}
+
+// Features:
+// - Formatted description with line breaks
+// - Shop establishment date
+// - Location display
+// - Contact buttons (email, call, WhatsApp)
+// - Policy tabs/accordion
+```
+
+```tsx
+// src/components/shop/ShopStats.tsx
+interface ShopStatsProps {
+  productCount: number;
+  auctionCount: number;
+  followerCount: number;
+  rating: number;
+  reviewCount: number;
+  totalSales?: number;
+  responseTime?: string; // "Within 2 hours"
+  shipmentTime?: string; // "1-2 days"
+}
+
+// Features:
+// - Grid of stat cards
+// - Icons for each stat
+// - Responsive layout (2x2 → 3x2 → 4x2)
+// - Animated count-up on scroll
+```
+
+```tsx
+// src/components/shop/ShopReviews.tsx
+interface ShopReviewsProps {
+  shopId: string;
+  initialReviews?: Review[];
+  allowReview: boolean; // User must have purchased
+}
+
+// Features:
+// - Reuse ReviewList component
+// - Filter by rating (5★, 4★, etc.)
+// - Sort by recent/helpful
+// - Review form (if eligible)
+// - Average rating breakdown (5★: 60%, 4★: 30%...)
+```
+
+#### Phase 3: Create Category Components (2-4 hours)
+
+```tsx
+// src/components/category/CategoryHeader.tsx
+interface CategoryHeaderProps {
+  name: string;
+  description?: string;
+  image?: string;
+  productCount: number;
+  parentCategory?: { name: string; slug: string };
+}
+
+// Features:
+// - Large banner with category image
+// - Category name and description
+// - Product count badge
+// - Parent category link
+```
+
+```tsx
+// src/components/category/CategoryStats.tsx
+interface CategoryStatsProps {
+  productCount: number;
+  sellerCount: number;
+  priceRange: { min: number; max: number };
+  avgRating?: number;
+  topBrands?: string[];
+}
+
+// Features:
+// - Price range display (₹1,000 - ₹50,000)
+// - Number of sellers
+// - Average product rating
+// - Popular brands in category
+```
+
+#### Phase 4: Create Auction Components (3-5 hours)
+
+```tsx
+// src/components/auction/AuctionInfo.tsx
+interface AuctionInfoProps {
+  auctionId: string;
+  currentBid: number;
+  reservePrice?: number;
+  reserveMet: boolean;
+  buyNowPrice?: number;
+  bidCount: number;
+  timeLeft: number; // milliseconds
+  minBidIncrement: number;
+  userMaxBid?: number; // For auto-bid display
+  canBid: boolean;
+  onPlaceBid: (amount: number) => Promise<void>;
+  onBuyNow?: () => Promise<void>;
+}
+
+// Features:
+// - Large current bid display
+// - Reserve price indicator
+// - Time left (use LiveCountdown)
+// - Bid input with increment buttons
+// - Buy now button (if available)
+// - Bid history link
+// - Watch button
+```
+
+```tsx
+// src/components/auction/AuctionSellerInfo.tsx
+interface AuctionSellerInfoProps {
+  seller: {
+    id: string;
+    name: string;
+    avatar?: string;
+    rating: number;
+    reviewCount: number;
+    memberSince: Date;
+  };
+  shop: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+}
+
+// Features:
+// - Seller avatar and name
+// - Seller rating and review count
+// - Member since date
+// - Shop link button
+// - Contact seller button
+// - View seller's auctions link
+```
+
+#### Phase 5: Documentation & Testing (2-4 hours)
+
+- Update component documentation
+- Add Storybook stories for new components
+- Write unit tests for new components
+- Update detail pages to use new components
+- Test responsive layouts
+- Test dark mode
+
+### 📊 Benefits Summary
+
+| Improvement                                   | Impact                          | Lines Saved      |
+| --------------------------------------------- | ------------------------------- | ---------------- |
+| Extract ShopProducts/ShopAuctions             | Reusable in seller dashboard    | ~300 lines       |
+| Extract CategoryProducts/SubcategoryGrid      | Reusable in search results      | ~250 lines       |
+| Create ShopAbout/Stats/Reviews/Policies       | Consistent shop detail pages    | ~400 lines       |
+| Create CategoryHeader/Stats/FeaturedSellers   | Consistent category pages       | ~300 lines       |
+| Create AuctionInfo/SellerInfo/SimilarAuctions | Consistent auction detail pages | ~350 lines       |
+| Reuse ProductGallery for AuctionGallery       | No duplicate gallery code       | ~200 lines       |
+| **Total**                                     | -                               | **~1,800 lines** |
+
+### ✅ Validation Checklist
+
+**Product Detail Sections**:
+
+- [ ] ProductGallery works with images and videos
+- [ ] ProductInfo shows accurate stock and pricing
+- [ ] ProductDescription renders markdown properly
+- [ ] ProductReviews loads and submits correctly
+- [ ] ProductVariants shows same-category alternatives
+- [ ] SellerProducts filters by shop correctly
+- [ ] SimilarProducts shows relevant recommendations
+
+**Shop Detail Sections**:
+
+- [ ] ShopHeader displays correctly with follow button
+- [ ] ShopAbout renders policies and contact info
+- [ ] ShopStats displays accurate counts
+- [ ] ShopProducts has working filters and pagination
+- [ ] ShopAuctions shows ongoing auctions
+- [ ] ShopReviews allows eligible users to review
+
+**Category Detail Sections**:
+
+- [ ] CategoryHeader shows proper breadcrumb
+- [ ] SubcategoryGrid navigates correctly
+- [ ] CategoryProducts has working filters
+- [ ] CategoryStats shows accurate data
+
+**Auction Detail Sections**:
+
+- [ ] AuctionInfo bid input validates correctly
+- [ ] LiveCountdown updates in real-time
+- [ ] LiveBidHistory shows latest bids
+- [ ] AutoBidSetup saves preferences
+- [ ] AuctionSellerInfo links work
+
+**General**:
+
+- [ ] All sections work in dark mode
+- [ ] All sections are mobile responsive
+- [ ] All sections handle loading states
+- [ ] All sections handle error states
+
+### 🎯 Success Criteria
+
+1. ✅ All product detail components documented and working
+2. ✅ Shop detail page has 6+ reusable section components
+3. ✅ Category detail page has 5+ reusable section components
+4. ✅ Auction detail page has 7+ reusable section components
+5. ✅ ProductGallery reused for AuctionGallery
+6. ✅ ReviewList reused across product/shop/auction pages
+7. ✅ All sections support dark mode
+8. ✅ All sections are mobile responsive
+9. ✅ Consistent section structure across all detail pages
+10. ✅ Filters and sorting work in all grid sections
+11. ✅ Real-time updates work in auction sections
+12. ✅ All sections have proper error handling
+
+### 📝 Files to Modify/Create
+
+**Shop Components**:
+| File | Action |
+| ---------------------------------------------- | --------- |
+| `src/components/shop/ShopAbout.tsx` | CREATE |
+| `src/components/shop/ShopStats.tsx` | CREATE |
+| `src/components/shop/ShopProducts.tsx` | EXTRACT |
+| `src/components/shop/ShopAuctions.tsx` | EXTRACT |
+| `src/components/shop/ShopReviews.tsx` | CREATE |
+| `src/components/shop/ShopPolicies.tsx` | CREATE |
+
+**Category Components**:
+| File | Action |
+| ----------------------------------------------------- | ------- |
+| `src/components/category/CategoryHeader.tsx` | CREATE |
+| `src/components/category/SubcategoryGrid.tsx` | EXTRACT |
+| `src/components/category/CategoryProducts.tsx` | EXTRACT |
+| `src/components/category/CategoryStats.tsx` | CREATE |
+| `src/components/category/CategoryFeaturedSellers.tsx` | CREATE |
+
+**Auction Components**:
+| File | Action |
+| ---------------------------------------------------- | ------ |
+| `src/components/auction/AuctionGallery.tsx` | ALIAS |
+| `src/components/auction/AuctionInfo.tsx` | CREATE |
+| `src/components/auction/AuctionDescription.tsx` | ALIAS |
+| `src/components/auction/AuctionSellerInfo.tsx` | CREATE |
+| `src/components/auction/SimilarAuctions.tsx` | CREATE |
+
+**Pages to Update**:
+| File | Changes |
+| -------------------------------------- | ---------------------------------------------- |
+| `src/app/shops/[slug]/page.tsx` | Use ShopProducts, ShopAuctions, ShopAbout, etc |
+| `src/app/categories/[slug]/page.tsx` | Use CategoryHeader, SubcategoryGrid, etc |
+| `src/app/auctions/[slug]/page.tsx` | Use AuctionInfo, AuctionGallery, etc |
+
+### 🚀 Estimated Effort Breakdown
+
+| Phase                               | Hours     |
+| ----------------------------------- | --------- |
+| Phase 1: Extract Inline Sections    | 4-6       |
+| Phase 2: Create Shop Components     | 3-5       |
+| Phase 3: Create Category Components | 2-4       |
+| Phase 4: Create Auction Components  | 3-5       |
+| Phase 5: Documentation & Testing    | 2-4       |
+| **Total**                           | **12-18** |
+
+---
+
+## Task 25: Validation Consolidation & Address Selector Updates 🔐
+
+### 🎯 Problem Statement
+
+The codebase has validation logic scattered across multiple files with inconsistent messages and rules. Additionally, forms use `SmartAddressForm` directly instead of `AddressSelectorWithCreate`, missing the opportunity for users to select existing addresses quickly.
+
+### 🔍 Current Issues
+
+1. **Validation messages duplicated** across 50+ files (Zod schemas, form components, API routes)
+2. **Inconsistent error messages** for same validation (e.g., "Email invalid" vs "Please enter valid email")
+3. **Hardcoded validation rules** (min/max lengths, patterns) repeated everywhere
+4. **No centralized validation constants** - changes require updating multiple files
+5. **SmartAddressForm used directly** in wizards instead of selector with dropdown
+6. **GPS validation not needed** - adds complexity and permission issues for simple forms
+7. **No reusable validation helpers** - same logic reimplemented multiple times
+8. **API and frontend validations differ** - leads to inconsistent UX
+
+### 📊 Current Validation Files
+
+| File                                        | Purpose                   | Issues                       |
+| ------------------------------------------- | ------------------------- | ---------------------------- |
+| `src/lib/validations/*.schema.ts`           | Zod schemas (7 files)     | Hardcoded messages and rules |
+| `src/lib/form-validation.ts`                | Generic validators        | Separate from Zod schemas    |
+| `src/lib/validation/inline-edit-schemas.ts` | Inline edit validation    | Different messages           |
+| `src/app/api/lib/validation-middleware.ts`  | API validation            | Different from frontend      |
+| `src/components/forms/*.tsx`                | Form component validation | Inline validation logic      |
+| `src/hooks/useSlugValidation.ts`            | Async validation          | Unique but inconsistent      |
+
+### ✅ Solution: Centralized Validation Constants
+
+Created `src/constants/validation-messages.ts` with:
+
+1. **VALIDATION_RULES** - All min/max lengths, patterns, ranges
+2. **VALIDATION_MESSAGES** - All error messages (consistent across app)
+3. **Validation Helpers** - Reusable functions (isValidEmail, isValidPhone, etc.)
+
+**Benefits**:
+
+- ✅ Single source of truth for all validation rules
+- ✅ Consistent error messages across frontend and API
+- ✅ Easy to update rules globally (e.g., change min password length)
+- ✅ TypeScript autocomplete for all messages
+- ✅ Reusable helpers reduce code duplication
+- ✅ Better maintainability and testability
+
+### 🔄 Migration Strategy
+
+#### Phase 1: Update Zod Schemas (4-6 hours)
+
+Replace hardcoded values with constants:
+
+**Before**:
+
+```ts
+// src/lib/validations/address.schema.ts
+export const addressSchema = z.object({
+  fullName: z
+    .string()
+    .min(2, "Full name must be at least 2 characters")
+    .max(100, "Full name must be less than 100 characters"),
+  phone: z.string().regex(/^[6-9]\d{9}$/, "Invalid Indian phone number"),
+  pincode: z.string().regex(/^\d{6}$/, "Pincode must be 6 digits"),
+});
+```
+
+**After**:
+
+```ts
+// src/lib/validations/address.schema.ts
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
+
+export const addressSchema = z.object({
+  fullName: z
+    .string()
+    .min(VALIDATION_RULES.NAME.MIN_LENGTH, VALIDATION_MESSAGES.NAME.TOO_SHORT)
+    .max(VALIDATION_RULES.NAME.MAX_LENGTH, VALIDATION_MESSAGES.NAME.TOO_LONG),
+  phone: z
+    .string()
+    .regex(VALIDATION_RULES.PHONE.PATTERN, VALIDATION_MESSAGES.PHONE.INVALID),
+  pincode: z
+    .string()
+    .regex(
+      VALIDATION_RULES.ADDRESS.PINCODE.PATTERN,
+      VALIDATION_MESSAGES.ADDRESS.PINCODE_INVALID
+    ),
+});
+```
+
+**Files to Update** (7 Zod schema files):
+
+- `src/lib/validations/address.schema.ts`
+- `src/lib/validations/product.schema.ts`
+- `src/lib/validations/shop.schema.ts`
+- `src/lib/validations/auction.schema.ts`
+- `src/lib/validations/category.schema.ts`
+- `src/lib/validations/review.schema.ts`
+- `src/lib/validations/user.schema.ts`
+
+#### Phase 2: Update Form Components (3-5 hours)
+
+Replace inline validation with centralized helpers:
+
+**Before**:
+
+```tsx
+// Some form component
+const validateEmail = (email: string) => {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return "Invalid email address";
+  }
+  return null;
+};
+```
+
+**After**:
+
+```tsx
+import {
+  isValidEmail,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
+
+const validateEmail = (email: string) => {
+  if (!isValidEmail(email)) {
+    return VALIDATION_MESSAGES.EMAIL.INVALID;
+  }
+  return null;
+};
+```
+
+#### Phase 3: Replace SmartAddressForm with AddressSelectorWithCreate (4-6 hours)
+
+**Shop Creation Wizard** - Currently uses SmartAddressForm:
+
+**Before**:
+
+```tsx
+// src/components/seller/shop-wizard/ContactLegalStep.tsx
+<SmartAddressForm
+  value={formData.businessAddress}
+  onChange={(address) => onChange("businessAddress", address)}
+  mode="inline"
+  showGPS={true} // ❌ Not needed - adds complexity
+  required
+/>
+```
+
+**After**:
+
+```tsx
+// src/components/seller/shop-wizard/ContactLegalStep.tsx
+<AddressSelectorWithCreate
+  value={formData.businessAddressId}
+  onChange={(id, address) => {
+    onChange("businessAddressId", id);
+    if (address) {
+      onChange("businessAddress", address); // Store full object if needed
+    }
+  }}
+  userId={user.uid}
+  addressType="work"
+  required
+  placeholder="Select business address or add new"
+  showCreateButton
+/>
+// User can:
+// 1. Select from existing saved addresses (dropdown)
+// 2. Click "New" to open SmartAddressForm modal
+// 3. SmartAddressForm saves to user addresses collection
+// 4. New address auto-selected in dropdown
+```
+
+**Benefits**:
+
+- ✅ Faster workflow - select existing address in 1 click
+- ✅ Reuses saved addresses across wizards, forms, checkout
+- ✅ GPS only shown when user explicitly creates new address
+- ✅ Consistent UX - same pattern everywhere
+
+**Files to Update**:
+| File | Change |
+| ---- | ------ |
+| `src/components/seller/shop-wizard/ContactLegalStep.tsx` | Replace SmartAddressForm |
+| `src/components/seller/product-wizard/ShippingStep.tsx` | Add AddressSelectorWithCreate |
+| `src/components/seller/auction-wizard/PickupStep.tsx` | Add AddressSelectorWithCreate |
+| `src/app/checkout/page.tsx` | Use AddressSelectorWithCreate (already planned) |
+| `src/app/user/settings/addresses/page.tsx` | Keep SmartAddressForm for CRUD |
+
+#### Phase 4: Remove Unnecessary GPS Validation (2-3 hours)
+
+**Issues with GPS**:
+
+1. ❌ Permission prompts interrupt user flow
+2. ❌ Doesn't work in all browsers/devices
+3. ❌ Not accurate for business addresses
+4. ❌ Adds complexity for simple "select address" flow
+5. ❌ Users prefer typing known addresses
+
+**Keep GPS**:
+
+- ✅ In SmartAddressForm modal (optional feature)
+- ✅ User explicitly clicks "Use GPS" button
+- ✅ Only for creating NEW addresses
+
+**Remove GPS**:
+
+- ❌ From inline forms
+- ❌ From wizard steps
+- ❌ As required validation
+- ❌ From address selectors
+
+**Changes**:
+
+```tsx
+// src/components/common/SmartAddressForm.tsx
+interface SmartAddressFormProps {
+  // ...
+  showGPS?: boolean; // Keep as optional feature
+  requireGPS?: boolean; // ❌ REMOVE - never require GPS
+}
+
+// Remove GPS validation errors:
+// ❌ "GPS permission denied"
+// ❌ "Location not available"
+// ❌ "GPS timeout"
+```
+
+#### Phase 5: Update API Validation Middleware (2-4 hours)
+
+Ensure API uses same validation constants:
+
+**Before**:
+
+```ts
+// src/app/api/products/route.ts
+if (data.name.length < 3) {
+  return NextResponse.json({ error: "Name too short" }, { status: 400 });
+}
+```
+
+**After**:
+
+```ts
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
+
+if (data.name.length < VALIDATION_RULES.PRODUCT.NAME.MIN_LENGTH) {
+  return NextResponse.json(
+    { error: VALIDATION_MESSAGES.PRODUCT.NAME_TOO_SHORT },
+    { status: 400 }
+  );
+}
+```
+
+#### Phase 6: Update Tests (3-4 hours)
+
+Update test assertions to use centralized messages:
+
+**Before**:
+
+```ts
+expect(error).toBe("Email is required");
+```
+
+**After**:
+
+```ts
+import { VALIDATION_MESSAGES } from "@/constants/validation-messages";
+
+expect(error).toBe(VALIDATION_MESSAGES.REQUIRED.FIELD("Email"));
+```
+
+### 📊 Benefits Summary
+
+| Improvement                          | Impact                       | Lines Saved      |
+| ------------------------------------ | ---------------------------- | ---------------- |
+| Centralized validation constants     | Single source of truth       | ~500 lines       |
+| Consistent error messages            | Better UX                    | N/A              |
+| Reusable validation helpers          | Less duplication             | ~300 lines       |
+| AddressSelectorWithCreate in wizards | Faster address entry         | ~400 lines       |
+| Remove GPS requirement               | Better UX, less errors       | ~200 lines       |
+| Update API validation                | Frontend/backend consistency | ~100 lines       |
+| **Total**                            | -                            | **~1,500 lines** |
+
+### ✅ Validation Checklist
+
+**Centralized Constants**:
+
+- [x] Created `src/constants/validation-messages.ts`
+- [x] All VALIDATION_RULES defined
+- [x] All VALIDATION_MESSAGES defined
+- [x] Validation helper functions added
+
+**Schema Updates (UI - Priority #1)**:
+
+- [ ] address.schema.ts uses constants
+- [ ] product.schema.ts uses constants
+- [ ] shop.schema.ts uses constants
+- [ ] auction.schema.ts uses constants
+- [ ] category.schema.ts uses constants
+- [ ] review.schema.ts uses constants
+- [ ] user.schema.ts uses constants
+
+**Form Component Updates (UI - Priority #1)**:
+
+- [ ] Form components use validation helpers
+- [ ] Error messages consistent with constants
+- [ ] No hardcoded validation rules
+
+**Address Selector Updates (UI - Priority #1)**:
+
+- [ ] Shop wizard uses AddressSelectorWithCreate
+- [ ] Product wizard uses AddressSelectorWithCreate
+- [ ] Auction wizard uses AddressSelectorWithCreate
+- [ ] Checkout page uses AddressSelectorWithCreate
+- [ ] GPS removed from required validations
+- [ ] GPS kept as optional feature in SmartAddressForm
+
+**API Updates (Backend - Priority #1)**:
+
+- [ ] API routes use VALIDATION_RULES
+- [ ] API error messages use VALIDATION_MESSAGES
+- [ ] Frontend and API validations match
+
+**Test Updates (Priority #5)**:
+
+- [ ] Test assertions use VALIDATION_MESSAGES
+- [ ] Validation helper tests added
+- [ ] All tests passing
+
+### 🎯 Success Criteria
+
+1. ✅ All validation rules in one constants file
+2. ✅ All error messages consistent across app
+3. ✅ Zod schemas use centralized constants
+4. ✅ Form components use validation helpers
+5. ✅ API validation matches frontend validation
+6. ✅ AddressSelectorWithCreate used in all wizards
+7. ✅ Users can select existing addresses quickly
+8. ✅ GPS not required for address entry
+9. ✅ GPS available as optional feature
+10. ✅ No hardcoded validation messages in code
+11. ✅ All tests updated and passing
+12. ✅ TypeScript shows autocomplete for all messages
+
+### 📝 Files to Create/Modify
+
+**New Files**:
+| File | Purpose |
+| ---- | ------- |
+| `src/constants/validation-messages.ts` | ✅ Created - Centralized validation constants |
+
+**Update Zod Schemas** (7 files):
+| File | Changes |
+| ---- | ------- |
+| `src/lib/validations/address.schema.ts` | Use VALIDATION_RULES and VALIDATION_MESSAGES |
+| `src/lib/validations/product.schema.ts` | Use VALIDATION_RULES and VALIDATION_MESSAGES |
+| `src/lib/validations/shop.schema.ts` | Use VALIDATION_RULES and VALIDATION_MESSAGES |
+| `src/lib/validations/auction.schema.ts` | Use VALIDATION_RULES and VALIDATION_MESSAGES |
+| `src/lib/validations/category.schema.ts` | Use VALIDATION_RULES and VALIDATION_MESSAGES |
+| `src/lib/validations/review.schema.ts` | Use VALIDATION_RULES and VALIDATION_MESSAGES |
+| `src/lib/validations/user.schema.ts` | Use VALIDATION_RULES and VALIDATION_MESSAGES |
+
+**Update Form Components**:
+| File | Changes |
+| ---- | ------- |
+| `src/lib/form-validation.ts` | Use validation helpers from constants |
+| `src/components/common/SmartAddressForm.tsx` | Remove requireGPS, keep showGPS as optional |
+| `src/components/seller/shop-wizard/ContactLegalStep.tsx` | Replace with AddressSelectorWithCreate |
+| `src/components/seller/product-wizard/ShippingStep.tsx` | Add AddressSelectorWithCreate |
+| `src/components/seller/auction-wizard/PickupStep.tsx` | Add AddressSelectorWithCreate |
+
+**Update API Routes** (20+ files):
+| Pattern | Changes |
+| ------- | ------- |
+| `src/app/api/*/route.ts` | Use VALIDATION_RULES and VALIDATION_MESSAGES |
+
+**Update Tests**:
+| Pattern | Changes |
+| ------- | ------- |
+| `**/*.test.ts` | Update assertions to use VALIDATION_MESSAGES |
+
+### 🚀 Estimated Effort Breakdown
+
+| Phase                                           | Hours     | Priority |
+| ----------------------------------------------- | --------- | -------- |
+| Phase 1: Update Zod Schemas (UI)                | 4-6       | **#1**   |
+| Phase 2: Update Form Components (UI)            | 3-5       | **#1**   |
+| Phase 3: Replace SmartAddressForm with Selector | 4-6       | **#1**   |
+| Phase 4: Remove Unnecessary GPS Validation      | 2-3       | **#1**   |
+| Phase 5: Update API Validation (Backend)        | 2-4       | **#1**   |
+| Phase 6: Update Tests                           | 3-4       | **#5**   |
+| **Total**                                       | **16-24** | -        |
+
+### 📋 Detailed Implementation Tasks
+
+#### Task 25.1: Update Zod Schemas to Use Constants (UI) ⚡ Priority #1
+
+**Effort**: 4-6 hours
+
+**Files to Update**:
+
+```bash
+# Frontend Zod schemas
+src/lib/validations/address.schema.ts
+src/lib/validations/product.schema.ts
+src/lib/validations/shop.schema.ts
+src/lib/validations/auction.schema.ts
+src/lib/validations/category.schema.ts
+src/lib/validations/review.schema.ts
+src/lib/validations/user.schema.ts
+```
+
+**Steps**:
+
+1. Import VALIDATION_RULES and VALIDATION_MESSAGES
+2. Replace hardcoded min/max values with VALIDATION_RULES.\*.MIN_LENGTH
+3. Replace hardcoded regex patterns with VALIDATION_RULES.\*.PATTERN
+4. Replace hardcoded error strings with VALIDATION_MESSAGES.\*
+5. Test each schema with sample data
+
+**Example Changes**:
+
+```ts
+// Before
+z.string().min(2, "Name must be at least 2 characters");
+
+// After
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
+z.string().min(
+  VALIDATION_RULES.NAME.MIN_LENGTH,
+  VALIDATION_MESSAGES.NAME.TOO_SHORT
+);
+```
+
+---
+
+#### Task 25.2: Update Form Components to Use Helpers (UI) ⚡ Priority #1
+
+**Effort**: 3-5 hours
+
+**Files to Update**:
+
+```bash
+# Form validation utilities
+src/lib/form-validation.ts
+
+# Form components with inline validation
+src/components/forms/*.tsx
+src/components/checkout/*.tsx
+src/components/seller/*-wizard/*.tsx
+```
+
+**Steps**:
+
+1. Import validation helpers (isValidEmail, isValidPhone, etc.)
+2. Replace inline regex with helper functions
+3. Replace hardcoded error messages with VALIDATION_MESSAGES
+4. Test form validation in browser
+
+**Example Changes**:
+
+```ts
+// Before
+const validateEmail = (email: string) => {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return "Invalid email";
+  }
+};
+
+// After
+import {
+  isValidEmail,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
+const validateEmail = (email: string) => {
+  if (!isValidEmail(email)) {
+    return VALIDATION_MESSAGES.EMAIL.INVALID;
+  }
+};
+```
+
+---
+
+#### Task 25.3: Update API Routes to Use Constants (Backend) ⚡ Priority #1
+
+**Effort**: 2-4 hours
+
+**Files to Update**:
+
+```bash
+# API route handlers
+src/app/api/products/route.ts
+src/app/api/shops/route.ts
+src/app/api/auctions/route.ts
+src/app/api/categories/route.ts
+src/app/api/reviews/route.ts
+src/app/api/users/route.ts
+src/app/api/addresses/route.ts
+
+# API validation middleware
+src/app/api/lib/validation-middleware.ts
+```
+
+**Steps**:
+
+1. Import VALIDATION_RULES and VALIDATION_MESSAGES in each API route
+2. Replace hardcoded validation checks with VALIDATION_RULES
+3. Replace hardcoded error messages with VALIDATION_MESSAGES
+4. Test API endpoints with invalid data
+5. Verify error messages match frontend
+
+**Example Changes**:
+
+```ts
+// Before
+if (data.name.length < 3) {
+  return NextResponse.json({ error: "Name too short" }, { status: 400 });
+}
+
+// After
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
+if (data.name.length < VALIDATION_RULES.PRODUCT.NAME.MIN_LENGTH) {
+  return NextResponse.json(
+    { error: VALIDATION_MESSAGES.PRODUCT.NAME_TOO_SHORT },
+    { status: 400 }
+  );
+}
+```
+
+---
+
+#### Task 25.4: Create and Integrate AddressSelectorWithCreate ⚡ Priority #1
+
+**Effort**: 4-6 hours
+
+**Steps**:
+
+1. Verify AddressSelectorWithCreate component (from Task 23 Phase 4)
+2. Replace SmartAddressForm in shop wizard
+3. Replace SmartAddressForm in product wizard
+4. Replace SmartAddressForm in auction wizard
+5. Update checkout page
+6. Test address selection and creation flow
+
+**Files to Update**:
+
+```bash
+src/components/seller/shop-wizard/ContactLegalStep.tsx
+src/components/seller/product-wizard/ShippingStep.tsx
+src/components/seller/auction-wizard/PickupStep.tsx
+src/app/checkout/page.tsx
+```
+
+---
+
+#### Task 25.5: Remove GPS Requirement ⚡ Priority #1
+
+**Effort**: 2-3 hours
+
+**Steps**:
+
+1. Update SmartAddressForm to make showGPS optional (not required)
+2. Remove requireGPS prop if exists
+3. Remove GPS validation errors from forms
+4. Keep GPS as optional feature in modal
+5. Test address forms without GPS
+
+**Files to Update**:
+
+```bash
+src/components/common/SmartAddressForm.tsx
+src/components/common/GPSButton.tsx
+src/components/checkout/AddressForm.tsx
+```
 
 ---
 
 ## Updated Summary Statistics
 
-| Task                                      | Priority     | Effort (hours) | Status |
-| ----------------------------------------- | ------------ | -------------- | ------ |
-| Task 1: Large Files                       | HIGH         | 12-18          | ⬜     |
-| Task 2: Constants Usage                   | HIGH         | 8-12           | ⬜     |
-| Task 3: New Constants                     | MEDIUM       | 4-6            | ⬜     |
-| Task 4: HTML Wrappers                     | HIGH         | 8-12           | ⬜     |
-| Task 5: Sieve Processing                  | HIGH         | 6-10           | ⬜     |
-| Task 6: Wizard Navigation                 | HIGH         | 4-6            | ⬜     |
-| Task 7: Category/Shop Display             | MEDIUM       | 4-6            | ⬜     |
-| Task 8: API Debouncing                    | HIGH         | 4-6            | ⬜     |
-| Task 9: Performance                       | MEDIUM       | 6-10           | ⬜     |
-| Task 10: Graph View                       | MEDIUM       | 6-8            | ⬜     |
-| Task 11: Mobile/Dark Mode                 | HIGH         | 8-12           | 🔄     |
-| Task 12: Code Quality                     | MEDIUM       | 4-6            | ⬜     |
-| Task 13: Accessibility                    | MEDIUM       | 4-6            | ⬜     |
-| Task 14: Test Coverage                    | LOW          | 8-12           | ⬜     |
-| **Task 15: User Verification**            | **CRITICAL** | **20-30**      | ⬜     |
-| **Task 16: IP Tracking**                  | **HIGH**     | **6-8**        | ⬜     |
-| **Task 17: Events System**                | **MEDIUM**   | **24-32**      | ⬜     |
-| **Task 18: Nav/Filter/Dark**              | **HIGH**     | **16-24**      | 🔄     |
-| **Task 19: URL Params/Pagination**        | **HIGH**     | **20-28**      | ⬜     |
-| **Task 20: Firestore Indexes**            | **HIGH**     | **2-4**        | ✅     |
-| **Task 21: Navigation Cleanup**           | **HIGH**     | **6-12**       | ⬜     |
-| **Task 22: Hooks/Contexts Consolidation** | **HIGH**     | **16-24**      | ⬜     |
-| **Task 23: Form/Wizard Reusability**      | **HIGH**     | **12-18**      | ⬜     |
-| **TOTAL**                                 | -            | **208-310**    | -      |
+| Task                                       | Priority     | Effort (hours) | Status |
+| ------------------------------------------ | ------------ | -------------- | ------ |
+| Task 1: Large Files                        | HIGH         | 12-18          | ⬜     |
+| Task 2: Constants Usage                    | HIGH         | 8-12           | ⬜     |
+| Task 3: New Constants                      | MEDIUM       | 4-6            | ⬜     |
+| Task 4: HTML Wrappers                      | HIGH         | 8-12           | ⬜     |
+| Task 5: Sieve Processing                   | HIGH         | 6-10           | ⬜     |
+| Task 6: Wizard Navigation                  | HIGH         | 4-6            | ⬜     |
+| Task 7: Category/Shop Display              | MEDIUM       | 4-6            | ⬜     |
+| Task 8: API Debouncing                     | HIGH         | 4-6            | ⬜     |
+| Task 9: Performance                        | MEDIUM       | 6-10           | ⬜     |
+| Task 10: Graph View                        | MEDIUM       | 6-8            | ⬜     |
+| Task 11: Mobile/Dark Mode                  | HIGH         | 8-12           | 🔄     |
+| Task 12: Code Quality                      | MEDIUM       | 4-6            | ⬜     |
+| Task 13: Accessibility                     | MEDIUM       | 4-6            | ⬜     |
+| Task 14: Test Coverage                     | LOW          | 8-12           | ⬜     |
+| **Task 15: User Verification**             | **CRITICAL** | **20-30**      | ⬜     |
+| **Task 16: IP Tracking**                   | **HIGH**     | **6-8**        | ⬜     |
+| **Task 17: Events System**                 | **MEDIUM**   | **24-32**      | ⬜     |
+| **Task 18: Nav/Filter/Dark**               | **HIGH**     | **16-24**      | 🔄     |
+| **Task 19: URL Params/Pagination**         | **HIGH**     | **20-28**      | ⬜     |
+| **Task 20: Firestore Indexes**             | **HIGH**     | **2-4**        | ✅     |
+| **Task 21: Navigation Cleanup**            | **HIGH**     | **6-12**       | ⬜     |
+| **Task 22: Hooks/Contexts Consolidation**  | **HIGH**     | **16-24**      | ⬜     |
+| **Task 23: Form/Wizard Reusability**       | **HIGH**     | **30-44**      | ⬜     |
+| **Task 24: Detail Page Sections**          | **MEDIUM**   | **12-18**      | ⬜     |
+| **Task 25: Validation & Selector Updates** | **HIGH**     | **16-24**      | ⬜     |
+| **TOTAL**                                  | -            | **254-378**    | -      |
 
 ### Progress Summary
 
@@ -3432,13 +4867,14 @@ export function AddressSelectorWithCreate({
 
 ### Reusable Code Summary
 
-| Category          | Existing | To Create | Underutilized |
-| ----------------- | -------- | --------- | ------------- |
-| Hooks             | 15       | 5         | 8             |
-| Contexts          | 5        | 0         | 3             |
-| Utility Functions | 20+      | 0         | Many          |
-| Form Components   | 8        | 0         | ✅ Well used  |
-| Value Components  | 20+      | 0         | ⚠️ Underused  |
+| Category            | Existing | To Create | Underutilized |
+| ------------------- | -------- | --------- | ------------- |
+| Hooks               | 15       | 5         | 8             |
+| Contexts            | 5        | 0         | 3             |
+| Utility Functions   | 20+      | 0         | Many          |
+| Form Components     | 8        | 14        | ✅ Well used  |
+| Selector Components | 3        | 11        | ⚠️ New        |
+| Value Components    | 20+      | 0         | ⚠️ Underused  |
 
 ---
 
