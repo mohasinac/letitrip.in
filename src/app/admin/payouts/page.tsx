@@ -9,6 +9,7 @@ import {
   TableCheckbox,
 } from "@/components/common/inline-edit";
 import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
+import { SimplePagination } from "@/components/common/Pagination";
 import { payoutsService } from "@/services/payouts.service";
 import { toast } from "@/components/admin/Toast";
 import { Eye, CheckCircle, XCircle } from "lucide-react";
@@ -19,9 +20,9 @@ export default function AdminPayoutsPage() {
   const router = useRouter();
   const {
     data: payouts,
-    loading,
+    isLoading: loading,
     execute: loadPayouts,
-  } = useLoadingState<any[]>([]);
+  } = useLoadingState<any[]>();
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPayouts, setSelectedPayouts] = useState<Set<string>>(
@@ -193,22 +194,22 @@ export default function AdminPayoutsPage() {
             <StatsCardGrid columns={5} className="mb-6">
               <StatsCard title="Total Requests" value={stats.total} />
               <StatsCard
-                label="Pending"
+                title="Pending"
                 value={stats.pending}
                 className="[&_p:last-child]:!text-yellow-600 dark:[&_p:last-child]:!text-yellow-400"
               />
               <StatsCard
-                label="Processed"
+                title="Processed"
                 value={stats.processed}
                 className="[&_p:last-child]:!text-green-600 dark:[&_p:last-child]:!text-green-400"
               />
               <StatsCard
-                label="Rejected"
+                title="Rejected"
                 value={stats.rejected}
                 className="[&_p:last-child]:!text-red-600 dark:[&_p:last-child]:!text-red-400"
               />
               <StatsCard
-                label="Total Amount"
+                title="Total Amount"
                 value={formatCurrency(stats.totalAmount)}
               />
             </StatsCardGrid>
@@ -239,7 +240,7 @@ export default function AdminPayoutsPage() {
                 <div className="p-8 text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                 </div>
-              ) : payouts.length === 0 ? (
+              ) : !payouts || payouts.length === 0 ? (
                 <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                   <p>No payout requests found</p>
                 </div>
@@ -378,29 +379,12 @@ export default function AdminPayoutsPage() {
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-6 flex justify-center gap-2">
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Previous
-                </button>
-                <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Next
-                </button>
-              </div>
-            )}
+            <SimplePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              className="mt-6"
+            />
           </div>
         </div>
       </div>

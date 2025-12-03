@@ -6,6 +6,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { Price, DateDisplay } from "@/components/common/values";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
+import { SimplePagination } from "@/components/common/Pagination";
 import {
   UnifiedFilterSidebar,
   TableCheckbox,
@@ -462,29 +463,12 @@ export default function SellerReturnsPage() {
                 )}
               </div>
 
-              {totalPages > 1 && (
-                <div className="mt-6 flex justify-center gap-2">
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    Previous
-                  </button>
-                  <span className="px-4 py-2 text-gray-900 dark:text-white">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(totalPages, p + 1))
-                    }
-                    disabled={currentPage === totalPages}
-                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
+              <SimplePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                className="mt-6"
+              />
             </div>
           </div>
         </div>
