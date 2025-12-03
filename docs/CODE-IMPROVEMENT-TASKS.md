@@ -13,21 +13,22 @@ The application successfully builds and is ready for release. All critical type 
 
 ### Recent Fixes Applied (December 3, 2025)
 
-| Issue                        | File(s)                                                                   | Resolution                                                                                                                                                                                            |
-| ---------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Email service architecture   | `src/services/email.service.ts`, `src/app/api/lib/email/email.service.ts` | Separated frontend/backend email services properly                                                                                                                                                    |
-| Missing DemoStep settings    | `src/app/admin/demo/page.tsx`                                             | Added `settings` step to all status objects (4 locations)                                                                                                                                             |
-| EmptyState prop type         | `src/app/search/page.tsx`                                                 | Changed `href` to `onClick` with router.push                                                                                                                                                          |
-| ShopFormData incomplete      | `src/components/seller/shop-wizard/types.ts`                              | Added all missing fields used by wizard steps                                                                                                                                                         |
-| FormCheckbox missing label   | `src/components/seller/shop-wizard/SettingsStep.tsx`                      | Added label prop to FormCheckbox components                                                                                                                                                           |
-| Removed stale files          | `src/app/page.old.tsx`                                                    | Deleted file with outdated types                                                                                                                                                                      |
-| **Task 2: COLLECTIONS**      | 15+ API routes                                                            | ✅ Migrated hardcoded collection names to COLLECTIONS constant                                                                                                                                        |
-| **Task 2: SUBCOLLECTIONS**   | `src/constants/database.ts`                                               | ✅ Added SHOP_FOLLOWING, SHOP_SETTINGS, REVIEW_HELPFUL_VOTES, TICKET_MESSAGES, SESSIONS                                                                                                               |
-| **Task 11: Dark Mode**       | 15+ pages fixed                                                           | ✅ user/won-auctions, watchlist, tickets, messages, following, riplimit, bids; seller/messages, support-tickets, orders, my-shops, revenue, analytics; admin/users, orders/[id], support-tickets/[id] |
-| **Task 12: Console.log**     | 7 files fixed                                                             | ✅ Removed debug console.log from admin/orders, shops, products, users, hero-slides pages                                                                                                             |
-| **Task 4: DateDisplay**      | 2 files fixed                                                             | ✅ admin/orders/[id] and admin/support-tickets/[id] now use DateDisplay component                                                                                                                     |
-| **Task 1: File Splitting**   | `src/app/admin/demo/page.tsx`                                             | ✅ Split 1797 lines → 400 lines + 8 reusable components                                                                                                                                               |
-| **Task 22: useLoadingState** | 10 pages                                                                  | ✅ Migrated user/watchlist, won-auctions, following, addresses, bids, favorites, page + seller/my-shops, revenue, analytics                                                                           |
+| Issue                        | File(s)                                                                   | Resolution                                                                                                                                                                                                                               |
+| ---------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Email service architecture   | `src/services/email.service.ts`, `src/app/api/lib/email/email.service.ts` | Separated frontend/backend email services properly                                                                                                                                                                                       |
+| Missing DemoStep settings    | `src/app/admin/demo/page.tsx`                                             | Added `settings` step to all status objects (4 locations)                                                                                                                                                                                |
+| EmptyState prop type         | `src/app/search/page.tsx`                                                 | Changed `href` to `onClick` with router.push                                                                                                                                                                                             |
+| ShopFormData incomplete      | `src/components/seller/shop-wizard/types.ts`                              | Added all missing fields used by wizard steps                                                                                                                                                                                            |
+| FormCheckbox missing label   | `src/components/seller/shop-wizard/SettingsStep.tsx`                      | Added label prop to FormCheckbox components                                                                                                                                                                                              |
+| Removed stale files          | `src/app/page.old.tsx`                                                    | Deleted file with outdated types                                                                                                                                                                                                         |
+| **Task 2: COLLECTIONS**      | 15+ API routes                                                            | ✅ Migrated hardcoded collection names to COLLECTIONS constant                                                                                                                                                                           |
+| **Task 2: SUBCOLLECTIONS**   | `src/constants/database.ts`                                               | ✅ Added SHOP_FOLLOWING, SHOP_SETTINGS, REVIEW_HELPFUL_VOTES, TICKET_MESSAGES, SESSIONS                                                                                                                                                  |
+| **Task 11: Dark Mode**       | 17+ pages fixed                                                           | ✅ user/won-auctions, watchlist, tickets, messages, following, riplimit, bids; seller/messages, support-tickets, orders, my-shops, revenue, analytics; admin/users, orders/[id], support-tickets/[id], admin/tickets, admin/tickets/[id] |
+| **Task 12: Console.log**     | 7 files fixed                                                             | ✅ Removed debug console.log from admin/orders, shops, products, users, hero-slides pages                                                                                                                                                |
+| **Task 4: DateDisplay**      | 2 files fixed                                                             | ✅ admin/orders/[id] and admin/support-tickets/[id] now use DateDisplay component                                                                                                                                                        |
+| **Task 1: File Splitting**   | `src/app/admin/demo/page.tsx`                                             | ✅ Split 1797 lines → 400 lines + 8 reusable components                                                                                                                                                                                  |
+| **Task 22: useLoadingState** | 10 pages                                                                  | ✅ Migrated user/watchlist, won-auctions, following, addresses, bids, favorites, page + seller/my-shops, revenue, analytics                                                                                                              |
+| **StatsCard Dark Mode**      | `src/components/common/StatsCard.tsx`                                     | ✅ Added dark mode support and StatsCardGrid component                                                                                                                                                                                   |
 
 ---
 
@@ -113,7 +114,7 @@ The application successfully builds and is ready for release. All critical type 
 
 ### Task 11: Dark Mode Support (Partial - In Progress)
 
-**Status**: 🟢 COMPLETE (95%+ done)
+**Status**: 🟢 COMPLETE (99%+ done)
 
 **Files Fixed**:
 
@@ -128,10 +129,36 @@ The application successfully builds and is ready for release. All critical type 
 - ✅ `src/app/admin/orders/[id]/page.tsx` - Full dark mode support added
 - ✅ `src/app/admin/support-tickets/[id]/page.tsx` - Full dark mode support added
 - ✅ `src/app/admin/component-demo/page.tsx` - Full dark mode support added
+- ✅ `src/app/admin/tickets/page.tsx` - Full dark mode support added (stats, filters, table, mobile cards)
+- ✅ `src/app/admin/tickets/[id]/page.tsx` - Full dark mode support added (all sections)
+- ✅ `src/app/admin/page.tsx` - Full dark mode support added (dashboard)
+- ✅ `src/app/admin/hero-slides/create/page.tsx` - Full dark mode support added
+- ✅ `src/app/admin/hero-slides/[id]/edit/page.tsx` - Full dark mode support added
+- ✅ `src/app/admin/static-assets/page.tsx` - Full dark mode support added
+- ✅ `src/app/admin/riplimit/page.tsx` - Full dark mode support added
+- ✅ `src/app/admin/reviews/page.tsx` - Full dark mode support added
+- ✅ `src/components/common/StatsCard.tsx` - Added dark mode support to StatsCard component
+- ✅ `src/components/admin/AdminPageHeader.tsx` - Added dark mode support
+- ✅ `src/components/admin/LoadingSpinner.tsx` - Added dark mode support
 
 **Remaining**:
 
 - `src/app/admin/demo/page.tsx` - Large file, needs systematic dark mode audit
+
+---
+
+### Task 12: Console.log Removal
+
+**Status**: 🟢 COMPLETE (100%)
+
+**Files Fixed**:
+
+- ✅ `src/components/layout/FeaturedShopsSection.tsx` - Removed debug console.log
+- ✅ `src/components/layout/FeaturedProductsSection.tsx` - Removed debug console.log
+- ✅ `src/components/layout/FeaturedCategoriesSection.tsx` - Removed debug console.log
+- ✅ `src/components/layout/FeaturedAuctionsSection.tsx` - Removed debug console.log
+- ✅ `src/contexts/AuthContext.tsx` - Removed debug console.log (kept console.error for real errors)
+- ✅ Admin pages (orders, shops, products, users, hero-slides) - Removed previously
 
 ---
 

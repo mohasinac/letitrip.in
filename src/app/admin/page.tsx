@@ -153,10 +153,10 @@ export default function AdminDashboardPage() {
       {/* Welcome Header */}
       <div>
         {" "}
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Welcome back, {user?.fullName || "Admin"}!
         </h1>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
           Here's what's happening with your platform today.
         </p>
       </div>
@@ -168,7 +168,7 @@ export default function AdminDashboardPage() {
           return (
             <div
               key={stat.title}
-              className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md dark:hover:shadow-gray-900/30 transition-shadow"
             >
               <div className="flex items-center justify-between">
                 <div className={`p-3 bg-${stat.color}-100 rounded-lg`}>
@@ -182,10 +182,10 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
               <div className="mt-4">
-                <h3 className="text-sm font-medium text-gray-600">
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   {stat.title}
                 </h3>
-                <p className="mt-1 text-2xl font-bold text-gray-900">
+                <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
                   <Quantity value={stat.value} />
                 </p>
               </div>
@@ -196,7 +196,9 @@ export default function AdminDashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          Quick Actions
+        </h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {quickActions.map((action) => {
             const Icon = action.icon;
@@ -204,7 +206,7 @@ export default function AdminDashboardPage() {
               <Link
                 key={action.href}
                 href={action.href}
-                className="group bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg hover:border-purple-200 transition-all"
+                className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:border-purple-200 dark:hover:border-purple-700 transition-all"
               >
                 <div className="flex items-start justify-between">
                   <div className={`p-3 bg-${action.color}-100 rounded-lg`}>
@@ -213,13 +215,13 @@ export default function AdminDashboardPage() {
                   <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-all" />
                 </div>
                 <div className="mt-4">
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                     {action.title}
                   </h3>
-                  <p className="mt-1 text-sm text-gray-600">
+                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                     {action.description}
                   </p>
-                  <p className="mt-3 text-sm font-medium text-gray-500">
+                  <p className="mt-3 text-sm font-medium text-gray-500 dark:text-gray-400">
                     {action.stats}
                   </p>
                 </div>
@@ -230,57 +232,67 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Recent Activity Section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
           Recent Activity
         </h2>
         <div className="space-y-4">
-          <div className="flex items-center justify-between py-3 border-b border-gray-100">
+          <div className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <Users className="h-5 w-5 text-blue-600" />
+              <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
                   New user registered
                 </p>
-                <p className="text-xs text-gray-500">2 minutes ago</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  2 minutes ago
+                </p>
               </div>
             </div>
-            <span className="text-xs text-gray-400">Just now</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">
+              Just now
+            </span>
           </div>
-          <div className="flex items-center justify-between py-3 border-b border-gray-100">
+          <div className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <Store className="h-5 w-5 text-purple-600" />
+              <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                <Store className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
                   New shop pending approval
                 </p>
-                <p className="text-xs text-gray-500">15 minutes ago</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  15 minutes ago
+                </p>
               </div>
             </div>
             <Link
               href="/admin/shops/pending"
-              className="text-xs text-purple-600 hover:underline"
+              className="text-xs text-purple-600 dark:text-purple-400 hover:underline"
             >
               Review
             </Link>
           </div>
           <div className="flex items-center justify-between py-3">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                <Package className="h-5 w-5 text-green-600" />
+              <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                <Package className="h-5 w-5 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
                   5 new products listed
                 </p>
-                <p className="text-xs text-gray-500">1 hour ago</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  1 hour ago
+                </p>
               </div>
             </div>
-            <span className="text-xs text-gray-400">1h ago</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">
+              1h ago
+            </span>
           </div>
         </div>
       </div>

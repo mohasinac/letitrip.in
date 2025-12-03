@@ -52,8 +52,8 @@ export default function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
           const auctionIds = activeItems.map((item) => item.itemId);
           curatedAuctions = await auctionsService.getByIds(auctionIds);
         }
-      } catch (err) {
-        console.log("No curated auctions, falling back to featured flag");
+      } catch {
+        // No curated auctions, fallback to featured query
       }
 
       // If we have curated auctions, use them

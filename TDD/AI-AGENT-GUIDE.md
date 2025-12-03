@@ -1,6 +1,6 @@
 # AI Agent Guide
 
-> **Last Updated**: December 2, 2025
+> **Last Updated**: December 3, 2025
 
 ## Quick Reference for AI Coding Agents
 
@@ -11,10 +11,13 @@
 3. Check `src/constants/api-routes.ts` for API endpoints
 4. Use existing services from `src/services/`
 5. **Use wrapper components** - See "HTML Tag Wrappers" and "Value Display Components" sections below
+6. **Use loading state hooks** - Use `useLoadingState` from `src/hooks/useLoadingState.ts` for data fetching
 
 ### Migration Status
 
 ✅ **Price Component Migration Complete** - All inline `₹{amount.toLocaleString()}` patterns have been migrated to use `<Price amount={} />` or `<CompactPrice amount={} />` components. See [Doc 32](../../docs/32-common-value-components.md) for full migration details.
+
+✅ **Dark Mode Support** - All major pages now have dark mode support. Always include `dark:` variants for background, text, and border colors.
 
 ### Code Style
 
@@ -30,6 +33,9 @@
 - Use `UnifiedFilterSidebar` for filtering
 - Use components from `src/components/forms/` for forms
 - Use components from `src/components/common/values/` for value display
+- Use `StatsCard` and `StatsCardGrid` for dashboard statistics
+- Use `SettingsSection` for settings pages
+- Use `PeriodSelector` for analytics period selection
 
 #### Services
 
@@ -40,6 +46,26 @@ const auction = await auctionsService.getBySlug(params.slug);
 // ✅ Correct - use route constants for links
 import { SELLER_ROUTES } from '@/constants/routes';
 href={SELLER_ROUTES.AUCTION_EDIT(auction.slug)}
+```
+
+---
+
+## Reusable Hooks (IMPORTANT)
+
+**Always use the existing hooks for common patterns**:
+
+```tsx
+// ✅ For loading/error/data state management
+import { useLoadingState } from '@/hooks/useLoadingState';
+const { data, isLoading, error, execute } = useLoadingState<DataType>();
+
+// ✅ For debounced values (search, filters)
+import { useDebounce } from '@/hooks/useDebounce';
+const debouncedSearch = useDebounce(searchTerm, 300);
+
+// ✅ For filter state with URL sync
+import { useFilters } from '@/hooks/useFilters';
+const { filters, appliedFilters, applyFilters, resetFilters } = useFilters(defaults, { syncWithUrl: true });
 ```
 
 ---

@@ -63,8 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(currentUser);
 
       if (!currentUser && cachedUser) {
-        // Session expired, clear cached user
-        console.log("Session expired, clearing cached user");
+        // Session expired, cached user cleared automatically by authService
       }
     } catch (error) {
       console.error("Auth initialization error:", error);

@@ -53,8 +53,8 @@ export default function FeaturedProductsSection({ maxProducts = 10 }: Props) {
           const productIds = activeItems.map((item) => item.itemId);
           curatedProducts = await productsService.getByIds(productIds);
         }
-      } catch (err) {
-        console.log("No curated products, falling back to featured flag");
+      } catch {
+        // No curated products, fallback to featured query
       }
 
       // If we have curated products, use them

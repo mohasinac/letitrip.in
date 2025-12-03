@@ -10,11 +10,13 @@ import { FormSelect, FormTextarea, FormCheckbox } from "@/components/forms";
 import { supportService } from "@/services/support.service";
 
 const statusColors = {
-  open: "bg-blue-100 text-blue-800",
-  "in-progress": "bg-yellow-100 text-yellow-800",
-  resolved: "bg-green-100 text-green-800",
-  closed: "bg-gray-100 text-gray-800",
-  escalated: "bg-red-100 text-red-800",
+  open: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
+  "in-progress":
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
+  resolved:
+    "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
+  closed: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+  escalated: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
 };
 
 const categoryLabels = {
@@ -118,7 +120,9 @@ export default function AdminTicketDetailsPage() {
         <main className="container mx-auto px-4 py-8 max-w-6xl">
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-yellow-500"></div>
-            <p className="mt-4 text-gray-600">Loading ticket...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">
+              Loading ticket...
+            </p>
           </div>
         </main>
       </AuthGuard>
@@ -129,12 +133,12 @@ export default function AdminTicketDetailsPage() {
     return (
       <AuthGuard requireAuth allowedRoles={["admin"]}>
         <main className="container mx-auto px-4 py-8 max-w-6xl">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-red-700">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-6 text-red-700 dark:text-red-300">
             {error || "Ticket not found"}
           </div>
           <Link
             href="/admin/tickets"
-            className="inline-block mt-4 text-yellow-600 hover:text-yellow-700 font-semibold"
+            className="inline-block mt-4 text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 font-semibold"
           >
             ← Back to Tickets
           </Link>
@@ -150,7 +154,7 @@ export default function AdminTicketDetailsPage() {
         <div className="mb-6">
           <Link
             href="/admin/tickets"
-            className="inline-flex items-center text-yellow-600 hover:text-yellow-700 font-semibold mb-4"
+            className="inline-flex items-center text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 font-semibold mb-4"
           >
             <svg
               className="h-5 w-5 mr-1"
@@ -173,10 +177,10 @@ export default function AdminTicketDetailsPage() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Ticket Header */}
-            <div className="bg-white rounded-lg border p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex flex-col gap-4 mb-4">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                     {ticket.subject}
                   </h1>
                   <div className="flex flex-wrap items-center gap-2">
@@ -187,7 +191,7 @@ export default function AdminTicketDetailsPage() {
                     >
                       {ticket.status}
                     </span>
-                    <span className="px-3 py-1 bg-gray-100 rounded text-sm font-medium">
+                    <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm font-medium text-gray-800 dark:text-gray-200">
                       {categoryLabels[
                         ticket.category as keyof typeof categoryLabels
                       ] || ticket.category}
@@ -206,22 +210,22 @@ export default function AdminTicketDetailsPage() {
                 </div>
               </div>
 
-              <div className="border-t pt-4">
-                <h3 className="font-semibold text-gray-900 mb-2">
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                   Description
                 </h3>
-                <p className="text-gray-700 whitespace-pre-wrap">
+                <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                   {ticket.description}
                 </p>
               </div>
 
               {/* User Info */}
               {ticket.user && (
-                <div className="border-t pt-4 mt-4">
-                  <h3 className="font-semibold text-gray-900 mb-2">
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                     User Information
                   </h3>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
                     <p>
                       <strong>Name:</strong> {ticket.user.name || "N/A"}
                     </p>
@@ -234,8 +238,8 @@ export default function AdminTicketDetailsPage() {
             </div>
 
             {/* Conversation Thread */}
-            <div className="bg-white rounded-lg border p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                 Conversation
               </h2>
 
@@ -246,19 +250,19 @@ export default function AdminTicketDetailsPage() {
                       key={message.id}
                       className={`p-4 rounded-lg ${
                         message.senderRole === "admin"
-                          ? "bg-purple-50 border border-purple-100"
-                          : "bg-gray-50 border border-gray-100"
+                          ? "bg-purple-50 dark:bg-purple-900/30 border border-purple-100 dark:border-purple-800"
+                          : "bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-gray-900 dark:text-white">
                           {message.senderRole === "admin" ? "Admin" : "User"}
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
                           <DateDisplay date={message.createdAt} includeTime />
                         </span>
                       </div>
-                      <p className="text-gray-700 whitespace-pre-wrap">
+                      <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                         {message.message}
                       </p>
                       {message.isInternal && (
@@ -269,7 +273,7 @@ export default function AdminTicketDetailsPage() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500 text-center py-4">
+                  <p className="text-gray-500 dark:text-gray-400 text-center py-4">
                     No messages yet.
                   </p>
                 )}
@@ -277,8 +281,8 @@ export default function AdminTicketDetailsPage() {
             </div>
 
             {/* Reply Form */}
-            <div className="bg-white rounded-lg border p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                 Add Reply
               </h2>
               <form onSubmit={handleReply}>
@@ -312,31 +316,39 @@ export default function AdminTicketDetailsPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Ticket Info */}
-            <div className="bg-white rounded-lg border p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Ticket Info</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+                Ticket Info
+              </h3>
               <div className="space-y-2 text-sm">
                 <div>
-                  <span className="text-gray-600">ID:</span>
-                  <span className="ml-2 font-mono text-gray-900">
+                  <span className="text-gray-600 dark:text-gray-400">ID:</span>
+                  <span className="ml-2 font-mono text-gray-900 dark:text-white">
                     {ticketId.slice(0, 8)}...
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-600">Created:</span>
-                  <span className="ml-2 text-gray-900">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Created:
+                  </span>
+                  <span className="ml-2 text-gray-900 dark:text-white">
                     <DateDisplay date={ticket.createdAt} includeTime />
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-600">Updated:</span>
-                  <span className="ml-2 text-gray-900">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Updated:
+                  </span>
+                  <span className="ml-2 text-gray-900 dark:text-white">
                     <DateDisplay date={ticket.updatedAt} includeTime />
                   </span>
                 </div>
                 {ticket.resolvedAt && (
                   <div>
-                    <span className="text-gray-600">Resolved:</span>
-                    <span className="ml-2 text-gray-900">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Resolved:
+                    </span>
+                    <span className="ml-2 text-gray-900 dark:text-white">
                       <DateDisplay date={ticket.resolvedAt} includeTime />
                     </span>
                   </div>
@@ -345,8 +357,8 @@ export default function AdminTicketDetailsPage() {
             </div>
 
             {/* Status Control */}
-            <div className="bg-white rounded-lg border p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
                 Change Status
               </h3>
               <FormSelect
@@ -365,8 +377,8 @@ export default function AdminTicketDetailsPage() {
             </div>
 
             {/* Priority Control */}
-            <div className="bg-white rounded-lg border p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
                 Change Priority
               </h3>
               <FormSelect
@@ -384,8 +396,8 @@ export default function AdminTicketDetailsPage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-white rounded-lg border p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
                 Quick Actions
               </h3>
               <div className="space-y-2">

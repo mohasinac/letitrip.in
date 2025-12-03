@@ -65,8 +65,8 @@ export default function FeaturedCategoriesSection({
           const categoryIds = activeItems.map((item) => item.itemId);
           curatedCategories = await categoriesService.getByIds(categoryIds);
         }
-      } catch (err) {
-        console.log("No curated categories, falling back to homepage query");
+      } catch {
+        // No curated categories, fallback to homepage query
       }
 
       // Use curated categories or fallback to homepage query

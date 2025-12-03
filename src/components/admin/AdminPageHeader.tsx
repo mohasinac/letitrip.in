@@ -22,16 +22,16 @@ export function AdminPageHeader({
           <ol className="flex items-center space-x-2 text-sm">
             {breadcrumbs.map((crumb, index) => (
               <li key={crumb.label} className="flex items-center">
-                {index > 0 && <span className="mx-2 text-gray-400">/</span>}
+                {index > 0 && <span className="mx-2 text-gray-400 dark:text-gray-500">/</span>}
                 {crumb.href ? (
                   <a
                     href={crumb.href}
-                    className="text-gray-600 hover:text-gray-900"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                   >
                     {crumb.label}
                   </a>
                 ) : (
-                  <span className="text-gray-900 font-medium">
+                  <span className="text-gray-900 dark:text-white font-medium">
                     {crumb.label}
                   </span>
                 )}
@@ -43,9 +43,9 @@ export function AdminPageHeader({
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
           {description && (
-            <p className="text-sm text-gray-500 mt-1">{description}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{description}</p>
           )}
         </div>
         {actions && <div className="flex gap-3">{actions}</div>}
