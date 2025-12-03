@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 /**
  * GET /api/admin/debug/products-by-category
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     if (categoryId) {
       // Check specific category
       const productsSnap = await db
-        .collection("products")
+        .collection(COLLECTIONS.PRODUCTS)
         .where("category_id", "==", categoryId)
         .get();
 
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
       }));
 
       const publishedCount = products.filter(
-        (p) => p.status === "published" && p.is_deleted !== true,
+        (p) => p.status === "published" && p.is_deleted !== true
       ).length;
 
       return NextResponse.json({
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all products grouped by category
-    const productsSnap = await db.collection("products").get();
+    const productsSnap = await db.collection(COLLECTIONS.PRODUCTS).get();
     const products = productsSnap.docs.map((doc) => ({
       id: doc.id,
       name: doc.data().name,
@@ -67,7 +68,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Get categories
-    const categoriesSnap = await db.collection("categories").get();
+    const categoriesSnap = await db.collection(COLLECTIONS.CATEGORIES).get();
     const categories = categoriesSnap.docs.map((doc) => ({
       id: doc.id,
       name: doc.data().name,
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
       summary: {
         totalProducts: products.length,
         publishedProducts: products.filter(
-          (p) => p.status === "published" && p.is_deleted !== true,
+          (p) => p.status === "published" && p.is_deleted !== true
         ).length,
         categoriesWithProducts: Object.keys(byCategory).length,
       },
@@ -97,7 +98,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch debug info",
         details: error.message,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -328,7 +328,11 @@ export default function OrderDetailPage() {
                       <p className="text-gray-600 dark:text-gray-400">
                         Estimated Delivery
                       </p>
-                      <DateDisplay date={order.estimatedDelivery} includeTime className="font-medium text-gray-900 dark:text-white" />
+                      <DateDisplay
+                        date={order.estimatedDelivery}
+                        includeTime
+                        className="font-medium text-gray-900 dark:text-white"
+                      />
                     </div>
                   )}
                   {order.deliveredAt && (
@@ -336,7 +340,11 @@ export default function OrderDetailPage() {
                       <p className="text-gray-600 dark:text-gray-400">
                         Delivered At
                       </p>
-                      <DateDisplay date={order.deliveredAt} includeTime className="font-medium text-gray-900 dark:text-white" />
+                      <DateDisplay
+                        date={order.deliveredAt}
+                        includeTime
+                        className="font-medium text-gray-900 dark:text-white"
+                      />
                     </div>
                   )}
                 </div>

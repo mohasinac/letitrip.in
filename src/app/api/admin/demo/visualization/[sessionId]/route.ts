@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { toDateInputValue, getTodayDateInputValue } from "@/lib/date-utils";
+import { COLLECTIONS } from "@/constants/database";
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ sessionId: string }> },
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -12,7 +13,7 @@ export async function GET(
 
     // Fetch orders
     const ordersSnap = await db
-      .collection("orders")
+      .collection(COLLECTIONS.ORDERS)
       .where("demoSession", "==", sessionId)
       .get();
 
@@ -35,12 +36,12 @@ export async function GET(
       ([date, revenue]) => ({
         date,
         revenue: Math.round(revenue as number),
-      }),
+      })
     );
 
     // Category distribution
     const productsSnap = await db
-      .collection("products")
+      .collection(COLLECTIONS.PRODUCTS)
       .where("demoSession", "==", sessionId)
       .get();
 
@@ -50,12 +51,12 @@ export async function GET(
     }));
 
     const categoriesSnap = await db
-      .collection("categories")
+      .collection(COLLECTIONS.CATEGORIES)
       .where("demoSession", "==", sessionId)
       .get();
 
     const categoriesMap = new Map(
-      categoriesSnap.docs.map((doc) => [doc.id, doc.data().name]),
+      categoriesSnap.docs.map((doc) => [doc.id, doc.data().name])
     );
 
     const categoryDistribution = products.reduce((acc: any, product: any) => {
@@ -68,7 +69,7 @@ export async function GET(
       ([name, count]) => ({
         name,
         count,
-      }),
+      })
     );
 
     // Order status pie chart
@@ -82,7 +83,7 @@ export async function GET(
       ([status, count]) => ({
         status,
         count,
-      }),
+      })
     );
 
     // Payment method distribution
@@ -96,7 +97,7 @@ export async function GET(
       ([method, count]) => ({
         method,
         count,
-      }),
+      })
     );
 
     return NextResponse.json({

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 export async function GET() {
   try {
@@ -7,7 +8,7 @@ export async function GET() {
 
     // Get all unique demo sessions
     const categoriesSnapshot = await db
-      .collection("categories")
+      .collection(COLLECTIONS.CATEGORIES)
       .where("demoSession", "!=", null)
       .select("demoSession", "createdAt")
       .get();
@@ -19,7 +20,7 @@ export async function GET() {
       if (data.demoSession && !sessionsMap.has(data.demoSession)) {
         sessionsMap.set(
           data.demoSession,
-          data.createdAt?.toDate() || new Date(),
+          data.createdAt?.toDate() || new Date()
         );
       }
     });
@@ -28,13 +29,13 @@ export async function GET() {
       ([sessionId, createdAt]) => ({
         sessionId,
         createdAt: createdAt.toISOString(),
-      }),
+      })
     );
 
     // Sort by newest first
     sessions.sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     return NextResponse.json({ sessions });

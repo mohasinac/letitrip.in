@@ -12,7 +12,7 @@ async function meHandler(req: NextRequest) {
     if (!token) {
       return NextResponse.json(
         { error: "Unauthorized", message: "No session found" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -22,12 +22,15 @@ async function meHandler(req: NextRequest) {
     if (!session) {
       return NextResponse.json(
         { error: "Unauthorized", message: "Invalid or expired session" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     // Get user data from Firestore
-    const userDoc = await adminDb.collection(COLLECTIONS.USERS).doc(session.userId).get();
+    const userDoc = await adminDb
+      .collection(COLLECTIONS.USERS)
+      .doc(session.userId)
+      .get();
 
     if (!userDoc.exists) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -54,7 +57,7 @@ async function meHandler(req: NextRequest) {
             : null,
         },
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error: any) {
     console.error("Get current user error:", error);
@@ -67,7 +70,7 @@ async function meHandler(req: NextRequest) {
             ? "An unexpected error occurred"
             : error.message,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -81,7 +84,7 @@ export async function GET(req: NextRequest) {
   if (!apiRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many requests. Please try again later." },
-      { status: 429 },
+      { status: 429 }
     );
   }
 

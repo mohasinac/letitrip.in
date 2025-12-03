@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   if (!authRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many requests. Please try again later." },
-      { status: 429 },
+      { status: 429 }
     );
   }
 
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     // Get user from Firestore
     const userSnapshot = await adminDb
-      .collection("users")
+      .collection(COLLECTIONS.USERS)
       .where("email", "==", email.toLowerCase())
       .limit(1)
       .get();
@@ -71,14 +71,16 @@ export async function POST(req: NextRequest) {
 
     // Generate reset link
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://letitrip.in";
-    const resetLink = `${baseUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(email.toLowerCase())}`;
+    const resetLink = `${baseUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(
+      email.toLowerCase()
+    )}`;
 
     // Send password reset email
     try {
       await emailService.sendPasswordResetEmail(
         userData.email,
         userData.name || "User",
-        resetLink,
+        resetLink
       );
     } catch (emailError) {
       console.error("Error sending password reset email:", emailError);
@@ -90,7 +92,7 @@ export async function POST(req: NextRequest) {
     console.error("Password reset request error:", error);
     return NextResponse.json(
       { error: "An error occurred. Please try again later." },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -107,7 +109,7 @@ export async function PUT(req: NextRequest) {
   if (!authRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many requests. Please try again later." },
-      { status: 429 },
+      { status: 429 }
     );
   }
 
@@ -118,7 +120,7 @@ export async function PUT(req: NextRequest) {
     if (!email || !token || !newPassword) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -126,7 +128,7 @@ export async function PUT(req: NextRequest) {
     if (newPassword.length < 8) {
       return NextResponse.json(
         { error: "Password must be at least 8 characters long" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -143,7 +145,7 @@ export async function PUT(req: NextRequest) {
     if (userSnapshot.empty) {
       return NextResponse.json(
         { error: "Invalid or expired reset token" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -157,7 +159,7 @@ export async function PUT(req: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Invalid or expired reset token" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -168,7 +170,7 @@ export async function PUT(req: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Reset token has expired. Please request a new one." },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -200,13 +202,13 @@ export async function PUT(req: NextRequest) {
         message:
           "Password has been reset successfully. Please log in with your new password.",
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error) {
     console.error("Password reset error:", error);
     return NextResponse.json(
       { error: "An error occurred. Please try again later." },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

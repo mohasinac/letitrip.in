@@ -423,7 +423,11 @@ function TicketDetailContent() {
                     Created
                   </dt>
                   <dd className="mt-1">
-                    <DateDisplay date={ticket.createdAt} includeTime className="text-sm text-gray-900 dark:text-white" />
+                    <DateDisplay
+                      date={ticket.createdAt}
+                      includeTime
+                      className="text-sm text-gray-900 dark:text-white"
+                    />
                   </dd>
                 </div>
                 {ticket.resolvedAt && (
@@ -432,7 +436,11 @@ function TicketDetailContent() {
                       Resolved
                     </dt>
                     <dd className="mt-1">
-                      <DateDisplay date={ticket.resolvedAt} includeTime className="text-sm text-gray-900 dark:text-white" />
+                      <DateDisplay
+                        date={ticket.resolvedAt}
+                        includeTime
+                        className="text-sm text-gray-900 dark:text-white"
+                      />
                     </dd>
                   </div>
                 )}
@@ -534,7 +542,11 @@ function TicketDetailContent() {
                             </span>
                           )}
                         </div>
-                        <DateDisplay date={message.createdAt} includeTime className="text-xs" />
+                        <DateDisplay
+                          date={message.createdAt}
+                          includeTime
+                          className="text-xs"
+                        />
                       </div>
                       <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                         {message.message}

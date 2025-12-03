@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ sessionId: string }> },
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -13,37 +14,37 @@ export async function GET(
     const [categories, users, shops, products, auctions, bids, orders] =
       await Promise.all([
         db
-          .collection("categories")
+          .collection(COLLECTIONS.CATEGORIES)
           .where("demoSession", "==", sessionId)
           .count()
           .get(),
         db
-          .collection("users")
+          .collection(COLLECTIONS.USERS)
           .where("demoSession", "==", sessionId)
           .count()
           .get(),
         db
-          .collection("shops")
+          .collection(COLLECTIONS.SHOPS)
           .where("demoSession", "==", sessionId)
           .count()
           .get(),
         db
-          .collection("products")
+          .collection(COLLECTIONS.PRODUCTS)
           .where("demoSession", "==", sessionId)
           .count()
           .get(),
         db
-          .collection("auctions")
+          .collection(COLLECTIONS.AUCTIONS)
           .where("demoSession", "==", sessionId)
           .count()
           .get(),
         db
-          .collection("bids")
+          .collection(COLLECTIONS.BIDS)
           .where("demoSession", "==", sessionId)
           .count()
           .get(),
         db
-          .collection("orders")
+          .collection(COLLECTIONS.ORDERS)
           .where("demoSession", "==", sessionId)
           .count()
           .get(),

@@ -46,6 +46,7 @@ import {
   StepResult,
   CLEANUP_STEPS,
 } from "@/services/demo-data.service";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 
 const DEMO_PREFIX = "DEMO_";
 
@@ -1649,7 +1650,8 @@ export default function AdminDemoPage() {
             {summary && summary.categories > 0 && (
               <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Generated: {new Date(summary.createdAt).toLocaleString()}
+                  Generated:{" "}
+                  <DateDisplay date={summary.createdAt} includeTime />
                 </p>
               </div>
             )}

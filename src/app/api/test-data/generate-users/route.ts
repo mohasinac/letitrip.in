@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { faker } from "@faker-js/faker";
+import { COLLECTIONS } from "@/constants/database";
 
 const PREFIX = "TEST_";
 
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
         },
       };
 
-      const docRef = await db.collection("users").add(userData);
+      const docRef = await db.collection(COLLECTIONS.USERS).add(userData);
       users.push({ id: docRef.id, ...userData });
     }
 
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
     console.error("Error generating users:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to generate users" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

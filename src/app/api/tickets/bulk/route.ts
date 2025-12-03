@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireRole } from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { ValidationError } from "@/lib/api-errors";
-import { COLLECTIONS } from "@/constants/database";
+import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
 
 // Build update object for each action (excluding delete which needs special handling)
 function buildTicketUpdate(
@@ -97,7 +97,9 @@ export async function POST(request: NextRequest) {
 
         // Handle delete action (needs to delete messages first)
         if (action === "delete") {
-          const messagesSnapshot = await ticketRef.collection("messages").get();
+          const messagesSnapshot = await ticketRef
+            .collection(SUBCOLLECTIONS.TICKET_MESSAGES)
+            .get();
           messagesSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
           batch.delete(ticketRef);
           results.success.push(ticketId);

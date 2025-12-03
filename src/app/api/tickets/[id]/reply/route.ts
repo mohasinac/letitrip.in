@@ -6,7 +6,7 @@ import {
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { canReadResource } from "@/lib/rbac-permissions";
 import { ValidationError } from "@/lib/api-errors";
-import { COLLECTIONS } from "@/constants/database";
+import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
 
 /**
  * POST /api/tickets/[id]/reply
@@ -71,7 +71,9 @@ export async function POST(
       createdAt: now,
     };
 
-    const messageRef = await ticketRef.collection("messages").add(messageData);
+    const messageRef = await ticketRef
+      .collection(SUBCOLLECTIONS.TICKET_MESSAGES)
+      .add(messageData);
 
     // Update ticket status
     const ticketStatus = ticketData?.status;

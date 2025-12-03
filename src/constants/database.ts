@@ -81,10 +81,24 @@ export const COLLECTIONS = {
   // Homepage Management Collections
   HERO_SLIDES: "hero_slides",
   FEATURED_SECTIONS: "featured_sections",
+  HOMEPAGE_SETTINGS: "homepage_settings",
 
   // Content Management Collections
   BLOG_POSTS: "blog_posts",
   FAQS: "faqs",
+
+  // Settings Collections
+  SITE_SETTINGS: "site_settings",
+  PAYMENT_SETTINGS: "payment_settings",
+  SHIPPING_ZONES: "shipping_zones",
+  SHIPPING_CARRIERS: "shipping_carriers",
+  EMAIL_TEMPLATES: "email_templates",
+  EMAIL_SETTINGS: "email_settings",
+  NOTIFICATION_SETTINGS: "notification_settings",
+  FEATURE_FLAGS: "feature_flags",
+  BUSINESS_RULES: "business_rules",
+  RIPLIMIT_SETTINGS: "riplimit_settings",
+  ANALYTICS_SETTINGS: "analytics_settings",
 
   // Events & Verification Collections
   EVENTS: "events",
