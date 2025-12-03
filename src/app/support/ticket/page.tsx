@@ -72,7 +72,7 @@ export default function SupportTicketPage() {
       // Redirect to tickets list
       router.push("/user/tickets");
     } catch (err: any) {
-      console.error("Error creating ticket:", err);
+      logError(err, { component: "SupportTicketPage.handleSubmit", formData });
       setError(err.message || "Failed to create support ticket");
       setIsSubmitting(false);
     }

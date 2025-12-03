@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { logError } from "@/lib/firebase-error-logger";
 import { useRouter } from "next/navigation";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import {
@@ -336,7 +337,10 @@ export default function UserReviewsPage() {
       setReviews((prev) => prev.filter((r) => r.id !== deleteId));
       setDeleteId(null);
     } catch (error) {
-      console.error("Failed to delete review:", error);
+      logError(error, {
+        component: "ReviewsPage.handleDelete",
+        reviewId: deleteId,
+      });
     } finally {
       setDeleting(false);
     }
