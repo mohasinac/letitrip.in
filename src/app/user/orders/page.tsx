@@ -146,22 +146,26 @@ export default function OrdersPage() {
 
   // Mobile card renderer for orders
   const renderMobileOrderCard = (order: OrderCardFE) => (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
       <div className="flex items-start justify-between mb-2">
         <div>
-          <p className="font-medium text-gray-900">#{order.orderNumber}</p>
+          <p className="font-medium text-gray-900 dark:text-white">
+            #{order.orderNumber}
+          </p>
           <DateDisplay
             date={order.createdAt}
             format="short"
-            className="text-sm text-gray-500"
+            className="text-sm text-gray-500 dark:text-gray-400"
           />
         </div>
         <StatusBadge status={order.status} />
       </div>
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
         <div>
-          <p className="text-xs text-gray-500">{order.shopName || "N/A"}</p>
-          <p className="font-semibold text-gray-900">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {order.shopName || "N/A"}
+          </p>
+          <p className="font-semibold text-gray-900 dark:text-white">
             <Price amount={order.total} />
           </p>
         </div>
@@ -182,17 +186,21 @@ export default function OrdersPage() {
 
   return (
     <MobilePullToRefresh onRefresh={handleRefresh} className="min-h-screen">
-      <div className="bg-gray-50 py-8">
+      <div className="bg-gray-50 dark:bg-gray-900 py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-            <p className="text-gray-600 mt-2">Track and manage your orders</p>
-            <p className="text-xs text-gray-400 mt-1 lg:hidden">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              My Orders
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Track and manage your orders
+            </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 lg:hidden">
               Pull down to refresh
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2
@@ -224,25 +232,25 @@ export default function OrdersPage() {
 
                 {/* Pagination Controls */}
                 {orders.length > 0 && (
-                  <div className="border-t border-gray-200 px-6 py-4">
+                  <div className="border-t border-gray-200 dark:border-gray-700 px-6 py-4">
                     <div className="flex items-center justify-between">
                       <button
                         onClick={handlePrevPage}
                         disabled={currentPage === 1 || loading}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-target"
+                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-target"
                       >
                         <ChevronLeft className="w-4 h-4" />
                         <span className="hidden sm:inline">Previous</span>
                       </button>
 
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
                         Page {currentPage}
                       </span>
 
                       <button
                         onClick={handleNextPage}
                         disabled={!hasNextPage || loading}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-target"
+                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-target"
                       >
                         <span className="hidden sm:inline">Next</span>
                         <ChevronRight className="w-4 h-4" />

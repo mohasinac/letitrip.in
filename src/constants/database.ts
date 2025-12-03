@@ -85,6 +85,14 @@ export const COLLECTIONS = {
   // Content Management Collections
   BLOG_POSTS: "blog_posts",
   FAQS: "faqs",
+
+  // Events & Verification Collections
+  EVENTS: "events",
+  EVENT_REGISTRATIONS: "event_registrations",
+  EVENT_VOTES: "event_votes",
+  EVENT_OPTIONS: "event_options",
+  OTP_VERIFICATIONS: "otp_verifications",
+  USER_ACTIVITIES: "user_activities",
 } as const;
 
 /**

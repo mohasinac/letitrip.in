@@ -13,17 +13,23 @@ import { EmptyState } from "@/components/common/EmptyState";
 function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams?.get("q") || "";
+  const contentType = searchParams?.get("type") || "all";
   const [activeTab, setActiveTab] = useState<
-    "all" | "products" | "shops" | "categories"
+    "all" | "products" | "shops" | "categories" | "auctions" | "blog"
   >("all");
   const [results, setResults] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (query) {
+    // Only search if there's a query
+    if (query.trim()) {
       performSearch(query);
+    } else {
+      // No query - show empty state immediately
+      setResults(null);
+      setLoading(false);
     }
-  }, [query, activeTab]);
+  }, [query, activeTab, contentType]);
 
   const performSearch = async (searchQuery: string) => {
     try {
@@ -120,7 +126,16 @@ function SearchContent() {
         </div>
 
         {/* Results */}
-        {results && results.total > 0 ? (
+        {!query.trim() ? (
+          <EmptyState
+            title="Enter a search term"
+            description="Type something in the search bar to find products, shops, auctions, and more."
+            action={{
+              label: "Browse Categories",
+              href: "/categories",
+            }}
+          />
+        ) : results && results.total > 0 ? (
           <div className="space-y-8">
             {/* Products */}
             {(activeTab === "all" || activeTab === "products") &&
@@ -179,10 +194,7 @@ function SearchContent() {
             description={`We couldn't find any results for "${query}". Try different keywords or browse our categories.`}
             action={{
               label: "Browse Categories",
-              onClick: () => {
-                if (globalThis.location)
-                  globalThis.location.href = "/categories";
-              },
+              href: "/categories",
             }}
           />
         )}

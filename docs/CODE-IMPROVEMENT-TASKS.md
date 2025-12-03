@@ -4,13 +4,31 @@
 > **Status**: Analysis Complete - Ready for Implementation
 > **Estimated Total Effort**: 86-130 hours (with reusable components)
 > **Potential Lines Saved**: ~13,000 lines via shared components
-> **Total Tasks**: 14 improvement areas identified
+> **Total Tasks**: 17 improvement areas identified
 
 ## Executive Summary
 
 This document identifies code quality issues, refactoring opportunities, and improvements needed across the JustForView.in auction platform. Issues are categorized by priority and include effort estimates.
 
 **Key Finding**: Creating 8 reusable components first will reduce effort by 60-65% and eliminate ~13,000 lines of duplicated code across 60+ files.
+
+---
+
+## 🚨 NEW FEATURE REQUIREMENTS
+
+> **See**: [EVENTS-AND-VERIFICATION-CHECKLIST.md](./EVENTS-AND-VERIFICATION-CHECKLIST.md) for full implementation details
+
+### Priority Features (Required Before Launch)
+
+| Feature                  | Priority      | Effort | Status         |
+| ------------------------ | ------------- | ------ | -------------- |
+| Email OTP Verification   | P1 - CRITICAL | 8-12h  | ⬜ Not Started |
+| Phone OTP Verification   | P1 - CRITICAL | 8-12h  | ⬜ Not Started |
+| Verification Enforcement | P1 - CRITICAL | 4-6h   | ⬜ Not Started |
+| IP Tracking & Logging    | P2 - HIGH     | 6-8h   | ⬜ Not Started |
+| Events Management System | P3 - MEDIUM   | 24-32h | ⬜ Not Started |
+
+**Total New Feature Effort**: 50-70 hours
 
 ---
 
@@ -30,6 +48,9 @@ This document identifies code quality issues, refactoring opportunities, and imp
 12. [Task 12: Code Quality & Type Safety](#task-12-code-quality--type-safety-issues)
 13. [Task 13: Accessibility Improvements](#task-13-accessibility-improvements)
 14. [Task 14: Test Coverage Gaps](#task-14-test-coverage-gaps)
+15. [Task 15: User Verification System](#task-15-user-verification-system) ⭐ NEW
+16. [Task 16: IP Tracking & Security](#task-16-ip-tracking--security) ⭐ NEW
+17. [Task 17: Events Management System](#task-17-events-management-system) ⭐ NEW
 
 ---
 
@@ -962,6 +983,62 @@ Week 4: Sieve integration + polish
 4. ✅ Add debounce to SearchBar components
 5. ✅ Create `/api/header-stats` for combined header data
 6. ✅ Add retry limits to error handling
+7. ✅ **Enhanced RichTextEditor with images, tables, and advanced formatting**
+
+---
+
+## Recent Improvements
+
+### RichTextEditor Enhancements (December 2025)
+
+The `RichTextEditor` component (`src/components/common/RichTextEditor.tsx`) has been significantly enhanced with:
+
+**New Features:**
+
+- 📷 **Image Upload** - Upload from device or paste URL, with drag & drop support
+- 📊 **Tables** - Visual table picker with customizable rows/columns
+- 🎨 **Text Colors** - 9 color options for text formatting
+- 🖍️ **Highlighting** - 7 highlight color options
+- 📐 **Text Alignment** - Left, center, right, and justify
+- 💻 **Code Blocks** - Inline code and code block support
+- ➖ **Horizontal Rules** - Insert dividers
+- 📝 **Subscript/Superscript** - For scientific notation
+- 🔗 **Enhanced Links** - Modal with URL and text customization
+- ⌨️ **Keyboard Shortcuts** - Ctrl+B, Ctrl+I, Ctrl+U, Ctrl+K
+
+**New Props:**
+
+```typescript
+imageUploadContext?: "product" | "shop" | "auction" | "category" | "blog";
+imageUploadContextId?: string;
+onImageUpload?: (url: string) => void;
+```
+
+**Exported Tool Presets:**
+
+- `DEFAULT_TOOLS` - All available tools
+- `BASIC_TOOLS` - Simple formatting only (bold, italic, underline, lists, link)
+
+**Usage Example:**
+
+```tsx
+import RichTextEditor, { BASIC_TOOLS } from "@/components/common/RichTextEditor";
+
+// Full-featured editor
+<RichTextEditor
+  value={content}
+  onChange={setContent}
+  imageUploadContext="blog"
+  imageUploadContextId={blogId}
+/>
+
+// Simple editor
+<RichTextEditor
+  value={content}
+  onChange={setContent}
+  tools={BASIC_TOOLS}
+/>
+```
 
 ---
 
@@ -1073,6 +1150,894 @@ Found `it.todo()` tests in `TDD/resources/theming/TEST-CASES.md`:
 | `SearchableDropdown.tsx`   | Complex state management  |
 | `UnifiedFilterSidebar.tsx` | Complex filter logic      |
 | `ImageEditor.tsx`          | Image manipulation logic  |
+
+---
+
+## Task 15: User Verification System ⭐ NEW
+
+**Priority**: CRITICAL (P1)
+**Effort**: 20-30 hours
+**Goal**: Require email & phone verification before purchases/bidding
+
+> **Full Details**: See [EVENTS-AND-VERIFICATION-CHECKLIST.md](./EVENTS-AND-VERIFICATION-CHECKLIST.md)
+
+### Summary
+
+Users MUST verify their email and phone number before:
+
+- Placing orders (checkout)
+- Bidding on auctions
+- Participating in events
+- Uploading profile images (optional)
+
+### Key Components to Create
+
+| Component                                        | Purpose                       |
+| ------------------------------------------------ | ----------------------------- |
+| `src/services/otp.service.ts`                    | OTP generation & verification |
+| `src/services/sms.service.ts`                    | SMS sending via MSG91/Twilio  |
+| `src/components/auth/EmailVerificationModal.tsx` | Email OTP flow                |
+| `src/components/auth/PhoneVerificationModal.tsx` | Phone OTP flow                |
+| `src/components/auth/OTPInput.tsx`               | 6-digit OTP input             |
+| `src/components/auth/VerificationGate.tsx`       | Block unverified users        |
+| `src/hooks/useVerificationCheck.ts`              | Check verification status     |
+
+### API Endpoints
+
+| Endpoint                             | Purpose          |
+| ------------------------------------ | ---------------- |
+| `POST /api/auth/verify-email/send`   | Send email OTP   |
+| `POST /api/auth/verify-email/verify` | Verify email OTP |
+| `POST /api/auth/verify-phone/send`   | Send SMS OTP     |
+| `POST /api/auth/verify-phone/verify` | Verify phone OTP |
+
+### Database Updates
+
+```typescript
+// Add to COLLECTIONS constant
+OTP_VERIFICATIONS: "otp_verifications",
+
+// User document additions
+emailVerifiedAt: Timestamp | null;
+phoneVerifiedAt: Timestamp | null;
+```
+
+### Checklist
+
+- [ ] Email OTP generation & storage
+- [ ] Email OTP verification API
+- [ ] Phone OTP via SMS provider
+- [ ] Phone OTP verification API
+- [ ] Verification UI modals
+- [ ] Verification enforcement in checkout
+- [ ] Verification enforcement in bidding
+- [ ] Profile verification badges
+
+---
+
+## Task 16: IP Tracking & Security ⭐ NEW
+
+**Priority**: HIGH (P2)
+**Effort**: 6-8 hours
+**Goal**: Track user IPs for security and fraud prevention
+
+> **Full Details**: See [EVENTS-AND-VERIFICATION-CHECKLIST.md](./EVENTS-AND-VERIFICATION-CHECKLIST.md)
+
+### Summary
+
+Track IP addresses for all critical user actions to:
+
+- Prevent fraud (multiple accounts)
+- Detect suspicious activity
+- Comply with legal requirements
+- Enable rate limiting
+
+### Key Components
+
+| Component                              | Purpose                  |
+| -------------------------------------- | ------------------------ |
+| `src/app/api/middleware/ip-tracker.ts` | Extract IP from requests |
+| `src/services/ip-tracker.service.ts`   | Log activities with IP   |
+
+### Actions to Track
+
+- Login / Registration
+- Email/Phone verification
+- Placing orders
+- Placing bids
+- Event registration
+- Event voting
+
+### Database Schema
+
+```typescript
+// Add to COLLECTIONS
+USER_ACTIVITIES: "user_activities",
+
+interface UserActivity {
+  id: string;
+  userId: string;
+  action: string;
+  ipAddress: string;
+  userAgent: string;
+  deviceType: 'mobile' | 'tablet' | 'desktop';
+  createdAt: Timestamp;
+}
+```
+
+### Checklist
+
+- [ ] IP extraction middleware
+- [ ] User activity logging service
+- [ ] Log login/registration
+- [ ] Log orders and bids
+- [ ] Log verification attempts
+- [ ] Rate limiting by IP
+- [ ] Admin activity report
+
+---
+
+## Task 17: Events Management System ⭐ NEW
+
+**Priority**: MEDIUM (P3)
+**Effort**: 24-32 hours
+**Goal**: Full event management with giveaways, contests, polls, tournaments
+
+> **Full Details**: See [EVENTS-AND-VERIFICATION-CHECKLIST.md](./EVENTS-AND-VERIFICATION-CHECKLIST.md)
+
+### Summary
+
+Create a comprehensive events system supporting:
+
+- **Giveaways** - Random winner selection
+- **Draws** - Ticket-based raffles
+- **Contests** - Submissions with voting
+- **Polls** - User voting on options
+- **Tournaments** - Multi-stage competitions
+
+### Business Rules
+
+- Maximum 2 live events at a time
+- Requires user verification to participate
+- IP tracking for fraud prevention
+- Google Forms integration for external entries
+- Rich text editor for event descriptions
+
+### Key Pages
+
+| Page                      | Purpose             |
+| ------------------------- | ------------------- |
+| `/admin/events`           | Admin event list    |
+| `/admin/events/create`    | Create event wizard |
+| `/admin/events/[id]`      | Edit event          |
+| `/events`                 | Public events list  |
+| `/events/[slug]`          | Event details       |
+| `/events/[slug]/register` | Event registration  |
+| `/events/[slug]/vote`     | Voting page         |
+| `/events/[slug]/results`  | Results display     |
+
+### Key Components
+
+| Component            | Purpose            |
+| -------------------- | ------------------ |
+| `EventCard.tsx`      | Event listing card |
+| `EventBanner.tsx`    | Hero banner        |
+| `EventCountdown.tsx` | Timer component    |
+| `PollVoting.tsx`     | Poll voting UI     |
+| `WinnersSection.tsx` | Display winners    |
+| `PrizeShowcase.tsx`  | Show prizes        |
+
+### Database Collections
+
+```typescript
+// Add to COLLECTIONS
+EVENTS: "events",
+EVENT_REGISTRATIONS: "event_registrations",
+EVENT_VOTES: "event_votes",
+EVENT_OPTIONS: "event_options",
+```
+
+### Checklist
+
+- [ ] Database schema & types
+- [ ] Event CRUD APIs (admin)
+- [ ] Event list/detail APIs (public)
+- [ ] Registration API with verification check
+- [ ] Voting API with IP tracking
+- [ ] Admin event management pages
+- [ ] Public event pages
+- [ ] Event registration flow
+- [ ] Voting UI for polls/contests
+- [ ] Winners display section
+- [ ] Google Forms integration
+- [ ] Results import from Excel/CSV
+- [ ] 2 live events limit enforcement
+
+---
+
+## Task 18: Navigation, Filters & Dark Mode Consistency (NEW - HIGH PRIORITY)
+
+### Problem
+
+Multiple inconsistencies across admin, seller, user, and public pages:
+
+1. **Tabbed Layout Missing**: Only 3 admin sections use TabNav (blog, settings, auctions) despite tabs.ts defining more
+2. **UnifiedFilterSidebar Underutilized**: Many list pages use custom inline filters instead
+3. **Dark Mode Gaps**: 20+ files have `bg-white` without `dark:bg-*` variant
+4. **Navigation Links Broken**: navigation.ts has outdated/non-existent routes
+5. **Sort/Dropdown Bars Inconsistent**: Different patterns across pages
+
+### Pages Missing Tabbed Layout (Should Match Blog Pattern)
+
+#### Admin Content Management
+
+| Page                        | Status          | Action Needed                  |
+| --------------------------- | --------------- | ------------------------------ |
+| `/admin/homepage`           | ❌ No TabNav    | Add layout.tsx with TabNav     |
+| `/admin/hero-slides`        | ❌ No TabNav    | Merge under Content Management |
+| `/admin/featured-sections`  | ❌ No TabNav    | Merge under Content Management |
+| `/admin/featured-products`  | ❌ No TabNav    | Merge under Content Management |
+| `/admin/featured-auctions`  | ❌ No TabNav    | Merge under Content Management |
+| `/admin/featured-countdown` | ❌ No TabNav    | Merge under Content Management |
+| `/admin/categories`         | ❌ No TabNav    | Add layout.tsx with TabNav     |
+| `/admin/component-demo`     | ❌ No dark mode | Add dark mode styles           |
+
+#### Admin Marketplace
+
+| Page              | TabNav | Filter           | Dark Mode |
+| ----------------- | ------ | ---------------- | --------- |
+| `/admin/products` | ❌     | ✅ UnifiedFilter | ⚠️ Check  |
+| `/admin/auctions` | ✅     | ✅ UnifiedFilter | ⚠️ Check  |
+| `/admin/shops`    | ❌     | ✅ UnifiedFilter | ⚠️ Check  |
+| `/admin/users`    | ❌     | ❌ Custom inline | ⚠️ Check  |
+
+#### Admin Transactions
+
+| Page              | TabNav | Filter           | Dark Mode |
+| ----------------- | ------ | ---------------- | --------- |
+| `/admin/orders`   | ❌     | ❌ Custom inline | ❌        |
+| `/admin/payments` | ❌     | ❌ Custom inline | ⚠️ Check  |
+| `/admin/payouts`  | ❌     | ✅ UnifiedFilter | ⚠️ Check  |
+| `/admin/coupons`  | ❌     | ✅ UnifiedFilter | ⚠️ Check  |
+| `/admin/returns`  | ❌     | ✅ UnifiedFilter | ⚠️ Check  |
+
+#### Admin Support
+
+| Page                     | TabNav | Filter           | Dark Mode |
+| ------------------------ | ------ | ---------------- | --------- |
+| `/admin/support-tickets` | ❌     | ✅ UnifiedFilter | ⚠️ Check  |
+| `/admin/reviews`         | ❌     | ✅ UnifiedFilter | ⚠️ Check  |
+
+### Seller Pages Needing Review
+
+| Page                | Filter              | Dark Mode |
+| ------------------- | ------------------- | --------- |
+| `/seller/products`  | ✅ UnifiedFilter    | ⚠️ Check  |
+| `/seller/orders`    | ✅ UnifiedFilter    | ⚠️ Check  |
+| `/seller/returns`   | ✅ UnifiedFilter    | ⚠️ Check  |
+| `/seller/analytics` | ❌ No filter needed | ⚠️ Check  |
+| `/seller/payouts`   | ⚠️ Needs review     | ⚠️ Check  |
+
+### User Pages Needing Review
+
+| Page                  | Filter           | Dark Mode   |
+| --------------------- | ---------------- | ----------- |
+| `/user/orders`        | ❌ Custom inline | ✅ Fixed    |
+| `/user/favorites`     | ❌ None          | ✅ Fixed    |
+| `/user/reviews`       | ✅ Has filters   | ✅ Has dark |
+| `/user/addresses`     | ❌ None          | ✅ Has dark |
+| `/user/settings`      | ✅ TabNav exists | ⚠️ Check    |
+| `/user/won-auctions`  | ❌ None          | ❌ Missing  |
+| `/user/watchlist`     | ❌ None          | ❌ Missing  |
+| `/user/tickets`       | ❌ None          | ❌ Missing  |
+| `/user/tickets/[id]`  | ❌ None          | ❌ Missing  |
+| `/user/bids`          | ❌ None          | ⚠️ Check    |
+| `/user/history`       | ❌ None          | ⚠️ Check    |
+| `/user/messages`      | ❌ None          | ⚠️ Check    |
+| `/user/notifications` | ❌ None          | ⚠️ Check    |
+| `/user/returns`       | ❌ None          | ⚠️ Check    |
+
+### Seller Pages Dark Mode Status
+
+| Page                      | Dark Mode  |
+| ------------------------- | ---------- |
+| `/seller/messages`        | ❌ Missing |
+| `/seller/support-tickets` | ❌ Missing |
+| `/seller/products`        | ⚠️ Check   |
+| `/seller/orders`          | ⚠️ Check   |
+| `/seller/returns`         | ⚠️ Check   |
+| `/seller/analytics`       | ⚠️ Check   |
+| `/seller/payouts`         | ⚠️ Check   |
+
+### Admin Pages Dark Mode Status
+
+| Page                          | Dark Mode  |
+| ----------------------------- | ---------- |
+| `/admin/users`                | ❌ Missing |
+| `/admin/tickets`              | ❌ Missing |
+| `/admin/tickets/[id]`         | ❌ Missing |
+| `/admin/support-tickets/[id]` | ❌ Missing |
+| `/admin/orders/[id]`          | ❌ Missing |
+| `/admin/component-demo`       | ❌ Missing |
+| `/admin/page.tsx` (dashboard) | ⚠️ Check   |
+
+### Public Pages Needing Review
+
+| Page        | Filter            | Dark Mode |
+| ----------- | ----------------- | --------- |
+| `/products` | ✅ UnifiedFilter  | ⚠️ Check  |
+| `/auctions` | ⚠️ Custom sidebar | ⚠️ Check  |
+| `/shops`    | ✅ UnifiedFilter  | ⚠️ Check  |
+| `/search`   | ⚠️ Custom sidebar | ⚠️ Check  |
+| `/compare`  | ❌ None           | ⚠️ Check  |
+
+### Dark Mode Issues Found (50+ instances)
+
+#### User Pages (Fixed)
+
+- ✅ `/user/orders/page.tsx` - Fixed
+- ✅ `/user/favorites/page.tsx` - Fixed
+
+#### User Pages (Needs Fix)
+
+```
+src/app/user/won-auctions/page.tsx (10+ instances)
+src/app/user/watchlist/page.tsx
+src/app/user/tickets/page.tsx
+src/app/user/tickets/[id]/page.tsx
+```
+
+#### Seller Pages (Needs Fix)
+
+```
+src/app/seller/messages/page.tsx (6+ instances)
+src/app/seller/support-tickets/page.tsx (12+ instances)
+```
+
+#### Admin Pages (Needs Fix)
+
+```
+src/app/admin/users/page.tsx (10+ instances)
+src/app/admin/tickets/page.tsx
+src/app/admin/tickets/[id]/page.tsx
+src/app/admin/support-tickets/[id]/page.tsx
+src/app/admin/orders/[id]/page.tsx
+src/app/admin/component-demo/page.tsx
+```
+
+#### Components (Needs Fix)
+
+```
+src/components/common/LoadingStates.tsx
+src/components/common/PageHeader.tsx
+src/components/forms/FormField.tsx
+```
+
+### Broken Navigation Links
+
+From `navigation.ts`:
+
+```typescript
+// USER_MENU_ITEMS - These routes may not exist or are outdated
+{
+  href: "/user/payments";
+} // ❓ Verify exists
+{
+  href: "/user/notifications";
+} // ❓ Verify exists
+{
+  href: "/user/security";
+} // ❓ Verify exists
+
+// SELLER_MENU_ITEMS - These routes may not exist
+{
+  href: "/seller/promotions";
+} // ❓ Verify exists
+{
+  href: "/seller/customers";
+} // ❓ Verify exists
+
+// ADMIN_MENU_ITEMS - Verified working
+// Most admin routes exist but some submenu items may be outdated
+```
+
+### Implementation Checklist
+
+#### Phase 1: Admin Content Management Consolidation
+
+- [ ] Create `/admin/content` with TabNav layout
+- [ ] Migrate hero-slides, featured-sections, featured-products under tabs
+- [ ] Update navigation.ts to point to new routes
+- [ ] Add dark mode to all content management pages
+
+#### Phase 2: Admin Marketplace Consistency
+
+- [ ] Add TabNav to products, shops
+- [ ] Replace custom inline filters with UnifiedFilterSidebar
+- [ ] Fix dark mode gaps
+
+#### Phase 3: Admin Transactions Consistency
+
+- [ ] Add TabNav or consistent layout to orders, payments, payouts
+- [ ] Replace custom filters with UnifiedFilterSidebar
+- [ ] Fix dark mode (especially orders/[id])
+
+#### Phase 4: Seller Pages
+
+- [ ] Audit all seller pages for filter consistency
+- [ ] Fix dark mode gaps
+- [ ] Ensure all use UnifiedFilterSidebar where applicable
+
+#### Phase 5: User Pages
+
+- [ ] Audit all user pages for consistency
+- [ ] Add filters where needed
+- [ ] Fix dark mode gaps
+
+#### Phase 6: Public Pages
+
+- [ ] Audit products, auctions, shops, search
+- [ ] Unify filter sidebar implementations
+- [ ] Ensure dark mode works across all
+
+#### Phase 7: Navigation Cleanup
+
+- [ ] Audit all routes in navigation.ts
+- [ ] Remove or fix broken links
+- [ ] Update tabs.ts to match actual routes
+- [ ] Test all navigation flows
+
+### Key Components to Use
+
+| Component              | Purpose                   | Location                                         |
+| ---------------------- | ------------------------- | ------------------------------------------------ |
+| `TabNav`               | Tabbed section navigation | `src/components/navigation/TabNav.tsx`           |
+| `UnifiedFilterSidebar` | Consistent filter UI      | `src/components/common/UnifiedFilterSidebar.tsx` |
+| `SortDropdown`         | Standard sort controls    | `src/components/common/SortDropdown.tsx`         |
+| `Pagination`           | Standard pagination       | `src/components/common/Pagination.tsx`           |
+
+### Reference Implementation
+
+See `/admin/blog/layout.tsx` for proper TabNav implementation:
+
+```tsx
+// Example pattern to follow
+import TabNav from "@/components/navigation/TabNav";
+import { ADMIN_BLOG_TABS } from "@/constants/tabs";
+
+export default function BlogLayout({ children }) {
+  return (
+    <div className="space-y-6">
+      <TabNav tabs={ADMIN_BLOG_TABS} baseUrl="/admin/blog" />
+      {children}
+    </div>
+  );
+}
+```
+
+---
+
+## Task 19: URL-Based Filtering, Sorting & Pagination (NEW - HIGH PRIORITY)
+
+### Problem
+
+Currently filters, sorts, searches, and pagination are handled inconsistently:
+
+1. **Filters not in URL**: State is lost on page refresh/share
+2. **Instant filter changes**: Should wait for "Apply" button (except sort/pagination)
+3. **Pagination inconsistent**: Different styles across pages, no custom limit/page input
+4. **Search bar issues**: Empty search allowed, content type dropdown broken
+5. **Search page stuck on skeleton**: When visited without query
+
+### Requirements
+
+#### URL Parameter Pattern
+
+All list pages MUST use URL search params for state:
+
+```
+/products?category=electronics&minPrice=100&maxPrice=500&sort=price_asc&page=2&limit=20
+/auctions?status=active&sort=ending_soon&page=1&limit=12
+/admin/orders?status=pending&dateFrom=2025-01-01&sort=created_desc&page=1
+/search?q=laptop&type=products&sort=relevance&page=1&limit=24
+```
+
+#### Filter Behavior
+
+| Action      | Trigger            | Updates URL |
+| ----------- | ------------------ | ----------- |
+| **Filters** | Click "Apply"      | Yes         |
+| **Sort**    | Instant on change  | Yes         |
+| **Page**    | Instant on change  | Yes         |
+| **Limit**   | Instant on change  | Yes         |
+| **Search**  | Click Search/Enter | Yes         |
+
+#### Pagination Features
+
+- Page size selector: 12, 24, 48, 96 items
+- Page number input for jumping to specific page
+- Previous/Next buttons
+- First/Last page buttons
+- Show current page and total pages
+- Persist limit in URL
+
+### Pages Requiring Updates
+
+#### Public Pages
+
+| Page                 | Filter | Sort | Pagination | URL Params |
+| -------------------- | ------ | ---- | ---------- | ---------- |
+| `/products`          | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/auctions`          | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/shops`             | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/search`            | ⚠️     | ⚠️   | ⚠️         | Partial    |
+| `/categories/[slug]` | ⚠️     | ⚠️   | ⚠️         | ❌         |
+
+#### Admin Pages
+
+| Page                     | Filter | Sort | Pagination | URL Params |
+| ------------------------ | ------ | ---- | ---------- | ---------- |
+| `/admin/products`        | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/admin/auctions/*`      | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/admin/orders`          | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/admin/users`           | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/admin/shops`           | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/admin/payments`        | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/admin/payouts`         | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/admin/coupons`         | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/admin/returns`         | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/admin/reviews`         | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/admin/support-tickets` | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/admin/blog/posts`      | ⚠️     | ⚠️   | ⚠️         | ❌         |
+
+#### Seller Pages
+
+| Page               | Filter | Sort | Pagination | URL Params |
+| ------------------ | ------ | ---- | ---------- | ---------- |
+| `/seller/products` | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/seller/orders`   | ⚠️     | ⚠️   | ⚠️         | ❌         |
+| `/seller/returns`  | ⚠️     | ⚠️   | ⚠️         | ❌         |
+
+#### User Pages
+
+| Page           | Filter | Sort | Pagination | URL Params |
+| -------------- | ------ | ---- | ---------- | ---------- |
+| `/user/orders` | ⚠️     | ⚠️   | ⚠️         | ❌         |
+
+### Implementation Plan
+
+#### Phase 1: Create Reusable Hooks & Components
+
+```typescript
+// src/hooks/useUrlFilters.ts
+interface UseUrlFiltersOptions {
+  defaultFilters: Record<string, any>;
+  defaultSort: string;
+  defaultPage: number;
+  defaultLimit: number;
+}
+
+// Returns:
+// - filters: current filter values from URL
+// - pendingFilters: filters being edited (before Apply)
+// - setFilter: update pending filter
+// - applyFilters: push filters to URL
+// - resetFilters: clear all filters
+// - sort: current sort value
+// - setSort: update sort (instant)
+// - page: current page
+// - setPage: update page (instant)
+// - limit: current limit
+// - setLimit: update limit (instant)
+```
+
+```typescript
+// src/components/common/AdvancedPagination.tsx
+interface AdvancedPaginationProps {
+  currentPage: number;
+  totalPages: number;
+  limit: number;
+  onPageChange: (page: number) => void;
+  onLimitChange: (limit: number) => void;
+  limitOptions?: number[]; // Default: [12, 24, 48, 96]
+  showPageInput?: boolean; // Default: true
+}
+```
+
+#### Phase 2: Update UnifiedFilterSidebar
+
+- Add "Apply Filters" button
+- Add "Reset Filters" button
+- Show pending changes indicator
+- Integrate with useUrlFilters hook
+
+#### Phase 3: Fix Search Functionality
+
+- ✅ Prevent empty search submissions (DONE)
+- ✅ Fix search page skeleton on empty query (DONE)
+- [ ] Content type dropdown working
+- [ ] Use URL params for search state
+- [ ] Add sort options to search results
+- [ ] Add pagination to search results
+
+#### Phase 4: Update All List Pages
+
+For each page:
+
+1. Import and use `useUrlFilters` hook
+2. Read initial state from URL params
+3. Update API calls to use URL-based filters
+4. Replace local pagination with `AdvancedPagination`
+5. Add Apply/Reset buttons to filter sidebar
+
+### Search Bar Issues Fixed
+
+| Issue                         | Status                   |
+| ----------------------------- | ------------------------ |
+| Empty text search allowed     | ✅                       |
+| Search page stuck on skeleton | ✅                       |
+| Content type dropdown empty   | 🔄 Needs constants check |
+
+### Checklist
+
+- [x] Prevent empty text search
+- [x] Fix search page empty query handling
+- [ ] Create `useUrlFilters` hook
+- [ ] Create `AdvancedPagination` component
+- [ ] Update `UnifiedFilterSidebar` with Apply button
+- [ ] Update all public list pages
+- [ ] Update all admin list pages
+- [ ] Update all seller list pages
+- [ ] Update all user list pages
+- [ ] Test URL sharing/bookmarking
+- [ ] Test browser back/forward navigation
+
+---
+
+## Task 20: Firestore Indexes & Query Optimization (NEW)
+
+### Problem
+
+Several API queries fail due to missing composite indexes. Firestore requires composite indexes for queries that combine multiple filters or filters with orderBy clauses.
+
+### Recently Added Indexes (Deployed Dec 3, 2025)
+
+| Collection | Fields                                          | Purpose                      |
+| ---------- | ----------------------------------------------- | ---------------------------- |
+| products   | status + created_at + stock_count               | Products with inStock filter |
+| products   | is_featured + status + created_at + stock_count | Featured products in stock   |
+| products   | category_id + status + created_at               | Products by category         |
+
+### Query Patterns That May Need Indexes
+
+Review these API routes for missing index requirements:
+
+#### Products API (`/api/products`)
+
+- status + is_featured + stock_count + created_at
+- shop_id + status + stock_count + created_at
+- category_id + status + stock_count + price
+- price range queries with sorting
+
+#### Auctions API (`/api/auctions`)
+
+- status + is_featured + end_time
+- status + bid_count + created_at
+- shop_id + status + end_time
+
+#### Orders API (`/api/orders`)
+
+- user_id + status + created_at
+- shop_id + status + payment_status + created_at
+
+### How to Add New Indexes
+
+1. When you see `FAILED_PRECONDITION` error, click the provided link
+2. Or manually add to `firestore.indexes.json`:
+
+```json
+{
+  "collectionGroup": "products",
+  "queryScope": "COLLECTION",
+  "fields": [
+    { "fieldPath": "status", "order": "ASCENDING" },
+    { "fieldPath": "created_at", "order": "DESCENDING" },
+    { "fieldPath": "stock_count", "order": "DESCENDING" }
+  ]
+}
+```
+
+3. Deploy with: `firebase deploy --only firestore:indexes`
+
+### Checklist
+
+- [x] Add products status + created_at + stock_count index
+- [x] Add products is_featured + status + created_at + stock_count index
+- [x] Add products category_id + status + created_at index
+- [x] Deploy indexes to Firebase
+- [ ] Monitor for additional missing index errors
+- [ ] Document all required indexes in README
+
+---
+
+## Task 21: Navigation Component Cleanup & Refactoring (NEW)
+
+### Problem
+
+The navigation system has evolved over time and now contains:
+
+1. **"More" button** in admin/seller layouts that should be removed (mobile uses BottomNav)
+2. **MobileSidebar** has full navigation but should only have dashboard links (admin/seller/user)
+3. **BottomNav** needs to be scrollable and take 100% width
+4. **Outdated navigation code** and inconsistent component naming
+5. **No backward compatibility needed** - clean break
+
+### Current State
+
+| Component            | Location                                  | Issues                       |
+| -------------------- | ----------------------------------------- | ---------------------------- |
+| `AdminSidebar`       | `src/components/admin/AdminSidebar.tsx`   | Has "More" menu button       |
+| `SellerSidebar`      | `src/components/seller/SellerSidebar.tsx` | Has "More" menu button       |
+| `AdminLayoutClient`  | `src/app/admin/AdminLayoutClient.tsx`     | Mobile nav implementation    |
+| `SellerLayoutClient` | `src/app/seller/SellerLayoutClient.tsx`   | Mobile nav implementation    |
+| `MobileSidebar`      | `src/components/layout/MobileSidebar.tsx` | Full navigation items        |
+| `BottomNav`          | `src/components/layout/BottomNav.tsx`     | Not scrollable, width issues |
+| `MobileNavRow`       | `src/components/layout/MobileNavRow.tsx`  | Used for admin/seller mobile |
+
+### Required Changes
+
+#### 1. Remove "More" Button from Sidebars
+
+- Delete overflow/more menu from `AdminSidebar`
+- Delete overflow/more menu from `SellerSidebar`
+- Mobile users use BottomNav (rendered above the main BottomNav)
+
+#### 2. Simplify MobileSidebar
+
+Remove full navigation, only keep dashboard links:
+
+```tsx
+// MobileSidebar should only have:
+- Dashboard (User): /user
+- Dashboard (Seller): /seller (if seller)
+- Dashboard (Admin): /admin (if admin)
+// No other navigation items - handled by BottomNav
+```
+
+#### 3. Fix BottomNav
+
+```tsx
+// Requirements:
+- 100% width container
+- Horizontal scroll if items overflow
+- Proper touch scrolling on mobile
+- No visible scrollbar (use CSS)
+```
+
+#### 4. Component Renaming (Optional but Recommended)
+
+| Current Name         | Suggested Name         | Reason           |
+| -------------------- | ---------------------- | ---------------- |
+| `MobileNavRow`       | `AdminMobileNav`       | More descriptive |
+| `AdminLayoutClient`  | `AdminMobileProvider`  | Clearer purpose  |
+| `SellerLayoutClient` | `SellerMobileProvider` | Clearer purpose  |
+
+#### 5. Navigation Code Cleanup
+
+Files to audit and clean:
+
+- `src/constants/navigation.ts` - Remove unused items
+- `src/constants/tabs.ts` - Remove unused tabs
+- `src/components/layout/Header.tsx` - Check for legacy nav code
+- `src/components/layout/MainNavBar.tsx` - Check for legacy code
+
+### Implementation Checklist
+
+#### Phase 1: Remove "More" Buttons
+
+- [ ] `AdminSidebar.tsx` - Remove more/overflow button
+- [ ] `SellerSidebar.tsx` - Remove more/overflow button
+- [ ] Remove any related state/handlers for "more" menu
+
+#### Phase 2: Simplify MobileSidebar
+
+- [ ] Remove full navigation items from MobileSidebar
+- [ ] Add only dashboard links (user/seller/admin based on role)
+- [ ] Test mobile sidebar shows correct links
+
+#### Phase 3: Fix BottomNav
+
+- [ ] Make container 100% width
+- [ ] Add `overflow-x-auto` with hidden scrollbar
+- [ ] Add `scroll-smooth` for touch scrolling
+- [ ] Test horizontal scroll works on mobile
+
+#### Phase 4: Cleanup & Rename
+
+- [ ] Audit `navigation.ts` for dead code
+- [ ] Audit `tabs.ts` for dead code
+- [ ] Rename components if desired
+- [ ] Update imports across codebase
+
+### Code Examples
+
+#### BottomNav Scroll Fix
+
+```tsx
+// Current (broken)
+<div className="fixed bottom-0 left-0 right-0">
+  <div className="flex justify-around">
+
+// Fixed
+<div className="fixed bottom-0 left-0 right-0 w-full">
+  <div className="flex w-full overflow-x-auto scrollbar-hide scroll-smooth">
+    <div className="flex min-w-full">
+```
+
+#### MobileSidebar Simplified
+
+```tsx
+// Only dashboard links
+const dashboardLinks = [
+  { href: "/user", label: "My Account", icon: User },
+  ...(isSeller
+    ? [{ href: "/seller", label: "Seller Dashboard", icon: Store }]
+    : []),
+  ...(isAdmin
+    ? [{ href: "/admin", label: "Admin Dashboard", icon: Shield }]
+    : []),
+];
+```
+
+### Estimated Effort
+
+| Task                   | Hours    |
+| ---------------------- | -------- |
+| Remove "More" buttons  | 1-2      |
+| Simplify MobileSidebar | 1-2      |
+| Fix BottomNav scroll   | 1-2      |
+| Code cleanup & rename  | 2-4      |
+| Testing                | 1-2      |
+| **Total**              | **6-12** |
+
+---
+
+## Updated Summary Statistics
+
+| Task                               | Priority     | Effort (hours) | Status |
+| ---------------------------------- | ------------ | -------------- | ------ |
+| Task 1: Large Files                | HIGH         | 12-18          | ⬜     |
+| Task 2: Constants Usage            | HIGH         | 8-12           | ⬜     |
+| Task 3: New Constants              | MEDIUM       | 4-6            | ⬜     |
+| Task 4: HTML Wrappers              | HIGH         | 8-12           | ⬜     |
+| Task 5: Sieve Processing           | HIGH         | 6-10           | ⬜     |
+| Task 6: Wizard Navigation          | HIGH         | 4-6            | ⬜     |
+| Task 7: Category/Shop Display      | MEDIUM       | 4-6            | ⬜     |
+| Task 8: API Debouncing             | HIGH         | 4-6            | ⬜     |
+| Task 9: Performance                | MEDIUM       | 6-10           | ⬜     |
+| Task 10: Graph View                | MEDIUM       | 6-8            | ⬜     |
+| Task 11: Mobile/Dark Mode          | HIGH         | 8-12           | 🔄     |
+| Task 12: Code Quality              | MEDIUM       | 4-6            | ⬜     |
+| Task 13: Accessibility             | MEDIUM       | 4-6            | ⬜     |
+| Task 14: Test Coverage             | LOW          | 8-12           | ⬜     |
+| **Task 15: User Verification**     | **CRITICAL** | **20-30**      | ⬜     |
+| **Task 16: IP Tracking**           | **HIGH**     | **6-8**        | ⬜     |
+| **Task 17: Events System**         | **MEDIUM**   | **24-32**      | ⬜     |
+| **Task 18: Nav/Filter/Dark**       | **HIGH**     | **16-24**      | 🔄     |
+| **Task 19: URL Params/Pagination** | **HIGH**     | **20-28**      | ⬜     |
+| **Task 20: Firestore Indexes**     | **HIGH**     | **2-4**        | ✅     |
+| **Task 21: Navigation Cleanup**    | **HIGH**     | **6-12**       | ⬜     |
+| **TOTAL**                          | -            | **180-268**    | -      |
+
+### Progress Summary
+
+| Category              | Fixed | Remaining |
+| --------------------- | ----- | --------- |
+| User Page Dark Mode   | 2     | 10+       |
+| Seller Page Dark Mode | 0     | 5+        |
+| Admin Page Dark Mode  | 0     | 6+        |
+| Firestore Indexes     | 3     | Monitor   |
+| Search Issues         | 3     | 2         |
 
 ---
 
