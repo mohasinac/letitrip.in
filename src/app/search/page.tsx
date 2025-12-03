@@ -195,7 +195,7 @@ function SearchContent() {
             description={`We couldn't find any results for "${query}". Try different keywords or browse our categories.`}
             action={{
               label: "Browse Categories",
-              href: "/categories",
+              onClick: () => router.push("/categories"),
             }}
           />
         )}

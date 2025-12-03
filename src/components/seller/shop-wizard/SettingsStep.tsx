@@ -31,7 +31,7 @@ export default function SettingsStep({
             onChange={(e) =>
               onChange(
                 "defaultShippingFee",
-                e.target.value ? Number(e.target.value) : undefined,
+                e.target.value ? Number(e.target.value) : undefined
               )
             }
             placeholder="e.g. 99"
@@ -53,24 +53,21 @@ export default function SettingsStep({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <FormField label="Enable COD" id="enableCOD" optional>
-          <FormCheckbox
-            checked={!!formData.enableCOD}
-            onChange={(e) => onChange("enableCOD", e.target.checked)}
-          />
-        </FormField>
-        <FormField label="Enable Returns" id="enableReturns" optional>
-          <FormCheckbox
-            checked={!!formData.enableReturns}
-            onChange={(e) => onChange("enableReturns", e.target.checked)}
-          />
-        </FormField>
-        <FormField label="Show Contact Info" id="showContact" optional>
-          <FormCheckbox
-            checked={!!formData.showContact}
-            onChange={(e) => onChange("showContact", e.target.checked)}
-          />
-        </FormField>
+        <FormCheckbox
+          label="Enable COD"
+          checked={!!formData.enableCOD}
+          onChange={(e) => onChange("enableCOD", e.target.checked)}
+        />
+        <FormCheckbox
+          label="Enable Returns"
+          checked={!!formData.enableReturns}
+          onChange={(e) => onChange("enableReturns", e.target.checked)}
+        />
+        <FormCheckbox
+          label="Show Contact Info"
+          checked={!!formData.showContact}
+          onChange={(e) => onChange("showContact", e.target.checked)}
+        />
       </div>
     </div>
   );
