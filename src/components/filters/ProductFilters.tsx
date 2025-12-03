@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Filter, X, ChevronDown, ChevronRight } from "lucide-react";
+import { logError } from "@/lib/error-logger";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
 
@@ -50,7 +51,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
       const response = await categoriesService.list({ isActive: true });
       setCategories(response.data);
     } catch (error) {
-      console.error("Failed to load categories:", error);
+      logError(error as Error, { component: "ProductFilters.loadCategories" });
     } finally {
       setLoadingCategories(false);
     }

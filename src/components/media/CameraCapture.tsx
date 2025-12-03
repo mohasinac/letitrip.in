@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Camera, X, RotateCw, Check } from "lucide-react";
+import { logError } from "@/lib/error-logger";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { MediaFile } from "@/types/media";
 
@@ -55,7 +56,7 @@ export default function CameraCapture({
         setIsReady(true);
       }
     } catch (err) {
-      console.error("Error accessing camera:", err);
+      logError(err as Error, { component: "CameraCapture.startCamera" });
       setError("Unable to access camera. Please check permissions.");
     }
   };
