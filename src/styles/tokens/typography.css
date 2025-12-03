@@ -8,9 +8,14 @@
   /* ============================================
    * Font Families
    * ============================================ */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
 
   /* Primary font used throughout the app */
   --font-body: var(--font-sans);
@@ -21,20 +26,20 @@
    * Font Sizes
    * Based on modular scale (1.25 ratio)
    * ============================================ */
-  --text-2xs: 0.625rem;  /* 10px */
-  --text-xs: 0.75rem;    /* 12px */
-  --text-sm: 0.875rem;   /* 14px */
-  --text-base: 1rem;     /* 16px */
-  --text-lg: 1.125rem;   /* 18px */
-  --text-xl: 1.25rem;    /* 20px */
-  --text-2xl: 1.5rem;    /* 24px */
-  --text-3xl: 1.875rem;  /* 30px */
-  --text-4xl: 2.25rem;   /* 36px */
-  --text-5xl: 3rem;      /* 48px */
-  --text-6xl: 3.75rem;   /* 60px */
-  --text-7xl: 4.5rem;    /* 72px */
-  --text-8xl: 6rem;      /* 96px */
-  --text-9xl: 8rem;      /* 128px */
+  --text-2xs: 0.625rem; /* 10px */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --text-4xl: 2.25rem; /* 36px */
+  --text-5xl: 3rem; /* 48px */
+  --text-6xl: 3.75rem; /* 60px */
+  --text-7xl: 4.5rem; /* 72px */
+  --text-8xl: 6rem; /* 96px */
+  --text-9xl: 8rem; /* 128px */
 
   /* ============================================
    * Font Weights
@@ -60,15 +65,15 @@
   --line-height-loose: 2;
 
   /* Specific line heights for font sizes */
-  --line-height-xs: 1rem;     /* 16px for 12px text */
-  --line-height-sm: 1.25rem;  /* 20px for 14px text */
+  --line-height-xs: 1rem; /* 16px for 12px text */
+  --line-height-sm: 1.25rem; /* 20px for 14px text */
   --line-height-base: 1.5rem; /* 24px for 16px text */
-  --line-height-lg: 1.75rem;  /* 28px for 18px text */
-  --line-height-xl: 1.75rem;  /* 28px for 20px text */
-  --line-height-2xl: 2rem;    /* 32px for 24px text */
+  --line-height-lg: 1.75rem; /* 28px for 18px text */
+  --line-height-xl: 1.75rem; /* 28px for 20px text */
+  --line-height-2xl: 2rem; /* 32px for 24px text */
   --line-height-3xl: 2.25rem; /* 36px for 30px text */
-  --line-height-4xl: 2.5rem;  /* 40px for 36px text */
-  --line-height-5xl: 1;       /* 48px for 48px text */
+  --line-height-4xl: 2.5rem; /* 40px for 36px text */
+  --line-height-5xl: 1; /* 48px for 48px text */
 
   /* ============================================
    * Letter Spacing
@@ -90,28 +95,28 @@
    * Semantic Typography
    * Pre-composed for common use cases
    * ============================================ */
-  
+
   /* Headings */
   --heading-1-size: var(--text-4xl);
   --heading-1-weight: var(--font-weight-bold);
   --heading-1-line-height: var(--line-height-tight);
-  
+
   --heading-2-size: var(--text-3xl);
   --heading-2-weight: var(--font-weight-bold);
   --heading-2-line-height: var(--line-height-tight);
-  
+
   --heading-3-size: var(--text-2xl);
   --heading-3-weight: var(--font-weight-semibold);
   --heading-3-line-height: var(--line-height-snug);
-  
+
   --heading-4-size: var(--text-xl);
   --heading-4-weight: var(--font-weight-semibold);
   --heading-4-line-height: var(--line-height-snug);
-  
+
   --heading-5-size: var(--text-lg);
   --heading-5-weight: var(--font-weight-semibold);
   --heading-5-line-height: var(--line-height-normal);
-  
+
   --heading-6-size: var(--text-base);
   --heading-6-weight: var(--font-weight-semibold);
   --heading-6-line-height: var(--line-height-normal);
@@ -144,7 +149,7 @@
     --heading-2-size: var(--text-2xl);
     --heading-3-size: var(--text-xl);
     --heading-4-size: var(--text-lg);
-    
+
     /* Ensure minimum 16px on mobile to prevent iOS zoom */
     --body-size: max(var(--text-base), 16px);
   }

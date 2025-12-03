@@ -50,7 +50,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
       ? Math.round(
           ((product.originalPrice - product.salePrice) /
             product.originalPrice) *
-            100
+            100,
         )
       : 0;
 
@@ -189,8 +189,8 @@ export function ProductInfo({ product }: ProductInfoProps) {
                 setQuantity(
                   Math.min(
                     Math.max(1, parseInt(e.target.value) || 1),
-                    product.stock
-                  )
+                    product.stock,
+                  ),
                 )
               }
               className="w-20 text-center border border-gray-300 rounded-lg py-2"

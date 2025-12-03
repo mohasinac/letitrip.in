@@ -126,7 +126,9 @@ export function initErrorHandlers(): void {
   // Unhandled promise rejection handler
   globalThis.addEventListener("unhandledrejection", (event) => {
     logError(
-      (event as PromiseRejectionEvent).reason instanceof Error ? (event as PromiseRejectionEvent).reason : String((event as PromiseRejectionEvent).reason),
+      (event as PromiseRejectionEvent).reason instanceof Error
+        ? (event as PromiseRejectionEvent).reason
+        : String((event as PromiseRejectionEvent).reason),
       {
         url: globalThis.location?.href,
         component: "promise",

@@ -40,7 +40,7 @@ export function FilterBar({
   const handleCheckboxChange = (
     key: string,
     optionValue: string | number,
-    checked: boolean
+    checked: boolean,
   ) => {
     const currentValues = values[key] || [];
     const newValues = checked
@@ -164,13 +164,13 @@ export function FilterBar({
                       <input
                         type="checkbox"
                         checked={(values[filter.key] || []).includes(
-                          option.value
+                          option.value,
                         )}
                         onChange={(e) =>
                           handleCheckboxChange(
                             filter.key,
                             option.value,
-                            e.target.checked
+                            e.target.checked,
                           )
                         }
                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"

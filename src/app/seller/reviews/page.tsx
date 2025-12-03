@@ -101,7 +101,7 @@ export default function SellerReviewsPage() {
 
   // Products list for filter
   const [products, setProducts] = useState<Array<{ id: string; name: string }>>(
-    []
+    [],
   );
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export default function SellerReviewsPage() {
         (response.data || []).map((p: { id: string; name: string }) => ({
           id: p.id,
           name: p.name,
-        }))
+        })),
       );
     } catch (error) {
       console.error("Error loading products:", error);
@@ -184,8 +184,8 @@ export default function SellerReviewsPage() {
           r.status === "approved"
             ? "published"
             : r.status === "rejected"
-            ? "flagged"
-            : "pending",
+              ? "flagged"
+              : "pending",
       }));
 
       setReviews(reviewData);
@@ -199,10 +199,10 @@ export default function SellerReviewsPage() {
             reviewData.length
           : 0;
       const needsResponse = reviewData.filter(
-        (r: Review) => !r.sellerResponse
+        (r: Review) => !r.sellerResponse,
       ).length;
       const responded = reviewData.filter(
-        (r: Review) => r.sellerResponse
+        (r: Review) => r.sellerResponse,
       ).length;
 
       const distribution: Record<number, number> = {
@@ -257,8 +257,8 @@ export default function SellerReviewsPage() {
                   respondedAt: new Date().toISOString(),
                 },
               }
-            : r
-        )
+            : r,
+        ),
       );
 
       setRespondingTo(null);
@@ -421,7 +421,7 @@ export default function SellerReviewsPage() {
                     setRatingFilter(
                       ratingFilter === rating.toString()
                         ? ""
-                        : rating.toString()
+                        : rating.toString(),
                     )
                   }
                   className={`flex items-center gap-1 w-16 ${
@@ -631,7 +631,7 @@ export default function SellerReviewsPage() {
                       {review.sellerResponse.respondedAt &&
                         formatDistanceToNow(
                           new Date(review.sellerResponse.respondedAt),
-                          { addSuffix: true }
+                          { addSuffix: true },
                         )}
                     </span>
                   </div>

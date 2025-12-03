@@ -65,10 +65,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     // Parse Sieve query
-    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-      searchParams,
-      couponsConfig
-    );
+    const {
+      query: sieveQuery,
+      errors,
+      warnings,
+    } = parseSieveQuery(searchParams, couponsConfig);
 
     if (errors.length > 0) {
       return NextResponse.json(
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -106,7 +107,11 @@ export async function GET(request: NextRequest) {
     for (const filter of sieveQuery.filters) {
       const dbField = couponsConfig.fieldMappings[filter.field] || filter.field;
       if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+        query = query.where(
+          dbField,
+          filter.operator as FirebaseFirestore.WhereFilterOp,
+          filter.value,
+        );
       }
     }
 
@@ -137,7 +142,9 @@ export async function GET(request: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const data = snapshot.docs.map((doc) => transformCoupon(doc.id, doc.data()));
+    const data = snapshot.docs.map((doc) =>
+      transformCoupon(doc.id, doc.data()),
+    );
 
     // Build response with Sieve pagination meta
     const pagination = createPaginationMeta(totalCount, sieveQuery);
@@ -156,7 +163,7 @@ export async function GET(request: NextRequest) {
     console.error("Error listing coupons:", error);
     return NextResponse.json(
       { success: false, error: "Failed to list coupons" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

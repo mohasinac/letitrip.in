@@ -43,11 +43,17 @@ const eslintConfig = [
           patterns: [
             {
               group: ["**/components/ui/Input", "**/components/ui/Select"],
-              message: "Use FormInput/FormSelect from @/components/forms instead (Doc 27 standard)",
+              message:
+                "Use FormInput/FormSelect from @/components/forms instead (Doc 27 standard)",
             },
             {
-              group: ["**/components/mobile/MobileFormInput", "**/components/mobile/MobileFormSelect", "**/components/mobile/MobileTextarea"],
-              message: "Use FormInput/FormSelect/FormTextarea from @/components/forms instead (Doc 27 standard)",
+              group: [
+                "**/components/mobile/MobileFormInput",
+                "**/components/mobile/MobileFormSelect",
+                "**/components/mobile/MobileTextarea",
+              ],
+              message:
+                "Use FormInput/FormSelect/FormTextarea from @/components/forms instead (Doc 27 standard)",
             },
           ],
         },
@@ -57,7 +63,8 @@ const eslintConfig = [
         "warn",
         {
           selector: 'JSXOpeningElement[name.name="img"]',
-          message: "Use OptimizedImage from @/components/common/OptimizedImage instead of raw <img> tag (Doc 29)",
+          message:
+            "Use OptimizedImage from @/components/common/OptimizedImage instead of raw <img> tag (Doc 29)",
         },
       ],
     },

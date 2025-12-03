@@ -119,7 +119,7 @@ export function AuctionStatus({
         config.bgClass,
         config.textClass,
         sizeClasses[size],
-        className
+        className,
       )}
     >
       {showIcon && (

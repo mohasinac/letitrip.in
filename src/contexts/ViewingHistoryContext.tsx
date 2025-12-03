@@ -65,7 +65,7 @@ export function ViewingHistoryProvider({
 
   const recentlyViewed = useMemo(
     () => history.slice(0, recentlyViewedLimit),
-    [history, recentlyViewedLimit]
+    [history, recentlyViewedLimit],
   );
 
   const addToHistory = useCallback(
@@ -73,7 +73,7 @@ export function ViewingHistoryProvider({
       viewingHistoryService.addToHistory(item);
       setHistory(viewingHistoryService.getHistory());
     },
-    []
+    [],
   );
 
   const removeFromHistory = useCallback((itemId: string): void => {
@@ -90,7 +90,7 @@ export function ViewingHistoryProvider({
     (itemId: string): boolean => {
       return history.some((item) => item.id === itemId);
     },
-    [history]
+    [history],
   );
 
   const count = history.length;
@@ -113,7 +113,7 @@ export function ViewingHistoryProvider({
       clearHistory,
       isInHistory,
       count,
-    ]
+    ],
   );
 
   return (
@@ -130,7 +130,7 @@ export function useViewingHistory(): ViewingHistoryContextType {
   const context = useContext(ViewingHistoryContext);
   if (context === undefined) {
     throw new Error(
-      "useViewingHistory must be used within a ViewingHistoryProvider"
+      "useViewingHistory must be used within a ViewingHistoryProvider",
     );
   }
   return context;

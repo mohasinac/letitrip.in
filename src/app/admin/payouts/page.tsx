@@ -20,7 +20,7 @@ export default function AdminPayoutsPage() {
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPayouts, setSelectedPayouts] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -127,10 +127,10 @@ export default function AdminPayoutsPage() {
 
     try {
       const result = await payoutsService.bulkProcess(
-        Array.from(selectedPayouts)
+        Array.from(selectedPayouts),
       );
       toast.success(
-        `${result.success} payouts processed, ${result.failed} failed`
+        `${result.success} payouts processed, ${result.failed} failed`,
       );
       setSelectedPayouts(new Set());
       loadPayouts();
@@ -281,7 +281,7 @@ export default function AdminPayoutsPage() {
                               setSelectedPayouts(new Set());
                             } else {
                               setSelectedPayouts(
-                                new Set(payouts.map((p) => p.id))
+                                new Set(payouts.map((p) => p.id)),
                               );
                             }
                           }}
@@ -353,8 +353,8 @@ export default function AdminPayoutsPage() {
                               payout.status === "processed"
                                 ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
                                 : payout.status === "rejected"
-                                ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
-                                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
+                                  ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
+                                  : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
                             }`}
                           >
                             {payout.status}

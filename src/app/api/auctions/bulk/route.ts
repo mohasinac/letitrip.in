@@ -5,15 +5,31 @@ import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ValidationError } from "@/lib/api-errors";
 
 // Status requirements for each action
-const STATUS_REQUIREMENTS: Record<string, { required?: string[]; message?: string }> = {
-  start: { required: ["scheduled"], message: "Only scheduled auctions can be started" },
+const STATUS_REQUIREMENTS: Record<
+  string,
+  { required?: string[]; message?: string }
+> = {
+  start: {
+    required: ["scheduled"],
+    message: "Only scheduled auctions can be started",
+  },
   end: { required: ["active"], message: "Only active auctions can be ended" },
-  cancel: { required: ["scheduled", "active"], message: "Can only cancel scheduled or active auctions" },
-  delete: { required: ["draft", "ended", "cancelled"], message: "Can only delete draft, ended, or cancelled auctions" },
+  cancel: {
+    required: ["scheduled", "active"],
+    message: "Can only cancel scheduled or active auctions",
+  },
+  delete: {
+    required: ["draft", "ended", "cancelled"],
+    message: "Can only delete draft, ended, or cancelled auctions",
+  },
 };
 
 // Build update object for each action
-function buildAuctionUpdate(action: string, now: string, data?: any): Record<string, any> | null {
+function buildAuctionUpdate(
+  action: string,
+  now: string,
+  data?: any,
+): Record<string, any> | null {
   switch (action) {
     case "start":
       return { status: "active", start_time: now, updated_at: now };
@@ -99,7 +115,11 @@ export async function POST(request: NextRequest) {
         const auctionDoc = await auctionRef.get();
 
         if (!auctionDoc.exists) {
-          results.push({ id: auctionId, success: false, error: "Auction not found" });
+          results.push({
+            id: auctionId,
+            success: false,
+            error: "Auction not found",
+          });
           continue;
         }
 
@@ -109,15 +129,26 @@ export async function POST(request: NextRequest) {
         if (role === "seller") {
           const ownsShop = await userOwnsShop(auctionData.shop_id, user.uid);
           if (!ownsShop) {
-            results.push({ id: auctionId, success: false, error: "Not authorized to edit this auction" });
+            results.push({
+              id: auctionId,
+              success: false,
+              error: "Not authorized to edit this auction",
+            });
             continue;
           }
         }
 
         // Validate status requirements
         const requirement = STATUS_REQUIREMENTS[action];
-        if (requirement?.required && !requirement.required.includes(auctionData.status)) {
-          results.push({ id: auctionId, success: false, error: requirement.message });
+        if (
+          requirement?.required &&
+          !requirement.required.includes(auctionData.status)
+        ) {
+          results.push({
+            id: auctionId,
+            success: false,
+            error: requirement.message,
+          });
           continue;
         }
 
@@ -131,14 +162,25 @@ export async function POST(request: NextRequest) {
         // Build and apply update
         const updates = buildAuctionUpdate(action, now, data);
         if (!updates) {
-          results.push({ id: auctionId, success: false, error: action === "update" ? "Update data is required" : `Unknown action: ${action}` });
+          results.push({
+            id: auctionId,
+            success: false,
+            error:
+              action === "update"
+                ? "Update data is required"
+                : `Unknown action: ${action}`,
+          });
           continue;
         }
 
         await auctionRef.update(updates);
         results.push({ id: auctionId, success: true });
       } catch (err: any) {
-        results.push({ id: auctionId, success: false, error: err.message || "Failed to process auction" });
+        results.push({
+          id: auctionId,
+          success: false,
+          error: err.message || "Failed to process auction",
+        });
       }
     }
 

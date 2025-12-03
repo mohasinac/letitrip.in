@@ -77,7 +77,7 @@ function applyTheme(theme: Theme): void {
   if (metaThemeColor) {
     metaThemeColor.setAttribute(
       "content",
-      theme === "dark" ? "#111827" : "#ffffff"
+      theme === "dark" ? "#111827" : "#ffffff",
     );
   }
 }
@@ -120,7 +120,7 @@ export function ThemeProvider({
 
       applyTheme(newTheme);
     },
-    [enableStorage]
+    [enableStorage],
   );
 
   // Toggle between light and dark
@@ -137,7 +137,7 @@ export function ThemeProvider({
       isLoading,
       toggleTheme,
     }),
-    [theme, setTheme, isLoading, toggleTheme]
+    [theme, setTheme, isLoading, toggleTheme],
   );
 
   return (

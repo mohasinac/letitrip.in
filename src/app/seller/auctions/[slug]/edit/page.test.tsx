@@ -52,9 +52,9 @@ jest.mock("@/components/seller/AuctionForm", () => {
       return React.createElement(
         "div",
         { "data-testid": "auction-form" },
-        "AuctionForm"
+        "AuctionForm",
       );
-    }
+    },
   );
   return {
     __esModule: true,
@@ -230,7 +230,7 @@ describe("EditAuctionPage", () => {
 
     await waitFor(() => {
       expect(mockAuctionsService.getBySlug).toHaveBeenCalledWith(
-        "test-auction-slug"
+        "test-auction-slug",
       );
     });
   });
@@ -262,7 +262,7 @@ describe("EditAuctionPage", () => {
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
-        "/auctions/test-auction-slug/not-found"
+        "/auctions/test-auction-slug/not-found",
       );
     });
   });

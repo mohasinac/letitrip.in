@@ -14,7 +14,7 @@ export async function GET(
 
     // Try direct doc access first (slug as ID), fallback to query for backward compatibility
     let doc = await db.collection(COLLECTION).doc(slug).get();
-    
+
     if (!doc.exists) {
       const snapshot = await db
         .collection(COLLECTION)
@@ -63,7 +63,7 @@ export async function PATCH(
 
     // Try direct doc access first (slug as ID), fallback to query for backward compatibility
     let doc = await db.collection(COLLECTION).doc(slug).get();
-    
+
     if (!doc.exists) {
       const snapshot = await db
         .collection(COLLECTION)
@@ -135,7 +135,7 @@ export async function DELETE(
 
     // Try direct doc access first (slug as ID), fallback to query for backward compatibility
     let doc = await db.collection(COLLECTION).doc(slug).get();
-    
+
     if (!doc.exists) {
       const snapshot = await db
         .collection(COLLECTION)

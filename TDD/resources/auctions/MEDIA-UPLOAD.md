@@ -27,7 +27,6 @@ Advanced media upload features including image editing (crop, zoom, rotate), mob
 ### Features
 
 1. **Crop Tab**:
-
    - Freeform or preset aspect ratios (1:1, 4:3, 16:9, free)
    - Zoom control (1-3x scale)
    - Rotation (90° increments)
@@ -230,7 +229,7 @@ const VideoThumbnailGenerator: React.FC<VideoThumbnailGeneratorProps> = ({
         if (blob) onSave(blob, currentTime);
       },
       "image/jpeg",
-      0.8
+      0.8,
     );
   };
 

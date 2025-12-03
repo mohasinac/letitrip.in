@@ -2,7 +2,7 @@
  * Demo Data Service
  * Generates comprehensive, meaningful demo data for TCG, Beyblades, and Figurines
  * with multi-parent category logic, variants, and complete e-commerce flows.
- * 
+ *
  * All demo data uses DEMO_ prefix for easy identification and cleanup.
  * Supports step-by-step generation for better control and rollback capability.
  */
@@ -10,7 +10,7 @@
 import { apiService } from "./api.service";
 import { ADMIN_ROUTES } from "@/constants/api-routes";
 
-export type DemoStep = 
+export type DemoStep =
   | "categories"
   | "users"
   | "shops"
@@ -96,56 +96,88 @@ class DemoDataService {
    */
 
   async generateCategories(scale: number = 10): Promise<StepResult> {
-    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("categories"), { scale });
+    return apiService.post<StepResult>(
+      this.ROUTES.GENERATE_STEP("categories"),
+      { scale },
+    );
   }
 
   async generateUsers(scale: number = 10): Promise<StepResult> {
-    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("users"), { scale });
+    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("users"), {
+      scale,
+    });
   }
 
-  async generateShops(sellers: Array<{ id: string; name: string }>, scale: number = 10): Promise<StepResult> {
-    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("shops"), { sellers, scale });
+  async generateShops(
+    sellers: Array<{ id: string; name: string }>,
+    scale: number = 10,
+  ): Promise<StepResult> {
+    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("shops"), {
+      sellers,
+      scale,
+    });
   }
 
   async generateProducts(
     shops: Array<{ id: string; ownerId: string; name: string; slug: string }>,
     categoryMap: Record<string, string>,
-    scale: number = 10
+    scale: number = 10,
   ): Promise<StepResult> {
-    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("products"), { shops, categoryMap, scale });
+    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("products"), {
+      shops,
+      categoryMap,
+      scale,
+    });
   }
 
   async generateAuctions(
     shops: Array<{ id: string; ownerId: string; name: string; slug: string }>,
     productsByShop: Record<string, string[]>,
-    scale: number = 10
+    scale: number = 10,
   ): Promise<StepResult> {
-    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("auctions"), { shops, productsByShop, scale });
+    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("auctions"), {
+      shops,
+      productsByShop,
+      scale,
+    });
   }
 
   async generateBids(
     auctions: string[],
     buyers: Array<{ id: string; name: string }>,
-    scale: number = 10
+    scale: number = 10,
   ): Promise<StepResult> {
-    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("bids"), { auctions, buyers, scale });
+    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("bids"), {
+      auctions,
+      buyers,
+      scale,
+    });
   }
 
   async generateReviews(
     products: string[],
     buyers: Array<{ id: string; name: string }>,
-    scale: number = 10
+    scale: number = 10,
   ): Promise<StepResult> {
-    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("reviews"), { products, buyers, scale });
+    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("reviews"), {
+      products,
+      buyers,
+      scale,
+    });
   }
 
   async generateOrders(
     shops: Array<{ id: string; ownerId: string; name: string; slug: string }>,
     buyers: Array<{ id: string; name: string }>,
     productsByShop: Record<string, string[]>,
-    scale: number = 10
+    scale: number = 10,
   ): Promise<StepResult> {
-    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("orders"), { shops, buyers, productsByShop, scale });
+    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("orders"), {
+      shops,
+      buyers,
+      productsByShop,
+      scale,
+    });
   }
 
   async generateExtras(params: {
@@ -155,11 +187,16 @@ class DemoDataService {
     products?: string[];
     scale?: number;
   }): Promise<StepResult> {
-    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("extras"), params);
+    return apiService.post<StepResult>(
+      this.ROUTES.GENERATE_STEP("extras"),
+      params,
+    );
   }
 
   async generateSettings(scale: number = 10): Promise<StepResult> {
-    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("settings"), { scale });
+    return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("settings"), {
+      scale,
+    });
   }
 
   /**

@@ -1,4 +1,7 @@
-import type { ProductStatus, ProductCondition } from "@/types/shared/common.types";
+import type {
+  ProductStatus,
+  ProductCondition,
+} from "@/types/shared/common.types";
 
 export interface ProductEditFormData {
   name: string;

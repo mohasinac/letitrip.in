@@ -193,8 +193,8 @@ function NotificationsContent() {
       await notificationService.markAsRead([id]);
       setNotifications((prev) =>
         prev.map((n) =>
-          n.id === id ? { ...n, read: true, readAt: new Date() } : n
-        )
+          n.id === id ? { ...n, read: true, readAt: new Date() } : n,
+        ),
       );
     } catch (err) {
       console.error("Failed to mark as read:", err);
@@ -206,7 +206,7 @@ function NotificationsContent() {
     try {
       await notificationService.markAllAsRead();
       setNotifications((prev) =>
-        prev.map((n) => ({ ...n, read: true, readAt: new Date() }))
+        prev.map((n) => ({ ...n, read: true, readAt: new Date() })),
       );
     } catch (err) {
       console.error("Failed to mark all as read:", err);

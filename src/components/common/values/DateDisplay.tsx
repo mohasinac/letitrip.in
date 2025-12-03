@@ -94,7 +94,7 @@ export function RelativeDate({
       title={showFullOnHover ? full : undefined}
       className={cn(
         "text-gray-600 dark:text-gray-400 cursor-default",
-        className
+        className,
       )}
     >
       {relative}

@@ -35,164 +35,378 @@ const PRODUCT_VIDEOS = [
 // Authentic Beyblade product names by category
 const BEYBLADE_PRODUCTS: Record<string, string[]> = {
   "Attack Types": [
-    "Valkyrie Wing Accel", "Xcalius X3", "Spriggan Requiem", "Strike God Valkyrie",
-    "Winning Valkyrie", "Imperial Dragon", "Rage Longinus", "Super Hyperion",
-    "Savior Valkyrie", "Ultimate Valkyrie", "Dangerous Belial", "Dynamite Belial",
+    "Valkyrie Wing Accel",
+    "Xcalius X3",
+    "Spriggan Requiem",
+    "Strike God Valkyrie",
+    "Winning Valkyrie",
+    "Imperial Dragon",
+    "Rage Longinus",
+    "Super Hyperion",
+    "Savior Valkyrie",
+    "Ultimate Valkyrie",
+    "Dangerous Belial",
+    "Dynamite Belial",
   ],
   "Defense Types": [
-    "Roktavor R3", "Deep Chaos", "Maximum Garuda", "Revive Phoenix",
-    "Archer Hercules", "Shelter Regulus", "World Spriggan", "Prominence Phoenix",
-    "Vanish Fafnir", "Greatest Raphael", "Guilty Longinus", "Astral Spriggan",
+    "Roktavor R3",
+    "Deep Chaos",
+    "Maximum Garuda",
+    "Revive Phoenix",
+    "Archer Hercules",
+    "Shelter Regulus",
+    "World Spriggan",
+    "Prominence Phoenix",
+    "Vanish Fafnir",
+    "Greatest Raphael",
+    "Guilty Longinus",
+    "Astral Spriggan",
   ],
   "Stamina Types": [
-    "Drain Fafnir", "Geist Fafnir", "Wizard Fafnir", "Mirage Fafnir",
-    "Tempest Dragon", "Curse Satan", "Twin Nemesis", "Bloody Longinus",
-    "Lord Spriggan", "Variant Lucifer", "Hollow Deathscyther", "Cyclone Ragnaruk",
+    "Drain Fafnir",
+    "Geist Fafnir",
+    "Wizard Fafnir",
+    "Mirage Fafnir",
+    "Tempest Dragon",
+    "Curse Satan",
+    "Twin Nemesis",
+    "Bloody Longinus",
+    "Lord Spriggan",
+    "Variant Lucifer",
+    "Hollow Deathscyther",
+    "Cyclone Ragnaruk",
   ],
   "Balance Types": [
-    "God Valkyrie", "Legend Spriggan", "Spriggan Requiem", "Cho-Z Achilles",
-    "Perfect Phoenix", "Union Achilles", "Master Diabolos", "Brave Valkyrie",
-    "Infinite Achilles", "Lucifer The End", "Hyperion Burn", "Helios Volcano",
+    "God Valkyrie",
+    "Legend Spriggan",
+    "Spriggan Requiem",
+    "Cho-Z Achilles",
+    "Perfect Phoenix",
+    "Union Achilles",
+    "Master Diabolos",
+    "Brave Valkyrie",
+    "Infinite Achilles",
+    "Lucifer The End",
+    "Hyperion Burn",
+    "Helios Volcano",
   ],
   "X Attack": [
-    "Dran Sword 3-60F", "Shark Edge 4-60T", "Wizard Arrow 4-80B", "Hells Scythe 4-60T",
-    "Phoenix Wing 9-60GF", "Cobalt Drake 4-60R", "Wyvern Gale 5-60D", "Steel Samurai 3-70F",
+    "Dran Sword 3-60F",
+    "Shark Edge 4-60T",
+    "Wizard Arrow 4-80B",
+    "Hells Scythe 4-60T",
+    "Phoenix Wing 9-60GF",
+    "Cobalt Drake 4-60R",
+    "Wyvern Gale 5-60D",
+    "Steel Samurai 3-70F",
   ],
   "X Defense": [
-    "Dran Buster 1-60A", "Knight Shield 2-60D", "Titan 2-60R", "Fortress 4-80D",
-    "Guardian Cetus 1-60B", "Iron Warden 3-60T", "Bastion 2-70D", "Aegis 4-60A",
+    "Dran Buster 1-60A",
+    "Knight Shield 2-60D",
+    "Titan 2-60R",
+    "Fortress 4-80D",
+    "Guardian Cetus 1-60B",
+    "Iron Warden 3-60T",
+    "Bastion 2-70D",
+    "Aegis 4-60A",
   ],
   "X Stamina": [
-    "Wizard Rod 5-70DB", "Knight Lance 3-60N", "Phoenix Feather 5-60S", "Dragon Spiral 4-70S",
-    "Viper Tail 5-60N", "Serpent Coil 3-80S", "Wind Eagle 5-70N", "Storm Shark 4-60S",
+    "Wizard Rod 5-70DB",
+    "Knight Lance 3-60N",
+    "Phoenix Feather 5-60S",
+    "Dragon Spiral 4-70S",
+    "Viper Tail 5-60N",
+    "Serpent Coil 3-80S",
+    "Wind Eagle 5-70N",
+    "Storm Shark 4-60S",
   ],
   "X Balance": [
-    "Cobalt Dragoon 3-60F", "Dran Dagger 5-60LF", "Phoenix Rush 4-70B", "Knight Cross 3-60A",
-    "Thunder Dragon 5-60F", "Blaze Tiger 4-70LF", "Frost Wolf 3-60B", "Shadow Hawk 5-70F",
+    "Cobalt Dragoon 3-60F",
+    "Dran Dagger 5-60LF",
+    "Phoenix Rush 4-70B",
+    "Knight Cross 3-60A",
+    "Thunder Dragon 5-60F",
+    "Blaze Tiger 4-70LF",
+    "Frost Wolf 3-60B",
+    "Shadow Hawk 5-70F",
   ],
   "Metal Fusion": [
-    "Storm Pegasus", "Lightning L-Drago", "Rock Leone", "Flame Sagittario",
-    "Earth Eagle", "Dark Wolf", "Rock Aries", "Flame Libra", "Storm Aquario",
+    "Storm Pegasus",
+    "Lightning L-Drago",
+    "Rock Leone",
+    "Flame Sagittario",
+    "Earth Eagle",
+    "Dark Wolf",
+    "Rock Aries",
+    "Flame Libra",
+    "Storm Aquario",
   ],
   "Metal Masters": [
-    "Galaxy Pegasus", "Meteo L-Drago", "Ray Unicorno", "Flame Byxis",
-    "Grand Cetus", "Rock Zurafa", "Burn Fireblaze", "Cyber Pegasus",
+    "Galaxy Pegasus",
+    "Meteo L-Drago",
+    "Ray Unicorno",
+    "Flame Byxis",
+    "Grand Cetus",
+    "Rock Zurafa",
+    "Burn Fireblaze",
+    "Cyber Pegasus",
   ],
   "Metal Fury": [
-    "Cosmic Pegasus", "L-Drago Destroy", "Fang Leone", "Phantom Orion",
-    "Diablo Nemesis", "Blitz Unicorno", "Flash Sagittario", "Scythe Kronos",
+    "Cosmic Pegasus",
+    "L-Drago Destroy",
+    "Fang Leone",
+    "Phantom Orion",
+    "Diablo Nemesis",
+    "Blitz Unicorno",
+    "Flash Sagittario",
+    "Scythe Kronos",
   ],
   "Plastic Gen": [
-    "Dragoon S", "Dranzer S", "Driger S", "Draciel S", "Dragoon V", "Dranzer V",
-    "Wolborg", "Seaborg", "Falborg", "Galeon", "Trygle", "Trypio",
+    "Dragoon S",
+    "Dranzer S",
+    "Driger S",
+    "Draciel S",
+    "Dragoon V",
+    "Dranzer V",
+    "Wolborg",
+    "Seaborg",
+    "Falborg",
+    "Galeon",
+    "Trygle",
+    "Trypio",
   ],
   "HMS (Heavy Metal System)": [
-    "Dragoon MS", "Dranzer MS", "Driger MS", "Draciel MS",
-    "Gaia Dragoon MS", "Wolborg MS", "Advance Striker", "Dark Effigy",
+    "Dragoon MS",
+    "Dranzer MS",
+    "Driger MS",
+    "Draciel MS",
+    "Gaia Dragoon MS",
+    "Wolborg MS",
+    "Advance Striker",
+    "Dark Effigy",
   ],
   "String Launchers": [
-    "LR String Launcher", "Beyblade Burst String Launcher", "Power String Launcher",
-    "Long String Launcher", "Turbo String Launcher", "Pro String Launcher",
+    "LR String Launcher",
+    "Beyblade Burst String Launcher",
+    "Power String Launcher",
+    "Long String Launcher",
+    "Turbo String Launcher",
+    "Pro String Launcher",
   ],
   "Ripcord Launchers": [
-    "Standard Ripcord Launcher", "Power Ripcord Launcher", "Light Launcher",
-    "Left Spin Launcher", "Right Spin Launcher", "Dual Spin Launcher",
+    "Standard Ripcord Launcher",
+    "Power Ripcord Launcher",
+    "Light Launcher",
+    "Left Spin Launcher",
+    "Right Spin Launcher",
+    "Dual Spin Launcher",
   ],
   "LR Launchers": [
-    "LR Launcher", "Long LR Launcher", "Superking LR Launcher",
-    "Dynamite Battle LR Launcher", "Pro Series LR Launcher",
+    "LR Launcher",
+    "Long LR Launcher",
+    "Superking LR Launcher",
+    "Dynamite Battle LR Launcher",
+    "Pro Series LR Launcher",
   ],
   "Launcher Grips": [
-    "Beyblade Launcher Grip", "Rubber Launcher Grip", "Pro Launcher Grip",
-    "Extended Launcher Grip", "Custom Launcher Grip", "Metal Launcher Grip",
+    "Beyblade Launcher Grip",
+    "Rubber Launcher Grip",
+    "Pro Launcher Grip",
+    "Extended Launcher Grip",
+    "Custom Launcher Grip",
+    "Metal Launcher Grip",
   ],
   "Power Launchers": [
-    "Turbo Power Launcher", "Max Power Launcher", "Extreme Power Launcher",
-    "Ultra Power Launcher", "Hyper Power Launcher", "Super Power Launcher",
+    "Turbo Power Launcher",
+    "Max Power Launcher",
+    "Extreme Power Launcher",
+    "Ultra Power Launcher",
+    "Hyper Power Launcher",
+    "Super Power Launcher",
   ],
   "Standard Stadiums": [
-    "Beyblade Burst Stadium", "Pro Stadium", "Official BeyStadium",
-    "Tournament Stadium", "Competition Stadium", "Practice Stadium",
+    "Beyblade Burst Stadium",
+    "Pro Stadium",
+    "Official BeyStadium",
+    "Tournament Stadium",
+    "Competition Stadium",
+    "Practice Stadium",
   ],
   "Burst Stadiums": [
-    "BeyStadium Standard Type", "BeyStadium Attack Type", "BeyStadium Wide Type",
-    "DB BeyStadium", "Superking BeyStadium", "Cho-Z BeyStadium",
+    "BeyStadium Standard Type",
+    "BeyStadium Attack Type",
+    "BeyStadium Wide Type",
+    "DB BeyStadium",
+    "Superking BeyStadium",
+    "Cho-Z BeyStadium",
   ],
   "X Stadiums": [
-    "Xtreme BeyStadium", "X Standard Stadium", "X Battle Stadium",
-    "X Pro Stadium", "X Tournament Stadium", "X Arena Stadium",
+    "Xtreme BeyStadium",
+    "X Standard Stadium",
+    "X Battle Stadium",
+    "X Pro Stadium",
+    "X Tournament Stadium",
+    "X Arena Stadium",
   ],
   "Battle Sets": [
-    "Beyblade Burst Battle Set", "Starter Battle Set", "Pro Battle Set",
-    "Tournament Battle Set", "Deluxe Battle Set", "Ultimate Battle Set",
+    "Beyblade Burst Battle Set",
+    "Starter Battle Set",
+    "Pro Battle Set",
+    "Tournament Battle Set",
+    "Deluxe Battle Set",
+    "Ultimate Battle Set",
   ],
   "Energy Layers": [
-    "Valkyrie Layer", "Spriggan Layer", "Fafnir Layer", "Longinus Layer",
-    "Achilles Layer", "Phoenix Layer", "Dragon Layer", "Belial Layer",
+    "Valkyrie Layer",
+    "Spriggan Layer",
+    "Fafnir Layer",
+    "Longinus Layer",
+    "Achilles Layer",
+    "Phoenix Layer",
+    "Dragon Layer",
+    "Belial Layer",
   ],
   "Forge Discs": [
-    "00 Disc", "10 Disc", "0 Wall Disc", "0 Cross Disc",
-    "7 Disc", "11 Disc", "Blitz Disc", "Sting Disc",
+    "00 Disc",
+    "10 Disc",
+    "0 Wall Disc",
+    "0 Cross Disc",
+    "7 Disc",
+    "11 Disc",
+    "Blitz Disc",
+    "Sting Disc",
   ],
   "Performance Tips": [
-    "Xtend+ Tip", "Quick' Tip", "Destroy' Tip", "Variable' Tip",
-    "Mobius Tip", "Bearing' Tip", "Rise Tip", "Orbit Tip",
+    "Xtend+ Tip",
+    "Quick' Tip",
+    "Destroy' Tip",
+    "Variable' Tip",
+    "Mobius Tip",
+    "Bearing' Tip",
+    "Rise Tip",
+    "Orbit Tip",
   ],
-  "Blades": [
-    "Dran Blade", "Shark Blade", "Knight Blade", "Phoenix Blade",
-    "Wizard Blade", "Hells Blade", "Cobalt Blade", "Leon Blade",
+  Blades: [
+    "Dran Blade",
+    "Shark Blade",
+    "Knight Blade",
+    "Phoenix Blade",
+    "Wizard Blade",
+    "Hells Blade",
+    "Cobalt Blade",
+    "Leon Blade",
   ],
-  "Ratchets": [
-    "3-60 Ratchet", "4-60 Ratchet", "5-60 Ratchet", "4-70 Ratchet",
-    "3-70 Ratchet", "5-70 Ratchet", "4-80 Ratchet", "2-60 Ratchet",
+  Ratchets: [
+    "3-60 Ratchet",
+    "4-60 Ratchet",
+    "5-60 Ratchet",
+    "4-70 Ratchet",
+    "3-70 Ratchet",
+    "5-70 Ratchet",
+    "4-80 Ratchet",
+    "2-60 Ratchet",
   ],
-  "Bits": [
-    "Flat Bit", "Needle Bit", "Ball Bit", "Dot Bit",
-    "Rush Bit", "Low Flat Bit", "Gear Flat Bit", "Taper Bit",
+  Bits: [
+    "Flat Bit",
+    "Needle Bit",
+    "Ball Bit",
+    "Dot Bit",
+    "Rush Bit",
+    "Low Flat Bit",
+    "Gear Flat Bit",
+    "Taper Bit",
   ],
   "Tournament Exclusives": [
-    "World Champion Valkyrie", "Tournament Gold Spriggan", "Champion Edition Fafnir",
-    "Pro Series Longinus", "Limited Tournament Achilles", "Exclusive Event Phoenix",
+    "World Champion Valkyrie",
+    "Tournament Gold Spriggan",
+    "Champion Edition Fafnir",
+    "Pro Series Longinus",
+    "Limited Tournament Achilles",
+    "Exclusive Event Phoenix",
   ],
   "Store Exclusives": [
-    "Amazon Exclusive Valkyrie", "Target Exclusive Spriggan", "Walmart Exclusive Set",
-    "Japan Import Limited", "Korea Exclusive Edition", "Asia Limited Release",
+    "Amazon Exclusive Valkyrie",
+    "Target Exclusive Spriggan",
+    "Walmart Exclusive Set",
+    "Japan Import Limited",
+    "Korea Exclusive Edition",
+    "Asia Limited Release",
   ],
   "Anniversary Editions": [
-    "20th Anniversary Dragoon", "Anniversary Gold L-Drago", "Special Edition Pegasus",
-    "Commemorative Spriggan", "Anniversary Premium Set", "Legacy Collection Valkyrie",
+    "20th Anniversary Dragoon",
+    "Anniversary Gold L-Drago",
+    "Special Edition Pegasus",
+    "Commemorative Spriggan",
+    "Anniversary Premium Set",
+    "Legacy Collection Valkyrie",
   ],
   "Gold Series": [
-    "Gold Valkyrie", "Gold Spriggan", "Gold Fafnir", "Gold Longinus",
-    "Gold Achilles", "Gold Phoenix", "Gold Dragon", "Gold Diabolos",
+    "Gold Valkyrie",
+    "Gold Spriggan",
+    "Gold Fafnir",
+    "Gold Longinus",
+    "Gold Achilles",
+    "Gold Phoenix",
+    "Gold Dragon",
+    "Gold Diabolos",
   ],
   "Vintage Beyblades": [
-    "Original Dragoon", "Classic Dranzer", "Vintage Driger", "Retro Draciel",
-    "First Gen Wolborg", "Original Seaborg", "Classic Falborg", "Vintage Trygle",
+    "Original Dragoon",
+    "Classic Dranzer",
+    "Vintage Driger",
+    "Retro Draciel",
+    "First Gen Wolborg",
+    "Original Seaborg",
+    "Classic Falborg",
+    "Vintage Trygle",
   ],
   "Rare Finds": [
-    "Rare Proto Valkyrie", "Limited Proto Spriggan", "Prototype Fafnir",
-    "Test Version Longinus", "Sample Edition Achilles", "Rare Color Variant",
+    "Rare Proto Valkyrie",
+    "Limited Proto Spriggan",
+    "Prototype Fafnir",
+    "Test Version Longinus",
+    "Sample Edition Achilles",
+    "Rare Color Variant",
   ],
   "Collector Items": [
-    "Museum Edition Dragoon", "Display Only Dranzer", "Collector Case Set",
-    "Premium Display Collection", "Sealed Box Collection", "Mint Condition Rare",
+    "Museum Edition Dragoon",
+    "Display Only Dranzer",
+    "Collector Case Set",
+    "Premium Display Collection",
+    "Sealed Box Collection",
+    "Mint Condition Rare",
   ],
   "Carrying Cases": [
-    "Beyblade Storage Case", "Tournament Carry Case", "Pro Carrying Bag",
-    "Deluxe Storage Box", "Travel Case", "Competition Bag",
+    "Beyblade Storage Case",
+    "Tournament Carry Case",
+    "Pro Carrying Bag",
+    "Deluxe Storage Box",
+    "Travel Case",
+    "Competition Bag",
   ],
   "Tool Kits": [
-    "Beyblade Tool Set", "Maintenance Kit", "Assembly Tools",
-    "Pro Tuning Kit", "Repair Kit", "Cleaning Set",
+    "Beyblade Tool Set",
+    "Maintenance Kit",
+    "Assembly Tools",
+    "Pro Tuning Kit",
+    "Repair Kit",
+    "Cleaning Set",
   ],
   "Display Stands": [
-    "Acrylic Display Stand", "LED Display Case", "Wall Mount Display",
-    "Rotating Display", "Collection Shelf", "Premium Display Cabinet",
+    "Acrylic Display Stand",
+    "LED Display Case",
+    "Wall Mount Display",
+    "Rotating Display",
+    "Collection Shelf",
+    "Premium Display Cabinet",
   ],
   "Spare Parts": [
-    "Replacement Springs", "Extra Tips", "Spare Discs",
-    "Backup Layers", "Extra Frames", "Replacement Launchers",
+    "Replacement Springs",
+    "Extra Tips",
+    "Spare Discs",
+    "Backup Layers",
+    "Extra Frames",
+    "Replacement Launchers",
   ],
 };
 
@@ -202,28 +416,42 @@ export async function POST(request: NextRequest) {
     const { shops, categoryMap, scale = 10 } = body;
 
     if (!shops || !Array.isArray(shops) || shops.length === 0) {
-      return NextResponse.json({ success: false, error: "Shops data required" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Shops data required" },
+        { status: 400 },
+      );
     }
 
     if (!categoryMap || Object.keys(categoryMap).length === 0) {
-      return NextResponse.json({ success: false, error: "Category map required" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Category map required" },
+        { status: 400 },
+      );
     }
 
     const db = getFirestoreAdmin();
     const timestamp = new Date();
     const createdProducts: string[] = [];
     const productsByShop: Record<string, string[]> = {};
-    
+
     // Track counts per category: { categoryId: { total, inStock, outOfStock } }
-    const categoryStats: Record<string, { total: number; inStock: number; outOfStock: number }> = {};
+    const categoryStats: Record<
+      string,
+      { total: number; inStock: number; outOfStock: number }
+    > = {};
 
     // Get leaf categories (ones that have Beyblade products)
-    const leafCategories = Object.entries(categoryMap as Record<string, string>).filter(([name]) => {
+    const leafCategories = Object.entries(
+      categoryMap as Record<string, string>,
+    ).filter(([name]) => {
       return BEYBLADE_PRODUCTS[name] !== undefined;
     });
 
     if (leafCategories.length === 0) {
-      return NextResponse.json({ success: false, error: "No leaf categories found with products" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "No leaf categories found with products" },
+        { status: 400 },
+      );
     }
 
     // Initialize productsByShop
@@ -235,46 +463,65 @@ export async function POST(request: NextRequest) {
     // Scale × 100 products (100 for scale 10, 1000 for scale 10, 10000 for scale 100)
     const totalProducts = scale * 100;
     let productIndex = 0;
-    
+
     for (let i = 0; i < totalProducts; i++) {
       const shopIndex = i % shops.length;
       const currentShop = shops[shopIndex];
-      const [categoryName, categoryId] = leafCategories[i % leafCategories.length];
-      
+      const [categoryName, categoryId] =
+        leafCategories[i % leafCategories.length];
+
       // Get product names for this category
-      const categoryProducts = BEYBLADE_PRODUCTS[categoryName] || ["Generic Beyblade"];
+      const categoryProducts = BEYBLADE_PRODUCTS[categoryName] || [
+        "Generic Beyblade",
+      ];
       const productName = categoryProducts[i % categoryProducts.length];
 
       const productRef = db.collection(COLLECTIONS.PRODUCTS).doc();
-      
+
       // Pricing based on category type
       let basePrice = 500 + Math.random() * 3000;
-      if (categoryName.includes("Limited") || categoryName.includes("Rare") || categoryName.includes("Gold")) {
+      if (
+        categoryName.includes("Limited") ||
+        categoryName.includes("Rare") ||
+        categoryName.includes("Gold")
+      ) {
         basePrice = 5000 + Math.random() * 25000; // Rare items cost more
-      } else if (categoryName.includes("Stadium") || categoryName.includes("Battle Set")) {
+      } else if (
+        categoryName.includes("Stadium") ||
+        categoryName.includes("Battle Set")
+      ) {
         basePrice = 2000 + Math.random() * 8000; // Stadiums/sets cost more
-      } else if (categoryName.includes("Parts") || categoryName.includes("Spare")) {
+      } else if (
+        categoryName.includes("Parts") ||
+        categoryName.includes("Spare")
+      ) {
         basePrice = 200 + Math.random() * 1500; // Parts are cheaper
       }
-      
+
       // 15% of products are out of stock
       const isOutOfStock = Math.random() < 0.15;
       const stockCount = isOutOfStock ? 0 : Math.floor(Math.random() * 50) + 1;
-      
+
       // Generate 4-6 images per product - use shuffled selection for variety
       const imageCount = 4 + Math.floor(Math.random() * 3);
       // Shuffle and pick unique images for this product
-      const shuffledImages = [...PRODUCT_IMAGES].sort(() => Math.random() - 0.5);
+      const shuffledImages = [...PRODUCT_IMAGES].sort(
+        () => Math.random() - 0.5,
+      );
       const productImages = shuffledImages.slice(0, imageCount);
-      
+
       // 40% of products have videos
       const hasVideo = Math.random() < 0.4;
-      const productVideos = hasVideo ? [PRODUCT_VIDEOS[i % PRODUCT_VIDEOS.length]] : [];
+      const productVideos = hasVideo
+        ? [PRODUCT_VIDEOS[i % PRODUCT_VIDEOS.length]]
+        : [];
 
       // Condition varies for vintage/rare items
       let condition: "New" | "Like New" | "Good" | "Fair" = "New";
       if (categoryName.includes("Vintage") || categoryName.includes("Rare")) {
-        condition = ["New", "Like New", "Good", "Fair"][Math.floor(Math.random() * 4)] as typeof condition;
+        condition = ["New", "Like New", "Good", "Fair"][
+          Math.floor(Math.random() * 4)
+        ] as typeof condition;
       }
 
       await productRef.set({
@@ -301,14 +548,18 @@ export async function POST(request: NextRequest) {
         sales_count: Math.floor(Math.random() * 100),
         review_count: 0,
         average_rating: 0,
-        tags: ["beyblade", categoryName.toLowerCase().replace(/\s+/g, "-"), condition.toLowerCase()],
+        tags: [
+          "beyblade",
+          categoryName.toLowerCase().replace(/\s+/g, "-"),
+          condition.toLowerCase(),
+        ],
         created_at: timestamp,
         updated_at: timestamp,
       });
 
       createdProducts.push(productRef.id);
       productsByShop[currentShop.id].push(productRef.id);
-      
+
       // Track category stats
       if (!categoryStats[categoryId]) {
         categoryStats[categoryId] = { total: 0, inStock: 0, outOfStock: 0 };
@@ -319,7 +570,7 @@ export async function POST(request: NextRequest) {
       } else {
         categoryStats[categoryId].outOfStock++;
       }
-      
+
       productIndex++;
     }
 
@@ -344,7 +595,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: unknown) {
     console.error("Demo products error:", error);
-    const message = error instanceof Error ? error.message : "Failed to generate products";
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
+    const message =
+      error instanceof Error ? error.message : "Failed to generate products";
+    return NextResponse.json(
+      { success: false, error: message },
+      { status: 500 },
+    );
   }
 }

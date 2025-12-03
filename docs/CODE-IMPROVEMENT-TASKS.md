@@ -624,19 +624,16 @@ interface WizardActionBarProps {
 ### Required Changes
 
 1. **Product Detail Page** (`src/app/products/[slug]/page.tsx`)
-
    - Show category breadcrumb
    - Show shop info with link
    - Show related products from same category
 
 2. **Auction Detail Page** (`src/app/auctions/[slug]/page.tsx`)
-
    - Show category breadcrumb
    - Show shop info with link
    - Show similar auctions
 
 3. **Product/Auction Cards**
-
    - Show category tag
    - Show shop name
 

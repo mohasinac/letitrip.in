@@ -81,7 +81,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         setSearchQuery("");
         router.push(route.path);
       },
-      [router]
+      [router],
     );
 
     useImperativeHandle(ref, () => ({
@@ -136,13 +136,13 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         case "ArrowDown":
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev < suggestions.length - 1 ? prev + 1 : 0
+            prev < suggestions.length - 1 ? prev + 1 : 0,
           );
           break;
         case "ArrowUp":
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : suggestions.length - 1
+            prev > 0 ? prev - 1 : suggestions.length - 1,
           );
           break;
         case "Enter":
@@ -349,7 +349,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 SearchBar.displayName = "SearchBar";

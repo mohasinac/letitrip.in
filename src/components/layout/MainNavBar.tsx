@@ -197,7 +197,7 @@ export default function MainNavBar({
                           </Link>
                         ))}
                       </div>
-                    )
+                    ),
                   )}
                 </div>
               )}
@@ -258,7 +258,7 @@ export default function MainNavBar({
                           </Link>
                         ))}
                       </div>
-                    )
+                    ),
                   )}
                 </div>
               )}
@@ -518,7 +518,7 @@ export default function MainNavBar({
                               </Link>
                             ))}
                         </div>
-                      )
+                      ),
                     )}
                   </div>
                 )}

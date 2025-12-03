@@ -58,7 +58,7 @@ export const Heading: React.FC<HeadingProps> = ({
       className={cn(
         sizeClasses[level],
         "text-gray-900 dark:text-white",
-        className
+        className,
       )}
       {...props}
     >

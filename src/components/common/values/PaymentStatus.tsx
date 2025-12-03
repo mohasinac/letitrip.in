@@ -121,7 +121,7 @@ export function PaymentStatus({
         "inline-flex items-center gap-1.5 font-medium rounded-full",
         config.colors,
         sizeClasses[size],
-        className
+        className,
       )}
     >
       {showIcon && <Icon size={iconSizes[size]} />}

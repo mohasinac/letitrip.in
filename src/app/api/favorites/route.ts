@@ -33,16 +33,17 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 }
+        { status: 401 },
       );
     }
     const userId = user.id;
 
     // Parse Sieve query
-    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-      searchParams,
-      favoritesConfig
-    );
+    const {
+      query: sieveQuery,
+      errors,
+      warnings,
+    } = parseSieveQuery(searchParams, favoritesConfig);
 
     if (errors.length > 0) {
       return NextResponse.json(
@@ -51,7 +52,7 @@ export async function GET(req: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -61,9 +62,14 @@ export async function GET(req: NextRequest) {
 
     // Apply Sieve filters
     for (const filter of sieveQuery.filters) {
-      const dbField = favoritesConfig.fieldMappings[filter.field] || filter.field;
+      const dbField =
+        favoritesConfig.fieldMappings[filter.field] || filter.field;
       if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+        query = query.where(
+          dbField,
+          filter.operator as FirebaseFirestore.WhereFilterOp,
+          filter.value,
+        );
       }
     }
 
@@ -135,7 +141,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching favorites:", error);
     return NextResponse.json(
       { error: "Failed to fetch favorites" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

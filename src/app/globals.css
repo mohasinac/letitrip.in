@@ -1,5 +1,5 @@
 /* Design System Tokens */
-@import '../styles/tokens/index.css';
+@import "../styles/tokens/index.css";
 
 @tailwind base;
 @tailwind components;
@@ -35,7 +35,12 @@
   }
 
   /* Headings */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply text-gray-900 dark:text-white;
   }
 
@@ -75,12 +80,14 @@
   }
 
   /* Strong/Bold */
-  strong, b {
+  strong,
+  b {
     @apply font-semibold text-gray-900 dark:text-white;
   }
 
   /* Emphasis/Italic */
-  em, i {
+  em,
+  i {
     @apply italic;
   }
 
@@ -123,7 +130,8 @@
   }
 
   /* Lists */
-  ul, ol {
+  ul,
+  ol {
     @apply text-gray-700 dark:text-gray-300;
   }
 
@@ -171,7 +179,9 @@
     @apply text-gray-700 dark:text-gray-300 font-medium;
   }
 
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     @apply bg-white dark:bg-gray-800;
     @apply text-gray-900 dark:text-gray-100;
     @apply border border-gray-300 dark:border-gray-600;
@@ -180,7 +190,8 @@
     @apply focus:ring-2 focus:ring-yellow-500/20;
   }
 
-  input[type="checkbox"], input[type="radio"] {
+  input[type="checkbox"],
+  input[type="radio"] {
     @apply bg-white dark:bg-gray-700;
     @apply border-gray-300 dark:border-gray-600;
     @apply text-yellow-500 focus:ring-yellow-500;
@@ -192,7 +203,10 @@
   }
 
   /* Disabled states */
-  input:disabled, textarea:disabled, select:disabled, button:disabled {
+  input:disabled,
+  textarea:disabled,
+  select:disabled,
+  button:disabled {
     @apply bg-gray-100 dark:bg-gray-700;
     @apply text-gray-400 dark:text-gray-500;
     @apply cursor-not-allowed;
@@ -246,7 +260,8 @@
   }
 
   /* Subscript and superscript */
-  sub, sup {
+  sub,
+  sup {
     @apply text-xs;
   }
 

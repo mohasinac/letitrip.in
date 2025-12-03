@@ -593,6 +593,7 @@ export default function AdminDemoPage() {
         reviews: { status: "pending" },
         orders: { status: "pending" },
         extras: { status: "pending" },
+        settings: { status: "pending" },
       });
 
       toast.info("Starting demo data generation...");
@@ -751,6 +752,7 @@ export default function AdminDemoPage() {
       reviews: { status: "pending" },
       orders: { status: "pending" },
       extras: { status: "pending" },
+      settings: { status: "pending" },
     });
 
     toast.info("Starting step-by-step cleanup...");

@@ -87,10 +87,10 @@ export default function AdminBlogPage() {
       const data = Array.isArray(response) ? response : response.data || [];
       setPosts(data);
       setTotalPages(
-        Array.isArray(response) ? 1 : Math.ceil((response.count || 0) / limit)
+        Array.isArray(response) ? 1 : Math.ceil((response.count || 0) / limit),
       );
       setTotalPosts(
-        Array.isArray(response) ? data.length : response.count || 0
+        Array.isArray(response) ? data.length : response.count || 0,
       );
 
       // Calculate stats
@@ -103,7 +103,7 @@ export default function AdminBlogPage() {
     } catch (error) {
       console.error("Failed to load blog posts:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load blog posts"
+        error instanceof Error ? error.message : "Failed to load blog posts",
       );
     } finally {
       setLoading(false);
@@ -141,7 +141,7 @@ export default function AdminBlogPage() {
               await blogService.delete(id);
               break;
           }
-        })
+        }),
       );
 
       await loadPosts();
@@ -436,7 +436,7 @@ export default function AdminBlogPage() {
                           }
                           onChange={(checked) => {
                             setSelectedIds(
-                              checked ? posts.map((p) => p.id) : []
+                              checked ? posts.map((p) => p.id) : [],
                             );
                           }}
                           aria-label="Select all posts"
@@ -475,7 +475,7 @@ export default function AdminBlogPage() {
                               setSelectedIds((prev) =>
                                 checked
                                   ? [...prev, post.id]
-                                  : prev.filter((id) => id !== post.id)
+                                  : prev.filter((id) => id !== post.id),
                               );
                             }}
                             aria-label={`Select ${post.title}`}

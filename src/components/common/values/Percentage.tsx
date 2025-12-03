@@ -65,7 +65,7 @@ export function Percentage({
       className={cn(
         "inline-flex items-center gap-1 font-medium",
         colorClasses[type],
-        className
+        className,
       )}
     >
       {showIcon && (

@@ -17,7 +17,9 @@ import {
 /**
  * Get or create RipLimit account for a user
  */
-export async function getOrCreateAccount(userId: string): Promise<RipLimitAccountBE> {
+export async function getOrCreateAccount(
+  userId: string,
+): Promise<RipLimitAccountBE> {
   const db = getFirestoreAdmin();
   const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
   const accountDoc = await accountRef.get();
@@ -37,8 +39,10 @@ export async function getOrCreateAccount(userId: string): Promise<RipLimitAccoun
     unpaidAuctionIds: [],
     strikes: 0,
     isBlocked: false,
-    createdAt: now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
-    updatedAt: now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+    createdAt:
+      now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+    updatedAt:
+      now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
   };
 
   await accountRef.set(newAccount);
@@ -48,7 +52,9 @@ export async function getOrCreateAccount(userId: string): Promise<RipLimitAccoun
 /**
  * Get blocked bids for a user
  */
-export async function getBlockedBids(userId: string): Promise<RipLimitBlockedBidBE[]> {
+export async function getBlockedBids(
+  userId: string,
+): Promise<RipLimitBlockedBidBE[]> {
   const db = getFirestoreAdmin();
   const blockedBidsRef = db
     .collection(COLLECTIONS.RIPLIMIT_ACCOUNTS)
@@ -109,7 +115,10 @@ export async function getBalanceDetails(userId: string): Promise<{
 /**
  * Mark auction as unpaid (user won but hasn't paid)
  */
-export async function markAuctionUnpaid(userId: string, auctionId: string): Promise<void> {
+export async function markAuctionUnpaid(
+  userId: string,
+  auctionId: string,
+): Promise<void> {
   const db = getFirestoreAdmin();
   const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
 
@@ -123,7 +132,9 @@ export async function markAuctionUnpaid(userId: string, auctionId: string): Prom
 /**
  * Add strike to user account
  */
-export async function addStrike(userId: string): Promise<{ strikes: number; isBlocked: boolean }> {
+export async function addStrike(
+  userId: string,
+): Promise<{ strikes: number; isBlocked: boolean }> {
   const db = getFirestoreAdmin();
   const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
 
@@ -136,7 +147,9 @@ export async function addStrike(userId: string): Promise<{ strikes: number; isBl
     t.update(accountRef, {
       strikes: newStrikes,
       isBlocked: shouldBlock,
-      blockReason: shouldBlock ? "Too many unpaid auctions (3 strikes)" : undefined,
+      blockReason: shouldBlock
+        ? "Too many unpaid auctions (3 strikes)"
+        : undefined,
       updatedAt: FieldValue.serverTimestamp(),
     });
 

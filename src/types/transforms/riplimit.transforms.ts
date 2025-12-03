@@ -137,7 +137,9 @@ export function toFERipLimitBalance(data: {
 /**
  * Transform transaction API response to FE type
  */
-export function toFERipLimitTransaction(tx: RipLimitTransactionBE): RipLimitTransactionFE {
+export function toFERipLimitTransaction(
+  tx: RipLimitTransactionBE,
+): RipLimitTransactionFE {
   const createdAt = parseDate(tx.createdAt);
   const isCredit = tx.amount > 0;
 
@@ -166,10 +168,14 @@ export function toFERipLimitTransaction(tx: RipLimitTransactionBE): RipLimitTran
 /**
  * Transform transaction history API response to FE type
  */
-export function toFERipLimitTransactionHistory(data: {
-  transactions: RipLimitTransactionBE[];
-  total: number;
-}, limit: number = 20, offset: number = 0): RipLimitTransactionHistoryFE {
+export function toFERipLimitTransactionHistory(
+  data: {
+    transactions: RipLimitTransactionBE[];
+    total: number;
+  },
+  limit: number = 20,
+  offset: number = 0,
+): RipLimitTransactionHistoryFE {
   return {
     transactions: data.transactions.map(toFERipLimitTransaction),
     total: data.total,

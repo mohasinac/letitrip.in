@@ -64,7 +64,7 @@ export default function StaticAssetsPage() {
         await uploadAsset(
           file,
           selectedType,
-          selectedType === "payment-logo" ? "payment-methods" : "default"
+          selectedType === "payment-logo" ? "payment-methods" : "default",
         );
       }
 
@@ -161,10 +161,10 @@ export default function StaticAssetsPage() {
                   selectedType === "payment-logo"
                     ? "image/svg+xml,image/png"
                     : selectedType === "video"
-                    ? "video/*"
-                    : selectedType === "document"
-                    ? ".pdf,.doc,.docx,.xls,.xlsx,.txt"
-                    : "image/*"
+                      ? "video/*"
+                      : selectedType === "document"
+                        ? ".pdf,.doc,.docx,.xls,.xlsx,.txt"
+                        : "image/*"
                 }
                 onChange={handleUpload}
                 disabled={uploading}

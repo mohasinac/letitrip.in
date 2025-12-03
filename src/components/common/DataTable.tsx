@@ -39,7 +39,7 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   const [localSortKey, setLocalSortKey] = useState<string | null>(null);
   const [localSortDirection, setLocalSortDirection] = useState<"asc" | "desc">(
-    "asc"
+    "asc",
   );
 
   const activeSortKey = sortKey || localSortKey;

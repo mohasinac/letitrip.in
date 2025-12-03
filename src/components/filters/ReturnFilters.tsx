@@ -28,7 +28,7 @@ export const ReturnFilters: React.FC<ReturnFiltersProps> = ({
 
   const updateFilter = <K extends keyof ReturnFilterValues>(
     key: K,
-    value: ReturnFilterValues[K]
+    value: ReturnFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };

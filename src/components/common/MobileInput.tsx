@@ -46,7 +46,7 @@ export const MobileInput = forwardRef<HTMLInputElement, MobileInputProps>(
       id,
       name,
     },
-    ref
+    ref,
   ) {
     const [showCountryPicker, setShowCountryPicker] = useState(false);
 
@@ -214,7 +214,7 @@ export const MobileInput = forwardRef<HTMLInputElement, MobileInputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default MobileInput;

@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
         cartCount = cartData.items.reduce(
           (sum: number, item: { quantity?: number }) =>
             sum + (item.quantity || 1),
-          0
+          0,
         );
       }
     }
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching header stats:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch header stats" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -26,7 +26,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (!isAdmin) {
       return NextResponse.json(
         { success: false, error: "Forbidden - Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (typeof amount !== "number" || amount === 0) {
       return NextResponse.json(
         { success: false, error: "Valid non-zero amount is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           success: false,
           error: "Reason is required (minimum 5 characters)",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       userId,
       adjustmentAmount,
       reason.trim(),
-      auth.user.uid
+      auth.user.uid,
     );
 
     return NextResponse.json({
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       error instanceof Error ? error.message : "Failed to adjust balance";
     return NextResponse.json(
       { success: false, error: message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

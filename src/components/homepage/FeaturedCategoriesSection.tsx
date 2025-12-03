@@ -34,7 +34,7 @@ export function FeaturedCategoriesSection({
       setLoading(true);
       const data = await homepageService.getFeaturedCategories(
         categoryLimit,
-        itemsPerCategory
+        itemsPerCategory,
       );
       setCategories(data);
 
@@ -179,8 +179,8 @@ export function FeaturedCategoriesSection({
                             item.status === "upcoming"
                               ? "pending"
                               : item.status === "live"
-                              ? "active"
-                              : item.status,
+                                ? "active"
+                                : item.status,
                           shop: {
                             id: item.shopId,
                             name: item.shopName,

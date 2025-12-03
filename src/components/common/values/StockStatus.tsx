@@ -73,7 +73,7 @@ export function StockStatus({
         "inline-flex items-center gap-1.5 font-medium rounded-full",
         colors,
         sizeClasses[size],
-        className
+        className,
       )}
     >
       {showIcon && <Icon size={iconSizes[size]} />}

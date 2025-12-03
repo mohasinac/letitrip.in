@@ -27,19 +27,24 @@ export async function GET(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const { searchParams } = new URL(request.url);
-    
+
     // Parse pagination using sieve
     const { query } = parseSieveQuery(searchParams);
-    
+
     // Get transaction type filter
     const typeParam = searchParams.get("type");
     let type: RipLimitTransactionType | undefined;
-    if (typeParam && Object.values(RipLimitTransactionType).includes(typeParam as RipLimitTransactionType)) {
+    if (
+      typeParam &&
+      Object.values(RipLimitTransactionType).includes(
+        typeParam as RipLimitTransactionType,
+      )
+    ) {
       type = typeParam as RipLimitTransactionType;
     }
 
@@ -70,7 +75,7 @@ export async function GET(request: NextRequest) {
     console.error("Error getting RipLimit transactions:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get transactions" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -14,7 +14,9 @@ const INDIA_POST_API = "https://api.postalpincode.in/pincode";
 /**
  * Fetches pincode data from India Post API
  */
-export async function fetchPincodeData(pincode: string): Promise<PincodeLookupResult> {
+export async function fetchPincodeData(
+  pincode: string,
+): Promise<PincodeLookupResult> {
   // Validate pincode format
   const cleaned = pincode.replace(/\D/g, "");
   if (cleaned.length !== 6 || !/^[1-9]/.test(cleaned)) {
@@ -33,7 +35,7 @@ export async function fetchPincodeData(pincode: string): Promise<PincodeLookupRe
   try {
     const response = await fetch(`${INDIA_POST_API}/${cleaned}`, {
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
       },
       next: { revalidate: 86400 }, // Cache for 24 hours
     });
@@ -42,12 +44,16 @@ export async function fetchPincodeData(pincode: string): Promise<PincodeLookupRe
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json() as IndiaPostPincodeResponse[];
+    const data = (await response.json()) as IndiaPostPincodeResponse[];
 
     // India Post API returns an array with one item
     const result = data[0];
 
-    if (result.Status !== "Success" || !result.PostOffice || result.PostOffice.length === 0) {
+    if (
+      result.Status !== "Success" ||
+      !result.PostOffice ||
+      result.PostOffice.length === 0
+    ) {
       return {
         pincode: cleaned,
         areas: [],
@@ -61,8 +67,8 @@ export async function fetchPincodeData(pincode: string): Promise<PincodeLookupRe
     }
 
     // Extract unique areas
-    const areas = [...new Set(result.PostOffice.map(po => po.Name))];
-    
+    const areas = [...new Set(result.PostOffice.map((po) => po.Name))];
+
     // Use first post office for common data
     const firstPO = result.PostOffice[0];
 
@@ -86,7 +92,7 @@ export async function fetchPincodeData(pincode: string): Promise<PincodeLookupRe
  * Transforms India Post response to internal format
  */
 export function transformPincodeResponse(
-  response: IndiaPostPincodeResponse[]
+  response: IndiaPostPincodeResponse[],
 ): PincodeData | null {
   const result = response[0];
 
@@ -99,7 +105,7 @@ export function transformPincodeResponse(
 
   return {
     pincode: firstPO.Pincode,
-    areas: postOffices.map(po => ({
+    areas: postOffices.map((po) => ({
       name: po.Name,
       branchType: po.BranchType,
       deliveryStatus: po.DeliveryStatus === "Delivery",

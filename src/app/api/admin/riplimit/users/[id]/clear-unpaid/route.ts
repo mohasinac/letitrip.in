@@ -26,7 +26,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (!isAdmin) {
       return NextResponse.json(
         { success: false, error: "Forbidden - Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (!auctionId || typeof auctionId !== "string") {
       return NextResponse.json(
         { success: false, error: "Auction ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           success: false,
           error: "Reason is required (minimum 5 characters)",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       error instanceof Error ? error.message : "Failed to clear unpaid flag";
     return NextResponse.json(
       { success: false, error: message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

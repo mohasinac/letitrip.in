@@ -238,7 +238,7 @@ function ProductsContent() {
         image: string;
         shopId: string;
         shopName: string;
-      }
+      },
     ) => {
       try {
         if (!productDetails) {
@@ -262,7 +262,7 @@ function ProductsContent() {
         toast.error(error.message || "Failed to add to cart");
       }
     },
-    [products, addItem]
+    [products, addItem],
   );
 
   return (

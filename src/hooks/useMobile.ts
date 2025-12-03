@@ -107,7 +107,8 @@ export function isIOS(): boolean {
   if (typeof globalThis === "undefined") return false;
 
   return (
-    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(globalThis as any).MSStream
+    /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+    !(globalThis as any).MSStream
   );
 }
 

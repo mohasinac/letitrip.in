@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     console.error("Recent reviews error:", error);
     return NextResponse.json(
       { data: [], error: "Failed to fetch recent reviews" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -58,7 +58,7 @@ export const WizardSteps: React.FC<WizardStepsProps> = ({
     if (!container) return;
 
     const activeButton = container.querySelector(
-      `[data-step="${currentStep}"]`
+      `[data-step="${currentStep}"]`,
     ) as HTMLElement;
 
     if (activeButton) {
@@ -144,7 +144,7 @@ export const WizardSteps: React.FC<WizardStepsProps> = ({
                     ? "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
                     : "bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700",
                 ],
-                onStepClick && "cursor-pointer hover:scale-105"
+                onStepClick && "cursor-pointer hover:scale-105",
               )}
             >
               {/* Step indicator */}
@@ -156,7 +156,7 @@ export const WizardSteps: React.FC<WizardStepsProps> = ({
                     state === "completed" && "bg-green-500 text-white",
                     state === "error" && "bg-red-500 text-white",
                     state === "pending" &&
-                      "bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
+                      "bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300",
                   )}
                 >
                   {state === "completed" ? (

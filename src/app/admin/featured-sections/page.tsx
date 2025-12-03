@@ -299,22 +299,22 @@ function AddItemModal({
       switch (type) {
         case "product":
           endpoint = `/products?search=${encodeURIComponent(
-            searchQuery
+            searchQuery,
           )}&limit=20`;
           break;
         case "auction":
           endpoint = `/auctions?search=${encodeURIComponent(
-            searchQuery
+            searchQuery,
           )}&limit=20`;
           break;
         case "shop":
           endpoint = `/shops?search=${encodeURIComponent(
-            searchQuery
+            searchQuery,
           )}&limit=20`;
           break;
         case "category":
           endpoint = `/categories?search=${encodeURIComponent(
-            searchQuery
+            searchQuery,
           )}&limit=20`;
           break;
       }
@@ -322,7 +322,7 @@ function AddItemModal({
       const response = await apiService.get<{ data: any[] }>(endpoint);
       // Filter out already featured items
       const filtered = (response.data || []).filter(
-        (item: any) => !existingIds.includes(item.id || item.slug)
+        (item: any) => !existingIds.includes(item.id || item.slug),
       );
       setResults(filtered);
     } catch (error) {
@@ -465,7 +465,7 @@ export default function FeaturedSectionsPage() {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   useEffect(() => {
@@ -526,7 +526,7 @@ export default function FeaturedSectionsPage() {
           (item, index) => ({
             ...item,
             position: index,
-          })
+          }),
         );
 
         return {
@@ -577,7 +577,7 @@ export default function FeaturedSectionsPage() {
     setItems((prev) => ({
       ...prev,
       [activeSection]: (prev[activeSection] || []).map((item) =>
-        item.id === id ? { ...item, active: !item.active } : item
+        item.id === id ? { ...item, active: !item.active } : item,
       ),
     }));
     setHasChanges(true);
@@ -587,7 +587,7 @@ export default function FeaturedSectionsPage() {
     setItems((prev) => ({
       ...prev,
       [activeSection]: (prev[activeSection] || []).filter(
-        (item) => item.id !== id
+        (item) => item.id !== id,
       ),
     }));
     setHasChanges(true);
@@ -603,7 +603,7 @@ export default function FeaturedSectionsPage() {
         (item, idx) => ({
           ...item,
           position: idx,
-        })
+        }),
       );
       setItems((prev) => ({
         ...prev,
@@ -621,7 +621,7 @@ export default function FeaturedSectionsPage() {
         (item, idx) => ({
           ...item,
           position: idx,
-        })
+        }),
       );
       setItems((prev) => ({
         ...prev,
@@ -714,7 +714,7 @@ export default function FeaturedSectionsPage() {
         <div className="flex gap-2 overflow-x-auto pb-2">
           {SECTIONS.map((section) => {
             const count = (items[section.key] || []).filter(
-              (i) => i.active
+              (i) => i.active,
             ).length;
             return (
               <button

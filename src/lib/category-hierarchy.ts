@@ -186,7 +186,7 @@ export async function updateCategoryProductCounts(
 
   // Update the category itself first
   const count = await countCategoryProducts(categoryId);
-  
+
   // Count in-stock and out-of-stock products
   const productsSnapshot = await db
     .collection("products")
@@ -196,7 +196,7 @@ export async function updateCategoryProductCounts(
 
   let inStockCount = 0;
   let outOfStockCount = 0;
-  
+
   for (const doc of productsSnapshot.docs) {
     const data = doc.data();
     if (data.is_deleted !== true) {
@@ -221,16 +221,16 @@ export async function updateCategoryProductCounts(
   // Sort ancestors by level (if available) or update one by one
   for (const ancestorId of ancestorIds) {
     const ancestorCount = await countCategoryProducts(ancestorId);
-    
+
     // Sum up in_stock and out_of_stock from children
     const childrenSnapshot = await db
       .collection("categories")
       .where("parent_ids", "array-contains", ancestorId)
       .get();
-    
+
     let ancestorInStock = 0;
     let ancestorOutOfStock = 0;
-    
+
     for (const childDoc of childrenSnapshot.docs) {
       const childData = childDoc.data();
       ancestorInStock += childData.in_stock_count || 0;
@@ -422,10 +422,10 @@ export async function updateCategoryAuctionCounts(
       .collection("categories")
       .where("parent_ids", "array-contains", ancestorId)
       .get();
-    
+
     let liveCount = 0;
     let endedCount = 0;
-    
+
     for (const childDoc of childrenSnapshot.docs) {
       const childData = childDoc.data();
       liveCount += childData.live_auction_count || 0;
@@ -463,10 +463,10 @@ export async function rebuildAllCategoryCounts(): Promise<{
     try {
       const categoryData = doc.data();
       const categoryId = doc.id;
-      
+
       // Count products
       const count = await countCategoryProducts(categoryId);
-      
+
       // Count in-stock and out-of-stock products
       const productsSnapshot = await db
         .collection("products")
@@ -476,7 +476,7 @@ export async function rebuildAllCategoryCounts(): Promise<{
 
       let inStockCount = 0;
       let outOfStockCount = 0;
-      
+
       for (const prodDoc of productsSnapshot.docs) {
         const data = prodDoc.data();
         if (data.is_deleted !== true) {

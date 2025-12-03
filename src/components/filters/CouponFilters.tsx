@@ -28,7 +28,7 @@ export const CouponFilters: React.FC<CouponFiltersProps> = ({
 
   const updateFilter = <K extends keyof CouponFilterValues>(
     key: K,
-    value: CouponFilterValues[K]
+    value: CouponFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };

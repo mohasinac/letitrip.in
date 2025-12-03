@@ -57,19 +57,22 @@ const OPERATOR_PATTERNS: { pattern: string; operator: FilterOperator }[] = [
  */
 export function parseSieveQuery(
   searchParams: URLSearchParams,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): SieveParseResult {
   const errors: SieveError[] = [];
   const warnings: string[] = [];
 
   // Parse pagination
-  const { page, pageSize, paginationErrors } = parsePagination(searchParams, config);
+  const { page, pageSize, paginationErrors } = parsePagination(
+    searchParams,
+    config,
+  );
   errors.push(...paginationErrors);
 
   // Parse sorts
   const { sorts, sortErrors, sortWarnings } = parseSorts(
     searchParams.get("sorts") || "",
-    config
+    config,
   );
   errors.push(...sortErrors);
   warnings.push(...sortWarnings);
@@ -77,7 +80,7 @@ export function parseSieveQuery(
   // Parse filters
   const { filters, filterErrors, filterWarnings } = parseFilters(
     searchParams.get("filters") || "",
-    config
+    config,
   );
   errors.push(...filterErrors);
   warnings.push(...filterWarnings);
@@ -85,7 +88,12 @@ export function parseSieveQuery(
   const query: SieveQuery = {
     page,
     pageSize,
-    sorts: sorts.length > 0 ? sorts : config?.defaultSort ? [config.defaultSort] : [],
+    sorts:
+      sorts.length > 0
+        ? sorts
+        : config?.defaultSort
+          ? [config.defaultSort]
+          : [],
     filters,
   };
 
@@ -97,7 +105,7 @@ export function parseSieveQuery(
  */
 function parsePagination(
   searchParams: URLSearchParams,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): { page: number; pageSize: number; paginationErrors: SieveError[] } {
   const errors: SieveError[] = [];
   const maxSize = config?.maxPageSize ?? MAX_PAGE_SIZE;
@@ -144,7 +152,7 @@ function parsePagination(
  */
 function parseSorts(
   sortsParam: string,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): { sorts: SortField[]; sortErrors: SieveError[]; sortWarnings: string[] } {
   const errors: SieveError[] = [];
   const warnings: string[] = [];
@@ -154,7 +162,10 @@ function parseSorts(
     return { sorts, sortErrors: errors, sortWarnings: warnings };
   }
 
-  const sortFields = sortsParam.split(",").map((s) => s.trim()).filter(Boolean);
+  const sortFields = sortsParam
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 
   for (const sortField of sortFields) {
     const isDescending = sortField.startsWith("-");
@@ -181,8 +192,12 @@ function parseSorts(
  */
 function parseFilters(
   filtersParam: string,
-  config?: SieveConfig
-): { filters: FilterCondition[]; filterErrors: SieveError[]; filterWarnings: string[] } {
+  config?: SieveConfig,
+): {
+  filters: FilterCondition[];
+  filterErrors: SieveError[];
+  filterWarnings: string[];
+} {
   const errors: SieveError[] = [];
   const warnings: string[] = [];
   const filters: FilterCondition[] = [];
@@ -249,7 +264,7 @@ function splitFilters(filtersParam: string): string[] {
  */
 function parseFilterCondition(
   filterStr: string,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): { condition?: FilterCondition; error?: SieveError; isWarning?: boolean } {
   // Find the operator
   for (const { pattern, operator } of OPERATOR_PATTERNS) {
@@ -260,7 +275,9 @@ function parseFilterCondition(
 
       // Validate field against config
       if (config?.filterableFields) {
-        const fieldConfig = config.filterableFields.find((f) => f.field === field);
+        const fieldConfig = config.filterableFields.find(
+          (f) => f.field === field,
+        );
         if (!fieldConfig) {
           return {
             error: {
@@ -318,7 +335,7 @@ function parseFilterValue(
   valueStr: string,
   operator: FilterOperator,
   config?: SieveConfig,
-  field?: string
+  field?: string,
 ): FilterValue {
   // Null operators
   if (operator === "==null" || operator === "!=null") {
@@ -390,7 +407,7 @@ export function buildSieveQueryString(query: Partial<SieveQuery>): string {
  */
 export function mergeSieveQuery(
   current: SieveQuery,
-  updates: Partial<SieveQuery>
+  updates: Partial<SieveQuery>,
 ): SieveQuery {
   return {
     page: updates.page ?? current.page,
@@ -417,7 +434,10 @@ export function createDefaultSieveQuery(config?: SieveConfig): SieveQuery {
 /**
  * Parse sieve query from URL string
  */
-export function parseSieveFromURL(url: string, config?: SieveConfig): SieveParseResult {
+export function parseSieveFromURL(
+  url: string,
+  config?: SieveConfig,
+): SieveParseResult {
   const urlObj = new URL(url, "http://localhost");
   return parseSieveQuery(urlObj.searchParams, config);
 }
@@ -427,24 +447,24 @@ export function parseSieveFromURL(url: string, config?: SieveConfig): SieveParse
  */
 export function updateURLWithSieve(
   baseUrl: string,
-  query: Partial<SieveQuery>
+  query: Partial<SieveQuery>,
 ): string {
   const url = new URL(baseUrl, "http://localhost");
   const queryString = buildSieveQueryString(query);
-  
+
   if (queryString) {
     // Clear existing sieve params
     url.searchParams.delete("page");
     url.searchParams.delete("pageSize");
     url.searchParams.delete("sorts");
     url.searchParams.delete("filters");
-    
+
     // Add new params
     const newParams = new URLSearchParams(queryString);
     newParams.forEach((value, key) => {
       url.searchParams.set(key, value);
     });
   }
-  
+
   return url.pathname + url.search;
 }

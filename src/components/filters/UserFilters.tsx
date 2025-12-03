@@ -28,7 +28,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
 
   const updateFilter = <K extends keyof UserFilterValues>(
     key: K,
-    value: UserFilterValues[K]
+    value: UserFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };

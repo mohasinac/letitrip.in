@@ -30,17 +30,22 @@ function parseDate(date: Timestamp | string | Date | undefined | null): Date {
  */
 export function toFECategory(data: CategoryBE | any): CategoryFE {
   // Handle both snake_case and camelCase field names from API
-  const parentIds = data.parentIds || data.parent_ids || (data.parent_id ? [data.parent_id] : []);
+  const parentIds =
+    data.parentIds ||
+    data.parent_ids ||
+    (data.parent_id ? [data.parent_id] : []);
   const productCount = data.productCount ?? data.product_count ?? 0;
   const inStockCount = data.inStockCount ?? data.in_stock_count ?? 0;
   const outOfStockCount = data.outOfStockCount ?? data.out_of_stock_count ?? 0;
-  const liveAuctionCount = data.liveAuctionCount ?? data.live_auction_count ?? 0;
-  const endedAuctionCount = data.endedAuctionCount ?? data.ended_auction_count ?? 0;
+  const liveAuctionCount =
+    data.liveAuctionCount ?? data.live_auction_count ?? 0;
+  const endedAuctionCount =
+    data.endedAuctionCount ?? data.ended_auction_count ?? 0;
   const level = data.level ?? 0;
   const hasChildrenValue = data.hasChildren ?? data.has_children ?? false;
   const isLeaf = data.isLeaf ?? data.is_leaf ?? !hasChildrenValue;
   const order = data.order ?? data.sortOrder ?? data.sort_order ?? 0;
-  
+
   // Determine status/isActive
   let isActive = true;
   if (data.status !== undefined) {
@@ -52,7 +57,8 @@ export function toFECategory(data: CategoryBE | any): CategoryFE {
   }
 
   // Determine featured
-  const featured = data.featured ?? data.is_featured ?? data.metadata?.featured ?? false;
+  const featured =
+    data.featured ?? data.is_featured ?? data.metadata?.featured ?? false;
 
   return {
     id: data.id,

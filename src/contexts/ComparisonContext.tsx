@@ -38,7 +38,7 @@ interface ComparisonContextType {
 }
 
 const ComparisonContext = createContext<ComparisonContextType | undefined>(
-  undefined
+  undefined,
 );
 
 interface ComparisonProviderProps {
@@ -89,7 +89,7 @@ export function ComparisonProvider({ children }: ComparisonProviderProps) {
     (productId: string): boolean => {
       return productIds.includes(productId);
     },
-    [productIds]
+    [productIds],
   );
 
   const canAddMore = products.length < COMPARISON_CONFIG.MAX_PRODUCTS;
@@ -119,7 +119,7 @@ export function ComparisonProvider({ children }: ComparisonProviderProps) {
       canAddMore,
       canCompare,
       count,
-    ]
+    ],
   );
 
   return (

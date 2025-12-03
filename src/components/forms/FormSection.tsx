@@ -116,7 +116,7 @@ export function FormActions({
         alignClasses[align],
         sticky &&
           "sticky bottom-0 bg-white dark:bg-gray-900 py-4 -mx-6 px-6 -mb-6",
-        className
+        className,
       )}
     >
       {children}

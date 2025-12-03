@@ -53,10 +53,11 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
 
     // Parse Sieve query
-    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-      searchParams,
-      returnsConfig
-    );
+    const {
+      query: sieveQuery,
+      errors,
+      warnings,
+    } = parseSieveQuery(searchParams, returnsConfig);
 
     if (errors.length > 0) {
       return NextResponse.json(
@@ -65,7 +66,7 @@ export async function GET(req: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -73,7 +74,9 @@ export async function GET(req: NextRequest) {
     const shopId = searchParams.get("shop_id") || undefined;
     const status = searchParams.get("status") || undefined;
     const reason = searchParams.get("reason") || undefined;
-    const requiresAdminIntervention = searchParams.get("requires_admin_intervention");
+    const requiresAdminIntervention = searchParams.get(
+      "requires_admin_intervention",
+    );
     const startDate = searchParams.get("start_date") || undefined;
     const endDate = searchParams.get("end_date") || undefined;
 
@@ -81,7 +84,10 @@ export async function GET(req: NextRequest) {
 
     if (status) query = query.where("status", "==", status);
     if (reason) query = query.where("reason", "==", reason);
-    if (requiresAdminIntervention !== null && requiresAdminIntervention !== undefined) {
+    if (
+      requiresAdminIntervention !== null &&
+      requiresAdminIntervention !== undefined
+    ) {
       const val = requiresAdminIntervention === "true";
       query = query.where("requires_admin_intervention", "==", val);
     }
@@ -92,7 +98,11 @@ export async function GET(req: NextRequest) {
     for (const filter of sieveQuery.filters) {
       const dbField = returnsConfig.fieldMappings[filter.field] || filter.field;
       if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+        query = query.where(
+          dbField,
+          filter.operator as FirebaseFirestore.WhereFilterOp,
+          filter.value,
+        );
       }
     }
 
@@ -123,7 +133,9 @@ export async function GET(req: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const data = snapshot.docs.map((doc) => transformReturn(doc.id, doc.data()));
+    const data = snapshot.docs.map((doc) =>
+      transformReturn(doc.id, doc.data()),
+    );
 
     // Build response with Sieve pagination meta
     const pagination = createPaginationMeta(totalCount, sieveQuery);
@@ -142,7 +154,7 @@ export async function GET(req: NextRequest) {
     console.error("Returns list error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to load returns" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

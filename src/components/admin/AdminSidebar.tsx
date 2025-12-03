@@ -212,7 +212,7 @@ export function AdminSidebar() {
     setExpandedItems((prev) =>
       prev.includes(title)
         ? prev.filter((item) => item !== title)
-        : [...prev, title]
+        : [...prev, title],
     );
   };
 
@@ -238,7 +238,7 @@ export function AdminSidebar() {
           ? item.children.filter(
               (child) =>
                 child.title.toLowerCase().includes(query) ||
-                (child.href && child.href.toLowerCase().includes(query))
+                (child.href && child.href.toLowerCase().includes(query)),
             )
           : [];
 
@@ -357,7 +357,7 @@ export function AdminSidebar() {
                         "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                         active
                           ? "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white",
                       )}
                     >
                       <Icon
@@ -365,7 +365,7 @@ export function AdminSidebar() {
                           "h-5 w-5",
                           active
                             ? "text-yellow-600 dark:text-yellow-500"
-                            : "text-gray-400 dark:text-gray-500"
+                            : "text-gray-400 dark:text-gray-500",
                         )}
                       />
                       <span className="flex-1">
@@ -411,7 +411,7 @@ export function AdminSidebar() {
                               "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
                               childActive
                                 ? "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
-                                : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white"
+                                : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white",
                             )}
                           >
                             <ChildIcon
@@ -419,7 +419,7 @@ export function AdminSidebar() {
                                 "h-4 w-4",
                                 childActive
                                   ? "text-yellow-600 dark:text-yellow-500"
-                                  : "text-gray-400 dark:text-gray-500"
+                                  : "text-gray-400 dark:text-gray-500",
                               )}
                             />
                             <span>{highlightText(child.title)}</span>

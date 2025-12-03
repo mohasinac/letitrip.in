@@ -3,8 +3,10 @@
 import { forwardRef, TextareaHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-export interface FormTextareaProps
-  extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "size"> {
+export interface FormTextareaProps extends Omit<
+  TextareaHTMLAttributes<HTMLTextAreaElement>,
+  "size"
+> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -31,7 +33,7 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
       value,
       ...props
     },
-    ref
+    ref,
   ) => {
     const textareaId = id || label?.toLowerCase().replace(/\s+/g, "-");
     const currentLength = typeof value === "string" ? value.length : 0;
@@ -74,15 +76,15 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
                 "bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-60",
               "resize-y",
               leftIcon && "pl-10",
-              className
+              className,
             )}
             aria-invalid={!!error}
             aria-describedby={
               error
                 ? `${textareaId}-error`
                 : helperText
-                ? `${textareaId}-helper`
-                : undefined
+                  ? `${textareaId}-helper`
+                  : undefined
             }
             {...props}
           />
@@ -117,7 +119,7 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 FormTextarea.displayName = "FormTextarea";

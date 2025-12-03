@@ -3,8 +3,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-export interface FormFieldsetProps
-  extends React.FieldsetHTMLAttributes<HTMLFieldSetElement> {
+export interface FormFieldsetProps extends React.FieldsetHTMLAttributes<HTMLFieldSetElement> {
   legend?: string;
   description?: string;
   required?: boolean;
@@ -35,7 +34,7 @@ export const FormFieldset: React.FC<FormFieldsetProps> = ({
       className={cn(
         "space-y-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg",
         error && "border-red-300 dark:border-red-700",
-        className
+        className,
       )}
       {...props}
     >

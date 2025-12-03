@@ -132,7 +132,7 @@ export function MobileDataTable<T extends Record<string, any>>({
               className={cn(
                 "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4",
                 onRowClick &&
-                  "cursor-pointer hover:border-gray-300 dark:hover:border-gray-600 active:bg-gray-50 dark:active:bg-gray-700 transition-colors"
+                  "cursor-pointer hover:border-gray-300 dark:hover:border-gray-600 active:bg-gray-50 dark:active:bg-gray-700 transition-colors",
               )}
             >
               <div className="flex items-center justify-between">
@@ -181,7 +181,7 @@ export function MobileDataTable<T extends Record<string, any>>({
                   key={col.key as string}
                   className={cn(
                     "px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-800",
-                    col.className
+                    col.className,
                   )}
                 >
                   {col.header}
@@ -197,7 +197,7 @@ export function MobileDataTable<T extends Record<string, any>>({
                 className={cn(
                   "bg-white dark:bg-gray-900",
                   onRowClick &&
-                    "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors",
                 )}
               >
                 {columns.map((col) => (
@@ -205,7 +205,7 @@ export function MobileDataTable<T extends Record<string, any>>({
                     key={col.key as string}
                     className={cn(
                       "px-4 py-4 text-sm text-gray-900 dark:text-gray-100",
-                      col.className
+                      col.className,
                     )}
                   >
                     {col.render

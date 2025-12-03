@@ -111,7 +111,8 @@ const DEFAULT_SETTINGS: AllSettings = {
       youtube: "",
     },
     maintenanceMode: false,
-    maintenanceMessage: "We are currently undergoing scheduled maintenance. Please check back soon.",
+    maintenanceMessage:
+      "We are currently undergoing scheduled maintenance. Please check back soon.",
   },
   payment: {
     razorpay: {
@@ -164,14 +165,14 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     if (user.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -179,7 +180,10 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get("category") as SettingsCategory | null;
 
     const db = getFirestoreAdmin();
-    const settingsDoc = await db.collection(SETTINGS_COLLECTION).doc(SETTINGS_DOC_ID).get();
+    const settingsDoc = await db
+      .collection(SETTINGS_COLLECTION)
+      .doc(SETTINGS_DOC_ID)
+      .get();
 
     let settings = DEFAULT_SETTINGS;
     if (settingsDoc.exists) {
@@ -207,7 +211,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching settings:", error);
     return NextResponse.json(
       { error: "Failed to fetch settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -218,14 +222,14 @@ export async function PUT(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     if (user.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -235,14 +239,14 @@ export async function PUT(request: NextRequest) {
     if (!category || !settings) {
       return NextResponse.json(
         { error: "Category and settings are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!["general", "payment", "shipping", "features"].includes(category)) {
       return NextResponse.json(
         { error: "Invalid settings category" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -262,11 +266,21 @@ export async function PUT(request: NextRequest) {
 
     // For payment settings, preserve secrets if not provided
     if (category === "payment") {
-      if (settings.razorpay && !settings.razorpay.keySecret && currentSettings.payment?.razorpay?.keySecret) {
-        updatedCategory.razorpay.keySecret = currentSettings.payment.razorpay.keySecret;
+      if (
+        settings.razorpay &&
+        !settings.razorpay.keySecret &&
+        currentSettings.payment?.razorpay?.keySecret
+      ) {
+        updatedCategory.razorpay.keySecret =
+          currentSettings.payment.razorpay.keySecret;
       }
-      if (settings.payu && !settings.payu.merchantSalt && currentSettings.payment?.payu?.merchantSalt) {
-        updatedCategory.payu.merchantSalt = currentSettings.payment.payu.merchantSalt;
+      if (
+        settings.payu &&
+        !settings.payu.merchantSalt &&
+        currentSettings.payment?.payu?.merchantSalt
+      ) {
+        updatedCategory.payu.merchantSalt =
+          currentSettings.payment.payu.merchantSalt;
       }
     }
 
@@ -276,12 +290,15 @@ export async function PUT(request: NextRequest) {
         updatedAt: FieldValue.serverTimestamp(),
         updatedBy: user.id,
       },
-      { merge: true }
+      { merge: true },
     );
 
     // Fetch updated settings and mask
     const updatedDoc = await settingsRef.get();
-    const updatedSettings = deepMerge(DEFAULT_SETTINGS, updatedDoc.data() || {});
+    const updatedSettings = deepMerge(
+      DEFAULT_SETTINGS,
+      updatedDoc.data() || {},
+    );
     const maskedUpdated = maskSensitiveFields(updatedSettings);
 
     return NextResponse.json({
@@ -293,7 +310,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating settings:", error);
     return NextResponse.json(
       { error: "Failed to update settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -304,14 +321,14 @@ export async function PATCH(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     if (user.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -321,7 +338,7 @@ export async function PATCH(request: NextRequest) {
     if (!path || value === undefined) {
       return NextResponse.json(
         { error: "Path and value are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -329,8 +346,11 @@ export async function PATCH(request: NextRequest) {
     const pathParts = path.split(".");
     if (pathParts.length < 2 || pathParts.length > 3) {
       return NextResponse.json(
-        { error: "Invalid path format. Use 'category.field' or 'category.subcategory.field'" },
-        { status: 400 }
+        {
+          error:
+            "Invalid path format. Use 'category.field' or 'category.subcategory.field'",
+        },
+        { status: 400 },
       );
     }
 
@@ -339,13 +359,14 @@ export async function PATCH(request: NextRequest) {
 
     await settingsRef.set(
       {
-        [pathParts[0]]: pathParts.length === 2
-          ? { [pathParts[1]]: value }
-          : { [pathParts[1]]: { [pathParts[2]]: value } },
+        [pathParts[0]]:
+          pathParts.length === 2
+            ? { [pathParts[1]]: value }
+            : { [pathParts[1]]: { [pathParts[2]]: value } },
         updatedAt: FieldValue.serverTimestamp(),
         updatedBy: user.id,
       },
-      { merge: true }
+      { merge: true },
     );
 
     return NextResponse.json({
@@ -356,16 +377,19 @@ export async function PATCH(request: NextRequest) {
     console.error("Error patching setting:", error);
     return NextResponse.json(
       { error: "Failed to update setting" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 // Helper: Deep merge objects - preserves structure of target, overrides with source values
-function deepMerge(target: AllSettings, source: Record<string, unknown>): AllSettings {
+function deepMerge(
+  target: AllSettings,
+  source: Record<string, unknown>,
+): AllSettings {
   // Use JSON parse/stringify for deep clone and simple merge
   const output = JSON.parse(JSON.stringify(target)) as AllSettings;
-  
+
   // Merge each top-level category
   if (source.general && typeof source.general === "object") {
     output.general = { ...output.general, ...(source.general as object) };
@@ -376,36 +400,48 @@ function deepMerge(target: AllSettings, source: Record<string, unknown>): AllSet
       };
     }
   }
-  
+
   if (source.payment && typeof source.payment === "object") {
     const paymentSource = source.payment as Record<string, unknown>;
     output.payment = { ...output.payment, ...(paymentSource as object) };
     if (paymentSource.razorpay && typeof paymentSource.razorpay === "object") {
-      output.payment.razorpay = { ...output.payment.razorpay, ...(paymentSource.razorpay as object) };
+      output.payment.razorpay = {
+        ...output.payment.razorpay,
+        ...(paymentSource.razorpay as object),
+      };
     }
     if (paymentSource.payu && typeof paymentSource.payu === "object") {
-      output.payment.payu = { ...output.payment.payu, ...(paymentSource.payu as object) };
+      output.payment.payu = {
+        ...output.payment.payu,
+        ...(paymentSource.payu as object),
+      };
     }
     if (paymentSource.cod && typeof paymentSource.cod === "object") {
-      output.payment.cod = { ...output.payment.cod, ...(paymentSource.cod as object) };
+      output.payment.cod = {
+        ...output.payment.cod,
+        ...(paymentSource.cod as object),
+      };
     }
   }
-  
+
   if (source.shipping && typeof source.shipping === "object") {
     const shippingSource = source.shipping as Record<string, unknown>;
     output.shipping = { ...output.shipping, ...(shippingSource as object) };
-    if (shippingSource.estimatedDeliveryDays && typeof shippingSource.estimatedDeliveryDays === "object") {
+    if (
+      shippingSource.estimatedDeliveryDays &&
+      typeof shippingSource.estimatedDeliveryDays === "object"
+    ) {
       output.shipping.estimatedDeliveryDays = {
         ...output.shipping.estimatedDeliveryDays,
         ...(shippingSource.estimatedDeliveryDays as object),
       };
     }
   }
-  
+
   if (source.features && typeof source.features === "object") {
     output.features = { ...output.features, ...(source.features as object) };
   }
-  
+
   return output;
 }
 

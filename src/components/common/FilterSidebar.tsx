@@ -56,7 +56,7 @@ export function FilterSidebar({
   isLoading = false,
 }: FilterSidebarProps) {
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export function FilterSidebar({
   const handleCheckboxChange = (
     key: string,
     optionValue: string | number,
-    checked: boolean
+    checked: boolean,
   ) => {
     const currentValues = values[key] || [];
     const newValues = checked
@@ -163,7 +163,7 @@ export function FilterSidebar({
                     handleCheckboxChange(
                       field.key,
                       option.value,
-                      e.target.checked
+                      e.target.checked,
                     )
                   }
                   className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"

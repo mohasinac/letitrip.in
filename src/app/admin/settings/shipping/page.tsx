@@ -111,7 +111,7 @@ export default function AdminShippingSettingsPage() {
     setSettings({
       ...settings,
       restrictedPincodes: settings.restrictedPincodes.filter(
-        (p) => p !== pincode
+        (p) => p !== pincode,
       ),
     });
   };

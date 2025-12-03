@@ -67,10 +67,11 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(req.url);
 
         // Parse Sieve query
-        const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-          searchParams,
-          shopsConfig
-        );
+        const {
+          query: sieveQuery,
+          errors,
+          warnings,
+        } = parseSieveQuery(searchParams, shopsConfig);
 
         if (errors.length > 0) {
           return NextResponse.json(
@@ -79,7 +80,7 @@ export async function GET(request: NextRequest) {
               error: "Invalid query parameters",
               details: errors,
             },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
@@ -123,9 +124,14 @@ export async function GET(request: NextRequest) {
 
         // Apply Sieve filters
         for (const filter of sieveQuery.filters) {
-          const dbField = shopsConfig.fieldMappings[filter.field] || filter.field;
+          const dbField =
+            shopsConfig.fieldMappings[filter.field] || filter.field;
           if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-            query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+            query = query.where(
+              dbField,
+              filter.operator as FirebaseFirestore.WhereFilterOp,
+              filter.value,
+            );
           }
         }
 
@@ -157,14 +163,20 @@ export async function GET(request: NextRequest) {
 
         // Execute query
         const snapshot = await query.get();
-        const shops = snapshot.docs.map((doc) => transformShop(doc.id, doc.data()));
+        const shops = snapshot.docs.map((doc) =>
+          transformShop(doc.id, doc.data()),
+        );
 
         // Check if user can create more shops
         let canCreateMore = false;
         if (role === UserRole.ADMIN) {
           canCreateMore = true;
         } else if (role === UserRole.SELLER && userId) {
-          const userShopsQuery = Collections.shops().where("owner_id", "==", userId);
+          const userShopsQuery = Collections.shops().where(
+            "owner_id",
+            "==",
+            userId,
+          );
           const userShopsSnapshot = await userShopsQuery.get();
           canCreateMore = userShopsSnapshot.size === 0;
         }
@@ -193,13 +205,14 @@ export async function GET(request: NextRequest) {
           {
             success: false,
             error: errorMessage,
-            details: process.env.NODE_ENV === "development" ? error?.stack : undefined,
+            details:
+              process.env.NODE_ENV === "development" ? error?.stack : undefined,
           },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
-    { ttl: 180 }
+    { ttl: 180 },
   );
 }
 

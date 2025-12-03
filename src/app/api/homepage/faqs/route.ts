@@ -29,7 +29,7 @@ export async function GET() {
     console.error("FAQs error:", error);
     return NextResponse.json(
       { data: [], error: "Failed to fetch FAQs" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

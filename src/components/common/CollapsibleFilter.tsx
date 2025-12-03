@@ -38,7 +38,7 @@ export function CollapsibleFilter({
     [sections[2]?.id]: true,
   });
   const [searchQueries, setSearchQueries] = useState<Record<string, string>>(
-    {}
+    {},
   );
 
   const toggleSection = (sectionId: string) => {
@@ -64,7 +64,7 @@ export function CollapsibleFilter({
     const query = searchQueries[section.id]?.toLowerCase() || "";
     if (!query) return section.options;
     return section.options.filter((opt) =>
-      opt.label.toLowerCase().includes(query)
+      opt.label.toLowerCase().includes(query),
     );
   };
 
@@ -180,7 +180,7 @@ export function CollapsibleFilter({
                             section.type === "radio"
                               ? activeFilters[section.id] === option.value
                               : activeFilters[section.id]?.includes(
-                                  option.value
+                                  option.value,
                                 )
                           }
                           onChange={(e) => {
@@ -191,7 +191,7 @@ export function CollapsibleFilter({
                               const updated = e.target.checked
                                 ? [...current, option.value]
                                 : current.filter(
-                                    (v: string) => v !== option.value
+                                    (v: string) => v !== option.value,
                                   );
                               onChange(section.id, updated);
                             }

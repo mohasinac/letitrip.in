@@ -49,7 +49,7 @@ export function PhoneNumber({
         href={`tel:${telNumber}`}
         className={cn(
           "text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center",
-          className
+          className,
         )}
       >
         {content}
@@ -61,7 +61,7 @@ export function PhoneNumber({
     <span
       className={cn(
         "text-gray-900 dark:text-white inline-flex items-center",
-        className
+        className,
       )}
     >
       {content}

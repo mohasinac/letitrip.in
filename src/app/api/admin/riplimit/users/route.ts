@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     if (!isAdmin) {
       return NextResponse.json(
         { success: false, error: "Forbidden - Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
               }
             : null,
         };
-      })
+      }),
     );
 
     const totalPages = Math.ceil(totalCount / query.pageSize);
@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
     console.error("Error getting RipLimit users:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get users" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

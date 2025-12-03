@@ -87,7 +87,7 @@ export default function AuctionDetailPage() {
             limit: 6,
           });
           setShopAuctions(
-            (shopAuctionsData.data || []).filter((a) => a.slug !== slug)
+            (shopAuctionsData.data || []).filter((a) => a.slug !== slug),
           );
         } catch (error) {
           console.error("Failed to load shop:", error);
@@ -102,7 +102,7 @@ export default function AuctionDetailPage() {
           limit: 6,
         });
         setSimilarAuctions(
-          (similarData.data || []).filter((a) => a.slug !== slug)
+          (similarData.data || []).filter((a) => a.slug !== slug),
         );
       } catch (error) {
         console.error("Failed to load similar auctions:", error);

@@ -34,7 +34,7 @@ export function CategoryTagsStep({
   };
 
   const handleCustomCategoryChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setCustomCategory(e.target.value);
     onChange("category", e.target.value);
@@ -50,7 +50,7 @@ export function CategoryTagsStep({
   const handleRemoveTag = (tag: string) => {
     onChange(
       "tags",
-      formData.tags.filter((t) => t !== tag)
+      formData.tags.filter((t) => t !== tag),
     );
   };
 

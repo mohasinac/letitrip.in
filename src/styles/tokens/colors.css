@@ -33,7 +33,7 @@
   /* ============================================
    * Semantic Colors
    * ============================================ */
-  
+
   /* Success */
   --color-success: #16a34a; /* green-600 */
   --color-success-hover: #15803d; /* green-700 */
@@ -114,7 +114,7 @@
   /* ============================================
    * Status Colors (Orders, Auctions, etc.)
    * ============================================ */
-  
+
   /* Order Status */
   --color-status-pending: #f59e0b; /* amber-500 */
   --color-status-pending-bg: #fffbeb;

@@ -419,21 +419,26 @@ export function searchNavigationRoutes(
     includeUser?: boolean;
     includeSeller?: boolean;
     includeAdmin?: boolean;
-  }
+  },
 ): SearchableRoute[] {
   if (!query || query.length < 1) {
     // Return popular routes when no query
-    return [
-      ...PUBLIC_ROUTES.slice(0, 5),
-      ...SUPPORT_ROUTES.slice(0, 3),
-    ].slice(0, maxResults);
+    return [...PUBLIC_ROUTES.slice(0, 5), ...SUPPORT_ROUTES.slice(0, 3)].slice(
+      0,
+      maxResults,
+    );
   }
 
   const normalizedQuery = query.toLowerCase().trim();
   const queryWords = normalizedQuery.split(/\s+/);
 
   // Build routes list based on options
-  let routes: SearchableRoute[] = [...PUBLIC_ROUTES, ...SUPPORT_ROUTES, ...LEGAL_ROUTES, ...AUTH_ROUTES];
+  let routes: SearchableRoute[] = [
+    ...PUBLIC_ROUTES,
+    ...SUPPORT_ROUTES,
+    ...LEGAL_ROUTES,
+    ...AUTH_ROUTES,
+  ];
 
   if (options?.includeUser !== false) {
     routes = [...routes, ...USER_ROUTES];
@@ -467,7 +472,7 @@ export function searchNavigationRoutes(
 
     // Keyword matches
     const keywordMatches = route.keywords.filter((kw) =>
-      queryWords.some((qw) => kw.includes(qw) || qw.includes(kw))
+      queryWords.some((qw) => kw.includes(qw) || qw.includes(kw)),
     );
     score += keywordMatches.length * 10;
 

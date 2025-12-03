@@ -4,7 +4,11 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 import { ValidationError } from "@/lib/api-errors";
 
 // Build update object for each action
-function buildCategoryUpdate(action: string, now: string, updates?: any): Record<string, any> | null {
+function buildCategoryUpdate(
+  action: string,
+  now: string,
+  updates?: any,
+): Record<string, any> | null {
   switch (action) {
     case "activate":
       return { is_active: true, updated_at: now };
@@ -23,7 +27,11 @@ function buildCategoryUpdate(action: string, now: string, updates?: any): Record
 }
 
 // Delete category with parent cleanup
-async function deleteCategory(categoryId: string, categoryData: any, now: string): Promise<string | null> {
+async function deleteCategory(
+  categoryId: string,
+  categoryData: any,
+  now: string,
+): Promise<string | null> {
   const childrenIds = categoryData.children_ids || [];
   if (childrenIds.length > 0) {
     return "Category has subcategories";
@@ -39,13 +47,17 @@ async function deleteCategory(categoryId: string, categoryData: any, now: string
   }
 
   // Remove from all parent categories
-  const parentIds = categoryData.parent_ids || (categoryData.parent_id ? [categoryData.parent_id] : []);
+  const parentIds =
+    categoryData.parent_ids ||
+    (categoryData.parent_id ? [categoryData.parent_id] : []);
   for (const parentId of parentIds) {
     const parentRef = Collections.categories().doc(parentId);
     const parentDoc = await parentRef.get();
     if (parentDoc.exists) {
       const parentData: any = parentDoc.data();
-      const updatedChildrenIds = (parentData.children_ids || []).filter((id: string) => id !== categoryId);
+      const updatedChildrenIds = (parentData.children_ids || []).filter(
+        (id: string) => id !== categoryId,
+      );
       await parentRef.update({
         children_ids: updatedChildrenIds,
         child_count: updatedChildrenIds.length,
@@ -122,7 +134,11 @@ export async function POST(request: NextRequest) {
 
         // Handle delete action separately (complex logic)
         if (action === "delete") {
-          const deleteError = await deleteCategory(categoryId, categoryData, now);
+          const deleteError = await deleteCategory(
+            categoryId,
+            categoryData,
+            now,
+          );
           if (deleteError) {
             results.failed.push({ id: categoryId, error: deleteError });
           } else {
@@ -134,7 +150,13 @@ export async function POST(request: NextRequest) {
         // Build and apply update
         const update = buildCategoryUpdate(action, now, updates);
         if (!update) {
-          results.failed.push({ id: categoryId, error: action === "update" ? "Updates object required" : "Unknown action" });
+          results.failed.push({
+            id: categoryId,
+            error:
+              action === "update"
+                ? "Updates object required"
+                : "Unknown action",
+          });
           continue;
         }
 

@@ -89,9 +89,14 @@ class MessagesService {
   /**
    * Transform BE conversation to FE format
    */
-  private transformConversation(conv: ConversationBEResponse, userId: string): ConversationFE {
+  private transformConversation(
+    conv: ConversationBEResponse,
+    userId: string,
+  ): ConversationFE {
     const isFromSender = conv.participants.sender.id === userId;
-    const otherParticipant = isFromSender ? conv.participants.recipient : conv.participants.sender;
+    const otherParticipant = isFromSender
+      ? conv.participants.recipient
+      : conv.participants.sender;
     const unreadCount = conv.unreadCount?.[userId] || 0;
 
     return {
@@ -115,7 +120,9 @@ class MessagesService {
       status: conv.status,
       createdAt: new Date(conv.createdAt),
       updatedAt: new Date(conv.updatedAt),
-      timeAgo: formatDistanceToNow(new Date(conv.lastMessage.sentAt), { addSuffix: true }),
+      timeAgo: formatDistanceToNow(new Date(conv.lastMessage.sentAt), {
+        addSuffix: true,
+      }),
       isUnread: unreadCount > 0,
     };
   }
@@ -151,14 +158,17 @@ class MessagesService {
   /**
    * Get list of conversations
    */
-  async getConversations(params: {
-    page?: number;
-    pageSize?: number;
-    status?: "active" | "archived" | "all";
-  } = {}): Promise<ConversationListResponse> {
+  async getConversations(
+    params: {
+      page?: number;
+      pageSize?: number;
+      status?: "active" | "archived" | "all";
+    } = {},
+  ): Promise<ConversationListResponse> {
     const searchParams = new URLSearchParams();
     if (params.page) searchParams.set("page", params.page.toString());
-    if (params.pageSize) searchParams.set("pageSize", params.pageSize.toString());
+    if (params.pageSize)
+      searchParams.set("pageSize", params.pageSize.toString());
     if (params.status) searchParams.set("status", params.status);
 
     const queryString = searchParams.toString();
@@ -173,7 +183,7 @@ class MessagesService {
 
     const userId = this.currentUserId || "";
     const conversations = response.data.conversations.map((c) =>
-      this.transformConversation(c, userId)
+      this.transformConversation(c, userId),
     );
 
     return {
@@ -185,13 +195,17 @@ class MessagesService {
   /**
    * Get messages in a conversation
    */
-  async getConversation(conversationId: string, params: {
-    page?: number;
-    pageSize?: number;
-  } = {}): Promise<MessageListResponse> {
+  async getConversation(
+    conversationId: string,
+    params: {
+      page?: number;
+      pageSize?: number;
+    } = {},
+  ): Promise<MessageListResponse> {
     const searchParams = new URLSearchParams();
     if (params.page) searchParams.set("page", params.page.toString());
-    if (params.pageSize) searchParams.set("pageSize", params.pageSize.toString());
+    if (params.pageSize)
+      searchParams.set("pageSize", params.pageSize.toString());
 
     const queryString = searchParams.toString();
     const url = `/messages/${conversationId}${queryString ? `?${queryString}` : ""}`;
@@ -207,8 +221,13 @@ class MessagesService {
     const userId = this.currentUserId || "";
 
     return {
-      conversation: this.transformConversation(response.data.conversation, userId),
-      messages: response.data.messages.map((m) => this.transformMessage(m, userId)),
+      conversation: this.transformConversation(
+        response.data.conversation,
+        userId,
+      ),
+      messages: response.data.messages.map((m) =>
+        this.transformMessage(m, userId),
+      ),
       pagination: response.data.pagination,
     };
   }
@@ -217,7 +236,9 @@ class MessagesService {
    * Get unread message count
    */
   async getUnreadCount(): Promise<number> {
-    const response = await apiService.get<{ data: { count: number } }>("/messages/unread-count");
+    const response = await apiService.get<{ data: { count: number } }>(
+      "/messages/unread-count",
+    );
     return response.data.count;
   }
 
@@ -249,7 +270,10 @@ class MessagesService {
   /**
    * Send message in existing conversation
    */
-  async sendMessage(conversationId: string, input: SendMessageInputFE): Promise<{
+  async sendMessage(
+    conversationId: string,
+    input: SendMessageInputFE,
+  ): Promise<{
     messageId: string;
     conversationId: string;
   }> {

@@ -88,15 +88,9 @@ export async function GET() {
         .where("title", ">=", DEMO_PREFIX)
         .where("title", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
-      db
-        .collection("favorites")
-        .get(), // Favorites don't have DEMO_ prefix, count all for demo users
-      db
-        .collection("carts")
-        .get(), // Carts don't have DEMO_ prefix, count all for demo users
-      db
-        .collection("notifications")
-        .get(), // Notifications don't have DEMO_ prefix
+      db.collection("favorites").get(), // Favorites don't have DEMO_ prefix, count all for demo users
+      db.collection("carts").get(), // Carts don't have DEMO_ prefix, count all for demo users
+      db.collection("notifications").get(), // Notifications don't have DEMO_ prefix
     ]);
 
     const categories = categoriesSnapshot.size;
@@ -150,7 +144,13 @@ export async function GET() {
       db.collection("homepage_settings").get(),
     ]);
 
-    const settings = siteSettings.size + paymentSettings.size + shippingZones.size + emailTemplates.size + featureFlags.size + homepageSettings.size;
+    const settings =
+      siteSettings.size +
+      paymentSettings.size +
+      shippingZones.size +
+      emailTemplates.size +
+      featureFlags.size +
+      homepageSettings.size;
 
     return NextResponse.json({
       exists: true,

@@ -3,8 +3,10 @@
 import { forwardRef, InputHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export interface FormCheckboxProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
+export interface FormCheckboxProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "type" | "size"
+> {
   label: string | ReactNode;
   description?: string;
   error?: string;
@@ -31,7 +33,7 @@ export const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
               error
                 ? "border-red-500 text-red-600"
                 : "border-gray-300 dark:border-gray-600 text-blue-600",
-              props.disabled && "cursor-not-allowed opacity-60"
+              props.disabled && "cursor-not-allowed opacity-60",
             )}
             aria-invalid={!!error}
             aria-describedby={
@@ -48,7 +50,7 @@ export const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
               error
                 ? "text-red-600 dark:text-red-400"
                 : "text-gray-700 dark:text-gray-300",
-              props.disabled && "cursor-not-allowed opacity-60"
+              props.disabled && "cursor-not-allowed opacity-60",
             )}
           >
             {label}
@@ -69,7 +71,7 @@ export const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 FormCheckbox.displayName = "FormCheckbox";

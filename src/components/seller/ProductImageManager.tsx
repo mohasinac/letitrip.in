@@ -153,7 +153,7 @@ export default function ProductImageManager({
     images.map((url, index) => ({
       id: `existing-${index}`,
       url,
-    }))
+    })),
   );
   const [uploading, setUploading] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
@@ -176,14 +176,14 @@ export default function ProductImageManager({
       e.stopPropagation();
 
       const files = Array.from(e.dataTransfer.files).filter((file) =>
-        file.type.startsWith("image/")
+        file.type.startsWith("image/"),
       );
 
       if (files.length > 0) {
         await handleFiles(files);
       }
     },
-    [productImages]
+    [productImages],
   );
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -226,8 +226,8 @@ export default function ProductImageManager({
         prev.map((img) =>
           img.id === image.id
             ? { ...img, uploading: true, progress: 0, error: undefined }
-            : img
-        )
+            : img,
+        ),
       );
 
       // Perform upload through media service
@@ -244,7 +244,7 @@ export default function ProductImageManager({
       const updatedList = productImages.map((img) =>
         img.id === image.id
           ? { ...img, url: uploadedUrl, uploading: false, progress: 100 }
-          : img
+          : img,
       );
       setProductImages(updatedList);
 
@@ -260,8 +260,8 @@ export default function ProductImageManager({
                 uploading: false,
                 error: error instanceof Error ? error.message : "Upload failed",
               }
-            : img
-        )
+            : img,
+        ),
       );
     }
   };
@@ -275,8 +275,8 @@ export default function ProductImageManager({
       prev.map((img) =>
         img.id === imageId
           ? { ...img, uploading: true, error: undefined, progress: 0 }
-          : img
-      )
+          : img,
+      ),
     );
 
     await uploadImage(image);

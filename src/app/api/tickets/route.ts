@@ -53,10 +53,11 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
 
     // Parse Sieve query
-    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-      searchParams,
-      ticketsConfig
-    );
+    const {
+      query: sieveQuery,
+      errors,
+      warnings,
+    } = parseSieveQuery(searchParams, ticketsConfig);
 
     if (errors.length > 0) {
       return NextResponse.json(
@@ -65,7 +66,7 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
       if (!user) {
         return NextResponse.json(
           { error: "Authentication required" },
-          { status: 401 }
+          { status: 401 },
         );
       }
       query = query.where("userId", "==", user.uid);
@@ -92,7 +93,7 @@ export async function GET(request: NextRequest) {
       if (!shopId) {
         return NextResponse.json(
           { error: "Shop ID required for seller" },
-          { status: 400 }
+          { status: 400 },
         );
       }
       query = query.where("shopId", "==", shopId);
@@ -117,7 +118,11 @@ export async function GET(request: NextRequest) {
     for (const filter of sieveQuery.filters) {
       const dbField = ticketsConfig.fieldMappings[filter.field] || filter.field;
       if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+        query = query.where(
+          dbField,
+          filter.operator as FirebaseFirestore.WhereFilterOp,
+          filter.value,
+        );
       }
     }
 
@@ -148,7 +153,9 @@ export async function GET(request: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const data = snapshot.docs.map((doc) => transformTicket(doc.id, doc.data()));
+    const data = snapshot.docs.map((doc) =>
+      transformTicket(doc.id, doc.data()),
+    );
 
     // Get statistics (admin only)
     let stats = undefined;

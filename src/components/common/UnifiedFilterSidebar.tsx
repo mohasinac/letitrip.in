@@ -43,7 +43,7 @@ export function UnifiedFilterSidebar({
   inlineSearchPlaceholder = "Search...",
 }: UnifiedFilterSidebarProps) {
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
@@ -147,7 +147,7 @@ export function UnifiedFilterSidebar({
             // For fields with options, filter options
             if (field.options) {
               const filteredOptions = field.options.filter((option) =>
-                option.label.toLowerCase().includes(query)
+                option.label.toLowerCase().includes(query),
               );
 
               if (filteredOptions.length > 0) {
@@ -187,7 +187,7 @@ export function UnifiedFilterSidebar({
       const newCollapsed = new Set<string>();
       sections.forEach((section) => {
         const hasMatch = filteredSections.some(
-          (fs) => fs.title === section.title
+          (fs) => fs.title === section.title,
         );
         if (!hasMatch) {
           newCollapsed.add(section.title);
@@ -200,7 +200,7 @@ export function UnifiedFilterSidebar({
   const handleCheckboxChange = (
     key: string,
     optionValue: string | number,
-    checked: boolean
+    checked: boolean,
   ) => {
     const currentValues = pendingValues[key] || [];
     const newValues = checked
@@ -223,7 +223,7 @@ export function UnifiedFilterSidebar({
         </mark>
       ) : (
         part
-      )
+      ),
     );
   };
 
@@ -289,7 +289,7 @@ export function UnifiedFilterSidebar({
                     handleCheckboxChange(
                       field.key,
                       option.value,
-                      e.target.checked
+                      e.target.checked,
                     )
                   }
                   className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
@@ -440,8 +440,8 @@ export function UnifiedFilterSidebar({
           mobile
             ? "fixed inset-y-0 left-0 z-50 w-80 transform transition-transform duration-300"
             : isOpen
-            ? "w-72 shrink-0"
-            : "w-0 overflow-hidden"
+              ? "w-72 shrink-0"
+              : "w-0 overflow-hidden"
         } ${
           mobile && !isOpen ? "-translate-x-full" : "translate-x-0"
         } bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ${className}`}
@@ -484,8 +484,8 @@ export function UnifiedFilterSidebar({
                 {isLoading
                   ? "Applying..."
                   : hasPendingChanges
-                  ? "Apply Filters"
-                  : "Filters Applied"}
+                    ? "Apply Filters"
+                    : "Filters Applied"}
               </button>
               {hasActiveFilters && (
                 <button
@@ -654,8 +654,8 @@ export function UnifiedFilterSidebar({
               {isLoading
                 ? "Applying..."
                 : hasPendingChanges
-                ? "Apply Filters"
-                : "Filters Applied"}
+                  ? "Apply Filters"
+                  : "Filters Applied"}
             </button>
             {hasActiveFilters && (
               <button

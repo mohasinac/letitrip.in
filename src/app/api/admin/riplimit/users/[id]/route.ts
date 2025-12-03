@@ -29,7 +29,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     if (!isAdmin) {
       return NextResponse.json(
         { success: false, error: "Forbidden - Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     console.error("Error getting user RipLimit details:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get user details" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

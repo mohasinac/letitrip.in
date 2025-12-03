@@ -118,7 +118,7 @@ export async function PATCH(
     const user = authResult.user!;
 
     const { slug } = await params;
-    
+
     // Try direct doc access first (slug as ID), fallback to query for backward compatibility
     let doc = await Collections.products().doc(slug).get();
     if (!doc.exists) {
@@ -175,8 +175,9 @@ export async function PATCH(
     const statusChanged = body.status && body.status !== productData.status;
     const categoryChanged =
       body.category_id && body.category_id !== productData.category_id;
-    const stockChanged = 
-      body.stock_count !== undefined && body.stock_count !== productData.stock_count;
+    const stockChanged =
+      body.stock_count !== undefined &&
+      body.stock_count !== productData.stock_count;
     const oldCategoryId = productData.category_id;
     const newCategoryId = body.category_id || oldCategoryId;
 
@@ -262,7 +263,7 @@ export async function DELETE(
     const user = authResult.user!;
 
     const { slug } = await params;
-    
+
     // Try direct doc access first (slug as ID), fallback to query for backward compatibility
     let doc = await Collections.products().doc(slug).get();
     if (!doc.exists) {

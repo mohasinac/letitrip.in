@@ -64,10 +64,11 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(req.url);
 
         // Parse Sieve query
-        const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-          searchParams,
-          productsConfig
-        );
+        const {
+          query: sieveQuery,
+          errors,
+          warnings,
+        } = parseSieveQuery(searchParams, productsConfig);
 
         if (errors.length > 0) {
           return NextResponse.json(
@@ -76,7 +77,7 @@ export async function GET(request: NextRequest) {
               error: "Invalid query parameters",
               details: errors,
             },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
@@ -93,8 +94,10 @@ export async function GET(request: NextRequest) {
         }
 
         // Legacy query params support (for backward compatibility)
-        const shopId = searchParams.get("shopId") || searchParams.get("shop_id");
-        const categoryId = searchParams.get("categoryId") || searchParams.get("category_id");
+        const shopId =
+          searchParams.get("shopId") || searchParams.get("shop_id");
+        const categoryId =
+          searchParams.get("categoryId") || searchParams.get("category_id");
         const status = searchParams.get("status");
         const minPrice = searchParams.get("minPrice");
         const maxPrice = searchParams.get("maxPrice");
@@ -125,10 +128,16 @@ export async function GET(request: NextRequest) {
 
         // Apply Sieve filters
         for (const filter of sieveQuery.filters) {
-          const dbField = productsConfig.fieldMappings[filter.field] || filter.field;
-          if (filter.operator === "==" || filter.operator === "!=" ||
-              filter.operator === ">" || filter.operator === ">=" ||
-              filter.operator === "<" || filter.operator === "<=") {
+          const dbField =
+            productsConfig.fieldMappings[filter.field] || filter.field;
+          if (
+            filter.operator === "==" ||
+            filter.operator === "!=" ||
+            filter.operator === ">" ||
+            filter.operator === ">=" ||
+            filter.operator === "<" ||
+            filter.operator === "<="
+          ) {
             query = query.where(dbField, filter.operator, filter.value);
           }
         }
@@ -150,7 +159,8 @@ export async function GET(request: NextRequest) {
         // Apply sorting
         if (sieveQuery.sorts.length > 0) {
           for (const sort of sieveQuery.sorts) {
-            const dbField = productsConfig.fieldMappings[sort.field] || sort.field;
+            const dbField =
+              productsConfig.fieldMappings[sort.field] || sort.field;
             query = query.orderBy(dbField, sort.direction);
           }
         } else {
@@ -176,7 +186,9 @@ export async function GET(request: NextRequest) {
 
         // Execute query
         const snapshot = await query.get();
-        let data = snapshot.docs.map((doc) => transformProduct(doc.id, doc.data()));
+        let data = snapshot.docs.map((doc) =>
+          transformProduct(doc.id, doc.data()),
+        );
 
         // Apply text search filter (client-side)
         if (search) {
@@ -187,15 +199,15 @@ export async function GET(request: NextRequest) {
               p.description?.toLowerCase().includes(searchLower) ||
               p.slug?.toLowerCase().includes(searchLower) ||
               p.tags?.some((tag: string) =>
-                tag.toLowerCase().includes(searchLower)
-              )
+                tag.toLowerCase().includes(searchLower),
+              ),
           );
         }
 
         // Build response with Sieve pagination meta
         const pagination = createPaginationMeta(
           search ? data.length : totalCount,
-          sieveQuery
+          sieveQuery,
         );
 
         return NextResponse.json({
@@ -212,11 +224,11 @@ export async function GET(request: NextRequest) {
         console.error("Error fetching products:", error);
         return NextResponse.json(
           { success: false, error: "Failed to fetch products" },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
-    { ttl: 120 }
+    { ttl: 120 },
   );
 }
 

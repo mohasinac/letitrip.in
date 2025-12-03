@@ -245,8 +245,8 @@ function DetailedProductsTable({ products }: { products: TopProductFE[] }) {
                       conversionRate >= 5
                         ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-400"
                         : conversionRate >= 2
-                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400"
-                        : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
+                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400"
+                          : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
                     }`}
                   >
                     {conversionRate.toFixed(1)}%
@@ -301,8 +301,8 @@ function StatCard({
                   isPositive
                     ? "text-green-600 dark:text-green-400"
                     : isNegative
-                    ? "text-red-600 dark:text-red-400"
-                    : "text-gray-600 dark:text-gray-400"
+                      ? "text-red-600 dark:text-red-400"
+                      : "text-gray-600 dark:text-gray-400"
                 }`}
               >
                 {isPositive ? "+" : ""}
@@ -486,8 +486,8 @@ export default function AdminAnalyticsSalesPage() {
                         {salesData.length > 0
                           ? new Date(
                               salesData.reduce((best, day) =>
-                                day.revenue > best.revenue ? day : best
-                              ).date
+                                day.revenue > best.revenue ? day : best,
+                              ).date,
                             ).toLocaleDateString("en-IN", {
                               weekday: "long",
                               month: "short",
@@ -501,7 +501,7 @@ export default function AdminAnalyticsSalesPage() {
                         ₹
                         {salesData.length > 0
                           ? Math.max(
-                              ...salesData.map((d) => d.revenue)
+                              ...salesData.map((d) => d.revenue),
                             ).toLocaleString("en-IN")
                           : 0}
                       </p>

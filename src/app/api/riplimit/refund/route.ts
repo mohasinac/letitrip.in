@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -43,8 +43,11 @@ export async function POST(request: NextRequest) {
     // Validate amount
     if (!amount || typeof amount !== "number" || amount < RIPLIMIT_MIN_REFUND) {
       return NextResponse.json(
-        { success: false, error: `Minimum refund is ${RIPLIMIT_MIN_REFUND} RipLimit (₹${ripLimitToInr(RIPLIMIT_MIN_REFUND)})` },
-        { status: 400 }
+        {
+          success: false,
+          error: `Minimum refund is ${RIPLIMIT_MIN_REFUND} RipLimit (₹${ripLimitToInr(RIPLIMIT_MIN_REFUND)})`,
+        },
+        { status: 400 },
       );
     }
 
@@ -52,16 +55,23 @@ export async function POST(request: NextRequest) {
     if (!method || !["original", "bank"].includes(method)) {
       return NextResponse.json(
         { success: false, error: "Invalid refund method" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate bank details if method is bank
     if (method === "bank") {
-      if (!bankDetails?.accountNumber || !bankDetails?.ifscCode || !bankDetails?.accountHolderName) {
+      if (
+        !bankDetails?.accountNumber ||
+        !bankDetails?.ifscCode ||
+        !bankDetails?.accountHolderName
+      ) {
         return NextResponse.json(
-          { success: false, error: "Bank details are required for bank transfer refund" },
-          { status: 400 }
+          {
+            success: false,
+            error: "Bank details are required for bank transfer refund",
+          },
+          { status: 400 },
         );
       }
     }
@@ -72,22 +82,28 @@ export async function POST(request: NextRequest) {
     // Check if user has unpaid auctions
     if (balance.hasUnpaidAuctions) {
       return NextResponse.json(
-        { success: false, error: "Cannot request refund while you have unpaid won auctions" },
-        { status: 400 }
+        {
+          success: false,
+          error: "Cannot request refund while you have unpaid won auctions",
+        },
+        { status: 400 },
       );
     }
 
     // Check sufficient available balance
     if (balance.availableBalance < amount) {
       return NextResponse.json(
-        { success: false, error: `Insufficient available balance. You have ${balance.availableBalance} RipLimit available.` },
-        { status: 400 }
+        {
+          success: false,
+          error: `Insufficient available balance. You have ${balance.availableBalance} RipLimit available.`,
+        },
+        { status: 400 },
       );
     }
 
     // Calculate refund amounts
     const inrAmount = ripLimitToInr(amount);
-    
+
     // Check if this is the first refund this month (no fee) or additional (₹10 fee)
     const db = getFirestoreAdmin();
     const startOfMonth = new Date();
@@ -98,7 +114,11 @@ export async function POST(request: NextRequest) {
       .collection(COLLECTIONS.RIPLIMIT_REFUNDS)
       .where("userId", "==", auth.user.uid)
       .where("createdAt", ">=", Timestamp.fromDate(startOfMonth))
-      .where("status", "in", [RipLimitRefundStatus.REQUESTED, RipLimitRefundStatus.PROCESSING, RipLimitRefundStatus.COMPLETED])
+      .where("status", "in", [
+        RipLimitRefundStatus.REQUESTED,
+        RipLimitRefundStatus.PROCESSING,
+        RipLimitRefundStatus.COMPLETED,
+      ])
       .get();
 
     const feeAmount = existingRefundsQuery.empty ? 0 : 10;
@@ -138,7 +158,9 @@ export async function POST(request: NextRequest) {
       });
 
       // Create transaction record
-      const transactionRef = db.collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS).doc();
+      const transactionRef = db
+        .collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS)
+        .doc();
       t.set(transactionRef, {
         userId,
         type: "refund",
@@ -168,7 +190,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating refund request:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create refund request" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -184,7 +206,7 @@ export async function GET(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -209,7 +231,7 @@ export async function GET(request: NextRequest) {
     console.error("Error getting refund history:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get refund history" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

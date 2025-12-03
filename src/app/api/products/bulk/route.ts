@@ -6,10 +6,19 @@ import { ValidationError } from "@/lib/api-errors";
 import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
 
 // Actions that affect category counts
-const STATUS_CHANGING_ACTIONS = new Set(["publish", "unpublish", "archive", "delete"]);
+const STATUS_CHANGING_ACTIONS = new Set([
+  "publish",
+  "unpublish",
+  "archive",
+  "delete",
+]);
 
 // Build update object for each action
-function buildProductUpdate(action: string, now: string, updates?: any): { update: Record<string, any> | null; error?: string } {
+function buildProductUpdate(
+  action: string,
+  now: string,
+  updates?: any,
+): { update: Record<string, any> | null; error?: string } {
   switch (action) {
     case "publish":
       return { update: { status: "published", updated_at: now } };
@@ -25,7 +34,12 @@ function buildProductUpdate(action: string, now: string, updates?: any): { updat
       if (!updates?.stockCount && updates?.stockCount !== 0) {
         return { update: null, error: "Stock count required" };
       }
-      return { update: { stock_count: parseInt(String(updates.stockCount)), updated_at: now } };
+      return {
+        update: {
+          stock_count: parseInt(String(updates.stockCount)),
+          updated_at: now,
+        },
+      };
     case "update":
       if (!updates || typeof updates !== "object") {
         return { update: null, error: "Updates object required" };
@@ -114,7 +128,10 @@ export async function POST(request: NextRequest) {
         if (user.role === "seller") {
           const ownsShop = await userOwnsShop(productData?.shop_id, user.uid);
           if (!ownsShop) {
-            results.failed.push({ id: productId, error: "Not authorized to edit this product" });
+            results.failed.push({
+              id: productId,
+              error: "Not authorized to edit this product",
+            });
             continue;
           }
         }
@@ -132,7 +149,10 @@ export async function POST(request: NextRequest) {
         // Build and apply update
         const { update, error } = buildProductUpdate(action, now, updates);
         if (!update) {
-          results.failed.push({ id: productId, error: error || "Unknown action" });
+          results.failed.push({
+            id: productId,
+            error: error || "Unknown action",
+          });
           continue;
         }
 
@@ -143,7 +163,11 @@ export async function POST(request: NextRequest) {
           categoriesNeedingUpdate.add(categoryId);
         }
         if (action === "update") {
-          if (updates.status && updates.status !== productData.status && categoryId) {
+          if (
+            updates.status &&
+            updates.status !== productData.status &&
+            categoryId
+          ) {
             categoriesNeedingUpdate.add(categoryId);
           }
           if (updates.category_id && updates.category_id !== categoryId) {

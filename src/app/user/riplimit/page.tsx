@@ -139,9 +139,8 @@ export default function UserRipLimitPage() {
       setProcessingPurchase(true);
       setError(null);
 
-      const purchaseData = await ripLimitService.initiatePurchase(
-        purchaseAmount
-      );
+      const purchaseData =
+        await ripLimitService.initiatePurchase(purchaseAmount);
 
       // Initialize Razorpay
       const options = {
@@ -211,7 +210,7 @@ export default function UserRipLimitPage() {
 
       const result = await ripLimitService.requestRefund(
         refundAmount,
-        refundReason
+        refundReason,
       );
 
       setSuccessMessage(result.message);
@@ -698,7 +697,7 @@ export default function UserRipLimitPage() {
                 max={balance?.availableBalance || 0}
                 min={1}
                 helperText={`You will receive ₹${refundAmount.toLocaleString(
-                  "en-IN"
+                  "en-IN",
                 )}`}
               />
             </div>

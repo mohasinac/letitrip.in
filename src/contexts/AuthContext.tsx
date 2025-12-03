@@ -25,7 +25,7 @@ interface AuthContextType {
       displayName?: string;
       email?: string;
       photoURL?: string;
-    }
+    },
   ) => Promise<GoogleAuthResponse>;
   register: (data: {
     email: string;
@@ -41,7 +41,7 @@ interface AuthContextType {
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -101,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         displayName?: string;
         email?: string;
         photoURL?: string;
-      }
+      },
     ) => {
       try {
         const response = await authService.loginWithGoogle({
@@ -118,7 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    []
+    [],
   );
 
   // Register function
@@ -141,7 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    []
+    [],
   );
 
   // Logout function

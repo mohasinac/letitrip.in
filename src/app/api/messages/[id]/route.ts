@@ -28,7 +28,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -41,13 +41,15 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const userId = auth.user.uid;
 
     // Get conversation
-    const conversationRef = db.collection(COLLECTIONS.CONVERSATIONS).doc(conversationId);
+    const conversationRef = db
+      .collection(COLLECTIONS.CONVERSATIONS)
+      .doc(conversationId);
     const conversationDoc = await conversationRef.get();
 
     if (!conversationDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Conversation not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -55,7 +57,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     if (!conversationData?.participantIds?.includes(userId)) {
       return NextResponse.json(
         { success: false, error: "Not authorized to access this conversation" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -89,7 +91,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           Object.entries(data.readBy || {}).map(([key, value]) => [
             key,
             (value as any)?.toDate?.()?.toISOString() || value,
-          ])
+          ]),
         ),
       };
     });
@@ -122,11 +124,17 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const conversation = {
       id: conversationDoc.id,
       ...conversationData,
-      createdAt: conversationData.createdAt?.toDate?.()?.toISOString() || conversationData.createdAt,
-      updatedAt: conversationData.updatedAt?.toDate?.()?.toISOString() || conversationData.updatedAt,
+      createdAt:
+        conversationData.createdAt?.toDate?.()?.toISOString() ||
+        conversationData.createdAt,
+      updatedAt:
+        conversationData.updatedAt?.toDate?.()?.toISOString() ||
+        conversationData.updatedAt,
       lastMessage: {
         ...conversationData.lastMessage,
-        sentAt: conversationData.lastMessage?.sentAt?.toDate?.()?.toISOString() || conversationData.lastMessage?.sentAt,
+        sentAt:
+          conversationData.lastMessage?.sentAt?.toDate?.()?.toISOString() ||
+          conversationData.lastMessage?.sentAt,
       },
     };
 
@@ -149,7 +157,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     console.error("Error fetching conversation:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch conversation" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -165,7 +173,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -176,13 +184,15 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const db = getFirestoreAdmin();
     const userId = auth.user.uid;
 
-    const conversationRef = db.collection(COLLECTIONS.CONVERSATIONS).doc(conversationId);
+    const conversationRef = db
+      .collection(COLLECTIONS.CONVERSATIONS)
+      .doc(conversationId);
     const conversationDoc = await conversationRef.get();
 
     if (!conversationDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Conversation not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -190,7 +200,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     if (!conversationData?.participantIds?.includes(userId)) {
       return NextResponse.json(
         { success: false, error: "Not authorized" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -237,7 +247,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       default:
         return NextResponse.json(
           { success: false, error: "Invalid action" },
-          { status: 400 }
+          { status: 400 },
         );
     }
 
@@ -249,7 +259,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     console.error("Error updating conversation:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update conversation" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -265,7 +275,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -274,13 +284,15 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const db = getFirestoreAdmin();
     const userId = auth.user.uid;
 
-    const conversationRef = db.collection(COLLECTIONS.CONVERSATIONS).doc(conversationId);
+    const conversationRef = db
+      .collection(COLLECTIONS.CONVERSATIONS)
+      .doc(conversationId);
     const conversationDoc = await conversationRef.get();
 
     if (!conversationDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Conversation not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -288,7 +300,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     if (!conversationData?.participantIds?.includes(userId)) {
       return NextResponse.json(
         { success: false, error: "Not authorized" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -306,7 +318,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     console.error("Error deleting conversation:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete conversation" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

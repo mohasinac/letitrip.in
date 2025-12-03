@@ -3,31 +3,64 @@ import { requireAdmin } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
 // Status requirements for each action
-const STATUS_REQUIREMENTS: Record<string, { required?: string[]; excluded?: string[]; message: string }> = {
-  approve: { required: ["pending"], message: "Only pending payouts can be approved" },
-  process: { required: ["pending", "approved"], message: "Only pending or approved payouts can be processed" },
-  complete: { required: ["processing"], message: "Only processing payouts can be completed" },
-  reject: { required: ["pending"], message: "Only pending payouts can be rejected" },
-  delete: { excluded: ["completed", "processing"], message: "Cannot delete completed or processing payouts" },
+const STATUS_REQUIREMENTS: Record<
+  string,
+  { required?: string[]; excluded?: string[]; message: string }
+> = {
+  approve: {
+    required: ["pending"],
+    message: "Only pending payouts can be approved",
+  },
+  process: {
+    required: ["pending", "approved"],
+    message: "Only pending or approved payouts can be processed",
+  },
+  complete: {
+    required: ["processing"],
+    message: "Only processing payouts can be completed",
+  },
+  reject: {
+    required: ["pending"],
+    message: "Only pending payouts can be rejected",
+  },
+  delete: {
+    excluded: ["completed", "processing"],
+    message: "Cannot delete completed or processing payouts",
+  },
 };
 
 // Build update object for each action
-function buildPayoutUpdate(action: string, userId: string, data?: any): Record<string, any> | null {
+function buildPayoutUpdate(
+  action: string,
+  userId: string,
+  data?: any,
+): Record<string, any> | null {
   const now = new Date();
   switch (action) {
     case "approve":
       return { status: "approved", approved_at: now, updated_at: now };
     case "process":
-      return { status: "processing", processing_at: now, processed_by: userId, updated_at: now };
+      return {
+        status: "processing",
+        processing_at: now,
+        processed_by: userId,
+        updated_at: now,
+      };
     case "complete":
       return { status: "completed", completed_at: now, updated_at: now };
     case "reject":
-      return { status: "rejected", rejected_at: now, failure_reason: data?.reason || "Rejected by admin", updated_at: now };
+      return {
+        status: "rejected",
+        rejected_at: now,
+        failure_reason: data?.reason || "Rejected by admin",
+        updated_at: now,
+      };
     case "update":
       if (!data) return null;
       const updates: Record<string, any> = { updated_at: now };
       if ("status" in data) updates.status = data.status;
-      if ("transaction_id" in data) updates.transaction_id = data.transaction_id;
+      if ("transaction_id" in data)
+        updates.transaction_id = data.transaction_id;
       if ("notes" in data) updates.notes = data.notes;
       return updates;
     default:
@@ -83,11 +116,17 @@ export async function POST(request: NextRequest) {
         // Validate status requirements
         const requirement = STATUS_REQUIREMENTS[action];
         if (requirement) {
-          if (requirement.required && !requirement.required.includes(payout.status)) {
+          if (
+            requirement.required &&
+            !requirement.required.includes(payout.status)
+          ) {
             results.failed.push({ id, error: requirement.message });
             continue;
           }
-          if (requirement.excluded && requirement.excluded.includes(payout.status)) {
+          if (
+            requirement.excluded &&
+            requirement.excluded.includes(payout.status)
+          ) {
             results.failed.push({ id, error: requirement.message });
             continue;
           }
@@ -103,7 +142,13 @@ export async function POST(request: NextRequest) {
         // Build and apply update
         const updates = buildPayoutUpdate(action, user.uid, data);
         if (!updates) {
-          results.failed.push({ id, error: action === "update" ? "No update data provided" : `Unknown action: ${action}` });
+          results.failed.push({
+            id,
+            error:
+              action === "update"
+                ? "No update data provided"
+                : `Unknown action: ${action}`,
+          });
           continue;
         }
 

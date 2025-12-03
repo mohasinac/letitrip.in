@@ -33,7 +33,7 @@ import { evaluateFilters, isFirestoreSupported } from "./operators";
  */
 export function adaptToFirestore(
   sieveQuery: SieveQuery,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): FirestoreAdapterResult {
   const firestoreFilters: FirestoreFilter[] = [];
   const clientSideFilters: ClientSideFilter[] = [];
@@ -74,9 +74,7 @@ export function adaptToFirestore(
 /**
  * Map sieve operator to Firestore operator
  */
-function mapOperatorToFirestore(
-  operator: string
-): FirestoreOperator | null {
+function mapOperatorToFirestore(operator: string): FirestoreOperator | null {
   const mapping: Record<string, FirestoreOperator> = {
     "==": "==",
     "!=": "!=",
@@ -96,7 +94,7 @@ function mapOperatorToFirestore(
 export async function executeSieveQuery<T extends DocumentData>(
   collectionName: string,
   sieveQuery: SieveQuery,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): Promise<SievePaginatedResponse<T>> {
   const db = getFirestoreAdmin();
   const collectionRef = db.collection(collectionName);
@@ -121,9 +119,9 @@ export async function executeSieveQuery<T extends DocumentData>(
 
   // If we have client-side filters, we need to fetch more and filter
   const hasClientFilters = adapted.clientSideFilters.length > 0;
-  
+
   let data: T[];
-  
+
   if (hasClientFilters) {
     // Fetch all matching documents and filter client-side
     // This is less efficient but necessary for operators Firestore doesn't support
@@ -137,8 +135,8 @@ export async function executeSieveQuery<T extends DocumentData>(
     allData = allData.filter((record) =>
       evaluateFilters(
         adapted.clientSideFilters.map((f) => f.condition),
-        record as unknown as Record<string, unknown>
-      )
+        record as unknown as Record<string, unknown>,
+      ),
     );
 
     // Update count after client-side filtering
@@ -155,7 +153,7 @@ export async function executeSieveQuery<T extends DocumentData>(
     if (adapted.offset > 0) {
       // Fetch documents up to the offset to get the cursor
       const cursorSnapshot = await q.limit(adapted.offset).get();
-      
+
       const lastVisible = cursorSnapshot.docs.at(-1);
       if (lastVisible) {
         q = q.startAfter(lastVisible).limit(adapted.limit);
@@ -192,9 +190,12 @@ export async function executeSieveQuery<T extends DocumentData>(
     meta: {
       appliedFilters: sieveQuery.filters,
       appliedSorts: sieveQuery.sorts,
-      warnings: adapted.clientSideFilters.length > 0
-        ? [`${adapted.clientSideFilters.length} filter(s) applied client-side`]
-        : undefined,
+      warnings:
+        adapted.clientSideFilters.length > 0
+          ? [
+              `${adapted.clientSideFilters.length} filter(s) applied client-side`,
+            ]
+          : undefined,
     },
   };
 }
@@ -208,7 +209,7 @@ export async function executeSieveQuery<T extends DocumentData>(
 export function applySieveToQuery(
   baseQuery: Query,
   sieveQuery: SieveQuery,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): Query {
   const adapted = adaptToFirestore(sieveQuery, config);
   let q = baseQuery;
@@ -235,7 +236,7 @@ export function applySieveToQuery(
 export function postProcessResults<T extends Record<string, unknown>>(
   results: T[],
   sieveQuery: SieveQuery,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): { data: T[]; totalCount: number } {
   const adapted = adaptToFirestore(sieveQuery, config);
 
@@ -245,8 +246,8 @@ export function postProcessResults<T extends Record<string, unknown>>(
     filtered = results.filter((record) =>
       evaluateFilters(
         adapted.clientSideFilters.map((f) => f.condition),
-        record
-      )
+        record,
+      ),
     );
   }
 
@@ -265,9 +266,7 @@ export function postProcessResults<T extends Record<string, unknown>>(
 /**
  * Get collection reference
  */
-export function getCollectionRef(
-  collectionName: string
-): CollectionReference {
+export function getCollectionRef(collectionName: string): CollectionReference {
   const db = getFirestoreAdmin();
   return db.collection(collectionName);
 }
@@ -295,7 +294,7 @@ export function createEmptyResponse<T>(): SievePaginatedResponse<T> {
  */
 export function createPaginationMeta(
   totalCount: number,
-  sieveQuery: SieveQuery
+  sieveQuery: SieveQuery,
 ): SievePaginationMeta {
   const totalPages = Math.ceil(totalCount / sieveQuery.pageSize);
   return {

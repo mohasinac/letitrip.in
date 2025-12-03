@@ -44,8 +44,10 @@ const DownloadIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export interface SmartLinkProps
-  extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
+export interface SmartLinkProps extends Omit<
+  React.AnchorHTMLAttributes<HTMLAnchorElement>,
+  "href"
+> {
   /** The link destination - can be relative path or full URL */
   href: string;
   /** Children to render inside the link */
@@ -140,7 +142,7 @@ export const SmartLink = forwardRef<HTMLAnchorElement, SmartLinkProps>(
       title,
       ...props
     },
-    ref
+    ref,
   ) => {
     // Determine link type and behavior
     const linkInfo = useMemo(() => {
@@ -325,7 +327,7 @@ export const SmartLink = forwardRef<HTMLAnchorElement, SmartLinkProps>(
         {content}
       </a>
     );
-  }
+  },
 );
 
 SmartLink.displayName = "SmartLink";

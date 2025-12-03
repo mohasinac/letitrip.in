@@ -59,8 +59,8 @@ export function CompareButton({
             inComparison
               ? "bg-blue-600 text-white hover:bg-blue-700"
               : disabled
-              ? "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
-              : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 shadow-md"
+                ? "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+                : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 shadow-md"
           }
           ${className}
         `}
@@ -69,8 +69,8 @@ export function CompareButton({
           disabled
             ? "Maximum products reached"
             : inComparison
-            ? "Remove from compare"
-            : "Add to compare"
+              ? "Remove from compare"
+              : "Add to compare"
         }
       >
         {inComparison ? (
@@ -93,8 +93,8 @@ export function CompareButton({
             inComparison
               ? "bg-blue-600 text-white hover:bg-blue-700"
               : disabled
-              ? "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
-              : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
+                ? "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
           }
           ${className}
         `}
@@ -125,8 +125,8 @@ export function CompareButton({
           inComparison
             ? "text-blue-600 dark:text-blue-400"
             : disabled
-            ? "text-gray-400 cursor-not-allowed"
-            : "text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+              ? "text-gray-400 cursor-not-allowed"
+              : "text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
         }
         ${className}
       `}

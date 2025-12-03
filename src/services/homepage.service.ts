@@ -1,5 +1,9 @@
 import { apiService } from "./api.service";
-import { HOMEPAGE_ROUTES, PRODUCT_ROUTES, AUCTION_ROUTES } from "@/constants/api-routes";
+import {
+  HOMEPAGE_ROUTES,
+  PRODUCT_ROUTES,
+  AUCTION_ROUTES,
+} from "@/constants/api-routes";
 import { logServiceError } from "@/lib/error-logger";
 import { analyticsService } from "./analytics.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
@@ -41,7 +45,7 @@ interface AuctionItemFE {
   currentBid: number;
   bidCount: number;
   images: string[];
-  status: 'upcoming' | 'live' | 'ended';
+  status: "upcoming" | "live" | "ended";
   startTime: Date;
   endTime: Date;
   shopId: string;
@@ -93,10 +97,14 @@ function transformSlide(data: Record<string, unknown>): HeroSlide {
     image: (data.image as string) || (data.image_url as string) || "",
     title: (data.title as string) || "",
     subtitle: (data.subtitle as string) || "",
-    ctaText: (data.ctaText as string) || (data.cta_text as string) || "Shop Now",
+    ctaText:
+      (data.ctaText as string) || (data.cta_text as string) || "Shop Now",
     ctaLink: (data.ctaLink as string) || (data.link_url as string) || "/",
     order: (data.order as number) ?? (data.position as number) ?? 0,
-    enabled: data.enabled !== undefined ? (data.enabled as boolean) : (data.is_active as boolean) ?? true,
+    enabled:
+      data.enabled !== undefined
+        ? (data.enabled as boolean)
+        : ((data.is_active as boolean) ?? true),
   };
 }
 
@@ -127,11 +135,11 @@ class HomepageService {
         HOMEPAGE_ROUTES.HERO_SLIDES,
       );
       const slides = (response.slides || []).map(transformSlide);
-      
+
       if (slides.length === 0) {
         analyticsService.trackEvent("homepage_no_hero_slides");
       }
-      
+
       return slides;
     } catch (error) {
       logServiceError("HomepageService", "getHeroSlides", error as Error);
@@ -166,18 +174,21 @@ class HomepageService {
         sorts: "-created_at",
         pageSize: limit.toString(),
       });
-      
+
       const response = await apiService.get<{ data: ProductCardFE[] }>(
-        `${PRODUCT_ROUTES.LIST}?${params.toString()}`
+        `${PRODUCT_ROUTES.LIST}?${params.toString()}`,
       );
-      
+
       // Filter to only in-stock products client-side (safety check)
-      const products = (response.data || []).filter((p: any) => (p.stock_count || p.stock_quantity || p.stockCount || 0) > 0);
-      
+      const products = (response.data || []).filter(
+        (p: any) =>
+          (p.stock_count || p.stock_quantity || p.stockCount || 0) > 0,
+      );
+
       if (products.length === 0) {
         analyticsService.trackEvent("homepage_no_latest_products");
       }
-      
+
       return products;
     } catch (error) {
       logServiceError("HomepageService", "getLatestProducts", error as Error);
@@ -198,17 +209,17 @@ class HomepageService {
         sorts: "-bid_count,-created_at",
         pageSize: limit.toString(),
       });
-      
+
       const response = await apiService.get<{ data: AuctionItemFE[] }>(
-        `${AUCTION_ROUTES.LIST}?${params.toString()}`
+        `${AUCTION_ROUTES.LIST}?${params.toString()}`,
       );
-      
+
       const auctions = response.data || [];
-      
+
       if (auctions.length === 0) {
         analyticsService.trackEvent("homepage_no_hot_auctions");
       }
-      
+
       return auctions;
     } catch (error) {
       logServiceError("HomepageService", "getHotAuctions", error as Error);
@@ -224,27 +235,31 @@ class HomepageService {
    */
   async getFeaturedCategories(
     categoryLimit = 6,
-    itemsPerCategory = 10
+    itemsPerCategory = 10,
   ): Promise<CategoryWithItems[]> {
     try {
       const params = new URLSearchParams({
         categoryLimit: categoryLimit.toString(),
         itemsPerCategory: itemsPerCategory.toString(),
       });
-      
+
       const response = await apiService.get<{ data: CategoryWithItems[] }>(
-        `/homepage/categories/featured?${params.toString()}`
+        `/homepage/categories/featured?${params.toString()}`,
       );
-      
+
       const categories = response.data || [];
-      
+
       if (categories.length === 0) {
         analyticsService.trackEvent("homepage_no_featured_categories");
       }
-      
+
       return categories;
     } catch (error) {
-      logServiceError("HomepageService", "getFeaturedCategories", error as Error);
+      logServiceError(
+        "HomepageService",
+        "getFeaturedCategories",
+        error as Error,
+      );
       analyticsService.trackEvent("homepage_featured_categories_error", {
         error: (error as Error).message,
       });
@@ -257,24 +272,24 @@ class HomepageService {
    */
   async getFeaturedShops(
     shopLimit = 4,
-    itemsPerShop = 10
+    itemsPerShop = 10,
   ): Promise<ShopWithItems[]> {
     try {
       const params = new URLSearchParams({
         shopLimit: shopLimit.toString(),
         itemsPerShop: itemsPerShop.toString(),
       });
-      
+
       const response = await apiService.get<{ data: ShopWithItems[] }>(
-        `/homepage/shops/featured?${params.toString()}`
+        `/homepage/shops/featured?${params.toString()}`,
       );
-      
+
       const shops = response.data || [];
-      
+
       if (shops.length === 0) {
         analyticsService.trackEvent("homepage_no_featured_shops");
       }
-      
+
       return shops;
     } catch (error) {
       logServiceError("HomepageService", "getFeaturedShops", error as Error);
@@ -296,18 +311,21 @@ class HomepageService {
         inStock: "true",
         pageSize: limit.toString(),
       });
-      
+
       const response = await apiService.get<{ data: ProductCardFE[] }>(
-        `${PRODUCT_ROUTES.LIST}?${params.toString()}`
+        `${PRODUCT_ROUTES.LIST}?${params.toString()}`,
       );
-      
+
       // Filter to only in-stock products client-side (safety check)
-      const products = (response.data || []).filter((p: any) => (p.stock_count || p.stock_quantity || p.stockCount || 0) > 0);
-      
+      const products = (response.data || []).filter(
+        (p: any) =>
+          (p.stock_count || p.stock_quantity || p.stockCount || 0) > 0,
+      );
+
       if (products.length === 0) {
         analyticsService.trackEvent("homepage_no_featured_products");
       }
-      
+
       return products;
     } catch (error) {
       logServiceError("HomepageService", "getFeaturedProducts", error as Error);
@@ -328,17 +346,17 @@ class HomepageService {
         status: "active",
         pageSize: limit.toString(),
       });
-      
+
       const response = await apiService.get<{ data: AuctionItemFE[] }>(
-        `${AUCTION_ROUTES.LIST}?${params.toString()}`
+        `${AUCTION_ROUTES.LIST}?${params.toString()}`,
       );
-      
+
       const auctions = response.data || [];
-      
+
       if (auctions.length === 0) {
         analyticsService.trackEvent("homepage_no_featured_auctions");
       }
-      
+
       return auctions;
     } catch (error) {
       logServiceError("HomepageService", "getFeaturedAuctions", error as Error);
@@ -358,17 +376,17 @@ class HomepageService {
         minRating: "4",
         limit: limit.toString(),
       });
-      
+
       const response = await apiService.get<{ data: ReviewFE[] }>(
-        `/homepage/reviews?${params.toString()}`
+        `/homepage/reviews?${params.toString()}`,
       );
-      
+
       const reviews = response.data || [];
-      
+
       if (reviews.length === 0) {
         analyticsService.trackEvent("homepage_no_recent_reviews");
       }
-      
+
       return reviews;
     } catch (error) {
       logServiceError("HomepageService", "getRecentReviews", error as Error);
@@ -389,17 +407,17 @@ class HomepageService {
         status: "published",
         limit: limit.toString(),
       });
-      
+
       const response = await apiService.get<{ data: BlogPostFE[] }>(
-        `/blog?${params.toString()}`
+        `/blog?${params.toString()}`,
       );
-      
+
       const blogs = response.data || [];
-      
+
       if (blogs.length === 0) {
         analyticsService.trackEvent("homepage_no_featured_blogs");
       }
-      
+
       return blogs;
     } catch (error) {
       logServiceError("HomepageService", "getFeaturedBlogs", error as Error);
@@ -416,13 +434,13 @@ class HomepageService {
   async getFAQs(): Promise<FAQ[]> {
     try {
       const response = await apiService.get<{ data: FAQ[] }>("/homepage/faqs");
-      
+
       const faqs = response.data || [];
-      
+
       if (faqs.length === 0) {
         analyticsService.trackEvent("homepage_no_faqs");
       }
-      
+
       return faqs;
     } catch (error) {
       logServiceError("HomepageService", "getFAQs", error as Error);

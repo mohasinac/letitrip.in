@@ -153,7 +153,7 @@ export default function CreateBlogPostPage() {
     } catch (error) {
       console.error("Failed to create blog post:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to create blog post"
+        error instanceof Error ? error.message : "Failed to create blog post",
       );
     } finally {
       setLoading(false);
@@ -164,7 +164,7 @@ export default function CreateBlogPostPage() {
     if (formData.title || formData.content || uploadedUrls.length > 0) {
       if (
         confirm(
-          "Are you sure you want to cancel? All unsaved changes will be lost."
+          "Are you sure you want to cancel? All unsaved changes will be lost.",
         )
       ) {
         cleanupUploadedMedia();
@@ -221,8 +221,8 @@ export default function CreateBlogPostPage() {
                       currentStep > step.id
                         ? "border-green-500 bg-green-500 text-white"
                         : currentStep === step.id
-                        ? "border-purple-600 bg-purple-600 text-white"
-                        : "border-gray-300 bg-white text-gray-400"
+                          ? "border-purple-600 bg-purple-600 text-white"
+                          : "border-gray-300 bg-white text-gray-400"
                     }`}
                   >
                     {currentStep > step.id ? (

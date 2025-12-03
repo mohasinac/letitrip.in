@@ -17,11 +17,56 @@ const INDIAN_CITIES = [
   { city: "Lucknow", state: "Uttar Pradesh", pincode: "226001" },
 ];
 
-const STREETS = ["Marine Drive", "MG Road", "Park Street", "Anna Salai", "FC Road", "Brigade Road", "Linking Road", "Gandhi Nagar", "Civil Lines", "Mall Road"];
+const STREETS = [
+  "Marine Drive",
+  "MG Road",
+  "Park Street",
+  "Anna Salai",
+  "FC Road",
+  "Brigade Road",
+  "Linking Road",
+  "Gandhi Nagar",
+  "Civil Lines",
+  "Mall Road",
+];
 
 // Beyblade-themed shop names
-const SHOP_PREFIXES = ["Blader's", "Spin", "Burst", "Battle", "Storm", "Dragon", "Phoenix", "Ultimate", "Pro", "Master", "Legend", "Galaxy", "Turbo", "Nova", "Metal", "Champion"];
-const SHOP_SUFFIXES = ["Arena", "Den", "Hub", "Zone", "Store", "Emporium", "Palace", "Corner", "World", "Vault", "Paradise", "Bazaar", "Haven", "Fortress", "Stadium", "Dojo"];
+const SHOP_PREFIXES = [
+  "Blader's",
+  "Spin",
+  "Burst",
+  "Battle",
+  "Storm",
+  "Dragon",
+  "Phoenix",
+  "Ultimate",
+  "Pro",
+  "Master",
+  "Legend",
+  "Galaxy",
+  "Turbo",
+  "Nova",
+  "Metal",
+  "Champion",
+];
+const SHOP_SUFFIXES = [
+  "Arena",
+  "Den",
+  "Hub",
+  "Zone",
+  "Store",
+  "Emporium",
+  "Palace",
+  "Corner",
+  "World",
+  "Vault",
+  "Paradise",
+  "Bazaar",
+  "Haven",
+  "Fortress",
+  "Stadium",
+  "Dojo",
+];
 
 // Shop logos and banners - Beyblade themed
 const SHOP_LOGOS = [
@@ -56,13 +101,21 @@ export async function POST(request: NextRequest) {
     const { sellers, scale = 10 } = body;
 
     if (!sellers || !Array.isArray(sellers) || sellers.length === 0) {
-      return NextResponse.json({ success: false, error: "Sellers data required" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Sellers data required" },
+        { status: 400 },
+      );
     }
 
     const db = getFirestoreAdmin();
     const timestamp = new Date();
-    const createdShops: Array<{ id: string; ownerId: string; name: string; slug: string }> = [];
-    
+    const createdShops: Array<{
+      id: string;
+      ownerId: string;
+      name: string;
+      slug: string;
+    }> = [];
+
     // Calculate shop count: scale / 2 (5 shops for scale 10, 50 for scale 100)
     const shopCount = Math.max(1, Math.ceil(scale / 2));
 
@@ -77,7 +130,12 @@ export async function POST(request: NextRequest) {
         name: shopName,
         slug: shopSlug,
         description: `Premium Beyblade shop - Attack, Defense, Stamina types and accessories. Authentic Takara Tomy and Hasbro products!`,
-        tagline: ["Let it rip!", "Authentic Beyblades only", "Fast shipping worldwide", "Blader's choice"][i % 4],
+        tagline: [
+          "Let it rip!",
+          "Authentic Beyblades only",
+          "Fast shipping worldwide",
+          "Blader's choice",
+        ][i % 4],
         email: `shop${i + 1}@demo.letitrip.in`,
         phone: `+91-${8000000000 + i}`,
         whatsapp: `+91-${8000000000 + i}`,
@@ -133,7 +191,12 @@ export async function POST(request: NextRequest) {
         updated_at: timestamp,
       });
 
-      createdShops.push({ id: shopRef.id, ownerId: seller.id, name: shopName, slug: shopSlug });
+      createdShops.push({
+        id: shopRef.id,
+        ownerId: seller.id,
+        name: shopName,
+        slug: shopSlug,
+      });
     }
 
     return NextResponse.json({
@@ -146,7 +209,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: unknown) {
     console.error("Demo shops error:", error);
-    const message = error instanceof Error ? error.message : "Failed to generate shops";
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
+    const message =
+      error instanceof Error ? error.message : "Failed to generate shops";
+    return NextResponse.json(
+      { success: false, error: message },
+      { status: 500 },
+    );
   }
 }

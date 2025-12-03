@@ -740,7 +740,7 @@ const isEnded = Math.random() < 0.3;
 
 // After: All live, consistent timeframes
 const startDate = new Date(
-  now - Math.floor(Math.random() * 2) * 24 * 60 * 60 * 1000
+  now - Math.floor(Math.random() * 2) * 24 * 60 * 60 * 1000,
 );
 const daysUntilEnd = 3 + Math.floor(Math.random() * 5); // 3-7 days
 const endDate = new Date(now + daysUntilEnd * 24 * 60 * 60 * 1000);
@@ -762,7 +762,6 @@ const endDate = new Date(now + daysUntilEnd * 24 * 60 * 60 * 1000);
 **Features Implemented**:
 
 1. **Image Editor**:
-
    - Crop with aspect ratio presets (1:1, 4:3, 16:9, free)
    - Zoom control (1-3x)
    - Rotation (90° increments)
@@ -770,7 +769,6 @@ const endDate = new Date(now + daysUntilEnd * 24 * 60 * 60 * 1000);
    - Uses `react-easy-crop` library
 
 2. **Focus Point Selection**:
-
    - Click/tap to set focus point on image
    - Visual crosshair indicator
    - Mobile preview showing cropped result

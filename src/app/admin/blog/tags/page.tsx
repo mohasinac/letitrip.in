@@ -298,13 +298,13 @@ export default function BlogTagsPage() {
       if (editTag) {
         await apiService.patch(`/blog/tags/${editTag.id}`, data);
         setTags((prev) =>
-          prev.map((t) => (t.id === editTag.id ? { ...t, ...data } : t))
+          prev.map((t) => (t.id === editTag.id ? { ...t, ...data } : t)),
         );
         toast.success("Tag updated successfully");
       } else {
         const response = await apiService.post<{ data: BlogTag }>(
           "/blog/tags",
-          data
+          data,
         );
         setTags((prev) => [
           ...prev,
@@ -351,7 +351,7 @@ export default function BlogTagsPage() {
           try {
             const response = await apiService.post<{ data: BlogTag }>(
               "/blog/tags",
-              { name, slug }
+              { name, slug },
             );
             newTags.push(
               response.data || {
@@ -361,7 +361,7 @@ export default function BlogTagsPage() {
                 postCount: 0,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
-              }
+              },
             );
           } catch {
             // Add locally if API fails
@@ -406,7 +406,7 @@ export default function BlogTagsPage() {
   const handleBulkDelete = async () => {
     try {
       await Promise.all(
-        selectedIds.map((id) => apiService.delete(`/blog/tags/${id}`))
+        selectedIds.map((id) => apiService.delete(`/blog/tags/${id}`)),
       );
       setTags((prev) => prev.filter((t) => !selectedIds.includes(t.id)));
       setSelectedIds([]);
@@ -422,13 +422,13 @@ export default function BlogTagsPage() {
     ? tags.filter(
         (t) =>
           t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          t.slug.toLowerCase().includes(searchQuery.toLowerCase())
+          t.slug.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     : tags;
 
   // Sort by post count
   const sortedTags = [...filteredTags].sort(
-    (a, b) => b.postCount - a.postCount
+    (a, b) => b.postCount - a.postCount,
   );
 
   // Stats
@@ -621,7 +621,7 @@ export default function BlogTagsPage() {
                         setSelectedIds([...selectedIds, tag.id]);
                       } else {
                         setSelectedIds(
-                          selectedIds.filter((id) => id !== tag.id)
+                          selectedIds.filter((id) => id !== tag.id),
                         );
                       }
                     }}

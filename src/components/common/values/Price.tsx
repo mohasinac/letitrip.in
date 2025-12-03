@@ -63,7 +63,7 @@ export function Price({
       <span
         className={cn(
           "font-semibold text-gray-900 dark:text-white",
-          sizeClasses[size]
+          sizeClasses[size],
         )}
       >
         {formattedPrice}
@@ -77,9 +77,9 @@ export function Price({
               size === "xl"
                 ? "text-base"
                 : size === "lg"
-                ? "text-sm"
-                : "text-xs",
-              strikethroughClassName
+                  ? "text-sm"
+                  : "text-xs",
+              strikethroughClassName,
             )}
           >
             {formatCurrency(originalPrice, { showDecimals, showSymbol })}

@@ -75,7 +75,7 @@ export default function CategoriesPage() {
 
   // Fields configuration for inline edit - using centralized config
   const baseFields = toInlineFields(
-    getFieldsForContext(CATEGORY_FIELDS, "table")
+    getFieldsForContext(CATEGORY_FIELDS, "table"),
   );
 
   // Update parent category options dynamically
@@ -157,7 +157,7 @@ export default function CategoriesPage() {
     } catch (error) {
       console.error("Failed to load categories:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load categories"
+        error instanceof Error ? error.message : "Failed to load categories",
       );
     } finally {
       setLoading(false);
@@ -175,7 +175,7 @@ export default function CategoriesPage() {
     } catch (error) {
       console.error("Failed to delete category:", error);
       toast.error(
-        "Failed to delete category. It may have subcategories or products."
+        "Failed to delete category. It may have subcategories or products.",
       );
     }
   };
@@ -184,7 +184,7 @@ export default function CategoriesPage() {
   const filteredCategories = categories.filter(
     (category) =>
       category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      category.slug.toLowerCase().includes(searchQuery.toLowerCase())
+      category.slug.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Calculate hierarchy level (for display)
@@ -362,7 +362,7 @@ export default function CategoriesPage() {
             <div className="lg:hidden space-y-4 mb-4">
               {filteredCategories.map((category) => {
                 const parentCategory = categories.find(
-                  (c) => c.id === category.parent_id
+                  (c) => c.id === category.parent_id,
                 );
                 return (
                   <div
@@ -376,7 +376,7 @@ export default function CategoriesPage() {
                           setSelectedIds((prev) =>
                             checked
                               ? [...prev, category.id]
-                              : prev.filter((id) => id !== category.id)
+                              : prev.filter((id) => id !== category.id),
                           );
                         }}
                         aria-label={`Select ${category.name}`}
@@ -468,7 +468,7 @@ export default function CategoriesPage() {
                         }
                         onChange={(checked) => {
                           setSelectedIds(
-                            checked ? filteredCategories.map((c) => c.id) : []
+                            checked ? filteredCategories.map((c) => c.id) : [],
                           );
                         }}
                         aria-label="Select all categories"
@@ -500,11 +500,11 @@ export default function CategoriesPage() {
                         // Validate form fields
                         const fieldsToValidate = getFieldsForContext(
                           CATEGORY_FIELDS,
-                          "table"
+                          "table",
                         );
                         const { isValid } = validateForm(
                           values,
-                          fieldsToValidate
+                          fieldsToValidate,
                         );
 
                         if (!isValid) {
@@ -536,7 +536,7 @@ export default function CategoriesPage() {
                   {filteredCategories.map((category) => {
                     const isEditing = editingId === category.id;
                     const parentCategory = categories.find(
-                      (c) => c.id === category.parent_id
+                      (c) => c.id === category.parent_id,
                     );
 
                     if (isEditing) {
@@ -557,11 +557,11 @@ export default function CategoriesPage() {
                               // Validate form fields
                               const fieldsToValidate = getFieldsForContext(
                                 CATEGORY_FIELDS,
-                                "table"
+                                "table",
                               );
                               const { isValid } = validateForm(
                                 values,
-                                fieldsToValidate
+                                fieldsToValidate,
                               );
 
                               if (!isValid) {
@@ -580,7 +580,7 @@ export default function CategoriesPage() {
                             } catch (error) {
                               console.error(
                                 "Failed to update category:",
-                                error
+                                error,
                               );
                               throw error;
                             }
@@ -604,7 +604,7 @@ export default function CategoriesPage() {
                               setSelectedIds((prev) =>
                                 checked
                                   ? [...prev, category.id]
-                                  : prev.filter((id) => id !== category.id)
+                                  : prev.filter((id) => id !== category.id),
                               );
                             }}
                             aria-label={`Select ${category.name}`}

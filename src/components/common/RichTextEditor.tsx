@@ -388,7 +388,7 @@ export default function RichTextEditor({
   // Filter buttons based on enabled tools
   const visibleButtons = useMemo(
     () => EDITOR_BUTTONS.filter((btn) => tools.includes(btn.tool)),
-    [tools]
+    [tools],
   );
 
   // Group buttons for visual separation
@@ -453,7 +453,7 @@ export default function RichTextEditor({
       // Refocus editor
       editorRef.current?.focus();
     },
-    [disabled, onChange, saveSelection]
+    [disabled, onChange, saveSelection],
   );
 
   // Handle inserting a link
@@ -510,7 +510,7 @@ export default function RichTextEditor({
       setShowColorPicker(null);
       editorRef.current?.focus();
     },
-    [onChange]
+    [onChange],
   );
 
   // Handle highlight
@@ -527,7 +527,7 @@ export default function RichTextEditor({
       setShowColorPicker(null);
       editorRef.current?.focus();
     },
-    [onChange]
+    [onChange],
   );
 
   // Handle image upload from file
@@ -571,7 +571,7 @@ export default function RichTextEditor({
         setShowImagePicker(false);
       }
     },
-    [imageUploadContext, imageUploadContextId, onImageUpload]
+    [imageUploadContext, imageUploadContextId, onImageUpload],
   );
 
   // Insert image from URL
@@ -605,7 +605,7 @@ export default function RichTextEditor({
       setShowImagePicker(false);
       setImageUrl("");
     },
-    [onChange]
+    [onChange],
   );
 
   // Insert table
@@ -632,7 +632,7 @@ export default function RichTextEditor({
       setShowTablePicker(false);
       editorRef.current?.focus();
     },
-    [onChange]
+    [onChange],
   );
 
   // Insert code block
@@ -658,7 +658,7 @@ export default function RichTextEditor({
       document.execCommand(
         "insertHTML",
         false,
-        '<code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono">code</code>'
+        '<code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono">code</code>',
       );
     }
 
@@ -675,13 +675,13 @@ export default function RichTextEditor({
       if (btn.hasDropdown) {
         if (btn.tool === "textColor") {
           setShowColorPicker(
-            showColorPicker === "textColor" ? null : "textColor"
+            showColorPicker === "textColor" ? null : "textColor",
           );
           setShowImagePicker(false);
           setShowTablePicker(false);
         } else if (btn.tool === "highlight") {
           setShowColorPicker(
-            showColorPicker === "highlight" ? null : "highlight"
+            showColorPicker === "highlight" ? null : "highlight",
           );
           setShowImagePicker(false);
           setShowTablePicker(false);
@@ -711,7 +711,7 @@ export default function RichTextEditor({
       insertInlineCode,
       insertCodeBlock,
       saveSelection,
-    ]
+    ],
   );
 
   // Handle content change
@@ -752,7 +752,7 @@ export default function RichTextEditor({
       // For text, allow HTML but could sanitize if needed
       // Currently allowing rich paste for better UX
     },
-    [disabled, handleImageUpload]
+    [disabled, handleImageUpload],
   );
 
   // Handle keyboard shortcuts
@@ -786,7 +786,7 @@ export default function RichTextEditor({
         }
       }
     },
-    [executeCommand, saveSelection]
+    [executeCommand, saveSelection],
   );
 
   // Get character count
@@ -1047,7 +1047,7 @@ export default function RichTextEditor({
                                 : "bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                             }`}
                           />
-                        ))
+                        )),
                       )}
                     </div>
                     <div className="flex gap-2">
@@ -1061,7 +1061,7 @@ export default function RichTextEditor({
                             ...tableSize,
                             rows: Math.max(
                               1,
-                              Math.min(10, parseInt(e.target.value) || 1)
+                              Math.min(10, parseInt(e.target.value) || 1),
                             ),
                           })
                         }
@@ -1078,7 +1078,7 @@ export default function RichTextEditor({
                             ...tableSize,
                             cols: Math.max(
                               1,
-                              Math.min(10, parseInt(e.target.value) || 1)
+                              Math.min(10, parseInt(e.target.value) || 1),
                             ),
                           })
                         }

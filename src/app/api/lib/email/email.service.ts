@@ -1,5 +1,5 @@
 /**
- * Email Service
+ * Email Service (Backend)
  *
  * Handles sending emails using Resend API (or fallback to console logging in development)
  *
@@ -17,7 +17,7 @@ import {
   getPasswordResetEmailText,
   getWelcomeEmailTemplate,
   getWelcomeEmailText,
-} from './templates';
+} from "./templates/index";
 
 export interface EmailOptions {
   to: string | string[];
@@ -48,7 +48,7 @@ class EmailService {
 
     if (!this.isConfigured) {
       console.warn(
-        "⚠️ Email service not configured. Set RESEND_API_KEY in environment variables.",
+        "⚠️ Email service not configured. Set RESEND_API_KEY in environment variables."
       );
     }
   }
@@ -119,11 +119,13 @@ class EmailService {
         success: true,
         messageId: data.id,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Email service error";
       console.error("❌ Email service error:", error);
       return {
         success: false,
-        error: error.message || "Email service error",
+        error: errorMessage,
       };
     }
   }
@@ -134,7 +136,7 @@ class EmailService {
   async sendVerificationEmail(
     email: string,
     name: string,
-    verificationLink: string,
+    verificationLink: string
   ): Promise<EmailResult> {
     const html = getVerificationEmailTemplate(name, verificationLink);
     const text = getVerificationEmailText(name, verificationLink);
@@ -153,7 +155,7 @@ class EmailService {
   async sendPasswordResetEmail(
     email: string,
     name: string,
-    resetLink: string,
+    resetLink: string
   ): Promise<EmailResult> {
     const html = getPasswordResetEmailTemplate(name, resetLink);
     const text = getPasswordResetEmailText(name, resetLink);

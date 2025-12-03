@@ -1,7 +1,7 @@
 /**
  * Test Email Endpoint
  * POST /api/admin/email/test
- * 
+ *
  * Send a test email to verify Resend configuration
  */
 
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     if (!to || typeof to !== "string") {
       return NextResponse.json(
         { error: "Email address is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     if (!emailRegex.test(to)) {
       return NextResponse.json(
         { error: "Invalid email address format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -88,11 +88,11 @@ export async function POST(request: NextRequest) {
 
     if (!result.success) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: result.error || "Failed to send email" 
+        {
+          success: false,
+          error: result.error || "Failed to send email",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -104,11 +104,11 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("Test email error:", error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error.message || "Failed to send test email" 
+      {
+        success: false,
+        error: error.message || "Failed to send test email",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

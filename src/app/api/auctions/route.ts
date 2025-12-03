@@ -66,10 +66,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     // Parse Sieve query
-    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-      searchParams,
-      auctionsConfig
-    );
+    const {
+      query: sieveQuery,
+      errors,
+      warnings,
+    } = parseSieveQuery(searchParams, auctionsConfig);
 
     if (errors.length > 0) {
       return NextResponse.json(
@@ -78,14 +79,15 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Legacy filter params (backward compatibility)
     const shopId = searchParams.get("shop_id") || searchParams.get("shopId");
     const status = searchParams.get("status");
-    const categoryId = searchParams.get("categoryId") || searchParams.get("category_id");
+    const categoryId =
+      searchParams.get("categoryId") || searchParams.get("category_id");
     const minBid = searchParams.get("minBid");
     const maxBid = searchParams.get("maxBid");
     const featured = searchParams.get("featured");
@@ -134,9 +136,14 @@ export async function GET(request: NextRequest) {
 
     // Apply Sieve filters
     for (const filter of sieveQuery.filters) {
-      const dbField = auctionsConfig.fieldMappings[filter.field] || filter.field;
+      const dbField =
+        auctionsConfig.fieldMappings[filter.field] || filter.field;
       if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+        query = query.where(
+          dbField,
+          filter.operator as FirebaseFirestore.WhereFilterOp,
+          filter.value,
+        );
       }
     }
 
@@ -182,7 +189,9 @@ export async function GET(request: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const data = snapshot.docs.map((doc) => transformAuction(doc.id, doc.data()));
+    const data = snapshot.docs.map((doc) =>
+      transformAuction(doc.id, doc.data()),
+    );
 
     // Build response with Sieve pagination meta
     const pagination = createPaginationMeta(totalCount, sieveQuery);
@@ -215,7 +224,7 @@ export async function GET(request: NextRequest) {
           details: error instanceof Error ? error.message : String(error),
         }),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -299,10 +308,10 @@ export async function POST(request: NextRequest) {
       created_at: now,
       updated_at: now,
     };
-    
+
     // Use slug as document ID for SEO-friendly URLs
     await Collections.auctions().doc(slug).set(auctionData);
-    
+
     // Update category auction counts if category is provided
     if (category_id) {
       try {
@@ -311,7 +320,7 @@ export async function POST(request: NextRequest) {
         console.error("Failed to update category auction counts:", err);
       }
     }
-    
+
     return NextResponse.json(
       { success: true, data: { id: slug, ...auctionData } },
       { status: 201 },

@@ -83,7 +83,7 @@ function CategoryDetailContent({ params }: PageProps) {
     if (subcategorySearch.trim()) {
       const query = subcategorySearch.toLowerCase();
       filtered = filtered.filter((cat) =>
-        cat.name.toLowerCase().includes(query)
+        cat.name.toLowerCase().includes(query),
       );
     }
 
@@ -125,7 +125,7 @@ function CategoryDetailContent({ params }: PageProps) {
       } else {
         // Load default breadcrumb using parent hierarchy
         const breadcrumbData = await categoriesService.getBreadcrumb(
-          categoryData.id
+          categoryData.id,
         );
         setBreadcrumb(breadcrumbData);
       }
@@ -182,7 +182,7 @@ function CategoryDetailContent({ params }: PageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    }
+    },
   ) => {
     try {
       if (!productDetails) {
@@ -223,7 +223,7 @@ function CategoryDetailContent({ params }: PageProps) {
           setShowRightArrow(
             subcategoriesScrollRef.current.scrollLeft <
               subcategoriesScrollRef.current.scrollWidth -
-                subcategoriesScrollRef.current.clientWidth
+                subcategoriesScrollRef.current.clientWidth,
           );
         }
       }, 300);
@@ -702,7 +702,7 @@ function CategoryDetailContent({ params }: PageProps) {
                     setShowLeftArrow(target.scrollLeft > 0);
                     setShowRightArrow(
                       target.scrollLeft <
-                        target.scrollWidth - target.clientWidth
+                        target.scrollWidth - target.clientWidth,
                     );
                   }}
                 >

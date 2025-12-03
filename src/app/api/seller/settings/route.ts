@@ -57,14 +57,14 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     if (user.role !== "seller" && user.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden. Seller access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -99,16 +99,18 @@ export async function GET(request: NextRequest) {
     // Merge with defaults to ensure all fields exist
     const settings = {
       profile: { ...DEFAULT_SETTINGS.profile, ...settingsData?.profile },
-      notifications: { ...DEFAULT_SETTINGS.notifications, ...settingsData?.notifications },
+      notifications: {
+        ...DEFAULT_SETTINGS.notifications,
+        ...settingsData?.notifications,
+      },
       payout: { ...DEFAULT_SETTINGS.payout, ...settingsData?.payout },
     };
 
     // Mask sensitive payout info
     if (settings.payout.accountNumber) {
       const accNum = settings.payout.accountNumber;
-      settings.payout.accountNumber = accNum.length > 4 
-        ? "••••" + accNum.slice(-4) 
-        : accNum;
+      settings.payout.accountNumber =
+        accNum.length > 4 ? "••••" + accNum.slice(-4) : accNum;
     }
 
     return NextResponse.json(settings);
@@ -116,7 +118,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching seller settings:", error);
     return NextResponse.json(
       { error: "Failed to fetch settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -127,14 +129,14 @@ export async function PUT(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     if (user.role !== "seller" && user.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden. Seller access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -166,7 +168,10 @@ export async function PUT(request: NextRequest) {
 
     if (payout) {
       // If account number is masked, preserve the original
-      if (payout.accountNumber?.startsWith("••••") && currentData?.payout?.accountNumber) {
+      if (
+        payout.accountNumber?.startsWith("••••") &&
+        currentData?.payout?.accountNumber
+      ) {
         payout.accountNumber = currentData.payout.accountNumber;
       }
       updateData.payout = payout;
@@ -182,7 +187,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating seller settings:", error);
     return NextResponse.json(
       { error: "Failed to update settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

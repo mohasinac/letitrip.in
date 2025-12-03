@@ -11,7 +11,7 @@
 
 import * as functions from "firebase-functions/v1";
 import * as admin from "firebase-admin";
-import {notificationService} from "./services/notification.service";
+import { notificationService } from "./services/notification.service";
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -146,7 +146,7 @@ async function processEndedAuctions(): Promise<{
   console.log(`[Auction Cron] Found ${snapshot.size} auctions to process`);
 
   if (snapshot.empty) {
-    return {processed: 0, successful: 0, failed: 0};
+    return { processed: 0, successful: 0, failed: 0 };
   }
 
   // Process each ended auction in batches
@@ -225,13 +225,13 @@ async function closeAuction(auctionId: string): Promise<void> {
           auctionName: auction.name as string,
           auctionSlug: auction.slug as string,
           auctionImage:
-            Array.isArray(auction.images) && auction.images.length > 0 ?
-              (auction.images[0] as string) :
-              undefined,
+            Array.isArray(auction.images) && auction.images.length > 0
+              ? (auction.images[0] as string)
+              : undefined,
           startingBid: auction.starting_bid as number,
-          reservePrice: auction.reserve_price ?
-            (auction.reserve_price as number) :
-            undefined,
+          reservePrice: auction.reserve_price
+            ? (auction.reserve_price as number)
+            : undefined,
           seller: {
             email: seller.email as string,
             name: (seller.name as string) || (seller.email as string),
@@ -283,9 +283,9 @@ async function closeAuction(auctionId: string): Promise<void> {
           auctionName: auction.name as string,
           auctionSlug: auction.slug as string,
           auctionImage:
-            Array.isArray(auction.images) && auction.images.length > 0 ?
-              (auction.images[0] as string) :
-              undefined,
+            Array.isArray(auction.images) && auction.images.length > 0
+              ? (auction.images[0] as string)
+              : undefined,
           startingBid: auction.starting_bid as number,
           reservePrice: auction.reserve_price as number,
           finalBid,
@@ -356,9 +356,9 @@ async function closeAuction(auctionId: string): Promise<void> {
         auctionName: auction.name as string,
         auctionSlug: auction.slug as string,
         auctionImage:
-          Array.isArray(auction.images) && auction.images.length > 0 ?
-            (auction.images[0] as string) :
-            undefined,
+          Array.isArray(auction.images) && auction.images.length > 0
+            ? (auction.images[0] as string)
+            : undefined,
         startingBid: auction.starting_bid as number,
         finalBid,
         seller: {
@@ -563,11 +563,13 @@ export const rebuildCategoryTree = functions
 
     try {
       const result = await buildAndSaveCategoryTree();
-      console.log(`[Category Tree] Scheduled rebuild complete: ${result.totalCount} categories`);
+      console.log(
+        `[Category Tree] Scheduled rebuild complete: ${result.totalCount} categories`,
+      );
       return result;
     } catch (error) {
       console.error("[Category Tree] Scheduled rebuild failed:", error);
-      return {success: false, error: String(error)};
+      return { success: false, error: String(error) };
     }
   });
 
@@ -582,7 +584,9 @@ export const onCategoryWrite = functions
   })
   .firestore.document("categories/{categoryId}")
   .onWrite(async (change, context) => {
-    console.log(`[Category Tree] Category ${context.params.categoryId} changed, triggering rebuild...`);
+    console.log(
+      `[Category Tree] Category ${context.params.categoryId} changed, triggering rebuild...`,
+    );
 
     // Debounce: Only rebuild if last update was more than 5 seconds ago
     const cacheRef = db.collection("cache").doc("category_tree");
@@ -634,7 +638,10 @@ export const triggerCategoryTreeRebuild = functions
       );
     }
 
-    console.log("[Category Tree] Manual rebuild triggered by:", context.auth.uid);
+    console.log(
+      "[Category Tree] Manual rebuild triggered by:",
+      context.auth.uid,
+    );
 
     try {
       const result = await buildAndSaveCategoryTree();
@@ -683,7 +690,7 @@ async function buildAndSaveCategoryTree(): Promise<{
       version: Date.now(),
     });
 
-    return {totalCount: 0, rootCount: 0, leafCount: 0, maxDepth: 0};
+    return { totalCount: 0, rootCount: 0, leafCount: 0, maxDepth: 0 };
   }
 
   // Build flat map first
@@ -711,7 +718,10 @@ async function buildAndSaveCategoryTree(): Promise<{
   const rootIds: string[] = [];
   categoryMap.forEach((cat, id) => {
     const parentIds = cat.parentIds || (cat.parentId ? [cat.parentId] : []);
-    if (parentIds.length === 0 || parentIds.every((pid: string) => !categoryMap.has(pid))) {
+    if (
+      parentIds.length === 0 ||
+      parentIds.every((pid: string) => !categoryMap.has(pid))
+    ) {
       rootIds.push(id);
     }
   });
@@ -720,19 +730,21 @@ async function buildAndSaveCategoryTree(): Promise<{
   function buildNode(
     catId: string,
     level: number,
-    ancestors: Array<{id: string; name: string; slug: string}>,
+    ancestors: Array<{ id: string; name: string; slug: string }>,
   ): CategoryNode {
     const cat = categoryMap.get(catId)!;
     const childIds = childrenMap.get(catId) || [];
 
     const currentAncestors = [
       ...ancestors,
-      {id: catId, name: cat.name, slug: cat.slug},
+      { id: catId, name: cat.name, slug: cat.slug },
     ];
 
     const children = childIds
       .map((childId) => buildNode(childId, level + 1, currentAncestors))
-      .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name));
+      .sort(
+        (a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name),
+      );
 
     const path = [...ancestors.map((a) => a.name), cat.name].join(" > ");
 
@@ -763,7 +775,7 @@ async function buildAndSaveCategoryTree(): Promise<{
   // Build flat map without children for quick lookups
   const flat: Record<string, Omit<CategoryNode, "children">> = {};
   function flattenNode(node: CategoryNode) {
-    const {children, ...rest} = node;
+    const { children, ...rest } = node;
     flat[node.id] = rest;
     children.forEach(flattenNode);
   }
@@ -783,7 +795,9 @@ async function buildAndSaveCategoryTree(): Promise<{
   // Calculate max depth
   function getMaxDepth(nodes: CategoryNode[], currentDepth: number): number {
     if (nodes.length === 0) return currentDepth;
-    return Math.max(...nodes.map((n) => getMaxDepth(n.children, currentDepth + 1)));
+    return Math.max(
+      ...nodes.map((n) => getMaxDepth(n.children, currentDepth + 1)),
+    );
   }
   const maxDepth = tree.length > 0 ? getMaxDepth(tree, 0) : 0;
 
@@ -803,7 +817,7 @@ async function buildAndSaveCategoryTree(): Promise<{
 
   console.log(
     `[Category Tree] Saved tree with ${categoryMap.size} categories, ` +
-    `${rootIds.length} roots, ${leaves.length} leaves, depth ${maxDepth}`,
+      `${rootIds.length} roots, ${leaves.length} leaves, depth ${maxDepth}`,
   );
 
   return {
@@ -832,17 +846,22 @@ export const onOrderStatusChange = functions
   .onUpdate(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
-    const {orderId} = context.params;
+    const { orderId } = context.params;
 
     // Skip if status hasn't changed
-    if (before.status === after.status && before.order_status === after.order_status) {
+    if (
+      before.status === after.status &&
+      before.order_status === after.order_status
+    ) {
       return;
     }
 
     const newStatus = after.status || after.order_status;
     const oldStatus = before.status || before.order_status;
 
-    console.log(`[Order Trigger] Order ${orderId} status changed: ${oldStatus} -> ${newStatus}`);
+    console.log(
+      `[Order Trigger] Order ${orderId} status changed: ${oldStatus} -> ${newStatus}`,
+    );
 
     try {
       // Create notification for the user
@@ -857,7 +876,9 @@ export const onOrderStatusChange = functions
       };
 
       await db.collection("notifications").add(notificationData);
-      console.log(`[Order Trigger] Created notification for user ${after.user_id}`);
+      console.log(
+        `[Order Trigger] Created notification for user ${after.user_id}`,
+      );
 
       // If order is confirmed, notify seller
       if (newStatus === "confirmed" && after.shop_id) {
@@ -873,7 +894,9 @@ export const onOrderStatusChange = functions
             read: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
           });
-          console.log(`[Order Trigger] Notified seller ${shop.owner_id} of new order`);
+          console.log(
+            `[Order Trigger] Notified seller ${shop.owner_id} of new order`,
+          );
         }
       }
 
@@ -884,15 +907,21 @@ export const onOrderStatusChange = functions
           userId: after.user_id,
           type: "review_request",
           title: "How was your order?",
-          message: "Your order has been delivered. Would you like to leave a review?",
+          message:
+            "Your order has been delivered. Would you like to leave a review?",
           orderId: orderId,
           read: false,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
-        console.log(`[Order Trigger] Created review request notification for order ${orderId}`);
+        console.log(
+          `[Order Trigger] Created review request notification for order ${orderId}`,
+        );
       }
     } catch (error) {
-      console.error(`[Order Trigger] Error processing order ${orderId}:`, error);
+      console.error(
+        `[Order Trigger] Error processing order ${orderId}:`,
+        error,
+      );
     }
   });
 
@@ -925,7 +954,10 @@ function getOrderStatusMessage(status: string, orderId: string): string {
     cancelled: `Your order #${orderId} has been cancelled.`,
     refunded: `Your order #${orderId} has been refunded.`,
   };
-  return messages[status] || `Your order #${orderId} status has been updated to ${status}.`;
+  return (
+    messages[status] ||
+    `Your order #${orderId} status has been updated to ${status}.`
+  );
 }
 
 // ============================================================================
@@ -946,18 +978,24 @@ export const onPaymentStatusChange = functions
   .onUpdate(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
-    const {paymentId} = context.params;
+    const { paymentId } = context.params;
 
     // Skip if payment status hasn't changed
     if (before.status === after.status) {
       return;
     }
 
-    console.log(`[Payment Trigger] Payment ${paymentId} status changed: ${before.status} -> ${after.status}`);
+    console.log(
+      `[Payment Trigger] Payment ${paymentId} status changed: ${before.status} -> ${after.status}`,
+    );
 
     try {
       // If payment is successful, update order status to confirmed
-      if (after.status === "completed" || after.status === "success" || after.status === "paid") {
+      if (
+        after.status === "completed" ||
+        after.status === "success" ||
+        after.status === "paid"
+      ) {
         if (after.order_id) {
           const orderRef = db.collection("orders").doc(after.order_id);
           const orderDoc = await orderRef.get();
@@ -965,7 +1003,10 @@ export const onPaymentStatusChange = functions
           if (orderDoc.exists) {
             const order = orderDoc.data();
             // Only update if order is still pending
-            if (order?.status === "pending" || order?.order_status === "pending") {
+            if (
+              order?.status === "pending" ||
+              order?.order_status === "pending"
+            ) {
               await orderRef.update({
                 status: "confirmed",
                 order_status: "confirmed",
@@ -973,7 +1014,9 @@ export const onPaymentStatusChange = functions
                 paid_at: admin.firestore.FieldValue.serverTimestamp(),
                 updated_at: admin.firestore.FieldValue.serverTimestamp(),
               });
-              console.log(`[Payment Trigger] Auto-confirmed order ${after.order_id}`);
+              console.log(
+                `[Payment Trigger] Auto-confirmed order ${after.order_id}`,
+              );
             }
           }
         }
@@ -992,11 +1035,16 @@ export const onPaymentStatusChange = functions
             read: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
           });
-          console.log(`[Payment Trigger] Notified user ${after.user_id} of payment failure`);
+          console.log(
+            `[Payment Trigger] Notified user ${after.user_id} of payment failure`,
+          );
         }
       }
     } catch (error) {
-      console.error(`[Payment Trigger] Error processing payment ${paymentId}:`, error);
+      console.error(
+        `[Payment Trigger] Error processing payment ${paymentId}:`,
+        error,
+      );
     }
   });
 
@@ -1018,14 +1066,16 @@ export const onReturnStatusChange = functions
   .onUpdate(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
-    const {returnId} = context.params;
+    const { returnId } = context.params;
 
     // Skip if status hasn't changed
     if (before.status === after.status) {
       return;
     }
 
-    console.log(`[Return Trigger] Return ${returnId} status changed: ${before.status} -> ${after.status}`);
+    console.log(
+      `[Return Trigger] Return ${returnId} status changed: ${before.status} -> ${after.status}`,
+    );
 
     try {
       // Create notification for the user
@@ -1041,7 +1091,9 @@ export const onReturnStatusChange = functions
       };
 
       await db.collection("notifications").add(notificationData);
-      console.log(`[Return Trigger] Created notification for user ${after.user_id}`);
+      console.log(
+        `[Return Trigger] Created notification for user ${after.user_id}`,
+      );
 
       // If return is approved, notify seller
       if (after.status === "approved" && after.shop_id) {
@@ -1057,7 +1109,9 @@ export const onReturnStatusChange = functions
             read: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
           });
-          console.log(`[Return Trigger] Notified seller ${shop.owner_id} of approved return`);
+          console.log(
+            `[Return Trigger] Notified seller ${shop.owner_id} of approved return`,
+          );
         }
       }
 
@@ -1072,13 +1126,18 @@ export const onReturnStatusChange = functions
                 stock: admin.firestore.FieldValue.increment(item.quantity || 1),
                 updated_at: admin.firestore.FieldValue.serverTimestamp(),
               });
-              console.log(`[Return Trigger] Restored ${item.quantity || 1} units to product ${item.product_id}`);
+              console.log(
+                `[Return Trigger] Restored ${item.quantity || 1} units to product ${item.product_id}`,
+              );
             }
           }
         }
       }
     } catch (error) {
-      console.error(`[Return Trigger] Error processing return ${returnId}:`, error);
+      console.error(
+        `[Return Trigger] Error processing return ${returnId}:`,
+        error,
+      );
     }
   });
 
@@ -1113,7 +1172,10 @@ function getReturnStatusMessage(status: string, returnId: string): string {
     refunded: `Your refund for return #${returnId} has been processed.`,
     completed: `Your return #${returnId} has been completed.`,
   };
-  return messages[status] || `Your return #${returnId} status has been updated to ${status}.`;
+  return (
+    messages[status] ||
+    `Your return #${returnId} status has been updated to ${status}.`
+  );
 }
 
 // ============================================================================
@@ -1133,19 +1195,23 @@ export const onTicketStatusChange = functions
   .onUpdate(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
-    const {ticketId} = context.params;
+    const { ticketId } = context.params;
 
     // Skip if status hasn't changed
     if (before.status === after.status) {
       return;
     }
 
-    console.log(`[Ticket Trigger] Ticket ${ticketId} status changed: ${before.status} -> ${after.status}`);
+    console.log(
+      `[Ticket Trigger] Ticket ${ticketId} status changed: ${before.status} -> ${after.status}`,
+    );
 
     try {
       const userId = after.userId || after.user_id;
       if (!userId) {
-        console.warn(`[Ticket Trigger] No user ID found for ticket ${ticketId}`);
+        console.warn(
+          `[Ticket Trigger] No user ID found for ticket ${ticketId}`,
+        );
         return;
       }
 
@@ -1162,7 +1228,10 @@ export const onTicketStatusChange = functions
 
       console.log(`[Ticket Trigger] Created notification for user ${userId}`);
     } catch (error) {
-      console.error(`[Ticket Trigger] Error processing ticket ${ticketId}:`, error);
+      console.error(
+        `[Ticket Trigger] Error processing ticket ${ticketId}:`,
+        error,
+      );
     }
   });
 
@@ -1191,7 +1260,10 @@ function getTicketStatusMessage(status: string, ticketId: string): string {
     resolved: `Your support ticket #${ticketId} has been resolved.`,
     closed: `Your support ticket #${ticketId} has been closed.`,
   };
-  return messages[status] || `Your ticket #${ticketId} status has been updated to ${status}.`;
+  return (
+    messages[status] ||
+    `Your ticket #${ticketId} status has been updated to ${status}.`
+  );
 }
 
 // ============================================================================
@@ -1211,7 +1283,7 @@ export const onNewBid = functions
   .firestore.document("bids/{bidId}")
   .onCreate(async (snapshot, context) => {
     const bid = snapshot.data();
-    const {bidId} = context.params;
+    const { bidId } = context.params;
 
     console.log(`[Bid Trigger] New bid ${bidId} on auction ${bid.auction_id}`);
 
@@ -1226,7 +1298,9 @@ export const onNewBid = functions
       }
 
       const auction = auctionDoc.data() as Record<string, unknown>;
-      const previousHighestBidderId = auction.highest_bidder_id as string | undefined;
+      const previousHighestBidderId = auction.highest_bidder_id as
+        | string
+        | undefined;
 
       // Update auction with new highest bid
       await auctionRef.update({
@@ -1247,7 +1321,9 @@ export const onNewBid = functions
           read: false,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
-        console.log(`[Bid Trigger] Notified previous bidder ${previousHighestBidderId} of outbid`);
+        console.log(
+          `[Bid Trigger] Notified previous bidder ${previousHighestBidderId} of outbid`,
+        );
       }
 
       // Notify seller of new bid
@@ -1286,9 +1362,11 @@ export const onNewReview = functions
   .firestore.document("reviews/{reviewId}")
   .onCreate(async (snapshot, context) => {
     const review = snapshot.data();
-    const {reviewId} = context.params;
+    const { reviewId } = context.params;
 
-    console.log(`[Review Trigger] New review ${reviewId} for ${review.type || "product"}`);
+    console.log(
+      `[Review Trigger] New review ${reviewId} for ${review.type || "product"}`,
+    );
 
     try {
       // Update shop rating if shop_id is provided
@@ -1317,11 +1395,16 @@ export const onNewReview = functions
             read: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
           });
-          console.log(`[Review Trigger] Notified seller ${shop.owner_id} of new review`);
+          console.log(
+            `[Review Trigger] Notified seller ${shop.owner_id} of new review`,
+          );
         }
       }
     } catch (error) {
-      console.error(`[Review Trigger] Error processing review ${reviewId}:`, error);
+      console.error(
+        `[Review Trigger] Error processing review ${reviewId}:`,
+        error,
+      );
     }
   });
 
@@ -1347,13 +1430,18 @@ async function updateShopRating(shopId: string): Promise<void> {
 
     const averageRating = totalRating / reviewsSnapshot.size;
 
-    await db.collection("shops").doc(shopId).update({
-      rating: Math.round(averageRating * 10) / 10,
-      review_count: reviewsSnapshot.size,
-      updated_at: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    await db
+      .collection("shops")
+      .doc(shopId)
+      .update({
+        rating: Math.round(averageRating * 10) / 10,
+        review_count: reviewsSnapshot.size,
+        updated_at: admin.firestore.FieldValue.serverTimestamp(),
+      });
 
-    console.log(`[Review Trigger] Updated shop ${shopId} rating to ${averageRating.toFixed(1)}`);
+    console.log(
+      `[Review Trigger] Updated shop ${shopId} rating to ${averageRating.toFixed(1)}`,
+    );
   } catch (error) {
     console.error("[Review Trigger] Error updating shop rating:", error);
   }
@@ -1381,13 +1469,18 @@ async function updateProductRating(productId: string): Promise<void> {
 
     const averageRating = totalRating / reviewsSnapshot.size;
 
-    await db.collection("products").doc(productId).update({
-      rating: Math.round(averageRating * 10) / 10,
-      review_count: reviewsSnapshot.size,
-      updated_at: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    await db
+      .collection("products")
+      .doc(productId)
+      .update({
+        rating: Math.round(averageRating * 10) / 10,
+        review_count: reviewsSnapshot.size,
+        updated_at: admin.firestore.FieldValue.serverTimestamp(),
+      });
 
-    console.log(`[Review Trigger] Updated product ${productId} rating to ${averageRating.toFixed(1)}`);
+    console.log(
+      `[Review Trigger] Updated product ${productId} rating to ${averageRating.toFixed(1)}`,
+    );
   } catch (error) {
     console.error("[Review Trigger] Error updating product rating:", error);
   }
@@ -1422,7 +1515,9 @@ export const cleanupOldBids = functions
       oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
       const cutoffTimestamp = admin.firestore.Timestamp.fromDate(oneMonthAgo);
 
-      console.log(`[Cleanup] Cleaning bids older than ${oneMonthAgo.toISOString()}`);
+      console.log(
+        `[Cleanup] Cleaning bids older than ${oneMonthAgo.toISOString()}`,
+      );
 
       // Step 1: Get all ended auctions with winning bids
       const auctionsSnapshot = await db
@@ -1431,7 +1526,10 @@ export const cleanupOldBids = functions
         .select("winner_id", "final_bid")
         .get();
 
-      const winningBidInfo: Record<string, {bidderId: string; amount: number}> = {};
+      const winningBidInfo: Record<
+        string,
+        { bidderId: string; amount: number }
+      > = {};
 
       auctionsSnapshot.forEach((doc) => {
         const data = doc.data();
@@ -1443,7 +1541,9 @@ export const cleanupOldBids = functions
         }
       });
 
-      console.log(`[Cleanup] Found ${Object.keys(winningBidInfo).length} auctions with winning bids`);
+      console.log(
+        `[Cleanup] Found ${Object.keys(winningBidInfo).length} auctions with winning bids`,
+      );
 
       // Step 2: Get all old bids
       const oldBidsSnapshot = await db
@@ -1452,11 +1552,13 @@ export const cleanupOldBids = functions
         .limit(1000) // Process in batches
         .get();
 
-      console.log(`[Cleanup] Found ${oldBidsSnapshot.size} bids older than 1 month`);
+      console.log(
+        `[Cleanup] Found ${oldBidsSnapshot.size} bids older than 1 month`,
+      );
 
       if (oldBidsSnapshot.empty) {
         console.log("[Cleanup] No old bids to clean");
-        return {deleted: 0, preserved: 0};
+        return { deleted: 0, preserved: 0 };
       }
 
       // Step 3: Delete non-winning bids
@@ -1481,7 +1583,9 @@ export const cleanupOldBids = functions
         if (isWinningBid) {
           // Preserve winning bids
           preservedCount++;
-          console.log(`[Cleanup] Preserving winning bid ${bidDoc.id} for auction ${auctionId}`);
+          console.log(
+            `[Cleanup] Preserving winning bid ${bidDoc.id} for auction ${auctionId}`,
+          );
         } else {
           // Delete non-winning bids
           batch.delete(bidDoc.ref);
@@ -1500,10 +1604,14 @@ export const cleanupOldBids = functions
       // Commit remaining batch
       if (batchCount > 0) {
         await batch.commit();
-        console.log(`[Cleanup] Committed final batch of ${batchCount} deletions`);
+        console.log(
+          `[Cleanup] Committed final batch of ${batchCount} deletions`,
+        );
       }
 
-      console.log(`[Cleanup] Bid cleanup complete: deleted ${deletedCount}, preserved ${preservedCount}`);
+      console.log(
+        `[Cleanup] Bid cleanup complete: deleted ${deletedCount}, preserved ${preservedCount}`,
+      );
 
       return {
         deleted: deletedCount,
@@ -1512,7 +1620,7 @@ export const cleanupOldBids = functions
       };
     } catch (error) {
       console.error("[Cleanup] Error cleaning old bids:", error);
-      return {error: String(error)};
+      return { error: String(error) };
     }
   });
 
@@ -1544,7 +1652,7 @@ export const cleanupExpiredSessions = functions
 
       if (sessionsSnapshot.empty) {
         console.log("[Cleanup] No expired sessions found");
-        return {cleaned: 0};
+        return { cleaned: 0 };
       }
 
       const batch = db.batch();
@@ -1553,12 +1661,14 @@ export const cleanupExpiredSessions = functions
       });
 
       await batch.commit();
-      console.log(`[Cleanup] Deleted ${sessionsSnapshot.size} expired sessions`);
+      console.log(
+        `[Cleanup] Deleted ${sessionsSnapshot.size} expired sessions`,
+      );
 
-      return {cleaned: sessionsSnapshot.size};
+      return { cleaned: sessionsSnapshot.size };
     } catch (error) {
       console.error("[Cleanup] Error cleaning sessions:", error);
-      return {error: String(error)};
+      return { error: String(error) };
     }
   });
 
@@ -1594,7 +1704,7 @@ export const cleanupAbandonedCarts = functions
 
       if (cartsSnapshot.empty) {
         console.log("[Cleanup] No abandoned carts found");
-        return {cleaned: 0};
+        return { cleaned: 0 };
       }
 
       const batch = db.batch();
@@ -1605,10 +1715,10 @@ export const cleanupAbandonedCarts = functions
       await batch.commit();
       console.log(`[Cleanup] Deleted ${cartsSnapshot.size} abandoned carts`);
 
-      return {cleaned: cartsSnapshot.size};
+      return { cleaned: cartsSnapshot.size };
     } catch (error) {
       console.error("[Cleanup] Error cleaning carts:", error);
-      return {error: String(error)};
+      return { error: String(error) };
     }
   });
 
@@ -1641,7 +1751,7 @@ export const expireCoupons = functions
 
       if (couponsSnapshot.empty) {
         console.log("[Cleanup] No coupons to expire");
-        return {expired: 0};
+        return { expired: 0 };
       }
 
       const batch = db.batch();
@@ -1655,10 +1765,10 @@ export const expireCoupons = functions
       await batch.commit();
       console.log(`[Cleanup] Expired ${couponsSnapshot.size} coupons`);
 
-      return {expired: couponsSnapshot.size};
+      return { expired: couponsSnapshot.size };
     } catch (error) {
       console.error("[Cleanup] Error expiring coupons:", error);
-      return {error: String(error)};
+      return { error: String(error) };
     }
   });
 
@@ -1680,14 +1790,16 @@ export const onProductWrite = functions
   .onWrite(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
-    const {productId} = context.params;
+    const { productId } = context.params;
 
     // Determine if this is a create, delete, or update
     const wasDeleted = !change.after.exists;
     const wasCreated = !change.before.exists;
     const shopChanged = before?.shop_id !== after?.shop_id;
 
-    console.log(`[Product Trigger] Product ${productId} ${wasCreated ? "created" : wasDeleted ? "deleted" : "updated"}`);
+    console.log(
+      `[Product Trigger] Product ${productId} ${wasCreated ? "created" : wasDeleted ? "deleted" : "updated"}`,
+    );
 
     try {
       // If shop changed, update both old and new shop counts
@@ -1726,13 +1838,15 @@ export const onAuctionWrite = functions
   .onWrite(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
-    const {auctionId} = context.params;
+    const { auctionId } = context.params;
 
     const wasDeleted = !change.after.exists;
     const wasCreated = !change.before.exists;
     const shopChanged = before?.shop_id !== after?.shop_id;
 
-    console.log(`[Auction Trigger] Auction ${auctionId} ${wasCreated ? "created" : wasDeleted ? "deleted" : "updated"}`);
+    console.log(
+      `[Auction Trigger] Auction ${auctionId} ${wasCreated ? "created" : wasDeleted ? "deleted" : "updated"}`,
+    );
 
     try {
       if (shopChanged && before?.shop_id && after?.shop_id) {
@@ -1775,7 +1889,9 @@ async function updateShopProductCount(shopId: string): Promise<void> {
       updated_at: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    console.log(`[Shop Stats] Updated shop ${shopId} product count to ${productCount}`);
+    console.log(
+      `[Shop Stats] Updated shop ${shopId} product count to ${productCount}`,
+    );
   } catch (error) {
     console.error("[Shop Stats] Error updating product count:", error);
   }
@@ -1801,14 +1917,16 @@ async function updateShopAuctionCount(shopId: string): Promise<void> {
       updated_at: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    console.log(`[Shop Stats] Updated shop ${shopId} auction count to ${auctionCount}`);
+    console.log(
+      `[Shop Stats] Updated shop ${shopId} auction count to ${auctionCount}`,
+    );
   } catch (error) {
     console.error("[Shop Stats] Error updating auction count:", error);
   }
 }
 
 // ============================================================================
-// CATEGORY STATS UPDATE FUNCTIONS  
+// CATEGORY STATS UPDATE FUNCTIONS
 // ============================================================================
 
 /**
@@ -1829,7 +1947,11 @@ export const onProductCategoryChange = functions
     const newCategoryId = after?.category_id;
 
     // Only process if category changed or product created/deleted
-    if (oldCategoryId === newCategoryId && change.before.exists && change.after.exists) {
+    if (
+      oldCategoryId === newCategoryId &&
+      change.before.exists &&
+      change.after.exists
+    ) {
       // Only status change
       const statusChanged = before?.status !== after?.status;
       if (statusChanged && newCategoryId) {
@@ -1840,7 +1962,8 @@ export const onProductCategoryChange = functions
 
     try {
       const updates: Promise<void>[] = [];
-      if (oldCategoryId) updates.push(updateCategoryProductCount(oldCategoryId));
+      if (oldCategoryId)
+        updates.push(updateCategoryProductCount(oldCategoryId));
       if (newCategoryId && newCategoryId !== oldCategoryId) {
         updates.push(updateCategoryProductCount(newCategoryId));
       }
@@ -1869,7 +1992,9 @@ async function updateCategoryProductCount(categoryId: string): Promise<void> {
       updated_at: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    console.log(`[Category Stats] Updated category ${categoryId} product count to ${productCount}`);
+    console.log(
+      `[Category Stats] Updated category ${categoryId} product count to ${productCount}`,
+    );
   } catch (error) {
     console.error("[Category Stats] Error updating product count:", error);
   }
