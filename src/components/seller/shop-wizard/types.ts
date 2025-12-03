@@ -4,6 +4,9 @@ export interface ShopFormData {
   slug: string;
   description: string;
   category: string;
+  phone: string;
+  email: string;
+  countryCode: string;
 
   // BrandingStep
   logoUrl: string;
@@ -13,14 +16,11 @@ export interface ShopFormData {
   about?: string;
 
   // ContactLegalStep
-  phone?: string;
-  email?: string;
-  address?: string;
+  businessAddressId?: string; // ID of saved address
+  address?: string; // Fallback formatted address
   gstin?: string;
   pan?: string;
   cin?: string;
-  contactEmail?: string;
-  contactPhone?: string;
   addressLine1?: string;
   city?: string;
   state?: string;

@@ -23,6 +23,7 @@ import {
   FormTextarea,
 } from "@/components/forms";
 import SlugInput from "@/components/common/SlugInput";
+import { WizardActionBar } from "@/components/forms/WizardActionBar";
 import { shopsService } from "@/services/shops.service";
 import {
   BasicInfoStep,
@@ -467,38 +468,19 @@ export default function CreateShopWizardPage() {
           )}
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4">
-          <button
-            type="button"
-            onClick={prevStep}
-            disabled={currentStep === 1}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Previous
-          </button>{" "}
-          {currentStep < STEPS.length ? (
-            <button
-              type="button"
-              onClick={nextStep}
-              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              Next
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={isSubmitting || isValidatingSlug}
-              className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isSubmitting ? "Creating Shop..." : "Create Shop"}
-            </button>
-          )}
-        </div>
+        {/* Wizard Action Bar */}
+        <WizardActionBar
+          currentStep={currentStep}
+          totalSteps={STEPS.length}
+          onPrevious={prevStep}
+          onNext={nextStep}
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          isFirstStep={currentStep === 1}
+          isLastStep={currentStep === STEPS.length}
+          submitButtonText="Create Shop"
+          loadingText="Creating Shop..."
+        />
       </div>
     </div>
   );

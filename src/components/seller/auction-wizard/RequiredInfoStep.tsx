@@ -4,6 +4,8 @@ import Image from "next/image";
 import { toast } from "sonner";
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput, FormSelect, FormLabel } from "@/components/forms";
+import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
+import { ShopSelector } from "@/components/seller/ShopSelector";
 import { mediaService } from "@/services/media.service";
 import type { RequiredStepProps } from "./types";
 
@@ -104,17 +106,28 @@ export function RequiredInfoStep({
       </div>
 
       {/* Category */}
-      <FormSelect
-        id="auction-category"
-        label="Category"
-        required
-        value={formData.category}
-        onChange={(e) => handleChange("category", e.target.value)}
-        options={[
-          { value: "", label: "Select a category" },
-          ...categories.map((cat) => ({ value: cat.id, label: cat.name })),
-        ]}
-      />
+      <div>
+        <FormLabel required>Category</FormLabel>
+        <CategorySelectorWithCreate
+          value={formData.category}
+          onChange={(categoryId) =>
+            handleChange("category", categoryId || "")
+          }
+          placeholder="Select or create a category"
+          required
+        />
+      </div>
+
+      {/* Shop */}
+      <div>
+        <FormLabel required>Shop</FormLabel>
+        <ShopSelector
+          value={formData.shopId || ""}
+          onChange={(shopId) => handleChange("shopId", shopId || "")}
+          required
+          helperText="Select which shop this auction belongs to"
+        />
+      </div>
 
       {/* Starting Bid */}
       <FormInput

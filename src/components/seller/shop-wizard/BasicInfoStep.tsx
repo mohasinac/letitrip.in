@@ -1,8 +1,10 @@
 "use client";
 
-import { FormInput, FormTextarea, FormSelect } from "@/components/forms";
+import { FormInput, FormTextarea } from "@/components/forms";
 import SlugInput from "@/components/common/SlugInput";
 import { FormLabel } from "@/components/forms";
+import MobileInput from "@/components/common/MobileInput";
+import { CategorySelectorWithCreate } from "@/components/seller/CategorySelectorWithCreate";
 import type { ShopFormData, OnChange } from "./types";
 
 interface BasicInfoStepProps {
@@ -42,21 +44,36 @@ export default function BasicInfoStep({
         helperText={`${
           formData.description?.length || 0
         }/500 characters (min 20)`}
+        required
       />
 
-      <FormSelect
-        id="shop-category"
-        label="Primary Category"
+      <CategorySelectorWithCreate
         value={formData.category}
-        onChange={(e) => onChange("category", e.target.value)}
-        options={[
-          { value: "", label: "Select a category" },
-          { value: "electronics", label: "Electronics" },
-          { value: "fashion", label: "Fashion" },
-          { value: "home", label: "Home & Kitchen" },
-          { value: "toys", label: "Toys & Games" },
-        ]}
+        onChange={(categoryId) => onChange("category", categoryId)}
+        label="Primary Category"
+        required
         helperText="Main category your shop focuses on"
+      />
+
+      <MobileInput
+        value={formData.phone || ""}
+        countryCode={formData.countryCode || "IN"}
+        onPhoneChange={(phone) => onChange("phone", phone)}
+        onCountryChange={(code) => onChange("countryCode", code)}
+        label="Phone Number"
+        required
+        helperText="Primary contact number for your shop"
+      />
+
+      <FormInput
+        id="shop-email"
+        type="email"
+        label="Email Address"
+        value={formData.email || ""}
+        onChange={(e) => onChange("email", e.target.value)}
+        placeholder="shop@example.com"
+        helperText="Primary email address for customer inquiries"
+        required
       />
     </div>
   );

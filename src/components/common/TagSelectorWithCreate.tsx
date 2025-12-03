@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { X, Plus, Loader2, Tag, GripVertical } from "lucide-react";
 import { toast } from "sonner";
 import { FormInput } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 // Tag Interface
 export interface Tag {
@@ -96,9 +98,20 @@ export function TagSelectorWithCreate({
   maxTags = 10,
   className = "",
 }: TagSelectorWithCreateProps) {
-  const [allTags, setAllTags] = useState<Tag[]>([]);
+  const {
+    isLoading: loading,
+    data: allTags,
+    setData: setAllTags,
+    execute,
+  } = useLoadingState<Tag[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, { component: "TagSelectorWithCreate.loadTags" });
+      toast.error("Failed to load tags");
+    },
+  });
+
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [newTagColor, setNewTagColor] = useState(TAG_COLORS[0].value);
@@ -111,18 +124,17 @@ export function TagSelectorWithCreate({
 
   useEffect(() => {
     // Update selected tags when value changes
-    if (value && allTags.length > 0) {
+    if (value && allTags && allTags.length > 0) {
       const selected = allTags.filter((tag) => value.includes(tag.id));
       setSelectedTags(selected);
     }
   }, [value, allTags]);
 
-  const loadTags = async () => {
-    try {
-      setLoading(true);
+  const loadTags = () =>
+    execute(async () => {
       // TODO: Implement actual API call
       // const data = await tagsService.list({ entityType });
-      // setAllTags(data);
+      // return data;
 
       // Mock data for now
       const mockTags: Tag[] = [
@@ -167,14 +179,8 @@ export function TagSelectorWithCreate({
           usageCount: 15,
         },
       ];
-      setAllTags(mockTags);
-    } catch (error) {
-      console.error("Failed to load tags:", error);
-      toast.error("Failed to load tags");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return mockTags;
+    });
 
   const generateSlug = (name: string): string => {
     return name
@@ -233,14 +239,16 @@ export function TagSelectorWithCreate({
         usageCount: 0,
       };
 
-      setAllTags((prev) => [...prev, newTag]);
+      setAllTags([...(allTags || []), newTag]);
       handleAddTag(newTag);
       setShowForm(false);
       setNewTagName("");
       setNewTagColor(TAG_COLORS[0].value);
       toast.success("Tag created successfully");
     } catch (error) {
-      console.error("Failed to create tag:", error);
+      logError(error as Error, {
+        component: "TagSelectorWithCreate.handleCreateTag",
+      });
       toast.error("Failed to create tag");
     } finally {
       setCreating(false);
@@ -265,7 +273,7 @@ export function TagSelectorWithCreate({
     return colorObj?.lightBg || "bg-gray-50 dark:bg-gray-900/20";
   };
 
-  const filteredTags = allTags.filter((tag) =>
+  const filteredTags = (allTags || []).filter((tag) =>
     tag.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 

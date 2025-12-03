@@ -64,16 +64,17 @@ export function CouponSelector({
   const loadCoupons = () =>
     execute(async () => {
       const response = await couponsService.list({
-        status: "active",
         limit: 20,
       });
 
-      const coupons = response.data || [];
+      const coupons = (response.data || []).filter(
+        (c) => c.status === "active"
+      );
 
       // Find best coupon
       if (coupons.length > 0) {
         const validCoupons = coupons.filter((c) => {
-          if (c.minimumOrderValue && cartTotal < c.minimumOrderValue) {
+          if (c.minPurchaseAmount && cartTotal < c.minPurchaseAmount) {
             return false;
           }
           return true;
@@ -93,14 +94,15 @@ export function CouponSelector({
     });
 
   const calculateDiscount = (coupon: CouponFE): number => {
-    if (coupon.discountType === "percentage") {
-      let discount = (cartTotal * coupon.discountValue) / 100;
-      if (coupon.maxDiscount) {
-        discount = Math.min(discount, coupon.maxDiscount);
+    if (coupon.type === "percentage") {
+      const value = coupon.discountValue || 0;
+      let discount = (cartTotal * value) / 100;
+      if (coupon.maxDiscountAmount) {
+        discount = Math.min(discount, coupon.maxDiscountAmount);
       }
       return discount;
     } else {
-      return Math.min(coupon.discountValue, cartTotal);
+      return Math.min(coupon.discountValue || 0, cartTotal);
     }
   };
 
@@ -250,8 +252,8 @@ export function CouponSelector({
           {displayedCoupons.map((coupon) => {
             const discount = calculateDiscount(coupon);
             const isEligible =
-              !coupon.minimumOrderValue ||
-              cartTotal >= coupon.minimumOrderValue;
+              !coupon.minPurchaseAmount ||
+              cartTotal >= coupon.minPurchaseAmount;
             const isApplied = appliedCouponCode === coupon.code;
             const isBest = bestCoupon?.code === coupon.code;
 
@@ -282,7 +284,7 @@ export function CouponSelector({
                           Best Value
                         </span>
                       )}
-                      {isExpiringSoon(coupon.expiryDate) && (
+                      {isExpiringSoon(coupon.endDate) && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
                           <AlertCircle className="w-3 h-3" />
                           Expiring Soon
@@ -305,30 +307,30 @@ export function CouponSelector({
 
                     {/* Details */}
                     <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
-                      {coupon.minimumOrderValue && (
+                      {coupon.minPurchaseAmount && (
                         <span>
-                          Min: <Price amount={coupon.minimumOrderValue} />
+                          Min: <Price amount={coupon.minPurchaseAmount} />
                         </span>
                       )}
-                      {coupon.maxDiscount &&
-                        coupon.discountType === "percentage" && (
+                      {coupon.maxDiscountAmount &&
+                        coupon.type === "percentage" && (
                           <span>
-                            Max: <Price amount={coupon.maxDiscount} />
+                            Max: <Price amount={coupon.maxDiscountAmount} />
                           </span>
                         )}
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        <DateDisplay date={coupon.expiryDate} />
+                        <DateDisplay date={coupon.endDate} />
                       </span>
                     </div>
 
                     {/* Eligibility Warning */}
-                    {!isEligible && coupon.minimumOrderValue && (
-                      <p className="mt-2 text-xs text-orange-600 dark:text-orange-400">
+                    {!isEligible && coupon.minPurchaseAmount && (
+                      <div className="mt-2 text-sm text-orange-600 dark:text-orange-400">
                         Add{" "}
-                        <Price amount={coupon.minimumOrderValue - cartTotal} />{" "}
-                        more to cart to use this coupon
-                      </p>
+                        <Price amount={coupon.minPurchaseAmount - cartTotal} />{" "}
+                        more to unlock this coupon
+                      </div>
                     )}
                   </div>
 
