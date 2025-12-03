@@ -248,10 +248,10 @@ export default function UserRipLimitPage() {
     return (
       <main className="container mx-auto px-4 py-8">
         <div className="animate-pulse">
-          <div className="h-8 w-48 bg-gray-200 rounded mb-6" />
+          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-6" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded-lg" />
+              <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg" />
             ))}
           </div>
         </div>
@@ -264,11 +264,11 @@ export default function UserRipLimitPage() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Wallet className="w-8 h-8 text-blue-600" />
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <Wallet className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             My RipLimit
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             Manage your bidding currency for auctions
           </p>
         </div>
@@ -341,20 +341,20 @@ export default function UserRipLimitPage() {
         </Card>
 
         {/* Available Balance */}
-        <Card>
+        <Card className="dark:bg-gray-800">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-gray-500 text-sm font-medium">
+              <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
                 Available to Bid
               </p>
               {loadingBalance ? (
-                <div className="h-8 w-32 bg-gray-200 animate-pulse rounded mt-1" />
+                <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 animate-pulse rounded mt-1" />
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-green-600 mt-1">
+                  <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">
                     {balance?.formattedAvailable || "0 RL"}
                   </p>
-                  <p className="text-gray-500 text-sm mt-1">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
                     ≈ {balance?.formattedAvailableINR || "₹0"}
                   </p>
                 </>
@@ -377,20 +377,20 @@ export default function UserRipLimitPage() {
         </Card>
 
         {/* Blocked Balance */}
-        <Card>
+        <Card className="dark:bg-gray-800">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-gray-500 text-sm font-medium">
+              <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
                 In Active Bids
               </p>
               {loadingBalance ? (
-                <div className="h-8 w-32 bg-gray-200 animate-pulse rounded mt-1" />
+                <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 animate-pulse rounded mt-1" />
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-orange-600 mt-1">
+                  <p className="text-3xl font-bold text-orange-600 dark:text-orange-400 mt-1">
                     {balance?.formattedBlocked || "0 RL"}
                   </p>
-                  <p className="text-gray-500 text-sm mt-1">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
                     ≈ {balance?.formattedBlockedINR || "₹0"}
                   </p>
                 </>
@@ -413,21 +413,21 @@ export default function UserRipLimitPage() {
         <Card
           title="Active Bids"
           description="RipLimit blocked for your current bids"
-          className="mb-8"
+          className="mb-8 dark:bg-gray-800"
         >
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-100 dark:divide-gray-700">
             {balance.blockedBids.map((bid) => (
               <div
                 key={bid.bidId}
                 className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-orange-100 rounded-lg">
-                    <Gavel className="w-5 h-5 text-orange-600" />
+                  <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                    <Gavel className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Auction Bid</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="font-medium text-gray-900 dark:text-white">Auction Bid</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       {bid.formattedAmount} blocked
                     </p>
                   </div>
@@ -473,20 +473,20 @@ export default function UserRipLimitPage() {
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="flex items-center gap-4 animate-pulse">
-                <div className="w-10 h-10 bg-gray-200 rounded-full" />
+                <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full" />
                 <div className="flex-1">
-                  <div className="h-4 w-32 bg-gray-200 rounded" />
-                  <div className="h-3 w-24 bg-gray-100 rounded mt-2" />
+                  <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+                  <div className="h-3 w-24 bg-gray-100 dark:bg-gray-600 rounded mt-2" />
                 </div>
-                <div className="h-5 w-20 bg-gray-200 rounded" />
+                <div className="h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded" />
               </div>
             ))}
           </div>
         ) : transactions.length === 0 ? (
           <div className="text-center py-12">
-            <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 font-medium">No transactions yet</p>
-            <p className="text-gray-400 text-sm mt-1">
+            <Clock className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400 font-medium">No transactions yet</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">
               Your transaction history will appear here
             </p>
             <Button
@@ -498,7 +498,7 @@ export default function UserRipLimitPage() {
             </Button>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-100 dark:divide-gray-700">
             {transactions.map((tx) => (
               <div
                 key={tx.id}
@@ -507,27 +507,27 @@ export default function UserRipLimitPage() {
                 <div className="flex items-center gap-4">
                   <div
                     className={`p-2 rounded-full ${
-                      tx.isCredit ? "bg-green-100" : "bg-gray-100"
+                      tx.isCredit ? "bg-green-100 dark:bg-green-900/30" : "bg-gray-100 dark:bg-gray-700"
                     }`}
                   >
                     {getTransactionIcon(tx.type, tx.isCredit)}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">{tx.typeLabel}</p>
-                    <p className="text-sm text-gray-500">{tx.description}</p>
-                    <p className="text-xs text-gray-400 mt-1">{tx.timeAgo}</p>
+                    <p className="font-medium text-gray-900 dark:text-white">{tx.typeLabel}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{tx.description}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{tx.timeAgo}</p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p
                     className={`font-semibold ${
-                      tx.isCredit ? "text-green-600" : "text-red-600"
+                      tx.isCredit ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                     }`}
                   >
                     {tx.isCredit ? "+" : "-"}
                     {tx.formattedAmount}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
                     Balance: {tx.formattedBalanceAfter}
                   </p>
                 </div>
@@ -571,7 +571,7 @@ export default function UserRipLimitPage() {
               setRefundAmount(balance.availableBalance);
               setShowRefundModal(true);
             }}
-            className="text-sm text-gray-500 hover:text-gray-700 underline"
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 underline"
           >
             Request Refund
           </button>
@@ -581,14 +581,14 @@ export default function UserRipLimitPage() {
       {/* Purchase Modal */}
       {showPurchaseModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 Purchase RipLimit
               </h2>
               <button
                 onClick={() => setShowPurchaseModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -605,7 +605,7 @@ export default function UserRipLimitPage() {
                     className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                       purchaseAmount === amount
                         ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                     }`}
                   >
                     <Price amount={amount} />
@@ -629,14 +629,14 @@ export default function UserRipLimitPage() {
             </div>
 
             {/* Summary */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">You will receive</span>
-                <span className="text-xl font-bold text-blue-600">
+                <span className="text-gray-600 dark:text-gray-400">You will receive</span>
+                <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
                   {purchaseAmount.toLocaleString("en-IN")} RL
                 </span>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                 1 INR = 1 RipLimit • No expiry • Fully refundable
               </p>
             </div>
@@ -666,23 +666,23 @@ export default function UserRipLimitPage() {
       {/* Refund Modal */}
       {showRefundModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 Request Refund
               </h2>
               <button
                 onClick={() => setShowRefundModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             {/* Available Balance */}
-            <div className="bg-blue-50 rounded-lg p-4 mb-6">
-              <p className="text-sm text-blue-700">Available for refund</p>
-              <p className="text-2xl font-bold text-blue-600">
+            <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 mb-6">
+              <p className="text-sm text-blue-700 dark:text-blue-400">Available for refund</p>
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {balance?.formattedAvailable}
               </p>
             </div>
