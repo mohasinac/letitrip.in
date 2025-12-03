@@ -25,6 +25,7 @@ import { reviewsService } from "@/services/reviews.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { PageState } from "@/components/common/PageState";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import type { ReviewFE } from "@/types/frontend/review.types";
 
 // Filter options
@@ -411,39 +412,28 @@ export default function UserReviewsPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Total Reviews
-            </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-              {stats.total}
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Approved</p>
-            <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
-              {stats.approved}
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Pending</p>
-            <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">
-              {stats.pending}
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Average Rating
-            </p>
-            <div className="flex items-center gap-1 mt-1">
-              <Star className="h-5 w-5 text-yellow-400 fill-current" />
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                {stats.averageRating}
-              </span>
-            </div>
-          </div>
-        </div>
+        <StatsCardGrid columns={4} className="mb-6">
+          <StatsCard
+            title="Total Reviews"
+            value={stats.total}
+            icon={<MessageSquare className="w-5 h-5 text-blue-600" />}
+          />
+          <StatsCard
+            title="Approved"
+            value={stats.approved}
+            icon={<CheckCircle className="w-5 h-5 text-green-600" />}
+          />
+          <StatsCard
+            title="Pending"
+            value={stats.pending}
+            icon={<Clock className="w-5 h-5 text-yellow-600" />}
+          />
+          <StatsCard
+            title="Average Rating"
+            value={stats.averageRating}
+            icon={<Star className="w-5 h-5 text-yellow-500 fill-current" />}
+          />
+        </StatsCardGrid>
 
         {/* Filters */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-6">

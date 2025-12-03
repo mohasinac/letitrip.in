@@ -189,18 +189,27 @@ export default function SellerReturnsPage() {
               <StatsCardGrid columns={4} className="mb-6">
                 <StatsCard title="Total Returns" value={totalReturns} />
                 <StatsCard
-                  label="Pending Review"
-                  value={returns.filter((r) => r.status === "requested").length}
+                  title="Pending Review"
+                  value={
+                    (returns || []).filter((r) => r.status === "requested")
+                      .length
+                  }
                   className="[&_p:last-child]:!text-yellow-600 dark:[&_p:last-child]:!text-yellow-400"
                 />
                 <StatsCard
-                  label="Approved"
-                  value={returns.filter((r) => r.status === "approved").length}
+                  title="Approved"
+                  value={
+                    (returns || []).filter((r) => r.status === "approved")
+                      .length
+                  }
                   className="[&_p:last-child]:!text-green-600 dark:[&_p:last-child]:!text-green-400"
                 />
                 <StatsCard
-                  label="Needs Attention"
-                  value={returns.filter((r) => r.status === "escalated").length}
+                  title="Needs Attention"
+                  value={
+                    (returns || []).filter((r) => r.status === "escalated")
+                      .length
+                  }
                   className="[&_p:last-child]:!text-red-600 dark:[&_p:last-child]:!text-red-400"
                 />
               </StatsCardGrid>
@@ -210,7 +219,7 @@ export default function SellerReturnsPage() {
                   <div className="p-8 text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                   </div>
-                ) : returns.length === 0 ? (
+                ) : (returns || []).length === 0 ? (
                   <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                     No returns found
                   </div>
@@ -219,7 +228,7 @@ export default function SellerReturnsPage() {
                     {/* Mobile Cards */}
                     {isMobile && (
                       <div className="lg:hidden space-y-4 p-4">
-                        {returns.map((returnItem) => (
+                        {(returns || []).map((returnItem) => (
                           <div
                             key={returnItem.id}
                             className="bg-white dark:bg-gray-800 rounded-lg border p-4"
@@ -362,7 +371,7 @@ export default function SellerReturnsPage() {
                           </tr>
                         </thead>
                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                          {returns.map((returnItem) => (
+                          {(returns || []).map((returnItem) => (
                             <tr
                               key={returnItem.id}
                               className="hover:bg-gray-50 dark:hover:bg-gray-700"

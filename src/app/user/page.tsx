@@ -11,7 +11,7 @@ import {
   Clock,
   ChevronRight,
 } from "lucide-react";
-import { StatsCard } from "@/components/common/StatsCard";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Price, DateDisplay } from "@/components/common/values";
 import { ordersService } from "@/services/orders.service";
@@ -118,8 +118,8 @@ export default function UserDashboardPage() {
           </p>
         </div>
 
-        {/* Stats Cards - Single row on mobile, 2 columns on tablet, 4 on desktop */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
+        {/* Stats Cards */}
+        <StatsCardGrid columns={4} className="mb-8">
           <StatsCard
             title="Total Orders"
             value={stats.totalOrders}
@@ -140,7 +140,7 @@ export default function UserDashboardPage() {
             value={stats.cancelledOrders}
             icon={<Package className="w-5 h-5 md:w-6 md:h-6 text-red-600" />}
           />
-        </div>
+        </StatsCardGrid>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

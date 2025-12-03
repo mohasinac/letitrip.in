@@ -1,12 +1,22 @@
 "use client";
 
 import { useEffect, useCallback } from "react";
-import { Trophy, AlertCircle, Loader2, Package, Download } from "lucide-react";
+import {
+  Trophy,
+  AlertCircle,
+  Loader2,
+  Package,
+  Download,
+  DollarSign,
+  Clock,
+  CheckCircle,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { auctionsService } from "@/services/auctions.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { PageState } from "@/components/common/PageState";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import Link from "next/link";
 import Image from "next/image";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
@@ -86,42 +96,28 @@ export default function WonAuctionsPage() {
 
         {/* Stats */}
         {auctionsList.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Total Won
-                </div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {auctionsList.length}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Total Value
-                </div>
-                <div className="text-2xl font-bold text-green-600">
-                  {formatCurrency(totalWinnings)}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Pending Payment
-                </div>
-                <div className="text-2xl font-bold text-orange-600">
-                  {pendingPayment.length}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Completed
-                </div>
-                <div className="text-2xl font-bold text-blue-600">
-                  {completedOrders.length}
-                </div>
-              </div>
-            </div>
-          </div>
+          <StatsCardGrid columns={4} className="mb-8">
+            <StatsCard
+              title="Total Won"
+              value={auctionsList.length}
+              icon={<Trophy className="w-5 h-5 text-yellow-500" />}
+            />
+            <StatsCard
+              title="Total Value"
+              value={formatCurrency(totalWinnings)}
+              icon={<DollarSign className="w-5 h-5 text-green-600" />}
+            />
+            <StatsCard
+              title="Pending Payment"
+              value={pendingPayment.length}
+              icon={<Clock className="w-5 h-5 text-orange-600" />}
+            />
+            <StatsCard
+              title="Completed"
+              value={completedOrders.length}
+              icon={<CheckCircle className="w-5 h-5 text-blue-600" />}
+            />
+          </StatsCardGrid>
         )}
 
         {/* Won Auctions List */}
