@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { logError } from "@/lib/error-logger";
 import {
   Star,
   Heart,
@@ -69,7 +70,10 @@ export function ProductInfo({ product }: ProductInfoProps) {
       });
       toast.success("Added to cart!");
     } catch (error) {
-      console.error("Failed to add to cart:", error);
+      logError(error, {
+        component: "ProductInfo.handleAddToCart",
+        productId: product.id,
+      });
       toast.error("Failed to add to cart");
     }
   };
@@ -87,7 +91,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
           url: globalThis.location?.href || "",
         });
       } catch (error) {
-        console.error("Share failed:", error);
+        logError(error, { component: "ProductInfo.handleShare" });
       }
     } else {
       // Fallback: copy to clipboard

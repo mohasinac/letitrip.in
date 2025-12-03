@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Store } from "lucide-react";
+import { toast } from "sonner";
+import { logError } from "@/lib/error-logger";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
@@ -55,7 +57,11 @@ export function SellerProducts({
 
       setProducts(sorted.slice(0, 16)); // Max 16 products
     } catch (error) {
-      console.error("Failed to load seller products:", error);
+      logError(error as Error, {
+        component: "SellerProducts.loadProducts",
+        metadata: { sellerId: shopId },
+      });
+      toast.error("Failed to load seller products");
     } finally {
       setLoading(false);
     }

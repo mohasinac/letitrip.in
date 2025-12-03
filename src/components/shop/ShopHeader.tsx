@@ -60,7 +60,7 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
           url: globalThis.location?.href || "",
         });
       } catch (error) {
-        console.error("Share failed:", error);
+        logError(error as Error, { component: "ShopHeader.handleShare" });
       }
     } else {
       navigator.clipboard.writeText(globalThis.location?.href || "");

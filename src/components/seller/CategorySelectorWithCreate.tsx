@@ -46,7 +46,7 @@ export default function CategorySelectorWithCreate({
     initialData: [],
     onLoadError: (error) => {
       logError(error, {
-        context: "CategorySelectorWithCreate.loadCategories",
+        component: "CategorySelectorWithCreate.loadCategories",
       });
     },
   });
@@ -161,7 +161,7 @@ export default function CategorySelectorWithCreate({
       setSearchQuery("");
     } catch (error: any) {
       logError(error as Error, {
-        context: "CategorySelectorWithCreate.createCategory",
+        component: "CategorySelectorWithCreate.createCategory",
       });
       setCreateErrors({
         submit:
@@ -204,7 +204,7 @@ export default function CategorySelectorWithCreate({
         <div className="flex items-center gap-2">
           <div className="flex-1 relative">
             <CategorySelector
-              categories={categories}
+              categories={categories || []}
               value={value}
               onChange={(id, cat) => {
                 onChange(id, cat);

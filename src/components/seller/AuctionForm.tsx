@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { logError } from "@/lib/error-logger";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
@@ -82,7 +83,10 @@ export default function AuctionForm({
         setSlugError("This URL is already taken");
       }
     } catch (error) {
-      console.error("Error validating slug:", error);
+      logError(error as Error, {
+        component: "AuctionForm.validateSlug",
+        metadata: { slug },
+      });
     } finally {
       setIsValidatingSlug(false);
     }
@@ -113,7 +117,7 @@ export default function AuctionForm({
 
     if (formData.reservePrice && formData.reservePrice < formData.startingBid) {
       toast.error(
-        "Reserve price must be greater than or equal to starting bid",
+        "Reserve price must be greater than or equal to starting bid"
       );
       return;
     }
@@ -272,7 +276,7 @@ export default function AuctionForm({
                   e.target.value
                     .split(",")
                     .map((s) => s.trim())
-                    .filter(Boolean),
+                    .filter(Boolean)
                 )
               }
               rows={3}
@@ -293,7 +297,7 @@ export default function AuctionForm({
                   e.target.value
                     .split(",")
                     .map((s) => s.trim())
-                    .filter(Boolean),
+                    .filter(Boolean)
                 )
               }
               rows={2}
@@ -312,12 +316,12 @@ export default function AuctionForm({
             formData.status === AuctionStatus.DRAFT
               ? "Draft auctions are not visible to buyers"
               : formData.status === AuctionStatus.SCHEDULED
-                ? "Auction will go live at the scheduled start time"
-                : formData.status === AuctionStatus.ACTIVE
-                  ? "Auction is currently accepting bids"
-                  : formData.status === AuctionStatus.ENDED
-                    ? "Auction has ended"
-                    : "Auction has been cancelled"
+              ? "Auction will go live at the scheduled start time"
+              : formData.status === AuctionStatus.ACTIVE
+              ? "Auction is currently accepting bids"
+              : formData.status === AuctionStatus.ENDED
+              ? "Auction has ended"
+              : "Auction has been cancelled"
           }
         >
           <FormSelect

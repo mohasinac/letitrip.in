@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { toast } from "sonner";
+import { logError } from "@/lib/error-logger";
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput, FormSelect, FormLabel } from "@/components/forms";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
@@ -52,7 +53,9 @@ export function RequiredInfoStep({
         images: [...prev.images, ...uploadedUrls],
       }));
     } catch (error) {
-      console.error("Image upload failed:", error);
+      logError(error, {
+        component: "AuctionWizard.RequiredInfoStep.handleImageUpload",
+      });
       toast.error("Failed to upload images. Please try again.");
     } finally {
       setUploadingImages(false);

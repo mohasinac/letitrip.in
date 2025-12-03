@@ -48,7 +48,7 @@ export default function FeaturedCategories() {
           : (response as any).data || [];
         setCategories(data.slice(0, 9));
       } catch (error) {
-        console.error("Failed to fetch featured categories:", error);
+        logError(error, { component: "FeaturedCategories.fetchCategories" });
       } finally {
         setLoading(false);
       }

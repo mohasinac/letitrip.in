@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { logError } from "@/lib/error-logger";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { ProductCardSkeleton } from "@/components/cards/ProductCardSkeleton";
 import { homepageService } from "@/services/homepage.service";
@@ -45,7 +46,7 @@ export function ProductsSection({
         });
       }
     } catch (error) {
-      console.error("Failed to load products:", error);
+      logError(error as Error, { component: "ProductsSection.loadProducts" });
     } finally {
       setLoading(false);
     }

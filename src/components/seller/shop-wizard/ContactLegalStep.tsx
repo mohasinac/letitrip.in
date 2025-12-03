@@ -26,15 +26,14 @@ export default function ContactLegalStep({
           if (addressData) {
             onChange(
               "address",
-              `${addressData.line1}, ${addressData.city}, ${addressData.state}, ${addressData.pincode}`,
+              `${addressData.addressLine1}, ${addressData.city}, ${addressData.state}, ${addressData.postalCode}`,
             );
           }
         }}
         label="Business Address"
         required
         error={errors.address}
-        filterByType="work"
-        helperText="Select or create your business address"
+        filterType="work"
       />
 
       {/* Legal Information (Optional) */}

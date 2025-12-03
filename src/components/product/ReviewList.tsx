@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Star, ThumbsUp, Check } from "lucide-react";
+import { logError } from "@/lib/error-logger";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { DateDisplay } from "@/components/common/values";
 import { reviewsService } from "@/services/reviews.service";
@@ -82,7 +83,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
         });
       }
     } catch (error) {
-      console.error("Failed to load reviews:", error);
+      logError(error, { component: "ReviewList.loadReviews", productId });
       setReviews([]);
       setStats(null);
     } finally {

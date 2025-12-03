@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { logError } from "@/lib/error-logger";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
@@ -45,7 +46,10 @@ export function ProductVariants({
 
       setProducts(filtered.slice(0, 12)); // Max 12 variants
     } catch (error) {
-      console.error("Failed to load variants:", error);
+      logError(error, {
+        component: "ProductVariants.loadVariants",
+        metadata: { productId },
+      });
     } finally {
       setLoading(false);
     }

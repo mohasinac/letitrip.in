@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Edit } from "lucide-react";
+import { logError } from "@/lib/error-logger";
 import { reviewsService } from "@/services/reviews.service";
 import ReviewForm from "./ReviewForm";
 import ReviewList from "./ReviewList";
@@ -27,7 +28,10 @@ export function ProductReviews({
       setLoading(true);
       await reviewsService.list({ productId });
     } catch (error) {
-      console.error("Failed to load reviews:", error);
+      logError(error, {
+        component: "ProductReviews.loadReviews",
+        metadata: { productId },
+      });
     } finally {
       setLoading(false);
     }

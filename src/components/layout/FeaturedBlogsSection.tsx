@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { logError } from "@/lib/error-logger";
 import { BlogCard } from "@/components/cards/BlogCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { blogService } from "@/services/blog.service";

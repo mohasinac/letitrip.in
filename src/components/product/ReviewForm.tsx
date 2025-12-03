@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Star, Image as ImageIcon } from "lucide-react";
+import { toast } from "sonner";
 import { FormInput, FormLabel, FormTextarea } from "@/components/forms";
+import { logError } from "@/lib/error-logger";
 import { reviewsService } from "@/services/reviews.service";
 import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
@@ -54,8 +56,13 @@ export default function ReviewForm({
         "review",
         productId,
       );
+      toast.success("Images uploaded successfully");
     } catch (err) {
-      console.error("Upload error:", err);
+      logError(err as Error, {
+        component: "ReviewForm.handleImageUpload",
+        metadata: { productId },
+      });
+      toast.error("Failed to upload images");
     }
   };
 

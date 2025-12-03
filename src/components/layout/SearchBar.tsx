@@ -20,6 +20,7 @@ import {
   type SearchableRoute,
 } from "@/constants/searchable-routes";
 import { DynamicIcon, type IconName } from "@/components/common/DynamicIcon";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export interface SearchBarRef {
   focusSearch: () => void;
@@ -46,10 +47,16 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
     const searchBarRef = useRef<HTMLDivElement>(null);
     const suggestionsRef = useRef<HTMLDivElement>(null);
 
-    // Update suggestions when query changes (only for "all" content type)
+    // Debounce search query to reduce suggestions updates
+    const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+    // Update suggestions when debounced query changes (only for "all" content type)
     useEffect(() => {
-      if (contentType === "all" && searchQuery.length > 0) {
-        const routes = searchNavigationRoutes(searchQuery, MAX_SUGGESTIONS);
+      if (contentType === "all" && debouncedSearchQuery.length > 0) {
+        const routes = searchNavigationRoutes(
+          debouncedSearchQuery,
+          MAX_SUGGESTIONS,
+        );
         setSuggestions(routes);
         setShowSuggestions(routes.length > 0);
         setSelectedIndex(-1);
@@ -57,7 +64,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         setSuggestions([]);
         setShowSuggestions(false);
       }
-    }, [searchQuery, contentType]);
+    }, [debouncedSearchQuery, contentType]);
 
     // Close suggestions when clicking outside
     useEffect(() => {

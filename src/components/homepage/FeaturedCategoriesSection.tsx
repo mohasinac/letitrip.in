@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { logError } from "@/lib/error-logger";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { ProductCard } from "@/components/cards/ProductCard";
 import AuctionCard from "@/components/cards/AuctionCard";
@@ -44,7 +45,9 @@ export function FeaturedCategoriesSection({
         });
       }
     } catch (error) {
-      console.error("Failed to load featured categories:", error);
+      logError(error as Error, {
+        component: "FeaturedCategoriesSection.loadCategories",
+      });
     } finally {
       setLoading(false);
     }

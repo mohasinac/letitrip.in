@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Grid, X, Package } from "lucide-react";
+import { logError } from "@/lib/error-logger";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { productsService } from "@/services/products.service";
@@ -70,7 +71,10 @@ export function SimilarProducts({
 
       setProducts(diversified);
     } catch (error) {
-      console.error("Failed to load similar products:", error);
+      logError(error as Error, {
+        component: "SimilarProducts.loadSimilarProducts",
+        metadata: { productId: product.id },
+      });
     } finally {
       setLoading(false);
     }
