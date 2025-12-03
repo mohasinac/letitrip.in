@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { auctionsService } from "@/services/auctions.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { PageState } from "@/components/common/PageState";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import Link from "next/link";
 import Image from "next/image";
@@ -142,42 +143,28 @@ export default function MyBidsPage() {
 
         {/* Stats */}
         {bidsList.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Total Bids
-                </div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {bidsList.length}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Winning
-                </div>
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {winningBids.length}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Outbid
-                </div>
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                  {outbidBids.length}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Ended
-                </div>
-                <div className="text-2xl font-bold text-gray-600 dark:text-gray-300">
-                  {endedBids.length}
-                </div>
-              </div>
-            </div>
-          </div>
+          <StatsCardGrid columns={4} className="mb-8">
+            <StatsCard
+              title="Total Bids"
+              value={bidsList.length}
+              icon={<Gavel className="w-5 h-5 text-blue-600" />}
+            />
+            <StatsCard
+              title="Winning"
+              value={winningBids.length}
+              icon={<Trophy className="w-5 h-5 text-green-600" />}
+            />
+            <StatsCard
+              title="Outbid"
+              value={outbidBids.length}
+              icon={<TrendingUp className="w-5 h-5 text-red-600" />}
+            />
+            <StatsCard
+              title="Ended"
+              value={endedBids.length}
+              icon={<Gavel className="w-5 h-5 text-gray-600" />}
+            />
+          </StatsCardGrid>
         )}
 
         {/* Bids List */}

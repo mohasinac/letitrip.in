@@ -41,9 +41,9 @@ export default function AdminCouponsPage() {
   const isMobile = useIsMobile();
   const {
     data: coupons,
-    loading,
+    isLoading: loading,
     execute: loadCoupons,
-  } = useLoadingState<any[]>([]);
+  } = useLoadingState<any[]>({ initialData: [] });
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCoupons, setSelectedCoupons] = useState<Set<string>>(
@@ -150,10 +150,10 @@ export default function AdminCouponsPage() {
   };
 
   const toggleSelectAll = () => {
-    if (selectedCoupons.size === coupons.length) {
+    if (selectedCoupons.size === (coupons || []).length) {
       setSelectedCoupons(new Set());
     } else {
-      setSelectedCoupons(new Set(coupons.map((c) => c.id)));
+      setSelectedCoupons(new Set((coupons || []).map((c) => c.id)));
     }
   };
 
@@ -228,20 +228,25 @@ export default function AdminCouponsPage() {
             <StatsCardGrid columns={4} className="mb-6">
               <StatsCard title="Total Coupons" value={totalCoupons} />
               <StatsCard
-                label="Active"
-                value={coupons.filter((c) => c.isActive).length}
+                title="Active"
+                value={(coupons || []).filter((c) => c.isActive).length}
                 className="[&_p:last-child]:!text-green-600"
               />
               <StatsCard
-                label="Expired"
+                title="Expired"
                 value={
-                  coupons.filter((c) => new Date(c.validTo) < new Date()).length
+                  (coupons || []).filter(
+                    (c) => new Date(c.validTo) < new Date()
+                  ).length
                 }
                 className="[&_p:last-child]:!text-red-600"
               />
               <StatsCard
-                label="Total Uses"
-                value={coupons.reduce((sum, c) => sum + (c.usageCount || 0), 0)}
+                title="Total Uses"
+                value={(coupons || []).reduce(
+                  (sum, c) => sum + (c.usageCount || 0),
+                  0
+                )}
               />
             </StatsCardGrid>
 
@@ -262,7 +267,7 @@ export default function AdminCouponsPage() {
                   <div className="bg-white rounded-lg p-8 text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                   </div>
-                ) : coupons.length === 0 ? (
+                ) : (coupons || []).length === 0 ? (
                   <div className="bg-white rounded-lg p-8 text-center text-gray-500">
                     <p>No coupons found</p>
                     <button
@@ -274,7 +279,7 @@ export default function AdminCouponsPage() {
                   </div>
                 ) : (
                   <>
-                    {coupons.map((coupon) => {
+                    {(coupons || []).map((coupon) => {
                       const isExpired = new Date(coupon.validTo) < new Date();
                       return (
                         <div
@@ -447,7 +452,7 @@ export default function AdminCouponsPage() {
                 <div className="p-8 text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                 </div>
-              ) : coupons.length === 0 ? (
+              ) : (coupons || []).length === 0 ? (
                 <div className="p-8 text-center text-gray-500">
                   <p>No coupons found</p>
                   <button
@@ -463,10 +468,12 @@ export default function AdminCouponsPage() {
                     <tr>
                       <th className="px-6 py-3 text-left">
                         <TableCheckbox
-                          checked={selectedCoupons.size === coupons.length}
+                          checked={
+                            selectedCoupons.size === (coupons || []).length
+                          }
                           indeterminate={
                             selectedCoupons.size > 0 &&
-                            selectedCoupons.size < coupons.length
+                            selectedCoupons.size < (coupons || []).length
                           }
                           onChange={toggleSelectAll}
                         />
@@ -508,7 +515,7 @@ export default function AdminCouponsPage() {
                       }}
                       resourceName="coupon"
                     />
-                    {coupons.map((coupon) => {
+                    {(coupons || []).map((coupon) => {
                       const isEditing = editingId === coupon.id;
 
                       if (isEditing) {
@@ -667,4 +674,3 @@ export default function AdminCouponsPage() {
     </AuthGuard>
   );
 }
-

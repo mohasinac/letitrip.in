@@ -21,9 +21,9 @@ export default function AdminReviewsPage() {
   const router = useRouter();
   const {
     data: reviews,
-    loading,
+    isLoading: loading,
     execute: loadReviews,
-  } = useLoadingState<any[]>([]);
+  } = useLoadingState<any[]>({ initialData: [] });
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedReviews, setSelectedReviews] = useState<Set<string>>(
@@ -113,10 +113,10 @@ export default function AdminReviewsPage() {
   };
 
   const toggleSelectAll = () => {
-    if (selectedReviews.size === reviews.length) {
+    if (selectedReviews.size === (reviews || []).length) {
       setSelectedReviews(new Set());
     } else {
-      setSelectedReviews(new Set(reviews.map((r) => r.id)));
+      setSelectedReviews(new Set((reviews || []).map((r) => r.id)));
     }
   };
 
@@ -171,18 +171,24 @@ export default function AdminReviewsPage() {
             <StatsCardGrid columns={4} className="mb-6">
               <StatsCard title="Total Reviews" value={totalReviews} />
               <StatsCard
-                label="Pending"
-                value={reviews.filter((r) => r.status === "pending").length}
+                title="Pending"
+                value={
+                  (reviews || []).filter((r) => r.status === "pending").length
+                }
                 className="[&_p:last-child]:!text-yellow-600 dark:[&_p:last-child]:!text-yellow-500"
               />
               <StatsCard
-                label="Approved"
-                value={reviews.filter((r) => r.status === "approved").length}
+                title="Approved"
+                value={
+                  (reviews || []).filter((r) => r.status === "approved").length
+                }
                 className="[&_p:last-child]:!text-green-600 dark:[&_p:last-child]:!text-green-500"
               />
               <StatsCard
-                label="Flagged"
-                value={reviews.filter((r) => r.status === "flagged").length}
+                title="Flagged"
+                value={
+                  (reviews || []).filter((r) => r.status === "flagged").length
+                }
                 className="[&_p:last-child]:!text-red-600 dark:[&_p:last-child]:!text-red-500"
               />
             </StatsCardGrid>
@@ -207,7 +213,7 @@ export default function AdminReviewsPage() {
                 <div className="p-8 text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                 </div>
-              ) : reviews.length === 0 ? (
+              ) : (reviews || []).length === 0 ? (
                 <div className="p-8 text-center text-gray-500">
                   <p>No reviews found</p>
                 </div>
@@ -217,10 +223,12 @@ export default function AdminReviewsPage() {
                     <tr>
                       <th className="px-6 py-3 text-left">
                         <TableCheckbox
-                          checked={selectedReviews.size === reviews.length}
+                          checked={
+                            selectedReviews.size === (reviews || []).length
+                          }
                           indeterminate={
                             selectedReviews.size > 0 &&
-                            selectedReviews.size < reviews.length
+                            selectedReviews.size < (reviews || []).length
                           }
                           onChange={toggleSelectAll}
                         />
@@ -246,7 +254,7 @@ export default function AdminReviewsPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {reviews.map((review) => (
+                    {(reviews || []).map((review) => (
                       <tr
                         key={review.id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-700"

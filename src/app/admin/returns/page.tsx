@@ -27,9 +27,9 @@ export default function AdminReturnsPage() {
   const isMobile = useIsMobile();
   const {
     data: returns,
-    loading,
+    isLoading: loading,
     execute: loadReturns,
-  } = useLoadingState<any[]>([]);
+  } = useLoadingState<any[]>({ initialData: [] });
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -108,18 +108,24 @@ export default function AdminReturnsPage() {
             <StatsCardGrid columns={4} className="mb-6">
               <StatsCard title="Total Returns" value={totalReturns} />
               <StatsCard
-                label="Pending"
-                value={returns.filter((r) => r.status === "pending").length}
+                title="Pending"
+                value={
+                  (returns || []).filter((r) => r.status === "pending").length
+                }
                 className="[&_p:last-child]:!text-yellow-600 dark:[&_p:last-child]:!text-yellow-400"
               />
               <StatsCard
-                label="Approved"
-                value={returns.filter((r) => r.status === "approved").length}
+                title="Approved"
+                value={
+                  (returns || []).filter((r) => r.status === "approved").length
+                }
                 className="[&_p:last-child]:!text-green-600 dark:[&_p:last-child]:!text-green-400"
               />
               <StatsCard
-                label="Completed"
-                value={returns.filter((r) => r.status === "completed").length}
+                title="Completed"
+                value={
+                  (returns || []).filter((r) => r.status === "completed").length
+                }
                 className="[&_p:last-child]:!text-blue-600 dark:[&_p:last-child]:!text-blue-400"
               />
             </StatsCardGrid>
@@ -131,13 +137,13 @@ export default function AdminReturnsPage() {
                   <div className="bg-white dark:bg-gray-800 rounded-lg p-8 text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                   </div>
-                ) : returns.length === 0 ? (
+                ) : (returns || []).length === 0 ? (
                   <div className="bg-white dark:bg-gray-800 rounded-lg p-8 text-center text-gray-500 dark:text-gray-400">
                     No returns found
                   </div>
                 ) : (
                   <>
-                    {returns.map((returnItem) => (
+                    {(returns || []).map((returnItem) => (
                       <div
                         key={returnItem.id}
                         className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3"
@@ -275,7 +281,7 @@ export default function AdminReturnsPage() {
                 <div className="p-8 text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                 </div>
-              ) : returns.length === 0 ? (
+              ) : (returns || []).length === 0 ? (
                 <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                   No returns found
                 </div>
@@ -307,7 +313,7 @@ export default function AdminReturnsPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {returns.map((returnItem) => (
+                    {(returns || []).map((returnItem) => (
                       <tr
                         key={returnItem.id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -422,4 +428,3 @@ export default function AdminReturnsPage() {
     </AuthGuard>
   );
 }
-

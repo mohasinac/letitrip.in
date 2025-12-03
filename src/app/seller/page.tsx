@@ -14,7 +14,7 @@ import {
   ArrowRight,
   Loader2,
 } from "lucide-react";
-import { StatsCard } from "@/components/common/StatsCard";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { CompactPrice, Price } from "@/components/common/values";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -144,7 +144,7 @@ export default function SellerDashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <StatsCardGrid columns={4}>
         <StatsCard
           title="Active Shops"
           value={stats.shops.active.toString()}
@@ -185,7 +185,7 @@ export default function SellerDashboardPage() {
             isPositive: stats.revenue.thisMonth > stats.revenue.lastMonth,
           }}
         />
-      </div>
+      </StatsCardGrid>
 
       {/* Quick Actions */}
       <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">

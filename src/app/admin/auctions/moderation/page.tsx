@@ -19,9 +19,9 @@ export default function AuctionModerationPage() {
   const router = useRouter();
   const {
     data: auctions,
-    loading,
+    isLoading: loading,
     execute: loadAuctions,
-  } = useLoadingState<any[]>([]);
+  } = useLoadingState<any[]>({ initialData: [] });
   const [filterValues, setFilterValues] = useState<Record<string, any>>({
     status: ["pending"],
   });
@@ -169,18 +169,25 @@ export default function AuctionModerationPage() {
             <StatsCardGrid columns={4} className="mb-6">
               <StatsCard title="Total Auctions" value={totalAuctions} />
               <StatsCard
-                label="Pending Review"
-                value={auctions.filter((a) => a.status === "pending").length}
+                title="Pending Review"
+                value={
+                  (auctions || []).filter((a) => a.status === "pending").length
+                }
                 className="[&_p:last-child]:!text-yellow-600"
               />
               <StatsCard
-                label="Scheduled"
-                value={auctions.filter((a) => a.status === "scheduled").length}
+                title="Scheduled"
+                value={
+                  (auctions || []).filter((a) => a.status === "scheduled")
+                    .length
+                }
                 className="[&_p:last-child]:!text-blue-600"
               />
               <StatsCard
-                label="Live Now"
-                value={auctions.filter((a) => a.status === "live").length}
+                title="Live Now"
+                value={
+                  (auctions || []).filter((a) => a.status === "live").length
+                }
                 className="[&_p:last-child]:!text-green-600"
               />
             </StatsCardGrid>
@@ -190,7 +197,7 @@ export default function AuctionModerationPage() {
                 <div className="p-8 text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                 </div>
-              ) : auctions.length === 0 ? (
+              ) : (auctions || []).length === 0 ? (
                 <div className="p-8 text-center text-gray-500">
                   No auctions found
                 </div>
@@ -219,7 +226,7 @@ export default function AuctionModerationPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {auctions.map((auction) => (
+                    {(auctions || []).map((auction) => (
                       <tr key={auction.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4">
                           <div className="flex items-center">

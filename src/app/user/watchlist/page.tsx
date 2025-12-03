@@ -2,11 +2,12 @@
 
 import { useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Heart, AlertCircle, Loader2 } from "lucide-react";
+import { Heart, AlertCircle, Loader2, Eye, Clock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { auctionsService } from "@/services/auctions.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { PageState } from "@/components/common/PageState";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import AuctionCard from "@/components/cards/AuctionCard";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
@@ -89,48 +90,36 @@ export default function WatchlistPage() {
 
         {/* Stats */}
         {auctionsList.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Total Watched
-                </div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {auctionsList.length}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Active Auctions
-                </div>
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {
-                    auctionsList.filter(
-                      (a) => a.status === AuctionStatus.ACTIVE
-                    ).length
-                  }
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Ending Soon
-                </div>
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                  {
-                    auctionsList.filter((a) => {
-                      const endTime =
-                        typeof a.endTime === "string"
-                          ? new Date(a.endTime)
-                          : a.endTime;
-                      const hoursRemaining =
-                        (endTime.getTime() - Date.now()) / (1000 * 60 * 60);
-                      return hoursRemaining <= 24 && hoursRemaining > 0;
-                    }).length
-                  }
-                </div>
-              </div>
-            </div>
-          </div>
+          <StatsCardGrid columns={3} className="mb-8">
+            <StatsCard
+              title="Total Watched"
+              value={auctionsList.length}
+              icon={<Eye className="w-5 h-5 text-blue-600" />}
+            />
+            <StatsCard
+              title="Active Auctions"
+              value={
+                auctionsList.filter((a) => a.status === AuctionStatus.ACTIVE)
+                  .length
+              }
+              icon={<Heart className="w-5 h-5 text-green-600" />}
+            />
+            <StatsCard
+              title="Ending Soon"
+              value={
+                auctionsList.filter((a) => {
+                  const endTime =
+                    typeof a.endTime === "string"
+                      ? new Date(a.endTime)
+                      : a.endTime;
+                  const hoursRemaining =
+                    (endTime.getTime() - Date.now()) / (1000 * 60 * 60);
+                  return hoursRemaining <= 24 && hoursRemaining > 0;
+                }).length
+              }
+              icon={<Clock className="w-5 h-5 text-red-600" />}
+            />
+          </StatsCardGrid>
         )}
 
         {/* Auctions Grid */}
