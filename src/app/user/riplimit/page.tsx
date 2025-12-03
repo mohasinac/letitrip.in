@@ -139,8 +139,9 @@ export default function UserRipLimitPage() {
       setProcessingPurchase(true);
       setError(null);
 
-      const purchaseData =
-        await ripLimitService.initiatePurchase(purchaseAmount);
+      const purchaseData = await ripLimitService.initiatePurchase(
+        purchaseAmount
+      );
 
       // Initialize Razorpay
       const options = {
@@ -210,7 +211,7 @@ export default function UserRipLimitPage() {
 
       const result = await ripLimitService.requestRefund(
         refundAmount,
-        refundReason,
+        refundReason
       );
 
       setSuccessMessage(result.message);
@@ -251,7 +252,10 @@ export default function UserRipLimitPage() {
           <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-6" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+              <div
+                key={i}
+                className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg"
+              />
             ))}
           </div>
         </div>
@@ -426,7 +430,9 @@ export default function UserRipLimitPage() {
                     <Gavel className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white">Auction Bid</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      Auction Bid
+                    </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       {bid.formattedAmount} blocked
                     </p>
@@ -485,7 +491,9 @@ export default function UserRipLimitPage() {
         ) : transactions.length === 0 ? (
           <div className="text-center py-12">
             <Clock className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-gray-400 font-medium">No transactions yet</p>
+            <p className="text-gray-500 dark:text-gray-400 font-medium">
+              No transactions yet
+            </p>
             <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">
               Your transaction history will appear here
             </p>
@@ -507,21 +515,31 @@ export default function UserRipLimitPage() {
                 <div className="flex items-center gap-4">
                   <div
                     className={`p-2 rounded-full ${
-                      tx.isCredit ? "bg-green-100 dark:bg-green-900/30" : "bg-gray-100 dark:bg-gray-700"
+                      tx.isCredit
+                        ? "bg-green-100 dark:bg-green-900/30"
+                        : "bg-gray-100 dark:bg-gray-700"
                     }`}
                   >
                     {getTransactionIcon(tx.type, tx.isCredit)}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white">{tx.typeLabel}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{tx.description}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{tx.timeAgo}</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {tx.typeLabel}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {tx.description}
+                    </p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                      {tx.timeAgo}
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p
                     className={`font-semibold ${
-                      tx.isCredit ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                      tx.isCredit
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-red-600 dark:text-red-400"
                     }`}
                   >
                     {tx.isCredit ? "+" : "-"}
@@ -631,7 +649,9 @@ export default function UserRipLimitPage() {
             {/* Summary */}
             <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">You will receive</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  You will receive
+                </span>
                 <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
                   {purchaseAmount.toLocaleString("en-IN")} RL
                 </span>
@@ -681,7 +701,9 @@ export default function UserRipLimitPage() {
 
             {/* Available Balance */}
             <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 mb-6">
-              <p className="text-sm text-blue-700 dark:text-blue-400">Available for refund</p>
+              <p className="text-sm text-blue-700 dark:text-blue-400">
+                Available for refund
+              </p>
               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {balance?.formattedAvailable}
               </p>
@@ -697,7 +719,7 @@ export default function UserRipLimitPage() {
                 max={balance?.availableBalance || 0}
                 min={1}
                 helperText={`You will receive ₹${refundAmount.toLocaleString(
-                  "en-IN",
+                  "en-IN"
                 )}`}
               />
             </div>

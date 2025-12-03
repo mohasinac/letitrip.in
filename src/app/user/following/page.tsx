@@ -53,7 +53,9 @@ export default function FollowingPage() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center gap-3 mb-2">
             <Heart className="h-6 w-6 text-blue-600 dark:text-blue-400 fill-current" />
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Following</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Following
+            </h1>
           </div>
           <p className="text-gray-600 dark:text-gray-400">
             {shopsList.length > 0

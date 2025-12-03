@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Package,
-  Heart,
   MapPin,
   User,
   ShoppingBag,
@@ -17,59 +16,82 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { Price, DateDisplay } from "@/components/common/values";
 import { ordersService } from "@/services/orders.service";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import type { OrderCardFE } from "@/types/frontend/order.types";
+
+interface DashboardData {
+  recentOrders: OrderCardFE[];
+  stats: {
+    totalOrders: number;
+    pendingOrders: number;
+    completedOrders: number;
+    cancelledOrders: number;
+  };
+}
 
 export default function UserDashboardPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const [recentOrders, setRecentOrders] = useState<OrderCardFE[]>([]);
-  const [stats, setStats] = useState({
-    totalOrders: 0,
-    pendingOrders: 0,
-    completedOrders: 0,
-    cancelledOrders: 0,
+
+  const {
+    data,
+    isLoading: loading,
+    execute,
+  } = useLoadingState<DashboardData>({
+    initialData: {
+      recentOrders: [],
+      stats: {
+        totalOrders: 0,
+        pendingOrders: 0,
+        completedOrders: 0,
+        cancelledOrders: 0,
+      },
+    },
   });
-  const [loading, setLoading] = useState(true);
+
+  const loadDashboardData = useCallback(async () => {
+    // Load recent orders
+    const ordersData = await ordersService.list({} as any);
+    const orders = ordersData.data || [];
+
+    // Calculate stats
+    const totalOrders = orders.length;
+    const pendingOrders = orders.filter(
+      (o) => o.status === "pending" || o.status === "confirmed"
+    ).length;
+    const completedOrders = orders.filter(
+      (o) => o.status === "delivered"
+    ).length;
+    const cancelledOrders = orders.filter(
+      (o) => o.status === "cancelled"
+    ).length;
+
+    return {
+      recentOrders: orders,
+      stats: {
+        totalOrders,
+        pendingOrders,
+        completedOrders,
+        cancelledOrders,
+      },
+    };
+  }, []);
 
   useEffect(() => {
     if (!user) {
       router.push("/login?redirect=/user");
       return;
     }
-    loadDashboardData();
-  }, [user]);
+    execute(loadDashboardData);
+  }, [user, execute, loadDashboardData, router]);
 
-  const loadDashboardData = async () => {
-    setLoading(true);
-    try {
-      // Load recent orders
-      const ordersData = await ordersService.list({} as any);
-      const orders = ordersData.data || [];
-      setRecentOrders(orders);
-
-      // Calculate stats
-      const totalOrders = orders.length;
-      const pendingOrders = orders.filter(
-        (o) => o.status === "pending" || o.status === "confirmed",
-      ).length;
-      const completedOrders = orders.filter(
-        (o) => o.status === "delivered",
-      ).length;
-      const cancelledOrders = orders.filter(
-        (o) => o.status === "cancelled",
-      ).length;
-
-      setStats({
-        totalOrders,
-        pendingOrders,
-        completedOrders,
-        cancelledOrders,
-      });
-    } catch (error) {
-      console.error("Failed to load dashboard data:", error);
-    } finally {
-      setLoading(false);
-    }
+  // Safe access to data
+  const recentOrders = data?.recentOrders || [];
+  const stats = data?.stats || {
+    totalOrders: 0,
+    pendingOrders: 0,
+    completedOrders: 0,
+    cancelledOrders: 0,
   };
 
   if (loading) {
@@ -234,8 +256,8 @@ export default function UserDashboardPage() {
                             order.status === "delivered"
                               ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                               : order.status === "cancelled"
-                                ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-                                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+                              ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                              : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
                           }`}
                         >
                           {order.status.charAt(0).toUpperCase() +
