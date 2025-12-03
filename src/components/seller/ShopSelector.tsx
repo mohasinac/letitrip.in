@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FormSelect } from "@/components/forms";
 import { shopsService } from "@/services/shops.service";
 import { logError } from "@/lib/firebase-error-logger";
-import { toast } from "sonner";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 interface Option {
   label: string;
@@ -27,33 +27,32 @@ export default function ShopSelector({
   disabled,
   className = "",
 }: ShopSelectorProps) {
-  const [options, setOptions] = useState<Option[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    isLoading: loading,
+    data: options,
+    execute,
+  } = useLoadingState<Option[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, { context: "ShopSelector.loadShops" });
+    },
+  });
 
   useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const res = await shopsService.list({ limit: 100 });
-        const opts = (res.data || []).map((s) => ({
-          label: s.name,
-          value: s.id,
-          slug: s.slug,
-        }));
-        setOptions(opts);
-      } catch (e) {
-        logError(e as Error, { context: "ShopSelector.loadShops" });
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+    execute(async () => {
+      const res = await shopsService.list({ limit: 100 });
+      return (res.data || []).map((s) => ({
+        label: s.name,
+        value: s.id,
+        slug: s.slug,
+      }));
+    });
   }, []);
 
+  const selectOptions = includeAllOption;
   const selectOptions = includeAllOption
-    ? [{ value: "", label: "All Shops" }, ...options]
-    : options;
-
+    ? [{ value: "", label: "All Shops" }, ...(options || [])]
+    : options || [];
   return (
     <div className={className}>
       <FormSelect
@@ -62,7 +61,7 @@ export default function ShopSelector({
         value={value || ""}
         onChange={(e) => {
           const val = e.target.value || undefined;
-          const sel = options.find((o) => o.value === val);
+          const sel = (options || []).find((o) => o.value === val);
           onChange(val, sel?.slug);
         }}
         disabled={disabled || loading}

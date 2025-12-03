@@ -10,6 +10,8 @@ import {
   Calendar,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import { FormInput } from "@/components/forms";
 import { Price, DateDisplay } from "@/components/common/values";
 import { couponsService } from "@/services/coupons.service";
@@ -37,8 +39,19 @@ export function CouponSelector({
   appliedCouponCode,
   className = "",
 }: CouponSelectorProps) {
-  const [availableCoupons, setAvailableCoupons] = useState<CouponFE[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    data: availableCoupons,
+    setData: setAvailableCoupons,
+    execute,
+  } = useLoadingState<CouponFE[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, { component: "CouponSelector.loadCoupons" });
+      toast.error("Failed to load coupons");
+    },
+  });
+
   const [manualCode, setManualCode] = useState("");
   const [validating, setValidating] = useState(false);
   const [showAll, setShowAll] = useState(false);
@@ -48,16 +61,14 @@ export function CouponSelector({
     loadCoupons();
   }, [cartTotal]);
 
-  const loadCoupons = async () => {
-    try {
-      setLoading(true);
+  const loadCoupons = () =>
+    execute(async () => {
       const response = await couponsService.list({
         status: "active",
         limit: 20,
       });
 
-      const coupons = response.data;
-      setAvailableCoupons(coupons);
+      const coupons = response.data || [];
 
       // Find best coupon
       if (coupons.length > 0) {
@@ -77,13 +88,9 @@ export function CouponSelector({
           setBestCoupon(best);
         }
       }
-    } catch (error) {
-      console.error("Failed to load coupons:", error);
-      toast.error("Failed to load coupons");
-    } finally {
-      setLoading(false);
-    }
-  };
+
+      return coupons;
+    });
 
   const calculateDiscount = (coupon: CouponFE): number => {
     if (coupon.discountType === "percentage") {
@@ -98,9 +105,8 @@ export function CouponSelector({
   };
 
   const handleApplyCoupon = async (coupon: CouponFE) => {
+    setValidating(true);
     try {
-      setValidating(true);
-
       // Validate coupon
       const validation = await couponsService.validate({
         code: coupon.code,
@@ -115,6 +121,7 @@ export function CouponSelector({
         toast.error(validation.message || "Invalid coupon");
       }
     } catch (error: any) {
+      logError(error, { component: "CouponSelector.handleApplyCoupon" });
       toast.error(error.message || "Failed to apply coupon");
     } finally {
       setValidating(false);
@@ -127,9 +134,8 @@ export function CouponSelector({
       return;
     }
 
+    setValidating(true);
     try {
-      setValidating(true);
-
       const validation = await couponsService.validate({
         code: manualCode.trim().toUpperCase(),
         cartTotal,
@@ -138,7 +144,7 @@ export function CouponSelector({
 
       if (validation.valid) {
         // Find the coupon details
-        const coupon = availableCoupons.find(
+        const coupon = (availableCoupons || []).find(
           (c) => c.code === manualCode.trim().toUpperCase()
         );
         if (coupon) {
@@ -152,6 +158,7 @@ export function CouponSelector({
         toast.error(validation.message || "Invalid coupon");
       }
     } catch (error: any) {
+      logError(error, { component: "CouponSelector.handleManualApply" });
       toast.error(error.message || "Failed to apply coupon");
     } finally {
       setValidating(false);
@@ -166,8 +173,8 @@ export function CouponSelector({
   };
 
   const displayedCoupons = showAll
-    ? availableCoupons
-    : availableCoupons.slice(0, 3);
+    ? availableCoupons || []
+    : (availableCoupons || []).slice(0, 3);
 
   if (loading) {
     return (
@@ -234,10 +241,10 @@ export function CouponSelector({
       )}
 
       {/* Available Coupons */}
-      {availableCoupons.length > 0 && (
+      {(availableCoupons || []).length > 0 && (
         <div className="space-y-3">
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Available Coupons ({availableCoupons.length})
+            Available Coupons ({(availableCoupons || []).length})
           </p>
 
           {displayedCoupons.map((coupon) => {
@@ -348,21 +355,21 @@ export function CouponSelector({
           })}
 
           {/* Show More/Less */}
-          {availableCoupons.length > 3 && (
+          {(availableCoupons || []).length > 3 && (
             <button
               onClick={() => setShowAll(!showAll)}
               className="w-full text-center py-2 text-sm text-primary hover:underline"
             >
               {showAll
                 ? "Show Less"
-                : `Show ${availableCoupons.length - 3} More Coupons`}
+                : `Show ${(availableCoupons || []).length - 3} More Coupons`}
             </button>
           )}
         </div>
       )}
 
       {/* No Coupons */}
-      {availableCoupons.length === 0 && (
+      {(!availableCoupons || availableCoupons.length === 0) && (
         <div className="text-center p-6 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
           <Ticket className="w-12 h-12 text-gray-400 mx-auto mb-2" />
           <p className="text-sm text-gray-600 dark:text-gray-400">

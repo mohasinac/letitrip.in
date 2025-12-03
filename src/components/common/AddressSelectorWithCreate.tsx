@@ -7,6 +7,7 @@ import { addressService } from "@/services/address.service";
 import { SmartAddressForm } from "./SmartAddressForm";
 import type { AddressFE } from "@/types/frontend/address.types";
 import { logError } from "@/lib/firebase-error-logger";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 export interface AddressSelectorWithCreateProps {
   value?: string | null;
@@ -29,8 +30,21 @@ export function AddressSelectorWithCreate({
   autoSelectDefault = true,
   className = "",
 }: AddressSelectorWithCreateProps) {
-  const [addresses, setAddresses] = useState<AddressFE[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    data: addresses,
+    setData: setAddresses,
+    execute,
+  } = useLoadingState<AddressFE[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, {
+        context: "AddressSelectorWithCreate.loadAddresses",
+      });
+      toast.error("Failed to load addresses");
+    },
+  });
+
   const [showForm, setShowForm] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(value || null);
 
@@ -41,7 +55,7 @@ export function AddressSelectorWithCreate({
 
   // Auto-select default address
   useEffect(() => {
-    if (autoSelectDefault && addresses.length > 0 && !selectedId) {
+    if (autoSelectDefault && addresses && addresses.length > 0 && !selectedId) {
       const defaultAddress = addresses.find((addr) => addr.isDefault);
       if (defaultAddress) {
         setSelectedId(defaultAddress.id);
@@ -50,27 +64,16 @@ export function AddressSelectorWithCreate({
     }
   }, [addresses, autoSelectDefault, selectedId, onChange]);
 
-  const loadAddresses = async () => {
-    try {
-      setLoading(true);
+  const loadAddresses = () =>
+    execute(async () => {
       const data = await addressService.getAll();
-
       // Filter by type if specified
       const filtered =
         filterType === "all"
           ? data
           : data.filter((addr) => addr.addressType === filterType);
-
-      setAddresses(filtered);
-    } catch (error) {
-      logError(error as Error, {
-        context: "AddressSelectorWithCreate.loadAddresses",
-      });
-      toast.error("Failed to load addresses");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return filtered;
+    });
 
   const handleAddressSelect = (address: AddressFE) => {
     setSelectedId(address.id);
@@ -78,7 +81,7 @@ export function AddressSelectorWithCreate({
   };
 
   const handleAddressCreated = (newAddress: AddressFE) => {
-    setAddresses((prev) => [...prev, newAddress]);
+    setAddresses([...(addresses || []), newAddress]);
     setSelectedId(newAddress.id);
     onChange(newAddress.id, newAddress);
     setShowForm(false);
@@ -127,7 +130,7 @@ export function AddressSelectorWithCreate({
 
       {/* Address Cards */}
       <div className="space-y-3">
-        {addresses.length === 0 ? (
+        {!addresses || addresses.length === 0 ? (
           <div className="text-center p-6 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
             <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">

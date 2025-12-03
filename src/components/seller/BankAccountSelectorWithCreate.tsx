@@ -19,6 +19,7 @@ import {
   VALIDATION_MESSAGES,
   isValidIFSC,
 } from "@/constants/validation-messages";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 // Bank Account Interface
 export interface BankAccount {
@@ -92,8 +93,15 @@ export function BankAccountSelectorWithCreate({
   autoSelectDefault = true,
   className = "",
 }: BankAccountSelectorWithCreateProps) {
-  const [accounts, setAccounts] = useState<BankAccount[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    isLoading: loading,
+    data: accounts,
+    setData: setAccounts,
+    execute,
+  } = useLoadingState<BankAccount[]>({
+    initialData: [],
+  });
+
   const [showForm, setShowForm] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(value || null);
   const [ifscLoading, setIfscLoading] = useState(false);
@@ -114,7 +122,6 @@ export function BankAccountSelectorWithCreate({
 
   const ifscCode = watch("ifscCode");
 
-  // Load bank accounts (mock for now - implement actual API later)
   useEffect(() => {
     loadBankAccounts();
   }, []);
@@ -137,24 +144,23 @@ export function BankAccountSelectorWithCreate({
     }
   }, [ifscCode]);
 
-  const loadBankAccounts = async () => {
-    try {
-      setLoading(true);
-      // TODO: Implement actual API call
-      // const data = await bankAccountsService.getAll();
-      // setAccounts(data);
-
-      // Mock data for now
-      setAccounts([]);
-    } catch (error) {
-      logError(error as Error, {
-        context: "BankAccountSelectorWithCreate.loadBankAccounts",
-      });
-      toast.error("Failed to load bank accounts");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loadBankAccounts = () =>
+    execute(
+      async () => {
+        // TODO: Implement actual API call
+        // const data = await bankAccountsService.getAll();
+        // return data;
+        return [];
+      },
+      {
+        onError: (error) => {
+          logError(error, {
+            context: "BankAccountSelectorWithCreate.loadBankAccounts",
+          });
+          toast.error("Failed to load bank accounts");
+        },
+      }
+    );
 
   const lookupIFSC = async (ifsc: string) => {
     try {
