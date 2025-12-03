@@ -8,6 +8,7 @@
 
 import { useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { logError } from "@/lib/firebase-error-logger";
 
 export interface NavigationGuardOptions {
   /**
@@ -87,7 +88,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
         if (onNavigate) {
           try {
             await onNavigate();
-          } catch (error) {
+          } catch (error: any) {
             logError(error, {
               component: "useNavigationGuard.onNavigate.beforeUnload",
             });
@@ -137,7 +138,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
         if (onNavigate) {
           try {
             await onNavigate();
-          } catch (error) {
+          } catch (error: any) {
             logError(error, {
               component: "useNavigationGuard.onNavigate.confirmNavigation",
             });

@@ -22,7 +22,7 @@ export default function CameraCapture({
   const streamRef = useRef<MediaStream | null>(null);
 
   const [facingMode, setFacingMode] = useState<"user" | "environment">(
-    initialFacingMode,
+    initialFacingMode
   );
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);

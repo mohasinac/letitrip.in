@@ -46,7 +46,7 @@ export function ProductVariants({
 
       setProducts(filtered.slice(0, 12)); // Max 12 variants
     } catch (error) {
-      logError(error, {
+      logError(error as Error, {
         component: "ProductVariants.loadVariants",
         metadata: { productId },
       });

@@ -28,7 +28,7 @@ export function ProductReviews({
       setLoading(true);
       await reviewsService.list({ productId });
     } catch (error) {
-      logError(error, {
+      logError(error as Error, {
         component: "ProductReviews.loadReviews",
         metadata: { productId },
       });

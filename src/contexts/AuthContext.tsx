@@ -26,7 +26,7 @@ interface AuthContextType {
       displayName?: string;
       email?: string;
       photoURL?: string;
-    },
+    }
   ) => Promise<GoogleAuthResponse>;
   register: (data: {
     email: string;
@@ -42,7 +42,7 @@ interface AuthContextType {
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined,
+  undefined
 );
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!currentUser && cachedUser) {
         // Session expired, cached user cleared automatically by authService
       }
-    } catch (error) {
+    } catch (error: any) {
       logError(error, { component: "AuthContext.initializeAuth" });
       setUser(null);
     } finally {
@@ -101,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         displayName?: string;
         email?: string;
         photoURL?: string;
-      },
+      }
     ) => {
       try {
         const response = await authService.loginWithGoogle({
@@ -118,7 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    [],
+    []
   );
 
   // Register function
@@ -141,14 +141,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    [],
+    []
   );
 
   // Logout function
   const logout = useCallback(async () => {
     try {
       await authService.logout();
-    } catch (error) {
+    } catch (error: any) {
       logError(error, { component: "AuthContext.logout" });
     } finally {
       setUser(null);
@@ -160,7 +160,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const currentUser = await authService.getCurrentUser();
       setUser(currentUser);
-    } catch (error) {
+    } catch (error: any) {
       logError(error, { component: "AuthContext.refreshUser" });
       setUser(null);
     }

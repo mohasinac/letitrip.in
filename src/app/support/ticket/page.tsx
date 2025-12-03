@@ -38,6 +38,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supportService } from "@/services/support.service";
 import { FormInput, FormSelect, FormTextarea } from "@/components/forms";
+import { logError } from "@/lib/firebase-error-logger";
 
 export default function SupportTicketPage() {
   const router = useRouter();
@@ -72,7 +73,10 @@ export default function SupportTicketPage() {
       // Redirect to tickets list
       router.push("/user/tickets");
     } catch (err: any) {
-      logError(err, { component: "SupportTicketPage.handleSubmit", formData });
+      logError(err, {
+        component: "SupportTicketPage.handleSubmit",
+        metadata: { formData },
+      });
       setError(err.message || "Failed to create support ticket");
       setIsSubmitting(false);
     }

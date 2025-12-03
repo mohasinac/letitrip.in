@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { logError } from "@/lib/firebase-error-logger";
 
 interface UseSlugValidationOptions {
   /** API endpoint for validation */
@@ -113,11 +114,10 @@ export function useSlugValidation({
         }
 
         setIsAvailable(data.available);
-      } catch (err) {
+      } catch (err: any) {
         logError(err, {
           component: "useSlugValidation.validate",
-          slug: slugToCheck,
-          endpoint,
+          metadata: { slug, endpoint },
         });
         setError(err instanceof Error ? err.message : "Validation failed");
         setIsAvailable(null);
@@ -125,7 +125,7 @@ export function useSlugValidation({
         setIsValidating(false);
       }
     },
-    [endpoint, params, excludeId],
+    [endpoint, params, excludeId]
   );
 
   // Debounced validation
@@ -142,7 +142,7 @@ export function useSlugValidation({
         setError(null);
       }
     },
-    [debouncedValidate],
+    [debouncedValidate]
   );
 
   // Reset function

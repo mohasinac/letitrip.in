@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
 import { categoriesService } from "@/services/categories.service";
+import { logError } from "@/lib/firebase-error-logger";
 import type { CategoryFE } from "@/types/frontend/category.types";
 import {
   Layers,
@@ -48,7 +49,9 @@ export default function FeaturedCategories() {
           : (response as any).data || [];
         setCategories(data.slice(0, 9));
       } catch (error) {
-        logError(error, { component: "FeaturedCategories.fetchCategories" });
+        logError(error as Error, {
+          component: "FeaturedCategories.fetchCategories",
+        });
       } finally {
         setLoading(false);
       }

@@ -1,5 +1,6 @@
 import { apiService } from "./api.service";
 import { CategoryBE, CategoryTreeNodeBE } from "@/types/backend/category.types";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   CategoryFE,
   CategoryTreeNodeFE,
@@ -276,9 +277,9 @@ class CategoriesService {
         currentId =
           (category as any).parentId || (category as any).parent_id || null;
       } catch (error) {
-        logError(error, {
+        logError(error as Error, {
           component: "CategoriesService.getBreadcrumb",
-          currentId,
+          metadata: { currentId },
         });
         break;
       }
@@ -344,7 +345,10 @@ class CategoriesService {
       const response: any = await apiService.post("/categories/batch", { ids });
       return toFECategories(response.data || []);
     } catch (error) {
-      logError(error, { component: "CategoriesService.getByIds", ids });
+      logError(error as Error, {
+        component: "CategoriesService.getByIds",
+        metadata: { ids },
+      });
       return [];
     }
   }

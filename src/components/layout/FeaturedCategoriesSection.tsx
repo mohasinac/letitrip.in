@@ -101,13 +101,13 @@ export default function FeaturedCategoriesSection({
               products: [],
             };
           }
-        }),
+        })
       );
 
       setCategoriesWithProducts(
         categoriesData.filter(
-          (item: CategoryWithProducts) => item.products.length > 0,
-        ),
+          (item: CategoryWithProducts) => item.products.length > 0
+        )
       );
     } catch (error) {
       logError(error as Error, {

@@ -10,6 +10,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { mediaService } from "@/services/media.service";
+import { logError } from "@/lib/firebase-error-logger";
 import { useNavigationGuard } from "./useNavigationGuard";
 
 export interface UploadedMedia {
@@ -167,10 +168,10 @@ export function useMediaUploadWithCleanup(
     try {
       // Delete all uploaded files from Firebase Storage
       const deletePromises = mediaToCleanup.map((media) =>
-        mediaService.deleteByUrl(media.url).catch((error) => {
+        mediaService.deleteByUrl(media.url).catch((error: any) => {
           logError(error, {
             component: "useMediaUploadWithCleanup.cleanup",
-            url: media.url,
+            metadata: { url: media.url },
           });
           // Don't throw, continue with other deletions
         })
@@ -183,7 +184,7 @@ export function useMediaUploadWithCleanup(
       uploadedMediaRef.current = [];
 
       onCleanupComplete?.();
-    } catch (error) {
+    } catch (error: any) {
       logError(error, {
         component: "useMediaUploadWithCleanup.cleanup.general",
       });

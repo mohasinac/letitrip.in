@@ -164,21 +164,26 @@ export const VALIDATION_RULES = {
   FILE: {
     IMAGE: {
       MAX_SIZE_MB: 5,
-      ALLOWED_TYPES: ["image/jpeg", "image/png", "image/webp", "image/jpg"],
+      ALLOWED_TYPES: [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/jpg",
+      ] as string[],
       ALLOWED_EXTENSIONS: [".jpg", ".jpeg", ".png", ".webp"],
     },
     VIDEO: {
       MAX_SIZE_MB: 50,
-      ALLOWED_TYPES: ["video/mp4", "video/webm"],
+      ALLOWED_TYPES: ["video/mp4", "video/webm"] as string[],
       ALLOWED_EXTENSIONS: [".mp4", ".webm"],
     },
     DOCUMENT: {
       MAX_SIZE_MB: 10,
-      ALLOWED_TYPES: ["application/pdf", "image/jpeg", "image/png"],
+      ALLOWED_TYPES: ["application/pdf", "image/jpeg", "image/png"] as string[],
       ALLOWED_EXTENSIONS: [".pdf", ".jpg", ".jpeg", ".png"],
     },
   },
-} as const;
+};
 
 // ============================================================================
 // VALIDATION MESSAGES
@@ -485,7 +490,7 @@ export function isValidPassword(password: string): {
  */
 export function validateFile(
   file: File,
-  type: "image" | "video" | "document",
+  type: "image" | "video" | "document"
 ): { valid: boolean; error?: string } {
   const rules =
     VALIDATION_RULES.FILE[

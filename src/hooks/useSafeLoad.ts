@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from "react";
+import { logError } from "@/lib/firebase-error-logger";
 
 /**
  * Hook to prevent infinite API calls in admin pages
@@ -35,7 +36,7 @@ interface UseSafeLoadOptions {
 
 export function useSafeLoad(
   loadFn: () => Promise<void> | void,
-  options: UseSafeLoadOptions = {}
+  options: UseSafeLoadOptions = {},
 ) {
   const {
     enabled = true,
@@ -67,7 +68,7 @@ export function useSafeLoad(
       await loadFn();
       setHasLoaded(true);
     } catch (error) {
-      logError(error, { component: "useSafeLoad.safeLoad" });
+      logError(error as Error, { component: "useSafeLoad.safeLoad" });
       setHasLoaded(false);
       // Don't throw - let the component handle errors gracefully
     } finally {
@@ -140,7 +141,7 @@ interface UseAdminLoadOptions {
 
 export function useAdminLoad(
   loadFn: () => Promise<void> | void,
-  options: UseAdminLoadOptions
+  options: UseAdminLoadOptions,
 ) {
   const { user, requiredRole = "admin", deps = [], debounce = 0 } = options;
 

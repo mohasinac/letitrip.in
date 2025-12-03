@@ -1,6 +1,7 @@
 /**
  * Date utility functions for safe ISO string conversion
  */
+import { logError } from "@/lib/firebase-error-logger";
 
 /**
  * Safely converts a date to ISO string, handling invalid dates
@@ -23,7 +24,10 @@ export function safeToISOString(date: any): string | null {
     if (isNaN(d.getTime())) return null;
     return d.toISOString();
   } catch (error) {
-    logError(error, { component: "dateUtils.toISOStringOrNull", date });
+    logError(error as Error, {
+      component: "dateUtils.toISOStringOrNull",
+      metadata: { date },
+    });
     return null;
   }
 }
@@ -36,7 +40,7 @@ export function safeToISOString(date: any): string | null {
  */
 export function toISOStringOrDefault(
   date: any,
-  fallback: Date = new Date()
+  fallback: Date = new Date(),
 ): string {
   return safeToISOString(date) ?? fallback.toISOString();
 }
@@ -84,7 +88,10 @@ export function safeToDate(date: any): Date | null {
     if (isNaN(d.getTime())) return null;
     return d;
   } catch (error) {
-    logError(error, { component: "dateUtils.toDate", date });
+    logError(error as Error, {
+      component: "dateUtils.toDate",
+      metadata: { date },
+    });
     return null;
   }
 }

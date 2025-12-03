@@ -73,7 +73,6 @@ export function SimilarProducts({
     } catch (error) {
       logError(error as Error, {
         component: "SimilarProducts.loadSimilarProducts",
-        metadata: { productId: product.id },
       });
     } finally {
       setLoading(false);

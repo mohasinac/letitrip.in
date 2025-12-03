@@ -53,7 +53,7 @@ export function RequiredInfoStep({
         images: [...prev.images, ...uploadedUrls],
       }));
     } catch (error) {
-      logError(error, {
+      logError(error as Error, {
         component: "AuctionWizard.RequiredInfoStep.handleImageUpload",
       });
       toast.error("Failed to upload images. Please try again.");

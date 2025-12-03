@@ -93,7 +93,7 @@ export default function HeroCarousel() {
     if (isTransitioning) return;
     setIsTransitioning(true);
     setCurrentSlide(
-      (prev) => (prev - 1 + enabledSlides.length) % enabledSlides.length,
+      (prev) => (prev - 1 + enabledSlides.length) % enabledSlides.length
     );
     setTimeout(() => setIsTransitioning(false), 500);
   }, [enabledSlides.length, isTransitioning]);

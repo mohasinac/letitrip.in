@@ -1,5 +1,6 @@
 import { apiService } from "./api.service";
 import { SHOP_ROUTES } from "@/constants/api-routes";
+import { logError } from "@/lib/firebase-error-logger";
 import { ShopBE } from "@/types/backend/shop.types";
 import { ShopFE, ShopCardFE, ShopFormFE } from "@/types/frontend/shop.types";
 import {
@@ -293,7 +294,10 @@ class ShopsService {
       const response: any = await apiService.post("/shops/batch", { ids });
       return (response.data || []).map(toFEShopCard);
     } catch (error) {
-      logError(error, { component: "ShopsService.getByIds", ids });
+      logError(error as Error, {
+        component: "ShopsService.getByIds",
+        metadata: { ids },
+      });
       return [];
     }
   }

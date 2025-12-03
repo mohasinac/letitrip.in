@@ -70,9 +70,9 @@ export function ProductInfo({ product }: ProductInfoProps) {
       });
       toast.success("Added to cart!");
     } catch (error) {
-      logError(error, {
+      logError(error as Error, {
         component: "ProductInfo.handleAddToCart",
-        productId: product.id,
+        metadata: { productId: product.id },
       });
       toast.error("Failed to add to cart");
     }
@@ -91,7 +91,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
           url: globalThis.location?.href || "",
         });
       } catch (error) {
-        logError(error, { component: "ProductInfo.handleShare" });
+        logError(error as Error, { component: "ProductInfo.handleShare" });
       }
     } else {
       // Fallback: copy to clipboard
