@@ -162,11 +162,16 @@ export interface ProductCardFE {
   originalPrice: number | null; // Alias for compareAtPrice
   rating: number; // Alias for averageRating
   stockCount: number; // Actual stock number (0 if out-of-stock)
+  inStock?: boolean; // Derived: stockCount > 0 (for backwards compatibility)
   condition: ProductCondition; // Product condition
   sku?: string | null; // SKU for admin display
   categoryId?: string | null; // Category ID for admin display
   salesCount?: number; // Sales count for admin display
   lowStockThreshold?: number; // Low stock threshold for admin display
+
+  // Legacy shop properties (use shop.name and shop.slug instead)
+  shopName?: string;
+  shopSlug?: string;
 }
 
 /**

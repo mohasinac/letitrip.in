@@ -126,7 +126,7 @@ export default function AdminReviewsPage() {
 
   return (
     <AuthGuard requireAuth allowedRoles={["admin"]}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="flex gap-6">
           {/* Filter Sidebar */}
           <UnifiedFilterSidebar
@@ -171,25 +171,33 @@ export default function AdminReviewsPage() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Total Reviews</div>
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Total Reviews
+                </div>
                 <div className="text-2xl font-bold">{totalReviews}</div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Pending</div>
-                <div className="text-2xl font-bold text-yellow-600">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Pending
+                </div>
+                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-500">
                   {reviews.filter((r) => r.status === "pending").length}
                 </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Approved</div>
-                <div className="text-2xl font-bold text-green-600">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Approved
+                </div>
+                <div className="text-2xl font-bold text-green-600 dark:text-green-500">
                   {reviews.filter((r) => r.status === "approved").length}
                 </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Flagged</div>
-                <div className="text-2xl font-bold text-red-600">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Flagged
+                </div>
+                <div className="text-2xl font-bold text-red-600 dark:text-red-500">
                   {reviews.filter((r) => r.status === "flagged").length}
                 </div>
               </div>
@@ -253,9 +261,12 @@ export default function AdminReviewsPage() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {reviews.map((review) => (
-                      <tr key={review.id} className="hover:bg-gray-50">
+                      <tr
+                        key={review.id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                      >
                         <td className="px-6 py-4">
                           <TableCheckbox
                             checked={selectedReviews.has(review.id)}

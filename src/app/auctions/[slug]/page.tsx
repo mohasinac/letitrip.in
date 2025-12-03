@@ -279,17 +279,17 @@ export default function AuctionDetailPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Breadcrumb */}
-      <div className="mb-6 flex items-center gap-2 text-sm text-gray-600">
-        <Link href="/" className="hover:text-primary">
+      <nav className="mb-6 flex items-center gap-2 text-sm text-gray-600">
+        <Link href="/" className="hover:text-primary transition-colors">
           Home
         </Link>
         <span>/</span>
-        <Link href="/auctions" className="hover:text-primary">
+        <Link href="/auctions" className="hover:text-primary transition-colors">
           Auctions
         </Link>
         <span>/</span>
-        <span className="text-gray-900">{auction.name}</span>
-      </div>
+        <span className="text-gray-900 truncate max-w-xs">{auction.name}</span>
+      </nav>
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Left Column - Images & Description */}

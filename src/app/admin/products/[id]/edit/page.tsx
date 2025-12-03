@@ -812,28 +812,6 @@ export default function AdminEditProductPage() {
             </div>
           </div>
 
-          {/* Feature Flags */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Features
-            </h2>
-            <div className="space-y-3">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.featured}
-                  onChange={(e) =>
-                    setFormData({ ...formData, featured: e.target.checked })
-                  }
-                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700">
-                  Featured Product (shown in featured sections and homepage)
-                </span>
-              </label>
-            </div>
-          </div>
-
           {/* Return Policy */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">

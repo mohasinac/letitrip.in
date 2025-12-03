@@ -25,41 +25,55 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { DateDisplay } from "@/components/common/values";
 
-// Default section order
+// Default section order - matches HomepageSettings.sections keys
 const DEFAULT_SECTION_ORDER = [
-  "featuredCategories",
+  "latestProducts",
   "featuredProducts",
+  "hotAuctions",
   "featuredAuctions",
+  "featuredCategories",
   "featuredShops",
+  "recentReviews",
   "featuredBlogs",
-  "featuredReviews",
 ];
 
-// Section display names
+// Section display names - matches HomepageSettings.sections keys
 const SECTION_NAMES: Record<string, { title: string; description: string }> = {
-  featuredCategories: {
-    title: "Featured Categories",
-    description: "Categories with products",
+  valueProposition: {
+    title: "Value Proposition",
+    description: "Trust badges (Authentic, Quality, Support, etc.)",
+  },
+  latestProducts: {
+    title: "Latest Products",
+    description: "Recently added products displayed in a grid",
   },
   featuredProducts: {
     title: "Featured Products",
-    description: "Highlighted products showcase",
+    description: "Admin-selected featured products",
+  },
+  hotAuctions: {
+    title: "Hot Auctions",
+    description: "Active auctions with the most bids",
   },
   featuredAuctions: {
     title: "Featured Auctions",
-    description: "Live and upcoming auctions",
+    description: "Admin-selected featured auctions",
+  },
+  featuredCategories: {
+    title: "Featured Categories",
+    description: "Admin-selected categories with items",
   },
   featuredShops: {
     title: "Featured Shops",
-    description: "Top shops with their products",
+    description: "Admin-selected shops with their items",
+  },
+  recentReviews: {
+    title: "Recent Reviews",
+    description: "Latest customer reviews (4+ stars)",
   },
   featuredBlogs: {
     title: "Featured Blogs",
-    description: "Latest blog posts",
-  },
-  featuredReviews: {
-    title: "Featured Reviews",
-    description: "Customer reviews showcase",
+    description: "Featured blog posts",
   },
 };
 
@@ -249,10 +263,12 @@ export default function HomepageSettingsPage() {
   if (!settings) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Failed to load homepage settings.</p>
+        <p className="text-gray-500 dark:text-gray-400">
+          Failed to load homepage settings.
+        </p>
         <button
           onClick={loadSettings}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="mt-4 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600"
         >
           Retry
         </button>
@@ -281,7 +297,7 @@ export default function HomepageSettingsPage() {
               <button
                 onClick={() => setShowResetDialog(true)}
                 disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-200 disabled:opacity-50"
               >
                 <RefreshCw className="w-4 h-4" />
                 Reset
@@ -307,13 +323,13 @@ export default function HomepageSettingsPage() {
         )}
 
         {/* Special Event Banner Settings */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Special Event Banner
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Announcement banner at the very top of the site
               </p>
             </div>
@@ -474,13 +490,13 @@ export default function HomepageSettingsPage() {
         </div>
 
         {/* Hero Carousel Settings */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Hero Carousel
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Main banner at the top of homepage
               </p>
             </div>
@@ -491,7 +507,7 @@ export default function HomepageSettingsPage() {
           </div>
 
           {settings.heroCarousel.enabled && (
-            <div className="space-y-4 pt-4 border-t border-gray-200">
+            <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div>
                 <FormLabel htmlFor="autoplay-interval">
                   Auto-play Interval:{" "}
@@ -597,12 +613,67 @@ function renderSectionConfig(
   updateSectionValue: (section: string, field: string, value: number) => void
 ): React.ReactNode {
   switch (sectionKey) {
+    case "valueProposition":
+      return (
+        <div className="text-sm text-gray-600 dark:text-gray-400">
+          This section displays trust badges (Authentic Products, Quality
+          Assured, 24/7 Support, etc.). No configuration needed.
+        </div>
+      );
+    case "latestProducts":
+      return (
+        <SliderControl
+          label="Max Products"
+          value={settings.sections.latestProducts?.maxProducts || 10}
+          min={5}
+          max={20}
+          onChange={(value) =>
+            updateSectionValue("latestProducts", "maxProducts", value)
+          }
+        />
+      );
+    case "featuredProducts":
+      return (
+        <SliderControl
+          label="Max Products"
+          value={settings.sections.featuredProducts?.maxProducts || 10}
+          min={5}
+          max={20}
+          onChange={(value) =>
+            updateSectionValue("featuredProducts", "maxProducts", value)
+          }
+        />
+      );
+    case "hotAuctions":
+      return (
+        <SliderControl
+          label="Max Auctions"
+          value={settings.sections.hotAuctions?.maxAuctions || 10}
+          min={5}
+          max={20}
+          onChange={(value) =>
+            updateSectionValue("hotAuctions", "maxAuctions", value)
+          }
+        />
+      );
+    case "featuredAuctions":
+      return (
+        <SliderControl
+          label="Max Auctions"
+          value={settings.sections.featuredAuctions?.maxAuctions || 10}
+          min={5}
+          max={20}
+          onChange={(value) =>
+            updateSectionValue("featuredAuctions", "maxAuctions", value)
+          }
+        />
+      );
     case "featuredCategories":
       return (
         <div className="space-y-4">
           <SliderControl
             label="Max Categories"
-            value={settings.sections.featuredCategories.maxCategories}
+            value={settings.sections.featuredCategories?.maxCategories || 8}
             min={1}
             max={10}
             onChange={(value) =>
@@ -611,7 +682,9 @@ function renderSectionConfig(
           />
           <SliderControl
             label="Products per Category"
-            value={settings.sections.featuredCategories.productsPerCategory}
+            value={
+              settings.sections.featuredCategories?.productsPerCategory || 6
+            }
             min={5}
             max={20}
             onChange={(value) =>
@@ -624,36 +697,12 @@ function renderSectionConfig(
           />
         </div>
       );
-    case "featuredProducts":
-      return (
-        <SliderControl
-          label="Max Products"
-          value={settings.sections.featuredProducts.maxProducts}
-          min={5}
-          max={20}
-          onChange={(value) =>
-            updateSectionValue("featuredProducts", "maxProducts", value)
-          }
-        />
-      );
-    case "featuredAuctions":
-      return (
-        <SliderControl
-          label="Max Auctions"
-          value={settings.sections.featuredAuctions.maxAuctions}
-          min={5}
-          max={20}
-          onChange={(value) =>
-            updateSectionValue("featuredAuctions", "maxAuctions", value)
-          }
-        />
-      );
     case "featuredShops":
       return (
         <div className="space-y-4">
           <SliderControl
             label="Max Shops"
-            value={settings.sections.featuredShops.maxShops}
+            value={settings.sections.featuredShops?.maxShops || 8}
             min={1}
             max={10}
             onChange={(value) =>
@@ -662,7 +711,7 @@ function renderSectionConfig(
           />
           <SliderControl
             label="Products per Shop"
-            value={settings.sections.featuredShops.productsPerShop}
+            value={settings.sections.featuredShops?.productsPerShop || 6}
             min={5}
             max={20}
             onChange={(value) =>
@@ -671,27 +720,27 @@ function renderSectionConfig(
           />
         </div>
       );
+    case "recentReviews":
+      return (
+        <SliderControl
+          label="Max Reviews"
+          value={settings.sections.recentReviews?.maxReviews || 10}
+          min={5}
+          max={20}
+          onChange={(value) =>
+            updateSectionValue("recentReviews", "maxReviews", value)
+          }
+        />
+      );
     case "featuredBlogs":
       return (
         <SliderControl
           label="Max Blogs"
-          value={settings.sections.featuredBlogs.maxBlogs}
-          min={5}
-          max={20}
+          value={settings.sections.featuredBlogs?.maxBlogs || 6}
+          min={3}
+          max={12}
           onChange={(value) =>
             updateSectionValue("featuredBlogs", "maxBlogs", value)
-          }
-        />
-      );
-    case "featuredReviews":
-      return (
-        <SliderControl
-          label="Max Reviews"
-          value={settings.sections.featuredReviews.maxReviews}
-          min={5}
-          max={20}
-          onChange={(value) =>
-            updateSectionValue("featuredReviews", "maxReviews", value)
           }
         />
       );
@@ -827,9 +876,9 @@ function SliderControl({
         step="1"
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+        className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
       />
-      <div className="flex justify-between text-xs text-gray-500 mt-1">
+      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
         <span>{min}</span>
         <span>{max}</span>
       </div>

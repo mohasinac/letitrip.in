@@ -7,7 +7,7 @@ const DEMO_PREFIX = "DEMO_";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { auctions, buyers } = body;
+    const { auctions, buyers, scale = 10 } = body;
 
     if (!auctions || !Array.isArray(auctions) || auctions.length === 0) {
       return NextResponse.json({ success: false, error: "Auctions data required" }, { status: 400 });
@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
       
       const auctionData = auctionDoc.data();
       let currentBid = auctionData?.starting_bid || 5000;
-      const numBidders = 3 + Math.floor(Math.random() * 7);
+      // Scale affects number of bidders: 1-3 bidders for scale 10, increases with scale
+      const numBidders = Math.max(1, Math.min(Math.ceil(scale / 10 * (1 + Math.floor(Math.random() * 2))), buyers.length, 3));
 
       for (let b = 0; b < numBidders; b++) {
         const bidder = buyers[b % buyers.length];

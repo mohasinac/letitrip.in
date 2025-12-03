@@ -136,8 +136,6 @@ export default function AdminProductsPage() {
       const actionMap: Record<string, any> = {
         approve: { status: "published" as ProductStatus },
         reject: { status: "archived" as ProductStatus },
-        feature: { featured: true },
-        unfeature: { featured: false },
       };
 
       if (actionId === "delete") {
@@ -376,7 +374,6 @@ export default function AdminProductsPage() {
                   rating={product.rating}
                   reviewCount={product.reviewCount}
                   inStock={product.stockCount > 0}
-                  featured={product.featured}
                   status={product.status}
                   sku={product.sku || undefined}
                   stockCount={product.stockCount}
@@ -534,11 +531,6 @@ export default function AdminProductsPage() {
                                 <div className="text-sm text-gray-500 truncate">
                                   {product.sku || "No SKU"}
                                 </div>
-                                {product.featured && (
-                                  <span className="inline-block mt-1 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
-                                    Featured
-                                  </span>
-                                )}
                               </div>
                             </div>
                           </td>

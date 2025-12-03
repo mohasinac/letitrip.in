@@ -239,19 +239,6 @@ export default function AdminEditShopPage() {
     }
   };
 
-  const handleFeature = async () => {
-    if (!shop) return;
-    try {
-      await shopsService.setFeatureFlags(shop.slug, {
-        featured: !shop.featured,
-      });
-      await loadShopData();
-    } catch (error) {
-      console.error("Failed to feature shop:", error);
-      toast.error("Failed to update feature status");
-    }
-  };
-
   const handleBan = async () => {
     if (!shop) return;
     try {
@@ -355,11 +342,6 @@ export default function AdminEditShopPage() {
                     Banned
                   </span>
                 )}
-                {shop.featured && (
-                  <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700">
-                    Featured
-                  </span>
-                )}
               </div>
             </div>
             <p className="mt-1 text-sm text-gray-600">
@@ -461,17 +443,6 @@ export default function AdminEditShopPage() {
           >
             <CheckCircle className="h-4 w-4" />
             {shop.isVerified ? "Remove Verification" : "Verify Shop"}
-          </button>
-          <button
-            onClick={handleFeature}
-            className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium ${
-              shop.featured
-                ? "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-                : "bg-yellow-600 text-white hover:bg-yellow-700"
-            }`}
-          >
-            <Star className="h-4 w-4" />
-            {shop.featured ? "Remove Featured" : "Set Featured"}
           </button>
           <button
             onClick={() => setShowBanDialog(true)}

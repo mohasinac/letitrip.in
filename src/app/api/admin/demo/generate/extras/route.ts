@@ -139,14 +139,14 @@ export async function POST(request: NextRequest) {
 
     // Featured Sections for homepage - Beyblade focused
     const sectionTypes = [
-      { type: "featured_products", title: "Featured Beyblades", subtitle: "Hand-picked for bladers" },
-      { type: "new_arrivals", title: "New Arrivals", subtitle: "Just landed" },
-      { type: "best_sellers", title: "Top Sellers", subtitle: "Fan favorites this week" },
-      { type: "on_sale", title: "Hot Deals", subtitle: "Limited time offers" },
-      { type: "featured_auctions", title: "Live Auctions", subtitle: "Bid on rare Beyblades" },
-      { type: "featured_shops", title: "Top Sellers", subtitle: "Verified Beyblade shops" },
-      { type: "featured_categories", title: "Shop by Type", subtitle: "Attack, Defense, Stamina" },
-      { type: "vintage_collection", title: "Vintage & Rare", subtitle: "Classic Beyblades" },
+      { type: "featured_products", title: "Featured Beyblades", subtitle: "Hand-picked for bladers", displayCount: 8 },
+      { type: "new_arrivals", title: "New Arrivals", subtitle: "Just landed", displayCount: 12 },
+      { type: "best_sellers", title: "Top Sellers", subtitle: "Fan favorites this week", displayCount: 8 },
+      { type: "on_sale", title: "Hot Deals", subtitle: "Limited time offers", displayCount: 10 },
+      { type: "featured_auctions", title: "Live Auctions", subtitle: "Bid on rare Beyblades", displayCount: 6 },
+      { type: "featured_shops", title: "Top Sellers", subtitle: "Verified Beyblade shops", displayCount: 6 },
+      { type: "featured_categories", title: "Shop by Type", subtitle: "Attack, Defense, Stamina", displayCount: 8 },
+      { type: "vintage_collection", title: "Vintage & Rare", subtitle: "Classic Beyblades", displayCount: 8 },
     ];
 
     for (let i = 0; i < sectionTypes.length; i++) {
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
         background_color: i % 2 !== 0 ? "#f8f9fa" : null,
         sort_order: i + 1,
         is_active: true,
-        display_count: [8, 12, 6, 10][i % 4],
+        display_count: sectionTypes[i].displayCount,
         layout: ["grid", "carousel", "list"][i % 3],
         show_view_all: true,
         view_all_link: `/products?section=${sectionTypes[i].type}`,

@@ -285,9 +285,9 @@ export default function CategoriesPage() {
           {filteredCategories.map((category) => (
             <div
               key={category.id}
-              className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
+              className="group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden hover:shadow-lg transition-shadow"
             >
-              <div className="aspect-video bg-gray-100 relative">
+              <div className="aspect-video bg-gray-100 dark:bg-gray-700 relative">
                 {category.image ? (
                   <OptimizedImage
                     src={category.image}
@@ -314,18 +314,6 @@ export default function CategoriesPage() {
                   <StatusBadge
                     status={category.is_active ? "active" : "inactive"}
                   />
-                </div>
-                <div className="mt-3 flex items-center gap-2 text-sm">
-                  {category.is_featured && (
-                    <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
-                      Featured
-                    </span>
-                  )}
-                  {category.show_on_homepage && (
-                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                      Homepage
-                    </span>
-                  )}
                 </div>
                 {category.description && (
                   <p className="mt-3 text-sm text-gray-600 line-clamp-2">
@@ -429,19 +417,6 @@ export default function CategoriesPage() {
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {category.is_featured && (
-                        <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
-                          Featured
-                        </span>
-                      )}
-                      {category.show_on_homepage && (
-                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                          Homepage
-                        </span>
-                      )}
-                    </div>
-
                     <div className="flex gap-2 pt-2 border-t dark:border-gray-700">
                       <Link
                         href={`/categories/${category.slug}`}
@@ -479,7 +454,7 @@ export default function CategoriesPage() {
           >
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="border-b border-gray-200 bg-gray-50">
+                <thead className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                   <tr>
                     <th className="w-12 px-6 py-3">
                       <TableCheckbox
@@ -516,7 +491,7 @@ export default function CategoriesPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                   {/* Quick Create Row */}
                   <QuickCreateRow
                     fields={fields}
@@ -541,7 +516,6 @@ export default function CategoriesPage() {
                           slug: values.name.toLowerCase().replace(/\s+/g, "-"),
                           parentId: values.parent_id || null,
                           image: values.image || "",
-                          featured: values.is_featured || false,
                           isActive: values.is_active !== false,
                           sortOrder: 0,
                         } as any);
@@ -554,8 +528,6 @@ export default function CategoriesPage() {
                     resourceName="category"
                     defaultValues={{
                       is_active: true,
-                      is_featured: false,
-                      show_on_homepage: false,
                       parent_id: "",
                     }}
                   />
@@ -622,7 +594,7 @@ export default function CategoriesPage() {
                     return (
                       <tr
                         key={category.id}
-                        className="hover:bg-gray-50"
+                        className="hover:bg-gray-50 dark:hover:bg-gray-700"
                         onDoubleClick={() => setEditingId(category.id)}
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -669,20 +641,6 @@ export default function CategoriesPage() {
                           <StatusBadge
                             status={category.is_active ? "active" : "inactive"}
                           />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            {category.is_featured && (
-                              <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
-                                Featured
-                              </span>
-                            )}
-                            {category.show_on_homepage && (
-                              <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                                Homepage
-                              </span>
-                            )}
-                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                           <div className="flex items-center justify-end gap-2">

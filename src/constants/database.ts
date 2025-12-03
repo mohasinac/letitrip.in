@@ -84,6 +84,7 @@ export const COLLECTIONS = {
 
   // Content Management Collections
   BLOG_POSTS: "blog_posts",
+  FAQS: "faqs",
 } as const;
 
 /**

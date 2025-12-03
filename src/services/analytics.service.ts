@@ -170,6 +170,27 @@ class AnalyticsService {
 
     return response.blob();
   }
+
+  // Track event (client-side event logging)
+  trackEvent(eventName: string, eventData?: Record<string, any>): void {
+    // In development, log to console
+    if (process.env.NODE_ENV === "development") {
+      console.log(`[Analytics Event] ${eventName}`, eventData);
+    }
+
+    // In production, send to analytics endpoint (if available)
+    // This is a fire-and-forget operation, no need to await
+    if (typeof window !== "undefined") {
+      try {
+        // You can integrate with Google Analytics, Mixpanel, etc. here
+        // For now, just log to console in dev mode
+        // Example: window.gtag?.('event', eventName, eventData);
+      } catch (error) {
+        // Silently fail - analytics should not break the app
+        console.debug("Analytics tracking failed:", error);
+      }
+    }
+  }
 }
 
 export const analyticsService = new AnalyticsService();

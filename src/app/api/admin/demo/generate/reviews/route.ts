@@ -26,7 +26,7 @@ const REVIEW_VIDEOS = [
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { products, buyers } = body;
+    const { products, buyers, scale = 10 } = body;
 
     if (!products || !Array.isArray(products) || products.length === 0) {
       return NextResponse.json({ success: false, error: "Products data required" }, { status: 400 });
@@ -70,7 +70,8 @@ export async function POST(request: NextRequest) {
 
     for (const productId of products) {
       const shopId = productShopMap[productId] || "";
-      const numReviews = 1 + Math.floor(Math.random() * 3);
+      // Number of reviews scales with scale parameter (1-2 reviews per product at scale 10)
+      const numReviews = Math.max(1, Math.min(Math.floor(scale / 10 * (1 + Math.floor(Math.random() * 1))), 2));
       const ratings: number[] = [];
 
       for (let r = 0; r < numReviews; r++) {

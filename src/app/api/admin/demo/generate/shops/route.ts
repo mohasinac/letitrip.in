@@ -53,7 +53,7 @@ const SHOP_BANNERS = [
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { sellers } = body;
+    const { sellers, scale = 10 } = body;
 
     if (!sellers || !Array.isArray(sellers) || sellers.length === 0) {
       return NextResponse.json({ success: false, error: "Sellers data required" }, { status: 400 });
@@ -62,8 +62,11 @@ export async function POST(request: NextRequest) {
     const db = getFirestoreAdmin();
     const timestamp = new Date();
     const createdShops: Array<{ id: string; ownerId: string; name: string; slug: string }> = [];
+    
+    // Calculate shop count: scale / 2 (5 shops for scale 10, 50 for scale 100)
+    const shopCount = Math.max(1, Math.ceil(scale / 2));
 
-    for (let i = 0; i < Math.min(sellers.length, 50); i++) {
+    for (let i = 0; i < Math.min(sellers.length, shopCount); i++) {
       const seller = sellers[i];
       const city = INDIAN_CITIES[i % INDIAN_CITIES.length];
       const shopName = `${DEMO_PREFIX}${SHOP_PREFIXES[i % SHOP_PREFIXES.length]} ${SHOP_SUFFIXES[i % SHOP_SUFFIXES.length]}`;
