@@ -168,7 +168,7 @@ export default function AdminReviewsPage() {
 
             {/* Stats Cards */}
             <StatsCardGrid columns={4} className="mb-6">
-              <StatsCard label="Total Reviews" value={totalReviews} />
+              <StatsCard title="Total Reviews" value={totalReviews} />
               <StatsCard
                 label="Pending"
                 value={reviews.filter((r) => r.status === "pending").length}
@@ -392,3 +392,4 @@ export default function AdminReviewsPage() {
     </AuthGuard>
   );
 }
+

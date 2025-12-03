@@ -166,7 +166,7 @@ export default function AuctionModerationPage() {
             </div>
 
             <StatsCardGrid columns={4} className="mb-6">
-              <StatsCard label="Total Auctions" value={totalAuctions} />
+              <StatsCard title="Total Auctions" value={totalAuctions} />
               <StatsCard
                 label="Pending Review"
                 value={auctions.filter((a) => a.status === "pending").length}
@@ -368,3 +368,4 @@ export default function AuctionModerationPage() {
     </AuthGuard>
   );
 }
+
