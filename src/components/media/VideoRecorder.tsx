@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Video, X, Square, Pause, Play, Monitor, Camera } from "lucide-react";
+import { logError } from "@/lib/error-logger";
 import { MediaFile } from "@/types/media";
 import { formatDuration } from "@/lib/media/media-validator";
 
@@ -68,7 +69,10 @@ export default function VideoRecorder({
         setIsReady(true);
       }
     } catch (err) {
-      console.error("Error accessing media:", err);
+      logError(err as Error, {
+        component: "VideoRecorder.startRecording",
+        metadata: { source },
+      });
       setError(`Unable to access ${source}. Please check permissions.`);
     }
   };

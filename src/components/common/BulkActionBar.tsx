@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { X, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { logError } from "@/lib/error-logger";
 import { BulkActionBarProps, BulkAction } from "@/types/inline-edit";
 import { ConfirmDialog } from "./ConfirmDialog";
 
@@ -37,7 +39,11 @@ export function BulkActionBar({
       setConfirmAction(null);
       setInputValue(null);
     } catch (error) {
-      console.error("Failed to execute bulk action:", error);
+      logError(error as Error, {
+        component: "BulkActionBar.handleExecuteAction",
+        metadata: { actionId: action.id },
+      });
+      toast.error(`Failed to execute action`);
     } finally {
       setActionLoading(false);
     }

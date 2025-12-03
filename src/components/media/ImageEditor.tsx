@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { logError } from "@/lib/error-logger";
 import {
   X,
   RotateCw,
@@ -85,7 +86,7 @@ export default function ImageEditor({
       const url = URL.createObjectURL(editedBlob);
       setPreviewUrl(url);
     } catch (error) {
-      console.error("Error updating preview:", error);
+      logError(error as Error, { component: "ImageEditor.updatePreview" });
     }
   };
 

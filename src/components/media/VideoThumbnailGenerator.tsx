@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { logError } from "@/lib/error-logger";
 import { X, Check } from "lucide-react";
 import { MediaFile } from "@/types/media";
 import { extractMultipleThumbnails } from "@/lib/media/video-processor";
@@ -48,7 +49,9 @@ export default function VideoThumbnailGenerator({
         setDuration(video.duration);
       };
     } catch (error) {
-      console.error("Error generating thumbnails:", error);
+      logError(error as Error, {
+        component: "VideoThumbnailGenerator.generateThumbnails",
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -76,7 +79,9 @@ export default function VideoThumbnailGenerator({
         { dataUrl: thumbnailDataUrl, timestamp },
       ]);
     } catch (error) {
-      console.error("Error generating custom thumbnail:", error);
+      logError(error as Error, {
+        component: "VideoThumbnailGenerator.handleCustomTimestamp",
+      });
     } finally {
       setIsGenerating(false);
     }

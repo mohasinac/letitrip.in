@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { MapPin } from "lucide-react";
 import { toast } from "sonner";
+import { logError } from "@/lib/error-logger";
 import { FormInput, FormSelect } from "@/components/forms";
 import { INDIAN_STATES } from "@/constants/location";
 
@@ -95,7 +96,9 @@ export function BusinessAddressStep({
         setLoadingGPS(false);
       },
       (error) => {
-        console.error("GPS error:", error);
+        logError(error as any, {
+          component: "BusinessAddressStep.getCurrentLocation",
+        });
         toast.error("Failed to get GPS location");
         setLoadingGPS(false);
       },

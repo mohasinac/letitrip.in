@@ -1,6 +1,8 @@
 "use client";
 
 import { ReactNode, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { logError } from "@/lib/error-logger";
 
 export interface ConfirmDialogProps {
   isOpen: boolean;
@@ -54,7 +56,8 @@ export function ConfirmDialog({
       await onConfirm();
       onClose();
     } catch (error) {
-      console.error("Confirm action failed:", error);
+      logError(error as Error, { component: "ConfirmDialog.handleConfirm" });
+      toast.error("Action failed");
     } finally {
       setIsProcessing(false);
     }

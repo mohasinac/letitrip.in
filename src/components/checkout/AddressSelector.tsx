@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Plus, MapPin, Edit2, Trash2, Check } from "lucide-react";
+import { toast } from "sonner";
+import { logError } from "@/lib/error-logger";
 import { addressService } from "@/services/address.service";
 import type { AddressFE } from "@/types/frontend/address.types";
 import { ConfirmDialog } from "../common/ConfirmDialog";
@@ -40,7 +42,7 @@ export function AddressSelector({
         onSelect(defaultAddress?.id || data[0].id);
       }
     } catch (error) {
-      console.error("Failed to load addresses:", error);
+      logError(error as Error, { component: "AddressSelector.loadAddresses" });
     } finally {
       setLoading(false);
     }
