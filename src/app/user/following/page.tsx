@@ -32,13 +32,13 @@ export default function FollowingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
           <Loader2
-            className="h-8 w-8 animate-spin text-blue-600 mx-auto"
+            className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400 mx-auto"
             data-testid="loading-spinner"
           />
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             Loading followed shops...
           </p>
         </div>
@@ -47,15 +47,15 @@ export default function FollowingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center gap-3 mb-2">
-            <Heart className="h-6 w-6 text-blue-600 fill-current" />
-            <h1 className="text-2xl font-bold text-gray-900">Following</h1>
+            <Heart className="h-6 w-6 text-blue-600 dark:text-blue-400 fill-current" />
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Following</h1>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             {shopsList.length > 0
               ? `${shopsList.length} shop${
                   shopsList.length > 1 ? "s" : ""
