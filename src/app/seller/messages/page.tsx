@@ -20,6 +20,7 @@ import { FormInput } from "@/components/forms";
 import { messagesService } from "@/services/messages.service";
 import type { ConversationFE } from "@/types/frontend/message.types";
 import { formatDistanceToNow } from "date-fns";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import {
   MessageSquare,
   Search,
@@ -36,25 +37,23 @@ import {
 export default function SellerMessagesPage() {
   const { user } = useAuth();
   const [conversations, setConversations] = useState<ConversationFE[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
+
   const loadConversations = useCallback(
     async (pageNum: number = 1, refresh: boolean = false) => {
       if (!user) return;
 
-      try {
-        if (refresh) {
-          setRefreshing(true);
-        } else {
-          setLoading(true);
-        }
-        setError(null);
+      if (refresh) {
+        setRefreshing(true);
+      }
 
+      await execute(async () => {
         // Set user ID for service transformations
         messagesService.setCurrentUserId(user.uid);
 
@@ -78,16 +77,10 @@ export default function SellerMessagesPage() {
 
         setHasMore(result.pagination.hasNext);
         setPage(pageNum);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load messages"
-        );
-      } finally {
-        setLoading(false);
         setRefreshing(false);
-      }
+      });
     },
-    [user]
+    [user, execute]
   );
 
   useEffect(() => {
@@ -99,7 +92,7 @@ export default function SellerMessagesPage() {
   };
 
   const handleLoadMore = () => {
-    if (hasMore && !loading) {
+    if (hasMore && !isLoading) {
       loadConversations(page + 1);
     }
   };
@@ -212,7 +205,9 @@ export default function SellerMessagesPage() {
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />
-            <span className="text-red-700 dark:text-red-400">{error}</span>
+            <span className="text-red-700 dark:text-red-400">
+              {error.message}
+            </span>
           </div>
           <button
             onClick={() => loadConversations(1)}
@@ -224,14 +219,14 @@ export default function SellerMessagesPage() {
       )}
 
       {/* Loading State */}
-      {loading && !refreshing && (
+      {isLoading && !refreshing && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
         </div>
       )}
 
       {/* Empty State */}
-      {!loading && filteredConversations.length === 0 && (
+      {!isLoading && filteredConversations.length === 0 && (
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
           <MessageSquare className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -246,7 +241,7 @@ export default function SellerMessagesPage() {
       )}
 
       {/* Conversations List */}
-      {!loading && filteredConversations.length > 0 && (
+      {!isLoading && filteredConversations.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">
           {filteredConversations.map((conv) => {
             const isUnread = conv.unreadCount > 0;
@@ -334,7 +329,7 @@ export default function SellerMessagesPage() {
       )}
 
       {/* Load More */}
-      {hasMore && !loading && (
+      {hasMore && !isLoading && (
         <div className="mt-6 text-center">
           <button
             onClick={handleLoadMore}

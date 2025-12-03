@@ -131,7 +131,9 @@ export default function AnalyticsPage() {
 
         {/* Filters */}
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Filters</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Filters
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Shop Selector */}
@@ -216,14 +218,18 @@ export default function AnalyticsPage() {
         {loading && (
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading analytics...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">
+              Loading analytics...
+            </p>
           </div>
         )}
 
         {/* Error State */}
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-8">
-            <p className="text-red-800 dark:text-red-400">{error.message || String(error)}</p>
+            <p className="text-red-800 dark:text-red-400">
+              {error.message || String(error)}
+            </p>
           </div>
         )}
 
@@ -247,19 +253,25 @@ export default function AnalyticsPage() {
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Completed</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Completed
+                    </span>
                     <span className="text-lg font-semibold text-green-600 dark:text-green-400">
                       {analytics.orders.completed}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Pending</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Pending
+                    </span>
                     <span className="text-lg font-semibold text-yellow-600 dark:text-yellow-400">
                       {analytics.orders.pending}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Cancelled</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Cancelled
+                    </span>
                     <span className="text-lg font-semibold text-red-600 dark:text-red-400">
                       {analytics.orders.cancelled}
                     </span>
@@ -273,7 +285,9 @@ export default function AnalyticsPage() {
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Average Order Value</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Average Order Value
+                    </span>
                     <span className="text-lg font-semibold text-gray-900 dark:text-white">
                       {new Intl.NumberFormat("en-IN", {
                         style: "currency",
@@ -283,13 +297,17 @@ export default function AnalyticsPage() {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Conversion Rate</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Conversion Rate
+                    </span>
                     <span className="text-lg font-semibold text-gray-900 dark:text-white">
                       {analytics.conversionRate.toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Total Customers</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Total Customers
+                    </span>
                     <span className="text-lg font-semibold text-gray-900 dark:text-white">
                       {analytics.customers.total}
                     </span>

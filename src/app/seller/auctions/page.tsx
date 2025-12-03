@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -15,6 +15,7 @@ import {
   Trash2,
   ExternalLink,
   Filter,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -22,6 +23,7 @@ import AuctionCard from "@/components/cards/AuctionCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { PageState } from "@/components/common/PageState";
 import {
   InlineEditRow,
   QuickCreateRow,
@@ -40,6 +42,7 @@ import {
 } from "@/constants/form-fields";
 import { validateForm } from "@/lib/form-validation";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
@@ -51,12 +54,14 @@ export default function SellerAuctionsPage() {
   const searchParams = useSearchParams();
   const isMobile = useIsMobile();
   const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "table">("table");
   const [totalAuctions, setTotalAuctions] = useState(0);
   const [showFilters, setShowFilters] = useState(!isMobile);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   // Inline edit states
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -69,24 +74,19 @@ export default function SellerAuctionsPage() {
     loadAuctions();
   }, [filterValues]);
 
-  const loadAuctions = async () => {
-    try {
-      setLoading(true);
+  const loadAuctions = useCallback(async () => {
+    await execute(async () => {
       const response = await auctionsService.list({
         ...filterValues,
       });
       setAuctions(response.data || []);
       setTotalAuctions(response.data?.length || 0);
-    } catch (error) {
-      console.error("Failed to load auctions:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
+  }, [filterValues, execute]);
 
   // Fields configuration for inline edit (using centralized config)
   const fields: InlineField[] = toInlineFields(
-    getFieldsForContext(AUCTION_FIELDS, "table"),
+    getFieldsForContext(AUCTION_FIELDS, "table")
   );
 
   // Bulk actions configuration
@@ -150,12 +150,18 @@ export default function SellerAuctionsPage() {
     ended: auctions.filter((a) => a.status === AuctionStatus.ENDED).length,
   };
 
-  if (loading) {
+  if (error) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <PageState.Error
+        message={error.message}
+        onRetry={loadAuctions}
+        fullPage={false}
+      />
     );
+  }
+
+  if (isLoading && auctions.length === 0) {
+    return <PageState.Loading message="Loading auctions..." fullPage={false} />;
   }
 
   return (
@@ -178,7 +184,7 @@ export default function SellerAuctionsPage() {
           searchable={true}
           mobile={false}
           resultCount={totalAuctions}
-          isLoading={loading}
+          isLoading={isLoading}
           showInlineSearch={true}
           inlineSearchValue={searchQuery}
           onInlineSearchChange={setSearchQuery}
@@ -191,8 +197,10 @@ export default function SellerAuctionsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">My Auctions</h1>
-            <p className="mt-1 text-sm text-gray-600">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              My Auctions
+            </h1>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Manage your auction listings
             </p>
           </div>
@@ -200,7 +208,7 @@ export default function SellerAuctionsPage() {
             {isMobile && (
               <button
                 onClick={() => setShowFilters(true)}
-                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 <Filter className="h-4 w-4" />
                 Filters
@@ -218,61 +226,69 @@ export default function SellerAuctionsPage() {
 
         {/* Stats */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Auctions</p>
-                <p className="mt-1 text-2xl font-bold text-gray-900">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Total Auctions
+                </p>
+                <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
                   {stats.total}
                 </p>
               </div>
-              <Gavel className="h-8 w-8 text-gray-400" />
+              <Gavel className="h-8 w-8 text-gray-400 dark:text-gray-500" />
             </div>
           </div>
-          <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Live Auctions</p>
-                <p className="mt-1 text-2xl font-bold text-green-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Live Auctions
+                </p>
+                <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
                   {stats.live}
                 </p>
               </div>
               <Zap className="h-8 w-8 text-green-500" />
             </div>
           </div>
-          <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Scheduled</p>
-                <p className="mt-1 text-2xl font-bold text-blue-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Scheduled
+                </p>
+                <p className="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {stats.scheduled}
                 </p>
               </div>
               <Clock className="h-8 w-8 text-blue-500" />
             </div>
           </div>
-          <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Ended</p>
-                <p className="mt-1 text-2xl font-bold text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Ended
+                </p>
+                <p className="mt-1 text-2xl font-bold text-gray-600 dark:text-gray-400">
                   {stats.ended}
                 </p>
               </div>
-              <Archive className="h-8 w-8 text-gray-400" />
+              <Archive className="h-8 w-8 text-gray-400 dark:text-gray-500" />
             </div>
           </div>
         </div>
 
         {/* View Toggle */}
         <div className="flex justify-end">
-          <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1">
+          <div className="inline-flex rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-1">
             <button
               onClick={() => setView("table")}
               className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
                 view === "table"
                   ? "bg-primary text-white"
-                  : "text-gray-600 hover:text-gray-900"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               }`}
             >
               Table
@@ -282,7 +298,7 @@ export default function SellerAuctionsPage() {
               className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
                 view === "grid"
                   ? "bg-primary text-white"
-                  : "text-gray-600 hover:text-gray-900"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               }`}
             >
               Grid
@@ -332,10 +348,10 @@ export default function SellerAuctionsPage() {
 
             {/* Table View */}
             {view === "table" && (
-              <div className="rounded-lg border border-gray-200 bg-white">
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="border-b border-gray-200 bg-gray-50">
+                    <thead className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
                       <tr>
                         <th className="w-12 px-6 py-3">
                           <TableCheckbox
@@ -349,33 +365,33 @@ export default function SellerAuctionsPage() {
                             }
                             onChange={(checked) => {
                               setSelectedIds(
-                                checked ? auctions.map((a) => a.id) : [],
+                                checked ? auctions.map((a) => a.id) : []
                               );
                             }}
                             aria-label="Select all auctions"
                           />
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           Auction
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           Current Bid
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           Bids
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           Time
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           Status
                         </th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200 bg-white">
+                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                       {/* Quick Create Row */}
                       <QuickCreateRow
                         fields={fields}
@@ -384,11 +400,11 @@ export default function SellerAuctionsPage() {
                             // Validate form fields
                             const fieldsToValidate = getFieldsForContext(
                               AUCTION_FIELDS,
-                              "table",
+                              "table"
                             );
                             const { isValid, errors } = validateForm(
                               values,
-                              fieldsToValidate,
+                              fieldsToValidate
                             );
 
                             if (!isValid) {
@@ -441,17 +457,17 @@ export default function SellerAuctionsPage() {
                                   // Validate form fields
                                   const fieldsToValidate = getFieldsForContext(
                                     AUCTION_FIELDS,
-                                    "table",
+                                    "table"
                                   );
                                   const { isValid, errors } = validateForm(
                                     values,
-                                    fieldsToValidate,
+                                    fieldsToValidate
                                   );
 
                                   if (!isValid) {
                                     setValidationErrors(errors);
                                     throw new Error(
-                                      "Please fix validation errors",
+                                      "Please fix validation errors"
                                     );
                                   }
 
@@ -459,14 +475,14 @@ export default function SellerAuctionsPage() {
 
                                   await auctionsService.quickUpdate(
                                     auction.id,
-                                    values,
+                                    values
                                   );
                                   await loadAuctions();
                                   setEditingId(null);
                                 } catch (error) {
                                   console.error(
                                     "Failed to update auction:",
-                                    error,
+                                    error
                                   );
                                   throw error;
                                 }
@@ -480,7 +496,7 @@ export default function SellerAuctionsPage() {
                         return (
                           <tr
                             key={auction.id}
-                            className="hover:bg-gray-50"
+                            className="hover:bg-gray-50 dark:hover:bg-gray-700"
                             onDoubleClick={() => setEditingId(auction.id)}
                           >
                             {/* Checkbox */}
@@ -491,7 +507,7 @@ export default function SellerAuctionsPage() {
                                   setSelectedIds((prev) =>
                                     checked
                                       ? [...prev, auction.id]
-                                      : prev.filter((id) => id !== auction.id),
+                                      : prev.filter((id) => id !== auction.id)
                                   );
                                 }}
                                 aria-label={`Select ${auction.name}`}
@@ -502,7 +518,7 @@ export default function SellerAuctionsPage() {
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
                                 {auction.images?.[0] && (
-                                  <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 overflow-hidden relative">
+                                  <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden relative">
                                     <OptimizedImage
                                       src={auction.images[0]}
                                       alt={auction.name || "Auction"}
@@ -512,10 +528,10 @@ export default function SellerAuctionsPage() {
                                   </div>
                                 )}
                                 <div>
-                                  <div className="font-medium text-gray-900">
+                                  <div className="font-medium text-gray-900 dark:text-white">
                                     {auction.name}
                                   </div>
-                                  <div className="text-xs text-gray-500 mt-1">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                     {auction.slug}
                                   </div>
                                 </div>
@@ -524,7 +540,7 @@ export default function SellerAuctionsPage() {
 
                             {/* Current Bid */}
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="font-medium text-gray-900">
+                              <div className="font-medium text-gray-900 dark:text-white">
                                 <Price
                                   amount={
                                     auction.currentBid ||
@@ -536,12 +552,12 @@ export default function SellerAuctionsPage() {
                             </td>
 
                             {/* Bids */}
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                               {auction.bidCount}
                             </td>
 
                             {/* Time */}
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                               {auction.status === AuctionStatus.ACTIVE ? (
                                 formatDistanceToNow(new Date(auction.endTime), {
                                   addSuffix: true,
@@ -566,21 +582,21 @@ export default function SellerAuctionsPage() {
                                   href={`/auctions/${auction.slug}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="rounded p-1.5 text-gray-600 hover:bg-gray-100"
+                                  className="rounded p-1.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                                   title="View"
                                 >
                                   <Eye className="h-4 w-4" />
                                 </Link>
                                 <Link
                                   href={`/seller/auctions/${auction.slug}/edit`}
-                                  className="rounded p-1.5 text-blue-600 hover:bg-blue-50"
+                                  className="rounded p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                   title="Full Edit"
                                 >
                                   <ExternalLink className="h-4 w-4" />
                                 </Link>
                                 <button
                                   onClick={() => setDeleteId(auction.id)}
-                                  className="rounded p-1.5 text-red-600 hover:bg-red-50"
+                                  className="rounded p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                                   title="Delete"
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -671,7 +687,7 @@ export default function SellerAuctionsPage() {
           searchable={true}
           mobile={true}
           resultCount={totalAuctions}
-          isLoading={loading}
+          isLoading={isLoading}
           showInlineSearch={true}
           inlineSearchValue={searchQuery}
           onInlineSearchChange={setSearchQuery}

@@ -11,6 +11,7 @@ import {
   Grid,
   List,
   Filter as FilterIcon,
+  AlertCircle,
 } from "lucide-react";
 import AuctionCard from "@/components/cards/AuctionCard";
 import { CardGrid } from "@/components/cards/CardGrid";
@@ -20,6 +21,7 @@ import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCa
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import { auctionsService } from "@/services/auctions.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 
@@ -28,10 +30,12 @@ function AuctionsContent() {
   const searchParams = useSearchParams();
   const isMobile = useIsMobile();
   const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   // Cursor-based pagination
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
@@ -46,24 +50,8 @@ function AuctionsContent() {
   const sortOrder = searchParams.get("sortOrder") || "desc";
   const itemsPerPage = 12;
 
-  // Sync filter values with URL on mount
-  useEffect(() => {
-    const initialFilters: Record<string, any> = {};
-    if (status) initialFilters.status = status;
-    if (featured) initialFilters.featured = featured;
-    setFilterValues(initialFilters);
-    // Load on mount
-    loadAuctions();
-  }, []);
-
-  // Reload when sort/page/filters change via URL
-  useEffect(() => {
-    loadAuctions();
-  }, [sortBy, sortOrder, currentPage, status, featured]);
-
-  const loadAuctions = async () => {
-    try {
-      setLoading(true);
+  const loadAuctions = useCallback(async () => {
+    await execute(async () => {
       const startAfter = cursors[currentPage - 1];
 
       const apiFilters: any = {
@@ -104,12 +92,31 @@ function AuctionsContent() {
           }
         }
       }
-    } catch (error) {
-      console.error("Failed to load auctions:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
+  }, [
+    cursors,
+    currentPage,
+    itemsPerPage,
+    sortBy,
+    sortOrder,
+    filterValues,
+    status,
+    featured,
+    execute,
+  ]);
+
+  // Sync filter values with URL on mount
+  useEffect(() => {
+    const initialFilters: Record<string, any> = {};
+    if (status) initialFilters.status = status;
+    if (featured) initialFilters.featured = featured;
+    setFilterValues(initialFilters);
+  }, [status, featured]);
+
+  // Reload when sort/page/filters change via URL
+  useEffect(() => {
+    loadAuctions();
+  }, [loadAuctions]);
 
   const handleResetFilters = useCallback(() => {
     setFilterValues({});
@@ -158,7 +165,26 @@ function AuctionsContent() {
     );
   };
 
-  if (loading) {
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {error.message}
+          </p>
+          <button
+            onClick={loadAuctions}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading && auctions.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[400px]">
@@ -217,9 +243,9 @@ function AuctionsContent() {
               isOpen={showFilters}
               onClose={() => setShowFilters(false)}
               searchable={true}
-              mobile={false}
+              mobile={true}
               resultCount={totalCount}
-              isLoading={loading}
+              isLoading={isLoading}
             />
           )}
 
@@ -236,7 +262,7 @@ function AuctionsContent() {
                       const newSortBy = e.target.value;
                       // Update URL with new sort
                       const params = new URLSearchParams(
-                        searchParams.toString(),
+                        searchParams.toString()
                       );
                       params.set("sortBy", newSortBy);
                       router.push(`/auctions?${params.toString()}`, {
@@ -257,7 +283,7 @@ function AuctionsContent() {
                       const newSortOrder = e.target.value as "asc" | "desc";
                       // Update URL with new sort order
                       const params = new URLSearchParams(
-                        searchParams.toString(),
+                        searchParams.toString()
                       );
                       params.set("sortOrder", newSortOrder);
                       router.push(`/auctions?${params.toString()}`, {
@@ -307,7 +333,7 @@ function AuctionsContent() {
             </div>
 
             {/* Results Count */}
-            {!loading && (
+            {!isLoading && (
               <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
                 Showing {(currentPage - 1) * itemsPerPage + 1}-
                 {Math.min(currentPage * itemsPerPage, totalCount)} of{" "}
@@ -329,7 +355,7 @@ function AuctionsContent() {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {
                         auctions.filter(
-                          (a) => a.status === AuctionStatus.ACTIVE,
+                          (a) => a.status === AuctionStatus.ACTIVE
                         ).length
                       }
                     </p>
@@ -379,7 +405,7 @@ function AuctionsContent() {
             </div>
 
             {/* Auctions Grid/List - Using unified AuctionCard component */}
-            {loading ? (
+            {isLoading ? (
               <AuctionCardSkeletonGrid count={view === "grid" ? 12 : 8} />
             ) : auctions.length === 0 ? (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
@@ -467,7 +493,7 @@ function AuctionsContent() {
             searchable={true}
             mobile={true}
             resultCount={totalCount}
-            isLoading={loading}
+            isLoading={isLoading}
           />
         )}
       </div>

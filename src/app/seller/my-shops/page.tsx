@@ -21,6 +21,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { FormInput } from "@/components/forms";
 import { shopsService } from "@/services/shops.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
 export default function MyShopsPage() {
@@ -69,16 +70,7 @@ export default function MyShopsPage() {
   );
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400 mx-auto" />
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Loading shops...
-          </p>
-        </div>
-      </div>
-    );
+    return <PageState.Loading message="Loading shops..." />;
   }
 
   return (
@@ -281,7 +273,10 @@ export default function MyShopsPage() {
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                 {filteredShops.map((shop) => (
-                  <tr key={shop.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <tr
+                    key={shop.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 flex-shrink-0 rounded bg-gray-100 dark:bg-gray-700 relative overflow-hidden">

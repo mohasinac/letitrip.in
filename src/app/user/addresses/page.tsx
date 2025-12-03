@@ -6,6 +6,7 @@ import { MapPin, Plus, Edit, Trash2, CheckCircle, Loader2 } from "lucide-react";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { addressService } from "@/services/address.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { SmartAddressForm } from "@/components/common/SmartAddressForm";
 import type { AddressFE } from "@/types/frontend/address.types";
@@ -70,11 +71,7 @@ function AddressesContent() {
   const addressesList = addresses || [];
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
-    );
+    return <PageState.Loading message="Loading addresses..." />;
   }
 
   return (

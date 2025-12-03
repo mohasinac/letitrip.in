@@ -26,6 +26,7 @@ import {
   NotificationType,
 } from "@/services/notification.service";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { formatDistanceToNow } from "date-fns";
 
 // Icon mapping for notification types
@@ -158,17 +159,16 @@ function NotificationItem({
 
 function NotificationsContent() {
   const [notifications, setNotifications] = useState<NotificationFE[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
+
   const fetchNotifications = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
+    await execute(async () => {
       const response = await notificationService.list({
         page,
         pageSize: 20,
@@ -176,13 +176,8 @@ function NotificationsContent() {
       });
       setNotifications(response.notifications);
       setTotalPages(response.pagination.totalPages);
-    } catch (err) {
-      setError("Failed to load notifications");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, showUnreadOnly]);
+    });
+  }, [page, showUnreadOnly, execute]);
 
   useEffect(() => {
     fetchNotifications();
@@ -193,8 +188,8 @@ function NotificationsContent() {
       await notificationService.markAsRead([id]);
       setNotifications((prev) =>
         prev.map((n) =>
-          n.id === id ? { ...n, read: true, readAt: new Date() } : n,
-        ),
+          n.id === id ? { ...n, read: true, readAt: new Date() } : n
+        )
       );
     } catch (err) {
       console.error("Failed to mark as read:", err);
@@ -206,7 +201,7 @@ function NotificationsContent() {
     try {
       await notificationService.markAllAsRead();
       setNotifications((prev) =>
-        prev.map((n) => ({ ...n, read: true, readAt: new Date() })),
+        prev.map((n) => ({ ...n, read: true, readAt: new Date() }))
       );
     } catch (err) {
       console.error("Failed to mark all as read:", err);
@@ -266,12 +261,12 @@ function NotificationsContent() {
             </div>
             <button
               onClick={fetchNotifications}
-              disabled={loading}
+              disabled={isLoading}
               className="p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors"
               title="Refresh"
             >
               <RefreshCw
-                className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
+                className={`h-5 w-5 ${isLoading ? "animate-spin" : ""}`}
               />
             </button>
           </div>
@@ -319,13 +314,13 @@ function NotificationsContent() {
         </div>
 
         {/* Content */}
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-600 dark:text-indigo-400" />
           </div>
         ) : error ? (
           <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-6 text-center">
-            <p className="text-red-600 dark:text-red-400">{error}</p>
+            <p className="text-red-600 dark:text-red-400">{error.message}</p>
             <button
               onClick={fetchNotifications}
               className="mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-500"

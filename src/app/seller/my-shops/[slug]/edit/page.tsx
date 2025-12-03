@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2, Eye, Loader2 } from "lucide-react";
+import { ArrowLeft, Trash2, Eye } from "lucide-react";
 import Link from "next/link";
 import ShopForm from "@/components/seller/ShopForm";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { PageState } from "@/components/common/PageState";
 import { shopsService } from "@/services/shops.service";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
 export default function EditShopPage() {
@@ -18,10 +20,12 @@ export default function EditShopPage() {
   const slug = params.slug as string;
 
   const [shop, setShop] = useState<ShopFE | null>(null);
-  const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   useEffect(() => {
     if (slug) {
@@ -29,19 +33,12 @@ export default function EditShopPage() {
     }
   }, [slug]);
 
-  const loadShop = async () => {
-    try {
-      setLoading(true);
+  const loadShop = useCallback(async () => {
+    await execute(async () => {
       const data = await shopsService.getBySlug(slug);
       setShop(data);
-    } catch (error) {
-      console.error("Failed to load shop:", error);
-      toast.error("Shop not found");
-      router.push("/seller/my-shops");
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
+  }, [slug, execute]);
 
   const handleSubmit = async (data: any) => {
     try {
@@ -79,15 +76,12 @@ export default function EditShopPage() {
   // Check if user is admin
   const isAdmin = user?.role === "admin";
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto" />
-          <p className="mt-2 text-sm text-gray-600">Loading shop...</p>
-        </div>
-      </div>
-    );
+  if (error) {
+    return <PageState.Error message={error.message} onRetry={loadShop} />;
+  }
+
+  if (isLoading) {
+    return <PageState.Loading message="Loading shop..." />;
   }
 
   if (!shop) {
@@ -95,15 +89,15 @@ export default function EditShopPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link
                 href="/seller/my-shops"
-                className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+                className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to My Shops
@@ -116,7 +110,7 @@ export default function EditShopPage() {
                 href={`/shops/${shop.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 <Eye className="h-4 w-4" />
                 View Public Shop
@@ -126,7 +120,7 @@ export default function EditShopPage() {
               {isAdmin && (
                 <button
                   onClick={() => setShowDeleteDialog(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-700 bg-white border border-red-300 rounded-lg hover:bg-red-50"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-700 dark:text-red-400 bg-white dark:bg-gray-700 border border-red-300 dark:border-red-700 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete Shop
@@ -137,24 +131,26 @@ export default function EditShopPage() {
 
           <div className="mt-4">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-900">Edit Shop</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Edit Shop
+              </h1>
               {shop.isVerified && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400">
                   ✓ Verified
                 </span>
               )}
               {shop.featured && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400">
                   ⭐ Featured
                 </span>
               )}
               {shop.isBanned && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400">
                   🚫 Banned
                 </span>
               )}
             </div>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Update your shop information
             </p>
           </div>
@@ -163,7 +159,7 @@ export default function EditShopPage() {
 
       {/* Form */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg border border-gray-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           <ShopForm
             shop={shop}
             mode="edit"
@@ -174,32 +170,38 @@ export default function EditShopPage() {
 
         {/* Shop Stats */}
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="text-sm text-gray-600">Products</div>
-            <div className="mt-1 text-2xl font-semibold text-gray-900">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Products
+            </div>
+            <div className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
               {shop.productCount || 0}
             </div>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="text-sm text-gray-600">Rating</div>
-            <div className="mt-1 text-2xl font-semibold text-gray-900">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Rating
+            </div>
+            <div className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
               {shop.rating ? `${shop.rating.toFixed(1)} ⭐` : "No ratings"}
             </div>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="text-sm text-gray-600">Reviews</div>
-            <div className="mt-1 text-2xl font-semibold text-gray-900">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Reviews
+            </div>
+            <div className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
               {shop.reviewCount || 0}
             </div>
           </div>
         </div>
 
         {/* Help Info */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 mb-2">
+        <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <h3 className="text-sm font-medium text-blue-900 dark:text-blue-200 mb-2">
             💡 Tips for better visibility
           </h3>
-          <ul className="text-sm text-blue-800 space-y-1">
+          <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
             <li>• Add a clear, professional logo</li>
             <li>• Write a detailed description (min 50 characters)</li>
             <li>• Complete all contact information</li>

@@ -17,8 +17,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
+  AlertCircle,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 export default function SellerOrdersPage() {
   const router = useRouter();
@@ -33,8 +35,10 @@ export default function SellerOrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [orders, setOrders] = useState<OrderCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [totalOrders, setTotalOrders] = useState(0);
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   // Filters from URL
   const [filterValues, setFilterValues] = useState<Partial<OrderFiltersFE>>({
@@ -66,9 +70,8 @@ export default function SellerOrdersPage() {
     loadOrders();
   }, [filterValues, currentPage]);
 
-  const loadOrders = async () => {
-    try {
-      setLoading(true);
+  const loadOrders = useCallback(async () => {
+    await execute(async () => {
       const startAfter = cursors[currentPage - 1];
       const response = await ordersService.getSellerOrders({
         ...filterValues,
@@ -94,12 +97,8 @@ export default function SellerOrdersPage() {
           }
         }
       }
-    } catch (error) {
-      logComponentError("SellerOrdersPage", "loadOrders", error as Error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
+  }, [filterValues, currentPage, cursors, execute]);
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -189,7 +188,7 @@ export default function SellerOrdersPage() {
               searchable={true}
               mobile={isMobile}
               resultCount={totalOrders}
-              isLoading={loading}
+              isLoading={isLoading}
               showInlineSearch={true}
               inlineSearchValue={searchQuery}
               onInlineSearchChange={setSearchQuery}
@@ -246,7 +245,20 @@ export default function SellerOrdersPage() {
               </div>
 
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                {loading ? (
+                {error ? (
+                  <div className="p-8 text-center">
+                    <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                    <p className="text-red-600 dark:text-red-400 mb-4">
+                      {error.message}
+                    </p>
+                    <button
+                      onClick={loadOrders}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      Try Again
+                    </button>
+                  </div>
+                ) : isLoading ? (
                   <div className="p-8 text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                   </div>
@@ -482,25 +494,25 @@ export default function SellerOrdersPage() {
 
               {/* Pagination - Mobile Optimized */}
               {orders.length > 0 && (
-                <div className="mt-6 border-t border-gray-200 pt-4">
+                <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
                   <div className="flex items-center justify-between">
                     <button
                       onClick={handlePrevPage}
-                      disabled={currentPage === 1 || loading}
-                      className="flex items-center gap-2 px-4 py-3 min-h-[48px] bg-white border border-gray-300 rounded-lg hover:bg-gray-50 active:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
+                      disabled={currentPage === 1 || isLoading}
+                      className="flex items-center gap-2 px-4 py-3 min-h-[48px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation text-gray-700 dark:text-gray-300"
                     >
                       <ChevronLeft className="w-4 h-4" />
                       <span className="hidden sm:inline">Previous</span>
                     </button>
 
-                    <span className="text-sm text-gray-600 font-medium">
+                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                       Page {currentPage}
                     </span>
 
                     <button
                       onClick={handleNextPage}
-                      disabled={!hasNextPage || loading}
-                      className="flex items-center gap-2 px-4 py-3 min-h-[48px] bg-white border border-gray-300 rounded-lg hover:bg-gray-50 active:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
+                      disabled={!hasNextPage || isLoading}
+                      className="flex items-center gap-2 px-4 py-3 min-h-[48px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation text-gray-700 dark:text-gray-300"
                     >
                       <span className="hidden sm:inline">Next</span>
                       <ChevronRight className="w-4 h-4" />

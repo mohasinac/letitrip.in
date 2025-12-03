@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -12,6 +12,8 @@ import {
   Edit,
   Trash2,
   ExternalLink,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -37,6 +39,7 @@ import {
 } from "@/constants/form-fields";
 import { validateForm } from "@/lib/form-validation";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
 export default function ProductsPage() {
@@ -44,8 +47,10 @@ export default function ProductsPage() {
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
   const [products, setProducts] = useState<ProductCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   // Unified filter state
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
@@ -66,9 +71,8 @@ export default function ProductsPage() {
     loadCategories();
   }, [searchQuery, filterValues]);
 
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
+  const loadProducts = useCallback(async () => {
+    await execute(async () => {
       const response = await productsService.list({
         limit: 50,
         search: searchQuery || undefined,
@@ -76,18 +80,14 @@ export default function ProductsPage() {
       });
       setProducts(response.data || []);
       setTotalProducts(response.count || response.data?.length || 0);
-    } catch (error) {
-      console.error("Failed to load products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
+  }, [searchQuery, filterValues, execute]);
 
   const loadCategories = async () => {
     try {
       const categories = await categoriesService.list({ isActive: true });
       setCategories(
-        categories.data.map((cat) => ({ id: cat.id, name: cat.name })),
+        categories.data.map((cat) => ({ id: cat.id, name: cat.name }))
       );
     } catch (error) {
       console.error("Failed to load categories:", error);
@@ -96,7 +96,7 @@ export default function ProductsPage() {
 
   // Fields configuration for inline edit (using centralized config)
   const baseFields = toInlineFields(
-    getFieldsForContext(PRODUCT_FIELDS, "table"),
+    getFieldsForContext(PRODUCT_FIELDS, "table")
   );
   const fields: InlineField[] = baseFields.map((field) => {
     // Change categoryId field to use category-create type
@@ -119,7 +119,7 @@ export default function ProductsPage() {
       const response = await productsService.bulkAction(
         actionId,
         selectedIds,
-        input,
+        input
       );
 
       if (response.success) {
@@ -149,7 +149,7 @@ export default function ProductsPage() {
   };
 
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -210,7 +210,7 @@ export default function ProductsPage() {
               searchable={true}
               mobile={false}
               resultCount={totalProducts}
-              isLoading={loading}
+              isLoading={isLoading}
               showInlineSearch={true}
               inlineSearchValue={searchQuery}
               onInlineSearchChange={setSearchQuery}
@@ -220,21 +220,39 @@ export default function ProductsPage() {
 
           {/* Content Area */}
           <div className="flex-1 space-y-6">
-            {loading && (
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
+                <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                <p className="text-red-600 dark:text-red-400 mb-4">
+                  {error.message}
+                </p>
+                <button
+                  onClick={loadProducts}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
+
+            {isLoading && (
               <div className="flex items-center justify-center py-12">
-                <div className="text-gray-600">Loading products...</div>
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400 mr-2" />
+                <div className="text-gray-600 dark:text-gray-400">
+                  Loading products...
+                </div>
               </div>
             )}
 
             {/* Grid View */}
-            {!loading && view === "grid" && (
+            {!isLoading && !error && view === "grid" && (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredProducts.map((product) => (
                   <div
                     key={product.id}
-                    className="group relative rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow"
+                    className="group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden hover:shadow-lg transition-shadow"
                   >
-                    <div className="aspect-square bg-gray-100 relative">
+                    <div className="aspect-square bg-gray-100 dark:bg-gray-700 relative">
                       <OptimizedImage
                         src={product.images?.[0] || "/placeholder-product.jpg"}
                         alt={product.name}
@@ -330,11 +348,11 @@ export default function ProductsPage() {
             )}
 
             {/* Table View */}
-            {!loading && view === "table" && (
-              <div className="rounded-lg border border-gray-200 bg-white">
+            {!isLoading && !error && view === "table" && (
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="border-b border-gray-200 bg-gray-50">
+                    <thead className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
                       <tr>
                         <th className="w-12 px-6 py-3">
                           <TableCheckbox
@@ -348,9 +366,7 @@ export default function ProductsPage() {
                             }
                             onChange={(checked) => {
                               setSelectedIds(
-                                checked
-                                  ? filteredProducts.map((p) => p.id)
-                                  : [],
+                                checked ? filteredProducts.map((p) => p.id) : []
                               );
                             }}
                             aria-label="Select all products"
@@ -385,11 +401,11 @@ export default function ProductsPage() {
                             // Validate form fields
                             const fieldsToValidate = getFieldsForContext(
                               PRODUCT_FIELDS,
-                              "table",
+                              "table"
                             );
                             const { isValid, errors } = validateForm(
                               values,
-                              fieldsToValidate,
+                              fieldsToValidate
                             );
 
                             if (!isValid) {
@@ -426,7 +442,7 @@ export default function ProductsPage() {
                       {filteredProducts.map((product) => {
                         const isEditing = editingId === product.id;
                         const category = categories.find(
-                          (c) => c.id === product.categoryId,
+                          (c) => c.id === product.categoryId
                         );
 
                         if (isEditing) {
@@ -447,17 +463,17 @@ export default function ProductsPage() {
                                   // Validate form fields
                                   const fieldsToValidate = getFieldsForContext(
                                     PRODUCT_FIELDS,
-                                    "table",
+                                    "table"
                                   );
                                   const { isValid, errors } = validateForm(
                                     values,
-                                    fieldsToValidate,
+                                    fieldsToValidate
                                   );
 
                                   if (!isValid) {
                                     setValidationErrors(errors);
                                     throw new Error(
-                                      "Please fix validation errors",
+                                      "Please fix validation errors"
                                     );
                                   }
 
@@ -470,14 +486,14 @@ export default function ProductsPage() {
                                       images: values.images
                                         ? [values.images]
                                         : product.images,
-                                    },
+                                    }
                                   );
                                   await loadProducts();
                                   setEditingId(null);
                                 } catch (error) {
                                   console.error(
                                     "Failed to update product:",
-                                    error,
+                                    error
                                   );
                                   throw error;
                                 }
@@ -508,7 +524,7 @@ export default function ProductsPage() {
                                   setSelectedIds((prev) =>
                                     checked
                                       ? [...prev, product.id]
-                                      : prev.filter((id) => id !== product.id),
+                                      : prev.filter((id) => id !== product.id)
                                   );
                                 }}
                                 aria-label={`Select ${product.name}`}
@@ -573,8 +589,8 @@ export default function ProductsPage() {
                                   isOutOfStock
                                     ? "text-red-600"
                                     : isLowStock
-                                      ? "text-yellow-600"
-                                      : "text-gray-900"
+                                    ? "text-yellow-600"
+                                    : "text-gray-900"
                                 }`}
                               >
                                 {product.stockCount}
@@ -677,7 +693,7 @@ export default function ProductsPage() {
             searchable={true}
             mobile={true}
             resultCount={totalProducts}
-            isLoading={loading}
+            isLoading={isLoading}
             showInlineSearch={true}
             inlineSearchValue={searchQuery}
             onInlineSearchChange={setSearchQuery}

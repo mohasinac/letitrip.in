@@ -23,6 +23,8 @@ import { DateDisplay } from "@/components/common/values";
 import { FormInput, FormSelect } from "@/components/forms";
 import { reviewsService } from "@/services/reviews.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import type { ReviewFE } from "@/types/frontend/review.types";
 
 // Filter options
@@ -255,9 +257,11 @@ export default function UserReviewsPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [reviews, setReviews] = useState<ReviewFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   // Filters
   const [statusFilter, setStatusFilter] = useState("all");
@@ -273,9 +277,7 @@ export default function UserReviewsPage() {
   });
 
   const loadReviews = useCallback(async () => {
-    try {
-      setLoading(true);
-
+    await execute(async () => {
       const filters: Record<string, any> = {
         userId: user?.id,
         limit: 50,
@@ -299,10 +301,10 @@ export default function UserReviewsPage() {
       // Calculate stats
       const allReviews = response.data || [];
       const approvedCount = allReviews.filter(
-        (r) => r.status === "approved",
+        (r) => r.status === "approved"
       ).length;
       const pendingCount = allReviews.filter(
-        (r) => r.status === "pending",
+        (r) => r.status === "pending"
       ).length;
       const avgRating =
         allReviews.length > 0
@@ -315,12 +317,8 @@ export default function UserReviewsPage() {
         pending: pendingCount,
         averageRating: Math.round(avgRating * 10) / 10,
       });
-    } catch (error) {
-      console.error("Failed to load reviews:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id, statusFilter, ratingFilter]);
+    });
+  }, [user?.id, statusFilter, ratingFilter, execute]);
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -486,10 +484,16 @@ export default function UserReviewsPage() {
         </div>
 
         {/* Reviews List */}
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
           </div>
+        ) : error ? (
+          <PageState.Error
+            message={error.message}
+            onRetry={loadReviews}
+            fullPage={false}
+          />
         ) : filteredReviews.length === 0 ? (
           <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
             <MessageSquare className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-3" />

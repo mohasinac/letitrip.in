@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { auctionsService } from "@/services/auctions.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import Link from "next/link";
 import Image from "next/image";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
@@ -48,33 +49,11 @@ export default function WonAuctionsPage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
-    );
+    return <PageState.Loading message="Loading won auctions..." />;
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-            Error
-          </h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {error.message}
-          </p>
-          <button
-            onClick={retry}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
+    return <PageState.Error message={error.message} onRetry={retry} />;
   }
 
   const totalWinnings = auctionsList.reduce(

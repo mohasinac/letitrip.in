@@ -38,6 +38,8 @@ import { FormInput, FormSelect } from "@/components/forms";
 import { reviewsService } from "@/services/reviews.service";
 import { productsService } from "@/services/products.service";
 import { apiService } from "@/services/api.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { PageState } from "@/components/common/PageState";
 import { formatDistanceToNow } from "date-fns";
 
 interface Review {
@@ -73,7 +75,6 @@ interface ReviewStats {
 export default function SellerReviewsPage() {
   const { user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<ReviewStats>({
     totalReviews: 0,
     averageRating: 0,
@@ -81,6 +82,9 @@ export default function SellerReviewsPage() {
     pendingResponses: 0,
     respondedPercentage: 0,
   });
+
+  // Loading state
+  const { isLoading, error, execute } = useLoadingState<void>();
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
@@ -101,7 +105,7 @@ export default function SellerReviewsPage() {
 
   // Products list for filter
   const [products, setProducts] = useState<Array<{ id: string; name: string }>>(
-    [],
+    []
   );
 
   useEffect(() => {
@@ -120,7 +124,7 @@ export default function SellerReviewsPage() {
         (response.data || []).map((p: { id: string; name: string }) => ({
           id: p.id,
           name: p.name,
-        })),
+        }))
       );
     } catch (error) {
       console.error("Error loading products:", error);
@@ -130,9 +134,7 @@ export default function SellerReviewsPage() {
   const loadReviews = useCallback(async () => {
     if (!user) return;
 
-    try {
-      setLoading(true);
-
+    await execute(async () => {
       // Build filters
       const filters: Record<string, string | number | boolean> = {
         sellerId: user.id,
@@ -184,8 +186,8 @@ export default function SellerReviewsPage() {
           r.status === "approved"
             ? "published"
             : r.status === "rejected"
-              ? "flagged"
-              : "pending",
+            ? "flagged"
+            : "pending",
       }));
 
       setReviews(reviewData);
@@ -199,10 +201,10 @@ export default function SellerReviewsPage() {
             reviewData.length
           : 0;
       const needsResponse = reviewData.filter(
-        (r: Review) => !r.sellerResponse,
+        (r: Review) => !r.sellerResponse
       ).length;
       const responded = reviewData.filter(
-        (r: Review) => r.sellerResponse,
+        (r: Review) => r.sellerResponse
       ).length;
 
       const distribution: Record<number, number> = {
@@ -228,12 +230,8 @@ export default function SellerReviewsPage() {
             ? Math.round((responded / reviewData.length) * 100)
             : 0,
       });
-    } catch (error) {
-      console.error("Error loading reviews:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, currentPage, selectedProduct, ratingFilter, statusFilter]);
+    });
+  }, [user, currentPage, selectedProduct, ratingFilter, statusFilter, execute]);
 
   const handleRespond = async () => {
     if (!respondingTo || !responseText.trim()) return;
@@ -257,8 +255,8 @@ export default function SellerReviewsPage() {
                   respondedAt: new Date().toISOString(),
                 },
               }
-            : r,
-        ),
+            : r
+        )
       );
 
       setRespondingTo(null);
@@ -299,7 +297,11 @@ export default function SellerReviewsPage() {
     );
   };
 
-  if (loading && reviews.length === 0) {
+  if (error) {
+    return <PageState.Error message={error.message} onRetry={loadReviews} />;
+  }
+
+  if (isLoading && reviews.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="animate-pulse">
@@ -421,7 +423,7 @@ export default function SellerReviewsPage() {
                     setRatingFilter(
                       ratingFilter === rating.toString()
                         ? ""
-                        : rating.toString(),
+                        : rating.toString()
                     )
                   }
                   className={`flex items-center gap-1 w-16 ${
@@ -631,7 +633,7 @@ export default function SellerReviewsPage() {
                       {review.sellerResponse.respondedAt &&
                         formatDistanceToNow(
                           new Date(review.sellerResponse.respondedAt),
-                          { addSuffix: true },
+                          { addSuffix: true }
                         )}
                     </span>
                   </div>
