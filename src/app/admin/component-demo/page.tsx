@@ -27,7 +27,7 @@ export default function ComponentDemoPage() {
     setTimeout(() => toast.error("Error! Something went wrong."), 500);
     setTimeout(
       () => toast.warning("Warning! Please review your changes."),
-      1000,
+      1000
     );
     setTimeout(() => toast.info("Info: Processing your request..."), 1500);
   };
@@ -59,7 +59,7 @@ export default function ComponentDemoPage() {
             <>
               <button
                 onClick={() => globalThis.location?.reload()}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-300"
               >
                 Reset
               </button>
@@ -74,21 +74,23 @@ export default function ComponentDemoPage() {
         />
 
         {/* Toggle Switch Demo */}
-        <section className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
+        <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
             ToggleSwitch Component
           </h2>
 
           <div className="space-y-6">
             {/* Basic Toggle */}
             <div>
-              <h3 className="font-medium text-gray-900 mb-3">Basic Toggle</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-3">
+                Basic Toggle
+              </h3>
               <div className="flex items-center gap-4">
                 <ToggleSwitch
                   enabled={toggle1}
                   onToggle={() => setToggle1(!toggle1)}
                 />
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
                   Status: {toggle1 ? "Enabled" : "Disabled"}
                 </span>
               </div>
@@ -96,7 +98,7 @@ export default function ComponentDemoPage() {
 
             {/* Toggle with Label */}
             <div>
-              <h3 className="font-medium text-gray-900 mb-3">
+              <h3 className="font-medium text-gray-900 dark:text-white mb-3">
                 Toggle with Label & Description
               </h3>
               <ToggleSwitch
@@ -109,7 +111,9 @@ export default function ComponentDemoPage() {
 
             {/* Different Sizes */}
             <div>
-              <h3 className="font-medium text-gray-900 mb-3">Sizes</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-3">
+                Sizes
+              </h3>
               <div className="flex items-center gap-6">
                 <div className="flex flex-col items-center gap-2">
                   <ToggleSwitch
@@ -117,7 +121,9 @@ export default function ComponentDemoPage() {
                     onToggle={() => setToggle3(!toggle3)}
                     size="sm"
                   />
-                  <span className="text-xs text-gray-500">Small</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Small
+                  </span>
                 </div>
                 <div className="flex flex-col items-center gap-2">
                   <ToggleSwitch
@@ -125,7 +131,9 @@ export default function ComponentDemoPage() {
                     onToggle={() => setToggle3(!toggle3)}
                     size="md"
                   />
-                  <span className="text-xs text-gray-500">Medium</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Medium
+                  </span>
                 </div>
                 <div className="flex flex-col items-center gap-2">
                   <ToggleSwitch
@@ -133,14 +141,18 @@ export default function ComponentDemoPage() {
                     onToggle={() => setToggle3(!toggle3)}
                     size="lg"
                   />
-                  <span className="text-xs text-gray-500">Large</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Large
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Disabled State */}
             <div>
-              <h3 className="font-medium text-gray-900 mb-3">Disabled</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-3">
+                Disabled
+              </h3>
               <ToggleSwitch
                 enabled={false}
                 onToggle={() => {}}
@@ -153,44 +165,56 @@ export default function ComponentDemoPage() {
         </section>
 
         {/* Loading Spinner Demo */}
-        <section className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
+        <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
             LoadingSpinner Component
           </h2>
 
           <div className="space-y-6">
             {/* Sizes */}
             <div>
-              <h3 className="font-medium text-gray-900 mb-3">Sizes</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-3">
+                Sizes
+              </h3>
               <div className="flex items-center gap-8">
                 <div className="flex flex-col items-center gap-2">
                   <LoadingSpinner size="sm" />
-                  <span className="text-xs text-gray-500">Small</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Small
+                  </span>
                 </div>
                 <div className="flex flex-col items-center gap-2">
                   <LoadingSpinner size="md" />
-                  <span className="text-xs text-gray-500">Medium</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Medium
+                  </span>
                 </div>
                 <div className="flex flex-col items-center gap-2">
                   <LoadingSpinner size="lg" />
-                  <span className="text-xs text-gray-500">Large</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Large
+                  </span>
                 </div>
                 <div className="flex flex-col items-center gap-2">
                   <LoadingSpinner size="xl" />
-                  <span className="text-xs text-gray-500">Extra Large</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Extra Large
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* With Message */}
             <div>
-              <h3 className="font-medium text-gray-900 mb-3">With Message</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mb-3">
+                With Message
+              </h3>
               <LoadingSpinner size="md" message="Loading data..." />
             </div>
 
             {/* Full Screen Demo */}
             <div>
-              <h3 className="font-medium text-gray-900 mb-3">
+              <h3 className="font-medium text-gray-900 dark:text-white mb-3">
                 Full Screen Mode
               </h3>
               <button
@@ -206,7 +230,7 @@ export default function ComponentDemoPage() {
           </div>
 
           {showLoading && (
-            <div className="fixed inset-0 bg-white bg-opacity-90 z-50">
+            <div className="fixed inset-0 bg-white dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-90 z-50">
               <LoadingSpinner
                 fullScreen
                 message="Loading full screen demo..."
@@ -216,13 +240,13 @@ export default function ComponentDemoPage() {
         </section>
 
         {/* Toast Notifications Demo */}
-        <section className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
+        <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
             Toast Notifications
           </h2>
 
           <div className="space-y-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Click the buttons below to test different toast notification
               types:
             </p>
@@ -281,13 +305,13 @@ export default function ComponentDemoPage() {
         </section>
 
         {/* Confirm Dialog Demo */}
-        <section className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
+        <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
             ConfirmDialog Component
           </h2>
 
           <div className="space-y-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Professional confirmation dialogs to replace browser confirm()
               alerts:
             </p>
@@ -301,9 +325,11 @@ export default function ComponentDemoPage() {
               </button>
             </div>
 
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-900 mb-2">Features:</h4>
-              <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+                Features:
+              </h4>
+              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
                 <li>Three variants: danger, warning, info</li>
                 <li>Loading state during async operations</li>
                 <li>Keyboard navigation (ESC to close)</li>
@@ -316,19 +342,21 @@ export default function ComponentDemoPage() {
         </section>
 
         {/* AdminPageHeader Demo */}
-        <section className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
+        <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
             AdminPageHeader Component
           </h2>
 
           <div className="space-y-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               See the header at the top of this page for a live example!
             </p>
 
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-900 mb-2">Features:</h4>
-              <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+                Features:
+              </h4>
+              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
                 <li>Title and description text</li>
                 <li>Breadcrumb navigation with links</li>
                 <li>Flexible action buttons area</li>
@@ -338,7 +366,9 @@ export default function ComponentDemoPage() {
             </div>
 
             <div className="mt-4">
-              <h4 className="font-medium text-gray-900 mb-2">Usage Example:</h4>
+              <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+                Usage Example:
+              </h4>
               <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-xs">
                 {`<AdminPageHeader
   title="Page Title"
@@ -360,40 +390,54 @@ export default function ComponentDemoPage() {
         </section>
 
         {/* Code Reduction Stats */}
-        <section className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
+        <section className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-lg border border-blue-200 dark:border-blue-800 p-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
             📊 Impact & Benefits
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white rounded-lg p-4">
-              <div className="text-3xl font-bold text-blue-600 mb-1">21%</div>
-              <div className="text-sm text-gray-600">Code Reduction</div>
-              <div className="text-xs text-gray-500 mt-1">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                21%
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Code Reduction
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 Homepage admin: 560 → 440 lines
               </div>
             </div>
 
-            <div className="bg-white rounded-lg p-4">
-              <div className="text-3xl font-bold text-green-600 mb-1">280+</div>
-              <div className="text-sm text-gray-600">Reusable Lines</div>
-              <div className="text-xs text-gray-500 mt-1">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">
+                280+
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Reusable Lines
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 Extracted into components
               </div>
             </div>
 
-            <div className="bg-white rounded-lg p-4">
-              <div className="text-3xl font-bold text-purple-600 mb-1">5</div>
-              <div className="text-sm text-gray-600">New Components</div>
-              <div className="text-xs text-gray-500 mt-1">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">
+                5
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                New Components
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 Ready for all admin pages
               </div>
             </div>
           </div>
 
           <div className="mt-6 space-y-2">
-            <h3 className="font-medium text-gray-900">Key Benefits:</h3>
-            <ul className="text-sm text-gray-600 space-y-1">
+            <h3 className="font-medium text-gray-900 dark:text-white">
+              Key Benefits:
+            </h3>
+            <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
               <li>✅ Consistent UI/UX across all admin pages</li>
               <li>✅ Professional user feedback (toasts vs alerts)</li>
               <li>✅ Better accessibility with ARIA attributes</li>
