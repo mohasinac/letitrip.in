@@ -1,38 +1,71 @@
 import { z } from "zod";
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 // Shop validation schema
 export const shopSchema = z.object({
   name: z
     .string()
-    .min(3, "Shop name must be at least 3 characters")
-    .max(100, "Shop name must be less than 100 characters"),
+    .min(
+      VALIDATION_RULES.SHOP.NAME.MIN_LENGTH,
+      VALIDATION_MESSAGES.SHOP.NAME_TOO_SHORT,
+    )
+    .max(
+      VALIDATION_RULES.SHOP.NAME.MAX_LENGTH,
+      VALIDATION_MESSAGES.SHOP.NAME_TOO_LONG,
+    ),
   slug: z
     .string()
-    .min(3, "Slug must be at least 3 characters")
-    .max(100, "Slug must be less than 100 characters")
-    .regex(
-      /^[a-z0-9-]+$/,
-      "Slug can only contain lowercase letters, numbers, and hyphens",
-    ),
+    .min(VALIDATION_RULES.SLUG.MIN_LENGTH, VALIDATION_MESSAGES.SLUG.TOO_SHORT)
+    .max(VALIDATION_RULES.SLUG.MAX_LENGTH, VALIDATION_MESSAGES.SLUG.TOO_LONG)
+    .regex(VALIDATION_RULES.SLUG.PATTERN, VALIDATION_MESSAGES.SLUG.INVALID),
   description: z
     .string()
-    .min(10, "Description must be at least 10 characters")
-    .max(1000, "Description must be less than 1000 characters"),
+    .min(
+      VALIDATION_RULES.SHOP.DESCRIPTION.MIN_LENGTH,
+      VALIDATION_MESSAGES.SHOP.DESC_TOO_SHORT,
+    )
+    .max(
+      VALIDATION_RULES.SHOP.DESCRIPTION.MAX_LENGTH,
+      VALIDATION_MESSAGES.SHOP.DESC_TOO_LONG,
+    ),
   logo: z.string().url("Invalid logo URL").optional(),
   banner: z.string().url("Invalid banner URL").optional(),
   phone: z
     .string()
-    .regex(/^[6-9]\d{9}$/, "Invalid Indian phone number")
+    .regex(VALIDATION_RULES.PHONE.PATTERN, VALIDATION_MESSAGES.PHONE.INVALID)
     .optional(),
   email: z.string().email("Invalid email address").optional(),
   address: z
     .object({
-      line1: z.string().min(5, "Address is too short"),
+      line1: z
+        .string()
+        .min(
+          VALIDATION_RULES.ADDRESS.LINE1.MIN_LENGTH,
+          VALIDATION_MESSAGES.ADDRESS.LINE1_TOO_SHORT,
+        ),
       line2: z.string().optional(),
-      city: z.string().min(2, "City is required"),
-      state: z.string().min(2, "State is required"),
-      pincode: z.string().regex(/^\d{6}$/, "Invalid pincode"),
-      country: z.string().default("India"),
+      city: z
+        .string()
+        .min(
+          VALIDATION_RULES.ADDRESS.CITY.MIN_LENGTH,
+          VALIDATION_MESSAGES.ADDRESS.CITY_TOO_SHORT,
+        ),
+      state: z
+        .string()
+        .min(
+          VALIDATION_RULES.ADDRESS.STATE.MIN_LENGTH,
+          VALIDATION_MESSAGES.ADDRESS.STATE_TOO_SHORT,
+        ),
+      pincode: z
+        .string()
+        .regex(
+          VALIDATION_RULES.ADDRESS.PINCODE.PATTERN,
+          VALIDATION_MESSAGES.ADDRESS.PINCODE_INVALID,
+        ),
+      country: z.string().default(VALIDATION_RULES.ADDRESS.COUNTRY),
     })
     .optional(),
   policies: z

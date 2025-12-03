@@ -61,7 +61,9 @@ export function AuctionSellerInfo({
   const memberYears = new Date().getFullYear() - memberSinceDate.getFullYear();
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 ${className}`}
+    >
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
         Seller Information
       </h3>
@@ -113,7 +115,8 @@ export function AuctionSellerInfo({
             year: "numeric",
             month: "long",
           })}
-          {memberYears > 0 && ` (${memberYears} year${memberYears > 1 ? "s" : ""})`}
+          {memberYears > 0 &&
+            ` (${memberYears} year${memberYears > 1 ? "s" : ""})`}
         </span>
       </div>
 

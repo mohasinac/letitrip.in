@@ -1,22 +1,32 @@
 import { z } from "zod";
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 // Category validation schema
 export const categorySchema = z.object({
   name: z
     .string()
-    .min(2, "Category name must be at least 2 characters")
-    .max(100, "Category name must be less than 100 characters"),
+    .min(
+      VALIDATION_RULES.CATEGORY.NAME.MIN_LENGTH,
+      VALIDATION_MESSAGES.CATEGORY.NAME_TOO_SHORT,
+    )
+    .max(
+      VALIDATION_RULES.CATEGORY.NAME.MAX_LENGTH,
+      VALIDATION_MESSAGES.CATEGORY.NAME_TOO_LONG,
+    ),
   slug: z
     .string()
-    .min(2, "Slug must be at least 2 characters")
-    .max(100, "Slug must be less than 100 characters")
-    .regex(
-      /^[a-z0-9-]+$/,
-      "Slug can only contain lowercase letters, numbers, and hyphens",
-    ),
+    .min(VALIDATION_RULES.SLUG.MIN_LENGTH, VALIDATION_MESSAGES.SLUG.TOO_SHORT)
+    .max(VALIDATION_RULES.SLUG.MAX_LENGTH, VALIDATION_MESSAGES.SLUG.TOO_LONG)
+    .regex(VALIDATION_RULES.SLUG.PATTERN, VALIDATION_MESSAGES.SLUG.INVALID),
   description: z
     .string()
-    .max(500, "Description must be less than 500 characters")
+    .max(
+      VALIDATION_RULES.CATEGORY.DESCRIPTION.MAX_LENGTH,
+      VALIDATION_MESSAGES.CATEGORY.DESC_TOO_LONG,
+    )
     .optional(),
   parentIds: z.array(z.string()).optional(),
   icon: z
@@ -29,8 +39,8 @@ export const categorySchema = z.object({
   featured: z.boolean().default(false),
   sortOrder: z
     .number()
-    .int("Sort order must be a whole number")
-    .min(0, "Sort order must be positive")
+    .int(VALIDATION_MESSAGES.NUMBER.NOT_INTEGER)
+    .min(0, VALIDATION_MESSAGES.NUMBER.NOT_POSITIVE)
     .default(0),
   metaTitle: z
     .string()

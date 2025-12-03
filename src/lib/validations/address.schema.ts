@@ -1,37 +1,72 @@
 import { z } from "zod";
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 // Address validation schema
 export const addressSchema = z.object({
   fullName: z
     .string()
-    .min(2, "Full name must be at least 2 characters")
-    .max(100, "Full name must be less than 100 characters"),
-  phone: z.string().regex(/^[6-9]\d{9}$/, "Invalid Indian phone number"),
+    .min(VALIDATION_RULES.NAME.MIN_LENGTH, VALIDATION_MESSAGES.NAME.TOO_SHORT)
+    .max(VALIDATION_RULES.NAME.MAX_LENGTH, VALIDATION_MESSAGES.NAME.TOO_LONG),
+  phone: z
+    .string()
+    .regex(VALIDATION_RULES.PHONE.PATTERN, VALIDATION_MESSAGES.PHONE.INVALID),
   line1: z
     .string()
-    .min(5, "Address line 1 must be at least 5 characters")
-    .max(100, "Address line 1 must be less than 100 characters"),
+    .min(
+      VALIDATION_RULES.ADDRESS.LINE1.MIN_LENGTH,
+      VALIDATION_MESSAGES.ADDRESS.LINE1_TOO_SHORT,
+    )
+    .max(
+      VALIDATION_RULES.ADDRESS.LINE1.MAX_LENGTH,
+      VALIDATION_MESSAGES.ADDRESS.LINE1_TOO_LONG,
+    ),
   line2: z
     .string()
-    .max(100, "Address line 2 must be less than 100 characters")
+    .max(
+      VALIDATION_RULES.ADDRESS.LINE2.MAX_LENGTH,
+      VALIDATION_MESSAGES.ADDRESS.LINE2_TOO_LONG,
+    )
     .optional(),
   city: z
     .string()
-    .min(2, "City must be at least 2 characters")
-    .max(50, "City must be less than 50 characters"),
+    .min(
+      VALIDATION_RULES.ADDRESS.CITY.MIN_LENGTH,
+      VALIDATION_MESSAGES.ADDRESS.CITY_TOO_SHORT,
+    )
+    .max(
+      VALIDATION_RULES.ADDRESS.CITY.MAX_LENGTH,
+      VALIDATION_MESSAGES.ADDRESS.CITY_TOO_LONG,
+    ),
   state: z
     .string()
-    .min(2, "State must be at least 2 characters")
-    .max(50, "State must be less than 50 characters"),
-  pincode: z.string().regex(/^\d{6}$/, "Pincode must be 6 digits"),
+    .min(
+      VALIDATION_RULES.ADDRESS.STATE.MIN_LENGTH,
+      VALIDATION_MESSAGES.ADDRESS.STATE_TOO_SHORT,
+    )
+    .max(
+      VALIDATION_RULES.ADDRESS.STATE.MAX_LENGTH,
+      VALIDATION_MESSAGES.ADDRESS.STATE_TOO_LONG,
+    ),
+  pincode: z
+    .string()
+    .regex(
+      VALIDATION_RULES.ADDRESS.PINCODE.PATTERN,
+      VALIDATION_MESSAGES.ADDRESS.PINCODE_INVALID,
+    ),
   country: z.string().min(2, "Country is required").default("India"),
   type: z.enum(["home", "work", "other"], {
-    message: "Please select a valid address type",
+    message: VALIDATION_MESSAGES.ADDRESS.TYPE_INVALID,
   }),
   isDefault: z.boolean().default(false),
   landmark: z
     .string()
-    .max(100, "Landmark must be less than 100 characters")
+    .max(
+      VALIDATION_RULES.ADDRESS.LANDMARK.MAX_LENGTH,
+      VALIDATION_MESSAGES.ADDRESS.LANDMARK_TOO_LONG,
+    )
     .optional(),
 });
 

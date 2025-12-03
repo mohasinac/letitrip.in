@@ -1,23 +1,17 @@
 "use client";
 
-import { use, useState, useEffect, useRef, Suspense } from "react";
-import Link from "next/link";
+import { use, useState, useEffect, Suspense } from "react";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormSelect } from "@/components/forms";
-import {
-  ChevronRight,
-  ChevronLeft,
-  Grid as GridIcon,
-  List,
-  Loader2,
-  Tag,
-  Home,
-  Search,
-  Filter,
-} from "lucide-react";
+import { Grid as GridIcon, List, Loader2, Filter } from "lucide-react";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { SimilarCategories } from "@/components/category/SimilarCategories";
+import { CategoryHeader } from "@/components/category/CategoryHeader";
+import { SubcategoryGrid } from "@/components/category/SubcategoryGrid";
+import { CategoryProducts } from "@/components/category/CategoryProducts";
+import { CategoryStats } from "@/components/category/CategoryStats";
+import { CategoryFeaturedSellers } from "@/components/category/CategoryFeaturedSellers";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { Price } from "@/components/common/values";
 import { PRODUCT_FILTERS } from "@/constants/filters";
@@ -38,15 +32,11 @@ function CategoryDetailContent({ params }: PageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addItem } = useCart();
-  const subcategoriesScrollRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
   const [category, setCategory] = useState<CategoryFE | null>(null);
   const [breadcrumb, setBreadcrumb] = useState<CategoryFE[]>([]);
   const [subcategories, setSubcategories] = useState<CategoryFE[]>([]);
-  const [filteredSubcategories, setFilteredSubcategories] = useState<
-    CategoryFE[]
-  >([]);
   const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -59,13 +49,6 @@ function CategoryDetailContent({ params }: PageProps) {
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  const [subcategorySearch, setSubcategorySearch] = useState("");
-  const [subcategorySort, setSubcategorySort] = useState<
-    "alphabetical" | "productCount"
-  >("alphabetical");
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(false);
-
   useEffect(() => {
     loadCategory();
   }, [slug]);
@@ -75,28 +58,6 @@ function CategoryDetailContent({ params }: PageProps) {
       loadProducts();
     }
   }, [category, sortBy, sortOrder, filterValues]);
-
-  useEffect(() => {
-    // Filter and sort subcategories
-    let filtered = [...subcategories];
-
-    if (subcategorySearch.trim()) {
-      const query = subcategorySearch.toLowerCase();
-      filtered = filtered.filter((cat) =>
-        cat.name.toLowerCase().includes(query),
-      );
-    }
-
-    filtered.sort((a, b) => {
-      if (subcategorySort === "alphabetical") {
-        return a.name.localeCompare(b.name);
-      } else {
-        return b.productCount - a.productCount;
-      }
-    });
-
-    setFilteredSubcategories(filtered);
-  }, [subcategories, subcategorySearch, subcategorySort]);
 
   const loadCategory = async () => {
     setLoading(true);
@@ -206,30 +167,6 @@ function CategoryDetailContent({ params }: PageProps) {
     }
   };
 
-  const scrollSubcategories = (direction: "left" | "right") => {
-    if (subcategoriesScrollRef.current) {
-      const scrollAmount = 300;
-      const newScrollLeft =
-        subcategoriesScrollRef.current.scrollLeft +
-        (direction === "left" ? -scrollAmount : scrollAmount);
-      subcategoriesScrollRef.current.scrollTo({
-        left: newScrollLeft,
-        behavior: "smooth",
-      });
-
-      setTimeout(() => {
-        if (subcategoriesScrollRef.current) {
-          setShowLeftArrow(subcategoriesScrollRef.current.scrollLeft > 0);
-          setShowRightArrow(
-            subcategoriesScrollRef.current.scrollLeft <
-              subcategoriesScrollRef.current.scrollWidth -
-                subcategoriesScrollRef.current.clientWidth,
-          );
-        }
-      }, 300);
-    }
-  };
-
   const buildCategoryPath = (targetSlug: string): string => {
     // Build path including current breadcrumb
     const pathSlugs = [...breadcrumb.map((c) => c.slug), slug];
@@ -267,95 +204,36 @@ function CategoryDetailContent({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Banner Section */}
-      {category.banner && (
-        <div className="relative h-64 w-full bg-gradient-to-r from-blue-500 to-purple-600 overflow-hidden">
-          <OptimizedImage
-            src={category.banner}
-            alt={category.name}
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
-      )}
-
       <div className="max-w-7xl mx-auto px-4">
         {/* Category Header */}
-        <div className={`relative ${category.banner ? "-mt-16" : "pt-8"} mb-8`}>
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-            <div className="flex items-center gap-6">
-              {/* Profile Image */}
-              {category.image && (
-                <div
-                  className={`w-24 h-24 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0 relative ${
-                    category.banner
-                      ? "-mt-12 border-4 border-white dark:border-gray-800 shadow-lg"
-                      : ""
-                  }`}
-                >
-                  <OptimizedImage
-                    src={category.image}
-                    alt={category.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
+        <CategoryHeader
+          id={category.id}
+          name={category.name}
+          slug={category.slug}
+          description={category.description}
+          image={category.image}
+          productCount={category.productCount}
+          parentCategory={
+            breadcrumb.length > 0
+              ? {
+                  id: breadcrumb[breadcrumb.length - 1].id,
+                  name: breadcrumb[breadcrumb.length - 1].name,
+                  slug: breadcrumb[breadcrumb.length - 1].slug,
+                }
+              : null
+          }
+        />
 
-              <div className="flex-1">
-                {/* Breadcrumb */}
-                <nav className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  <Link
-                    href="/"
-                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  >
-                    <Home className="w-4 h-4" />
-                  </Link>
-                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  <Link
-                    href="/categories"
-                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  >
-                    Categories
-                  </Link>
-                  {breadcrumb.map((cat) => (
-                    <div key={cat.id} className="flex items-center gap-2">
-                      <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                      <Link
-                        href={`/categories/${cat.slug}`}
-                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                      >
-                        {cat.name}
-                      </Link>
-                    </div>
-                  ))}
-                </nav>
-
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                  {category.name}
-                </h1>
-                {category.description && (
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {category.description.replace(/<[^>]*>/g, "")}
-                  </p>
-                )}
-              </div>
-
-              <div className="text-right">
-                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                  {category.productCount}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Products
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Category Stats */}
+        <CategoryStats
+          productCount={category.productCount}
+          sellerCount={0}
+          priceRange={{ min: 0, max: 999999 }}
+          popularBrands={[]}
+        />
 
         {/* Products Section */}
-        <div className="pb-12">
+        <div className="pb-12 mt-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               Products
@@ -650,118 +528,26 @@ function CategoryDetailContent({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Subcategories Section - Bottom Horizontal Scroll */}
+        {/* Subcategories Section */}
         {subcategories.length > 0 && (
           <div className="mt-12 mb-8">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                Explore Subcategories
-              </h2>
-
-              {/* Search and Sort Controls */}
-              <div className="flex flex-col sm:flex-row gap-3 mb-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  <input
-                    type="search"
-                    placeholder="Search subcategories..."
-                    value={subcategorySearch}
-                    onChange={(e) => setSubcategorySearch(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  />
-                </div>
-                <select
-                  value={subcategorySort}
-                  onChange={(e) => setSubcategorySort(e.target.value as any)}
-                  className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="alphabetical">Alphabetical</option>
-                  <option value="productCount">Product Count</option>
-                </select>
-              </div>
-
-              {/* Horizontal Scroll Container */}
-              <div className="relative">
-                {/* Left Arrow */}
-                {showLeftArrow && (
-                  <button
-                    onClick={() => scrollSubcategories("left")}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-700 shadow-lg rounded-full p-2 hover:bg-gray-50 dark:hover:bg-gray-600"
-                    aria-label="Scroll left"
-                  >
-                    <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                  </button>
-                )}
-
-                {/* Subcategories Horizontal List */}
-                <div
-                  ref={subcategoriesScrollRef}
-                  className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 px-1"
-                  onScroll={(e) => {
-                    const target = e.target as HTMLDivElement;
-                    setShowLeftArrow(target.scrollLeft > 0);
-                    setShowRightArrow(
-                      target.scrollLeft <
-                        target.scrollWidth - target.clientWidth,
-                    );
-                  }}
-                >
-                  {filteredSubcategories.length === 0 ? (
-                    <div className="w-full text-center py-8 text-gray-500 dark:text-gray-400">
-                      No subcategories found
-                    </div>
-                  ) : (
-                    filteredSubcategories.map((subcat) => (
-                      <Link
-                        key={subcat.id}
-                        href={`/categories/${
-                          subcat.slug
-                        }?path=${buildCategoryPath(subcat.slug)}`}
-                        className="flex-shrink-0 w-40 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-md transition-all p-3 group"
-                      >
-                        {subcat.image && (
-                          <div className="w-full h-24 mb-2 rounded-lg overflow-hidden bg-white dark:bg-gray-800 relative">
-                            <OptimizedImage
-                              src={subcat.image}
-                              alt={subcat.name}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform"
-                            />
-                          </div>
-                        )}
-                        <h3 className="font-semibold text-sm text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1 line-clamp-2">
-                          {subcat.name}
-                        </h3>
-                        <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                          <Tag className="w-3 h-3" />
-                          <span>{subcat.productCount} items</span>
-                        </div>
-                        <div className="mt-2 flex items-center justify-end">
-                          <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-                        </div>
-                      </Link>
-                    ))
-                  )}
-                </div>
-
-                {/* Right Arrow */}
-                {showRightArrow && (
-                  <button
-                    onClick={() => scrollSubcategories("right")}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-700 shadow-lg rounded-full p-2 hover:bg-gray-50 dark:hover:bg-gray-600"
-                    aria-label="Scroll right"
-                  >
-                    <ChevronRight className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                  </button>
-                )}
-              </div>
-            </div>
+            <SubcategoryGrid
+              subcategories={subcategories}
+              parentSlug={category.slug}
+            />
           </div>
         )}
 
+        {/* Featured Sellers */}
+        <CategoryFeaturedSellers
+          categoryId={category.id}
+          categorySlug={category.slug}
+          sellers={[]}
+        />
+
         {/* Similar Categories Section (sibling categories at same tree level) */}
         {category && (
-          <div className="mt-8 mb-8 px-4 md:px-8">
+          <div className="mt-8 mb-8">
             <SimilarCategories
               categorySlug={category.slug}
               categoryName={category.name}

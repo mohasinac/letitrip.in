@@ -1,52 +1,87 @@
 import { z } from "zod";
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 // Product creation/edit validation schema
 export const productSchema = z.object({
   // Step 1: Basic Info
   name: z
     .string()
-    .min(3, "Product name must be at least 3 characters")
-    .max(200, "Product name must be less than 200 characters"),
+    .min(
+      VALIDATION_RULES.PRODUCT.NAME.MIN_LENGTH,
+      VALIDATION_MESSAGES.PRODUCT.NAME_TOO_SHORT,
+    )
+    .max(
+      VALIDATION_RULES.PRODUCT.NAME.MAX_LENGTH,
+      VALIDATION_MESSAGES.PRODUCT.NAME_TOO_LONG,
+    ),
   slug: z
     .string()
-    .min(3, "Slug must be at least 3 characters")
-    .max(200, "Slug must be less than 200 characters")
-    .regex(
-      /^[a-z0-9-]+$/,
-      "Slug can only contain lowercase letters, numbers, and hyphens",
-    ),
-  categoryId: z.string().min(1, "Please select a category"),
-  brand: z.string().min(1, "Brand is required"),
-  sku: z.string().optional(),
+    .min(VALIDATION_RULES.SLUG.MIN_LENGTH, VALIDATION_MESSAGES.SLUG.TOO_SHORT)
+    .max(VALIDATION_RULES.SLUG.MAX_LENGTH, VALIDATION_MESSAGES.SLUG.TOO_LONG)
+    .regex(VALIDATION_RULES.SLUG.PATTERN, VALIDATION_MESSAGES.SLUG.INVALID),
+  categoryId: z.string().min(1, VALIDATION_MESSAGES.PRODUCT.NO_CATEGORY),
+  brand: z.string().min(1, VALIDATION_MESSAGES.REQUIRED.FIELD("Brand")),
+  sku: z
+    .string()
+    .min(
+      VALIDATION_RULES.PRODUCT.SKU.MIN_LENGTH,
+      VALIDATION_MESSAGES.PRODUCT.SKU_TOO_SHORT,
+    )
+    .max(
+      VALIDATION_RULES.PRODUCT.SKU.MAX_LENGTH,
+      VALIDATION_MESSAGES.PRODUCT.SKU_TOO_LONG,
+    )
+    .optional(),
 
   // Step 2: Pricing & Stock
   price: z
     .number()
-    .min(0, "Price must be positive")
-    .max(10000000, "Price is too high"),
+    .min(
+      VALIDATION_RULES.PRODUCT.PRICE.MIN,
+      VALIDATION_MESSAGES.PRODUCT.PRICE_TOO_LOW,
+    )
+    .max(
+      VALIDATION_RULES.PRODUCT.PRICE.MAX,
+      VALIDATION_MESSAGES.PRODUCT.PRICE_TOO_HIGH,
+    ),
   compareAtPrice: z
     .number()
-    .min(0, "Compare price must be positive")
+    .min(
+      VALIDATION_RULES.PRODUCT.PRICE.MIN,
+      VALIDATION_MESSAGES.PRODUCT.PRICE_TOO_LOW,
+    )
     .optional(),
   stockCount: z
     .number()
-    .int("Stock must be a whole number")
-    .min(0, "Stock cannot be negative"),
+    .int(VALIDATION_MESSAGES.NUMBER.NOT_INTEGER)
+    .min(
+      VALIDATION_RULES.PRODUCT.STOCK.MIN,
+      VALIDATION_MESSAGES.PRODUCT.STOCK_NEGATIVE,
+    ),
   lowStockThreshold: z
     .number()
-    .int("Low stock threshold must be a whole number")
-    .min(0, "Threshold cannot be negative")
+    .int(VALIDATION_MESSAGES.NUMBER.NOT_INTEGER)
+    .min(0, VALIDATION_MESSAGES.NUMBER.NOT_POSITIVE)
     .default(10),
   weight: z
     .number()
-    .min(0, "Weight must be positive")
+    .min(0, VALIDATION_MESSAGES.NUMBER.NOT_POSITIVE)
     .max(10000, "Weight is too high (max 10000kg)"),
 
   // Step 3: Product Details
   description: z
     .string()
-    .min(10, "Description must be at least 10 characters")
-    .max(5000, "Description must be less than 5000 characters"),
+    .min(
+      VALIDATION_RULES.PRODUCT.DESCRIPTION.MIN_LENGTH,
+      VALIDATION_MESSAGES.PRODUCT.DESC_TOO_SHORT,
+    )
+    .max(
+      VALIDATION_RULES.PRODUCT.DESCRIPTION.MAX_LENGTH,
+      VALIDATION_MESSAGES.PRODUCT.DESC_TOO_LONG,
+    ),
   condition: z.enum(["new", "like-new", "good", "fair"], {
     message: "Please select a valid condition",
   }),
@@ -56,11 +91,20 @@ export const productSchema = z.object({
   // Step 4: Media
   images: z
     .array(z.string().url("Invalid image URL"))
-    .min(1, "At least one product image is required")
-    .max(10, "Maximum 10 images allowed"),
+    .min(
+      VALIDATION_RULES.PRODUCT.IMAGES.MIN,
+      VALIDATION_MESSAGES.PRODUCT.NO_IMAGES,
+    )
+    .max(
+      VALIDATION_RULES.PRODUCT.IMAGES.MAX,
+      VALIDATION_MESSAGES.PRODUCT.TOO_MANY_IMAGES,
+    ),
   videos: z
     .array(z.string().url("Invalid video URL"))
-    .max(5, "Maximum 5 videos allowed")
+    .max(
+      VALIDATION_RULES.PRODUCT.VIDEOS.MAX,
+      VALIDATION_MESSAGES.PRODUCT.TOO_MANY_VIDEOS,
+    )
     .optional(),
 
   // Step 5: Shipping & Policies
@@ -85,7 +129,7 @@ export const productSchema = z.object({
   }),
 
   // System fields
-  shopId: z.string().min(1, "Shop ID is required"),
+  shopId: z.string().min(1, VALIDATION_MESSAGES.PRODUCT.NO_SHOP),
 });
 
 // Type inference from schema

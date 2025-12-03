@@ -1,21 +1,45 @@
 import { z } from "zod";
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 // Review validation schema
 export const reviewSchema = z.object({
-  productId: z.string().min(1, "Product ID is required"),
+  productId: z
+    .string()
+    .min(1, VALIDATION_MESSAGES.REQUIRED.FIELD("Product ID")),
   rating: z
     .number()
-    .int("Rating must be a whole number")
-    .min(1, "Rating must be at least 1 star")
-    .max(5, "Rating cannot exceed 5 stars"),
+    .int(VALIDATION_MESSAGES.NUMBER.NOT_INTEGER)
+    .min(
+      VALIDATION_RULES.REVIEW.RATING.MIN,
+      VALIDATION_MESSAGES.REVIEW.RATING_INVALID,
+    )
+    .max(
+      VALIDATION_RULES.REVIEW.RATING.MAX,
+      VALIDATION_MESSAGES.REVIEW.RATING_INVALID,
+    ),
   title: z
     .string()
-    .min(5, "Review title must be at least 5 characters")
-    .max(100, "Review title must be less than 100 characters"),
+    .min(
+      VALIDATION_RULES.REVIEW.TITLE.MIN_LENGTH,
+      VALIDATION_MESSAGES.REVIEW.TITLE_TOO_SHORT,
+    )
+    .max(
+      VALIDATION_RULES.REVIEW.TITLE.MAX_LENGTH,
+      VALIDATION_MESSAGES.REVIEW.TITLE_TOO_LONG,
+    ),
   comment: z
     .string()
-    .min(10, "Review must be at least 10 characters")
-    .max(1000, "Review must be less than 1000 characters"),
+    .min(
+      VALIDATION_RULES.REVIEW.CONTENT.MIN_LENGTH,
+      VALIDATION_MESSAGES.REVIEW.CONTENT_TOO_SHORT,
+    )
+    .max(
+      VALIDATION_RULES.REVIEW.CONTENT.MAX_LENGTH,
+      VALIDATION_MESSAGES.REVIEW.CONTENT_TOO_LONG,
+    ),
   pros: z.array(z.string()).max(5, "Maximum 5 pros allowed").optional(),
   cons: z.array(z.string()).max(5, "Maximum 5 cons allowed").optional(),
 });
@@ -30,7 +54,7 @@ export const reviewReplySchema = z.object({
 
 // Helpful vote validation
 export const reviewHelpfulSchema = z.object({
-  reviewId: z.string().min(1, "Review ID is required"),
+  reviewId: z.string().min(1, VALIDATION_MESSAGES.REQUIRED.FIELD("Review ID")),
   isHelpful: z.boolean(),
 });
 
