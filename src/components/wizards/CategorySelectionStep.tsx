@@ -110,8 +110,9 @@ export function CategorySelectionStep({
         <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-3">
           <p className="text-xs text-blue-800 dark:text-blue-300">
             💡 <strong>Tip:</strong> Choose the most specific category to help
-            customers find your {entityType}. For example, select &quot;Men&apos;s
-            Running Shoes&quot; instead of just &quot;Shoes&quot;.
+            customers find your {entityType}. For example, select
+            &quot;Men&apos;s Running Shoes&quot; instead of just
+            &quot;Shoes&quot;.
           </p>
         </div>
       )}
