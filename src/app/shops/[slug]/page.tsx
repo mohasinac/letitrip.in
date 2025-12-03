@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { logError } from "@/lib/firebase-error-logger";
 import { Loader2, Gavel } from "lucide-react";
 import { shopsService } from "@/services/shops.service";
 import { productsService } from "@/services/products.service";
@@ -75,7 +76,10 @@ export default function ShopPage({ params }: ShopPageProps) {
       const data = await shopsService.getBySlug(slug);
       setShop(data);
     } catch (error: any) {
-      console.error("Failed to load shop:", error);
+      logError(error as Error, {
+        component: "ShopPage.loadShop",
+        metadata: { slug },
+      });
       router.push(notFound.shop(slug, error));
     } finally {
       setLoading(false);
@@ -136,7 +140,10 @@ export default function ShopPage({ params }: ShopPageProps) {
       ];
       setAvailableBrands(brands);
     } catch (error) {
-      console.error("Failed to load products:", error);
+      logError(error as Error, {
+        component: "ShopPage.loadProducts",
+        metadata: { shopId: shop?.id },
+      });
     } finally {
       setProductsLoading(false);
     }
@@ -167,7 +174,10 @@ export default function ShopPage({ params }: ShopPageProps) {
       const response = await auctionsService.list(apiFilters);
       setAuctions(response.data || []);
     } catch (error) {
-      console.error("Failed to load auctions:", error);
+      logError(error as Error, {
+        component: "ShopPage.loadAuctions",
+        metadata: { shopId: shop?.id },
+      });
     } finally {
       setAuctionsLoading(false);
     }
