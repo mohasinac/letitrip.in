@@ -9,6 +9,7 @@ import { authService } from "@/services/auth.service";
 import { FormField, FormInput } from "@/components/forms";
 import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
+import { SettingsSection } from "@/components/common/SettingsSection";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -112,11 +113,10 @@ export default function SettingsPage() {
       </h1>
 
       {/* Avatar Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-          Profile Picture
-        </h2>
-
+      <SettingsSection
+        title="Profile Picture"
+        description="Upload a profile picture to personalize your account"
+      >
         <div className="flex flex-col sm:flex-row items-center gap-6">
           {/* Current Avatar */}
           <div className="relative">
@@ -145,10 +145,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="text-center sm:text-left">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Upload a profile picture to personalize your account.
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-500">
               Recommended: Square image, at least 200x200 pixels
             </p>
           </div>
@@ -183,14 +180,10 @@ export default function SettingsPage() {
             </div>
           </div>
         )}
-      </div>
+      </SettingsSection>
 
       {/* Profile Form */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-          Profile Information
-        </h2>
-
+      <SettingsSection title="Profile Information">
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
           <FormField label="Full Name" required>
@@ -262,14 +255,10 @@ export default function SettingsPage() {
             </button>
           </div>
         </form>
-      </div>
+      </SettingsSection>
 
       {/* Account Actions */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          Account Actions
-        </h2>
-
+      <SettingsSection title="Account Actions" className="mb-0">
         <div className="space-y-4">
           <button
             onClick={() => router.push("/user/addresses")}
@@ -296,7 +285,7 @@ export default function SettingsPage() {
             <div className="text-sm">Sign out of your account</div>
           </button>
         </div>
-      </div>
+      </SettingsSection>
     </main>
   );
 }
