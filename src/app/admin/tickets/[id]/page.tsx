@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { DateDisplay } from "@/components/common/values";
 import { FormSelect, FormTextarea, FormCheckbox } from "@/components/forms";
 import { supportService } from "@/services/support.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
@@ -31,32 +32,21 @@ const categoryLabels = {
 export default function AdminTicketDetailsPage() {
   const params = useParams();
   const ticketId = (params.id as string) || "";
-  const [ticket, setTicket] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { data: ticket, isLoading, error, execute } = useLoadingState<any>();
   const [replyMessage, setReplyMessage] = useState("");
   const [isInternal, setIsInternal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  const fetchTicket = useCallback(async () => {
+    await execute(() => supportService.getTicket(ticketId));
+  }, [ticketId, execute]);
+
   useEffect(() => {
-    fetchTicket();
-  }, [ticketId]);
-
-  const fetchTicket = async () => {
-    setIsLoading(true);
-    setError("");
-
-    try {
-      const response = await supportService.getTicket(ticketId);
-      setTicket(response);
-    } catch (err: any) {
-      console.error("Error fetching ticket:", err);
-      setError(err.message || "Failed to load ticket");
-    } finally {
-      setIsLoading(false);
+    if (ticketId) {
+      fetchTicket();
     }
-  };
+  }, [ticketId, fetchTicket]);
 
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,7 +109,7 @@ export default function AdminTicketDetailsPage() {
       <AuthGuard requireAuth allowedRoles={["admin"]}>
         <main className="container mx-auto px-4 py-8 max-w-6xl">
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-yellow-500"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 dark:border-gray-600 border-t-yellow-500"></div>
             <p className="mt-4 text-gray-600 dark:text-gray-400">
               Loading ticket...
             </p>
@@ -134,7 +124,7 @@ export default function AdminTicketDetailsPage() {
       <AuthGuard requireAuth allowedRoles={["admin"]}>
         <main className="container mx-auto px-4 py-8 max-w-6xl">
           <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-6 text-red-700 dark:text-red-300">
-            {error || "Ticket not found"}
+            {error?.message || "Ticket not found"}
           </div>
           <Link
             href="/admin/tickets"

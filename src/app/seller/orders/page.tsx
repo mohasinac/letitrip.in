@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
 import { ORDER_FILTERS } from "@/constants/filters";
 import { ordersService } from "@/services/orders.service";
 import type { OrderCardFE, OrderFiltersFE } from "@/types/frontend/order.types";
@@ -200,49 +201,24 @@ export default function SellerOrdersPage() {
                 My Orders
               </h1>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Total Orders
-                  </div>
-                  <div className="text-2xl font-bold dark:text-white">
-                    {totalOrders}
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Pending
-                  </div>
-                  <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                    {
-                      orders.filter((o) => o.status === OrderStatus.PENDING)
-                        .length
-                    }
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Processing
-                  </div>
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {
-                      orders.filter((o) => o.status === OrderStatus.PROCESSING)
-                        .length
-                    }
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Delivered
-                  </div>
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {
-                      orders.filter((o) => o.status === OrderStatus.DELIVERED)
-                        .length
-                    }
-                  </div>
-                </div>
-              </div>
+              <StatsCardGrid columns={4} className="mb-6">
+                <StatsCard label="Total Orders" value={totalOrders} />
+                <StatsCard
+                  label="Pending"
+                  value={orders.filter((o) => o.status === OrderStatus.PENDING).length}
+                  className="[&_p:last-child]:!text-yellow-600 dark:[&_p:last-child]:!text-yellow-400"
+                />
+                <StatsCard
+                  label="Processing"
+                  value={orders.filter((o) => o.status === OrderStatus.PROCESSING).length}
+                  className="[&_p:last-child]:!text-blue-600 dark:[&_p:last-child]:!text-blue-400"
+                />
+                <StatsCard
+                  label="Delivered"
+                  value={orders.filter((o) => o.status === OrderStatus.DELIVERED).length}
+                  className="[&_p:last-child]:!text-green-600 dark:[&_p:last-child]:!text-green-400"
+                />
+              </StatsCardGrid>
 
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                 {error ? (

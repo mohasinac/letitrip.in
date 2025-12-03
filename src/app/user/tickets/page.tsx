@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -8,6 +8,7 @@ import { DateDisplay } from "@/components/common/values";
 import { FormSelect } from "@/components/forms";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
 
 const statusColors = {
@@ -30,9 +31,16 @@ const categoryLabels = {
 
 export default function UserTicketsPage() {
   const router = useRouter();
-  const [tickets, setTickets] = useState<SupportTicketFE[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const {
+    data: ticketsData,
+    isLoading,
+    error,
+    execute,
+  } = useLoadingState<{
+    data: SupportTicketFE[];
+    pagination: any;
+  }>();
+  const tickets = ticketsData?.data || [];
 
   // Cursor pagination state
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
@@ -44,25 +52,18 @@ export default function UserTicketsPage() {
     category: "",
   });
 
-  useEffect(() => {
-    fetchTickets();
-  }, [filter, currentPage]);
-
-  const fetchTickets = async () => {
-    setIsLoading(true);
-    setError("");
-
-    try {
-      const startAfter = cursors[currentPage - 1];
-      const response = await supportService.listTickets({
+  const fetchTickets = useCallback(async () => {
+    const startAfter = cursors[currentPage - 1];
+    const response = await execute(() =>
+      supportService.listTickets({
         status: filter.status as any,
         category: filter.category as any,
         startAfter,
         limit: 20,
-      } as any);
+      } as any)
+    );
 
-      setTickets(response.data || []);
-
+    if (response) {
       // Check if it's cursor pagination
       if ("hasNextPage" in response.pagination) {
         setHasNextPage(response.pagination.hasNextPage || false);
@@ -78,13 +79,12 @@ export default function UserTicketsPage() {
           }
         }
       }
-    } catch (err: any) {
-      console.error("Error fetching tickets:", err);
-      setError(err.message || "Failed to load tickets");
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, [filter, currentPage, cursors, execute]);
+
+  useEffect(() => {
+    fetchTickets();
+  }, [fetchTickets]);
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -170,7 +170,7 @@ export default function UserTicketsPage() {
         {/* Error Message */}
         {error && (
           <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400">
-            {error}
+            {error.message || "Failed to load tickets"}
           </div>
         )}
 

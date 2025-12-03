@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
 import { useIsMobile } from "@/hooks/useMobile";
 import { DateDisplay } from "@/components/common/values";
 import { FormSelect } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
@@ -21,35 +23,36 @@ const statusColors = {
 export default function AdminTicketsPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
-  const [tickets, setTickets] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    data: ticketsData,
+    isLoading,
+    execute,
+  } = useLoadingState<{
+    data: any[];
+    stats: any;
+  }>();
   const [filter, setFilter] = useState({
     status: "",
     category: "",
     priority: "",
   });
 
-  useEffect(() => {
-    fetchTickets();
-  }, [filter]);
+  const tickets = ticketsData?.data || [];
+  const stats = ticketsData?.stats || {};
 
-  const fetchTickets = async () => {
-    setIsLoading(true);
-    try {
-      const response = await supportService.listTickets({
+  const fetchTickets = useCallback(async () => {
+    await execute(() =>
+      supportService.listTickets({
         status: filter.status as any,
         category: filter.category as any,
         priority: filter.priority as any,
-      });
-      setTickets(response.data || []);
-      setStats((response as any).stats || {});
-    } catch (err: any) {
-      console.error("Error fetching admin tickets:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      })
+    );
+  }, [filter, execute]);
+
+  useEffect(() => {
+    fetchTickets();
+  }, [fetchTickets]);
 
   return (
     <AuthGuard requireAuth allowedRoles={["admin"]}>
@@ -59,49 +62,34 @@ export default function AdminTicketsPage() {
         </h1>
 
         {/* Stats Cards */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-            <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-              <div className="text-2xl font-bold text-blue-900 dark:text-blue-200">
-                {stats.open || 0}
-              </div>
-              <div className="text-sm text-blue-700 dark:text-blue-400">
-                Open
-              </div>
-            </div>
-            <div className="bg-yellow-50 dark:bg-yellow-900/30 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
-              <div className="text-2xl font-bold text-yellow-900 dark:text-yellow-200">
-                {stats.inProgress || 0}
-              </div>
-              <div className="text-sm text-yellow-700 dark:text-yellow-400">
-                In Progress
-              </div>
-            </div>
-            <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-4 border border-green-200 dark:border-green-800">
-              <div className="text-2xl font-bold text-green-900 dark:text-green-200">
-                {stats.resolved || 0}
-              </div>
-              <div className="text-sm text-green-700 dark:text-green-400">
-                Resolved
-              </div>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {stats.closed || 0}
-              </div>
-              <div className="text-sm text-gray-700 dark:text-gray-300">
-                Closed
-              </div>
-            </div>
-            <div className="bg-red-50 dark:bg-red-900/30 rounded-lg p-4 border border-red-200 dark:border-red-800">
-              <div className="text-2xl font-bold text-red-900 dark:text-red-200">
-                {stats.escalated || 0}
-              </div>
-              <div className="text-sm text-red-700 dark:text-red-400">
-                Escalated
-              </div>
-            </div>
-          </div>
+        {stats && Object.keys(stats).length > 0 && (
+          <StatsCardGrid columns={5} className="mb-6">
+            <StatsCard
+              title="Open"
+              value={stats.open || 0}
+              className="!bg-blue-50 dark:!bg-blue-900/30 !border-blue-200 dark:!border-blue-800"
+            />
+            <StatsCard
+              title="In Progress"
+              value={stats.inProgress || 0}
+              className="!bg-yellow-50 dark:!bg-yellow-900/30 !border-yellow-200 dark:!border-yellow-800"
+            />
+            <StatsCard
+              title="Resolved"
+              value={stats.resolved || 0}
+              className="!bg-green-50 dark:!bg-green-900/30 !border-green-200 dark:!border-green-800"
+            />
+            <StatsCard
+              title="Closed"
+              value={stats.closed || 0}
+              className="!bg-gray-50 dark:!bg-gray-700 !border-gray-200 dark:!border-gray-600"
+            />
+            <StatsCard
+              title="Escalated"
+              value={stats.escalated || 0}
+              className="!bg-red-50 dark:!bg-red-900/30 !border-red-200 dark:!border-red-800"
+            />
+          </StatsCardGrid>
         )}
 
         {/* Filters */}

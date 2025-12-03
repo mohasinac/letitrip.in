@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { Price, DateDisplay } from "@/components/common/values";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
 import {
   UnifiedFilterSidebar,
   TableCheckbox,
@@ -184,40 +185,24 @@ export default function SellerReturnsPage() {
                 Returns Management
               </h1>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Total Returns
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {totalReturns}
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Pending Review
-                  </div>
-                  <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                    {returns.filter((r) => r.status === "requested").length}
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Approved
-                  </div>
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {returns.filter((r) => r.status === "approved").length}
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Needs Attention
-                  </div>
-                  <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                    {returns.filter((r) => r.status === "escalated").length}
-                  </div>
-                </div>
-              </div>
+              <StatsCardGrid columns={4} className="mb-6">
+                <StatsCard label="Total Returns" value={totalReturns} />
+                <StatsCard
+                  label="Pending Review"
+                  value={returns.filter((r) => r.status === "requested").length}
+                  className="[&_p:last-child]:!text-yellow-600 dark:[&_p:last-child]:!text-yellow-400"
+                />
+                <StatsCard
+                  label="Approved"
+                  value={returns.filter((r) => r.status === "approved").length}
+                  className="[&_p:last-child]:!text-green-600 dark:[&_p:last-child]:!text-green-400"
+                />
+                <StatsCard
+                  label="Needs Attention"
+                  value={returns.filter((r) => r.status === "escalated").length}
+                  className="[&_p:last-child]:!text-red-600 dark:[&_p:last-child]:!text-red-400"
+                />
+              </StatsCardGrid>
 
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                 {isLoading ? (

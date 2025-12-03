@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import { DateDisplay } from "@/components/common/values";
 import { FormTextarea } from "@/components/forms";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
@@ -31,30 +32,19 @@ export default function TicketDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const ticketId = (params.id as string) || "";
-  const [ticket, setTicket] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { data: ticket, isLoading, error, execute } = useLoadingState<any>();
   const [replyMessage, setReplyMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const fetchTicket = useCallback(async () => {
+    await execute(() => supportService.getTicket(ticketId));
+  }, [ticketId, execute]);
+
   useEffect(() => {
-    fetchTicket();
-  }, [ticketId]);
-
-  const fetchTicket = async () => {
-    setIsLoading(true);
-    setError("");
-
-    try {
-      const response = await supportService.getTicket(ticketId);
-      setTicket(response);
-    } catch (err: any) {
-      console.error("Error fetching ticket:", err);
-      setError(err.message || "Failed to load ticket");
-    } finally {
-      setIsLoading(false);
+    if (ticketId) {
+      fetchTicket();
     }
-  };
+  }, [ticketId, fetchTicket]);
 
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,7 +90,7 @@ export default function TicketDetailsPage() {
       <AuthGuard requireAuth>
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-red-700 dark:text-red-400">
-            {error || "Ticket not found"}
+            {error?.message || "Ticket not found"}
           </div>
           <Link
             href="/user/tickets"

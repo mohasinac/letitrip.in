@@ -1,21 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import AuthGuard from "@/components/auth/AuthGuard";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { auctionsService } from "@/services/auctions.service";
 import { AuctionStatus } from "@/types/shared/common.types";
 import { Eye, CheckCircle, XCircle, Edit, Flag, Clock } from "lucide-react";
 import { DateDisplay, Price } from "@/components/common/values";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 export default function AuctionModerationPage() {
   const router = useRouter();
-  const [auctions, setAuctions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: auctions, loading, execute: loadAuctions } = useLoadingState<any[]>([]);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({
     status: ["pending"],
   });
@@ -24,34 +25,26 @@ export default function AuctionModerationPage() {
   const [totalAuctions, setTotalAuctions] = useState(0);
   const [processingId, setProcessingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadAuctions();
+  const fetchAuctions = useCallback(async () => {
+    const response = await auctionsService.list({
+      ...filterValues,
+      page: currentPage,
+      limit: 20,
+    });
+    setTotalPages(Math.ceil((response.count || 0) / 20));
+    setTotalAuctions(response.count || 0);
+    return response.data || [];
   }, [filterValues, currentPage]);
 
-  const loadAuctions = async () => {
-    try {
-      setLoading(true);
-      const response = await auctionsService.list({
-        ...filterValues,
-        page: currentPage,
-        limit: 20,
-      });
-      setAuctions(response.data || []);
-      // Calculate total pages from count
-      setTotalPages(Math.ceil((response.count || 0) / 20));
-      setTotalAuctions(response.count || 0);
-    } catch (error: any) {
-      console.error("Failed to load auctions:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    loadAuctions(fetchAuctions);
+  }, [fetchAuctions, loadAuctions]);
 
   const handleApprove = async (id: string) => {
     try {
       setProcessingId(id);
       await auctionsService.update(id, { status: AuctionStatus.SCHEDULED });
-      await loadAuctions();
+      await loadAuctions(fetchAuctions);
     } catch (error: any) {
       console.error("Failed to approve auction:", error);
     } finally {
@@ -66,7 +59,7 @@ export default function AuctionModerationPage() {
     try {
       setProcessingId(id);
       await auctionsService.update(id, { status: AuctionStatus.CANCELLED });
-      await loadAuctions();
+      await loadAuctions(fetchAuctions);
     } catch (error: any) {
       console.error("Failed to reject auction:", error);
     } finally {
@@ -82,7 +75,7 @@ export default function AuctionModerationPage() {
       setProcessingId(id);
       // In a real app, this would call a flag endpoint
       toast.success(`Auction ${id} flagged for: ${reason}`);
-      await loadAuctions();
+      await loadAuctions(fetchAuctions);
     } catch (error: any) {
       console.error("Failed to flag auction:", error);
     } finally {
@@ -168,30 +161,24 @@ export default function AuctionModerationPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Total Auctions</div>
-                <div className="text-2xl font-bold">{totalAuctions}</div>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Pending Review</div>
-                <div className="text-2xl font-bold text-yellow-600">
-                  {auctions.filter((a) => a.status === "pending").length}
-                </div>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Scheduled</div>
-                <div className="text-2xl font-bold text-blue-600">
-                  {auctions.filter((a) => a.status === "scheduled").length}
-                </div>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <div className="text-sm text-gray-600">Live Now</div>
-                <div className="text-2xl font-bold text-green-600">
-                  {auctions.filter((a) => a.status === "live").length}
-                </div>
-              </div>
-            </div>
+            <StatsCardGrid columns={4} className="mb-6">
+              <StatsCard label="Total Auctions" value={totalAuctions} />
+              <StatsCard
+                label="Pending Review"
+                value={auctions.filter((a) => a.status === "pending").length}
+                className="[&_p:last-child]:!text-yellow-600"
+              />
+              <StatsCard
+                label="Scheduled"
+                value={auctions.filter((a) => a.status === "scheduled").length}
+                className="[&_p:last-child]:!text-blue-600"
+              />
+              <StatsCard
+                label="Live Now"
+                value={auctions.filter((a) => a.status === "live").length}
+                className="[&_p:last-child]:!text-green-600"
+              />
+            </StatsCardGrid>
 
             <div className="bg-white rounded-lg shadow overflow-hidden">
               {loading ? (
