@@ -9,7 +9,7 @@ import { logError } from "@/lib/firebase-error-logger";
  * Removes undefined, null, and empty values
  */
 export function buildQueryFromFilters<T extends Record<string, any>>(
-  filters: T,
+  filters: T
 ): Record<string, any> {
   const query: Record<string, any> = {};
 
@@ -33,7 +33,7 @@ export function buildQueryFromFilters<T extends Record<string, any>>(
  * Convert filter values to URL search params
  */
 export function filtersToSearchParams<T extends Record<string, any>>(
-  filters: T,
+  filters: T
 ): URLSearchParams {
   const params = new URLSearchParams();
 
@@ -62,7 +62,7 @@ export function filtersToSearchParams<T extends Record<string, any>>(
  */
 export function searchParamsToFilters<T extends Record<string, any>>(
   searchParams: URLSearchParams,
-  initialFilters: T,
+  initialFilters: T
 ): T {
   const filters = { ...initialFilters };
 
@@ -86,7 +86,7 @@ export function searchParamsToFilters<T extends Record<string, any>>(
  */
 export function persistFilters<T extends Record<string, any>>(
   key: string,
-  filters: T,
+  filters: T
 ): void {
   if (typeof window === "undefined") return;
 
@@ -102,7 +102,7 @@ export function persistFilters<T extends Record<string, any>>(
  */
 export function loadPersistedFilters<T extends Record<string, any>>(
   key: string,
-  initialFilters: T,
+  initialFilters: T
 ): T {
   if (typeof window === "undefined") return initialFilters;
 
@@ -139,7 +139,7 @@ export function mergeFilters<T extends Record<string, any>>(
 ): Partial<T> {
   return filterObjects.reduce(
     (acc, filters) => ({ ...acc, ...filters }),
-    {} as Partial<T>,
+    {} as Partial<T>
   );
 }
 
@@ -147,7 +147,7 @@ export function mergeFilters<T extends Record<string, any>>(
  * Get active filter count
  */
 export function getActiveFilterCount<T extends Record<string, any>>(
-  filters: T,
+  filters: T
 ): number {
   return Object.keys(filters).filter((key) => {
     const value = filters[key];
@@ -161,7 +161,7 @@ export function getActiveFilterCount<T extends Record<string, any>>(
  * Check if any filters are active
  */
 export function hasActiveFilters<T extends Record<string, any>>(
-  filters: T,
+  filters: T
 ): boolean {
   return getActiveFilterCount(filters) > 0;
 }
@@ -171,7 +171,7 @@ export function hasActiveFilters<T extends Record<string, any>>(
  */
 export function filtersToSummary<T extends Record<string, any>>(
   filters: T,
-  labels: Record<keyof T, string>,
+  labels: Record<keyof T, string>
 ): string[] {
   const summary: string[] = [];
 
@@ -206,7 +206,7 @@ export function validateFilters<T extends Record<string, any>>(
       max?: number;
       options?: any[];
     };
-  },
+  }
 ): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
 

@@ -35,7 +35,7 @@ export interface MediaUploadWithCleanupOptions {
 }
 
 export function useMediaUploadWithCleanup(
-  options: MediaUploadWithCleanupOptions = {},
+  options: MediaUploadWithCleanupOptions = {}
 ) {
   const {
     onUploadSuccess,
@@ -67,7 +67,7 @@ export function useMediaUploadWithCleanup(
         | "return"
         | "avatar"
         | "category",
-      contextId?: string,
+      contextId?: string
     ): Promise<string> => {
       setIsUploading(true);
 
@@ -98,7 +98,7 @@ export function useMediaUploadWithCleanup(
         setIsUploading(false);
       }
     },
-    [onUploadSuccess, onUploadError],
+    [onUploadSuccess, onUploadError]
   );
 
   /**
@@ -115,13 +115,13 @@ export function useMediaUploadWithCleanup(
         | "return"
         | "avatar"
         | "category",
-      contextId?: string,
+      contextId?: string
     ): Promise<string[]> => {
       setIsUploading(true);
 
       try {
         const uploadPromises = files.map((file) =>
-          mediaService.upload({ file, context, contextId }),
+          mediaService.upload({ file, context, contextId })
         );
 
         const results = await Promise.all(uploadPromises);
@@ -149,7 +149,7 @@ export function useMediaUploadWithCleanup(
         setIsUploading(false);
       }
     },
-    [onUploadSuccess, onUploadError],
+    [onUploadSuccess, onUploadError]
   );
 
   /**
@@ -173,7 +173,7 @@ export function useMediaUploadWithCleanup(
             url: media.url,
           });
           // Don't throw, continue with other deletions
-        }),
+        })
       );
 
       await Promise.allSettled(deletePromises);
