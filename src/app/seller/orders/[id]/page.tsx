@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { DateDisplay } from "@/components/common/values";
+import { DateDisplay, Price } from "@/components/common/values";
 import { FormInput, FormSelect } from "@/components/forms";
 import { ordersService } from "@/services/orders.service";
 import { notFound } from "@/lib/error-redirects";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import {
   ArrowLeft,
   Package,
@@ -18,7 +19,6 @@ import {
   Mail,
   Phone,
   MapPin,
-  Calendar,
   CreditCard,
   FileText,
 } from "lucide-react";
@@ -28,8 +28,13 @@ export default function SellerOrderDetailPage() {
   const router = useRouter();
   const orderId = params.id as string;
 
-  const [order, setOrder] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: order,
+    isLoading,
+    execute,
+  } = useLoadingState<any>({
+    initialData: null,
+  });
   const [updating, setUpdating] = useState(false);
   const [showShippingForm, setShowShippingForm] = useState(false);
   const [shippingData, setShippingData] = useState({
@@ -38,28 +43,26 @@ export default function SellerOrderDetailPage() {
     estimatedDelivery: "",
   });
 
-  useEffect(() => {
-    loadOrder();
-  }, [orderId]);
-
-  const loadOrder = async () => {
+  const loadOrder = useCallback(async () => {
     try {
-      setLoading(true);
       const data: any = await ordersService.getById(orderId);
-      setOrder(data);
+      return data;
     } catch (error: any) {
       console.error("Failed to load order:", error);
       router.push(notFound.order(orderId, error));
-    } finally {
-      setLoading(false);
+      return null;
     }
-  };
+  }, [orderId, router]);
+
+  useEffect(() => {
+    execute(loadOrder);
+  }, [execute, loadOrder]);
 
   const handleUpdateStatus = async (status: string) => {
     try {
       setUpdating(true);
       await ordersService.updateStatus(orderId, status);
-      await loadOrder();
+      await execute(loadOrder);
     } catch (error: any) {
       console.error("Failed to update status:", error);
     } finally {
@@ -77,7 +80,7 @@ export default function SellerOrderDetailPage() {
         shippingData.shippingProvider,
         shippingData.estimatedDelivery
           ? new Date(shippingData.estimatedDelivery)
-          : undefined,
+          : undefined
       );
       setShowShippingForm(false);
       setShippingData({
@@ -85,7 +88,7 @@ export default function SellerOrderDetailPage() {
         shippingProvider: "",
         estimatedDelivery: "",
       });
-      await loadOrder();
+      await execute(loadOrder);
     } catch (error: any) {
       console.error("Failed to add shipping:", error);
     } finally {
@@ -109,32 +112,25 @@ export default function SellerOrderDetailPage() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-    }).format(amount);
-  };
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case "delivered":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
       case "shipped":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
       case "processing":
-        return "bg-purple-100 text-purple-800";
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
       case "cancelled":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
       default:
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <AuthGuard requireAuth allowedRoles={["seller"]}>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
         </div>
       </AuthGuard>
@@ -144,18 +140,18 @@ export default function SellerOrderDetailPage() {
   if (!order) {
     return (
       <AuthGuard requireAuth allowedRoles={["seller"]}>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Order Not Found
             </h2>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               The order you're looking for doesn't exist or you don't have
               access to it.
             </p>
             <button
               onClick={() => router.push("/seller/orders")}
-              className="text-indigo-600 hover:text-indigo-900"
+              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"
             >
               Back to Orders
             </button>
@@ -167,29 +163,29 @@ export default function SellerOrderDetailPage() {
 
   return (
     <AuthGuard requireAuth allowedRoles={["seller"]}>
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-6">
             <button
               onClick={() => router.push("/seller/orders")}
-              className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+              className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
               Back to Orders
             </button>
             <div className="flex justify-between items-start">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   Order #{order.orderNumber || order.id}
                 </h1>
-                <p className="text-gray-600 mt-1">
+                <p className="text-gray-600 dark:text-gray-400 mt-1">
                   Placed on <DateDisplay date={order.createdAt} includeTime />
                 </p>
               </div>
               <span
                 className={`px-4 py-2 text-sm font-semibold rounded-full ${getStatusColor(
-                  order.status,
+                  order.status
                 )}`}
               >
                 {order.status}
@@ -201,13 +197,15 @@ export default function SellerOrderDetailPage() {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Order Items */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4">Order Items</h2>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Order Items
+                </h2>
                 <div className="space-y-4">
                   {order.items?.map((item: any) => (
                     <div
                       key={item.id}
-                      className="flex items-center gap-4 pb-4 border-b last:border-b-0"
+                      className="flex items-center gap-4 pb-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
                     >
                       {item.productImage && (
                         <div className="relative w-20 h-20">
@@ -220,26 +218,26 @@ export default function SellerOrderDetailPage() {
                         </div>
                       )}
                       <div className="flex-1">
-                        <h3 className="font-medium text-gray-900">
+                        <h3 className="font-medium text-gray-900 dark:text-white">
                           {item.productName}
                         </h3>
                         {item.variant && (
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
                             Variant: {item.variant}
                           </p>
                         )}
                         {item.sku && (
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-gray-500 dark:text-gray-500">
                             SKU: {item.sku}
                           </p>
                         )}
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">
-                          {formatCurrency(item.price)} × {item.quantity}
+                        <p className="font-semibold text-gray-900 dark:text-white">
+                          <Price amount={item.price} /> × {item.quantity}
                         </p>
-                        <p className="text-sm text-gray-600">
-                          Total: {formatCurrency(item.total)}
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          Total: <Price amount={item.total} />
                         </p>
                       </div>
                     </div>
@@ -247,62 +245,80 @@ export default function SellerOrderDetailPage() {
                 </div>
 
                 {/* Order Summary */}
-                <div className="mt-6 pt-6 border-t space-y-2">
-                  <div className="flex justify-between text-gray-600">
+                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-2">
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
                     <span>Subtotal</span>
-                    <span>{formatCurrency(order.subtotal)}</span>
+                    <span>
+                      <Price amount={order.subtotal} />
+                    </span>
                   </div>
                   {order.discount > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-green-600 dark:text-green-400">
                       <span>Discount</span>
-                      <span>-{formatCurrency(order.discount)}</span>
+                      <span>
+                        -<Price amount={order.discount} />
+                      </span>
                     </div>
                   )}
                   {order.couponCode && (
-                    <div className="flex justify-between text-sm text-gray-500">
+                    <div className="flex justify-between text-sm text-gray-500 dark:text-gray-500">
                       <span>Coupon: {order.couponCode}</span>
-                      <span>-{formatCurrency(order.couponDiscount || 0)}</span>
+                      <span>
+                        -<Price amount={order.couponDiscount || 0} />
+                      </span>
                     </div>
                   )}
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
                     <span>Shipping</span>
-                    <span>{formatCurrency(order.shipping)}</span>
+                    <span>
+                      <Price amount={order.shipping} />
+                    </span>
                   </div>
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
                     <span>Tax</span>
-                    <span>{formatCurrency(order.tax)}</span>
+                    <span>
+                      <Price amount={order.tax} />
+                    </span>
                   </div>
-                  <div className="flex justify-between text-xl font-bold text-gray-900 pt-2 border-t">
+                  <div className="flex justify-between text-xl font-bold text-gray-900 dark:text-white pt-2 border-t border-gray-200 dark:border-gray-700">
                     <span>Total</span>
-                    <span>{formatCurrency(order.total)}</span>
+                    <span>
+                      <Price amount={order.total} />
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Shipping Information */}
               {order.trackingNumber && (
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h2 className="text-xl font-semibold mb-4 flex items-center">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <Truck className="w-5 h-5 mr-2" />
                     Shipping Information
                   </h2>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-600">Tracking Number</p>
-                      <p className="font-semibold font-mono">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Tracking Number
+                      </p>
+                      <p className="font-semibold font-mono text-gray-900 dark:text-white">
                         {order.trackingNumber}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Shipping Provider</p>
-                      <p className="font-semibold">{order.shippingProvider}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Shipping Provider
+                      </p>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {order.shippingProvider}
+                      </p>
                     </div>
                     {order.estimatedDelivery && (
                       <div>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           Estimated Delivery
                         </p>
-                        <p className="font-semibold">
+                        <p className="font-semibold text-gray-900 dark:text-white">
                           <DateDisplay
                             date={order.estimatedDelivery}
                             format="medium"
@@ -312,8 +328,10 @@ export default function SellerOrderDetailPage() {
                     )}
                     {order.deliveredAt && (
                       <div>
-                        <p className="text-sm text-gray-600">Delivered On</p>
-                        <p className="font-semibold">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          Delivered On
+                        </p>
+                        <p className="font-semibold text-gray-900 dark:text-white">
                           <DateDisplay
                             date={order.deliveredAt}
                             format="medium"
@@ -327,23 +345,27 @@ export default function SellerOrderDetailPage() {
 
               {/* Customer Notes */}
               {order.customerNotes && (
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h2 className="text-xl font-semibold mb-4 flex items-center">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <FileText className="w-5 h-5 mr-2" />
                     Customer Notes
                   </h2>
-                  <p className="text-gray-700">{order.customerNotes}</p>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    {order.customerNotes}
+                  </p>
                 </div>
               )}
 
               {/* Internal Notes */}
               {order.internalNotes && (
-                <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-6">
-                  <h2 className="text-xl font-semibold mb-4 flex items-center text-yellow-800">
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700 p-6">
+                  <h2 className="text-xl font-semibold mb-4 flex items-center text-yellow-800 dark:text-yellow-200">
                     <FileText className="w-5 h-5 mr-2" />
                     Internal Notes
                   </h2>
-                  <p className="text-yellow-900">{order.internalNotes}</p>
+                  <p className="text-yellow-900 dark:text-yellow-100">
+                    {order.internalNotes}
+                  </p>
                 </div>
               )}
             </div>
@@ -351,18 +373,20 @@ export default function SellerOrderDetailPage() {
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Customer Information */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4">Customer</h2>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Customer
+                </h2>
                 <div className="space-y-3">
-                  <div className="flex items-center text-gray-700">
-                    <Mail className="w-5 h-5 mr-3 text-gray-400" />
+                  <div className="flex items-center text-gray-700 dark:text-gray-300">
+                    <Mail className="w-5 h-5 mr-3 text-gray-400 dark:text-gray-500" />
                     <span className="text-sm break-all">
                       {order.customerEmail || "N/A"}
                     </span>
                   </div>
                   {order.shippingAddress?.phone && (
-                    <div className="flex items-center text-gray-700">
-                      <Phone className="w-5 h-5 mr-3 text-gray-400" />
+                    <div className="flex items-center text-gray-700 dark:text-gray-300">
+                      <Phone className="w-5 h-5 mr-3 text-gray-400 dark:text-gray-500" />
                       <span className="text-sm">
                         {order.shippingAddress.phone}
                       </span>
@@ -372,13 +396,15 @@ export default function SellerOrderDetailPage() {
               </div>
 
               {/* Shipping Address */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4 flex items-center">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                   <MapPin className="w-5 h-5 mr-2" />
                   Shipping Address
                 </h2>
-                <div className="text-gray-700 space-y-1">
-                  <p className="font-medium">{order.shippingAddress.name}</p>
+                <div className="text-gray-700 dark:text-gray-300 space-y-1">
+                  <p className="font-medium text-gray-900 dark:text-white">
+                    {order.shippingAddress.name}
+                  </p>
                   <p className="text-sm">{order.shippingAddress.line1}</p>
                   {order.shippingAddress.line2 && (
                     <p className="text-sm">{order.shippingAddress.line2}</p>
@@ -397,27 +423,31 @@ export default function SellerOrderDetailPage() {
               </div>
 
               {/* Payment Information */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4 flex items-center">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                   <CreditCard className="w-5 h-5 mr-2" />
                   Payment
                 </h2>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Method</span>
-                    <span className="font-medium uppercase">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Method
+                    </span>
+                    <span className="font-medium uppercase text-gray-900 dark:text-white">
                       {order.paymentMethod}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Status</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Status
+                    </span>
                     <span
                       className={`font-medium ${
                         order.paymentStatus === "paid"
-                          ? "text-green-600"
+                          ? "text-green-600 dark:text-green-400"
                           : order.paymentStatus === "failed"
-                            ? "text-red-600"
-                            : "text-yellow-600"
+                          ? "text-red-600 dark:text-red-400"
+                          : "text-yellow-600 dark:text-yellow-400"
                       }`}
                     >
                       {order.paymentStatus}
@@ -425,8 +455,10 @@ export default function SellerOrderDetailPage() {
                   </div>
                   {order.paymentId && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Payment ID</span>
-                      <span className="font-mono text-xs">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Payment ID
+                      </span>
+                      <span className="font-mono text-xs text-gray-900 dark:text-white">
                         {order.paymentId}
                       </span>
                     </div>
@@ -435,8 +467,10 @@ export default function SellerOrderDetailPage() {
               </div>
 
               {/* Actions */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4">Actions</h2>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Actions
+                </h2>
                 <div className="space-y-3">
                   {order.status === "pending" && (
                     <button
@@ -493,8 +527,8 @@ export default function SellerOrderDetailPage() {
 
               {/* Shipping Form */}
               {showShippingForm && (
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h2 className="text-xl font-semibold mb-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                     Add Shipping Information
                   </h2>
                   <form onSubmit={handleAddShipping} className="space-y-4">
@@ -564,7 +598,7 @@ export default function SellerOrderDetailPage() {
                       <button
                         type="button"
                         onClick={() => setShowShippingForm(false)}
-                        className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
                         Cancel
                       </button>
