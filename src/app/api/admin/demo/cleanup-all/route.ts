@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 /**
  * Cleanup All Demo Data
@@ -34,7 +35,7 @@ export async function DELETE() {
     // Find demo products
     for (const prefix of PREFIXES) {
       const productSnapshot = await db
-        .collection("products")
+        .collection(COLLECTIONS.PRODUCTS)
         .where("name", ">=", prefix)
         .where("name", "<", `${prefix}\uf8ff`)
         .get();
@@ -44,7 +45,7 @@ export async function DELETE() {
     // Find demo auctions
     for (const prefix of PREFIXES) {
       const auctionSnapshot = await db
-        .collection("auctions")
+        .collection(COLLECTIONS.AUCTIONS)
         .where("title", ">=", prefix)
         .where("title", "<", `${prefix}\uf8ff`)
         .get();
@@ -54,7 +55,7 @@ export async function DELETE() {
     // Find demo users
     for (const prefix of PREFIXES) {
       const userSnapshot = await db
-        .collection("users")
+        .collection(COLLECTIONS.USERS)
         .where("name", ">=", prefix)
         .where("name", "<", `${prefix}\uf8ff`)
         .get();
@@ -64,7 +65,7 @@ export async function DELETE() {
     // Find demo shops
     for (const prefix of PREFIXES) {
       const shopSnapshot = await db
-        .collection("shops")
+        .collection(COLLECTIONS.SHOPS)
         .where("name", ">=", prefix)
         .where("name", "<", `${prefix}\uf8ff`)
         .get();
@@ -74,7 +75,7 @@ export async function DELETE() {
     // Find demo orders
     for (const prefix of PREFIXES) {
       const orderSnapshot = await db
-        .collection("orders")
+        .collection(COLLECTIONS.ORDERS)
         .where("orderNumber", ">=", prefix)
         .where("orderNumber", "<", `${prefix}\uf8ff`)
         .get();
@@ -286,7 +287,7 @@ export async function DELETE() {
         success: false,
         error: message,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -303,7 +304,7 @@ function checkForDemoData(data: any, prefixes: string[]): boolean {
   }
   if (data && typeof data === "object") {
     return Object.values(data).some((value) =>
-      checkForDemoData(value, prefixes),
+      checkForDemoData(value, prefixes)
     );
   }
   return false;

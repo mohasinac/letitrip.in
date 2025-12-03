@@ -30,7 +30,7 @@ export async function POST() {
     const deleteCollection = async (
       collectionName: string,
       whereField: string,
-      statKey: keyof typeof stats,
+      statKey: keyof typeof stats
     ) => {
       let totalDeleted = 0;
       let hasMore = true;
@@ -78,7 +78,10 @@ export async function POST() {
     await deleteCollection(COLLECTIONS.SUPPORT_TICKETS, "subject", "tickets");
 
     // Bids depend on auctions and users
-    const bidsSnapshot = await db.collection("bids").limit(1000).get();
+    const bidsSnapshot = await db
+      .collection(COLLECTIONS.BIDS)
+      .limit(1000)
+      .get();
 
     if (!bidsSnapshot.empty) {
       const batch = db.batch();
@@ -148,7 +151,7 @@ export async function POST() {
 
     // Notifications
     const notificationsSnapshot = await db
-      .collection("notifications")
+      .collection(COLLECTIONS.NOTIFICATIONS)
       .limit(1000)
       .get();
 
@@ -183,7 +186,7 @@ export async function POST() {
 
     const totalDeleted = Object.values(stats).reduce(
       (sum, count) => sum + count,
-      0,
+      0
     );
     console.log(`Cleanup complete. Total items deleted: ${totalDeleted}`);
 
@@ -197,7 +200,7 @@ export async function POST() {
     console.error("Error cleaning up test data:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to cleanup data" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -13,19 +13,19 @@ The application successfully builds and is ready for release. All critical type 
 
 ### Recent Fixes Applied (December 3, 2025)
 
-| Issue                      | File(s)                                                                   | Resolution                                                                                        |
-| -------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Email service architecture | `src/services/email.service.ts`, `src/app/api/lib/email/email.service.ts` | Separated frontend/backend email services properly                                                |
-| Missing DemoStep settings  | `src/app/admin/demo/page.tsx`                                             | Added `settings` step to all status objects (4 locations)                                         |
-| EmptyState prop type       | `src/app/search/page.tsx`                                                 | Changed `href` to `onClick` with router.push                                                      |
-| ShopFormData incomplete    | `src/components/seller/shop-wizard/types.ts`                              | Added all missing fields used by wizard steps                                                     |
-| FormCheckbox missing label | `src/components/seller/shop-wizard/SettingsStep.tsx`                      | Added label prop to FormCheckbox components                                                       |
-| Removed stale files        | `src/app/page.old.tsx`                                                    | Deleted file with outdated types                                                                  |
-| **Task 2: COLLECTIONS**    | 15+ API routes                                                            | ✅ Migrated hardcoded collection names to COLLECTIONS constant                                    |
-| **Task 2: SUBCOLLECTIONS** | `src/constants/database.ts`                                               | ✅ Added SHOP_FOLLOWING, SHOP_SETTINGS, REVIEW_HELPFUL_VOTES, TICKET_MESSAGES, SESSIONS           |
+| Issue                      | File(s)                                                                   | Resolution                                                                                                                           |
+| -------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Email service architecture | `src/services/email.service.ts`, `src/app/api/lib/email/email.service.ts` | Separated frontend/backend email services properly                                                                                   |
+| Missing DemoStep settings  | `src/app/admin/demo/page.tsx`                                             | Added `settings` step to all status objects (4 locations)                                                                            |
+| EmptyState prop type       | `src/app/search/page.tsx`                                                 | Changed `href` to `onClick` with router.push                                                                                         |
+| ShopFormData incomplete    | `src/components/seller/shop-wizard/types.ts`                              | Added all missing fields used by wizard steps                                                                                        |
+| FormCheckbox missing label | `src/components/seller/shop-wizard/SettingsStep.tsx`                      | Added label prop to FormCheckbox components                                                                                          |
+| Removed stale files        | `src/app/page.old.tsx`                                                    | Deleted file with outdated types                                                                                                     |
+| **Task 2: COLLECTIONS**    | 15+ API routes                                                            | ✅ Migrated hardcoded collection names to COLLECTIONS constant                                                                       |
+| **Task 2: SUBCOLLECTIONS** | `src/constants/database.ts`                                               | ✅ Added SHOP_FOLLOWING, SHOP_SETTINGS, REVIEW_HELPFUL_VOTES, TICKET_MESSAGES, SESSIONS                                              |
 | **Task 11: Dark Mode**     | 10 pages fixed                                                            | ✅ user/won-auctions, watchlist, tickets, messages; seller/messages, support-tickets; admin/users, orders/[id], support-tickets/[id] |
-| **Task 12: Console.log**   | 7 files fixed                                                             | ✅ Removed debug console.log from admin/orders, shops, products, users, hero-slides pages         |
-| **Task 4: DateDisplay**    | 2 files fixed                                                             | ✅ admin/orders/[id] and admin/support-tickets/[id] now use DateDisplay component                 |
+| **Task 12: Console.log**   | 7 files fixed                                                             | ✅ Removed debug console.log from admin/orders, shops, products, users, hero-slides pages                                            |
+| **Task 4: DateDisplay**    | 2 files fixed                                                             | ✅ admin/orders/[id] and admin/support-tickets/[id] now use DateDisplay component                                                    |
 
 ---
 
@@ -33,30 +33,60 @@ The application successfully builds and is ready for release. All critical type 
 
 ### Task 2: COLLECTIONS/SUBCOLLECTIONS Migration (Partial - In Progress)
 
-**Status**: 🟡 IN PROGRESS (70% complete)
+**Status**: 🟢 COMPLETE (95%+)
 
 **Files Fixed**:
 
-- ✅ `src/app/api/tickets/[id]/route.ts` - Using COLLECTIONS.SUPPORT_TICKETS and COLLECTIONS.USERS
+- ✅ `src/app/api/tickets/[id]/route.ts` - Using COLLECTIONS.SUPPORT_TICKETS, SUBCOLLECTIONS.TICKET_MESSAGES
 - ✅ `src/app/api/tickets/route.ts` - Using COLLECTIONS.SUPPORT_TICKETS
-- ✅ `src/app/api/tickets/[id]/reply/route.ts` - Using COLLECTIONS.SUPPORT_TICKETS
-- ✅ `src/app/api/tickets/bulk/route.ts` - Using COLLECTIONS.SUPPORT_TICKETS
+- ✅ `src/app/api/tickets/[id]/reply/route.ts` - Using COLLECTIONS.SUPPORT_TICKETS, SUBCOLLECTIONS.TICKET_MESSAGES
+- ✅ `src/app/api/tickets/bulk/route.ts` - Using COLLECTIONS.SUPPORT_TICKETS, SUBCOLLECTIONS.TICKET_MESSAGES
 - ✅ `src/app/api/auth/register/route.ts` - Using COLLECTIONS.USERS
 - ✅ `src/app/api/auth/google/route.ts` - Using COLLECTIONS.USERS
+- ✅ `src/app/api/auth/login/route.ts` - Using COLLECTIONS.USERS
+- ✅ `src/app/api/auth/me/route.ts` - Using COLLECTIONS.USERS
+- ✅ `src/app/api/auth/reset-password/route.ts` - Using COLLECTIONS.USERS, COLLECTIONS.SESSIONS
 - ✅ `src/app/api/middleware/rbac-auth.ts` - Using COLLECTIONS.USERS
 - ✅ `src/app/api/lib/session.ts` - Using COLLECTIONS.SESSIONS and COLLECTIONS.USERS
 - ✅ `src/app/api/lib/auth.ts` - Using COLLECTIONS.USERS
 - ✅ `src/app/api/lib/bulk-operations.ts` - Using COLLECTIONS.USERS
+- ✅ `src/app/api/lib/firebase/transactions.ts` - Using COLLECTIONS for orders, products, auctions, bids, returns, refunds
 - ✅ `src/app/api/user/addresses/route.ts` - Using COLLECTIONS.ADDRESSES
 - ✅ `src/app/api/user/addresses/[id]/route.ts` - Using COLLECTIONS.ADDRESSES
 - ✅ `src/app/api/reviews/[id]/helpful/route.ts` - Using SUBCOLLECTIONS.REVIEW_HELPFUL_VOTES
 - ✅ `src/app/api/shops/[slug]/follow/route.ts` - Using SUBCOLLECTIONS.SHOP_FOLLOWING
 - ✅ `src/app/api/shops/following/route.ts` - Using SUBCOLLECTIONS.SHOP_FOLLOWING
 - ✅ `src/app/api/seller/settings/route.ts` - Using SUBCOLLECTIONS.SHOP_SETTINGS
+- ✅ `src/app/api/categories/[slug]/products/route.ts` - Using COLLECTIONS.CATEGORIES, COLLECTIONS.PRODUCTS
+- ✅ `src/app/api/test-data/cleanup/route.ts` - Using COLLECTIONS.BIDS, COLLECTIONS.NOTIFICATIONS
+- ✅ `src/app/api/test-data/generate-users/route.ts` - Using COLLECTIONS.USERS
+- ✅ `src/app/api/test-data/generate-categories/route.ts` - Using COLLECTIONS.CATEGORIES
+- ✅ `src/app/api/admin/debug/products-by-category/route.ts` - Using COLLECTIONS.PRODUCTS, COLLECTIONS.CATEGORIES
+- ✅ `src/app/api/admin/demo/stats/route.ts` - Using all COLLECTIONS
+- ✅ `src/app/api/admin/demo/summary/route.ts` - Using all COLLECTIONS
+- ✅ `src/app/api/admin/demo/sessions/route.ts` - Using COLLECTIONS.CATEGORIES
+- ✅ `src/app/api/admin/demo/progress/[sessionId]/route.ts` - Using all COLLECTIONS
+- ✅ `src/app/api/admin/demo/analytics/[sessionId]/route.ts` - Using all COLLECTIONS
+- ✅ `src/app/api/admin/demo/visualization/[sessionId]/route.ts` - Using all COLLECTIONS
+- ✅ `src/app/api/admin/demo/generate/settings/route.ts` - Using all settings COLLECTIONS
+- ✅ `src/app/api/admin/demo/cleanup/[step]/route.ts` - Using COLLECTIONS.CONVERSATIONS, COLLECTIONS.MESSAGES
+- ✅ `src/app/api/admin/demo/cleanup-all/route.ts` - Using COLLECTIONS for all lookups
 
 **Constants Added**:
 
 - ✅ `COLLECTIONS.SESSIONS` - For session management
+- ✅ `COLLECTIONS.SITE_SETTINGS` - For site configuration
+- ✅ `COLLECTIONS.PAYMENT_SETTINGS` - For payment configuration
+- ✅ `COLLECTIONS.SHIPPING_ZONES` - For shipping zones
+- ✅ `COLLECTIONS.SHIPPING_CARRIERS` - For shipping carriers
+- ✅ `COLLECTIONS.EMAIL_TEMPLATES` - For email templates
+- ✅ `COLLECTIONS.EMAIL_SETTINGS` - For email settings
+- ✅ `COLLECTIONS.NOTIFICATION_SETTINGS` - For notification settings
+- ✅ `COLLECTIONS.FEATURE_FLAGS` - For feature flags
+- ✅ `COLLECTIONS.BUSINESS_RULES` - For business rules
+- ✅ `COLLECTIONS.RIPLIMIT_SETTINGS` - For RipLimit settings
+- ✅ `COLLECTIONS.ANALYTICS_SETTINGS` - For analytics settings
+- ✅ `COLLECTIONS.HOMEPAGE_SETTINGS` - For homepage settings
 - ✅ `SUBCOLLECTIONS.SHOP_FOLLOWING` - For user following shops
 - ✅ `SUBCOLLECTIONS.SHOP_SETTINGS` - For seller settings
 - ✅ `SUBCOLLECTIONS.REVIEW_HELPFUL_VOTES` - For helpful vote tracking

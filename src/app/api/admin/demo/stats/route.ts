@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { safeToISOString } from "@/lib/date-utils";
+import { COLLECTIONS } from "@/constants/database";
 
 // Disable caching for live stats
 export const dynamic = "force-dynamic";
@@ -34,63 +35,63 @@ export async function GET() {
       notificationsSnapshot,
     ] = await Promise.all([
       db
-        .collection("categories")
+        .collection(COLLECTIONS.CATEGORIES)
         .where("name", ">=", DEMO_PREFIX)
         .where("name", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
       db
-        .collection("users")
+        .collection(COLLECTIONS.USERS)
         .where("name", ">=", DEMO_PREFIX)
         .where("name", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
       db
-        .collection("shops")
+        .collection(COLLECTIONS.SHOPS)
         .where("name", ">=", DEMO_PREFIX)
         .where("name", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
       db
-        .collection("products")
+        .collection(COLLECTIONS.PRODUCTS)
         .where("name", ">=", DEMO_PREFIX)
         .where("name", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
       db
-        .collection("auctions")
+        .collection(COLLECTIONS.AUCTIONS)
         .where("title", ">=", DEMO_PREFIX)
         .where("title", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
       db
-        .collection("bids")
+        .collection(COLLECTIONS.BIDS)
         .where("bidderName", ">=", DEMO_PREFIX)
         .where("bidderName", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
       db
-        .collection("orders")
+        .collection(COLLECTIONS.ORDERS)
         .where("buyerName", ">=", DEMO_PREFIX)
         .where("buyerName", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
       db
-        .collection("payments")
+        .collection(COLLECTIONS.PAYMENTS)
         .where("transactionId", ">=", DEMO_PREFIX)
         .where("transactionId", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
       db
-        .collection("shipments")
+        .collection(COLLECTIONS.SHIPMENTS)
         .where("trackingNumber", ">=", DEMO_PREFIX)
         .where("trackingNumber", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
       db
-        .collection("reviews")
+        .collection(COLLECTIONS.REVIEWS)
         .where("user_name", ">=", DEMO_PREFIX)
         .where("user_name", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
       db
-        .collection("hero_slides")
+        .collection(COLLECTIONS.HERO_SLIDES)
         .where("title", ">=", DEMO_PREFIX)
         .where("title", "<", DEMO_PREFIX + "\uf8ff")
         .get(),
-      db.collection("favorites").get(), // Favorites don't have DEMO_ prefix, count all for demo users
-      db.collection("carts").get(), // Carts don't have DEMO_ prefix, count all for demo users
-      db.collection("notifications").get(), // Notifications don't have DEMO_ prefix
+      db.collection(COLLECTIONS.FAVORITES).get(), // Favorites don't have DEMO_ prefix, count all for demo users
+      db.collection(COLLECTIONS.CARTS).get(), // Carts don't have DEMO_ prefix, count all for demo users
+      db.collection(COLLECTIONS.NOTIFICATIONS).get(), // Notifications don't have DEMO_ prefix
     ]);
 
     const categories = categoriesSnapshot.size;
@@ -136,12 +137,12 @@ export async function GET() {
       featureFlags,
       homepageSettings,
     ] = await Promise.all([
-      db.collection("site_settings").get(),
-      db.collection("payment_settings").get(),
-      db.collection("shipping_zones").get(),
-      db.collection("email_templates").get(),
-      db.collection("feature_flags").get(),
-      db.collection("homepage_settings").get(),
+      db.collection(COLLECTIONS.SITE_SETTINGS).get(),
+      db.collection(COLLECTIONS.PAYMENT_SETTINGS).get(),
+      db.collection(COLLECTIONS.SHIPPING_ZONES).get(),
+      db.collection(COLLECTIONS.EMAIL_TEMPLATES).get(),
+      db.collection(COLLECTIONS.FEATURE_FLAGS).get(),
+      db.collection(COLLECTIONS.HOMEPAGE_SETTINGS).get(),
     ]);
 
     const settings =
@@ -172,7 +173,7 @@ export async function GET() {
         notifications,
         settings,
         createdAt: latestCreatedAt
-          ? (safeToISOString(latestCreatedAt) ?? new Date().toISOString())
+          ? safeToISOString(latestCreatedAt) ?? new Date().toISOString()
           : new Date().toISOString(),
       },
     });
@@ -184,7 +185,7 @@ export async function GET() {
         summary: null,
         error: error.message,
       },
-      { status: 200 },
+      { status: 200 }
     );
   }
 }

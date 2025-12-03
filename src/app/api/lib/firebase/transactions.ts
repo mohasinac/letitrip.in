@@ -6,12 +6,13 @@
 
 import { getFirestoreAdmin } from "./admin";
 import { FieldValue } from "firebase-admin/firestore";
+import { COLLECTIONS } from "@/constants/database";
 
 /**
  * Run a transaction
  */
 export async function runTransaction<T>(
-  callback: (transaction: FirebaseFirestore.Transaction) => Promise<T>,
+  callback: (transaction: FirebaseFirestore.Transaction) => Promise<T>
 ): Promise<T> {
   const db = getFirestoreAdmin();
   return db.runTransaction(callback);
@@ -72,13 +73,13 @@ export function deleteField() {
  */
 export async function createOrderWithItems(
   orderData: any,
-  orderItems: any[],
+  orderItems: any[]
 ): Promise<string> {
   const db = getFirestoreAdmin();
 
   return db.runTransaction(async (transaction) => {
     // Create order document
-    const orderRef = db.collection("orders").doc();
+    const orderRef = db.collection(COLLECTIONS.ORDERS).doc();
     transaction.set(orderRef, {
       ...orderData,
       created_at: serverTimestamp(),
@@ -87,7 +88,7 @@ export async function createOrderWithItems(
 
     // Create order item documents
     for (const item of orderItems) {
-      const itemRef = db.collection("order_items").doc();
+      const itemRef = db.collection(COLLECTIONS.ORDER_ITEMS).doc();
       transaction.set(itemRef, {
         ...item,
         order_id: orderRef.id,
@@ -105,10 +106,10 @@ export async function createOrderWithItems(
  */
 export async function updateProductStock(
   productId: string,
-  quantityChange: number,
+  quantityChange: number
 ): Promise<void> {
   const db = getFirestoreAdmin();
-  const productRef = db.collection("products").doc(productId);
+  const productRef = db.collection(COLLECTIONS.PRODUCTS).doc(productId);
 
   return db.runTransaction(async (transaction) => {
     const productDoc = await transaction.get(productRef);
@@ -137,10 +138,10 @@ export async function updateProductStock(
 export async function placeBid(
   auctionId: string,
   userId: string,
-  bidAmount: number,
+  bidAmount: number
 ): Promise<string> {
   const db = getFirestoreAdmin();
-  const auctionRef = db.collection("auctions").doc(auctionId);
+  const auctionRef = db.collection(COLLECTIONS.AUCTIONS).doc(auctionId);
 
   return db.runTransaction(async (transaction) => {
     const auctionDoc = await transaction.get(auctionRef);
@@ -160,7 +161,7 @@ export async function placeBid(
 
     // Update all previous winning bids to non-winning
     const previousBidsQuery = db
-      .collection("bids")
+      .collection(COLLECTIONS.BIDS)
       .where("auction_id", "==", auctionId)
       .where("is_winning", "==", true);
 
@@ -170,7 +171,7 @@ export async function placeBid(
     });
 
     // Create new bid
-    const bidRef = db.collection("bids").doc();
+    const bidRef = db.collection(COLLECTIONS.BIDS).doc();
     transaction.set(bidRef, {
       auction_id: auctionId,
       user_id: userId,
@@ -196,10 +197,10 @@ export async function placeBid(
 export async function processRefund(
   returnId: string,
   refundAmount: number,
-  refundData: any,
+  refundData: any
 ): Promise<string> {
   const db = getFirestoreAdmin();
-  const returnRef = db.collection("returns").doc(returnId);
+  const returnRef = db.collection(COLLECTIONS.RETURNS).doc(returnId);
 
   return db.runTransaction(async (transaction) => {
     const returnDoc = await transaction.get(returnRef);
@@ -209,7 +210,7 @@ export async function processRefund(
     }
 
     // Create refund record
-    const refundRef = db.collection("refunds").doc();
+    const refundRef = db.collection(COLLECTIONS.REFUNDS).doc();
     transaction.set(refundRef, {
       ...refundData,
       return_id: returnId,
@@ -236,14 +237,14 @@ export async function processRefund(
  */
 export async function transferCartToOrder(
   userId: string,
-  orderId: string,
+  orderId: string
 ): Promise<void> {
   const db = getFirestoreAdmin();
 
   await db.runTransaction(async (transaction) => {
     // Get all cart items for user
     const cartItemsQuery = db
-      .collection("cart_items")
+      .collection(COLLECTIONS.CART_ITEMS)
       .where("user_id", "==", userId);
 
     const cartItemsSnap = await transaction.get(cartItemsQuery);
@@ -253,7 +254,7 @@ export async function transferCartToOrder(
       const cartItem = cartItemDoc.data();
 
       // Create order item
-      const orderItemRef = db.collection("order_items").doc();
+      const orderItemRef = db.collection(COLLECTIONS.ORDER_ITEMS).doc();
       transaction.set(orderItemRef, {
         order_id: orderId,
         product_id: cartItem.product_id,

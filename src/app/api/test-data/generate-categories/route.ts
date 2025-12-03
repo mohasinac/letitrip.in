@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 const PREFIX = "TEST_";
 
@@ -42,7 +43,9 @@ export async function POST() {
         updated_at: new Date().toISOString(),
       };
 
-      const docRef = await db.collection("categories").add(categoryData);
+      const docRef = await db
+        .collection(COLLECTIONS.CATEGORIES)
+        .add(categoryData);
       categories.push({ id: docRef.id, ...categoryData });
     }
 
@@ -58,7 +61,7 @@ export async function POST() {
         success: false,
         error: error.message || "Failed to generate categories",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

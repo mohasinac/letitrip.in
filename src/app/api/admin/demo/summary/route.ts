@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 export async function GET() {
   try {
@@ -7,7 +8,7 @@ export async function GET() {
 
     // Get all unique demo sessions from categories
     const categoriesSnapshot = await db
-      .collection("categories")
+      .collection(COLLECTIONS.CATEGORIES)
       .where("demoSession", "!=", null)
       .select("demoSession", "createdAt")
       .get();
@@ -26,7 +27,7 @@ export async function GET() {
       if (data.demoSession && !sessionsMap.has(data.demoSession)) {
         sessionsMap.set(
           data.demoSession,
-          data.createdAt?.toDate() || new Date(),
+          data.createdAt?.toDate() || new Date()
         );
       }
     });
@@ -46,47 +47,47 @@ export async function GET() {
           shipmentsCount,
         ] = await Promise.all([
           db
-            .collection("categories")
+            .collection(COLLECTIONS.CATEGORIES)
             .where("demoSession", "==", sessionId)
             .count()
             .get(),
           db
-            .collection("users")
+            .collection(COLLECTIONS.USERS)
             .where("demoSession", "==", sessionId)
             .count()
             .get(),
           db
-            .collection("shops")
+            .collection(COLLECTIONS.SHOPS)
             .where("demoSession", "==", sessionId)
             .count()
             .get(),
           db
-            .collection("products")
+            .collection(COLLECTIONS.PRODUCTS)
             .where("demoSession", "==", sessionId)
             .count()
             .get(),
           db
-            .collection("auctions")
+            .collection(COLLECTIONS.AUCTIONS)
             .where("demoSession", "==", sessionId)
             .count()
             .get(),
           db
-            .collection("bids")
+            .collection(COLLECTIONS.BIDS)
             .where("demoSession", "==", sessionId)
             .count()
             .get(),
           db
-            .collection("orders")
+            .collection(COLLECTIONS.ORDERS)
             .where("demoSession", "==", sessionId)
             .count()
             .get(),
           db
-            .collection("payments")
+            .collection(COLLECTIONS.PAYMENTS)
             .where("demoSession", "==", sessionId)
             .count()
             .get(),
           db
-            .collection("shipments")
+            .collection(COLLECTIONS.SHIPMENTS)
             .where("demoSession", "==", sessionId)
             .count()
             .get(),
@@ -107,13 +108,13 @@ export async function GET() {
           reviews: 0,
           createdAt: sessionsMap.get(sessionId)!.toISOString(),
         };
-      }),
+      })
     );
 
     // Sort by newest first
     summaries.sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     return NextResponse.json({
@@ -128,7 +129,7 @@ export async function GET() {
         total: 0,
         error: error.message,
       },
-      { status: 200 },
+      { status: 200 }
     );
   }
 }

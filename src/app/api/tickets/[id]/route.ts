@@ -6,7 +6,7 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { canReadResource, canWriteResource } from "@/lib/rbac-permissions";
-import { COLLECTIONS } from "@/constants/database";
+import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
 
 /**
  * GET /api/tickets/[id]
@@ -48,7 +48,7 @@ export async function GET(
 
     // Get conversation messages
     const messagesSnapshot = await ticketRef
-      .collection("messages")
+      .collection(SUBCOLLECTIONS.TICKET_MESSAGES)
       .orderBy("createdAt", "asc")
       .get();
 
@@ -211,7 +211,9 @@ export async function DELETE(
     }
 
     // Delete all messages first
-    const messagesSnapshot = await ticketRef.collection("messages").get();
+    const messagesSnapshot = await ticketRef
+      .collection(SUBCOLLECTIONS.TICKET_MESSAGES)
+      .get();
     const batch = db.batch();
     messagesSnapshot.docs.forEach((doc) => {
       batch.delete(doc.ref);

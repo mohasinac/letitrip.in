@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 const DEMO_PREFIX = "DEMO_";
 
@@ -32,7 +33,7 @@ export async function POST() {
 
     // 1. Site Settings (General)
     await db
-      .collection("site_settings")
+      .collection(COLLECTIONS.SITE_SETTINGS)
       .doc("general")
       .set({
         siteName: "LET IT RIP - Letitrip.in",
@@ -81,7 +82,7 @@ export async function POST() {
 
     // 2. SEO Settings
     await db
-      .collection("site_settings")
+      .collection(COLLECTIONS.SITE_SETTINGS)
       .doc("seo")
       .set({
         defaultTitle:
@@ -115,7 +116,7 @@ export async function POST() {
 
     // 3. Maintenance Mode Settings
     await db
-      .collection("site_settings")
+      .collection(COLLECTIONS.SITE_SETTINGS)
       .doc("maintenance")
       .set({
         enabled: false,
@@ -134,7 +135,7 @@ export async function POST() {
 
     // 4. Payment Settings - Razorpay
     await db
-      .collection("payment_settings")
+      .collection(COLLECTIONS.PAYMENT_SETTINGS)
       .doc("razorpay")
       .set({
         enabled: true,
@@ -161,7 +162,7 @@ export async function POST() {
 
     // 5. Payment Settings - Cash on Delivery
     await db
-      .collection("payment_settings")
+      .collection(COLLECTIONS.PAYMENT_SETTINGS)
       .doc("cod")
       .set({
         enabled: true,
@@ -239,7 +240,7 @@ export async function POST() {
 
     for (const zone of shippingZones) {
       await db
-        .collection("shipping_zones")
+        .collection(COLLECTIONS.SHIPPING_ZONES)
         .doc()
         .set({
           ...zone,
@@ -288,7 +289,7 @@ export async function POST() {
 
     for (const carrier of carriers) {
       await db
-        .collection("shipping_carriers")
+        .collection(COLLECTIONS.SHIPPING_CARRIERS)
         .doc(carrier.code)
         .set({
           ...carrier,
@@ -352,7 +353,7 @@ export async function POST() {
 
     for (const template of emailTemplates) {
       await db
-        .collection("email_templates")
+        .collection(COLLECTIONS.EMAIL_TEMPLATES)
         .doc(template.id)
         .set({
           ...template,
@@ -365,7 +366,7 @@ export async function POST() {
 
     // 9. Email Settings (Resend)
     await db
-      .collection("email_settings")
+      .collection(COLLECTIONS.EMAIL_SETTINGS)
       .doc("resend")
       .set({
         provider: "resend",
@@ -381,7 +382,7 @@ export async function POST() {
 
     // 10. Notification Settings - Push
     await db
-      .collection("notification_settings")
+      .collection(COLLECTIONS.NOTIFICATION_SETTINGS)
       .doc("push")
       .set({
         enabled: true,
@@ -400,7 +401,7 @@ export async function POST() {
 
     // 11. Notification Settings - In-App
     await db
-      .collection("notification_settings")
+      .collection(COLLECTIONS.NOTIFICATION_SETTINGS)
       .doc("in_app")
       .set({
         enabled: true,
@@ -420,7 +421,7 @@ export async function POST() {
 
     // 12. Notification Settings - SMS
     await db
-      .collection("notification_settings")
+      .collection(COLLECTIONS.NOTIFICATION_SETTINGS)
       .doc("sms")
       .set({
         enabled: false,
@@ -443,7 +444,7 @@ export async function POST() {
     counts.notificationSettings++;
 
     // 13. Feature Flags
-    await db.collection("feature_flags").doc("current").set({
+    await db.collection(COLLECTIONS.FEATURE_FLAGS).doc("current").set({
       auctions: true,
       reviews: true,
       cod: true,
@@ -471,7 +472,7 @@ export async function POST() {
     counts.featureFlags++;
 
     // 14. Business Rules
-    await db.collection("business_rules").doc("current").set({
+    await db.collection(COLLECTIONS.BUSINESS_RULES).doc("current").set({
       minProductPrice: 100,
       maxProductPrice: 10000000,
       minAuctionPrice: 500,
@@ -498,7 +499,7 @@ export async function POST() {
     });
 
     // 15. RipLimit Settings (E028)
-    await db.collection("riplimit_settings").doc("current").set({
+    await db.collection(COLLECTIONS.RIPLIMIT_SETTINGS).doc("current").set({
       enabled: true,
       conversionRate: 100, // 1 INR = 100 RipLimit
       minPurchase: 100, // 100 RipLimit = ₹1
@@ -514,7 +515,7 @@ export async function POST() {
     });
 
     // 16. Analytics Settings (E017)
-    await db.collection("analytics_settings").doc("current").set({
+    await db.collection(COLLECTIONS.ANALYTICS_SETTINGS).doc("current").set({
       enabled: true,
       dataRetentionDays: 90,
       trackPageViews: true,
@@ -530,7 +531,7 @@ export async function POST() {
 
     // 17. Homepage Featured Sections Settings (E014)
     await db
-      .collection("homepage_settings")
+      .collection(COLLECTIONS.HOMEPAGE_SETTINGS)
       .doc("current")
       .set({
         heroCarousel: {
@@ -627,7 +628,7 @@ export async function POST() {
       error instanceof Error ? error.message : "Failed to generate settings";
     return NextResponse.json(
       { success: false, error: message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
