@@ -830,27 +830,31 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### User Pages Dark Mode
 
-##### ⬜ 89-fix-user-following-dark-mode
+##### ✅ 89-fix-user-following-dark-mode
 
 - **File**: `src/app/user/following/page.tsx`
 - **Add**: `dark:bg-gray-800 dark:text-white dark:border-gray-700` classes
+- **Status**: Already has full dark mode support
 
-##### ⬜ 90-fix-user-riplimit-dark-mode
+##### ✅ 90-fix-user-riplimit-dark-mode
 
 - **File**: `src/app/user/riplimit/page.tsx`
 - **Add**: Dark mode classes to all sections
+- **Status**: Already has full dark mode support (20+ dark: classes)
 
-##### ⬜ 91-fix-user-bids-dark-mode
+##### ✅ 91-fix-user-bids-dark-mode
 
 - **File**: `src/app/user/bids/page.tsx`
 - **Add**: Dark mode classes
+- **Status**: Already has full dark mode support (20+ dark: classes)
 
-##### ⬜ 92-fix-user-history-dark-mode
+##### ✅ 92-fix-user-history-dark-mode
 
 - **File**: `src/app/user/history/page.tsx`
 - **Add**: Dark mode classes
+- **Status**: Already has full dark mode support (20+ dark: classes)
 
-##### ⬜ 93-fix-user-messages-dark-mode
+##### ✅ 93-fix-user-messages-dark-mode
 
 - **File**: `src/app/user/messages/page.tsx`
 - **Add**: Dark mode classes
