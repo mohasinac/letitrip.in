@@ -1237,9 +1237,9 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 ##### 🔄 161-replace-console-statements-with-logger
 
-- **Files**: 40+ files with console.log/error
+- **Files**: 60+ files with console.log/error
 - **Changes**: Use firebase-error-logger
-- **Status**: IN PROGRESS - Completed 40 files:
+- **Status**: IN PROGRESS - Completed 49 files:
   - checkout page (6/6)
   - shops.service (1/1)
   - useSlugValidation (1/1)
@@ -1262,7 +1262,12 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - **NEW SESSION**: Product components (7 files: SellerProducts, SimilarProducts, ReviewList, ReviewForm, ProductVariants, ProductReviews, ProductInfo)
   - **NEW SESSION**: Homepage sections (9 files: RecentReviewsSection, ProductsSection, LatestProductsSection, HotAuctionsSection, FeaturedShopsSection, FeaturedProductsSection, FeaturedCategoriesSection, FeaturedBlogsSection, FeaturedAuctionsSection, AuctionsSection)
   - **NEW SESSION**: Layout components (2 files: FeaturedBlogsSection, FeaturedCategories)
-- **Remaining**: Media components, checkout components, common components, filters, analytics, category-hierarchy, error-logger test files
+  - **BATCH 3**: Media components (6 files: VideoThumbnailGenerator, VideoRecorder, ImageEditor, CameraCapture)
+  - **BATCH 3**: Checkout (1 file: AddressSelector)
+  - **BATCH 3**: Common (2 files: BulkActionBar, ConfirmDialog)
+  - **BATCH 3**: Filters (1 file: ProductFilters)
+  - **BATCH 3**: Wizards (1 file: BusinessAddressStep)
+- **Remaining**: Analytics, category-hierarchy, error-logger test files, services layer, and non-critical utilities
 
 ##### ⬜ 162-fix-unsafe-type-casts
 
