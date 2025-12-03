@@ -26,6 +26,7 @@ export interface ProductFormData {
   videos: string[];
 
   // Shipping & Policies
+  pickupAddressId?: string;
   shippingClass: "standard" | "express" | "free" | "fragile";
   returnPolicy: string;
   warrantyInfo: string;
