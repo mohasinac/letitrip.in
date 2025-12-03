@@ -35,7 +35,7 @@ interface UseSafeLoadOptions {
 
 export function useSafeLoad(
   loadFn: () => Promise<void> | void,
-  options: UseSafeLoadOptions = {},
+  options: UseSafeLoadOptions = {}
 ) {
   const {
     enabled = true,
@@ -140,7 +140,7 @@ interface UseAdminLoadOptions {
 
 export function useAdminLoad(
   loadFn: () => Promise<void> | void,
-  options: UseAdminLoadOptions,
+  options: UseAdminLoadOptions
 ) {
   const { user, requiredRole = "admin", deps = [], debounce = 0 } = options;
 

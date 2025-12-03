@@ -6,6 +6,7 @@
 
 import { logEvent, isSupported } from "firebase/analytics";
 import { analytics as firebaseAnalytics } from "@/app/api/lib/firebase/app";
+import { logError } from "@/lib/firebase-error-logger";
 
 // Initialize analytics (client-side only)
 let analytics: any = null;
@@ -30,7 +31,7 @@ export function trackEvent(
   try {
     logEvent(analytics, eventName, params);
   } catch (error) {
-    console.error("Analytics error:", error);
+    logError(error, { component: "analytics.trackEvent", eventName, params });
   }
 }
 

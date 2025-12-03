@@ -518,7 +518,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   // After
   z.string().min(
     VALIDATION_RULES.NAME.MIN_LENGTH,
-    VALIDATION_MESSAGES.NAME.TOO_SHORT
+    VALIDATION_MESSAGES.NAME.TOO_SHORT,
   );
   ```
 
@@ -635,7 +635,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 25.5: Remove GPS Requirement (2-3 hours) ⚡ UI Priority
 
-##### ⬜ 61-update-smart-address-form-props
+##### ✅ 61-update-smart-address-form-props
 
 - **File**: `src/components/common/SmartAddressForm.tsx`
 - **Changes**:
@@ -643,11 +643,13 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - Remove requireGPS prop
   - Remove GPS validation errors
   - Keep GPS as optional feature in modal
+- **Status**: COMPLETE - showGPS is already optional with default value true, no requireGPS prop exists, latitude/longitude are optional in schema
 
-##### ⬜ 62-update-address-forms-remove-gps
+##### ✅ 62-update-address-forms-remove-gps
 
 - **Files**: `src/components/checkout/AddressForm.tsx`, wizard steps
 - **Changes**: Remove GPS from required validation
+- **Status**: COMPLETE - No GPS required validation exists in any address forms
 
 ---
 
@@ -1238,23 +1240,23 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Files**: 20+ files with console.log/error
 - **Changes**: Use firebase-error-logger
 - **Status**: IN PROGRESS - Completed 20 files:
-  * checkout page (6/6)
-  * shops.service (1/1)
-  * useSlugValidation (1/1)
-  * useCart (7/7)
-  * categories.service (2/2)
-  * user messages (1/1)
-  * AuthContext (3/3)
-  * support ticket (1/1)
-  * user reviews (1/1)
-  * riplimit.service (1/1)
-  * location.service (1/1)
-  * filter-helpers (2/3)
-  * useNavigationGuard (2/2)
-  * date-utils (2/2)
-  * useMediaUploadWithCleanup (1/2)
-  * useFilters (1/2)
-  * useSafeLoad (2 removed debug logs, 1 replaced)
+  - checkout page (6/6)
+  - shops.service (1/1)
+  - useSlugValidation (1/1)
+  - useCart (7/7)
+  - categories.service (2/2)
+  - user messages (1/1)
+  - AuthContext (3/3)
+  - support ticket (1/1)
+  - user reviews (1/1)
+  - riplimit.service (1/1)
+  - location.service (1/1)
+  - filter-helpers (2/3)
+  - useNavigationGuard (2/2)
+  - date-utils (2/2)
+  - useMediaUploadWithCleanup (1/2)
+  - useFilters (1/2)
+  - useSafeLoad (2 removed debug logs, 1 replaced)
 - **Remaining**: Analytics, category-hierarchy, payment logos, error-logger test files, and non-critical utilities
 
 ##### ⬜ 162-fix-unsafe-type-casts
