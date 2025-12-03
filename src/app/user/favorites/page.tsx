@@ -97,12 +97,12 @@ export default function FavoritesPage() {
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <Heart className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-        <h2 className="text-2xl font-bold mb-2">
+        <Heart className="h-16 w-16 mx-auto mb-4 text-gray-400 dark:text-gray-500" />
+        <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
           {/* TODO: Replace with constant */}
           Sign in to view favorites
         </h2>
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
           {/* TODO: Replace with constant */}
           Save your favorite items and access them anytime
         </p>
@@ -121,18 +121,18 @@ export default function FavoritesPage() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
+        <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
           {/* TODO: Replace with constant */}
           My Favorites
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           {/* TODO: Replace with constant */}
           All your favorite items in one place
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-8">
+      <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
         <nav className="flex space-x-8">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -147,7 +147,7 @@ export default function FavoritesPage() {
                   ${
                     isActive
                       ? "border-primary text-primary font-medium"
-                      : "border-transparent text-gray-600 hover:text-gray-900"
+                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                   }
                 `}
               >
@@ -165,15 +165,17 @@ export default function FavoritesPage() {
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : error ? (
-        <div className="text-center py-16 text-red-600">{error}</div>
+        <div className="text-center py-16 text-red-600 dark:text-red-400">
+          {error}
+        </div>
       ) : items.length === 0 ? (
         <div className="text-center py-16">
-          <Heart className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-          <h3 className="text-xl font-semibold mb-2">
+          <Heart className="h-16 w-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+          <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
             {/* TODO: Replace with constant */}
             No favorites yet
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
             {/* TODO: Replace with constant */}
             Start adding your favorite {activeTab}s to see them here
           </p>
@@ -190,7 +192,7 @@ export default function FavoritesPage() {
           {items.map((item) => (
             <div
               key={item.id}
-              className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+              className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow bg-white dark:bg-gray-800"
             >
               <Link href={getItemLink(item)} className="block">
                 <div className="relative aspect-square">
@@ -205,7 +207,7 @@ export default function FavoritesPage() {
 
               <div className="p-4">
                 <Link href={getItemLink(item)}>
-                  <h3 className="font-semibold mb-2 hover:text-primary line-clamp-2">
+                  <h3 className="font-semibold mb-2 hover:text-primary line-clamp-2 text-gray-900 dark:text-white">
                     {getItemName(item)}
                   </h3>
                 </Link>
@@ -218,9 +220,9 @@ export default function FavoritesPage() {
 
                 <button
                   onClick={() => handleRemove(item.id)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-red-500 dark:border-red-400 text-red-500 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                 >
-                  <Heart className="h-4 w-4 fill-red-500" />
+                  <Heart className="h-4 w-4 fill-red-500 dark:fill-red-400" />
                   {/* TODO: Replace with constant */}
                   Remove
                 </button>

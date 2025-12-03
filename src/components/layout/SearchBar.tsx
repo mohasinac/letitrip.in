@@ -104,20 +104,24 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
       e.preventDefault();
       setShowSuggestions(false);
 
+      // Don't search if query is empty
+      const trimmedQuery = searchQuery.trim();
+      if (!trimmedQuery) {
+        // Focus the input and show error state
+        searchInputRef.current?.focus();
+        return;
+      }
+
       // Build search URL with query params
       const params = new URLSearchParams();
-      if (searchQuery.trim()) {
-        params.set("q", searchQuery.trim());
-      }
+      params.set("q", trimmedQuery);
       if (contentType !== "all") {
         params.set("type", contentType);
       }
 
       // Navigate to search results
       const searchUrl = `/search?${params.toString()}`;
-      if (globalThis.location) {
-        globalThis.location.href = searchUrl;
-      }
+      router.push(searchUrl);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -188,9 +192,9 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         <div className="container mx-auto max-w-full lg:max-w-6xl">
           <form onSubmit={handleSearch} className="flex gap-0">
             {/* Merged Content Type Selector and Search Input */}
-            <div className="flex-1 flex h-[50px] bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-yellow-500">
+            <div className="flex-1 flex h-[50px] bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus-within:ring-2 focus-within:ring-yellow-500">
               {/* Content Type Selector (replaces Category Selector) */}
-              <div className="flex-shrink-0 min-w-[70px] lg:min-w-[160px] border-r border-gray-300 dark:border-gray-600">
+              <div className="flex-shrink-0 min-w-[70px] lg:min-w-[160px] border-r border-gray-300 dark:border-gray-600 relative">
                 <ContentTypeFilter
                   value={contentType}
                   onChange={handleContentTypeChange}
