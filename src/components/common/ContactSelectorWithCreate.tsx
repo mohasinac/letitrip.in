@@ -11,9 +11,10 @@ import { MobileInput } from "@/components/common/MobileInput";
 import {
   VALIDATION_RULES,
   VALIDATION_MESSAGES,
-  isValidIndianPhone,
+  isValidPhone,
 } from "@/constants/validation-messages";
 import { logError } from "@/lib/firebase-error-logger";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 export interface Contact {
   id: string;
@@ -33,7 +34,7 @@ const ContactSchema = z.object({
   phone: z
     .string()
     .length(10, "Phone must be 10 digits")
-    .refine((val) => isValidIndianPhone(val), "Invalid phone number"),
+    .refine((val) => isValidPhone(`+91${val}`), "Invalid phone number"),
   countryCode: z.string(),
   email: z.string().email("Invalid email").optional().or(z.literal("")),
   relationship: z.string().optional(),
@@ -61,9 +62,20 @@ export function ContactSelectorWithCreate({
   autoSelectPrimary = true,
   className = "",
 }: ContactSelectorWithCreateProps) {
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    isLoading: loading,
+    data: contacts,
+    setData: setContacts,
+    execute,
+  } = useLoadingState<Contact[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, { component: "ContactSelectorWithCreate.loadContacts" });
+      toast.error("Failed to load contacts");
+    },
+  });
   const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(value || null);
 
   const {
@@ -86,8 +98,8 @@ export function ContactSelectorWithCreate({
   }, []);
 
   useEffect(() => {
-    if (autoSelectPrimary && contacts.length > 0 && !selectedId) {
-      const primary = contacts.find((c) => c.isPrimary);
+    if (autoSelectPrimary && (contacts || []).length > 0 && !selectedId) {
+      const primary = (contacts || []).find((c) => c.isPrimary);
       if (primary) {
         setSelectedId(primary.id);
         onChange(primary.id, primary);
@@ -95,20 +107,11 @@ export function ContactSelectorWithCreate({
     }
   }, [contacts, autoSelectPrimary, selectedId, onChange]);
 
-  const loadContacts = async () => {
-    try {
-      setLoading(true);
+  const loadContacts = () =>
+    execute(async () => {
       // TODO: Implement actual API
-      setContacts([]);
-    } catch (error) {
-      logError(error as Error, {
-        context: "ContactSelectorWithCreate.loadContacts",
-      });
-      toast.error("Failed to load contacts");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return [];
+    });
 
   const handleContactSelect = (contact: Contact) => {
     setSelectedId(contact.id);
@@ -117,7 +120,7 @@ export function ContactSelectorWithCreate({
 
   const onSubmit = async (data: ContactFormData) => {
     try {
-      setLoading(true);
+      setSubmitting(true);
       const newContact: Contact = {
         id: `contact_${Date.now()}`,
         name: data.name,
@@ -129,22 +132,22 @@ export function ContactSelectorWithCreate({
         createdAt: new Date(),
       };
 
-      setContacts((prev) => [...prev, newContact]);
+      setContacts([...(contacts || []), newContact]);
       setSelectedId(newContact.id);
       onChange(newContact.id, newContact);
       setShowForm(false);
       toast.success("Contact added successfully");
     } catch (error) {
       logError(error as Error, {
-        context: "ContactSelectorWithCreate.addContact",
+        component: "ContactSelectorWithCreate.addContact",
       });
       toast.error("Failed to add contact");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
-  if (loading && contacts.length === 0) {
+  if (loading && (contacts || []).length === 0) {
     return (
       <div className={`space-y-2 ${className}`}>
         {label && (
@@ -170,7 +173,7 @@ export function ContactSelectorWithCreate({
       )}
 
       <div className="space-y-3">
-        {contacts.length === 0 ? (
+        {(contacts || []).length === 0 ? (
           <div className="text-center p-6 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
             <Phone className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
@@ -187,7 +190,7 @@ export function ContactSelectorWithCreate({
           </div>
         ) : (
           <>
-            {contacts.map((contact) => (
+            {(contacts || []).map((contact) => (
               <button
                 key={contact.id}
                 type="button"
@@ -327,16 +330,16 @@ export function ContactSelectorWithCreate({
                   type="button"
                   onClick={() => setShowForm(false)}
                   className="btn-secondary flex-1"
-                  disabled={loading}
+                  disabled={submitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="btn-primary flex-1"
-                  disabled={loading}
+                  disabled={submitting}
                 >
-                  {loading ? (
+                  {submitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       Adding...

@@ -12,6 +12,7 @@ import {
 import { toast } from "sonner";
 import { Price } from "@/components/common/values";
 import { logError } from "@/lib/firebase-error-logger";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 // Shipping Method Interface
 export interface ShippingMethod {
@@ -47,18 +48,28 @@ export function ShippingMethodSelector({
   label = "Select Shipping Method",
   className = "",
 }: ShippingMethodSelectorProps) {
-  const [methods, setMethods] = useState<ShippingMethod[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    data: methods,
+    setData: setMethods,
+    execute,
+  } = useLoadingState<ShippingMethod[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, {
+        component: "ShippingMethodSelector.loadShippingMethods",
+      });
+      toast.error("Failed to load shipping methods");
+    },
+  });
   const [selectedId, setSelectedId] = useState<string | null>(value || null);
 
   useEffect(() => {
     loadShippingMethods();
   }, [deliveryPincode, cartTotal]);
 
-  const loadShippingMethods = async () => {
-    try {
-      setLoading(true);
-
+  const loadShippingMethods = () =>
+    execute(async () => {
       // TODO: Implement actual API call
       // const data = await shippingService.getAvailableMethods({
       //   pincode: deliveryPincode,
@@ -123,11 +134,11 @@ export function ShippingMethodSelector({
         },
       ];
 
-      setMethods(mockMethods);
-
+      return mockMethods;
+    }).then((loadedMethods) => {
       // Auto-select cheapest available method if none selected
-      if (!selectedId) {
-        const available = mockMethods.filter((m) => m.available);
+      if (!selectedId && loadedMethods) {
+        const available = loadedMethods.filter((m) => m.available);
         if (available.length > 0) {
           const cheapest = available.reduce((prev, current) =>
             current.cost < prev.cost ? current : prev
@@ -136,15 +147,7 @@ export function ShippingMethodSelector({
           onChange(cheapest.id, cheapest);
         }
       }
-    } catch (error) {
-      logError(error as Error, {
-        context: "ShippingMethodSelector.loadShippingMethods",
-      });
-      toast.error("Failed to load shipping methods");
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
 
   const handleMethodSelect = (method: ShippingMethod) => {
     if (!method.available) {
@@ -228,7 +231,7 @@ export function ShippingMethodSelector({
 
       {/* Shipping Method Cards */}
       <div className="space-y-3">
-        {methods.map((method) => {
+        {(methods || []).map((method) => {
           const isSelected = selectedId === method.id;
           const cutoffWarning = getCutoffWarning(method.cutoffTime);
 

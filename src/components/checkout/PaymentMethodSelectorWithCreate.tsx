@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FormField, FormInput, FormSelect } from "@/components/forms";
 import { logError } from "@/lib/firebase-error-logger";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import {
   VALIDATION_RULES,
   VALIDATION_MESSAGES,
@@ -68,9 +69,22 @@ export function PaymentMethodSelectorWithCreate({
   autoSelectDefault = true,
   className = "",
 }: PaymentMethodSelectorWithCreateProps) {
-  const [methods, setMethods] = useState<PaymentMethod[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    isLoading: loading,
+    data: methods,
+    setData: setMethods,
+    execute,
+  } = useLoadingState<PaymentMethod[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, {
+        component: "PaymentMethodSelectorWithCreate.loadPaymentMethods",
+      });
+      toast.error("Failed to load payment methods");
+    },
+  });
   const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(value || null);
 
   const {
@@ -93,8 +107,8 @@ export function PaymentMethodSelectorWithCreate({
   }, []);
 
   useEffect(() => {
-    if (autoSelectDefault && methods.length > 0 && !selectedId) {
-      const defaultMethod = methods.find((m) => m.isDefault);
+    if (autoSelectDefault && (methods || []).length > 0 && !selectedId) {
+      const defaultMethod = (methods || []).find((m) => m.isDefault);
       if (defaultMethod) {
         setSelectedId(defaultMethod.id);
         onChange(defaultMethod.id, defaultMethod);
@@ -102,20 +116,11 @@ export function PaymentMethodSelectorWithCreate({
     }
   }, [methods, autoSelectDefault, selectedId, onChange]);
 
-  const loadPaymentMethods = async () => {
-    try {
-      setLoading(true);
+  const loadPaymentMethods = () =>
+    execute(async () => {
       // TODO: Implement actual API
-      setMethods([]);
-    } catch (error) {
-      logError(error as Error, {
-        context: "PaymentMethodSelectorWithCreate.loadPaymentMethods",
-      });
-      toast.error("Failed to load payment methods");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return [];
+    });
 
   const handleMethodSelect = (method: PaymentMethod) => {
     setSelectedId(method.id);
@@ -124,7 +129,7 @@ export function PaymentMethodSelectorWithCreate({
 
   const onSubmit = async (data: PaymentMethodFormData) => {
     try {
-      setLoading(true);
+      setSubmitting(true);
       // TODO: Implement actual API
       const newMethod: PaymentMethod = {
         id: `pm_${Date.now()}`,
@@ -140,18 +145,18 @@ export function PaymentMethodSelectorWithCreate({
         createdAt: new Date(),
       };
 
-      setMethods((prev) => [...prev, newMethod]);
+      setMethods([...(methods || []), newMethod]);
       setSelectedId(newMethod.id);
       onChange(newMethod.id, newMethod);
       setShowForm(false);
       toast.success("Payment method added successfully");
     } catch (error) {
       logError(error as Error, {
-        context: "PaymentMethodSelectorWithCreate.addPaymentMethod",
+        component: "PaymentMethodSelectorWithCreate.addPaymentMethod",
       });
       toast.error("Failed to add payment method");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -159,7 +164,7 @@ export function PaymentMethodSelectorWithCreate({
     return <CreditCard className="w-5 h-5" />;
   };
 
-  if (loading && methods.length === 0) {
+  if (loading && (methods || []).length === 0) {
     return (
       <div className={`space-y-2 ${className}`}>
         {label && (
@@ -185,7 +190,7 @@ export function PaymentMethodSelectorWithCreate({
       )}
 
       <div className="space-y-3">
-        {methods.length === 0 ? (
+        {(methods || []).length === 0 ? (
           <div className="text-center p-6 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
             <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
@@ -202,7 +207,7 @@ export function PaymentMethodSelectorWithCreate({
           </div>
         ) : (
           <>
-            {methods.map((method) => (
+            {(methods || []).map((method) => (
               <button
                 key={method.id}
                 type="button"
@@ -286,13 +291,13 @@ export function PaymentMethodSelectorWithCreate({
 
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
               <FormField label="Payment Type" required>
-                <FormSelect {...register("type")}>
+                <select {...register("type")} className="input w-full">
                   <option value="card">Credit/Debit Card</option>
                   <option value="upi">UPI</option>
                   <option value="netbanking">Net Banking</option>
                   <option value="wallet">Wallet</option>
                   <option value="cod">Cash on Delivery</option>
-                </FormSelect>
+                </select>
               </FormField>
 
               {paymentType === "card" && (
@@ -348,16 +353,16 @@ export function PaymentMethodSelectorWithCreate({
                   type="button"
                   onClick={() => setShowForm(false)}
                   className="btn-secondary flex-1"
-                  disabled={loading}
+                  disabled={submitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="btn-primary flex-1"
-                  disabled={loading}
+                  disabled={submitting}
                 >
-                  {loading ? (
+                  {submitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       Adding...

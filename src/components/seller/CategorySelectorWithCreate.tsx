@@ -13,6 +13,8 @@ import {
   VALIDATION_RULES,
   VALIDATION_MESSAGES,
 } from "@/constants/validation-messages";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface CategorySelectorWithCreateProps {
   value: string | null;
@@ -35,12 +37,25 @@ export default function CategorySelectorWithCreate({
   required = false,
   onCategoryCreated,
 }: CategorySelectorWithCreateProps) {
-  const [categories, setCategories] = useState<CategoryType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    data: categories,
+    setData: setCategories,
+    execute,
+  } = useLoadingState<CategoryType[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, {
+        context: "CategorySelectorWithCreate.loadCategories",
+      });
+    },
+  });
+
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [creating, setCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [refreshKey, setRefreshKey] = useState(0); // Force refresh trigger
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Create category form state
   const [createForm, setCreateForm] = useState({
@@ -52,18 +67,15 @@ export default function CategorySelectorWithCreate({
 
   useEffect(() => {
     loadCategories();
-  }, [refreshKey]); // Re-fetch when refreshKey changes
+  }, [refreshKey]);
 
-  const loadCategories = async () => {
-    try {
-      setLoading(true);
-      // Add timestamp to bypass cache
+  const loadCategories = () =>
+    execute(async () => {
       const response = await categoriesService.list({
         isActive: true,
-        _t: Date.now(), // Cache buster
+        _t: Date.now(),
       });
-      // CategoryFE already has the right format, just map to CategorySelector's expected format
-      const transformed = response.data.map((cat: any) => ({
+      return response.data.map((cat: any) => ({
         id: cat.id,
         name: cat.name,
         slug: cat.slug,
@@ -76,15 +88,7 @@ export default function CategorySelectorWithCreate({
         is_active: cat.isActive !== false,
         product_count: cat.productCount || 0,
       }));
-      setCategories(transformed);
-    } catch (error) {
-      logError(error as Error, {
-        context: "CategorySelectorWithCreate.loadCategories",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
 
   const validateCreateForm = () => {
     const errors: Record<string, string> = {};

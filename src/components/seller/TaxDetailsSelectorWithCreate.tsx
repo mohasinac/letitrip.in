@@ -17,10 +17,11 @@ import { FormField, FormInput } from "@/components/forms";
 import {
   VALIDATION_RULES,
   VALIDATION_MESSAGES,
-  isValidGSTIN,
+  isValidGST,
   isValidPAN,
 } from "@/constants/validation-messages";
 import { logError } from "@/lib/firebase-error-logger";
+import { useLoadingState } from "@/hooks/useLoadingState";
 
 // Tax Details Interface
 export interface TaxDetails {
@@ -45,8 +46,8 @@ const TaxDetailsSchema = z.object({
     .max(VALIDATION_RULES.NAME.MAX_LENGTH, VALIDATION_MESSAGES.NAME.TOO_LONG),
   gstin: z
     .string()
-    .length(VALIDATION_RULES.GSTIN.LENGTH, "GSTIN must be 15 characters")
-    .refine((val) => isValidGSTIN(val), VALIDATION_MESSAGES.TAX.GSTIN_INVALID),
+    .length(15, "GSTIN must be 15 characters")
+    .refine((val) => isValidGST(val), VALIDATION_MESSAGES.TAX.GST_INVALID),
   pan: z
     .string()
     .length(VALIDATION_RULES.PAN.LENGTH, "PAN must be 10 characters")
@@ -55,8 +56,9 @@ const TaxDetailsSchema = z.object({
     .string()
     .optional()
     .refine(
-      (val) => !val || VALIDATION_RULES.CIN.PATTERN.test(val),
-      VALIDATION_MESSAGES.TAX.CIN_INVALID
+      (val) =>
+        !val || /^[A-Z]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/.test(val),
+      "Invalid CIN format"
     ),
   registeredAddress: z
     .string()
@@ -86,9 +88,22 @@ export function TaxDetailsSelectorWithCreate({
   autoSelectDefault = true,
   className = "",
 }: TaxDetailsSelectorWithCreateProps) {
-  const [taxDetailsList, setTaxDetailsList] = useState<TaxDetails[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    isLoading: loading,
+    data: taxDetailsList,
+    setData: setTaxDetailsList,
+    execute,
+  } = useLoadingState<TaxDetails[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, {
+        component: "TaxDetailsSelectorWithCreate.loadTaxDetails",
+      });
+      toast.error("Failed to load tax details");
+    },
+  });
   const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(value || null);
   const [gstinLoading, setGstinLoading] = useState(false);
 
@@ -114,8 +129,10 @@ export function TaxDetailsSelectorWithCreate({
 
   // Auto-select default tax details
   useEffect(() => {
-    if (autoSelectDefault && taxDetailsList.length > 0 && !selectedId) {
-      const defaultTaxDetails = taxDetailsList.find((tax) => tax.isDefault);
+    if (autoSelectDefault && (taxDetailsList || []).length > 0 && !selectedId) {
+      const defaultTaxDetails = (taxDetailsList || []).find(
+        (tax) => tax.isDefault
+      );
       if (defaultTaxDetails) {
         setSelectedId(defaultTaxDetails.id);
         onChange(defaultTaxDetails.id, defaultTaxDetails);
@@ -125,29 +142,20 @@ export function TaxDetailsSelectorWithCreate({
 
   // GSTIN lookup - extract PAN and state code
   useEffect(() => {
-    if (gstin && isValidGSTIN(gstin)) {
+    if (gstin && isValidGST(gstin)) {
       extractFromGSTIN(gstin);
     }
   }, [gstin]);
 
-  const loadTaxDetails = async () => {
-    try {
-      setLoading(true);
+  const loadTaxDetails = () =>
+    execute(async () => {
       // TODO: Implement actual API call
       // const data = await taxDetailsService.getAll();
-      // setTaxDetailsList(data);
+      // return data;
 
       // Mock data for now
-      setTaxDetailsList([]);
-    } catch (error) {
-      logError(error as Error, {
-        context: "TaxDetailsSelectorWithCreate.loadTaxDetails",
-      });
-      toast.error("Failed to load tax details");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return [];
+    });
 
   const extractFromGSTIN = async (gstinValue: string) => {
     try {
@@ -169,7 +177,7 @@ export function TaxDetailsSelectorWithCreate({
       toast.success("PAN and state code auto-filled from GSTIN");
     } catch (error) {
       logError(error as Error, {
-        context: "TaxDetailsSelectorWithCreate.extractFromGSTIN",
+        component: "TaxDetailsSelectorWithCreate.extractFromGSTIN",
       });
     } finally {
       setGstinLoading(false);
@@ -183,7 +191,7 @@ export function TaxDetailsSelectorWithCreate({
 
   const onSubmit = async (data: TaxDetailsFormData) => {
     try {
-      setLoading(true);
+      setSubmitting(true);
 
       // TODO: Implement actual API call
       // const newTaxDetails = await taxDetailsService.create(data);
@@ -203,18 +211,18 @@ export function TaxDetailsSelectorWithCreate({
         updatedAt: new Date(),
       };
 
-      setTaxDetailsList((prev) => [...prev, newTaxDetails]);
+      setTaxDetailsList([...(taxDetailsList || []), newTaxDetails]);
       setSelectedId(newTaxDetails.id);
       onChange(newTaxDetails.id, newTaxDetails);
       setShowForm(false);
       toast.success("Tax details added successfully");
     } catch (error) {
       logError(error as Error, {
-        context: "TaxDetailsSelectorWithCreate.addTaxDetails",
+        component: "TaxDetailsSelectorWithCreate.addTaxDetails",
       });
       toast.error("Failed to add tax details");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -276,7 +284,7 @@ export function TaxDetailsSelectorWithCreate({
     return stateCodes[code] || `State ${code}`;
   };
 
-  if (loading && taxDetailsList.length === 0) {
+  if (loading && (taxDetailsList || []).length === 0) {
     return (
       <div className={`space-y-2 ${className}`}>
         {label && (
@@ -307,7 +315,7 @@ export function TaxDetailsSelectorWithCreate({
 
       {/* Tax Details Cards */}
       <div className="space-y-3">
-        {taxDetailsList.length === 0 ? (
+        {(taxDetailsList || []).length === 0 ? (
           <div className="text-center p-6 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
             <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
@@ -324,7 +332,7 @@ export function TaxDetailsSelectorWithCreate({
           </div>
         ) : (
           <>
-            {taxDetailsList.map((taxDetails) => (
+            {(taxDetailsList || []).map((taxDetails) => (
               <button
                 key={taxDetails.id}
                 type="button"
@@ -555,16 +563,16 @@ export function TaxDetailsSelectorWithCreate({
                   type="button"
                   onClick={() => setShowForm(false)}
                   className="btn-secondary flex-1"
-                  disabled={loading}
+                  disabled={submitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="btn-primary flex-1"
-                  disabled={loading}
+                  disabled={submitting}
                 >
-                  {loading ? (
+                  {submitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       Adding...

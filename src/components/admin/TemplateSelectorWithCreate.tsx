@@ -21,6 +21,7 @@ import {
   FormSelect,
 } from "@/components/forms";
 import { logError } from "@/lib/firebase-error-logger";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import {
   VALIDATION_RULES,
   VALIDATION_MESSAGES,
@@ -85,9 +86,22 @@ export function TemplateSelectorWithCreate({
   label = "Select Template",
   className = "",
 }: TemplateSelectorWithCreateProps) {
-  const [templates, setTemplates] = useState<Template[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    isLoading: loading,
+    data: templates,
+    setData: setTemplates,
+    execute,
+  } = useLoadingState<Template[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, {
+        component: "TemplateSelectorWithCreate.loadTemplates",
+      });
+      toast.error("Failed to load templates");
+    },
+  });
   const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(value || null);
@@ -113,9 +127,8 @@ export function TemplateSelectorWithCreate({
     loadTemplates();
   }, [category]);
 
-  const loadTemplates = async () => {
-    try {
-      setLoading(true);
+  const loadTemplates = () =>
+    execute(async () => {
       // TODO: Implement actual API
       // const data = await templatesService.list({ category });
 
@@ -134,20 +147,10 @@ export function TemplateSelectorWithCreate({
         },
       ];
 
-      setTemplates(
-        category === "all"
-          ? mockTemplates
-          : mockTemplates.filter((t) => t.category === category)
-      );
-    } catch (error) {
-      logError(error as Error, {
-        context: "TemplateSelectorWithCreate.loadTemplates",
-      });
-      toast.error("Failed to load templates");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return category === "all"
+        ? mockTemplates
+        : mockTemplates.filter((t) => t.category === category);
+    });
 
   const handleTemplateSelect = (template: Template) => {
     setSelectedId(template.id);
@@ -177,7 +180,7 @@ export function TemplateSelectorWithCreate({
 
   const onSubmit = async (data: TemplateFormData) => {
     try {
-      setLoading(true);
+      setSubmitting(true);
 
       const variables = extractVariables(`${data.subject || ""} ${data.body}`);
 
@@ -194,22 +197,22 @@ export function TemplateSelectorWithCreate({
         updatedAt: new Date(),
       };
 
-      setTemplates((prev) => [...prev, newTemplate]);
+      setTemplates([...(templates || []), newTemplate]);
       setSelectedId(newTemplate.id);
       onChange(newTemplate.id, newTemplate);
       setShowForm(false);
       toast.success("Template created successfully");
     } catch (error) {
       logError(error as Error, {
-        context: "TemplateSelectorWithCreate.createTemplate",
+        component: "TemplateSelectorWithCreate.createTemplate",
       });
       toast.error("Failed to create template");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
-  if (loading && templates.length === 0) {
+  if (loading && (templates || []).length === 0) {
     return (
       <div className={`space-y-2 ${className}`}>
         {label && (
@@ -235,7 +238,7 @@ export function TemplateSelectorWithCreate({
       )}
 
       <div className="space-y-3">
-        {templates.length === 0 ? (
+        {(templates || []).length === 0 ? (
           <div className="text-center p-6 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
             <Mail className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
@@ -252,7 +255,7 @@ export function TemplateSelectorWithCreate({
           </div>
         ) : (
           <>
-            {templates.map((template) => (
+            {(templates || []).map((template) => (
               <div
                 key={template.id}
                 className={`
@@ -389,13 +392,13 @@ export function TemplateSelectorWithCreate({
                 required
                 error={errors.category?.message}
               >
-                <FormSelect {...register("category")}>
+                <select {...register("category")} className="input w-full">
                   {TEMPLATE_CATEGORIES.map((cat) => (
                     <option key={cat.value} value={cat.value}>
                       {cat.label}
                     </option>
                   ))}
-                </FormSelect>
+                </select>
               </FormField>
 
               {(templateCategory === "email" ||
@@ -455,16 +458,16 @@ export function TemplateSelectorWithCreate({
                   type="button"
                   onClick={() => setShowForm(false)}
                   className="btn-secondary flex-1"
-                  disabled={loading}
+                  disabled={submitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="btn-primary flex-1"
-                  disabled={loading}
+                  disabled={submitting}
                 >
-                  {loading ? (
+                  {submitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       Creating...

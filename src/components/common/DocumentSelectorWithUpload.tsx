@@ -19,6 +19,7 @@ import { FormField, FormSelect } from "@/components/forms";
 import { mediaService } from "@/services/media.service";
 import { DateDisplay } from "@/components/common/values";
 import { logError } from "@/lib/firebase-error-logger";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import {
   VALIDATION_RULES,
   VALIDATION_MESSAGES,
@@ -88,11 +89,24 @@ export function DocumentSelectorWithUpload({
   label = "Select Document",
   className = "",
 }: DocumentSelectorWithUploadProps) {
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    isLoading: loading,
+    data: documents,
+    setData: setDocuments,
+    execute,
+  } = useLoadingState<Document[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, {
+        component: "DocumentSelectorWithUpload.loadDocuments",
+      });
+      toast.error("Failed to load documents");
+    },
+  });
   const [showForm, setShowForm] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(value || null);
   const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -112,20 +126,11 @@ export function DocumentSelectorWithUpload({
     loadDocuments();
   }, [documentType]);
 
-  const loadDocuments = async () => {
-    try {
-      setLoading(true);
+  const loadDocuments = () =>
+    execute(async () => {
       // TODO: Implement actual API
-      setDocuments([]);
-    } catch (error) {
-      logError(error as Error, {
-        context: "DocumentSelectorWithUpload.loadDocuments",
-      });
-      toast.error("Failed to load documents");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return [];
+    });
 
   const handleDocumentSelect = (document: Document) => {
     setSelectedId(document.id);
@@ -170,11 +175,10 @@ export function DocumentSelectorWithUpload({
       // Upload file to Firebase Storage
       const uploadResult = await mediaService.upload({
         file: selectedFile,
-        context: "documents",
-        onProgress: (progress) => {
-          setUploadProgress(progress);
-        },
+        context: "product",
       });
+
+      // TODO: Add progress tracking when mediaService supports it
 
       // TODO: Implement actual API to save document metadata
       const newDocument: Document = {
@@ -188,7 +192,7 @@ export function DocumentSelectorWithUpload({
         verificationStatus: "pending",
       };
 
-      setDocuments((prev) => [...prev, newDocument]);
+      setDocuments([...(documents || []), newDocument]);
       setSelectedId(newDocument.id);
       onChange(newDocument.id, newDocument);
       setShowForm(false);
@@ -196,7 +200,7 @@ export function DocumentSelectorWithUpload({
       toast.success("Document uploaded successfully");
     } catch (error) {
       logError(error as Error, {
-        context: "DocumentSelectorWithUpload.uploadDocument",
+        component: "DocumentSelectorWithUpload.uploadDocument",
       });
       toast.error("Failed to upload document");
     } finally {
@@ -237,7 +241,7 @@ export function DocumentSelectorWithUpload({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  if (loading && documents.length === 0) {
+  if (loading && (documents || []).length === 0) {
     return (
       <div className={`space-y-2 ${className}`}>
         {label && (
@@ -263,7 +267,7 @@ export function DocumentSelectorWithUpload({
       )}
 
       <div className="space-y-3">
-        {documents.length === 0 ? (
+        {(documents || []).length === 0 ? (
           <div className="text-center p-6 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
             <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
@@ -280,7 +284,7 @@ export function DocumentSelectorWithUpload({
           </div>
         ) : (
           <>
-            {documents.map((document) => (
+            {(documents || []).map((document) => (
               <button
                 key={document.id}
                 type="button"
@@ -387,13 +391,13 @@ export function DocumentSelectorWithUpload({
                 required
                 error={errors.type?.message}
               >
-                <FormSelect {...register("type")}>
+                <select {...register("type")} className="input w-full">
                   {DOCUMENT_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
                       {type.label}
                     </option>
                   ))}
-                </FormSelect>
+                </select>
               </FormField>
 
               <FormField
