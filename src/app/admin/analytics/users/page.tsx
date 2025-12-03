@@ -18,7 +18,6 @@ import Link from "next/link";
 import {
   Users,
   TrendingUp,
-  TrendingDown,
   ArrowLeft,
   RefreshCw,
   Loader2,
@@ -28,104 +27,13 @@ import {
   Shield,
   Crown,
   Activity,
+  TrendingDown,
 } from "lucide-react";
 import { analyticsService } from "@/services/analytics.service";
 import { Price, DateDisplay, Quantity } from "@/components/common/values";
+import { PeriodSelector } from "@/components/common/PeriodSelector";
+import { StatCard } from "@/components/common/StatCard";
 import type { CustomerAnalyticsFE } from "@/types/frontend/analytics.types";
-
-// Period selector
-function PeriodSelector({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  const periods = [
-    { label: "Today", value: "day" },
-    { label: "This Week", value: "week" },
-    { label: "This Month", value: "month" },
-    { label: "This Year", value: "year" },
-  ];
-
-  return (
-    <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1">
-      {periods.map((period) => (
-        <button
-          key={period.value}
-          onClick={() => onChange(period.value)}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-            value === period.value
-              ? "bg-indigo-600 text-white"
-              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          }`}
-        >
-          {period.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-// Stat card component
-function StatCard({
-  title,
-  value,
-  change,
-  icon: Icon,
-  color,
-}: {
-  title: string;
-  value: string | number;
-  change?: number;
-  icon: React.ElementType;
-  color: "blue" | "green" | "purple" | "orange" | "red";
-}) {
-  const colorClasses = {
-    blue: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
-    green:
-      "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
-    purple:
-      "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
-    orange:
-      "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
-    red: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
-  };
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-            {value}
-          </p>
-          {change !== undefined && (
-            <div className="flex items-center mt-2">
-              {change >= 0 ? (
-                <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-              ) : (
-                <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
-              )}
-              <span
-                className={`text-sm ${
-                  change >= 0 ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {change >= 0 ? "+" : ""}
-                {change.toFixed(1)}%
-              </span>
-              <span className="text-xs text-gray-400 ml-1">vs last period</span>
-            </div>
-          )}
-        </div>
-        <div className={`p-3 rounded-full ${colorClasses[color]}`}>
-          <Icon className="w-6 h-6" />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // User segment chart
 function UserSegmentChart({
@@ -278,8 +186,8 @@ function TopCustomersTable({
                             index === 0
                               ? "text-yellow-500"
                               : index === 1
-                                ? "text-gray-400"
-                                : "text-orange-400"
+                              ? "text-gray-400"
+                              : "text-orange-400"
                           }`}
                         />
                       ) : (
