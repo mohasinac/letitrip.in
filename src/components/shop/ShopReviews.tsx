@@ -8,7 +8,9 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { toast } from "sonner";
 import { EmptyState } from "@/components/common/EmptyState";
+import { logError } from "@/lib/error-logger";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
 export interface ShopReview {
@@ -203,7 +205,11 @@ export function ShopReviews({
       setNewComment("");
       setShowForm(false);
     } catch (error) {
-      console.error("Failed to submit review:", error);
+      logError(error as Error, {
+        component: "ShopReviews.handleSubmit",
+        metadata: { shopId: shop.id },
+      });
+      toast.error("Failed to submit review");
     } finally {
       setSubmitting(false);
     }

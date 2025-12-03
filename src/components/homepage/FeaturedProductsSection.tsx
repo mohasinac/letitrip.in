@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { logError } from "@/lib/error-logger";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { ProductCardSkeleton } from "@/components/cards/ProductCardSkeleton";
@@ -36,7 +37,9 @@ export function FeaturedProductsSection({
         });
       }
     } catch (error) {
-      console.error("Failed to load featured products:", error);
+      logError(error as Error, {
+        component: "FeaturedProductsSection.loadProducts",
+      });
     } finally {
       setLoading(false);
     }

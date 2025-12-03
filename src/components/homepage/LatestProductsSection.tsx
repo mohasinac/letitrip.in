@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { logError } from "@/lib/error-logger";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { ProductCardSkeleton } from "@/components/cards/ProductCardSkeleton";
@@ -36,7 +37,9 @@ export function LatestProductsSection({
         });
       }
     } catch (error) {
-      console.error("Failed to load latest products:", error);
+      logError(error as Error, {
+        component: "LatestProductsSection.loadProducts",
+      });
     } finally {
       setLoading(false);
     }

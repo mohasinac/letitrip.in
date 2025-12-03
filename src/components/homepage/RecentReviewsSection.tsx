@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { logError } from "@/lib/error-logger";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { ReviewCard } from "@/components/cards/ReviewCard";
 import { homepageService } from "@/services/homepage.service";
@@ -37,7 +38,9 @@ export function RecentReviewsSection({
         });
       }
     } catch (error) {
-      console.error("Failed to load recent reviews:", error);
+      logError(error as Error, {
+        component: "RecentReviewsSection.loadReviews",
+      });
     } finally {
       setLoading(false);
     }

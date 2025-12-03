@@ -49,20 +49,18 @@ export default function BasicInfoStep({
 
       <CategorySelectorWithCreate
         value={formData.category}
-        onChange={(categoryId) => onChange("category", categoryId)}
-        label="Primary Category"
+        onChange={(categoryId) => onChange("category", categoryId || undefined)}
+        placeholder="Select primary category"
         required
-        helperText="Main category your shop focuses on"
       />
 
       <MobileInput
         value={formData.phone || ""}
         countryCode={formData.countryCode || "IN"}
-        onPhoneChange={(phone) => onChange("phone", phone)}
-        onCountryChange={(code) => onChange("countryCode", code)}
+        onChange={(phone) => onChange("phone", phone)}
+        onCountryCodeChange={(code) => onChange("countryCode", code)}
         label="Phone Number"
         required
-        helperText="Primary contact number for your shop"
       />
 
       <FormInput

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { logError } from "@/lib/error-logger";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { BlogCard } from "@/components/cards/BlogCard";
 import { homepageService } from "@/services/homepage.service";
@@ -37,7 +38,7 @@ export function FeaturedBlogsSection({
         });
       }
     } catch (error) {
-      console.error("Failed to load featured blogs:", error);
+      logError(error as Error, { component: "FeaturedBlogsSection.loadBlogs" });
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { logError } from "@/lib/error-logger";
 import AuctionCard from "@/components/cards/AuctionCard";
 import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";
@@ -35,7 +36,9 @@ export function HotAuctionsSection({
         });
       }
     } catch (error) {
-      console.error("Failed to load hot auctions:", error);
+      logError(error as Error, {
+        component: "HotAuctionsSection.loadAuctions",
+      });
     } finally {
       setLoading(false);
     }
