@@ -147,7 +147,9 @@ export function BankAccountSelectorWithCreate({
       // Mock data for now
       setAccounts([]);
     } catch (error) {
-      console.error("Failed to load bank accounts:", error);
+      logError(error as Error, {
+        context: "BankAccountSelectorWithCreate.loadBankAccounts",
+      });
       toast.error("Failed to load bank accounts");
     } finally {
       setLoading(false);
@@ -176,7 +178,9 @@ export function BankAccountSelectorWithCreate({
         toast.success("Bank details auto-filled from IFSC");
       }
     } catch (error) {
-      console.error("IFSC lookup failed:", error);
+      logError(error as Error, {
+        context: "BankAccountSelectorWithCreate.lookupIFSC",
+      });
     } finally {
       setIfscLoading(false);
     }
@@ -215,7 +219,9 @@ export function BankAccountSelectorWithCreate({
       setShowForm(false);
       toast.success("Bank account added successfully");
     } catch (error) {
-      console.error("Failed to add bank account:", error);
+      logError(error as Error, {
+        context: "BankAccountSelectorWithCreate.addAccount",
+      });
       toast.error("Failed to add bank account");
     } finally {
       setLoading(false);

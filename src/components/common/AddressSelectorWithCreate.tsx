@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { addressService } from "@/services/address.service";
 import { SmartAddressForm } from "./SmartAddressForm";
 import type { AddressFE } from "@/types/frontend/address.types";
+import { logError } from "@/lib/firebase-error-logger";
 
 export interface AddressSelectorWithCreateProps {
   value?: string | null;
@@ -62,7 +63,9 @@ export function AddressSelectorWithCreate({
 
       setAddresses(filtered);
     } catch (error) {
-      console.error("Failed to load addresses:", error);
+      logError(error as Error, {
+        context: "AddressSelectorWithCreate.loadAddresses",
+      });
       toast.error("Failed to load addresses");
     } finally {
       setLoading(false);

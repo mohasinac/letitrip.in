@@ -8,6 +8,11 @@ import CategorySelector, {
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput, FormTextarea, FormLabel } from "@/components/forms";
 import { categoriesService } from "@/services/categories.service";
+import { logError } from "@/lib/firebase-error-logger";
+import {
+  VALIDATION_RULES,
+  VALIDATION_MESSAGES,
+} from "@/constants/validation-messages";
 
 interface CategorySelectorWithCreateProps {
   value: string | null;
@@ -73,7 +78,9 @@ export default function CategorySelectorWithCreate({
       }));
       setCategories(transformed);
     } catch (error) {
-      console.error("Failed to load categories:", error);
+      logError(error as Error, {
+        context: "CategorySelectorWithCreate.loadCategories",
+      });
     } finally {
       setLoading(false);
     }
@@ -149,7 +156,9 @@ export default function CategorySelectorWithCreate({
       setShowCreateDialog(false);
       setSearchQuery("");
     } catch (error: any) {
-      console.error("Failed to create category:", error);
+      logError(error as Error, {
+        context: "CategorySelectorWithCreate.createCategory",
+      });
       setCreateErrors({
         submit:
           error?.message || "Failed to create category. Please try again.",
