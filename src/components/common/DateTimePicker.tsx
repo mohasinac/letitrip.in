@@ -117,7 +117,7 @@ export default function DateTimePicker({
       if (maxDate && date > maxDate) return true;
       return false;
     },
-    [minDate, maxDate]
+    [minDate, maxDate],
   );
 
   // Check if date is selected
@@ -130,7 +130,7 @@ export default function DateTimePicker({
         date.getFullYear() === value.getFullYear()
       );
     },
-    [value]
+    [value],
   );
 
   // Check if date is today
@@ -163,7 +163,7 @@ export default function DateTimePicker({
         setIsOpen(false);
       }
     },
-    [value, mode, isDateDisabled, onChange]
+    [value, mode, isDateDisabled, onChange],
   );
 
   // Handle time change
@@ -173,7 +173,7 @@ export default function DateTimePicker({
       newDate.setHours(hours, minutes, 0, 0);
       onChange(newDate);
     },
-    [value, onChange]
+    [value, onChange],
   );
 
   // Navigate month
@@ -192,7 +192,7 @@ export default function DateTimePicker({
       onChange(null);
       setIsOpen(false);
     },
-    [onChange]
+    [onChange],
   );
 
   // Get time values
@@ -379,8 +379,8 @@ export default function DateTimePicker({
                             disabled
                               ? "text-gray-400 dark:text-gray-600 cursor-not-allowed"
                               : !selected
-                              ? "text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
-                              : ""
+                                ? "text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
+                                : ""
                           }
                         `}
                       >

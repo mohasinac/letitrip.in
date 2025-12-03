@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     console.error("Error getting favorites count:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get favorites count" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

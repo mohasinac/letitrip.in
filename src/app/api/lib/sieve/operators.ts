@@ -14,7 +14,7 @@ import { FilterCondition, FilterOperator, FilterValue } from "./types";
  */
 export function evaluateFilter(
   condition: FilterCondition,
-  value: unknown
+  value: unknown,
 ): boolean {
   const { operator } = condition;
   const filterValue = condition.value;
@@ -63,7 +63,7 @@ export function evaluateFilter(
  */
 export function evaluateFilters(
   filters: FilterCondition[],
-  record: Record<string, unknown>
+  record: Record<string, unknown>,
 ): boolean {
   return filters.every((filter) => {
     const value = getNestedValue(record, filter.field);
@@ -79,7 +79,7 @@ export function evaluateFilters(
 function equals(
   value: unknown,
   filterValue: FilterValue,
-  caseInsensitive: boolean
+  caseInsensitive: boolean,
 ): boolean {
   if (value === null || value === undefined) {
     return filterValue === null;
@@ -133,9 +133,7 @@ function greaterThan(value: unknown, filterValue: FilterValue): boolean {
  * Greater than or equal comparison
  */
 function greaterThanOrEqual(value: unknown, filterValue: FilterValue): boolean {
-  return (
-    equals(value, filterValue, false) || greaterThan(value, filterValue)
-  );
+  return equals(value, filterValue, false) || greaterThan(value, filterValue);
 }
 
 /**
@@ -178,7 +176,7 @@ function lessThanOrEqual(value: unknown, filterValue: FilterValue): boolean {
 function contains(
   value: unknown,
   filterValue: FilterValue,
-  caseInsensitive: boolean
+  caseInsensitive: boolean,
 ): boolean {
   if (value === null || value === undefined) return false;
   if (filterValue === null) return false;
@@ -198,7 +196,7 @@ function contains(
 function startsWith(
   value: unknown,
   filterValue: FilterValue,
-  caseInsensitive: boolean
+  caseInsensitive: boolean,
 ): boolean {
   if (value === null || value === undefined) return false;
   if (filterValue === null) return false;
@@ -218,7 +216,7 @@ function startsWith(
 function endsWith(
   value: unknown,
   filterValue: FilterValue,
-  caseInsensitive: boolean
+  caseInsensitive: boolean,
 ): boolean {
   if (value === null || value === undefined) return false;
   if (filterValue === null) return false;
@@ -249,7 +247,7 @@ function isNull(value: unknown): boolean {
  */
 export function getNestedValue(
   obj: Record<string, unknown>,
-  path: string
+  path: string,
 ): unknown {
   const parts = path.split(".");
   let current: unknown = obj;
@@ -342,14 +340,7 @@ export function getOperatorDescription(operator: FilterOperator): string {
  * Check if operator is supported by Firestore
  */
 export function isFirestoreSupported(operator: FilterOperator): boolean {
-  const supported: FilterOperator[] = [
-    "==",
-    "!=",
-    ">",
-    ">=",
-    "<",
-    "<=",
-  ];
+  const supported: FilterOperator[] = ["==", "!=", ">", ">=", "<", "<="];
   return supported.includes(operator);
 }
 
@@ -357,16 +348,24 @@ export function isFirestoreSupported(operator: FilterOperator): boolean {
  * Get all available operators for a field type
  */
 export function getOperatorsForType(
-  type: "string" | "number" | "boolean" | "date"
+  type: "string" | "number" | "boolean" | "date",
 ): FilterOperator[] {
   switch (type) {
     case "string":
       return [
-        "==", "!=", "==*",
-        "@=", "@=*", "!@=",
-        "_=", "_=*", "!_=",
-        "_-=", "!_-=",
-        "==null", "!=null",
+        "==",
+        "!=",
+        "==*",
+        "@=",
+        "@=*",
+        "!@=",
+        "_=",
+        "_=*",
+        "!_=",
+        "_-=",
+        "!_-=",
+        "==null",
+        "!=null",
       ];
     case "number":
       return ["==", "!=", ">", ">=", "<", "<=", "==null", "!=null"];

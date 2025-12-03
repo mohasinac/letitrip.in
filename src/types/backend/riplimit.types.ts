@@ -365,7 +365,10 @@ export function canUserBid(account: RipLimitAccountBE): {
   reason?: string;
 } {
   if (account.isBlocked) {
-    return { canBid: false, reason: account.blockReason || "Account is blocked" };
+    return {
+      canBid: false,
+      reason: account.blockReason || "Account is blocked",
+    };
   }
   if (account.hasUnpaidAuctions) {
     return { canBid: false, reason: "You have unpaid won auctions" };
@@ -378,8 +381,13 @@ export function canUserBid(account: RipLimitAccountBE): {
  */
 export function hasSufficientBalance(
   account: RipLimitAccountBE,
-  bidAmountINR: number
-): { sufficient: boolean; required: number; available: number; shortfall: number } {
+  bidAmountINR: number,
+): {
+  sufficient: boolean;
+  required: number;
+  available: number;
+  shortfall: number;
+} {
   const required = inrToRipLimit(bidAmountINR);
   const available = account.availableBalance;
   const shortfall = Math.max(0, required - available);

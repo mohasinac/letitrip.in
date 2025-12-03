@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -75,7 +75,9 @@ export async function GET(request: NextRequest) {
         updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
         lastMessage: {
           ...data.lastMessage,
-          sentAt: data.lastMessage?.sentAt?.toDate?.()?.toISOString() || data.lastMessage?.sentAt,
+          sentAt:
+            data.lastMessage?.sentAt?.toDate?.()?.toISOString() ||
+            data.lastMessage?.sentAt,
         },
       };
     });
@@ -98,7 +100,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching conversations:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch conversations" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -114,17 +116,18 @@ export async function POST(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const body = await request.json();
-    const { conversationId, recipientId, type, subject, message, context } = body;
+    const { conversationId, recipientId, type, subject, message, context } =
+      body;
 
     if (!message?.trim()) {
       return NextResponse.json(
         { success: false, error: "Message content is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -135,21 +138,26 @@ export async function POST(request: NextRequest) {
 
     // If conversationId provided, add message to existing conversation
     if (conversationId) {
-      const conversationRef = db.collection(COLLECTIONS.CONVERSATIONS).doc(conversationId);
+      const conversationRef = db
+        .collection(COLLECTIONS.CONVERSATIONS)
+        .doc(conversationId);
       const conversationDoc = await conversationRef.get();
 
       if (!conversationDoc.exists) {
         return NextResponse.json(
           { success: false, error: "Conversation not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
       const conversationData = conversationDoc.data();
       if (!conversationData?.participantIds?.includes(userId)) {
         return NextResponse.json(
-          { success: false, error: "Not authorized to access this conversation" },
-          { status: 403 }
+          {
+            success: false,
+            error: "Not authorized to access this conversation",
+          },
+          { status: 403 },
         );
       }
 
@@ -175,7 +183,9 @@ export async function POST(request: NextRequest) {
       await messageRef.set(messageData);
 
       // Update conversation's last message and unread counts
-      const otherParticipantId = conversationData.participantIds.find((id: string) => id !== userId);
+      const otherParticipantId = conversationData.participantIds.find(
+        (id: string) => id !== userId,
+      );
       const currentUnreadCount = conversationData.unreadCount || {};
 
       await conversationRef.update({
@@ -186,7 +196,8 @@ export async function POST(request: NextRequest) {
         },
         unreadCount: {
           ...currentUnreadCount,
-          [otherParticipantId]: (currentUnreadCount[otherParticipantId] || 0) + 1,
+          [otherParticipantId]:
+            (currentUnreadCount[otherParticipantId] || 0) + 1,
         },
         updatedAt: now,
         status: "active",
@@ -210,22 +221,29 @@ export async function POST(request: NextRequest) {
     // Create new conversation
     if (!recipientId) {
       return NextResponse.json(
-        { success: false, error: "Recipient ID is required for new conversations" },
-        { status: 400 }
+        {
+          success: false,
+          error: "Recipient ID is required for new conversations",
+        },
+        { status: 400 },
       );
     }
 
     // Get recipient info
-    const recipientDoc = await db.collection(COLLECTIONS.USERS).doc(recipientId).get();
+    const recipientDoc = await db
+      .collection(COLLECTIONS.USERS)
+      .doc(recipientId)
+      .get();
     if (!recipientDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Recipient not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     const recipientData = recipientDoc.data();
-    const recipientName = recipientData?.displayName || recipientData?.email || "User";
+    const recipientName =
+      recipientData?.displayName || recipientData?.email || "User";
     const recipientType = getUserType(recipientData?.role || "user");
 
     // Check for existing conversation between these users
@@ -236,7 +254,10 @@ export async function POST(request: NextRequest) {
 
     const existingConversation = existingQuery.docs.find((doc) => {
       const data = doc.data();
-      return data.participantIds?.includes(recipientId) && data.type === (type || "buyer_seller");
+      return (
+        data.participantIds?.includes(recipientId) &&
+        data.type === (type || "buyer_seller")
+      );
     });
 
     if (existingConversation) {
@@ -345,8 +366,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating message:", error);
     return NextResponse.json(
       { success: false, error: "Failed to send message" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

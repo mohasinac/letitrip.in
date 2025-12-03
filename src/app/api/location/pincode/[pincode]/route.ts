@@ -16,7 +16,7 @@ interface RouteParams {
 
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: RouteParams,
 ): Promise<NextResponse> {
   try {
     const { pincode } = await params;
@@ -28,7 +28,7 @@ export async function GET(
           success: false,
           error: "Invalid pincode format. Must be 6 digits starting with 1-9.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -41,7 +41,7 @@ export async function GET(
           success: false,
           error: "Pincode not found. Please check and try again.",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -54,9 +54,10 @@ export async function GET(
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to lookup pincode",
+        error:
+          error instanceof Error ? error.message : "Failed to lookup pincode",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

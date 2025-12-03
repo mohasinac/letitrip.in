@@ -58,7 +58,7 @@ export function Rating({
             size={starSize}
             className="text-yellow-500 fill-yellow-500"
           />
-        )
+        ),
       )}
 
       {/* Half star */}
@@ -85,7 +85,7 @@ export function Rating({
         <span
           className={cn(
             "ml-1 font-medium text-gray-900 dark:text-white",
-            textClass
+            textClass,
           )}
         >
           {value.toFixed(1)}

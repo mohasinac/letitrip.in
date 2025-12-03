@@ -61,7 +61,7 @@ export interface SieveMiddlewareOptions<T = unknown> {
   handler?: (
     request: NextRequest,
     sieveQuery: SieveQuery,
-    config: SieveConfig
+    config: SieveConfig,
   ) => Promise<SievePaginatedResponse<any>>;
 
   /**
@@ -70,7 +70,7 @@ export interface SieveMiddlewareOptions<T = unknown> {
    */
   beforeQuery?: (
     request: NextRequest,
-    sieveQuery: SieveQuery
+    sieveQuery: SieveQuery,
   ) => Promise<SieveQuery> | SieveQuery;
 
   /**
@@ -78,7 +78,7 @@ export interface SieveMiddlewareOptions<T = unknown> {
    */
   afterQuery?: (
     result: SievePaginatedResponse<any>,
-    request: NextRequest
+    request: NextRequest,
   ) => Promise<SievePaginatedResponse<any>> | SievePaginatedResponse<any>;
 
   /**
@@ -97,7 +97,7 @@ export interface SieveMiddlewareOptions<T = unknown> {
  */
 export function withSieve<T = unknown>(
   config: SieveConfig,
-  options: SieveMiddlewareOptions<T>
+  options: SieveMiddlewareOptions<T>,
 ) {
   return async function handler(request: NextRequest): Promise<NextResponse> {
     try {
@@ -129,7 +129,7 @@ export function withSieve<T = unknown>(
         result = await executeSieveQuery(
           options.collection,
           sieveQuery,
-          config
+          config,
         );
       }
 
@@ -157,7 +157,7 @@ export function withSieve<T = unknown>(
           success: false,
           error: message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   };
@@ -265,7 +265,7 @@ export function withProtectedSieve<T = unknown>(
   config: SieveConfig,
   options: SieveMiddlewareOptions<T> & {
     getAuthFilter: (userId: string) => FilterCondition | FilterCondition[];
-  }
+  },
 ) {
   return async function handler(request: NextRequest): Promise<NextResponse> {
     try {
@@ -281,19 +281,19 @@ export function withProtectedSieve<T = unknown>(
           success: false,
           error: "Protected Sieve not fully implemented",
         },
-        { status: 501 }
+        { status: 501 },
       );
     } catch (error) {
       console.error(
         `Protected Sieve middleware error for ${options.collection}:`,
-        error
+        error,
       );
       return NextResponse.json(
         {
           success: false,
           error: "Internal server error",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   };

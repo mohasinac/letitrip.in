@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
         { success: false, error: "Shop IDs array is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     // Fetch shops by IDs (using slug as document ID pattern)
     const shops: any[] = [];
-    
+
     // Firestore 'in' query supports max 30 items, so we chunk
     const chunks: string[][] = [];
     for (let i = 0; i < limitedIds.length; i += 30) {
@@ -39,20 +39,20 @@ export async function POST(request: NextRequest) {
         }
         return null;
       });
-      
+
       const docs = await Promise.all(docPromises);
       const foundShops = docs.filter(Boolean);
       shops.push(...foundShops);
 
       // For any not found by ID, try legacy query
       const foundIds = foundShops.map((s: any) => s.id);
-      const missingIds = chunk.filter(id => !foundIds.includes(id));
-      
+      const missingIds = chunk.filter((id) => !foundIds.includes(id));
+
       if (missingIds.length > 0) {
         const legacyQuery = await Collections.shops()
           .where("slug", "in", missingIds)
           .get();
-        
+
         legacyQuery.docs.forEach((doc) => {
           shops.push({ id: doc.id, ...doc.data() });
         });
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     console.error("Error fetching shops batch:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch shops" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

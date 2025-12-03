@@ -87,7 +87,7 @@ export default function ProductsPage() {
     try {
       const categories = await categoriesService.list({ isActive: true });
       setCategories(
-        categories.data.map((cat) => ({ id: cat.id, name: cat.name }))
+        categories.data.map((cat) => ({ id: cat.id, name: cat.name })),
       );
     } catch (error) {
       console.error("Failed to load categories:", error);
@@ -96,7 +96,7 @@ export default function ProductsPage() {
 
   // Fields configuration for inline edit (using centralized config)
   const baseFields = toInlineFields(
-    getFieldsForContext(PRODUCT_FIELDS, "table")
+    getFieldsForContext(PRODUCT_FIELDS, "table"),
   );
   const fields: InlineField[] = baseFields.map((field) => {
     // Change categoryId field to use category-create type
@@ -119,7 +119,7 @@ export default function ProductsPage() {
       const response = await productsService.bulkAction(
         actionId,
         selectedIds,
-        input
+        input,
       );
 
       if (response.success) {
@@ -149,7 +149,7 @@ export default function ProductsPage() {
   };
 
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -348,7 +348,9 @@ export default function ProductsPage() {
                             }
                             onChange={(checked) => {
                               setSelectedIds(
-                                checked ? filteredProducts.map((p) => p.id) : []
+                                checked
+                                  ? filteredProducts.map((p) => p.id)
+                                  : [],
                               );
                             }}
                             aria-label="Select all products"
@@ -383,11 +385,11 @@ export default function ProductsPage() {
                             // Validate form fields
                             const fieldsToValidate = getFieldsForContext(
                               PRODUCT_FIELDS,
-                              "table"
+                              "table",
                             );
                             const { isValid, errors } = validateForm(
                               values,
-                              fieldsToValidate
+                              fieldsToValidate,
                             );
 
                             if (!isValid) {
@@ -424,7 +426,7 @@ export default function ProductsPage() {
                       {filteredProducts.map((product) => {
                         const isEditing = editingId === product.id;
                         const category = categories.find(
-                          (c) => c.id === product.categoryId
+                          (c) => c.id === product.categoryId,
                         );
 
                         if (isEditing) {
@@ -445,17 +447,17 @@ export default function ProductsPage() {
                                   // Validate form fields
                                   const fieldsToValidate = getFieldsForContext(
                                     PRODUCT_FIELDS,
-                                    "table"
+                                    "table",
                                   );
                                   const { isValid, errors } = validateForm(
                                     values,
-                                    fieldsToValidate
+                                    fieldsToValidate,
                                   );
 
                                   if (!isValid) {
                                     setValidationErrors(errors);
                                     throw new Error(
-                                      "Please fix validation errors"
+                                      "Please fix validation errors",
                                     );
                                   }
 
@@ -468,14 +470,14 @@ export default function ProductsPage() {
                                       images: values.images
                                         ? [values.images]
                                         : product.images,
-                                    }
+                                    },
                                   );
                                   await loadProducts();
                                   setEditingId(null);
                                 } catch (error) {
                                   console.error(
                                     "Failed to update product:",
-                                    error
+                                    error,
                                   );
                                   throw error;
                                 }
@@ -506,7 +508,7 @@ export default function ProductsPage() {
                                   setSelectedIds((prev) =>
                                     checked
                                       ? [...prev, product.id]
-                                      : prev.filter((id) => id !== product.id)
+                                      : prev.filter((id) => id !== product.id),
                                   );
                                 }}
                                 aria-label={`Select ${product.name}`}
@@ -571,8 +573,8 @@ export default function ProductsPage() {
                                   isOutOfStock
                                     ? "text-red-600"
                                     : isLowStock
-                                    ? "text-yellow-600"
-                                    : "text-gray-900"
+                                      ? "text-yellow-600"
+                                      : "text-gray-900"
                                 }`}
                               >
                                 {product.stockCount}

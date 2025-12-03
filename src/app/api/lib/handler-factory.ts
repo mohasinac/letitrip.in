@@ -16,7 +16,12 @@ import {
   requireRole,
 } from "@/app/api/middleware/rbac-auth";
 import { AuthUser, UserRole } from "@/lib/rbac-permissions";
-import { handleApiError, ApiError, NotFoundError, BadRequestError } from "./errors";
+import {
+  handleApiError,
+  ApiError,
+  NotFoundError,
+  BadRequestError,
+} from "./errors";
 
 // ============================================================
 // Types
@@ -35,7 +40,7 @@ export interface AuthenticatedContext extends HandlerContext {
 
 export type RouteHandler<T extends HandlerContext = HandlerContext> = (
   request: NextRequest,
-  context: T
+  context: T,
 ) => Promise<NextResponse>;
 
 export interface HandlerOptions {
@@ -58,7 +63,7 @@ export interface HandlerOptions {
  * Catches all errors and returns appropriate JSON responses
  */
 export function withErrorHandler<T extends HandlerContext>(
-  handler: RouteHandler<T>
+  handler: RouteHandler<T>,
 ): RouteHandler<T> {
   return async (request: NextRequest, context: T): Promise<NextResponse> => {
     try {
@@ -83,7 +88,7 @@ export function successResponse<T>(
     status?: number;
     message?: string;
     meta?: Record<string, any>;
-  }
+  },
 ): NextResponse {
   const response: any = {
     success: true,
@@ -107,7 +112,7 @@ export function successResponse<T>(
 export function errorResponse(
   message: string,
   status: number = 400,
-  details?: any
+  details?: any,
 ): NextResponse {
   return NextResponse.json(
     {
@@ -115,7 +120,7 @@ export function errorResponse(
       error: message,
       ...(details && { details }),
     },
-    { status }
+    { status },
   );
 }
 
@@ -131,7 +136,7 @@ export function paginatedResponse<T>(
     nextCursor?: string | null;
     page?: number;
     totalPages?: number;
-  }
+  },
 ): NextResponse {
   return NextResponse.json({
     success: true,
@@ -177,11 +182,13 @@ export function paginatedResponse<T>(
  * );
  */
 export function createHandler<TAuth extends boolean = false>(
-  handler: RouteHandler<TAuth extends true ? AuthenticatedContext : HandlerContext>,
-  options: HandlerOptions & { auth?: TAuth } = {}
+  handler: RouteHandler<
+    TAuth extends true ? AuthenticatedContext : HandlerContext
+  >,
+  options: HandlerOptions & { auth?: TAuth } = {},
 ): (
   request: NextRequest,
-  context?: { params?: Promise<Record<string, string>> }
+  context?: { params?: Promise<Record<string, string>> },
 ) => Promise<NextResponse> {
   const { auth = false, roles, parseBody = false, logging = false } = options;
 
@@ -281,29 +288,27 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
   } = config;
 
   // GET single resource
-  const GET = createHandler(
-    async (request, ctx) => {
-      const { id } = ctx.params;
-      if (!id) {
-        throw new BadRequestError("ID is required");
-      }
-
-      const doc = await collection().doc(id).get();
-
-      if (!doc.exists) {
-        throw new NotFoundError(`${resourceName} not found`);
-      }
-
-      const data = doc.data();
-
-      // Check access
-      if (!canAccess(ctx.user, data)) {
-        throw new NotFoundError(`${resourceName} not found`);
-      }
-
-      return successResponse(transform(doc.id, data));
+  const GET = createHandler(async (request, ctx) => {
+    const { id } = ctx.params;
+    if (!id) {
+      throw new BadRequestError("ID is required");
     }
-  );
+
+    const doc = await collection().doc(id).get();
+
+    if (!doc.exists) {
+      throw new NotFoundError(`${resourceName} not found`);
+    }
+
+    const data = doc.data();
+
+    // Check access
+    if (!canAccess(ctx.user, data)) {
+      throw new NotFoundError(`${resourceName} not found`);
+    }
+
+    return successResponse(transform(doc.id, data));
+  });
 
   // POST create resource
   const POST = createHandler(
@@ -314,7 +319,7 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
       const missingFields = requiredFields.filter((f) => !body[f]);
       if (missingFields.length > 0) {
         throw new BadRequestError(
-          `Missing required fields: ${missingFields.join(", ")}`
+          `Missing required fields: ${missingFields.join(", ")}`,
         );
       }
 
@@ -342,7 +347,7 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
         message: `${resourceName} created successfully`,
       });
     },
-    { auth: true, parseBody: true }
+    { auth: true, parseBody: true },
   );
 
   // PATCH update resource
@@ -363,7 +368,10 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
 
       // Check modify permission
       if (!canModify(ctx.user, existingData)) {
-        return errorResponse("You don't have permission to modify this resource", 403);
+        return errorResponse(
+          "You don't have permission to modify this resource",
+          403,
+        );
       }
 
       const body = ctx.body;
@@ -403,7 +411,7 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
         message: `${resourceName} updated successfully`,
       });
     },
-    { auth: true, parseBody: true }
+    { auth: true, parseBody: true },
   );
 
   // DELETE resource
@@ -424,17 +432,20 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
 
       // Check modify permission
       if (!canModify(ctx.user, existingData)) {
-        return errorResponse("You don't have permission to delete this resource", 403);
+        return errorResponse(
+          "You don't have permission to delete this resource",
+          403,
+        );
       }
 
       await collection().doc(id).delete();
 
       return successResponse(
         { deleted: true, id },
-        { message: `${resourceName} deleted successfully` }
+        { message: `${resourceName} deleted successfully` },
       );
     },
-    { auth: true }
+    { auth: true },
   );
 
   return { GET, POST, PATCH, DELETE };
@@ -462,10 +473,17 @@ export function getPaginationParams(searchParams: URLSearchParams) {
  */
 export function getFilterParams(
   searchParams: URLSearchParams,
-  allowedFilters: string[]
+  allowedFilters: string[],
 ): Record<string, string> {
   const filters: Record<string, string> = {};
-  const paginationKeys = ["limit", "startAfter", "cursor", "page", "sortBy", "sortOrder"];
+  const paginationKeys = [
+    "limit",
+    "startAfter",
+    "cursor",
+    "page",
+    "sortBy",
+    "sortOrder",
+  ];
 
   searchParams.forEach((value, key) => {
     if (

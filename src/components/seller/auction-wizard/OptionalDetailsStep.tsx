@@ -25,7 +25,7 @@ export function OptionalDetailsStep({
   // Calculate auction duration
   const duration = Math.ceil(
     (formData.endTime.getTime() - formData.startTime.getTime()) /
-      (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24),
   );
 
   return (

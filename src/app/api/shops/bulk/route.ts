@@ -3,7 +3,10 @@ import { requireAdmin } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
 // Build update object for each action
-function buildShopUpdate(action: string, data?: any): Record<string, any> | null {
+function buildShopUpdate(
+  action: string,
+  data?: any,
+): Record<string, any> | null {
   const now = new Date();
   switch (action) {
     case "verify":
@@ -19,12 +22,23 @@ function buildShopUpdate(action: string, data?: any): Record<string, any> | null
     case "deactivate":
       return { is_active: false, updated_at: now };
     case "ban":
-      return { is_banned: true, is_active: false, ban_reason: data?.banReason || "Bulk ban action", updated_at: now };
+      return {
+        is_banned: true,
+        is_active: false,
+        ban_reason: data?.banReason || "Bulk ban action",
+        updated_at: now,
+      };
     case "unban":
       return { is_banned: false, ban_reason: null, updated_at: now };
     case "update":
       if (!data) return null;
-      const allowedFields = ["is_verified", "is_featured", "show_on_homepage", "is_banned", "ban_reason"];
+      const allowedFields = [
+        "is_verified",
+        "is_featured",
+        "show_on_homepage",
+        "is_banned",
+        "ban_reason",
+      ];
       const updates: Record<string, any> = { updated_at: now };
       for (const field of allowedFields) {
         if (field in data) updates[field] = data[field];
@@ -37,10 +51,16 @@ function buildShopUpdate(action: string, data?: any): Record<string, any> | null
 
 // Check if shop can be deleted
 async function canDeleteShop(shopId: string): Promise<string | null> {
-  const productsSnapshot = await Collections.products().where("shop_id", "==", shopId).limit(1).get();
+  const productsSnapshot = await Collections.products()
+    .where("shop_id", "==", shopId)
+    .limit(1)
+    .get();
   if (!productsSnapshot.empty) return "Shop has products";
 
-  const auctionsSnapshot = await Collections.auctions().where("shop_id", "==", shopId).limit(1).get();
+  const auctionsSnapshot = await Collections.auctions()
+    .where("shop_id", "==", shopId)
+    .limit(1)
+    .get();
   if (!auctionsSnapshot.empty) return "Shop has auctions";
 
   return null;
@@ -103,7 +123,13 @@ export async function POST(request: NextRequest) {
         // Build and apply update
         const updates = buildShopUpdate(action, data);
         if (!updates) {
-          results.failed.push({ id, error: action === "update" ? "No update data provided" : `Unknown action: ${action}` });
+          results.failed.push({
+            id,
+            error:
+              action === "update"
+                ? "No update data provided"
+                : `Unknown action: ${action}`,
+          });
           continue;
         }
 

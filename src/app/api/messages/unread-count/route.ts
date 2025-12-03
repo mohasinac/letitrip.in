@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     console.error("Error getting message count:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get message count" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

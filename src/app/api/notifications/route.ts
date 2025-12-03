@@ -78,17 +78,18 @@ export async function GET(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const { searchParams } = new URL(request.url);
 
     // Parse Sieve query
-    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-      searchParams,
-      notificationsConfig
-    );
+    const {
+      query: sieveQuery,
+      errors,
+      warnings,
+    } = parseSieveQuery(searchParams, notificationsConfig);
 
     if (errors.length > 0) {
       return NextResponse.json(
@@ -97,7 +98,7 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -116,16 +117,22 @@ export async function GET(request: NextRequest) {
 
     // Apply Sieve filters
     for (const filter of sieveQuery.filters) {
-      const dbField = notificationsConfig.fieldMappings[filter.field] || filter.field;
+      const dbField =
+        notificationsConfig.fieldMappings[filter.field] || filter.field;
       if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+        query = query.where(
+          dbField,
+          filter.operator as FirebaseFirestore.WhereFilterOp,
+          filter.value,
+        );
       }
     }
 
     // Apply sorting
     if (sieveQuery.sorts.length > 0) {
       for (const sort of sieveQuery.sorts) {
-        const dbField = notificationsConfig.fieldMappings[sort.field] || sort.field;
+        const dbField =
+          notificationsConfig.fieldMappings[sort.field] || sort.field;
         query = query.orderBy(dbField, sort.direction);
       }
     } else {
@@ -149,8 +156,8 @@ export async function GET(request: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const notifications = snapshot.docs.map((doc) => 
-      transformNotification(doc.id, doc.data())
+    const notifications = snapshot.docs.map((doc) =>
+      transformNotification(doc.id, doc.data()),
     );
 
     // Build response with Sieve pagination meta
@@ -172,7 +179,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching notifications:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch notifications" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -189,7 +196,7 @@ export async function POST(request: NextRequest) {
     if (!auth.user || auth.role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -198,8 +205,11 @@ export async function POST(request: NextRequest) {
 
     if (!userId || !type || !title || !message) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields: userId, type, title, message" },
-        { status: 400 }
+        {
+          success: false,
+          error: "Missing required fields: userId, type, title, message",
+        },
+        { status: 400 },
       );
     }
 
@@ -217,7 +227,9 @@ export async function POST(request: NextRequest) {
       createdAt: now,
     };
 
-    const docRef = await db.collection(COLLECTIONS.NOTIFICATIONS).add(notification);
+    const docRef = await db
+      .collection(COLLECTIONS.NOTIFICATIONS)
+      .add(notification);
 
     return NextResponse.json({
       success: true,
@@ -230,7 +242,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating notification:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create notification" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -246,7 +258,7 @@ export async function PATCH(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -280,7 +292,7 @@ export async function PATCH(request: NextRequest) {
     if (!notificationIds || !Array.isArray(notificationIds)) {
       return NextResponse.json(
         { success: false, error: "notificationIds array required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -304,7 +316,7 @@ export async function PATCH(request: NextRequest) {
     console.error("Error marking notifications as read:", error);
     return NextResponse.json(
       { success: false, error: "Failed to mark notifications as read" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -320,7 +332,7 @@ export async function DELETE(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -372,7 +384,7 @@ export async function DELETE(request: NextRequest) {
     if (!notificationId) {
       return NextResponse.json(
         { success: false, error: "Notification id required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -383,14 +395,14 @@ export async function DELETE(request: NextRequest) {
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Notification not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (doc.data()?.userId !== auth.user.uid) {
       return NextResponse.json(
         { success: false, error: "Not authorized" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -404,7 +416,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error deleting notifications:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete notifications" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

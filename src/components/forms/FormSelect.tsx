@@ -10,8 +10,10 @@ export interface FormSelectOption {
   disabled?: boolean;
 }
 
-export interface FormSelectProps
-  extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "size"> {
+export interface FormSelectProps extends Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  "size"
+> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -35,7 +37,7 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
       id,
       ...props
     },
-    ref
+    ref,
   ) => {
     const selectId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
@@ -66,15 +68,15 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
               "bg-white dark:bg-gray-800 text-gray-900 dark:text-white",
               props.disabled &&
                 "bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-60",
-              className
+              className,
             )}
             aria-invalid={!!error}
             aria-describedby={
               error
                 ? `${selectId}-error`
                 : helperText
-                ? `${selectId}-helper`
-                : undefined
+                  ? `${selectId}-helper`
+                  : undefined
             }
             {...props}
           >
@@ -119,7 +121,7 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 FormSelect.displayName = "FormSelect";

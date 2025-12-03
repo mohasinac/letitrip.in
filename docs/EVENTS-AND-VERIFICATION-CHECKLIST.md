@@ -22,20 +22,17 @@
 ### 1.1 Email Verification
 
 - [ ] **Email OTP Service**
-
   - [ ] Create `src/services/otp.service.ts`
   - [ ] Generate 6-digit OTP with 10-minute expiry
   - [ ] Store OTP in Firestore with `otp_verifications` collection
   - [ ] Rate limiting: max 3 OTP requests per hour per email
 
 - [ ] **Email Verification API**
-
   - [ ] `POST /api/auth/verify-email/send` - Send OTP to email
   - [ ] `POST /api/auth/verify-email/verify` - Verify OTP code
   - [ ] `GET /api/auth/verify-email/status` - Check verification status
 
 - [ ] **Email Templates**
-
   - [ ] Create OTP email template in `src/lib/email/templates/otp-verification.ts`
   - [ ] Include branding, OTP code, expiry time
 
@@ -47,14 +44,12 @@
 ### 1.2 Phone Verification
 
 - [ ] **SMS OTP Service**
-
   - [ ] Integrate with SMS provider (MSG91/Twilio for India)
   - [ ] Create `src/services/sms.service.ts`
   - [ ] Generate 6-digit OTP with 5-minute expiry
   - [ ] Rate limiting: max 3 OTP requests per hour per phone
 
 - [ ] **Phone Verification API**
-
   - [ ] `POST /api/auth/verify-phone/send` - Send OTP via SMS
   - [ ] `POST /api/auth/verify-phone/verify` - Verify OTP code
   - [ ] `GET /api/auth/verify-phone/status` - Check verification status
@@ -67,7 +62,6 @@
 ### 1.3 Verification Enforcement
 
 - [ ] **Middleware/Guards**
-
   - [ ] Create `src/hooks/useVerificationCheck.ts`
   - [ ] Create `src/components/auth/VerificationGate.tsx`
   - [ ] Block checkout if not verified
@@ -113,13 +107,11 @@
 ### 2.1 IP Address Tracking
 
 - [ ] **IP Capture Middleware**
-
   - [ ] Create `src/app/api/middleware/ip-tracker.ts`
   - [ ] Capture IP from headers (`x-forwarded-for`, `x-real-ip`)
   - [ ] Handle Vercel/Cloudflare proxies
 
 - [ ] **User Activity Logging**
-
   - [ ] Create `user_activities` collection
   - [ ] Log IP on: login, registration, verification, orders, bids
   - [ ] Store user agent and device info
@@ -154,7 +146,6 @@
 ### 2.2 Security Measures
 
 - [ ] **Rate Limiting**
-
   - [ ] Max 5 login attempts per IP per 15 minutes
   - [ ] Max 3 OTP requests per user per hour
   - [ ] Max 10 bids per auction per user per hour
@@ -329,7 +320,6 @@
 ### 3.3 Admin Event Management
 
 - [ ] **Admin Event Pages**
-
   - [ ] `src/app/admin/events/page.tsx` - List all events
   - [ ] `src/app/admin/events/create/page.tsx` - Create wizard
   - [ ] `src/app/admin/events/[id]/page.tsx` - View/Edit event
@@ -347,7 +337,6 @@
 ### 3.4 Public Event Pages
 
 - [ ] **Event Pages**
-
   - [ ] `src/app/events/page.tsx` - List current & past events
   - [ ] `src/app/events/[slug]/page.tsx` - Event detail page
   - [ ] `src/app/events/[slug]/register/page.tsx` - Registration page
@@ -368,7 +357,6 @@
 ### 3.5 API Endpoints
 
 - [ ] **Admin APIs**
-
   - [ ] `GET /api/admin/events` - List events (with filters)
   - [ ] `POST /api/admin/events` - Create event
   - [ ] `GET /api/admin/events/[id]` - Get event details
@@ -393,7 +381,6 @@
 ### 3.6 Google Forms Integration
 
 - [ ] **Form Response Sync**
-
   - [ ] Service to fetch Google Form responses via API
   - [ ] Map form responses to event registrations
   - [ ] Scheduled sync job for continuous imports
@@ -407,13 +394,11 @@
 ### 3.7 Business Rules
 
 - [ ] **Max 2 Live Events**
-
   - [ ] Enforce in create/publish API
   - [ ] Show warning when limit reached
   - [ ] Allow scheduling future events
 
 - [ ] **Verification Requirements**
-
   - [ ] Block unverified users from registering
   - [ ] Block unverified users from voting
   - [ ] Show verification prompt before actions

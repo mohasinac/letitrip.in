@@ -49,7 +49,7 @@ export function BidCount({
         className={cn(
           "text-gray-500 dark:text-gray-400",
           sizeClasses[size],
-          className
+          className,
         )}
       >
         {showIcon && (
@@ -67,7 +67,7 @@ export function BidCount({
       className={cn(
         "text-gray-700 dark:text-gray-300",
         sizeClasses[size],
-        className
+        className,
       )}
     >
       {showIcon && (

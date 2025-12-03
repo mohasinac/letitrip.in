@@ -88,7 +88,11 @@ export interface ReverseGeocodeResult {
 }
 
 export interface GeolocationError {
-  code: "PERMISSION_DENIED" | "POSITION_UNAVAILABLE" | "TIMEOUT" | "NOT_SUPPORTED";
+  code:
+    | "PERMISSION_DENIED"
+    | "POSITION_UNAVAILABLE"
+    | "TIMEOUT"
+    | "NOT_SUPPORTED";
   message: string;
 }
 
@@ -137,7 +141,10 @@ export interface SmartAddressBE {
   updatedAt: Timestamp;
 }
 
-export interface SmartAddressFE extends Omit<SmartAddressBE, "createdAt" | "updatedAt"> {
+export interface SmartAddressFE extends Omit<
+  SmartAddressBE,
+  "createdAt" | "updatedAt"
+> {
   createdAt: Date;
   updatedAt: Date;
 

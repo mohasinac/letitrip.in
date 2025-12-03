@@ -244,7 +244,7 @@ const AuctionCardComponent = ({
     "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700",
     "hover:shadow-lg dark:hover:shadow-gray-900/50",
     isSelected && "ring-2 ring-blue-500 dark:ring-blue-400",
-    isCompact && "hover:shadow-md"
+    isCompact && "hover:shadow-md",
   );
 
   return (
@@ -258,7 +258,7 @@ const AuctionCardComponent = ({
       <div
         className={cn(
           "relative overflow-hidden bg-gray-100 dark:bg-gray-700",
-          isCompact ? "aspect-[4/3]" : "aspect-square"
+          isCompact ? "aspect-[4/3]" : "aspect-square",
         )}
       >
         {/* Selection Checkbox for Admin/Seller */}
@@ -270,7 +270,7 @@ const AuctionCardComponent = ({
                 "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
                 isSelected
                   ? "bg-blue-500 border-blue-500 text-white"
-                  : "bg-white/90 border-gray-400 hover:border-blue-500"
+                  : "bg-white/90 border-gray-400 hover:border-blue-500",
               )}
             >
               {isSelected && <CheckCircle size={14} />}
@@ -315,7 +315,7 @@ const AuctionCardComponent = ({
         <div
           className={cn(
             "absolute flex flex-col gap-1 z-20",
-            (isAdmin || isSeller) && onSelect ? "top-2 left-9" : "top-2 left-2"
+            (isAdmin || isSeller) && onSelect ? "top-2 left-9" : "top-2 left-2",
           )}
         >
           {/* Primary Status Badge - For Admin/Seller or special states */}
@@ -328,7 +328,7 @@ const AuctionCardComponent = ({
                   statusBadge === "pending" && "bg-yellow-500",
                   statusBadge === "moderation" && "bg-purple-500",
                   statusBadge === "ended" && "bg-gray-500",
-                  statusBadge === "cancelled" && "bg-red-600"
+                  statusBadge === "cancelled" && "bg-red-600",
                 )}
               >
                 {statusBadge.charAt(0).toUpperCase() + statusBadge.slice(1)}
@@ -562,7 +562,7 @@ const AuctionCardComponent = ({
             "font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors",
             isCompact
               ? "text-xs line-clamp-1 mb-1"
-              : "text-sm line-clamp-2 mb-2 min-h-[2.5rem]"
+              : "text-sm line-clamp-2 mb-2 min-h-[2.5rem]",
           )}
         >
           {auction.name}
@@ -574,7 +574,7 @@ const AuctionCardComponent = ({
             <span
               className={cn(
                 "font-bold text-gray-900 dark:text-white",
-                isCompact ? "text-sm" : "text-lg"
+                isCompact ? "text-sm" : "text-lg",
               )}
             >
               {formatCurrency(currentBid)}
@@ -600,8 +600,8 @@ const AuctionCardComponent = ({
             isEnded
               ? "text-gray-500 dark:text-gray-500"
               : isEndingSoon
-              ? "text-orange-600 dark:text-orange-400 font-medium"
-              : "text-gray-600 dark:text-gray-400"
+                ? "text-orange-600 dark:text-orange-400 font-medium"
+                : "text-gray-600 dark:text-gray-400",
           )}
         >
           <Clock size={isCompact ? 10 : 12} />
@@ -613,7 +613,7 @@ const AuctionCardComponent = ({
           <div
             className={cn(
               "flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400",
-              isCompact ? "mb-0" : "mb-3"
+              isCompact ? "mb-0" : "mb-3",
             )}
           >
             <Gavel size={12} />
@@ -636,10 +636,10 @@ const AuctionCardComponent = ({
               isEnded
                 ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                 : isTrulyLive
-                ? "bg-green-600 text-white hover:bg-green-700 active:bg-green-800"
-                : isUpcoming
-                ? "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  ? "bg-green-600 text-white hover:bg-green-700 active:bg-green-800"
+                  : isUpcoming
+                    ? "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600",
             )}
           >
             {isEnded ? (

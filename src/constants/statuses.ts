@@ -26,7 +26,8 @@ export const PRODUCT_STATUS = {
   REJECTED: "rejected",
 } as const;
 
-export type ProductStatus = (typeof PRODUCT_STATUS)[keyof typeof PRODUCT_STATUS];
+export type ProductStatus =
+  (typeof PRODUCT_STATUS)[keyof typeof PRODUCT_STATUS];
 
 // =============================================================================
 // AUCTION STATUS
@@ -41,7 +42,8 @@ export const AUCTION_STATUS = {
   UNSOLD: "unsold",
 } as const;
 
-export type AuctionStatus = (typeof AUCTION_STATUS)[keyof typeof AUCTION_STATUS];
+export type AuctionStatus =
+  (typeof AUCTION_STATUS)[keyof typeof AUCTION_STATUS];
 
 // =============================================================================
 // ORDER STATUS
@@ -85,7 +87,8 @@ export const PAYMENT_STATUS = {
   PARTIALLY_REFUNDED: "partially_refunded",
 } as const;
 
-export type PaymentStatus = (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS];
+export type PaymentStatus =
+  (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS];
 
 // =============================================================================
 // SHOP STATUS
@@ -109,7 +112,8 @@ export const VERIFICATION_STATUS = {
   REJECTED: "rejected",
 } as const;
 
-export type VerificationStatus = (typeof VERIFICATION_STATUS)[keyof typeof VERIFICATION_STATUS];
+export type VerificationStatus =
+  (typeof VERIFICATION_STATUS)[keyof typeof VERIFICATION_STATUS];
 
 // =============================================================================
 // TICKET STATUS
@@ -134,7 +138,8 @@ export const TICKET_PRIORITY = {
   URGENT: "urgent",
 } as const;
 
-export type TicketPriority = (typeof TICKET_PRIORITY)[keyof typeof TICKET_PRIORITY];
+export type TicketPriority =
+  (typeof TICKET_PRIORITY)[keyof typeof TICKET_PRIORITY];
 
 // =============================================================================
 // RETURN STATUS

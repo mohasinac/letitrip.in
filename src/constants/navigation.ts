@@ -478,11 +478,36 @@ export const ADMIN_MENU_ITEMS = [
     icon: "settings",
     description: "System settings",
     children: [
-      { id: "settings-general", name: "General", link: "/admin/settings/general", icon: "sliders" },
-      { id: "settings-payment", name: "Payment Gateways", link: "/admin/settings/payment", icon: "credit-card" },
-      { id: "settings-shipping", name: "Shipping", link: "/admin/settings/shipping", icon: "truck" },
-      { id: "settings-email", name: "Email", link: "/admin/settings/email", icon: "mail" },
-      { id: "settings-notifications", name: "Notifications", link: "/admin/settings/notifications", icon: "bell" },
+      {
+        id: "settings-general",
+        name: "General",
+        link: "/admin/settings/general",
+        icon: "sliders",
+      },
+      {
+        id: "settings-payment",
+        name: "Payment Gateways",
+        link: "/admin/settings/payment",
+        icon: "credit-card",
+      },
+      {
+        id: "settings-shipping",
+        name: "Shipping",
+        link: "/admin/settings/shipping",
+        icon: "truck",
+      },
+      {
+        id: "settings-email",
+        name: "Email",
+        link: "/admin/settings/email",
+        icon: "mail",
+      },
+      {
+        id: "settings-notifications",
+        name: "Notifications",
+        link: "/admin/settings/notifications",
+        icon: "bell",
+      },
     ],
   },
 ];

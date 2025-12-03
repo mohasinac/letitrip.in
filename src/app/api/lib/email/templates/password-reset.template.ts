@@ -4,7 +4,7 @@
 
 export function getPasswordResetEmailTemplate(
   name: string,
-  resetLink: string
+  resetLink: string,
 ): string {
   return `
 <!DOCTYPE html>
@@ -66,7 +66,7 @@ export function getPasswordResetEmailTemplate(
 
 export function getPasswordResetEmailText(
   name: string,
-  resetLink: string
+  resetLink: string,
 ): string {
   return `Hi ${name},
 

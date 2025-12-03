@@ -38,8 +38,10 @@ export async function getAdminStats(): Promise<{
   const db = getFirestoreAdmin();
 
   // Get all accounts
-  const accountsSnapshot = await db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).get();
-  
+  const accountsSnapshot = await db
+    .collection(COLLECTIONS.RIPLIMIT_ACCOUNTS)
+    .get();
+
   let totalAvailable = 0;
   let totalBlocked = 0;
   let unpaidUserCount = 0;
@@ -58,7 +60,7 @@ export async function getAdminStats(): Promise<{
     .collection(COLLECTIONS.RIPLIMIT_PURCHASES)
     .where("status", "==", RipLimitPurchaseStatus.COMPLETED)
     .get();
-  
+
   let totalRevenue = 0;
   purchasesSnapshot.docs.forEach((doc) => {
     totalRevenue += (doc.data() as RipLimitPurchaseBE).inrAmount;
@@ -69,7 +71,7 @@ export async function getAdminStats(): Promise<{
     .collection(COLLECTIONS.RIPLIMIT_REFUNDS)
     .where("status", "==", RipLimitRefundStatus.COMPLETED)
     .get();
-  
+
   let totalRefunded = 0;
   refundsSnapshot.docs.forEach((doc) => {
     totalRefunded += (doc.data() as RipLimitRefundBE).netAmount;
@@ -94,12 +96,18 @@ export async function adminAdjustBalance(
   userId: string,
   amount: number,
   reason: string,
-  adminId: string
+  adminId: string,
 ): Promise<RipLimitTransactionBE> {
-  return creditBalance(userId, amount, RipLimitTransactionType.ADJUSTMENT, reason, {
-    adjustedBy: adminId,
+  return creditBalance(
+    userId,
+    amount,
+    RipLimitTransactionType.ADJUSTMENT,
     reason,
-  });
+    {
+      adjustedBy: adminId,
+      reason,
+    },
+  );
 }
 
 /**
@@ -108,7 +116,7 @@ export async function adminAdjustBalance(
 export async function adminClearUnpaidAuction(
   userId: string,
   auctionId: string,
-  adminId: string
+  adminId: string,
 ): Promise<void> {
   const db = getFirestoreAdmin();
   const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
@@ -117,7 +125,9 @@ export async function adminClearUnpaidAuction(
     const accountDoc = await t.get(accountRef);
     const account = accountDoc.data() as RipLimitAccountBE;
 
-    const newUnpaidIds = account.unpaidAuctionIds.filter((id) => id !== auctionId);
+    const newUnpaidIds = account.unpaidAuctionIds.filter(
+      (id) => id !== auctionId,
+    );
 
     t.update(accountRef, {
       unpaidAuctionIds: newUnpaidIds,
@@ -126,7 +136,9 @@ export async function adminClearUnpaidAuction(
     });
 
     // Release any blocked RipLimit for this auction
-    const blockedBidRef = accountRef.collection(SUBCOLLECTIONS.RIPLIMIT_BLOCKED_BIDS).doc(auctionId);
+    const blockedBidRef = accountRef
+      .collection(SUBCOLLECTIONS.RIPLIMIT_BLOCKED_BIDS)
+      .doc(auctionId);
     const blockedBidDoc = await t.get(blockedBidRef);
 
     if (blockedBidDoc.exists) {
@@ -138,7 +150,9 @@ export async function adminClearUnpaidAuction(
       t.delete(blockedBidRef);
 
       // Create transaction record
-      const transactionRef = db.collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS).doc();
+      const transactionRef = db
+        .collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS)
+        .doc();
       t.set(transactionRef, {
         userId,
         type: RipLimitTransactionType.BID_RELEASE,
@@ -158,38 +172,47 @@ export async function adminClearUnpaidAuction(
 /**
  * Get user account details for admin
  */
-export async function getAdminUserDetails(userId: string): Promise<RipLimitAccountBE | null> {
+export async function getAdminUserDetails(
+  userId: string,
+): Promise<RipLimitAccountBE | null> {
   const db = getFirestoreAdmin();
-  const accountDoc = await db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId).get();
-  
+  const accountDoc = await db
+    .collection(COLLECTIONS.RIPLIMIT_ACCOUNTS)
+    .doc(userId)
+    .get();
+
   if (!accountDoc.exists) {
     return null;
   }
-  
+
   return { userId, ...accountDoc.data() } as RipLimitAccountBE;
 }
 
 /**
  * List all user accounts with pagination for admin
  */
-export async function listAllAccounts(options: {
-  limit?: number;
-  offset?: number;
-  filter?: "unpaid" | "blocked" | "all";
-} = {}): Promise<{ accounts: RipLimitAccountBE[]; total: number }> {
+export async function listAllAccounts(
+  options: {
+    limit?: number;
+    offset?: number;
+    filter?: "unpaid" | "blocked" | "all";
+  } = {},
+): Promise<{ accounts: RipLimitAccountBE[]; total: number }> {
   const db = getFirestoreAdmin();
-  let query = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).orderBy("createdAt", "desc");
-  
+  let query = db
+    .collection(COLLECTIONS.RIPLIMIT_ACCOUNTS)
+    .orderBy("createdAt", "desc");
+
   if (options.filter === "unpaid") {
     query = query.where("hasUnpaidAuctions", "==", true) as typeof query;
   } else if (options.filter === "blocked") {
     query = query.where("isBlocked", "==", true) as typeof query;
   }
-  
+
   // Get total count
   const countSnapshot = await query.count().get();
   const total = countSnapshot.data().count;
-  
+
   // Apply pagination
   if (options.offset) {
     query = query.offset(options.offset);
@@ -197,12 +220,12 @@ export async function listAllAccounts(options: {
   if (options.limit) {
     query = query.limit(options.limit);
   }
-  
+
   const snapshot = await query.get();
   const accounts = snapshot.docs.map((doc) => ({
     userId: doc.id,
     ...doc.data(),
   })) as RipLimitAccountBE[];
-  
+
   return { accounts, total };
 }

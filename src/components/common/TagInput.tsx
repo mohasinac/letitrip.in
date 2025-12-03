@@ -89,7 +89,7 @@ export default function TagInput({
       caseSensitive,
       allowDuplicates,
       onChange,
-    ]
+    ],
   );
 
   // Remove a tag
@@ -98,7 +98,7 @@ export default function TagInput({
       if (disabled) return;
       onChange(value.filter((_, i) => i !== index));
     },
-    [disabled, value, onChange]
+    [disabled, value, onChange],
   );
 
   // Handle input change
@@ -127,7 +127,7 @@ export default function TagInput({
       setShowSuggestions(newValue.length > 0 && filteredSuggestions.length > 0);
       setSelectedSuggestionIndex(0);
     },
-    [delimiter, addTag, filteredSuggestions.length]
+    [delimiter, addTag, filteredSuggestions.length],
   );
 
   // Handle key down
@@ -147,7 +147,7 @@ export default function TagInput({
       } else if (e.key === "ArrowDown" && showSuggestions) {
         e.preventDefault();
         setSelectedSuggestionIndex((prev) =>
-          prev < filteredSuggestions.length - 1 ? prev + 1 : prev
+          prev < filteredSuggestions.length - 1 ? prev + 1 : prev,
         );
       } else if (e.key === "ArrowUp" && showSuggestions) {
         e.preventDefault();
@@ -165,7 +165,7 @@ export default function TagInput({
       selectedSuggestionIndex,
       addTag,
       removeTag,
-    ]
+    ],
   );
 
   // Handle suggestion click
@@ -174,7 +174,7 @@ export default function TagInput({
       addTag(suggestion);
       inputRef.current?.focus();
     },
-    [addTag]
+    [addTag],
   );
 
   // Check if at max tags
@@ -248,7 +248,7 @@ export default function TagInput({
             onKeyDown={handleKeyDown}
             onFocus={() =>
               setShowSuggestions(
-                inputValue.length > 0 && filteredSuggestions.length > 0
+                inputValue.length > 0 && filteredSuggestions.length > 0,
               )
             }
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}

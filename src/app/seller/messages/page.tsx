@@ -67,7 +67,7 @@ export default function SellerMessagesPage() {
         // Filter to only show conversations where seller is a participant
         // and the other party is a buyer (user type)
         const sellerConversations = result.conversations.filter(
-          (c) => c.otherParticipant.type === "user"
+          (c) => c.otherParticipant.type === "user",
         );
 
         if (pageNum === 1) {
@@ -80,14 +80,14 @@ export default function SellerMessagesPage() {
         setPage(pageNum);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to load messages"
+          err instanceof Error ? err.message : "Failed to load messages",
         );
       } finally {
         setLoading(false);
         setRefreshing(false);
       }
     },
-    [user]
+    [user],
   );
 
   useEffect(() => {
@@ -285,7 +285,7 @@ export default function SellerMessagesPage() {
                               new Date(conv.lastMessage.sentAt),
                               {
                                 addSuffix: true,
-                              }
+                              },
                             )
                           : "No messages"}
                       </div>

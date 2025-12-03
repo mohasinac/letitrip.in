@@ -214,8 +214,8 @@ export default function ShopForm({
                 ? "Creating..."
                 : "Saving..."
               : mode === "create"
-              ? "Create Shop"
-              : "Save Changes"}
+                ? "Create Shop"
+                : "Save Changes"}
           </Button>
         }
       />

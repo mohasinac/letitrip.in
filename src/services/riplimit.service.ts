@@ -65,11 +65,13 @@ class RipLimitService {
   /**
    * Get transaction history
    */
-  async getTransactions(options: {
-    type?: string;
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<RipLimitTransactionHistoryFE> {
+  async getTransactions(
+    options: {
+      type?: string;
+      limit?: number;
+      offset?: number;
+    } = {},
+  ): Promise<RipLimitTransactionHistoryFE> {
     const params = new URLSearchParams();
     if (options.type) params.set("type", options.type);
     if (options.limit) params.set("limit", options.limit.toString());
@@ -93,14 +95,16 @@ class RipLimitService {
     return toFERipLimitTransactionHistory(
       response.data,
       options.limit || 20,
-      options.offset || 0
+      options.offset || 0,
     );
   }
 
   /**
    * Initiate RipLimit purchase
    */
-  async initiatePurchase(ripLimitAmount: number): Promise<RipLimitPurchaseResponseFE> {
+  async initiatePurchase(
+    ripLimitAmount: number,
+  ): Promise<RipLimitPurchaseResponseFE> {
     const response = await apiService.post<{
       success: boolean;
       data: {
@@ -160,7 +164,10 @@ class RipLimitService {
   /**
    * Request refund of available RipLimit balance
    */
-  async requestRefund(amount: number, reason?: string): Promise<{
+  async requestRefund(
+    amount: number,
+    reason?: string,
+  ): Promise<{
     success: boolean;
     refundId: string;
     message: string;

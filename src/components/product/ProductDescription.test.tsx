@@ -29,7 +29,7 @@ describe("ProductDescription", () => {
         <ProductDescription
           {...defaultProps}
           specifications={mockSpecifications}
-        />
+        />,
       );
 
       expect(screen.getByText("Specifications")).toBeInTheDocument();
@@ -60,7 +60,7 @@ describe("ProductDescription", () => {
         <ProductDescription
           {...defaultProps}
           specifications={mockSpecifications}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Specifications"));
@@ -75,7 +75,7 @@ describe("ProductDescription", () => {
       fireEvent.click(screen.getByText("Shipping & Returns"));
 
       expect(
-        screen.getByText(/Free shipping on orders above/)
+        screen.getByText(/Free shipping on orders above/),
       ).toBeInTheDocument();
     });
 
@@ -91,7 +91,7 @@ describe("ProductDescription", () => {
         <ProductDescription
           {...defaultProps}
           specifications={mockSpecifications}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Specifications"));
@@ -129,7 +129,7 @@ describe("ProductDescription", () => {
         <ProductDescription
           {...defaultProps}
           specifications={mockSpecifications}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Specifications"));
@@ -145,7 +145,7 @@ describe("ProductDescription", () => {
         <ProductDescription
           {...defaultProps}
           specifications={mockSpecifications}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByText("Specifications"));
@@ -168,7 +168,7 @@ describe("ProductDescription", () => {
       };
 
       render(
-        <ProductDescription {...defaultProps} specifications={specialSpecs} />
+        <ProductDescription {...defaultProps} specifications={specialSpecs} />,
       );
 
       fireEvent.click(screen.getByText("Specifications"));
@@ -181,7 +181,7 @@ describe("ProductDescription", () => {
   describe("Shipping Content", () => {
     it("renders custom shipping information when provided", () => {
       const { container } = render(
-        <ProductDescription {...defaultProps} shipping={mockShipping} />
+        <ProductDescription {...defaultProps} shipping={mockShipping} />,
       );
 
       fireEvent.click(screen.getByText("Shipping & Returns"));
@@ -197,7 +197,7 @@ describe("ProductDescription", () => {
 
       expect(screen.getByText("Shipping Information")).toBeInTheDocument();
       expect(
-        screen.getByText(/Free shipping on orders above/)
+        screen.getByText(/Free shipping on orders above/),
       ).toBeInTheDocument();
     });
 
@@ -266,7 +266,7 @@ describe("ProductDescription", () => {
           description={mockDescription}
           specifications={mockSpecifications}
           shipping={mockShipping}
-        />
+        />,
       );
 
       expect(screen.getByText("Description")).toBeInTheDocument();
@@ -276,7 +276,7 @@ describe("ProductDescription", () => {
 
     it("handles undefined specifications", () => {
       render(
-        <ProductDescription {...defaultProps} specifications={undefined} />
+        <ProductDescription {...defaultProps} specifications={undefined} />,
       );
 
       expect(screen.queryByText("Specifications")).not.toBeInTheDocument();
@@ -288,13 +288,13 @@ describe("ProductDescription", () => {
       };
 
       render(
-        <ProductDescription {...defaultProps} specifications={htmlSpecs} />
+        <ProductDescription {...defaultProps} specifications={htmlSpecs} />,
       );
 
       fireEvent.click(screen.getByText("Specifications"));
 
       expect(
-        screen.getByText("<strong>Bold</strong> text")
+        screen.getByText("<strong>Bold</strong> text"),
       ).toBeInTheDocument();
     });
 
@@ -304,7 +304,7 @@ describe("ProductDescription", () => {
           description={mockDescription}
           specifications={mockSpecifications}
           shipping={mockShipping}
-        />
+        />,
       );
 
       // Switch to specifications
@@ -327,7 +327,7 @@ describe("ProductDescription", () => {
         <ProductDescription
           {...defaultProps}
           specifications={mockSpecifications}
-        />
+        />,
       );
 
       const tabs = screen.getAllByRole("button");
@@ -339,7 +339,7 @@ describe("ProductDescription", () => {
         <ProductDescription
           {...defaultProps}
           specifications={mockSpecifications}
-        />
+        />,
       );
 
       const specTab = screen.getByText("Specifications");

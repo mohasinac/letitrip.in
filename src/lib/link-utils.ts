@@ -1,15 +1,21 @@
 /**
  * Link Utilities
- * 
+ *
  * Utilities for handling links - detecting internal vs external,
  * resolving relative paths, and validating link formats.
- * 
+ *
  * @module lib/link-utils
  * Epic: E034 - Flexible Link Fields
  */
 
 // Link type classifications
-export type LinkType = 'internal' | 'external' | 'email' | 'phone' | 'anchor' | 'invalid';
+export type LinkType =
+  | "internal"
+  | "external"
+  | "email"
+  | "phone"
+  | "anchor"
+  | "invalid";
 
 /**
  * Options for link validation
@@ -65,29 +71,29 @@ const defaultValidationOptions: LinkValidationOptions = {
  */
 export function getBaseUrl(): string {
   // Browser context
-  if (typeof globalThis !== 'undefined' && globalThis.location) {
+  if (typeof globalThis !== "undefined" && globalThis.location) {
     return globalThis.location.origin;
   }
-  
+
   // Server context - check for environment variables
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL;
   }
-  
+
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
-  
+
   // Default fallback for development
-  return 'http://localhost:3000';
+  return "http://localhost:3000";
 }
 
 /**
  * Check if a URL is an internal link
- * 
+ *
  * @param href - The URL or path to check
  * @returns true if the link is internal (relative path or same domain)
- * 
+ *
  * @example
  * isInternalLink('/products') // true
  * isInternalLink('/products?q=test') // true
@@ -96,28 +102,28 @@ export function getBaseUrl(): string {
  * isInternalLink('https://google.com') // false
  */
 export function isInternalLink(href: string): boolean {
-  if (!href || typeof href !== 'string') {
+  if (!href || typeof href !== "string") {
     return false;
   }
-  
+
   const trimmed = href.trim();
-  
+
   // Relative paths are internal
-  if (trimmed.startsWith('/') && !trimmed.startsWith('//')) {
+  if (trimmed.startsWith("/") && !trimmed.startsWith("//")) {
     return true;
   }
-  
+
   // Anchor links are internal
-  if (trimmed.startsWith('#')) {
+  if (trimmed.startsWith("#")) {
     return true;
   }
-  
+
   // Check if same domain
   try {
     const url = new URL(trimmed);
     const baseUrl = getBaseUrl();
     const base = new URL(baseUrl);
-    
+
     return url.hostname === base.hostname;
   } catch {
     // Invalid URL - might be a relative path without leading slash
@@ -127,24 +133,24 @@ export function isInternalLink(href: string): boolean {
 
 /**
  * Check if a URL is an external link
- * 
+ *
  * @param href - The URL or path to check
  * @returns true if the link is external (different domain)
- * 
+ *
  * @example
  * isExternalLink('https://google.com') // true
  * isExternalLink('/products') // false
  * isExternalLink('https://letitrip.in/products') // false (same domain)
  */
 export function isExternalLink(href: string): boolean {
-  if (!href || typeof href !== 'string') {
+  if (!href || typeof href !== "string") {
     return false;
   }
-  
+
   const trimmed = href.trim();
-  
+
   // Protocol-relative URLs (//example.com) are external
-  if (trimmed.startsWith('//')) {
+  if (trimmed.startsWith("//")) {
     const fullUrl = `https:${trimmed}`;
     try {
       const url = new URL(fullUrl);
@@ -154,9 +160,9 @@ export function isExternalLink(href: string): boolean {
       return true;
     }
   }
-  
+
   // Check for external protocols
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
     try {
       const url = new URL(trimmed);
       const base = new URL(getBaseUrl());
@@ -165,16 +171,16 @@ export function isExternalLink(href: string): boolean {
       return false;
     }
   }
-  
+
   return false;
 }
 
 /**
  * Get the type of a link
- * 
+ *
  * @param href - The URL or path to check
  * @returns The link type classification
- * 
+ *
  * @example
  * getLinkType('/products') // 'internal'
  * getLinkType('https://google.com') // 'external'
@@ -183,54 +189,54 @@ export function isExternalLink(href: string): boolean {
  * getLinkType('#section') // 'anchor'
  */
 export function getLinkType(href: string): LinkType {
-  if (!href || typeof href !== 'string') {
-    return 'invalid';
+  if (!href || typeof href !== "string") {
+    return "invalid";
   }
-  
+
   const trimmed = href.trim().toLowerCase();
-  
+
   // Email links
-  if (trimmed.startsWith('mailto:')) {
-    return 'email';
+  if (trimmed.startsWith("mailto:")) {
+    return "email";
   }
-  
+
   // Phone links
-  if (trimmed.startsWith('tel:')) {
-    return 'phone';
+  if (trimmed.startsWith("tel:")) {
+    return "phone";
   }
-  
+
   // Anchor links
-  if (trimmed.startsWith('#')) {
-    return 'anchor';
+  if (trimmed.startsWith("#")) {
+    return "anchor";
   }
-  
+
   // Internal links
   if (isInternalLink(href)) {
-    return 'internal';
+    return "internal";
   }
-  
+
   // External links
   if (isExternalLink(href)) {
-    return 'external';
+    return "external";
   }
-  
+
   // Check if it's a valid URL format
   try {
     new URL(href);
-    return 'external';
+    return "external";
   } catch {
     // Might be a malformed URL
-    return 'invalid';
+    return "invalid";
   }
 }
 
 /**
  * Resolve a relative path to a full URL
- * 
+ *
  * @param href - The URL or relative path
  * @param baseUrl - Optional base URL (defaults to current site)
  * @returns The fully resolved URL
- * 
+ *
  * @example
  * resolveUrl('/products') // 'https://letitrip.in/products'
  * resolveUrl('/search?q=test') // 'https://letitrip.in/search?q=test'
@@ -238,40 +244,40 @@ export function getLinkType(href: string): LinkType {
  * resolveUrl('https://google.com') // 'https://google.com' (unchanged)
  */
 export function resolveUrl(href: string, baseUrl?: string): string {
-  if (!href || typeof href !== 'string') {
+  if (!href || typeof href !== "string") {
     return href;
   }
-  
+
   const trimmed = href.trim();
   const base = baseUrl || getBaseUrl();
-  
+
   // Already a full URL
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
     return trimmed;
   }
-  
+
   // Protocol-relative URL
-  if (trimmed.startsWith('//')) {
+  if (trimmed.startsWith("//")) {
     return `https:${trimmed}`;
   }
-  
+
   // Email or phone - return as is
-  if (trimmed.startsWith('mailto:') || trimmed.startsWith('tel:')) {
+  if (trimmed.startsWith("mailto:") || trimmed.startsWith("tel:")) {
     return trimmed;
   }
-  
+
   // Anchor link - prepend base URL
-  if (trimmed.startsWith('#')) {
+  if (trimmed.startsWith("#")) {
     return `${base}${trimmed}`;
   }
-  
+
   // Relative path - prepend base URL
-  if (trimmed.startsWith('/')) {
+  if (trimmed.startsWith("/")) {
     // Remove trailing slash from base to avoid double slashes
-    const cleanBase = base.replace(/\/$/, '');
+    const cleanBase = base.replace(/\/$/, "");
     return `${cleanBase}${trimmed}`;
   }
-  
+
   // Relative path without leading slash
   // This is ambiguous, so we just return as-is
   return trimmed;
@@ -279,187 +285,190 @@ export function resolveUrl(href: string, baseUrl?: string): string {
 
 /**
  * Validate a link value
- * 
+ *
  * @param value - The link value to validate
  * @param options - Validation options
  * @returns Validation result
- * 
+ *
  * @example
  * validateLink('/products') // { isValid: true, type: 'internal', ... }
  * validateLink('not a url') // { isValid: false, error: '...', ... }
  */
 export function validateLink(
   value: string,
-  options: LinkValidationOptions = {}
+  options: LinkValidationOptions = {},
 ): LinkValidationResult {
   const opts = { ...defaultValidationOptions, ...options };
-  
+
   // Empty string is valid (optional field)
-  if (!value || value.trim() === '') {
+  if (!value || value.trim() === "") {
     return {
       isValid: true,
-      type: 'internal',
+      type: "internal",
       isInternal: true,
       shouldOpenInNewTab: false,
     };
   }
-  
+
   const trimmed = value.trim();
   const linkType = getLinkType(trimmed);
-  
+
   // Check if type is allowed
   switch (linkType) {
-    case 'internal':
-      if (!opts.allowRelative && trimmed.startsWith('/')) {
+    case "internal":
+      if (!opts.allowRelative && trimmed.startsWith("/")) {
         return {
           isValid: false,
-          error: 'Relative paths are not allowed',
+          error: "Relative paths are not allowed",
           type: linkType,
           isInternal: true,
           shouldOpenInNewTab: false,
         };
       }
       break;
-      
-    case 'external':
+
+    case "external":
       if (!opts.allowExternal) {
         return {
           isValid: false,
-          error: 'External URLs are not allowed',
+          error: "External URLs are not allowed",
           type: linkType,
           isInternal: false,
           shouldOpenInNewTab: true,
         };
       }
-      
+
       // Check for HTTPS requirement
-      if (opts.requireHttps && trimmed.toLowerCase().startsWith('http://')) {
+      if (opts.requireHttps && trimmed.toLowerCase().startsWith("http://")) {
         return {
           isValid: false,
-          error: 'Only HTTPS URLs are allowed',
+          error: "Only HTTPS URLs are allowed",
           type: linkType,
           isInternal: false,
           shouldOpenInNewTab: true,
         };
       }
       break;
-      
-    case 'email':
+
+    case "email":
       if (!opts.allowEmail) {
         return {
           isValid: false,
-          error: 'Email links are not allowed',
+          error: "Email links are not allowed",
           type: linkType,
           isInternal: false,
           shouldOpenInNewTab: false,
         };
       }
       break;
-      
-    case 'phone':
+
+    case "phone":
       if (!opts.allowPhone) {
         return {
           isValid: false,
-          error: 'Phone links are not allowed',
+          error: "Phone links are not allowed",
           type: linkType,
           isInternal: false,
           shouldOpenInNewTab: false,
         };
       }
       break;
-      
-    case 'anchor':
+
+    case "anchor":
       if (!opts.allowAnchor) {
         return {
           isValid: false,
-          error: 'Anchor links are not allowed',
+          error: "Anchor links are not allowed",
           type: linkType,
           isInternal: true,
           shouldOpenInNewTab: false,
         };
       }
       break;
-      
-    case 'invalid':
+
+    case "invalid":
       return {
         isValid: false,
-        error: 'Invalid link format',
+        error: "Invalid link format",
         type: linkType,
         isInternal: false,
         shouldOpenInNewTab: false,
       };
   }
-  
+
   // All validations passed
   return {
     isValid: true,
     type: linkType,
     resolvedUrl: resolveUrl(trimmed),
-    isInternal: linkType === 'internal' || linkType === 'anchor',
-    shouldOpenInNewTab: linkType === 'external',
+    isInternal: linkType === "internal" || linkType === "anchor",
+    shouldOpenInNewTab: linkType === "external",
   };
 }
 
 /**
  * Get the appropriate rel attribute for a link
- * 
+ *
  * @param href - The link URL
  * @returns The rel attribute value
  */
 export function getLinkRel(href: string): string | undefined {
   if (isExternalLink(href)) {
-    return 'noopener noreferrer';
+    return "noopener noreferrer";
   }
   return undefined;
 }
 
 /**
  * Get the appropriate target attribute for a link
- * 
+ *
  * @param href - The link URL
  * @param forceNewTab - Force opening in new tab
  * @returns The target attribute value
  */
-export function getLinkTarget(href: string, forceNewTab = false): string | undefined {
+export function getLinkTarget(
+  href: string,
+  forceNewTab = false,
+): string | undefined {
   if (forceNewTab || isExternalLink(href)) {
-    return '_blank';
+    return "_blank";
   }
   return undefined;
 }
 
 /**
  * Format a link for display (truncate if too long)
- * 
+ *
  * @param href - The link URL
  * @param maxLength - Maximum display length
  * @returns Formatted display string
  */
 export function formatLinkForDisplay(href: string, maxLength = 50): string {
-  if (!href) return '';
-  
+  if (!href) return "";
+
   // Remove protocol for cleaner display
-  let display = href.replace(/^https?:\/\//, '');
-  
+  let display = href.replace(/^https?:\/\//, "");
+
   // Remove trailing slash
-  display = display.replace(/\/$/, '');
-  
+  display = display.replace(/\/$/, "");
+
   // Truncate if too long
   if (display.length > maxLength) {
     return `${display.substring(0, maxLength - 3)}...`;
   }
-  
+
   return display;
 }
 
 /**
  * Extract domain from a URL
- * 
+ *
  * @param href - The URL
  * @returns The domain name or null
  */
 export function extractDomain(href: string): string | null {
   try {
-    const url = new URL(href.startsWith('//') ? `https:${href}` : href);
+    const url = new URL(href.startsWith("//") ? `https:${href}` : href);
     return url.hostname;
   } catch {
     return null;
@@ -468,18 +477,37 @@ export function extractDomain(href: string): string | null {
 
 /**
  * Check if a link is to a downloadable file
- * 
+ *
  * @param href - The URL
  * @returns true if the link points to a downloadable file
  */
 export function isDownloadableLink(href: string): boolean {
   const downloadExtensions = [
-    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
-    '.zip', '.rar', '.7z', '.tar', '.gz',
-    '.mp3', '.mp4', '.avi', '.mov', '.wmv',
-    '.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp',
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".ppt",
+    ".pptx",
+    ".zip",
+    ".rar",
+    ".7z",
+    ".tar",
+    ".gz",
+    ".mp3",
+    ".mp4",
+    ".avi",
+    ".mov",
+    ".wmv",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".svg",
+    ".webp",
   ];
-  
+
   const lowercaseHref = href.toLowerCase();
-  return downloadExtensions.some(ext => lowercaseHref.endsWith(ext));
+  return downloadExtensions.some((ext) => lowercaseHref.endsWith(ext));
 }

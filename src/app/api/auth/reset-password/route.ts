@@ -29,10 +29,7 @@ export async function POST(req: NextRequest) {
     const { email } = body;
 
     if (!email) {
-      return NextResponse.json(
-        { error: "Email is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
     // Always return success to prevent email enumeration

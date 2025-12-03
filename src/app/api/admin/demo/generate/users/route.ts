@@ -5,16 +5,79 @@ import { COLLECTIONS } from "@/constants/database";
 const DEMO_PREFIX = "DEMO_";
 
 const INDIAN_FIRST_NAMES = [
-  "Aarav", "Vivaan", "Aditya", "Arjun", "Sai", "Krishna", "Ishaan", "Rohan", "Rahul", "Ravi",
-  "Ananya", "Aadhya", "Diya", "Priya", "Kavya", "Saanvi", "Anika", "Pari", "Myra", "Sara",
-  "Amit", "Suresh", "Vikram", "Karan", "Akash", "Nikhil", "Sanjay", "Raj", "Dev", "Jay",
-  "Pooja", "Neha", "Shreya", "Anjali", "Ritika", "Meera", "Nisha", "Sneha", "Divya", "Tanvi",
-  "Om", "Ved", "Yash", "Aryan", "Dhruv", "Kabir", "Shaurya", "Rehan", "Zain", "Ali",
+  "Aarav",
+  "Vivaan",
+  "Aditya",
+  "Arjun",
+  "Sai",
+  "Krishna",
+  "Ishaan",
+  "Rohan",
+  "Rahul",
+  "Ravi",
+  "Ananya",
+  "Aadhya",
+  "Diya",
+  "Priya",
+  "Kavya",
+  "Saanvi",
+  "Anika",
+  "Pari",
+  "Myra",
+  "Sara",
+  "Amit",
+  "Suresh",
+  "Vikram",
+  "Karan",
+  "Akash",
+  "Nikhil",
+  "Sanjay",
+  "Raj",
+  "Dev",
+  "Jay",
+  "Pooja",
+  "Neha",
+  "Shreya",
+  "Anjali",
+  "Ritika",
+  "Meera",
+  "Nisha",
+  "Sneha",
+  "Divya",
+  "Tanvi",
+  "Om",
+  "Ved",
+  "Yash",
+  "Aryan",
+  "Dhruv",
+  "Kabir",
+  "Shaurya",
+  "Rehan",
+  "Zain",
+  "Ali",
 ];
 
 const INDIAN_LAST_NAMES = [
-  "Sharma", "Verma", "Gupta", "Singh", "Kumar", "Patel", "Shah", "Joshi", "Iyer", "Nair",
-  "Reddy", "Rao", "Menon", "Pillai", "Agarwal", "Banerjee", "Das", "Ghosh", "Sen", "Malhotra",
+  "Sharma",
+  "Verma",
+  "Gupta",
+  "Singh",
+  "Kumar",
+  "Patel",
+  "Shah",
+  "Joshi",
+  "Iyer",
+  "Nair",
+  "Reddy",
+  "Rao",
+  "Menon",
+  "Pillai",
+  "Agarwal",
+  "Banerjee",
+  "Das",
+  "Ghosh",
+  "Sen",
+  "Malhotra",
 ];
 
 const INDIAN_CITIES = [
@@ -30,13 +93,39 @@ const INDIAN_CITIES = [
   { city: "Lucknow", state: "Uttar Pradesh", pincode: "226001" },
 ];
 
-const STREETS = ["Marine Drive", "MG Road", "Park Street", "Anna Salai", "FC Road", "Brigade Road", "Linking Road", "Gandhi Nagar", "Civil Lines", "Mall Road"];
+const STREETS = [
+  "Marine Drive",
+  "MG Road",
+  "Park Street",
+  "Anna Salai",
+  "FC Road",
+  "Brigade Road",
+  "Linking Road",
+  "Gandhi Nagar",
+  "Civil Lines",
+  "Mall Road",
+];
 
 // Beyblade-themed display name prefixes for sellers
 const BLADER_PREFIXES = [
-  "BladeMaster", "SpinKing", "DragonBlader", "StormRider", "PhoenixBurst", "LegendarySpinner",
-  "BurstChampion", "MetalFury", "GalaxyPegasus", "LDragoMaster", "ValkyriePro", "SprigganElite",
-  "FafnirAce", "LonginusKing", "AchillesHero", "DiabolosDark", "BelialBlader", "RageWarrior",
+  "BladeMaster",
+  "SpinKing",
+  "DragonBlader",
+  "StormRider",
+  "PhoenixBurst",
+  "LegendarySpinner",
+  "BurstChampion",
+  "MetalFury",
+  "GalaxyPegasus",
+  "LDragoMaster",
+  "ValkyriePro",
+  "SprigganElite",
+  "FafnirAce",
+  "LonginusKing",
+  "AchillesHero",
+  "DiabolosDark",
+  "BelialBlader",
+  "RageWarrior",
 ];
 
 // Avatar images for different user types
@@ -65,47 +154,67 @@ const AVATAR_IMAGES = [
 
 // Role distribution percentages (for 10 users base)
 // Admin is always 1 (Mohsin) regardless of scale
-const USER_ROLES_BASE = { admin: 1, moderator: 3, support: 5, seller: 5, user: 4 };
+const USER_ROLES_BASE = {
+  admin: 1,
+  moderator: 3,
+  support: 5,
+  seller: 5,
+  user: 4,
+};
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const scale = body.scale || 10;
-    
+
     // Calculate actual user counts based on scale
     // Admin is always 1 (Mohsin) regardless of scale
     const USER_ROLES = {
       admin: 1, // Always 1 admin - Mohsin
-      moderator: Math.max(1, Math.round(USER_ROLES_BASE.moderator * scale / 10)),
-      support: Math.max(1, Math.round(USER_ROLES_BASE.support * scale / 10)),
-      seller: Math.max(1, Math.round(USER_ROLES_BASE.seller * scale / 10)),
-      user: Math.max(1, Math.round(USER_ROLES_BASE.user * scale / 10)),
+      moderator: Math.max(
+        1,
+        Math.round((USER_ROLES_BASE.moderator * scale) / 10),
+      ),
+      support: Math.max(1, Math.round((USER_ROLES_BASE.support * scale) / 10)),
+      seller: Math.max(1, Math.round((USER_ROLES_BASE.seller * scale) / 10)),
+      user: Math.max(1, Math.round((USER_ROLES_BASE.user * scale) / 10)),
     };
-    
+
     const db = getFirestoreAdmin();
     const timestamp = new Date();
-    const createdUsers: Array<{ id: string; role: string; name: string; email: string; password: string }> = [];
+    const createdUsers: Array<{
+      id: string;
+      role: string;
+      name: string;
+      email: string;
+      password: string;
+    }> = [];
 
     let userIndex = 0;
     for (const [role, count] of Object.entries(USER_ROLES)) {
       for (let i = 0; i < count; i++) {
         // Use Mohsin for the admin account, random names for others
         const isAdmin = role === "admin";
-        const firstName = isAdmin ? "Mohsin" : INDIAN_FIRST_NAMES[userIndex % INDIAN_FIRST_NAMES.length];
-        const lastName = isAdmin ? "AC" : INDIAN_LAST_NAMES[userIndex % INDIAN_LAST_NAMES.length];
+        const firstName = isAdmin
+          ? "Mohsin"
+          : INDIAN_FIRST_NAMES[userIndex % INDIAN_FIRST_NAMES.length];
+        const lastName = isAdmin
+          ? "AC"
+          : INDIAN_LAST_NAMES[userIndex % INDIAN_LAST_NAMES.length];
         const fullName = `${firstName} ${lastName}`;
-        const email = isAdmin 
-          ? "admin@demo.letitrip.in" 
+        const email = isAdmin
+          ? "admin@demo.letitrip.in"
           : `${firstName.toLowerCase()}.${lastName.toLowerCase()}${userIndex}@demo.letitrip.in`;
         const city = INDIAN_CITIES[userIndex % INDIAN_CITIES.length];
 
         const userRef = db.collection(COLLECTIONS.USERS).doc();
-        
+
         // Generate Beyblade-themed display name for sellers, use full name for others
-        const displayName = role === "seller" 
-          ? `${BLADER_PREFIXES[userIndex % BLADER_PREFIXES.length]}_${firstName}`
-          : fullName;
-        
+        const displayName =
+          role === "seller"
+            ? `${BLADER_PREFIXES[userIndex % BLADER_PREFIXES.length]}_${firstName}`
+            : fullName;
+
         // Beyblade-themed bio based on role
         const bioOptions = [
           `Beyblade collector and enthusiast from ${city.city}. Let it rip! 🌀`,
@@ -116,7 +225,7 @@ export async function POST(request: Request) {
           `Vintage HMS and Plastics collector from ${city.city}. 15+ years experience!`,
           `Tournament champion and trader from ${city.city}. Premium stadium setups!`,
         ];
-        
+
         await userRef.set({
           name: `${DEMO_PREFIX}${fullName}`,
           display_name: displayName,
@@ -138,38 +247,62 @@ export async function POST(request: Request) {
             language: "en",
             currency: "INR",
           },
-          addresses: [{
-            id: `addr-${userRef.id}-1`,
-            street: `${100 + userIndex} ${STREETS[userIndex % STREETS.length]}`,
-            city: city.city,
-            state: city.state,
-            pincode: city.pincode,
-            country: "India",
-            isDefault: true,
-            label: "Home",
-          }],
+          addresses: [
+            {
+              id: `addr-${userRef.id}-1`,
+              street: `${100 + userIndex} ${STREETS[userIndex % STREETS.length]}`,
+              city: city.city,
+              state: city.state,
+              pincode: city.pincode,
+              country: "India",
+              isDefault: true,
+              label: "Home",
+            },
+          ],
           createdAt: timestamp,
           updatedAt: timestamp,
           passwordHash: "$2a$10$demoHashForTestingOnlyDemo123",
         });
 
-        createdUsers.push({ id: userRef.id, role, name: fullName, email, password: "Demo@123" });
+        createdUsers.push({
+          id: userRef.id,
+          role,
+          name: fullName,
+          email,
+          password: "Demo@123",
+        });
         userIndex++;
       }
     }
 
-    const sellers = createdUsers.filter(u => u.role === "seller");
-    const buyers = createdUsers.filter(u => u.role === "user");
-    const admins = createdUsers.filter(u => u.role === "admin");
-    const moderators = createdUsers.filter(u => u.role === "moderator");
-    const supportStaff = createdUsers.filter(u => u.role === "support");
+    const sellers = createdUsers.filter((u) => u.role === "seller");
+    const buyers = createdUsers.filter((u) => u.role === "user");
+    const admins = createdUsers.filter((u) => u.role === "admin");
+    const moderators = createdUsers.filter((u) => u.role === "moderator");
+    const supportStaff = createdUsers.filter((u) => u.role === "support");
 
     const credentials = {
-      admins: admins.map(u => ({ email: u.email, password: u.password, name: u.name })),
-      moderators: moderators.map(u => ({ email: u.email, password: u.password, name: u.name })),
-      support: supportStaff.map(u => ({ email: u.email, password: u.password, name: u.name })),
-      sellers: sellers.slice(0, 10).map(u => ({ email: u.email, password: u.password, name: u.name })),
-      buyers: buyers.slice(0, 10).map(u => ({ email: u.email, password: u.password, name: u.name })),
+      admins: admins.map((u) => ({
+        email: u.email,
+        password: u.password,
+        name: u.name,
+      })),
+      moderators: moderators.map((u) => ({
+        email: u.email,
+        password: u.password,
+        name: u.name,
+      })),
+      support: supportStaff.map((u) => ({
+        email: u.email,
+        password: u.password,
+        name: u.name,
+      })),
+      sellers: sellers
+        .slice(0, 10)
+        .map((u) => ({ email: u.email, password: u.password, name: u.name })),
+      buyers: buyers
+        .slice(0, 10)
+        .map((u) => ({ email: u.email, password: u.password, name: u.name })),
     };
 
     return NextResponse.json({
@@ -184,14 +317,18 @@ export async function POST(request: Request) {
           sellers: sellers.length,
           buyers: buyers.length,
         },
-        sellers: sellers.map(s => ({ id: s.id, name: s.name })),
-        buyers: buyers.map(b => ({ id: b.id, name: b.name })),
+        sellers: sellers.map((s) => ({ id: s.id, name: s.name })),
+        buyers: buyers.map((b) => ({ id: b.id, name: b.name })),
         credentials,
       },
     });
   } catch (error: unknown) {
     console.error("Demo users error:", error);
-    const message = error instanceof Error ? error.message : "Failed to generate users";
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
+    const message =
+      error instanceof Error ? error.message : "Failed to generate users";
+    return NextResponse.json(
+      { success: false, error: message },
+      { status: 500 },
+    );
   }
 }

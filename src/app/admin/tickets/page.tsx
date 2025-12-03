@@ -193,10 +193,10 @@ export default function AdminTicketsPage() {
                             ticket.priority === "urgent"
                               ? "text-red-600"
                               : ticket.priority === "high"
-                              ? "text-orange-600"
-                              : ticket.priority === "medium"
-                              ? "text-yellow-600"
-                              : "text-gray-600"
+                                ? "text-orange-600"
+                                : ticket.priority === "medium"
+                                  ? "text-yellow-600"
+                                  : "text-gray-600"
                           }`}
                         >
                           {ticket.priority}

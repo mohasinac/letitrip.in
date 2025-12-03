@@ -78,7 +78,7 @@ export default function AdminGeneralSettingsPage() {
 
   const updateField = <K extends keyof GeneralSettings>(
     field: K,
-    value: GeneralSettings[K]
+    value: GeneralSettings[K],
   ) => {
     if (!settings) return;
     setSettings({ ...settings, [field]: value });
@@ -86,7 +86,7 @@ export default function AdminGeneralSettingsPage() {
 
   const updateSocialLink = (
     platform: keyof GeneralSettings["socialLinks"],
-    value: string
+    value: string,
   ) => {
     if (!settings) return;
     setSettings({

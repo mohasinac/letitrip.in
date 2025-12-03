@@ -61,10 +61,11 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
 
     // Parse Sieve query
-    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-      searchParams,
-      reviewsConfig
-    );
+    const {
+      query: sieveQuery,
+      errors,
+      warnings,
+    } = parseSieveQuery(searchParams, reviewsConfig);
 
     if (errors.length > 0) {
       return NextResponse.json(
@@ -73,12 +74,13 @@ export async function GET(req: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Legacy filter params (backward compatibility)
-    const productId = searchParams.get("product_id") || searchParams.get("productId");
+    const productId =
+      searchParams.get("product_id") || searchParams.get("productId");
     const shopId = searchParams.get("shop_id") || searchParams.get("shopId");
     const userId = searchParams.get("user_id") || searchParams.get("userId");
     const status = searchParams.get("status");
@@ -113,7 +115,11 @@ export async function GET(req: NextRequest) {
     for (const filter of sieveQuery.filters) {
       const dbField = reviewsConfig.fieldMappings[filter.field] || filter.field;
       if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+        query = query.where(
+          dbField,
+          filter.operator as FirebaseFirestore.WhereFilterOp,
+          filter.value,
+        );
       }
     }
 
@@ -159,7 +165,9 @@ export async function GET(req: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const reviews = snapshot.docs.map((doc) => transformReview(doc.id, doc.data()));
+    const reviews = snapshot.docs.map((doc) =>
+      transformReview(doc.id, doc.data()),
+    );
 
     // Calculate stats if filtering by product
     let stats = null;
@@ -176,7 +184,7 @@ export async function GET(req: NextRequest) {
       if (totalReviews > 0) {
         const totalRating = allReviews.reduce(
           (sum: number, r: any) => sum + r.rating,
-          0
+          0,
         );
         const averageRating = totalRating / totalReviews;
 
@@ -214,7 +222,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching reviews:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch reviews" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

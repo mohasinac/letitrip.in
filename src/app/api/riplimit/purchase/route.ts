@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     if (!amount || typeof amount !== "number" || amount < 10) {
       return NextResponse.json(
         { success: false, error: "Minimum purchase amount is ₹10" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -56,8 +56,11 @@ export async function POST(request: NextRequest) {
 
     if (ripLimitAmount < RIPLIMIT_MIN_PURCHASE) {
       return NextResponse.json(
-        { success: false, error: `Minimum purchase is ${RIPLIMIT_MIN_PURCHASE} RipLimit (₹10)` },
-        { status: 400 }
+        {
+          success: false,
+          error: `Minimum purchase is ${RIPLIMIT_MIN_PURCHASE} RipLimit (₹10)`,
+        },
+        { status: 400 },
       );
     }
 
@@ -76,7 +79,7 @@ export async function POST(request: NextRequest) {
     // Create purchase record in Firestore
     const db = getFirestoreAdmin();
     const purchaseRef = db.collection(COLLECTIONS.RIPLIMIT_PURCHASES).doc();
-    
+
     await purchaseRef.set({
       userId: auth.user.uid,
       ripLimitAmount,
@@ -100,7 +103,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating RipLimit purchase:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create purchase order" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

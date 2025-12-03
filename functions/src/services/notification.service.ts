@@ -79,7 +79,7 @@ export class NotificationService {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${this.apiKey}`,
         },
         body: JSON.stringify({
           from: `${this.fromName} <${this.fromEmail}>`,
@@ -138,9 +138,9 @@ Your auction "${data.auctionName}" has ended without receiving any bids.
 Auction Details:
 - Starting Bid: ${this.formatCurrency(data.startingBid)}
 ${
-  data.reservePrice ?
-    `- Reserve Price: ${this.formatCurrency(data.reservePrice)}` :
-    ""
+  data.reservePrice
+    ? `- Reserve Price: ${this.formatCurrency(data.reservePrice)}`
+    : ""
 }
 
 You can:
@@ -171,37 +171,37 @@ The Letitrip Team
   
   <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
     <p style="font-size: 16px; margin-bottom: 20px;">Hello ${
-  data.seller.name
-},</p>
+      data.seller.name
+    },</p>
     
     <p style="font-size: 16px; margin-bottom: 20px;">
       Unfortunately, your auction <strong>"${
-  data.auctionName
-}"</strong> has ended without receiving any bids.
+        data.auctionName
+      }"</strong> has ended without receiving any bids.
     </p>
     
     ${
-  data.auctionImage ?
-    `
+      data.auctionImage
+        ? `
     <div style="text-align: center; margin: 20px 0;">
       <img src="${data.auctionImage}" alt="${data.auctionName}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
     </div>
-    ` :
-    ""
-}
+    `
+        : ""
+    }
     
     <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="margin-top: 0; color: #667eea;">Auction Details</h3>
       <p style="margin: 10px 0;"><strong>Starting Bid:</strong> ${this.formatCurrency(
-    data.startingBid,
-  )}</p>
+        data.startingBid,
+      )}</p>
       ${
-  data.reservePrice ?
-    `<p style="margin: 10px 0;"><strong>Reserve Price:</strong> ${this.formatCurrency(
-      data.reservePrice,
-    )}</p>` :
-    ""
-}
+        data.reservePrice
+          ? `<p style="margin: 10px 0;"><strong>Reserve Price:</strong> ${this.formatCurrency(
+              data.reservePrice,
+            )}</p>`
+          : ""
+      }
     </div>
     
     <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
@@ -282,36 +282,36 @@ The Letitrip Team
   
   <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
     <p style="font-size: 16px; margin-bottom: 20px;">Hello ${
-  data.seller.name
-},</p>
+      data.seller.name
+    },</p>
     
     <p style="font-size: 16px; margin-bottom: 20px;">
       Your auction <strong>"${
-  data.auctionName
-}"</strong> has ended, but the reserve price was not met.
+        data.auctionName
+      }"</strong> has ended, but the reserve price was not met.
     </p>
     
     ${
-  data.auctionImage ?
-    `
+      data.auctionImage
+        ? `
     <div style="text-align: center; margin: 20px 0;">
       <img src="${data.auctionImage}" alt="${data.auctionName}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
     </div>
-    ` :
-    ""
-}
+    `
+        : ""
+    }
     
     <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="margin-top: 0; color: #667eea;">Auction Results</h3>
       <p style="margin: 10px 0;"><strong>Highest Bid:</strong> <span style="color: #ef4444; font-size: 20px; font-weight: bold;">${this.formatCurrency(
-    data.finalBid,
-  )}</span></p>
+        data.finalBid,
+      )}</span></p>
       <p style="margin: 10px 0;"><strong>Reserve Price:</strong> ${this.formatCurrency(
-    data.reservePrice || 0,
-  )}</p>
+        data.reservePrice || 0,
+      )}</p>
       <p style="margin: 10px 0;"><strong>Highest Bidder:</strong> ${
-  data.bidder.name
-}</p>
+        data.bidder.name
+      }</p>
     </div>
     
     <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
@@ -374,33 +374,33 @@ The Letitrip Team
   
   <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
     <p style="font-size: 16px; margin-bottom: 20px;">Hello ${
-  data.bidder.name
-},</p>
+      data.bidder.name
+    },</p>
     
     <p style="font-size: 16px; margin-bottom: 20px;">
       Thank you for participating in the auction <strong>"${
-  data.auctionName
-}"</strong>.
+        data.auctionName
+      }"</strong>.
     </p>
     
     ${
-  data.auctionImage ?
-    `
+      data.auctionImage
+        ? `
     <div style="text-align: center; margin: 20px 0;">
       <img src="${data.auctionImage}" alt="${data.auctionName}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
     </div>
-    ` :
-    ""
-}
+    `
+        : ""
+    }
     
     <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="margin-top: 0; color: #667eea;">Auction Results</h3>
       <p style="margin: 10px 0;"><strong>Your Bid:</strong> <span style="font-size: 20px; font-weight: bold;">${this.formatCurrency(
-    data.finalBid,
-  )}</span></p>
+        data.finalBid,
+      )}</span></p>
       <p style="margin: 10px 0;"><strong>Reserve Price:</strong> ${this.formatCurrency(
-    data.reservePrice || 0,
-  )}</p>
+        data.reservePrice || 0,
+      )}</p>
     </div>
     
     <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
@@ -485,30 +485,30 @@ The Letitrip Team
   
   <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
     <p style="font-size: 16px; margin-bottom: 20px;">Hello ${
-  data.winner.name
-},</p>
+      data.winner.name
+    },</p>
     
     <p style="font-size: 16px; margin-bottom: 20px;">
       🎊 Congratulations! You have won the auction for <strong>"${
-  data.auctionName
-}"</strong>!
+        data.auctionName
+      }"</strong>!
     </p>
     
     ${
-  data.auctionImage ?
-    `
+      data.auctionImage
+        ? `
     <div style="text-align: center; margin: 20px 0;">
       <img src="${data.auctionImage}" alt="${data.auctionName}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
     </div>
-    ` :
-    ""
-}
+    `
+        : ""
+    }
     
     <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
       <p style="color: white; margin: 0; font-size: 14px;">Your Winning Bid</p>
       <p style="color: white; margin: 10px 0; font-size: 36px; font-weight: bold;">${this.formatCurrency(
-    data.finalBid,
-  )}</p>
+        data.finalBid,
+      )}</p>
     </div>
     
     <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #10b981;">
@@ -574,33 +574,33 @@ The Letitrip Team
   
   <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
     <p style="font-size: 16px; margin-bottom: 20px;">Great news ${
-  data.seller.name
-}!</p>
+      data.seller.name
+    }!</p>
     
     <p style="font-size: 16px; margin-bottom: 20px;">
       Your auction <strong>"${
-  data.auctionName
-}"</strong> has ended successfully!
+        data.auctionName
+      }"</strong> has ended successfully!
     </p>
     
     ${
-  data.auctionImage ?
-    `
+      data.auctionImage
+        ? `
     <div style="text-align: center; margin: 20px 0;">
       <img src="${data.auctionImage}" alt="${data.auctionName}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
     </div>
-    ` :
-    ""
-}
+    `
+        : ""
+    }
     
     <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="margin-top: 0; color: #059669;">Sale Details</h3>
       <p style="margin: 10px 0;"><strong>Winner:</strong> ${
-  data.winner.name
-}</p>
+        data.winner.name
+      }</p>
       <p style="margin: 10px 0;"><strong>Final Bid:</strong> <span style="color: #10b981; font-size: 24px; font-weight: bold;">${this.formatCurrency(
-    data.finalBid,
-  )}</span></p>
+        data.finalBid,
+      )}</span></p>
     </div>
     
     <div style="background: #d1fae5; border-left: 4px solid #10b981; padding: 15px; margin: 20px 0; border-radius: 4px;">

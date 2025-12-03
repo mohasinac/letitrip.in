@@ -70,10 +70,11 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
 
     // Parse Sieve query
-    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-      searchParams,
-      slidesConfig
-    );
+    const {
+      query: sieveQuery,
+      errors,
+      warnings,
+    } = parseSieveQuery(searchParams, slidesConfig);
 
     if (errors.length > 0) {
       return NextResponse.json(
@@ -82,7 +83,7 @@ export async function GET(req: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -97,7 +98,11 @@ export async function GET(req: NextRequest) {
     for (const filter of sieveQuery.filters) {
       const dbField = slidesConfig.fieldMappings[filter.field] || filter.field;
       if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+        query = query.where(
+          dbField,
+          filter.operator as FirebaseFirestore.WhereFilterOp,
+          filter.value,
+        );
       }
     }
 
@@ -128,10 +133,10 @@ export async function GET(req: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const slides = snapshot.docs.map((doc) => 
-      isAdmin 
+    const slides = snapshot.docs.map((doc) =>
+      isAdmin
         ? transformSlideForAdmin(doc.id, doc.data())
-        : transformSlideForPublic(doc.id, doc.data())
+        : transformSlideForPublic(doc.id, doc.data()),
     );
 
     // Build response with Sieve pagination meta

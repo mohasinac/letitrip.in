@@ -52,7 +52,7 @@ export default function ReviewForm({
       await uploadMultipleMedia(
         files.map((f) => f.file),
         "review",
-        productId
+        productId,
       );
     } catch (err) {
       console.error("Upload error:", err);

@@ -187,7 +187,7 @@ function LiveAuctionRow({
       <td className="px-4 py-3">
         <div className="font-semibold text-gray-900">
           {formatPrice(
-            auction.currentBid || auction.startingBid || auction.currentPrice
+            auction.currentBid || auction.startingBid || auction.currentPrice,
           )}
         </div>
         {auction.reservePrice && (
@@ -291,10 +291,10 @@ export default function LiveAuctionsPage() {
         totalValue: liveAuctions.reduce(
           (sum, a) =>
             sum + (a.currentBid || a.startingBid || a.currentPrice || 0),
-          0
+          0,
         ),
         endingSoon: liveAuctions.filter(
-          (a) => new Date(a.endTime).getTime() - now < oneHour
+          (a) => new Date(a.endTime).getTime() - now < oneHour,
         ).length,
         scheduledCount: 0,
       });

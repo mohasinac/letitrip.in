@@ -52,10 +52,13 @@ class NotificationService {
   /**
    * Get list of notifications for the current user
    */
-  async list(params: NotificationListParams = {}): Promise<NotificationListResponse> {
+  async list(
+    params: NotificationListParams = {},
+  ): Promise<NotificationListResponse> {
     const searchParams = new URLSearchParams();
     if (params.page) searchParams.set("page", params.page.toString());
-    if (params.pageSize) searchParams.set("pageSize", params.pageSize.toString());
+    if (params.pageSize)
+      searchParams.set("pageSize", params.pageSize.toString());
     if (params.unreadOnly) searchParams.set("unreadOnly", "true");
 
     const queryString = searchParams.toString();
@@ -80,11 +83,13 @@ class NotificationService {
     }>(url);
 
     // Transform dates
-    const notifications: NotificationFE[] = response.data.notifications.map((n) => ({
-      ...n,
-      createdAt: new Date(n.createdAt),
-      readAt: n.readAt ? new Date(n.readAt) : undefined,
-    }));
+    const notifications: NotificationFE[] = response.data.notifications.map(
+      (n) => ({
+        ...n,
+        createdAt: new Date(n.createdAt),
+        readAt: n.readAt ? new Date(n.readAt) : undefined,
+      }),
+    );
 
     return {
       notifications,
@@ -97,7 +102,7 @@ class NotificationService {
    */
   async getUnreadCount(): Promise<number> {
     const response = await apiService.get<{ data: { count: number } }>(
-      "/notifications/unread-count"
+      "/notifications/unread-count",
     );
     return response.data.count;
   }
@@ -108,7 +113,7 @@ class NotificationService {
   async markAsRead(notificationIds: string[]): Promise<{ marked: number }> {
     const response = await apiService.patch<{ data: { marked: number } }>(
       "/notifications",
-      { notificationIds }
+      { notificationIds },
     );
     return response.data;
   }
@@ -119,7 +124,7 @@ class NotificationService {
   async markAllAsRead(): Promise<{ marked: number }> {
     const response = await apiService.patch<{ data: { marked: number } }>(
       "/notifications",
-      { markAll: true }
+      { markAll: true },
     );
     return response.data;
   }
@@ -129,7 +134,7 @@ class NotificationService {
    */
   async delete(notificationId: string): Promise<{ deleted: number }> {
     const response = await apiService.delete<{ data: { deleted: number } }>(
-      `/notifications?id=${notificationId}`
+      `/notifications?id=${notificationId}`,
     );
     return response.data;
   }
@@ -139,7 +144,7 @@ class NotificationService {
    */
   async deleteRead(): Promise<{ deleted: number }> {
     const response = await apiService.delete<{ data: { deleted: number } }>(
-      "/notifications?deleteRead=true"
+      "/notifications?deleteRead=true",
     );
     return response.data;
   }
@@ -149,7 +154,7 @@ class NotificationService {
    */
   async deleteAll(): Promise<{ deleted: number }> {
     const response = await apiService.delete<{ data: { deleted: number } }>(
-      "/notifications?deleteAll=true"
+      "/notifications?deleteAll=true",
     );
     return response.data;
   }

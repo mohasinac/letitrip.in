@@ -98,7 +98,7 @@ export default function AdminPaymentSettingsPage() {
 
   const updateRazorpay = (
     field: keyof PaymentSettings["razorpay"],
-    value: string | boolean
+    value: string | boolean,
   ) => {
     if (!settings) return;
     setSettings({
@@ -115,7 +115,7 @@ export default function AdminPaymentSettingsPage() {
 
   const updatePayu = (
     field: keyof PaymentSettings["payu"],
-    value: string | boolean
+    value: string | boolean,
   ) => {
     if (!settings) return;
     setSettings({
@@ -132,7 +132,7 @@ export default function AdminPaymentSettingsPage() {
 
   const updateCod = (
     field: keyof PaymentSettings["cod"],
-    value: boolean | number
+    value: boolean | number,
   ) => {
     if (!settings) return;
     setSettings({
@@ -146,7 +146,7 @@ export default function AdminPaymentSettingsPage() {
 
   const updateCurrency = (
     field: "currency" | "currencySymbol",
-    value: string
+    value: string,
   ) => {
     if (!settings) return;
     setSettings({

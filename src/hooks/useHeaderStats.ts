@@ -38,44 +38,49 @@ export function useHeaderStats() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastFetchRef = useRef<number>(0);
 
-  const fetchStats = useCallback(async (force = false) => {
-    // Debounce: don't fetch if less than 2 seconds since last fetch
-    const now = Date.now();
-    if (!force && now - lastFetchRef.current < 2000) {
-      return;
-    }
-    lastFetchRef.current = now;
-
-    if (!isAuthenticated) {
-      setStats(defaultStats);
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const response = await apiService.get<{
-        success: boolean;
-        data: HeaderStats;
-      }>("/header/stats");
-      
-      if (response.success) {
-        setStats(response.data);
+  const fetchStats = useCallback(
+    async (force = false) => {
+      // Debounce: don't fetch if less than 2 seconds since last fetch
+      const now = Date.now();
+      if (!force && now - lastFetchRef.current < 2000) {
+        return;
       }
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error("Failed to fetch stats"));
-      // Keep previous stats on error
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isAuthenticated]);
+      lastFetchRef.current = now;
+
+      if (!isAuthenticated) {
+        setStats(defaultStats);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await apiService.get<{
+          success: boolean;
+          data: HeaderStats;
+        }>("/header/stats");
+
+        if (response.success) {
+          setStats(response.data);
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error ? err : new Error("Failed to fetch stats"),
+        );
+        // Keep previous stats on error
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [isAuthenticated],
+  );
 
   // Initial fetch and setup polling
   useEffect(() => {
     if (isAuthenticated) {
       fetchStats(true);
-      
+
       // Set up polling
       intervalRef.current = setInterval(() => {
         fetchStats();

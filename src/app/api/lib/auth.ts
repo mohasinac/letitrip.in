@@ -22,7 +22,7 @@ export interface AuthResult {
  * Returns user, role, and session data if authenticated
  */
 export async function getAuthFromRequest(
-  request: NextRequest
+  request: NextRequest,
 ): Promise<AuthResult> {
   try {
     const token = getSessionToken(request);

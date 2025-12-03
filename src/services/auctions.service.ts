@@ -251,9 +251,10 @@ class AuctionsService {
   // Get user's watchlist
   async getWatchlist(): Promise<AuctionFE[]> {
     try {
-      const response = await apiService.get<{ success: boolean; data: AuctionBE[] }>(
-        "/auctions/watchlist",
-      );
+      const response = await apiService.get<{
+        success: boolean;
+        data: AuctionBE[];
+      }>("/auctions/watchlist");
       const auctionsBE = response.data || [];
       return toFEAuctions(auctionsBE);
     } catch (error) {
@@ -264,7 +265,10 @@ class AuctionsService {
   // Get user's active bids
   async getMyBids(): Promise<BidFE[]> {
     try {
-      const response = await apiService.get<{ success: boolean; data: BidBE[] }>("/auctions/my-bids");
+      const response = await apiService.get<{
+        success: boolean;
+        data: BidBE[];
+      }>("/auctions/my-bids");
       const bidsBE = response.data || [];
       return bidsBE.map((bid) => toFEBid(bid));
     } catch (error) {
@@ -275,7 +279,10 @@ class AuctionsService {
   // Get user's won auctions
   async getWonAuctions(): Promise<AuctionFE[]> {
     try {
-      const response = await apiService.get<{ success: boolean; data: AuctionBE[] }>("/auctions/won");
+      const response = await apiService.get<{
+        success: boolean;
+        data: AuctionBE[];
+      }>("/auctions/won");
       const auctionsBE = response.data || [];
       return toFEAuctions(auctionsBE);
     } catch (error) {

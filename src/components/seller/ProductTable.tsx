@@ -28,7 +28,7 @@ export default function ProductTable({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductCardFE | null>(
-    null
+    null,
   );
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -148,8 +148,8 @@ export default function ProductTable({
                 isOutOfStock
                   ? "text-red-600 dark:text-red-400"
                   : isLowStock
-                  ? "text-yellow-600 dark:text-yellow-400"
-                  : "text-gray-900 dark:text-white"
+                    ? "text-yellow-600 dark:text-yellow-400"
+                    : "text-gray-900 dark:text-white"
               }`}
             >
               {stockCount}

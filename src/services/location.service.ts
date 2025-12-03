@@ -1,6 +1,6 @@
 /**
  * Location Service - GPS, Pincode, and Geocoding
- * 
+ *
  * Handles all location-related operations on the frontend.
  * Uses apiService to call API routes - NEVER accesses database directly.
  */
@@ -23,7 +23,7 @@ class LocationService {
    */
   async lookupPincode(pincode: string): Promise<PincodeLookupResult> {
     const cleaned = pincode.replace(/\D/g, "");
-    
+
     if (cleaned.length !== 6) {
       return {
         pincode: cleaned,
@@ -37,9 +37,10 @@ class LocationService {
       };
     }
 
-    const response = await apiService.get<{ success: boolean; data: PincodeLookupResult }>(
-      `/location/pincode/${cleaned}`
-    );
+    const response = await apiService.get<{
+      success: boolean;
+      data: PincodeLookupResult;
+    }>(`/location/pincode/${cleaned}`);
 
     return response.data;
   }
@@ -84,7 +85,8 @@ class LocationService {
           switch (error.code) {
             case error.PERMISSION_DENIED:
               code = "PERMISSION_DENIED";
-              message = "Location permission denied. Please enable location access.";
+              message =
+                "Location permission denied. Please enable location access.";
               break;
             case error.POSITION_UNAVAILABLE:
               code = "POSITION_UNAVAILABLE";
@@ -105,7 +107,7 @@ class LocationService {
           enableHighAccuracy: true,
           timeout: 10000,
           maximumAge: 30000,
-        }
+        },
       );
     });
   }
@@ -131,11 +133,14 @@ class LocationService {
    * Reverse geocode coordinates to get address
    * Note: Requires Google Maps API integration
    */
-  async reverseGeocode(coords: GeoCoordinates): Promise<ReverseGeocodeResult | null> {
+  async reverseGeocode(
+    coords: GeoCoordinates,
+  ): Promise<ReverseGeocodeResult | null> {
     try {
-      const response = await apiService.get<{ success: boolean; data: ReverseGeocodeResult }>(
-        `/location/geocode?lat=${coords.latitude}&lng=${coords.longitude}`
-      );
+      const response = await apiService.get<{
+        success: boolean;
+        data: ReverseGeocodeResult;
+      }>(`/location/geocode?lat=${coords.latitude}&lng=${coords.longitude}`);
       return response.data;
     } catch (error) {
       console.error("Reverse geocoding error:", error);

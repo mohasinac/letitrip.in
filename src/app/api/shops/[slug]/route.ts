@@ -41,11 +41,11 @@ export async function GET(
 
     // Fetch shop directly by slug (slug === document ID)
     const shopDoc = await Collections.shops().doc(slug).get();
-    
+
     // Fallback: Try querying by slug field for backward compatibility
     let data: any;
     let docId: string;
-    
+
     if (!shopDoc.exists) {
       // Legacy data: slug stored as field, not as document ID
       const shopSnapshot = await Collections.shops()
@@ -65,7 +65,7 @@ export async function GET(
       data = shopDoc.data();
       docId = shopDoc.id;
     }
-    
+
     const shop: any = {
       id: docId,
       ...data,
@@ -136,7 +136,7 @@ export async function PATCH(
     let shopDoc = await Collections.shops().doc(slug).get();
     let shop: any;
     let docId: string;
-    
+
     if (!shopDoc.exists) {
       // Fallback: Legacy data with random ID
       const shopSnapshot = await Collections.shops()
@@ -245,7 +245,7 @@ export async function DELETE(
     let shopDoc = await Collections.shops().doc(slug).get();
     let shop: any;
     let docId: string;
-    
+
     if (!shopDoc.exists) {
       // Fallback: Legacy data with random ID
       const shopSnapshot = await Collections.shops()

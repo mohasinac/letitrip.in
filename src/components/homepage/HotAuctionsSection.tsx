@@ -86,8 +86,8 @@ export function HotAuctionsSection({
                 auction.status === "upcoming"
                   ? "pending"
                   : auction.status === "live"
-                  ? "active"
-                  : auction.status,
+                    ? "active"
+                    : auction.status,
               shop: {
                 id: auction.shopId,
                 name: auction.shopName,

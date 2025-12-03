@@ -61,7 +61,7 @@ export default function OrderDetailPage() {
       const updated = await ordersService.updateStatus(
         order.id,
         newStatus,
-        internalNotes || undefined
+        internalNotes || undefined,
       );
       setOrder(updated);
       setShowStatusDialog(false);
@@ -88,7 +88,7 @@ export default function OrderDetailPage() {
         order.id,
         trackingNumber.trim(),
         shippingProvider.trim(),
-        estimatedDelivery ? new Date(estimatedDelivery) : undefined
+        estimatedDelivery ? new Date(estimatedDelivery) : undefined,
       );
       setOrder(updated);
       setShowShipmentDialog(false);
@@ -223,11 +223,11 @@ export default function OrderDetailPage() {
   }
 
   const canUpdateStatus = !["cancelled", "delivered", "refunded"].includes(
-    order.status
+    order.status,
   );
   const canShip = order.status === "confirmed" || order.status === "processing";
   const canCancel = !["shipped", "delivered", "cancelled", "refunded"].includes(
-    order.status
+    order.status,
   );
 
   return (

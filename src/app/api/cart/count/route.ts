@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
         count = cartData.items.reduce(
           (sum: number, item: { quantity?: number }) =>
             sum + (item.quantity || 1),
-          0
+          0,
         );
       }
     }
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     console.error("Error getting cart count:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get cart count" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

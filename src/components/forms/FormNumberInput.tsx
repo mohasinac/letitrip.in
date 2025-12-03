@@ -3,8 +3,10 @@
 import { forwardRef, InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-export interface FormNumberInputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "type"> {
+export interface FormNumberInputProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "size" | "type"
+> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -38,7 +40,7 @@ export const FormNumberInput = forwardRef<
       onChange,
       ...props
     },
-    ref
+    ref,
   ) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
     const computedStep =
@@ -102,15 +104,15 @@ export const FormNumberInput = forwardRef<
               suffix && "rounded-r-none",
               // Hide number spinners
               "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-              className
+              className,
             )}
             aria-invalid={!!error}
             aria-describedby={
               error
                 ? `${inputId}-error`
                 : helperText
-                ? `${inputId}-helper`
-                : undefined
+                  ? `${inputId}-helper`
+                  : undefined
             }
             {...props}
           />
@@ -142,7 +144,7 @@ export const FormNumberInput = forwardRef<
         )}
       </div>
     );
-  }
+  },
 );
 
 FormNumberInput.displayName = "FormNumberInput";

@@ -122,7 +122,7 @@ export function MobileNavRow({
     <div
       className={cn(
         "lg:hidden fixed bottom-16 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]",
-        className
+        className,
       )}
     >
       <div className="relative flex items-center">
@@ -154,13 +154,13 @@ export function MobileNavRow({
                   href={item.href}
                   className={cn(
                     "flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap border-b-2",
-                    active ? colors.active : colors.inactive
+                    active ? colors.active : colors.inactive,
                   )}
                 >
                   <Icon
                     className={cn(
                       "h-5 w-5",
-                      active ? colors.activeIcon : colors.inactiveIcon
+                      active ? colors.activeIcon : colors.inactiveIcon,
                     )}
                   />
                   <span>{item.title}</span>

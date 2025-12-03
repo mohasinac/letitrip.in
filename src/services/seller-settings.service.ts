@@ -98,12 +98,16 @@ class SellerSettingsService {
   /**
    * Update notification settings
    */
-  async updateNotifications(notifications: Partial<SellerNotificationSettings>): Promise<void> {
+  async updateNotifications(
+    notifications: Partial<SellerNotificationSettings>,
+  ): Promise<void> {
     const response = await apiService.put<UpdateResponse>(this.baseUrl, {
       notifications,
     });
     if (!response.success) {
-      throw new Error(response.error || "Failed to update notification settings");
+      throw new Error(
+        response.error || "Failed to update notification settings",
+      );
     }
   }
 
@@ -123,7 +127,10 @@ class SellerSettingsService {
    * Update all settings at once
    */
   async updateAll(settings: Partial<SellerSettings>): Promise<void> {
-    const response = await apiService.put<UpdateResponse>(this.baseUrl, settings);
+    const response = await apiService.put<UpdateResponse>(
+      this.baseUrl,
+      settings,
+    );
     if (!response.success) {
       throw new Error(response.error || "Failed to update settings");
     }
@@ -134,7 +141,7 @@ class SellerSettingsService {
    */
   async toggleNotification(
     key: keyof SellerNotificationSettings,
-    enabled: boolean
+    enabled: boolean,
   ): Promise<void> {
     await this.updateNotifications({ [key]: enabled });
   }

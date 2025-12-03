@@ -13,7 +13,7 @@ export function BasicInfoStep({
   errors = {},
 }: BasicInfoStepProps) {
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     onChange(name as keyof BlogFormData, value);

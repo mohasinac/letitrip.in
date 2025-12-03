@@ -20,10 +20,10 @@ function ShopsContent() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<string>(
-    searchParams.get("sortBy") || "rating"
+    searchParams.get("sortBy") || "rating",
   );
   const [sortOrder, setSortOrder] = useState<string>(
-    searchParams.get("sortOrder") || "desc"
+    searchParams.get("sortOrder") || "desc",
   );
   const [showFilters, setShowFilters] = useState(false);
   const [totalShops, setTotalShops] = useState(0);

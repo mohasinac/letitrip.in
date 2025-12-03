@@ -55,7 +55,7 @@ export default function InlineCategorySelectorWithCreate({
       const leafCategories = response.data
         .filter(
           (cat: any) =>
-            cat.isLeaf || (!cat.childrenIds?.length && !cat.hasChildren)
+            cat.isLeaf || (!cat.childrenIds?.length && !cat.hasChildren),
         )
         .map((cat: any) => ({
           id: cat.id,

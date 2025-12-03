@@ -24,7 +24,7 @@ export async function GET(
     // Try direct doc access first (slug/id as document ID), fallback to query for backward compatibility
     let data: any = null;
     const docById = await Collections.auctions().doc(id).get();
-    
+
     if (docById.exists) {
       data = { id: docById.id, ...docById.data() };
     } else {

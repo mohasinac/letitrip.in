@@ -35,7 +35,10 @@ module.exports = [
       ...googleConfig.rules,
       quotes: ["error", "double"],
       indent: ["error", 2],
-      "max-len": ["error", {code: 120, ignoreTemplateLiterals: true, ignoreStrings: true}],
+      "max-len": [
+        "error",
+        { code: 120, ignoreTemplateLiterals: true, ignoreStrings: true },
+      ],
       "@typescript-eslint/no-explicit-any": "warn",
       "require-jsdoc": "off",
       "valid-jsdoc": "off",

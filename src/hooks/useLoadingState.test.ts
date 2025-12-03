@@ -27,9 +27,7 @@ describe("useLoadingState", () => {
 
     it("should accept initial data", () => {
       const initialData = { name: "test" };
-      const { result } = renderHook(() =>
-        useLoadingState({ initialData })
-      );
+      const { result } = renderHook(() => useLoadingState({ initialData }));
 
       expect(result.current.data).toEqual(initialData);
     });
@@ -78,7 +76,7 @@ describe("useLoadingState", () => {
 
       await act(async () => {
         await result.current.execute(() =>
-          Promise.reject(new Error(errorMessage))
+          Promise.reject(new Error(errorMessage)),
         );
       });
 
@@ -90,9 +88,7 @@ describe("useLoadingState", () => {
 
     it("should call onLoadStart callback", async () => {
       const onLoadStart = jest.fn();
-      const { result } = renderHook(() =>
-        useLoadingState({ onLoadStart })
-      );
+      const { result } = renderHook(() => useLoadingState({ onLoadStart }));
 
       await act(async () => {
         await result.current.execute(() => Promise.resolve("data"));
@@ -104,9 +100,7 @@ describe("useLoadingState", () => {
     it("should call onLoadSuccess callback", async () => {
       const onLoadSuccess = jest.fn();
       const mockData = "success";
-      const { result } = renderHook(() =>
-        useLoadingState({ onLoadSuccess })
-      );
+      const { result } = renderHook(() => useLoadingState({ onLoadSuccess }));
 
       await act(async () => {
         await result.current.execute(() => Promise.resolve(mockData));
@@ -118,9 +112,7 @@ describe("useLoadingState", () => {
     it("should call onLoadError callback", async () => {
       const onLoadError = jest.fn();
       const error = new Error("Test error");
-      const { result } = renderHook(() =>
-        useLoadingState({ onLoadError })
-      );
+      const { result } = renderHook(() => useLoadingState({ onLoadError }));
 
       await act(async () => {
         await result.current.execute(() => Promise.reject(error));
@@ -163,7 +155,7 @@ describe("useLoadingState", () => {
 
     it("should not set data when setData is false", async () => {
       const { result } = renderHook(() =>
-        useLoadingState({ initialData: "initial" })
+        useLoadingState({ initialData: "initial" }),
       );
 
       await act(async () => {
@@ -229,9 +221,7 @@ describe("useLoadingState", () => {
   describe("reset", () => {
     it("should reset to initial state", async () => {
       const initialData = "initial";
-      const { result } = renderHook(() =>
-        useLoadingState({ initialData })
-      );
+      const { result } = renderHook(() => useLoadingState({ initialData }));
 
       await act(async () => {
         await result.current.execute(() => Promise.resolve("new"));
@@ -290,13 +280,11 @@ describe("useLoadingState", () => {
   describe("errorAutoResetMs", () => {
     it("should auto-clear error after specified time", async () => {
       const { result } = renderHook(() =>
-        useLoadingState({ errorAutoResetMs: 1000 })
+        useLoadingState({ errorAutoResetMs: 1000 }),
       );
 
       await act(async () => {
-        await result.current.execute(() =>
-          Promise.reject(new Error("test"))
-        );
+        await result.current.execute(() => Promise.reject(new Error("test")));
       });
 
       expect(result.current.error).not.toBeNull();

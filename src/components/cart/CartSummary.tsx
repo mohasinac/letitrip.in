@@ -100,7 +100,7 @@ export function CartSummary({
               style={{
                 width: `${Math.min(
                   (subtotal / freeShippingThreshold) * 100,
-                  100
+                  100,
                 )}%`,
               }}
             />

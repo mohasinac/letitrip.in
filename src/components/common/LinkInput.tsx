@@ -52,11 +52,10 @@ const InternalIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export interface LinkInputProps
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    "value" | "onChange"
-  > {
+export interface LinkInputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "value" | "onChange"
+> {
   /** Current link value */
   value: string;
   /** Callback when value changes */
@@ -141,7 +140,7 @@ export function LinkInput({
       allowAnchor: true,
       ...validationOptions,
     }),
-    [allowRelative, allowExternal, onlyInternal, validationOptions]
+    [allowRelative, allowExternal, onlyInternal, validationOptions],
   );
 
   // Validate the current value
@@ -189,7 +188,7 @@ export function LinkInput({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange(e.target.value);
     },
-    [onChange]
+    [onChange],
   );
 
   // Handle blur
@@ -253,8 +252,8 @@ export function LinkInput({
             displayError
               ? `${inputId}-error`
               : helperText
-              ? `${inputId}-helper`
-              : undefined
+                ? `${inputId}-helper`
+                : undefined
           }
           className={`
             w-full px-3 py-2 
@@ -266,8 +265,8 @@ export function LinkInput({
               displayError
                 ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                 : isFocused
-                ? "border-yellow-500 ring-1 ring-yellow-500"
-                : "border-gray-300 dark:border-gray-600 focus:ring-yellow-500 focus:border-yellow-500"
+                  ? "border-yellow-500 ring-1 ring-yellow-500"
+                  : "border-gray-300 dark:border-gray-600 focus:ring-yellow-500 focus:border-yellow-500"
             }
             ${
               disabled

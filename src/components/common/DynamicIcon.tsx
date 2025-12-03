@@ -60,7 +60,7 @@ export function DynamicIcon({
  */
 export function getIconComponent(
   name: string,
-  fallback: string = "Circle"
+  fallback: string = "Circle",
 ): React.ComponentType<LucideProps> {
   const formatIconName = (iconName: string): string => {
     return iconName

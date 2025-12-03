@@ -37,7 +37,7 @@ export interface UseLoadingStateReturn<T> extends LoadingState<T> {
   /** Execute an async operation with loading state management */
   execute: <R = T>(
     asyncFn: () => Promise<R>,
-    options?: { setData?: boolean; isRefresh?: boolean }
+    options?: { setData?: boolean; isRefresh?: boolean },
   ) => Promise<R | null>;
   /** Set data manually */
   setData: (data: T | null) => void;
@@ -89,7 +89,7 @@ export interface UseLoadingStateReturn<T> extends LoadingState<T> {
  * ```
  */
 export function useLoadingState<T = any>(
-  options: UseLoadingStateOptions<T> = {}
+  options: UseLoadingStateOptions<T> = {},
 ): UseLoadingStateReturn<T> {
   const {
     initialData = null,
@@ -133,7 +133,7 @@ export function useLoadingState<T = any>(
         }, errorAutoResetMs);
       }
     },
-    [errorAutoResetMs, clearErrorTimeout]
+    [errorAutoResetMs, clearErrorTimeout],
   );
 
   const clearError = useCallback(() => {
@@ -156,9 +156,10 @@ export function useLoadingState<T = any>(
   const execute = useCallback(
     async <R = T>(
       asyncFn: () => Promise<R>,
-      executeOptions: { setData?: boolean; isRefresh?: boolean } = {}
+      executeOptions: { setData?: boolean; isRefresh?: boolean } = {},
     ): Promise<R | null> => {
-      const { setData: shouldSetData = true, isRefresh = false } = executeOptions;
+      const { setData: shouldSetData = true, isRefresh = false } =
+        executeOptions;
 
       clearErrorTimeout();
       onLoadStart?.();
@@ -211,7 +212,13 @@ export function useLoadingState<T = any>(
         return null;
       }
     },
-    [onLoadStart, onLoadSuccess, onLoadError, errorAutoResetMs, clearErrorTimeout]
+    [
+      onLoadStart,
+      onLoadSuccess,
+      onLoadError,
+      errorAutoResetMs,
+      clearErrorTimeout,
+    ],
   );
 
   const retry = useCallback(async (): Promise<T | null> => {
@@ -257,7 +264,7 @@ export function useLoadingState<T = any>(
  * ```
  */
 export function useMultiLoadingState<
-  T extends Record<string, () => Promise<any>>
+  T extends Record<string, () => Promise<any>>,
 >(loaders: T) {
   const keys = Object.keys(loaders) as (keyof T)[];
 
@@ -268,7 +275,7 @@ export function useMultiLoadingState<
       acc[key] = useLoadingState();
       return acc;
     },
-    {} as { [K in keyof T]: UseLoadingStateReturn<Awaited<ReturnType<T[K]>>> }
+    {} as { [K in keyof T]: UseLoadingStateReturn<Awaited<ReturnType<T[K]>>> },
   );
 
   // Execute all loaders
@@ -282,7 +289,7 @@ export function useMultiLoadingState<
     async <K extends keyof T>(key: K) => {
       await states[key].execute(loaders[key]);
     },
-    [states, loaders]
+    [states, loaders],
   );
 
   // Computed states

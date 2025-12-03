@@ -178,7 +178,7 @@ export default function AdminUsersPage() {
 
   // Fields configuration for inline edit - using centralized config
   const fields: InlineField[] = toInlineFields(
-    getFieldsForContext(USER_FIELDS, "table")
+    getFieldsForContext(USER_FIELDS, "table"),
   );
 
   // Bulk actions configuration
@@ -202,7 +202,7 @@ export default function AdminUsersPage() {
               u.phone || "",
               u.is_banned ? "Banned" : "Active",
               new Date(u.createdAt).toLocaleDateString(),
-            ].join(",")
+            ].join(","),
           ),
         ].join("\n");
 
@@ -462,7 +462,7 @@ export default function AdminUsersPage() {
                             setSelectedIds((prev) =>
                               checked
                                 ? [...prev, user.id]
-                                : prev.filter((id) => id !== user.id)
+                                : prev.filter((id) => id !== user.id),
                             );
                           }}
                           aria-label={`Select ${user.name || user.email}`}
@@ -638,7 +638,7 @@ export default function AdminUsersPage() {
                             ? filteredUsers
                                 .filter((u) => u.id !== currentUser?.uid)
                                 .map((u) => u.id)
-                            : []
+                            : [],
                         );
                       }}
                       aria-label="Select all users"
@@ -695,11 +695,11 @@ export default function AdminUsersPage() {
                               // Validate form fields
                               const fieldsToValidate = getFieldsForContext(
                                 USER_FIELDS,
-                                "table"
+                                "table",
                               );
                               const { isValid } = validateForm(
                                 values,
-                                fieldsToValidate
+                                fieldsToValidate,
                               );
 
                               if (!isValid) {
@@ -735,7 +735,7 @@ export default function AdminUsersPage() {
                                 setSelectedIds((prev) =>
                                   checked
                                     ? [...prev, user.id]
-                                    : prev.filter((id) => id !== user.id)
+                                    : prev.filter((id) => id !== user.id),
                                 );
                               }}
                               aria-label={`Select ${user.name || user.email}`}

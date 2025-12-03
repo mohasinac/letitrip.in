@@ -99,7 +99,9 @@ class SettingsService {
    * Get all settings
    */
   async getAll(): Promise<AllSettings> {
-    const response = await apiService.get<SettingsResponse<AllSettings>>(this.baseUrl);
+    const response = await apiService.get<SettingsResponse<AllSettings>>(
+      this.baseUrl,
+    );
     if (!response.success) {
       throw new Error(response.error || "Failed to fetch settings");
     }
@@ -111,7 +113,7 @@ class SettingsService {
    */
   async getCategory<T>(category: SettingsCategory): Promise<T> {
     const response = await apiService.get<SettingsResponse<T>>(
-      `${this.baseUrl}?category=${category}`
+      `${this.baseUrl}?category=${category}`,
     );
     if (!response.success) {
       throw new Error(response.error || `Failed to fetch ${category} settings`);
@@ -150,13 +152,18 @@ class SettingsService {
   /**
    * Update settings for a category
    */
-  async updateCategory<T>(category: SettingsCategory, settings: Partial<T>): Promise<T> {
+  async updateCategory<T>(
+    category: SettingsCategory,
+    settings: Partial<T>,
+  ): Promise<T> {
     const response = await apiService.put<SettingsResponse<T>>(this.baseUrl, {
       category,
       settings,
     });
     if (!response.success) {
-      throw new Error(response.error || `Failed to update ${category} settings`);
+      throw new Error(
+        response.error || `Failed to update ${category} settings`,
+      );
     }
     return response.settings;
   }
@@ -164,28 +171,36 @@ class SettingsService {
   /**
    * Update general settings
    */
-  async updateGeneral(settings: Partial<GeneralSettings>): Promise<GeneralSettings> {
+  async updateGeneral(
+    settings: Partial<GeneralSettings>,
+  ): Promise<GeneralSettings> {
     return this.updateCategory<GeneralSettings>("general", settings);
   }
 
   /**
    * Update payment settings
    */
-  async updatePayment(settings: Partial<PaymentSettings>): Promise<PaymentSettings> {
+  async updatePayment(
+    settings: Partial<PaymentSettings>,
+  ): Promise<PaymentSettings> {
     return this.updateCategory<PaymentSettings>("payment", settings);
   }
 
   /**
    * Update shipping settings
    */
-  async updateShipping(settings: Partial<ShippingSettings>): Promise<ShippingSettings> {
+  async updateShipping(
+    settings: Partial<ShippingSettings>,
+  ): Promise<ShippingSettings> {
     return this.updateCategory<ShippingSettings>("shipping", settings);
   }
 
   /**
    * Update feature settings
    */
-  async updateFeatures(settings: Partial<FeatureSettings>): Promise<FeatureSettings> {
+  async updateFeatures(
+    settings: Partial<FeatureSettings>,
+  ): Promise<FeatureSettings> {
     return this.updateCategory<FeatureSettings>("features", settings);
   }
 
@@ -193,10 +208,10 @@ class SettingsService {
    * Update a single setting by path
    */
   async updateSetting(path: string, value: unknown): Promise<void> {
-    const response = await apiService.patch<{ success: boolean; error?: string }>(
-      this.baseUrl,
-      { path, value }
-    );
+    const response = await apiService.patch<{
+      success: boolean;
+      error?: string;
+    }>(this.baseUrl, { path, value });
     if (!response.success) {
       throw new Error(response.error || "Failed to update setting");
     }
@@ -205,7 +220,10 @@ class SettingsService {
   /**
    * Toggle maintenance mode
    */
-  async toggleMaintenanceMode(enabled: boolean, message?: string): Promise<void> {
+  async toggleMaintenanceMode(
+    enabled: boolean,
+    message?: string,
+  ): Promise<void> {
     const updates: Partial<GeneralSettings> = { maintenanceMode: enabled };
     if (message !== undefined) {
       updates.maintenanceMessage = message;
@@ -218,7 +236,7 @@ class SettingsService {
    */
   async toggleFeature(
     feature: keyof FeatureSettings,
-    enabled: boolean
+    enabled: boolean,
   ): Promise<void> {
     await this.updateSetting(`features.${feature}`, enabled);
   }
@@ -227,7 +245,7 @@ class SettingsService {
    * Update social links
    */
   async updateSocialLinks(
-    links: Partial<GeneralSettings["socialLinks"]>
+    links: Partial<GeneralSettings["socialLinks"]>,
   ): Promise<void> {
     const current = await this.getGeneral();
     await this.updateGeneral({

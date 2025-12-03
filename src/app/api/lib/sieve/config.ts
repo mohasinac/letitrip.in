@@ -200,13 +200,7 @@ export const ordersSieveConfig: SieveConfig = {
  */
 export const usersSieveConfig: SieveConfig = {
   resource: "users",
-  sortableFields: [
-    "createdAt",
-    "updatedAt",
-    "displayName",
-    "email",
-    "role",
-  ],
+  sortableFields: ["createdAt", "updatedAt", "displayName", "email", "role"],
   filterableFields: [
     {
       field: "role",
@@ -299,11 +293,7 @@ export const shopsSieveConfig: SieveConfig = {
  */
 export const reviewsSieveConfig: SieveConfig = {
   resource: "reviews",
-  sortableFields: [
-    "createdAt",
-    "rating",
-    "helpfulCount",
-  ],
+  sortableFields: ["createdAt", "rating", "helpfulCount"],
   filterableFields: [
     {
       field: "rating",
@@ -351,12 +341,7 @@ export const reviewsSieveConfig: SieveConfig = {
  */
 export const categoriesSieveConfig: SieveConfig = {
   resource: "categories",
-  sortableFields: [
-    "createdAt",
-    "name",
-    "order",
-    "productCount",
-  ],
+  sortableFields: ["createdAt", "name", "order", "productCount"],
   filterableFields: [
     {
       field: "status",
@@ -394,12 +379,7 @@ export const categoriesSieveConfig: SieveConfig = {
  */
 export const couponsSieveConfig: SieveConfig = {
   resource: "coupons",
-  sortableFields: [
-    "createdAt",
-    "discount",
-    "expiresAt",
-    "usageCount",
-  ],
+  sortableFields: ["createdAt", "discount", "expiresAt", "usageCount"],
   filterableFields: [
     {
       field: "status",
@@ -442,11 +422,7 @@ export const couponsSieveConfig: SieveConfig = {
  */
 export const returnsSieveConfig: SieveConfig = {
   resource: "returns",
-  sortableFields: [
-    "createdAt",
-    "updatedAt",
-    "status",
-  ],
+  sortableFields: ["createdAt", "updatedAt", "status"],
   filterableFields: [
     {
       field: "status",
@@ -489,12 +465,7 @@ export const returnsSieveConfig: SieveConfig = {
  */
 export const ticketsSieveConfig: SieveConfig = {
   resource: "tickets",
-  sortableFields: [
-    "createdAt",
-    "updatedAt",
-    "priority",
-    "status",
-  ],
+  sortableFields: ["createdAt", "updatedAt", "priority", "status"],
   filterableFields: [
     {
       field: "status",
@@ -537,12 +508,7 @@ export const ticketsSieveConfig: SieveConfig = {
  */
 export const blogSieveConfig: SieveConfig = {
   resource: "blog",
-  sortableFields: [
-    "createdAt",
-    "publishedAt",
-    "title",
-    "viewCount",
-  ],
+  sortableFields: ["createdAt", "publishedAt", "title", "viewCount"],
   filterableFields: [
     {
       field: "status",
@@ -585,10 +551,7 @@ export const blogSieveConfig: SieveConfig = {
  */
 export const heroSlidesSieveConfig: SieveConfig = {
   resource: "hero-slides",
-  sortableFields: [
-    "createdAt",
-    "order",
-  ],
+  sortableFields: ["createdAt", "order"],
   filterableFields: [
     {
       field: "status",
@@ -616,11 +579,7 @@ export const heroSlidesSieveConfig: SieveConfig = {
  */
 export const payoutsSieveConfig: SieveConfig = {
   resource: "payouts",
-  sortableFields: [
-    "createdAt",
-    "amount",
-    "status",
-  ],
+  sortableFields: ["createdAt", "amount", "status"],
   filterableFields: [
     {
       field: "status",
@@ -658,9 +617,7 @@ export const payoutsSieveConfig: SieveConfig = {
  */
 export const favoritesSieveConfig: SieveConfig = {
   resource: "favorites",
-  sortableFields: [
-    "createdAt",
-  ],
+  sortableFields: ["createdAt"],
   filterableFields: [
     {
       field: "type",
@@ -688,10 +645,7 @@ export const favoritesSieveConfig: SieveConfig = {
  */
 export const notificationsSieveConfig: SieveConfig = {
   resource: "notifications",
-  sortableFields: [
-    "createdAt",
-    "type",
-  ],
+  sortableFields: ["createdAt", "type"],
   filterableFields: [
     {
       field: "type",

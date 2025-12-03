@@ -77,7 +77,7 @@ export const Text: React.FC<TextProps> = ({
         colorClasses[color],
         weightClasses[weight],
         truncate && "truncate",
-        className
+        className,
       )}
     >
       {children}

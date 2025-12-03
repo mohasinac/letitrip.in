@@ -25,7 +25,7 @@ export default function FAQSection({
   defaultCategory,
 }: FAQSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    defaultCategory || null
+    defaultCategory || null,
   );
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -40,7 +40,7 @@ export default function FAQSection({
     faqs = faqs.filter(
       (faq) =>
         faq.question.toLowerCase().includes(lowerQuery) ||
-        faq.answer.toLowerCase().includes(lowerQuery)
+        faq.answer.toLowerCase().includes(lowerQuery),
     );
   }
 

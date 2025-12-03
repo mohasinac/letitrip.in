@@ -142,10 +142,10 @@ export function GPSButton({
               {status === "loading"
                 ? "Detecting..."
                 : status === "success"
-                ? "Location found"
-                : status === "error"
-                ? "Try again"
-                : "Use my location"}
+                  ? "Location found"
+                  : status === "error"
+                    ? "Try again"
+                    : "Use my location"}
             </span>
           </>
         );

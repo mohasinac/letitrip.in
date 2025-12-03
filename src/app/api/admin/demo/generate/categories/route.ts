@@ -5,70 +5,99 @@ import { COLLECTIONS } from "@/constants/database";
 const DEMO_PREFIX = "DEMO_";
 
 // Beyblade and collectibles focused images
-const CATEGORY_IMAGES: Record<string, { image: string; banner: string; icon: string }> = {
-  "Beyblades": {
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=400&fit=crop",
+const CATEGORY_IMAGES: Record<
+  string,
+  { image: string; banner: string; icon: string }
+> = {
+  Beyblades: {
+    image:
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop",
   },
   "Beyblade Burst": {
-    image: "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=1200&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=100&h=100&fit=crop",
   },
   "Beyblade X": {
-    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=100&h=100&fit=crop",
   },
   "Attack Types": {
-    image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&h=100&fit=crop",
   },
   "Defense Types": {
-    image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=1200&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=100&h=100&fit=crop",
   },
   "Stamina Types": {
-    image: "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=1200&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=100&h=100&fit=crop",
   },
   "Balance Types": {
-    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=100&h=100&fit=crop",
   },
   "Launchers & Gear": {
-    image: "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=1200&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=100&h=100&fit=crop",
   },
   "Stadiums & Arenas": {
-    image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=1200&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=100&h=100&fit=crop",
   },
   "Parts & Upgrades": {
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1200&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=100&h=100&fit=crop",
   },
   "Limited Editions": {
-    image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=1200&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=100&h=100&fit=crop",
   },
   "Vintage & Rare": {
-    image: "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=1200&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=100&h=100&fit=crop",
   },
-  "Accessories": {
-    image: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400&h=300&fit=crop",
-    banner: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=1200&h=400&fit=crop",
+  Accessories: {
+    image:
+      "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400&h=300&fit=crop",
+    banner:
+      "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=100&h=100&fit=crop",
   },
 };
@@ -87,7 +116,7 @@ const DEFAULT_CATEGORY_IMAGES = [
 
 // Beyblade-focused category tree
 const CATEGORY_TREE = {
-  "Beyblades": {
+  Beyblades: {
     children: {
       "Beyblade Burst": {
         children: {
@@ -142,9 +171,9 @@ const CATEGORY_TREE = {
       "Energy Layers": { isLeaf: true },
       "Forge Discs": { isLeaf: true },
       "Performance Tips": { isLeaf: true },
-      "Blades": { isLeaf: true },
-      "Ratchets": { isLeaf: true },
-      "Bits": { isLeaf: true },
+      Blades: { isLeaf: true },
+      Ratchets: { isLeaf: true },
+      Bits: { isLeaf: true },
     },
   },
   "Limited Editions": {
@@ -162,7 +191,7 @@ const CATEGORY_TREE = {
       "Collector Items": { isLeaf: true },
     },
   },
-  "Accessories": {
+  Accessories: {
     children: {
       "Carrying Cases": { isLeaf: true },
       "Tool Kits": { isLeaf: true },
@@ -182,7 +211,7 @@ export async function POST() {
     async function createCategories(
       tree: Record<string, any>,
       parentId: string | null = null,
-      parentIds: string[] = []
+      parentIds: string[] = [],
     ): Promise<void> {
       for (const [name, data] of Object.entries(tree)) {
         const catData = data as any;
@@ -224,11 +253,11 @@ export async function POST() {
         categoryCount++;
 
         if (catData.children) {
-          await createCategories(
-            catData.children,
+          await createCategories(catData.children, categoryId, [
+            ...parentIds,
+            ...(parentId ? [parentId] : []),
             categoryId,
-            [...parentIds, ...(parentId ? [parentId] : []), categoryId]
-          );
+          ]);
         }
       }
     }
@@ -245,7 +274,11 @@ export async function POST() {
     });
   } catch (error: unknown) {
     console.error("Demo categories error:", error);
-    const message = error instanceof Error ? error.message : "Failed to generate categories";
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
+    const message =
+      error instanceof Error ? error.message : "Failed to generate categories";
+    return NextResponse.json(
+      { success: false, error: message },
+      { status: 500 },
+    );
   }
 }

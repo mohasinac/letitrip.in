@@ -53,7 +53,7 @@ export default function EditCouponPage() {
     } catch (error: any) {
       console.error("Failed to update coupon:", error);
       toast.error(
-        error.message || "Failed to update coupon. Please try again."
+        error.message || "Failed to update coupon. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -181,7 +181,7 @@ export default function EditCouponPage() {
                     style={{
                       width: `${Math.min(
                         (coupon.usageCount / coupon.usageLimit) * 100,
-                        100
+                        100,
                       )}%`,
                     }}
                   />

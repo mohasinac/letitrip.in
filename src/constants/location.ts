@@ -44,7 +44,10 @@ export const UNION_TERRITORIES = [
   "Puducherry",
 ] as const;
 
-export const ALL_INDIAN_STATES = [...INDIAN_STATES, ...UNION_TERRITORIES] as const;
+export const ALL_INDIAN_STATES = [
+  ...INDIAN_STATES,
+  ...UNION_TERRITORIES,
+] as const;
 
 export type IndianState = (typeof ALL_INDIAN_STATES)[number];
 
@@ -101,7 +104,10 @@ export function isValidIndianPhone(phone: string): boolean {
 /**
  * Formats a phone number for display
  */
-export function formatPhone(phone: string, countryCode: string = "+91"): string {
+export function formatPhone(
+  phone: string,
+  countryCode: string = "+91",
+): string {
   const cleaned = phone.replace(/\D/g, "");
   if (cleaned.length === 10) {
     return `${countryCode} ${cleaned.slice(0, 5)}-${cleaned.slice(5)}`;

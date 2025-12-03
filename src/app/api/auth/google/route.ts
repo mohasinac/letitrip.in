@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  getFirestoreAdmin,
-  getAuthAdmin,
-} from "@/app/api/lib/firebase/admin";
+import { getFirestoreAdmin, getAuthAdmin } from "@/app/api/lib/firebase/admin";
 import { cookies } from "next/headers";
 
 /**
@@ -30,7 +27,7 @@ export async function POST(request: NextRequest) {
     if (!idToken) {
       return NextResponse.json(
         { success: false, error: "ID token is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -45,7 +42,7 @@ export async function POST(request: NextRequest) {
       console.error("Failed to verify ID token:", error);
       return NextResponse.json(
         { success: false, error: "Invalid ID token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -54,7 +51,7 @@ export async function POST(request: NextRequest) {
     if (!email) {
       return NextResponse.json(
         { success: false, error: "Email is required from Google account" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -141,7 +138,9 @@ export async function POST(request: NextRequest) {
 
     // Create a session cookie
     const expiresIn = 60 * 60 * 24 * 14 * 1000; // 14 days
-    const sessionCookie = await auth.createSessionCookie(idToken, { expiresIn });
+    const sessionCookie = await auth.createSessionCookie(idToken, {
+      expiresIn,
+    });
 
     // Set the session cookie
     const cookieStore = await cookies();
@@ -171,10 +170,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Google auth error:", error);
-    const message = error instanceof Error ? error.message : "Authentication failed";
+    const message =
+      error instanceof Error ? error.message : "Authentication failed";
     return NextResponse.json(
       { success: false, error: message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

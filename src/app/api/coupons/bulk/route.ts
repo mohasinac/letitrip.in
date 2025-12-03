@@ -5,7 +5,11 @@ import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ValidationError } from "@/lib/api-errors";
 
 // Build update object for each action
-function buildCouponUpdate(action: string, now: string, data?: any): Record<string, any> | null {
+function buildCouponUpdate(
+  action: string,
+  now: string,
+  data?: any,
+): Record<string, any> | null {
   switch (action) {
     case "activate":
       return { is_active: true, updated_at: now };
@@ -75,7 +79,11 @@ export async function POST(request: NextRequest) {
         const couponDoc = await couponRef.get();
 
         if (!couponDoc.exists) {
-          results.push({ id: couponId, success: false, error: "Coupon not found" });
+          results.push({
+            id: couponId,
+            success: false,
+            error: "Coupon not found",
+          });
           continue;
         }
 
@@ -85,7 +93,11 @@ export async function POST(request: NextRequest) {
         if (role === "seller") {
           const ownsShop = await userOwnsShop(couponData.shop_id, user.uid);
           if (!ownsShop) {
-            results.push({ id: couponId, success: false, error: "Not authorized to edit this coupon" });
+            results.push({
+              id: couponId,
+              success: false,
+              error: "Not authorized to edit this coupon",
+            });
             continue;
           }
         }
@@ -100,14 +112,25 @@ export async function POST(request: NextRequest) {
         // Build and apply update
         const updates = buildCouponUpdate(action, now, data);
         if (!updates) {
-          results.push({ id: couponId, success: false, error: action === "update" ? "Update data is required" : `Unknown action: ${action}` });
+          results.push({
+            id: couponId,
+            success: false,
+            error:
+              action === "update"
+                ? "Update data is required"
+                : `Unknown action: ${action}`,
+          });
           continue;
         }
 
         await couponRef.update(updates);
         results.push({ id: couponId, success: true });
       } catch (err: any) {
-        results.push({ id: couponId, success: false, error: err.message || "Failed to process coupon" });
+        results.push({
+          id: couponId,
+          success: false,
+          error: err.message || "Failed to process coupon",
+        });
       }
     }
 

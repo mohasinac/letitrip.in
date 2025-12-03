@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     for (const doc of shopsSnapshot.docs) {
       const data = doc.data();
-      
+
       // Get products for this shop
       const productsSnapshot = await db
         .collection(COLLECTIONS.PRODUCTS)
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 
       // Filter in-stock products only
       const inStockProducts = productsSnapshot.docs
-        .filter(doc => {
+        .filter((doc) => {
           const product = doc.data();
           return product.stock > 0;
         })
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
     console.error("Featured shops error:", error);
     return NextResponse.json(
       { data: [], error: "Failed to fetch featured shops" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

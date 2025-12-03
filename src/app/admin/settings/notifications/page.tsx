@@ -181,7 +181,7 @@ export default function AdminNotificationSettingsPage() {
       setLoading(true);
       setError(null);
       const response = await apiService.get<{ settings: NotificationSettings }>(
-        "/api/admin/settings?category=notifications"
+        "/api/admin/settings?category=notifications",
       );
       if (response.settings) {
         setSettings({ ...DEFAULT_SETTINGS, ...response.settings });
@@ -216,7 +216,7 @@ export default function AdminNotificationSettingsPage() {
   };
 
   const toggleCategory = (
-    category: keyof NotificationSettings["categories"]
+    category: keyof NotificationSettings["categories"],
   ) => {
     setSettings({
       ...settings,
@@ -232,7 +232,7 @@ export default function AdminNotificationSettingsPage() {
 
   const toggleChannel = (
     category: keyof NotificationSettings["categories"],
-    channel: "email" | "push" | "inApp"
+    channel: "email" | "push" | "inApp",
   ) => {
     setSettings({
       ...settings,

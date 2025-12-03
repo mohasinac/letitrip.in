@@ -47,7 +47,7 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({
         "fixed bottom-16 lg:bottom-0 left-0 right-0 z-40",
         "bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700",
         "px-4 py-3 shadow-lg",
-        className
+        className,
       )}
     >
       <div className="max-w-4xl mx-auto flex flex-wrap gap-2 sm:gap-3">
@@ -64,7 +64,7 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({
               "text-gray-700 dark:text-gray-300",
               "hover:bg-gray-50 dark:hover:bg-gray-700",
               "disabled:opacity-50 disabled:cursor-not-allowed",
-              "min-w-[100px]"
+              "min-w-[100px]",
             )}
           >
             {isSaving ? (
@@ -90,7 +90,7 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({
               "text-gray-700 dark:text-gray-300",
               "hover:bg-gray-50 dark:hover:bg-gray-700",
               "disabled:opacity-50 disabled:cursor-not-allowed",
-              "min-w-[100px]"
+              "min-w-[100px]",
             )}
           >
             <CheckCircle className="w-4 h-4" />
@@ -113,7 +113,7 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({
             isValid
               ? "bg-green-600 hover:bg-green-700 text-white"
               : "bg-blue-600 hover:bg-blue-700 text-white",
-            "disabled:opacity-50 disabled:cursor-not-allowed"
+            "disabled:opacity-50 disabled:cursor-not-allowed",
           )}
         >
           {isSubmitting ? (

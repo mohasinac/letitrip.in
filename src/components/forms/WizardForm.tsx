@@ -70,14 +70,14 @@ export function WizardForm<T = Record<string, unknown>>({
       isValid: true,
       hasErrors: false,
       errorCount: 0,
-    }))
+    })),
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // Check if all steps are valid
   const isAllValid = stepStates.every(
-    (state) => state.isComplete && state.isValid && !state.hasErrors
+    (state) => state.isComplete && state.isValid && !state.hasErrors,
   );
 
   // Update step state
@@ -89,7 +89,7 @@ export function WizardForm<T = Record<string, unknown>>({
         return newStates;
       });
     },
-    []
+    [],
   );
 
   // Handle step click
@@ -98,7 +98,7 @@ export function WizardForm<T = Record<string, unknown>>({
       setCurrentStep(stepIndex);
       onStepChange?.(stepIndex);
     },
-    [onStepChange]
+    [onStepChange],
   );
 
   // Go to next step
@@ -175,7 +175,7 @@ export function WizardForm<T = Record<string, unknown>>({
 
       // Check if all valid
       const allValid = stepStates.every(
-        (state) => state.isValid && !state.hasErrors
+        (state) => state.isValid && !state.hasErrors,
       );
       if (!allValid) {
         setIsSubmitting(false);

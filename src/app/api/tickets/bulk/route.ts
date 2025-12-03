@@ -4,14 +4,22 @@ import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { ValidationError } from "@/lib/api-errors";
 
 // Build update object for each action (excluding delete which needs special handling)
-function buildTicketUpdate(action: string, now: Date, updates?: any): Record<string, any> | null {
+function buildTicketUpdate(
+  action: string,
+  now: Date,
+  updates?: any,
+): Record<string, any> | null {
   switch (action) {
     case "update":
       if (!updates || typeof updates !== "object") return null;
       return { ...updates, updatedAt: now };
     case "assign":
       if (!updates?.assignedTo) return null;
-      return { assignedTo: updates.assignedTo, status: "in-progress", updatedAt: now };
+      return {
+        assignedTo: updates.assignedTo,
+        status: "in-progress",
+        updatedAt: now,
+      };
     case "resolve":
       return { status: "resolved", resolvedAt: now, updatedAt: now };
     case "close":
@@ -96,8 +104,12 @@ export async function POST(request: NextRequest) {
         // Build update for other actions
         const ticketUpdate = buildTicketUpdate(action, now, updates);
         if (!ticketUpdate) {
-          const errorMsg = action === "update" ? "Updates object required" : 
-                           action === "assign" ? "assignedTo field required" : "Unknown action";
+          const errorMsg =
+            action === "update"
+              ? "Updates object required"
+              : action === "assign"
+                ? "assignedTo field required"
+                : "Unknown action";
           results.failed.push({ id: ticketId, error: errorMsg });
           continue;
         }

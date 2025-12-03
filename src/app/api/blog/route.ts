@@ -42,10 +42,11 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
 
     // Parse Sieve query
-    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-      searchParams,
-      blogConfig
-    );
+    const {
+      query: sieveQuery,
+      errors,
+      warnings,
+    } = parseSieveQuery(searchParams, blogConfig);
 
     if (errors.length > 0) {
       return NextResponse.json(
@@ -54,16 +55,18 @@ export async function GET(req: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Legacy query params support (for backward compatibility)
     const status = searchParams.get("status") || "published";
     const category = searchParams.get("category");
-    const featured = searchParams.get("featured") || searchParams.get("showOnHomepage");
+    const featured =
+      searchParams.get("featured") || searchParams.get("showOnHomepage");
 
-    let query: FirebaseFirestore.Query = db.collection(COLLECTION)
+    let query: FirebaseFirestore.Query = db
+      .collection(COLLECTION)
       .where("status", "==", status);
 
     // Apply legacy filters
@@ -78,7 +81,11 @@ export async function GET(req: NextRequest) {
     for (const filter of sieveQuery.filters) {
       const dbField = blogConfig.fieldMappings[filter.field] || filter.field;
       if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+        query = query.where(
+          dbField,
+          filter.operator as FirebaseFirestore.WhereFilterOp,
+          filter.value,
+        );
       }
     }
 
@@ -109,7 +116,9 @@ export async function GET(req: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const data = snapshot.docs.map((doc) => transformBlogPost(doc.id, doc.data()));
+    const data = snapshot.docs.map((doc) =>
+      transformBlogPost(doc.id, doc.data()),
+    );
 
     // Build response with Sieve pagination meta
     const pagination = createPaginationMeta(totalCount, sieveQuery);
@@ -128,7 +137,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching blog posts:", error);
     return NextResponse.json(
       { error: "Failed to fetch blog posts" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

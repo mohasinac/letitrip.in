@@ -25,8 +25,12 @@ export async function blockForBid(
   userId: string,
   auctionId: string,
   bidId: string,
-  bidAmountINR: number
-): Promise<{ success: boolean; error?: string; transaction?: RipLimitTransactionBE }> {
+  bidAmountINR: number,
+): Promise<{
+  success: boolean;
+  error?: string;
+  transaction?: RipLimitTransactionBE;
+}> {
   const db = getFirestoreAdmin();
   const ripLimitAmount = inrToRipLimit(bidAmountINR);
 
@@ -42,7 +46,10 @@ export async function blockForBid(
 
     // Check if user can bid
     if (account.isBlocked) {
-      return { success: false, error: account.blockReason || "Account is blocked" };
+      return {
+        success: false,
+        error: account.blockReason || "Account is blocked",
+      };
     }
     if (account.hasUnpaidAuctions) {
       return { success: false, error: "You have unpaid won auctions" };
@@ -57,7 +64,9 @@ export async function blockForBid(
     }
 
     // Check if already has a bid on this auction
-    const blockedBidRef = accountRef.collection(SUBCOLLECTIONS.RIPLIMIT_BLOCKED_BIDS).doc(auctionId);
+    const blockedBidRef = accountRef
+      .collection(SUBCOLLECTIONS.RIPLIMIT_BLOCKED_BIDS)
+      .doc(auctionId);
     const existingBid = await t.get(blockedBidRef);
     let previouslyBlocked = 0;
 
@@ -84,12 +93,15 @@ export async function blockForBid(
       bidId,
       amount: ripLimitAmount,
       bidAmountINR,
-      createdAt: Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+      createdAt:
+        Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
     };
     t.set(blockedBidRef, blockedBidData);
 
     // Create transaction record
-    const transactionRef = db.collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS).doc();
+    const transactionRef = db
+      .collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS)
+      .doc();
     const transactionRecord: Omit<RipLimitTransactionBE, "id"> = {
       userId,
       type: RipLimitTransactionType.BID_BLOCK,
@@ -100,13 +112,17 @@ export async function blockForBid(
       bidId,
       status: RipLimitTransactionStatus.COMPLETED,
       description: `Bid blocked for auction`,
-      createdAt: Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+      createdAt:
+        Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
     };
     t.set(transactionRef, transactionRecord);
 
     return {
       success: true,
-      transaction: { id: transactionRef.id, ...transactionRecord } as RipLimitTransactionBE,
+      transaction: {
+        id: transactionRef.id,
+        ...transactionRecord,
+      } as RipLimitTransactionBE,
     };
   });
 
@@ -119,13 +135,19 @@ export async function blockForBid(
 export async function releaseBlockedBid(
   userId: string,
   auctionId: string,
-  reason: string = "Outbid"
-): Promise<{ success: boolean; releasedAmount?: number; transaction?: RipLimitTransactionBE }> {
+  reason: string = "Outbid",
+): Promise<{
+  success: boolean;
+  releasedAmount?: number;
+  transaction?: RipLimitTransactionBE;
+}> {
   const db = getFirestoreAdmin();
 
   const result = await db.runTransaction(async (t) => {
     const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
-    const blockedBidRef = accountRef.collection(SUBCOLLECTIONS.RIPLIMIT_BLOCKED_BIDS).doc(auctionId);
+    const blockedBidRef = accountRef
+      .collection(SUBCOLLECTIONS.RIPLIMIT_BLOCKED_BIDS)
+      .doc(auctionId);
 
     const [accountDoc, blockedBidDoc] = await Promise.all([
       t.get(accountRef),
@@ -154,7 +176,9 @@ export async function releaseBlockedBid(
     t.delete(blockedBidRef);
 
     // Create transaction record
-    const transactionRef = db.collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS).doc();
+    const transactionRef = db
+      .collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS)
+      .doc();
     const transactionRecord: Omit<RipLimitTransactionBE, "id"> = {
       userId,
       type: RipLimitTransactionType.BID_RELEASE,
@@ -165,14 +189,18 @@ export async function releaseBlockedBid(
       bidId: blockedBid.bidId,
       status: RipLimitTransactionStatus.COMPLETED,
       description: `RipLimit released: ${reason}`,
-      createdAt: Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+      createdAt:
+        Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
     };
     t.set(transactionRef, transactionRecord);
 
     return {
       success: true,
       releasedAmount: releaseAmount,
-      transaction: { id: transactionRef.id, ...transactionRecord } as RipLimitTransactionBE,
+      transaction: {
+        id: transactionRef.id,
+        ...transactionRecord,
+      } as RipLimitTransactionBE,
     };
   });
 
@@ -185,7 +213,7 @@ export async function releaseBlockedBid(
 export async function useForAuctionPayment(
   userId: string,
   auctionId: string,
-  orderId: string
+  orderId: string,
 ): Promise<{
   success: boolean;
   usedAmount?: number;
@@ -196,7 +224,9 @@ export async function useForAuctionPayment(
 
   const result = await db.runTransaction(async (t) => {
     const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
-    const blockedBidRef = accountRef.collection(SUBCOLLECTIONS.RIPLIMIT_BLOCKED_BIDS).doc(auctionId);
+    const blockedBidRef = accountRef
+      .collection(SUBCOLLECTIONS.RIPLIMIT_BLOCKED_BIDS)
+      .doc(auctionId);
 
     const [accountDoc, blockedBidDoc] = await Promise.all([
       t.get(accountRef),
@@ -216,7 +246,9 @@ export async function useForAuctionPayment(
     const newLifetimeSpent = account.lifetimeSpent + usedAmount;
 
     // Remove from unpaid auctions if present
-    const newUnpaidAuctionIds = account.unpaidAuctionIds.filter((id) => id !== auctionId);
+    const newUnpaidAuctionIds = account.unpaidAuctionIds.filter(
+      (id) => id !== auctionId,
+    );
     const hasUnpaidAuctions = newUnpaidAuctionIds.length > 0;
 
     t.update(accountRef, {
@@ -231,7 +263,9 @@ export async function useForAuctionPayment(
     t.delete(blockedBidRef);
 
     // Create transaction record
-    const transactionRef = db.collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS).doc();
+    const transactionRef = db
+      .collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS)
+      .doc();
     const transactionRecord: Omit<RipLimitTransactionBE, "id"> = {
       userId,
       type: RipLimitTransactionType.AUCTION_PAYMENT,
@@ -243,7 +277,8 @@ export async function useForAuctionPayment(
       orderId,
       status: RipLimitTransactionStatus.COMPLETED,
       description: `Auction payment completed`,
-      createdAt: Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+      createdAt:
+        Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
     };
     t.set(transactionRef, transactionRecord);
 
@@ -251,7 +286,10 @@ export async function useForAuctionPayment(
       success: true,
       usedAmount,
       usedAmountINR: ripLimitToInr(usedAmount),
-      transaction: { id: transactionRef.id, ...transactionRecord } as RipLimitTransactionBE,
+      transaction: {
+        id: transactionRef.id,
+        ...transactionRecord,
+      } as RipLimitTransactionBE,
     };
   });
 

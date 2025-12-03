@@ -4,7 +4,10 @@ import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
 // Build update object for each action
-function buildReviewUpdate(action: string, data?: any): Record<string, any> | null {
+function buildReviewUpdate(
+  action: string,
+  data?: any,
+): Record<string, any> | null {
   const now = new Date().toISOString();
   switch (action) {
     case "approve":
@@ -79,7 +82,13 @@ export async function POST(request: NextRequest) {
         // Build and apply update
         const updates = buildReviewUpdate(action, data);
         if (!updates) {
-          results.failed.push({ id, error: action === "update" ? "No update data provided" : `Unknown action: ${action}` });
+          results.failed.push({
+            id,
+            error:
+              action === "update"
+                ? "No update data provided"
+                : `Unknown action: ${action}`,
+          });
           continue;
         }
 

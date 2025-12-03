@@ -3,8 +3,10 @@
 import { forwardRef, InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-export interface FormInputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
+export interface FormInputProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "size"
+> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -37,7 +39,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       value,
       ...props
     },
-    ref
+    ref,
   ) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
     const currentLength = typeof value === "string" ? value.length : 0;
@@ -57,7 +59,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       rightIcon && "pr-10",
       leftAddon && "rounded-l-none",
       rightAddon && "rounded-r-none",
-      className
+      className,
     );
 
     return (
@@ -98,8 +100,8 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
                 error
                   ? `${inputId}-error`
                   : helperText
-                  ? `${inputId}-helper`
-                  : undefined
+                    ? `${inputId}-helper`
+                    : undefined
               }
               {...props}
             />
@@ -147,7 +149,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 FormInput.displayName = "FormInput";

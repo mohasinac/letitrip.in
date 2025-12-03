@@ -38,7 +38,11 @@ export type { FormKeyValueInputProps } from "./FormKeyValueInput";
 
 // Layout Components
 export { FormSection, FormRow, FormActions } from "./FormSection";
-export type { FormSectionProps, FormRowProps, FormActionsProps } from "./FormSection";
+export type {
+  FormSectionProps,
+  FormRowProps,
+  FormActionsProps,
+} from "./FormSection";
 
 // Wizard Components
 export { WizardSteps } from "./WizardSteps";
@@ -48,4 +52,8 @@ export { WizardActionBar } from "./WizardActionBar";
 export type { WizardActionBarProps } from "./WizardActionBar";
 
 export { WizardForm } from "./WizardForm";
-export type { WizardFormProps, WizardFormStep, WizardFormChildProps } from "./WizardForm";
+export type {
+  WizardFormProps,
+  WizardFormStep,
+  WizardFormChildProps,
+} from "./WizardForm";

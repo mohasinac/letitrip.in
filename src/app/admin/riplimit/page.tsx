@@ -202,11 +202,11 @@ export default function AdminRipLimitPage() {
         {
           amount: adjustAmount,
           reason: adjustReason,
-        }
+        },
       );
 
       setSuccessMessage(
-        `Balance adjusted by ${adjustAmount >= 0 ? "+" : ""}${adjustAmount} RL`
+        `Balance adjusted by ${adjustAmount >= 0 ? "+" : ""}${adjustAmount} RL`,
       );
       setShowAdjustModal(false);
       setSelectedUser(null);
@@ -299,7 +299,7 @@ export default function AdminRipLimitPage() {
                       u.availableBalance + u.blockedBalance,
                       u.hasUnpaidAuctions ? "Yes" : "No",
                       u.isBlocked ? "Yes" : "No",
-                    ].join(",")
+                    ].join(","),
                   ),
                 ].join("\n");
 

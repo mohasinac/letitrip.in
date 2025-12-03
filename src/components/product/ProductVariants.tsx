@@ -40,7 +40,7 @@ export function ProductVariants({
 
       // Filter out current product and ensure exact category match
       const filtered = (response.data || []).filter(
-        (p: ProductCardFE) => p.id !== productId && p.categoryId === categoryId
+        (p: ProductCardFE) => p.id !== productId && p.categoryId === categoryId,
       );
 
       setProducts(filtered.slice(0, 12)); // Max 12 variants
@@ -73,7 +73,7 @@ export function ProductVariants({
 
     setCanScrollLeft(container.scrollLeft > 0);
     setCanScrollRight(
-      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10
+      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10,
     );
   };
 

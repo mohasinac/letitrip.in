@@ -5,8 +5,14 @@ import { COLLECTIONS } from "@/constants/database";
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const categoryLimit = parseInt(searchParams.get("categoryLimit") || "6", 10);
-    const itemsPerCategory = parseInt(searchParams.get("itemsPerCategory") || "10", 10);
+    const categoryLimit = parseInt(
+      searchParams.get("categoryLimit") || "6",
+      10,
+    );
+    const itemsPerCategory = parseInt(
+      searchParams.get("itemsPerCategory") || "10",
+      10,
+    );
 
     const db = getFirestoreAdmin();
 
@@ -23,7 +29,7 @@ export async function GET(request: NextRequest) {
 
     for (const doc of categoriesSnapshot.docs) {
       const data = doc.data();
-      
+
       // Get products for this category
       const productsSnapshot = await db
         .collection(COLLECTIONS.PRODUCTS)
@@ -34,7 +40,7 @@ export async function GET(request: NextRequest) {
 
       // Filter in-stock products only
       const inStockProducts = productsSnapshot.docs
-        .filter(doc => {
+        .filter((doc) => {
           const product = doc.data();
           return product.stock > 0;
         })
@@ -75,7 +81,7 @@ export async function GET(request: NextRequest) {
     console.error("Featured categories error:", error);
     return NextResponse.json(
       { data: [], error: "Failed to fetch featured categories" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

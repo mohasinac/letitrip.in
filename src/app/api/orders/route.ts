@@ -58,10 +58,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     // Parse Sieve query
-    const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-      searchParams,
-      ordersConfig
-    );
+    const {
+      query: sieveQuery,
+      errors,
+      warnings,
+    } = parseSieveQuery(searchParams, ordersConfig);
 
     if (errors.length > 0) {
       return NextResponse.json(
@@ -70,7 +71,7 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -79,7 +80,8 @@ export async function GET(request: NextRequest) {
     // Legacy query params support (for backward compatibility)
     const shopId = searchParams.get("shop_id") || searchParams.get("shopId");
     const status = searchParams.get("status");
-    const paymentStatus = searchParams.get("paymentStatus") || searchParams.get("payment_status");
+    const paymentStatus =
+      searchParams.get("paymentStatus") || searchParams.get("payment_status");
 
     // Role-based filtering
     if (role === "admin") {
@@ -101,7 +103,7 @@ export async function GET(request: NextRequest) {
       if (!owns) {
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 }
+          { status: 403 },
         );
       }
       query = query.where("shop_id", "==", shopId);
@@ -132,7 +134,11 @@ export async function GET(request: NextRequest) {
     for (const filter of sieveQuery.filters) {
       const dbField = ordersConfig.fieldMappings[filter.field] || filter.field;
       if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-        query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+        query = query.where(
+          dbField,
+          filter.operator as FirebaseFirestore.WhereFilterOp,
+          filter.value,
+        );
       }
     }
 
@@ -182,7 +188,7 @@ export async function GET(request: NextRequest) {
     console.error("Orders list error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to list orders" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

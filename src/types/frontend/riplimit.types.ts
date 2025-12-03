@@ -17,7 +17,7 @@ export interface RipLimitBalanceFE {
   formattedAvailable: string;
   formattedBlocked: string;
   formattedTotal: string;
-  
+
   // INR equivalents
   availableBalanceINR: number;
   blockedBalanceINR: number;
@@ -25,13 +25,13 @@ export interface RipLimitBalanceFE {
   formattedAvailableINR: string;
   formattedBlockedINR: string;
   formattedTotalINR: string;
-  
+
   // Status flags
   hasUnpaidAuctions: boolean;
   unpaidAuctionCount: number;
   isBlocked: boolean;
   canBid: boolean;
-  
+
   // Blocked bids
   blockedBids: RipLimitBlockedBidFE[];
 }

@@ -180,7 +180,12 @@ class BlogService {
     page?: number,
     limit?: number,
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
-    return this.list({ author: authorId, status: BLOG_STATUS.PUBLISHED, page, limit });
+    return this.list({
+      author: authorId,
+      status: BLOG_STATUS.PUBLISHED,
+      page,
+      limit,
+    });
   }
 
   // Search posts
@@ -189,7 +194,12 @@ class BlogService {
     page?: number,
     limit?: number,
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
-    return this.list({ search: query, status: BLOG_STATUS.PUBLISHED, page, limit });
+    return this.list({
+      search: query,
+      status: BLOG_STATUS.PUBLISHED,
+      page,
+      limit,
+    });
   }
 }
 

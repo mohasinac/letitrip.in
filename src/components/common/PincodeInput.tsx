@@ -44,7 +44,7 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
       id,
       name,
     },
-    ref
+    ref,
   ) {
     const [loading, setLoading] = useState(false);
     const [lookupResult, setLookupResult] =
@@ -84,7 +84,7 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
           setLoading(false);
         }
       },
-      [lastLookedUp, onAreaSelect, onLookupComplete]
+      [lastLookedUp, onAreaSelect, onLookupComplete],
     );
 
     // Trigger lookup when value reaches 6 digits
@@ -226,7 +226,7 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
           )}
       </div>
     );
-  }
+  },
 );
 
 export default PincodeInput;

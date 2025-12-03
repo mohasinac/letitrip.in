@@ -11,7 +11,7 @@ module.exports = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        
+
         // Design System - Semantic Colors using CSS Variables
         // These map to src/styles/tokens/colors.css
         primary: {
@@ -71,7 +71,7 @@ module.exports = {
           dark: "var(--color-info-dark)",
           bg: "var(--color-info-bg)",
         },
-        
+
         // Semantic background colors
         "bg-primary": "var(--color-bg-primary)",
         "bg-secondary": "var(--color-bg-secondary)",
@@ -80,7 +80,7 @@ module.exports = {
         "bg-elevated": "var(--color-bg-elevated)",
         "bg-hover": "var(--color-bg-hover)",
         "bg-active": "var(--color-bg-active)",
-        
+
         // Semantic text colors
         "text-primary": "var(--color-text-primary)",
         "text-secondary": "var(--color-text-secondary)",
@@ -89,13 +89,13 @@ module.exports = {
         "text-inverse": "var(--color-text-inverse)",
         "text-disabled": "var(--color-text-disabled)",
         "text-link": "var(--color-text-link)",
-        
+
         // Semantic border colors
         "border-primary": "var(--color-border-primary)",
         "border-secondary": "var(--color-border-secondary)",
         "border-focus": "var(--color-border-focus)",
         "border-error": "var(--color-border-error)",
-        
+
         // Status colors
         "status-pending": "var(--color-status-pending)",
         "status-processing": "var(--color-status-processing)",
@@ -103,12 +103,12 @@ module.exports = {
         "status-delivered": "var(--color-status-delivered)",
         "status-cancelled": "var(--color-status-cancelled)",
         "status-active": "var(--color-status-active)",
-        
+
         // Auction colors
         "auction-active": "var(--color-auction-active)",
         "auction-ending": "var(--color-auction-ending)",
         "auction-ended": "var(--color-auction-ended)",
-        
+
         // RipLimit colors
         riplimit: {
           DEFAULT: "var(--color-riplimit)",
@@ -116,7 +116,7 @@ module.exports = {
           blocked: "var(--color-riplimit-blocked)",
           available: "var(--color-riplimit-available)",
         },
-        
+
         // Keep existing neutral scale for gray utilities
         neutral: {
           50: "#fafafa",
@@ -132,7 +132,7 @@ module.exports = {
           950: "#0a0a0a",
         },
       },
-      
+
       // Use CSS variables for semantic backgrounds
       backgroundColor: {
         surface: {
@@ -143,7 +143,7 @@ module.exports = {
           elevated: "var(--color-bg-elevated)",
         },
       },
-      
+
       // Use CSS variables for text colors
       textColor: {
         content: {
@@ -154,7 +154,7 @@ module.exports = {
           inverse: "var(--color-text-inverse)",
         },
       },
-      
+
       // Use CSS variables for borders
       borderColor: {
         line: {
@@ -163,7 +163,7 @@ module.exports = {
           focus: "var(--color-border-focus)",
         },
       },
-      
+
       // Use CSS variables for shadows
       boxShadow: {
         "token-xs": "var(--shadow-xs)",
@@ -177,7 +177,7 @@ module.exports = {
         "inner-lg": "inset 0 2px 4px 0 rgb(0 0 0 / 0.1)",
         "3xl": "0 35px 60px -15px rgba(0, 0, 0, 0.3)",
       },
-      
+
       // Use CSS variables for border radius
       borderRadius: {
         "token-sm": "var(--radius-sm)",
@@ -219,18 +219,18 @@ module.exports = {
         106: "26.5rem",
         110: "27.5rem",
       },
-      
+
       fontSize: {
         "2xs": ["0.625rem", { lineHeight: "0.75rem" }],
       },
-      
+
       animation: {
         "fade-in": "fadeIn 0.3s ease-in-out",
         "slide-in": "slideIn 0.3s ease-in-out",
         "bounce-slow": "bounce 3s infinite",
         "spin-slow": "spin 3s linear infinite",
       },
-      
+
       keyframes: {
         fadeIn: {
           "0%": { opacity: "0" },
@@ -241,7 +241,7 @@ module.exports = {
           "100%": { transform: "translateX(0)" },
         },
       },
-      
+
       // Z-index scale from design tokens
       zIndex: {
         dropdown: "var(--z-index-dropdown)",

@@ -35,7 +35,7 @@ export function FeaturedShopsSection({
       setLoading(true);
       const data = await homepageService.getFeaturedShops(
         shopLimit,
-        itemsPerShop
+        itemsPerShop,
       );
       setShops(data);
 
@@ -190,8 +190,8 @@ export function FeaturedShopsSection({
                             item.status === "upcoming"
                               ? "pending"
                               : item.status === "live"
-                              ? "active"
-                              : item.status,
+                                ? "active"
+                                : item.status,
                           shop: {
                             id: item.shopId,
                             name: item.shopName,

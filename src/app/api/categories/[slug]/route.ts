@@ -18,7 +18,7 @@ export async function GET(
   try {
     const user = await getUserFromRequest(request);
     const { slug } = await params;
-    
+
     // Try direct doc access first (slug as ID), fallback to query for backward compatibility
     let doc = await Collections.categories().doc(slug).get();
     if (!doc.exists) {
@@ -94,7 +94,7 @@ export async function PATCH(
     }
 
     const { slug } = await params;
-    
+
     // Try direct doc access first (slug as ID), fallback to query for backward compatibility
     let doc = await Collections.categories().doc(slug).get();
     if (!doc.exists) {
@@ -238,7 +238,7 @@ export async function DELETE(
     }
 
     const { slug } = await params;
-    
+
     // Try direct doc access first (slug as ID), fallback to query for backward compatibility
     let doc = await Collections.categories().doc(slug).get();
     if (!doc.exists) {

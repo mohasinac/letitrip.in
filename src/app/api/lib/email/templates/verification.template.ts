@@ -4,7 +4,7 @@
 
 export function getVerificationEmailTemplate(
   name: string,
-  verificationLink: string
+  verificationLink: string,
 ): string {
   return `
 <!DOCTYPE html>
@@ -66,7 +66,7 @@ export function getVerificationEmailTemplate(
 
 export function getVerificationEmailText(
   name: string,
-  verificationLink: string
+  verificationLink: string,
 ): string {
   return `Hi ${name},
 

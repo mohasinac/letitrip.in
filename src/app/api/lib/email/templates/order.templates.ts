@@ -28,7 +28,9 @@ interface ShippingUpdateData {
   trackingUrl: string;
 }
 
-export function getOrderConfirmationTemplate(data: OrderConfirmationData): string {
+export function getOrderConfirmationTemplate(
+  data: OrderConfirmationData,
+): string {
   const itemsHtml = data.items
     .map(
       (item) => `
@@ -37,7 +39,7 @@ export function getOrderConfirmationTemplate(data: OrderConfirmationData): strin
         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">₹${item.price.toLocaleString()}</td>
       </tr>
-    `
+    `,
     )
     .join("");
 

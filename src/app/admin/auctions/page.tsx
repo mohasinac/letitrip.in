@@ -50,7 +50,7 @@ export default function AdminAuctionsPage() {
 
   // Filters
   const [filterValues, setFilterValues] = useState<Partial<AuctionFiltersBE>>(
-    {}
+    {},
   );
 
   // Pagination
@@ -99,7 +99,7 @@ export default function AdminAuctionsPage() {
     } catch (error) {
       console.error("Failed to load auctions:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load auctions"
+        error instanceof Error ? error.message : "Failed to load auctions",
       );
     } finally {
       setLoading(false);
@@ -115,7 +115,7 @@ export default function AdminAuctionsPage() {
           auctionsService.list({ status: AuctionStatus.SCHEDULED, limit: 1 }),
           auctionsService.list({ status: AuctionStatus.ENDED, limit: 1 }),
           auctionsService.list({ status: AuctionStatus.CANCELLED, limit: 1 }),
-        ]
+        ],
       );
 
       setStats({
@@ -150,14 +150,14 @@ export default function AdminAuctionsPage() {
         await Promise.all(
           selectedIds.map(async (id) => {
             await auctionsService.delete(id);
-          })
+          }),
         );
       } else {
         // Update auctions
         await Promise.all(
           selectedIds.map(async (id) => {
             await auctionsService.update(id, actionMap[actionId]);
-          })
+          }),
         );
       }
 
@@ -203,8 +203,8 @@ export default function AdminAuctionsPage() {
       a.currentBid || a.startingBid || a.currentPrice,
       a.reservePrice || "",
       a.startTime
-        ? safeToISOString(new Date(a.startTime)) ?? ""
-        : safeToISOString(new Date(a.endTime)) ?? "",
+        ? (safeToISOString(new Date(a.startTime)) ?? "")
+        : (safeToISOString(new Date(a.endTime)) ?? ""),
       safeToISOString(new Date(a.endTime)) ?? "",
       a.bidCount || a.totalBids || 0,
       a.shopId || "",
@@ -212,7 +212,7 @@ export default function AdminAuctionsPage() {
     ]);
 
     const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
-      "\n"
+      "\n",
     );
 
     // Download CSV
@@ -473,7 +473,7 @@ export default function AdminAuctionsPage() {
                               setSelectedIds(
                                 auctions
                                   .map((a) => a.id)
-                                  .filter(Boolean) as string[]
+                                  .filter(Boolean) as string[],
                               );
                             } else {
                               setSelectedIds([]);
@@ -530,8 +530,8 @@ export default function AdminAuctionsPage() {
                                 } else {
                                   setSelectedIds(
                                     selectedIds.filter(
-                                      (id) => id !== auction.id
-                                    )
+                                      (id) => id !== auction.id,
+                                    ),
                                   );
                                 }
                               }}
@@ -562,7 +562,7 @@ export default function AdminAuctionsPage() {
                           <td className="px-4 py-3">
                             <span
                               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                                auction.status
+                                auction.status,
                               )}`}
                             >
                               {auction.status}
@@ -573,7 +573,7 @@ export default function AdminAuctionsPage() {
                               {formatPrice(
                                 auction.currentBid ||
                                   auction.startingBid ||
-                                  auction.currentPrice
+                                  auction.currentPrice,
                               )}
                             </div>
                             {auction.reservePrice && (
@@ -587,8 +587,8 @@ export default function AdminAuctionsPage() {
                               {auction.status === AuctionStatus.ACTIVE
                                 ? formatTimeLeft(auction.endTime)
                                 : auction.status === AuctionStatus.SCHEDULED
-                                ? "Not started"
-                                : "Ended"}
+                                  ? "Not started"
+                                  : "Ended"}
                             </div>
                           </td>
                           <td className="px-4 py-3">
@@ -669,7 +669,7 @@ export default function AdminAuctionsPage() {
                               setSelectedIds([...selectedIds, auction.id!]);
                             } else {
                               setSelectedIds(
-                                selectedIds.filter((id) => id !== auction.id)
+                                selectedIds.filter((id) => id !== auction.id),
                               );
                             }
                           }}
@@ -678,7 +678,7 @@ export default function AdminAuctionsPage() {
                       <div className="absolute bottom-2 left-2">
                         <span
                           className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(
-                            auction.status
+                            auction.status,
                           )}`}
                         >
                           {auction.status}
@@ -701,7 +701,7 @@ export default function AdminAuctionsPage() {
                             {formatPrice(
                               auction.currentBid ||
                                 auction.startingBid ||
-                                auction.currentPrice
+                                auction.currentPrice,
                             )}
                           </span>
                         </div>

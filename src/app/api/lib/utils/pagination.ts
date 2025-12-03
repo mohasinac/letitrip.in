@@ -128,7 +128,7 @@ export async function applyCursorPagination<T = any>(
   // Get next cursor (last document ID)
   const nextCursor =
     hasNextPage && resultDocs.length > 0
-      ? resultDocs.at(-1)?.id ?? null
+      ? (resultDocs.at(-1)?.id ?? null)
       : null;
 
   return {

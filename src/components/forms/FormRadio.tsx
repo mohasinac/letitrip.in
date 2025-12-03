@@ -3,8 +3,10 @@
 import React, { forwardRef, InputHTMLAttributes, useId } from "react";
 import { cn } from "@/lib/utils";
 
-export interface FormRadioProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
+export interface FormRadioProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "type"
+> {
   label: string;
   description?: string;
   hasError?: boolean;
@@ -35,7 +37,7 @@ export const FormRadio = forwardRef<HTMLInputElement, FormRadioProps>(
             "text-blue-600 focus:ring-blue-500 focus:ring-offset-0",
             "dark:bg-gray-800 dark:checked:bg-blue-600",
             hasError && "border-red-500",
-            props.disabled && "opacity-50 cursor-not-allowed"
+            props.disabled && "opacity-50 cursor-not-allowed",
           )}
           {...props}
         />
@@ -44,7 +46,7 @@ export const FormRadio = forwardRef<HTMLInputElement, FormRadioProps>(
             htmlFor={radioId}
             className={cn(
               "text-sm font-medium text-gray-700 dark:text-gray-300",
-              props.disabled && "opacity-50 cursor-not-allowed"
+              props.disabled && "opacity-50 cursor-not-allowed",
             )}
           >
             {label}
@@ -57,7 +59,7 @@ export const FormRadio = forwardRef<HTMLInputElement, FormRadioProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 FormRadio.displayName = "FormRadio";
@@ -97,7 +99,7 @@ export const FormRadioGroup: React.FC<FormRadioGroupProps> = ({
         className={cn(
           orientation === "horizontal"
             ? "flex flex-wrap gap-4"
-            : "flex flex-col gap-2"
+            : "flex flex-col gap-2",
         )}
         role="radiogroup"
         aria-required={required}

@@ -77,10 +77,11 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(req.url);
 
         // Parse Sieve query
-        const { query: sieveQuery, errors, warnings } = parseSieveQuery(
-          searchParams,
-          categoriesConfig
-        );
+        const {
+          query: sieveQuery,
+          errors,
+          warnings,
+        } = parseSieveQuery(searchParams, categoriesConfig);
 
         if (errors.length > 0) {
           return NextResponse.json(
@@ -89,7 +90,7 @@ export async function GET(request: NextRequest) {
               error: "Invalid query parameters",
               details: errors,
             },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
@@ -110,24 +111,38 @@ export async function GET(request: NextRequest) {
           query = query.where("is_featured", "==", featured === "true");
         }
         if (showOnHomepage !== null) {
-          query = query.where("show_on_homepage", "==", showOnHomepage === "true");
+          query = query.where(
+            "show_on_homepage",
+            "==",
+            showOnHomepage === "true",
+          );
         }
         if (parentId !== null) {
-          query = query.where("parent_id", "==", parentId === "null" ? null : parentId);
+          query = query.where(
+            "parent_id",
+            "==",
+            parentId === "null" ? null : parentId,
+          );
         }
 
         // Apply Sieve filters
         for (const filter of sieveQuery.filters) {
-          const dbField = categoriesConfig.fieldMappings[filter.field] || filter.field;
+          const dbField =
+            categoriesConfig.fieldMappings[filter.field] || filter.field;
           if (["==", "!=", ">", ">=", "<", "<="].includes(filter.operator)) {
-            query = query.where(dbField, filter.operator as FirebaseFirestore.WhereFilterOp, filter.value);
+            query = query.where(
+              dbField,
+              filter.operator as FirebaseFirestore.WhereFilterOp,
+              filter.value,
+            );
           }
         }
 
         // Apply sorting
         if (sieveQuery.sorts.length > 0) {
           for (const sort of sieveQuery.sorts) {
-            const dbField = categoriesConfig.fieldMappings[sort.field] || sort.field;
+            const dbField =
+              categoriesConfig.fieldMappings[sort.field] || sort.field;
             query = query.orderBy(dbField, sort.direction);
           }
         } else {
@@ -152,7 +167,9 @@ export async function GET(request: NextRequest) {
 
         // Execute query
         const snapshot = await query.get();
-        const categories = snapshot.docs.map((doc) => transformCategory(doc.id, doc.data()));
+        const categories = snapshot.docs.map((doc) =>
+          transformCategory(doc.id, doc.data()),
+        );
 
         // Build Sieve pagination meta
         const pagination = createPaginationMeta(totalCount, sieveQuery);
@@ -172,11 +189,11 @@ export async function GET(request: NextRequest) {
         console.error("Error listing categories:", error);
         return NextResponse.json(
           { success: false, error: "Failed to list categories" },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
-    { ttl: 300 }
+    { ttl: 300 },
   );
 }
 
@@ -215,7 +232,7 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    
+
     // Fallback check for legacy data
     const existing = await Collections.categories()
       .where("slug", "==", slug)
@@ -258,7 +275,7 @@ export async function POST(request: NextRequest) {
       created_at: now,
       updated_at: now,
     };
-    
+
     // Use slug as document ID for SEO
     await Collections.categories().doc(slug).set(categoryData);
     const docRef = { id: slug };

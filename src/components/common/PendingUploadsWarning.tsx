@@ -25,7 +25,7 @@ export default function PendingUploadsWarning({
     useUploadContext();
   const [showWarning, setShowWarning] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(
-    null
+    null,
   );
 
   // Intercept browser back/forward/refresh

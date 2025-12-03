@@ -136,8 +136,8 @@ export default function ShopPage({ params }: ShopPageProps) {
           productFilters.stock === "in_stock"
             ? true
             : productFilters.stock === "out_of_stock"
-            ? false
-            : undefined,
+              ? false
+              : undefined,
         featured: productFilters.featured,
         rating: productFilters.rating,
       });
@@ -150,7 +150,7 @@ export default function ShopPage({ params }: ShopPageProps) {
         ...new Set(
           productsData
             .map((p) => p.brand)
-            .filter((brand): brand is string => Boolean(brand))
+            .filter((brand): brand is string => Boolean(brand)),
         ),
       ];
       setAvailableBrands(brands);
@@ -238,7 +238,7 @@ export default function ShopPage({ params }: ShopPageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    }
+    },
   ) => {
     try {
       if (!productDetails) {

@@ -65,7 +65,7 @@ describe("Handler Factory", () => {
     it("should merge meta fields", async () => {
       const response = successResponse(
         { id: "1" },
-        { meta: { total: 100, page: 1 } }
+        { meta: { total: 100, page: 1 } },
       );
       const json = await response.json();
 
@@ -91,7 +91,10 @@ describe("Handler Factory", () => {
       });
       const json = await response.json();
 
-      expect(json.details).toEqual({ field: "email", message: "Invalid format" });
+      expect(json.details).toEqual({
+        field: "email",
+        message: "Invalid format",
+      });
     });
   });
 
@@ -116,13 +119,15 @@ describe("Handler Factory", () => {
 
   describe("withErrorHandler", () => {
     it("should pass through successful responses", async () => {
-      const handler = jest.fn().mockResolvedValue(
-        successResponse({ id: "1" })
-      );
+      const handler = jest.fn().mockResolvedValue(successResponse({ id: "1" }));
       const wrappedHandler = withErrorHandler(handler);
 
       const request = new NextRequest("http://localhost/api/test");
-      const response = await wrappedHandler(request, { user: null, params: {}, searchParams: new URLSearchParams() });
+      const response = await wrappedHandler(request, {
+        user: null,
+        params: {},
+        searchParams: new URLSearchParams(),
+      });
       const json = await response.json();
 
       expect(json.success).toBe(true);
@@ -130,13 +135,17 @@ describe("Handler Factory", () => {
     });
 
     it("should catch and format ApiError", async () => {
-      const handler = jest.fn().mockRejectedValue(
-        new BadRequestError("Invalid input")
-      );
+      const handler = jest
+        .fn()
+        .mockRejectedValue(new BadRequestError("Invalid input"));
       const wrappedHandler = withErrorHandler(handler);
 
       const request = new NextRequest("http://localhost/api/test");
-      const response = await wrappedHandler(request, { user: null, params: {}, searchParams: new URLSearchParams() });
+      const response = await wrappedHandler(request, {
+        user: null,
+        params: {},
+        searchParams: new URLSearchParams(),
+      });
       const json = await response.json();
 
       expect(json.error).toBe("Invalid input");
@@ -144,13 +153,17 @@ describe("Handler Factory", () => {
     });
 
     it("should catch and format NotFoundError", async () => {
-      const handler = jest.fn().mockRejectedValue(
-        new NotFoundError("Resource not found")
-      );
+      const handler = jest
+        .fn()
+        .mockRejectedValue(new NotFoundError("Resource not found"));
       const wrappedHandler = withErrorHandler(handler);
 
       const request = new NextRequest("http://localhost/api/test");
-      const response = await wrappedHandler(request, { user: null, params: {}, searchParams: new URLSearchParams() });
+      const response = await wrappedHandler(request, {
+        user: null,
+        params: {},
+        searchParams: new URLSearchParams(),
+      });
       const json = await response.json();
 
       expect(json.error).toBe("Resource not found");
@@ -163,7 +176,11 @@ describe("Handler Factory", () => {
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
 
       const request = new NextRequest("http://localhost/api/test");
-      const response = await wrappedHandler(request, { user: null, params: {}, searchParams: new URLSearchParams() });
+      const response = await wrappedHandler(request, {
+        user: null,
+        params: {},
+        searchParams: new URLSearchParams(),
+      });
 
       expect(response.status).toBe(500);
       expect(consoleSpy).toHaveBeenCalled();
@@ -195,7 +212,7 @@ describe("Handler Factory", () => {
         async (req, ctx) => {
           return successResponse({ userId: ctx.user.uid });
         },
-        { auth: true }
+        { auth: true },
       );
 
       const request = new NextRequest("http://localhost/api/test");
@@ -209,7 +226,7 @@ describe("Handler Factory", () => {
     it("should return auth error when not authenticated", async () => {
       const authErrorResponse = new Response(
         JSON.stringify({ error: "Unauthorized" }),
-        { status: 401 }
+        { status: 401 },
       );
       mockRequireAuth.mockResolvedValue({ error: authErrorResponse });
 
@@ -217,7 +234,7 @@ describe("Handler Factory", () => {
         async (req, ctx) => {
           return successResponse({ data: "secret" });
         },
-        { auth: true }
+        { auth: true },
       );
 
       const request = new NextRequest("http://localhost/api/test");
@@ -235,7 +252,7 @@ describe("Handler Factory", () => {
         async (req, ctx) => {
           return successResponse({ role: ctx.user!.role });
         },
-        { roles: ["admin"] }
+        { roles: ["admin"] },
       );
 
       const request = new NextRequest("http://localhost/api/test");
@@ -255,7 +272,7 @@ describe("Handler Factory", () => {
         async (req, ctx) => {
           return successResponse({ received: ctx.body });
         },
-        { auth: true, parseBody: true }
+        { auth: true, parseBody: true },
       );
 
       const request = new NextRequest("http://localhost/api/test", {
@@ -279,7 +296,7 @@ describe("Handler Factory", () => {
         async (req, ctx) => {
           return successResponse({ received: ctx.body });
         },
-        { auth: true, parseBody: true }
+        { auth: true, parseBody: true },
       );
 
       const request = new NextRequest("http://localhost/api/test", {
@@ -316,7 +333,7 @@ describe("Handler Factory", () => {
       });
 
       const request = new NextRequest(
-        "http://localhost/api/test?filter=active&page=2"
+        "http://localhost/api/test?filter=active&page=2",
       );
       const response = await handler(request);
       const json = await response.json();

@@ -118,14 +118,14 @@ export function MobileSellerSidebar({
   useEffect(() => {
     const activeSection = navigation.find((item) =>
       item.children?.some(
-        (child) => child.href && pathname.startsWith(child.href)
-      )
+        (child) => child.href && pathname.startsWith(child.href),
+      ),
     );
     if (activeSection) {
       setExpandedItems((prev) =>
         prev.includes(activeSection.title)
           ? prev
-          : [...prev, activeSection.title]
+          : [...prev, activeSection.title],
       );
     }
   }, [pathname]);
@@ -134,7 +134,7 @@ export function MobileSellerSidebar({
     setExpandedItems((prev) =>
       prev.includes(title)
         ? prev.filter((item) => item !== title)
-        : [...prev, title]
+        : [...prev, title],
     );
   };
 
@@ -210,7 +210,7 @@ export function MobileSellerSidebar({
             const active = isActive(item.href);
             const expanded = expandedItems.includes(item.title);
             const hasActiveChild = item.children?.some(
-              (child) => child.href && isActive(child.href)
+              (child) => child.href && isActive(child.href),
             );
 
             return (
@@ -229,7 +229,7 @@ export function MobileSellerSidebar({
                     "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors touch-target",
                     active || hasActiveChild
                       ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700",
                   )}
                 >
                   <Icon
@@ -237,7 +237,7 @@ export function MobileSellerSidebar({
                       "h-5 w-5 flex-shrink-0",
                       active || hasActiveChild
                         ? "text-blue-600 dark:text-blue-500"
-                        : "text-gray-400 dark:text-gray-500"
+                        : "text-gray-400 dark:text-gray-500",
                     )}
                   />
                   <span className="flex-1">{item.title}</span>
@@ -273,7 +273,7 @@ export function MobileSellerSidebar({
                             "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors touch-target",
                             childActive
                               ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
-                              : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700"
+                              : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700",
                           )}
                         >
                           <ChildIcon
@@ -281,7 +281,7 @@ export function MobileSellerSidebar({
                               "h-4 w-4 flex-shrink-0",
                               childActive
                                 ? "text-blue-600 dark:text-blue-500"
-                                : "text-gray-400 dark:text-gray-500"
+                                : "text-gray-400 dark:text-gray-500",
                             )}
                           />
                           <span>{child.title}</span>

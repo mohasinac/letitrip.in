@@ -67,8 +67,8 @@ function StatCard({
                   isPositive
                     ? "text-green-600 dark:text-green-400"
                     : isNegative
-                    ? "text-red-600 dark:text-red-400"
-                    : "text-gray-600 dark:text-gray-400"
+                      ? "text-red-600 dark:text-red-400"
+                      : "text-gray-600 dark:text-gray-400"
                 }`}
               >
                 {isPositive ? "+" : ""}

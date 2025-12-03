@@ -99,28 +99,98 @@ export async function DELETE() {
 
       // Payments - use receipt or invoice_id field which has DEMO_ prefix
       { name: "payments", field: "receipt", strategy: "prefix" },
-      
+
       // Shipments - related to demo orders
-      { name: "shipments", relatedField: "orderId", relatedIds: demoOrderIds, strategy: "related" },
+      {
+        name: "shipments",
+        relatedField: "orderId",
+        relatedIds: demoOrderIds,
+        strategy: "related",
+      },
 
       // Related collections (delete by referenced ID)
-      { name: "bids", relatedField: "auctionId", relatedIds: demoAuctionIds, strategy: "related" },
-      { name: "reviews", relatedField: "product_id", relatedIds: demoProductIds, strategy: "related" },
-      { name: "order_items", relatedField: "orderId", relatedIds: demoOrderIds, strategy: "related" },
-      { name: "favorites", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
-      { name: "carts", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
-      { name: "cart_items", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
+      {
+        name: "bids",
+        relatedField: "auctionId",
+        relatedIds: demoAuctionIds,
+        strategy: "related",
+      },
+      {
+        name: "reviews",
+        relatedField: "product_id",
+        relatedIds: demoProductIds,
+        strategy: "related",
+      },
+      {
+        name: "order_items",
+        relatedField: "orderId",
+        relatedIds: demoOrderIds,
+        strategy: "related",
+      },
+      {
+        name: "favorites",
+        relatedField: "userId",
+        relatedIds: demoUserIds,
+        strategy: "related",
+      },
+      {
+        name: "carts",
+        relatedField: "userId",
+        relatedIds: demoUserIds,
+        strategy: "related",
+      },
+      {
+        name: "cart_items",
+        relatedField: "userId",
+        relatedIds: demoUserIds,
+        strategy: "related",
+      },
       { name: "messages", strategy: "deep_scan" },
-      { name: "notifications", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
-      { name: "addresses", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
-      { name: "returns", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
-      
+      {
+        name: "notifications",
+        relatedField: "userId",
+        relatedIds: demoUserIds,
+        strategy: "related",
+      },
+      {
+        name: "addresses",
+        relatedField: "userId",
+        relatedIds: demoUserIds,
+        strategy: "related",
+      },
+      {
+        name: "returns",
+        relatedField: "userId",
+        relatedIds: demoUserIds,
+        strategy: "related",
+      },
+
       // Support tickets - use correct collection name and strategy
-      { name: "support_tickets", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" },
-      { name: "tickets", relatedField: "userId", relatedIds: demoUserIds, strategy: "related" }, // legacy name
-      
-      { name: "payouts", relatedField: "shopId", relatedIds: demoShopIds, strategy: "related" },
-      { name: "media", relatedField: "uploadedBy", relatedIds: demoUserIds, strategy: "related" },
+      {
+        name: "support_tickets",
+        relatedField: "userId",
+        relatedIds: demoUserIds,
+        strategy: "related",
+      },
+      {
+        name: "tickets",
+        relatedField: "userId",
+        relatedIds: demoUserIds,
+        strategy: "related",
+      }, // legacy name
+
+      {
+        name: "payouts",
+        relatedField: "shopId",
+        relatedIds: demoShopIds,
+        strategy: "related",
+      },
+      {
+        name: "media",
+        relatedField: "uploadedBy",
+        relatedIds: demoUserIds,
+        strategy: "related",
+      },
 
       // Settings and feature flags - deep scan
       { name: "settings", strategy: "deep_scan" },
@@ -143,10 +213,14 @@ export async function DELETE() {
               demoDocRefs.push(...snapshot.docs.map((doc) => doc.ref));
             }
           }
-        } else if (collection.strategy === "related" && collection.relatedField && collection.relatedIds) {
+        } else if (
+          collection.strategy === "related" &&
+          collection.relatedField &&
+          collection.relatedIds
+        ) {
           // Strategy 2: Delete by related ID (for bids, reviews, etc.)
           const relatedIdsArray = Array.from(collection.relatedIds);
-          
+
           // Firestore 'in' query supports max 30 values, so batch
           for (let i = 0; i < relatedIdsArray.length; i += 30) {
             const batch = relatedIdsArray.slice(i, i + 30);
@@ -228,7 +302,9 @@ function checkForDemoData(data: any, prefixes: string[]): boolean {
     return data.some((item) => checkForDemoData(item, prefixes));
   }
   if (data && typeof data === "object") {
-    return Object.values(data).some((value) => checkForDemoData(value, prefixes));
+    return Object.values(data).some((value) =>
+      checkForDemoData(value, prefixes),
+    );
   }
   return false;
 }

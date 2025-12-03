@@ -377,8 +377,8 @@ export default function UserReturnsPage() {
                           ].includes(returnItem.status)
                             ? "text-blue-600 dark:text-blue-400"
                             : returnItem.status === "rejected"
-                            ? "text-red-600 dark:text-red-400"
-                            : "text-gray-400"
+                              ? "text-red-600 dark:text-red-400"
+                              : "text-gray-400"
                         }`}
                       >
                         <div
@@ -391,8 +391,8 @@ export default function UserReturnsPage() {
                             ].includes(returnItem.status)
                               ? "bg-blue-100 dark:bg-blue-900/30"
                               : returnItem.status === "rejected"
-                              ? "bg-red-100 dark:bg-red-900/30"
-                              : "bg-gray-100 dark:bg-gray-700"
+                                ? "bg-red-100 dark:bg-red-900/30"
+                                : "bg-gray-100 dark:bg-gray-700"
                           }`}
                         >
                           {returnItem.status === "rejected" ? (
@@ -450,7 +450,7 @@ export default function UserReturnsPage() {
                       <div
                         className={`flex-1 h-0.5 mx-2 ${
                           ["refund-processed", "completed"].includes(
-                            returnItem.status
+                            returnItem.status,
                           )
                             ? "bg-blue-600 dark:bg-blue-400"
                             : "bg-gray-200 dark:bg-gray-600"
@@ -460,7 +460,7 @@ export default function UserReturnsPage() {
                       <div
                         className={`flex flex-col items-center ${
                           ["refund-processed", "completed"].includes(
-                            returnItem.status
+                            returnItem.status,
                           )
                             ? "text-green-600 dark:text-green-400"
                             : "text-gray-400"
@@ -469,7 +469,7 @@ export default function UserReturnsPage() {
                         <div
                           className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 ${
                             ["refund-processed", "completed"].includes(
-                              returnItem.status
+                              returnItem.status,
                             )
                               ? "bg-green-100 dark:bg-green-900/30"
                               : "bg-gray-100 dark:bg-gray-700"

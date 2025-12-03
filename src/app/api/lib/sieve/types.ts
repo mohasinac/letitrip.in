@@ -150,7 +150,11 @@ export interface SievePaginatedResponse<T> {
  * Sieve parsing error
  */
 export interface SieveError {
-  type: "invalid_filter" | "invalid_sort" | "invalid_pagination" | "unknown_field";
+  type:
+    | "invalid_filter"
+    | "invalid_sort"
+    | "invalid_pagination"
+    | "unknown_field";
   field?: string;
   message: string;
 }

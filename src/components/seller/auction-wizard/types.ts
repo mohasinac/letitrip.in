@@ -44,7 +44,9 @@ export interface RequiredStepProps extends StepProps {
   uploadingImages: boolean;
   setUploadingImages: (uploading: boolean) => void;
   uploadProgress: Record<string, number>;
-  setUploadProgress: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+  setUploadProgress: React.Dispatch<
+    React.SetStateAction<Record<string, number>>
+  >;
 }
 
 export interface OptionalStepProps extends StepProps {

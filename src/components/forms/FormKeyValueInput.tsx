@@ -102,7 +102,7 @@ export function FormKeyValueInput({
               "bg-white dark:bg-gray-800 text-gray-900 dark:text-white",
               "placeholder:text-gray-400 dark:placeholder:text-gray-500",
               disabled &&
-                "bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-60"
+                "bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-60",
             )}
           />
           <div className="flex gap-2">
@@ -124,7 +124,7 @@ export function FormKeyValueInput({
                 "bg-white dark:bg-gray-800 text-gray-900 dark:text-white",
                 "placeholder:text-gray-400 dark:placeholder:text-gray-500",
                 disabled &&
-                  "bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-60"
+                  "bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-60",
               )}
             />
             <button
@@ -134,7 +134,7 @@ export function FormKeyValueInput({
               className={cn(
                 "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
                 "bg-blue-600 text-white hover:bg-blue-700",
-                "disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
+                "disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed",
               )}
             >
               {addButtonText}
@@ -167,7 +167,7 @@ export function FormKeyValueInput({
                           "p-1 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50",
                           "dark:hover:text-red-400 dark:hover:bg-red-900/20",
                           "transition-colors",
-                          disabled && "cursor-not-allowed opacity-50"
+                          disabled && "cursor-not-allowed opacity-50",
                         )}
                         aria-label={`Remove ${key}`}
                       >

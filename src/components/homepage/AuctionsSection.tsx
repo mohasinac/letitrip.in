@@ -98,8 +98,8 @@ export function AuctionsSection({
                     auction.status === "upcoming"
                       ? "pending"
                       : auction.status === "live"
-                      ? "active"
-                      : auction.status,
+                        ? "active"
+                        : auction.status,
                   shop: {
                     id: auction.shopId,
                     name: auction.shopName,
@@ -135,8 +135,8 @@ export function AuctionsSection({
                     auction.status === "upcoming"
                       ? "pending"
                       : auction.status === "live"
-                      ? "active"
-                      : auction.status,
+                        ? "active"
+                        : auction.status,
                   featured: true,
                   shop: {
                     id: auction.shopId,

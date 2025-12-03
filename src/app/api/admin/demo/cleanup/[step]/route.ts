@@ -22,7 +22,7 @@ type CleanupStep =
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ step: string }> }
+  { params }: { params: Promise<{ step: string }> },
 ) {
   try {
     const { step } = await params;
@@ -61,7 +61,7 @@ export async function DELETE(
     const deleteByRelatedIds = async (
       collection: string,
       field: string,
-      relatedIds: string[]
+      relatedIds: string[],
     ) => {
       let count = 0;
       // Firestore 'in' query supports max 30 values
@@ -90,7 +90,7 @@ export async function DELETE(
     // Get IDs for related cleanup
     const getDemoIds = async (
       collection: string,
-      field: string
+      field: string,
     ): Promise<string[]> => {
       const ids: string[] = [];
       for (const prefix of PREFIXES) {
@@ -129,7 +129,11 @@ export async function DELETE(
         // Delete bids related to demo auctions
         const auctionIds = await getDemoIds("auctions", "title");
         if (auctionIds.length > 0) {
-          deletedCount = await deleteByRelatedIds("bids", "auctionId", auctionIds);
+          deletedCount = await deleteByRelatedIds(
+            "bids",
+            "auctionId",
+            auctionIds,
+          );
         }
         // Also delete by bidderName prefix
         const prefixCount = await deleteByPrefix("bids", "bidderName");
@@ -141,7 +145,11 @@ export async function DELETE(
         // Delete reviews related to demo products
         const productIds = await getDemoIds("products", "name");
         if (productIds.length > 0) {
-          deletedCount = await deleteByRelatedIds("reviews", "product_id", productIds);
+          deletedCount = await deleteByRelatedIds(
+            "reviews",
+            "product_id",
+            productIds,
+          );
         }
         // Also delete by user_name prefix
         const prefixCount = await deleteByPrefix("reviews", "user_name");
@@ -152,20 +160,27 @@ export async function DELETE(
       case "orders": {
         // Get demo order IDs first for related cleanup
         const orderIds = await getDemoIds("orders", "orderNumber");
-        
+
         // Delete payments
         const paymentCount = await deleteByPrefix("payments", "transactionId");
         deletedCount += paymentCount;
-        
+
         // Delete shipments related to demo orders
         if (orderIds.length > 0) {
-          const shipmentCount = await deleteByRelatedIds("shipments", "orderId", orderIds);
+          const shipmentCount = await deleteByRelatedIds(
+            "shipments",
+            "orderId",
+            orderIds,
+          );
           deletedCount += shipmentCount;
         }
         // Also try by trackingNumber prefix
-        const shipmentPrefixCount = await deleteByPrefix("shipments", "trackingNumber");
+        const shipmentPrefixCount = await deleteByPrefix(
+          "shipments",
+          "trackingNumber",
+        );
         deletedCount += shipmentPrefixCount;
-        
+
         // Delete orders
         const orderCount = await deleteByPrefix("orders", "orderNumber");
         deletedCount += orderCount;
@@ -179,38 +194,54 @@ export async function DELETE(
 
         // Delete hero slides
         deletedCount += await deleteByPrefix("hero_slides", "title");
-        
+
         // Delete coupons
         deletedCount += await deleteByPrefix("coupons", "code");
-        
+
         // Delete featured sections
         deletedCount += await deleteByPrefix("featured_sections", "title");
-        
+
         // Delete carts by user
         if (userIds.length > 0) {
           deletedCount += await deleteByRelatedIds("carts", "user_id", userIds);
         }
-        
+
         // Delete favorites by user
         if (userIds.length > 0) {
-          deletedCount += await deleteByRelatedIds("favorites", "user_id", userIds);
+          deletedCount += await deleteByRelatedIds(
+            "favorites",
+            "user_id",
+            userIds,
+          );
         }
-        
+
         // Delete notifications by user
         if (userIds.length > 0) {
-          deletedCount += await deleteByRelatedIds("notifications", "userId", userIds);
+          deletedCount += await deleteByRelatedIds(
+            "notifications",
+            "userId",
+            userIds,
+          );
         }
-        
+
         // Delete support tickets by user
         if (userIds.length > 0) {
-          deletedCount += await deleteByRelatedIds("support_tickets", "userId", userIds);
+          deletedCount += await deleteByRelatedIds(
+            "support_tickets",
+            "userId",
+            userIds,
+          );
         }
-        
+
         // Delete returns by user
         if (userIds.length > 0) {
-          deletedCount += await deleteByRelatedIds("returns", "user_id", userIds);
+          deletedCount += await deleteByRelatedIds(
+            "returns",
+            "user_id",
+            userIds,
+          );
         }
-        
+
         // Delete conversations (try prefix on subject or participants)
         const convSnapshot = await db.collection("conversations").get();
         let convCount = 0;
@@ -226,7 +257,7 @@ export async function DELETE(
           breakdown.push({ collection: "conversations", count: convCount });
           deletedCount += convCount;
         }
-        
+
         // Delete messages from demo conversations
         const msgSnapshot = await db.collection("messages").get();
         let msgCount = 0;
@@ -241,10 +272,14 @@ export async function DELETE(
           breakdown.push({ collection: "messages", count: msgCount });
           deletedCount += msgCount;
         }
-        
+
         // Delete payouts by shop
         if (shopIds.length > 0) {
-          deletedCount += await deleteByRelatedIds("payouts", "shopId", shopIds);
+          deletedCount += await deleteByRelatedIds(
+            "payouts",
+            "shopId",
+            shopIds,
+          );
         }
         break;
       }
@@ -284,7 +319,7 @@ export async function DELETE(
       default:
         return NextResponse.json(
           { success: false, error: `Unknown step: ${step}` },
-          { status: 400 }
+          { status: 400 },
         );
     }
 
@@ -299,6 +334,9 @@ export async function DELETE(
   } catch (error: unknown) {
     console.error("Cleanup step error:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: message },
+      { status: 500 },
+    );
   }
 }

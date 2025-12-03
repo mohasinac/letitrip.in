@@ -24,7 +24,7 @@ export async function creditBalance(
   amount: number,
   type: RipLimitTransactionType,
   description: string,
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown>,
 ): Promise<RipLimitTransactionBE> {
   const db = getFirestoreAdmin();
   const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
@@ -46,8 +46,10 @@ export async function creditBalance(
         unpaidAuctionIds: [],
         strikes: 0,
         isBlocked: false,
-        createdAt: now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
-        updatedAt: now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+        createdAt:
+          now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+        updatedAt:
+          now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
       };
       t.set(accountRef, account);
     } else {
@@ -68,7 +70,9 @@ export async function creditBalance(
     });
 
     // Create transaction record
-    const transactionRef = db.collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS).doc();
+    const transactionRef = db
+      .collection(COLLECTIONS.RIPLIMIT_TRANSACTIONS)
+      .doc();
     const transactionRecord: Omit<RipLimitTransactionBE, "id"> = {
       userId,
       type,
@@ -78,7 +82,8 @@ export async function creditBalance(
       status: RipLimitTransactionStatus.COMPLETED,
       description,
       metadata,
-      createdAt: Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+      createdAt:
+        Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
     };
     t.set(transactionRef, transactionRecord);
 
@@ -97,7 +102,7 @@ export async function getTransactionHistory(
     type?: RipLimitTransactionType;
     limit?: number;
     offset?: number;
-  } = {}
+  } = {},
 ): Promise<{ transactions: RipLimitTransactionBE[]; total: number }> {
   const db = getFirestoreAdmin();
   let query = db

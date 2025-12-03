@@ -31,7 +31,7 @@ export default function SettingsStep({
             onChange={(e) =>
               onChange(
                 "defaultShippingFee",
-                e.target.value ? Number(e.target.value) : undefined
+                e.target.value ? Number(e.target.value) : undefined,
               )
             }
             placeholder="e.g. 99"
