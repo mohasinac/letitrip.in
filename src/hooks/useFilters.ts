@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { logError } from "@/lib/firebase-error-logger";
 
 /**
  * Hook for managing filter state with URL synchronization
@@ -20,7 +21,7 @@ export function useFilters<T extends Record<string, any>>(
     syncWithUrl?: boolean;
     /** Callback when filters change */
     onChange?: (filters: T) => void;
-  } = {}
+  } = {},
 ) {
   const router = useRouter();
   const pathname = usePathname();
@@ -59,10 +60,10 @@ export function useFilters<T extends Record<string, any>>(
         if (stored) {
           return { ...initialFilters, ...JSON.parse(stored) };
         }
-      } catch (error) {
+      } catch (error: any) {
         logError(error, {
           component: "useFilters.loadInitialFilters",
-          storageKey,
+          metadata: { storageKey },
         });
       }
     }
@@ -91,7 +92,7 @@ export function useFilters<T extends Record<string, any>>(
         : pathname;
       router.push(newUrl, { scroll: false });
     },
-    [syncWithUrl, pathname, router]
+    [syncWithUrl, pathname, router],
   );
 
   // Persist filters to localStorage
@@ -100,12 +101,15 @@ export function useFilters<T extends Record<string, any>>(
       if (!persist || typeof window === "undefined") return;
 
       try {
-        localStorage.setItem(storageKey, JSON.stringify(newFilters));
+        localStorage.setItem(persistKey, JSON.stringify(filters));
       } catch (error) {
-        console.error("Failed to persist filters to localStorage:", error);
+        logError(error as Error, {
+          component: "useFilters.useEffect",
+          metadata: { persistKey },
+        });
       }
     },
-    [persist, storageKey]
+    [persist, storageKey],
   );
 
   // Update filters (without applying)
@@ -137,7 +141,7 @@ export function useFilters<T extends Record<string, any>>(
       delete newFilters[key];
       setFilters(newFilters);
     },
-    [filters]
+    [filters],
   );
 
   // Check if filters are active

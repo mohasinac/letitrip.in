@@ -35,7 +35,10 @@ export function validateField<T extends z.ZodType>(
 
     return null;
   } catch (error) {
-    console.error("Validation error:", error);
+    logError(error as Error, {
+      component: "validateField",
+      metadata: { fieldName },
+    });
     return null;
   }
 }
@@ -63,7 +66,9 @@ export function validateStep<T extends z.ZodType>(
 
     return {};
   } catch (error) {
-    console.error("Validation error:", error);
+    logError(error as Error, {
+      component: "validateStep",
+    });
     return {};
   }
 }

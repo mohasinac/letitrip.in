@@ -111,7 +111,9 @@ export function useCart() {
         } as CartFE);
       }
     } catch (err: any) {
-      console.error("Failed to load cart:", err);
+      logError(err as Error, {
+        component: "useCart.loadCart",
+      });
       setError(err.message || "Failed to load cart");
     } finally {
       setLoading(false);
@@ -159,9 +161,7 @@ export function useCart() {
       } catch (err: any) {
         logError(err, {
           component: "useCart.addItem",
-          productId,
-          quantity,
-          variantId,
+          metadata: { productId, quantity, variant },
         });
         throw err;
       }
@@ -183,7 +183,10 @@ export function useCart() {
           await loadCart();
         }
       } catch (err: any) {
-        logError(err, { component: "useCart.updateItem", itemId, quantity });
+        logError(err, {
+          component: "useCart.updateItem",
+          metadata: { itemId, quantity },
+        });
         throw err;
       }
     },
@@ -204,7 +207,10 @@ export function useCart() {
           await loadCart();
         }
       } catch (err: any) {
-        logError(err, { component: "useCart.removeItem", itemId });
+        logError(err, {
+          component: "useCart.removeItem",
+          metadata: { itemId },
+        });
         throw err;
       }
     },
@@ -252,7 +258,10 @@ export function useCart() {
 
         return result;
       } catch (err: any) {
-        logError(err, { component: "useCart.applyCoupon", code });
+        logError(err, {
+          component: "useCart.applyCoupon",
+          metadata: { code },
+        });
         throw err;
       }
     },
@@ -315,7 +324,9 @@ export function useCart() {
       // Reload cart
       await loadCart();
     } catch (err: any) {
-      console.error("Failed to merge guest cart:", err);
+      logError(err as Error, {
+        component: "useCart.mergeGuestCart",
+      });
       setError(err.message || "Failed to merge cart items");
     } finally {
       setIsMerging(false);

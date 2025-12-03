@@ -5,6 +5,7 @@ import { useRef, useState, useEffect } from "react";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { shopsService } from "@/services/shops.service";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   ChevronRight,
   ChevronLeft,
@@ -47,7 +48,9 @@ export default function ShopsNav() {
         });
         setShops(response.data.slice(0, 9));
       } catch (error) {
-        console.error("Failed to fetch shops:", error);
+        logError(error as Error, {
+          component: "ShopsNav.fetchShops",
+        });
       } finally {
         setLoading(false);
       }

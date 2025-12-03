@@ -5,6 +5,7 @@
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import type { CategoryBE } from "@/types/backend/category.types";
+import { logError } from "@/lib/firebase-error-logger";
 
 /**
  * Get all descendant category IDs (children, grandchildren, etc.)
@@ -525,7 +526,10 @@ export async function rebuildAllCategoryCounts(): Promise<{
       );
       updated++;
     } catch (error: any) {
-      console.error(`Failed to update ${doc.id}:`, error);
+      logError(error as Error, {
+        component: "rebuildCategoryCounts",
+        metadata: { categoryId: doc.id },
+      });
       errors.push(`Failed to update ${doc.id}: ${error.message}`);
     }
   }

@@ -7,6 +7,7 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 import { DateDisplay } from "@/components/common/values";
 import type { ShopFE, ShopCardFE } from "@/types/frontend/shop.types";
 import { shopsService } from "@/services/shops.service";
+import { logError } from "@/lib/firebase-error-logger";
 
 interface ShopHeaderProps {
   shop: ShopFE;
@@ -45,7 +46,10 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
         setIsFollowing(true);
       }
     } catch (error: any) {
-      console.error("Failed to follow/unfollow shop:", error);
+      logError(error as Error, {
+        component: "ShopHeader.handleFollowToggle",
+        metadata: { shopSlug: shop.slug },
+      });
       toast.error(error.message || "Please login to follow shops");
     } finally {
       setFollowLoading(false);

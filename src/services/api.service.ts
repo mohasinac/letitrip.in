@@ -3,6 +3,7 @@ import {
   DEFAULT_CACHE_CONFIG,
   type CacheConfigEntry,
 } from "@/config/cache.config";
+import { logError } from "@/lib/firebase-error-logger";
 
 // Cache entry type
 interface CacheEntry<T> {
@@ -363,10 +364,10 @@ class ApiService {
           }
         })
         .catch((error) => {
-          console.error(
-            `[API Cache] Revalidation failed for ${endpoint}:`,
-            error,
-          );
+          logError(error as Error, {
+            component: "ApiService.getCached",
+            metadata: { endpoint },
+          });
         });
 
       return cached.data!;
