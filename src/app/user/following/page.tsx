@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, Loader2, Store } from "lucide-react";
 import { shopsService } from "@/services/shops.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { ShopCard } from "@/components/cards/ShopCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -11,24 +12,23 @@ import type { ShopCardFE } from "@/types/frontend/shop.types";
 
 export default function FollowingPage() {
   const router = useRouter();
-  const [shops, setShops] = useState<ShopCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: shops,
+    isLoading: loading,
+    execute,
+  } = useLoadingState<ShopCardFE[]>({ initialData: [] });
 
-  useEffect(() => {
-    loadFollowingShops();
+  const loadFollowingShops = useCallback(async () => {
+    const result = await shopsService.getFollowing();
+    return result.shops || [];
   }, []);
 
-  const loadFollowingShops = async () => {
-    try {
-      setLoading(true);
-      const result = await shopsService.getFollowing();
-      setShops(result.shops || []);
-    } catch (error) {
-      console.error("Failed to load following shops:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    execute(loadFollowingShops);
+  }, [execute, loadFollowingShops]);
+
+  // Safe access to shops array
+  const shopsList = shops || [];
 
   if (loading) {
     return (
@@ -56,9 +56,9 @@ export default function FollowingPage() {
             <h1 className="text-2xl font-bold text-gray-900">Following</h1>
           </div>
           <p className="text-gray-600">
-            {shops.length > 0
-              ? `${shops.length} shop${
-                  shops.length > 1 ? "s" : ""
+            {shopsList.length > 0
+              ? `${shopsList.length} shop${
+                  shopsList.length > 1 ? "s" : ""
                 } you're following`
               : "Shops you follow will appear here"}
           </p>
@@ -67,7 +67,7 @@ export default function FollowingPage() {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {shops.length === 0 ? (
+        {shopsList.length === 0 ? (
           <EmptyState
             icon={<Store className="h-12 w-12 text-gray-400" />}
             title="Not following any shops yet"
@@ -79,7 +79,7 @@ export default function FollowingPage() {
           />
         ) : (
           <CardGrid>
-            {shops.map((shop) => (
+            {shopsList.map((shop) => (
               <ShopCard
                 key={shop.id}
                 id={shop.id}

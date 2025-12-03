@@ -1,36 +1,33 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { MapPin, Plus, Edit, Trash2, CheckCircle, Loader2 } from "lucide-react";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { addressService } from "@/services/address.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { SmartAddressForm } from "@/components/common/SmartAddressForm";
 import type { AddressFE } from "@/types/frontend/address.types";
 
 function AddressesContent() {
-  const [addresses, setAddresses] = useState<AddressFE[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: addresses,
+    isLoading: loading,
+    execute,
+    setData: setAddresses,
+  } = useLoadingState<AddressFE[]>({ initialData: [] });
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadAddresses();
+  const loadAddresses = useCallback(async () => {
+    return await addressService.getAll();
   }, []);
 
-  const loadAddresses = async () => {
-    try {
-      setLoading(true);
-      const data = await addressService.getAll();
-      setAddresses(data);
-    } catch (error) {
-      console.error("Failed to load addresses:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    execute(loadAddresses);
+  }, [execute, loadAddresses]);
 
   const handleOpenForm = (addressId?: string) => {
     setEditingAddressId(addressId || null);
@@ -43,7 +40,7 @@ function AddressesContent() {
   };
 
   const handleFormSuccess = () => {
-    loadAddresses();
+    execute(loadAddresses);
     handleFormClose();
   };
 
@@ -53,7 +50,7 @@ function AddressesContent() {
     try {
       await addressService.delete(deleteId);
       setDeleteId(null);
-      loadAddresses();
+      execute(loadAddresses);
     } catch (error) {
       console.error("Failed to delete address:", error);
       toast.error("Failed to delete address. Please try again.");
@@ -63,11 +60,14 @@ function AddressesContent() {
   const handleSetDefault = async (id: string) => {
     try {
       await addressService.setDefault(id);
-      loadAddresses();
+      execute(loadAddresses);
     } catch (error) {
       console.error("Failed to set default address:", error);
     }
   };
+
+  // Safe access to addresses array
+  const addressesList = addresses || [];
 
   if (loading) {
     return (
@@ -100,7 +100,7 @@ function AddressesContent() {
         </button>
 
         {/* Addresses Grid */}
-        {addresses.length === 0 ? (
+        {addressesList.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
             <MapPin className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -119,7 +119,7 @@ function AddressesContent() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
-            {addresses.map((address) => (
+            {addressesList.map((address) => (
               <div
                 key={address.id}
                 className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 relative ${

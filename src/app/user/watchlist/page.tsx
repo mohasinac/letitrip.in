@@ -1,53 +1,53 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Heart, AlertCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { auctionsService } from "@/services/auctions.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import AuctionCard from "@/components/cards/AuctionCard";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 
 export default function WatchlistPage() {
   const { user } = useAuth();
-  const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: auctions,
+    isLoading: loading,
+    error,
+    execute,
+    setData: setAuctions,
+    retry,
+  } = useLoadingState<AuctionCardFE[]>({ initialData: [] });
+
+  const loadWatchlist = useCallback(async () => {
+    const data = await auctionsService.getWatchlist();
+    return data || [];
+  }, []);
 
   useEffect(() => {
     if (user) {
-      loadWatchlist();
+      execute(loadWatchlist);
     }
-  }, [user]);
-
-  const loadWatchlist = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const data = await auctionsService.getWatchlist();
-      setAuctions(data || []);
-    } catch (error) {
-      console.error("Failed to load watchlist:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to load watchlist"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [user, execute, loadWatchlist]);
 
   const handleRemoveFromWatchlist = async (auctionId: string) => {
     try {
       await auctionsService.toggleWatch(auctionId);
 
       // Remove from local state
-      setAuctions((prev) => prev.filter((auction) => auction.id !== auctionId));
+      const updatedAuctions = (auctions || []).filter(
+        (auction) => auction.id !== auctionId
+      );
+      setAuctions(updatedAuctions);
     } catch (error) {
       console.error("Failed to remove from watchlist:", error);
     }
   };
+
+  // Safe access to auctions array
+  const auctionsList = auctions || [];
 
   if (!user) {
     return (
@@ -82,10 +82,10 @@ export default function WatchlistPage() {
             Error
           </h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {error}
+            {error.message}
           </p>
           <button
-            onClick={loadWatchlist}
+            onClick={retry}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
           >
             Try Again
@@ -112,7 +112,7 @@ export default function WatchlistPage() {
         </div>
 
         {/* Stats */}
-        {auctions.length > 0 && (
+        {auctionsList.length > 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
@@ -120,7 +120,7 @@ export default function WatchlistPage() {
                   Total Watched
                 </div>
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {auctions.length}
+                  {auctionsList.length}
                 </div>
               </div>
               <div>
@@ -129,8 +129,9 @@ export default function WatchlistPage() {
                 </div>
                 <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {
-                    auctions.filter((a) => a.status === AuctionStatus.ACTIVE)
-                      .length
+                    auctionsList.filter(
+                      (a) => a.status === AuctionStatus.ACTIVE
+                    ).length
                   }
                 </div>
               </div>
@@ -140,7 +141,7 @@ export default function WatchlistPage() {
                 </div>
                 <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                   {
-                    auctions.filter((a) => {
+                    auctionsList.filter((a) => {
                       const endTime =
                         typeof a.endTime === "string"
                           ? new Date(a.endTime)
@@ -157,7 +158,7 @@ export default function WatchlistPage() {
         )}
 
         {/* Auctions Grid */}
-        {auctions.length === 0 ? (
+        {auctionsList.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
             <Heart className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -176,7 +177,7 @@ export default function WatchlistPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {auctions.map((auction) => (
+            {auctionsList.map((auction) => (
               <AuctionCard
                 key={auction.id}
                 auction={

@@ -1,42 +1,38 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { Trophy, AlertCircle, Loader2, Package, Download } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { auctionsService } from "@/services/auctions.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import Link from "next/link";
 import Image from "next/image";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 
 export default function WonAuctionsPage() {
   const { user } = useAuth();
-  const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: auctions,
+    isLoading: loading,
+    error,
+    execute,
+    retry,
+  } = useLoadingState<AuctionCardFE[]>({ initialData: [] });
+
+  const loadWonAuctions = useCallback(async () => {
+    const data = await auctionsService.getWonAuctions();
+    return data || [];
+  }, []);
 
   useEffect(() => {
     if (user) {
-      loadWonAuctions();
+      execute(loadWonAuctions);
     }
-  }, [user]);
+  }, [user, execute, loadWonAuctions]);
 
-  const loadWonAuctions = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const data = await auctionsService.getWonAuctions();
-      setAuctions(data || []);
-    } catch (error) {
-      console.error("Failed to load won auctions:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to load won auctions"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Safe access to auctions array
+  const auctionsList = auctions || [];
 
   if (!user) {
     return (
@@ -68,10 +64,10 @@ export default function WonAuctionsPage() {
             Error
           </h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {error}
+            {error.message}
           </p>
           <button
-            onClick={loadWonAuctions}
+            onClick={retry}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             Try Again
@@ -81,14 +77,14 @@ export default function WonAuctionsPage() {
     );
   }
 
-  const totalWinnings = auctions.reduce(
+  const totalWinnings = auctionsList.reduce(
     (sum, auction) => sum + (auction.currentBid || 0),
     0
   );
-  const pendingPayment = auctions.filter(
+  const pendingPayment = auctionsList.filter(
     (a) => !(a as any).order_id || (a as any).order_status === "pending"
   );
-  const completedOrders = auctions.filter(
+  const completedOrders = auctionsList.filter(
     (a) => (a as any).order_id && (a as any).order_status === "completed"
   );
 
@@ -110,7 +106,7 @@ export default function WonAuctionsPage() {
         </div>
 
         {/* Stats */}
-        {auctions.length > 0 && (
+        {auctionsList.length > 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div>
@@ -118,7 +114,7 @@ export default function WonAuctionsPage() {
                   Total Won
                 </div>
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {auctions.length}
+                  {auctionsList.length}
                 </div>
               </div>
               <div>
@@ -150,7 +146,7 @@ export default function WonAuctionsPage() {
         )}
 
         {/* Won Auctions List */}
-        {auctions.length === 0 ? (
+        {auctionsList.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
             <Trophy className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -168,7 +164,7 @@ export default function WonAuctionsPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {auctions.map((auction) => {
+            {auctionsList.map((auction) => {
               const hasPendingPayment =
                 !(auction as any).order_id ||
                 (auction as any).order_status === "pending";
