@@ -6,6 +6,7 @@
 import { NextRequest } from "next/server";
 import { getSessionToken, verifySession, SessionData } from "./session";
 import { getFirestoreAdmin } from "./firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 export interface AuthResult {
   user: {
@@ -22,7 +23,7 @@ export interface AuthResult {
  * Returns user, role, and session data if authenticated
  */
 export async function getAuthFromRequest(
-  request: NextRequest,
+  request: NextRequest
 ): Promise<AuthResult> {
   try {
     const token = getSessionToken(request);
@@ -37,7 +38,10 @@ export async function getAuthFromRequest(
 
     // Get full user data from Firestore
     const db = getFirestoreAdmin();
-    const userDoc = await db.collection("users").doc(session.userId).get();
+    const userDoc = await db
+      .collection(COLLECTIONS.USERS)
+      .doc(session.userId)
+      .get();
 
     if (!userDoc.exists) {
       return { user: null, role: null, session: null };

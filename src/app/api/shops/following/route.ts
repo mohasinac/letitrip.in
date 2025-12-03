@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { COLLECTIONS } from "@/constants/database";
+import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
 
 /**
  * GET /api/shops/following - Get list of shops the user follows
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     const followingSnapshot = await db
       .collection(COLLECTIONS.USERS)
       .doc(user.id)
-      .collection("following")
+      .collection(SUBCOLLECTIONS.SHOP_FOLLOWING)
       .get();
 
     if (followingSnapshot.empty) {
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     console.error("[GET /api/shops/following] Error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

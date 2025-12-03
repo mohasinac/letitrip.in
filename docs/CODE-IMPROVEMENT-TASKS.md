@@ -1,26 +1,322 @@
 # Code Improvement Tasks
 
 > **Generated**: December 3, 2025
-> **Last Updated**: January 6, 2025
+> **Last Updated**: December 3, 2025
 > **Status**: ✅ BUILD PASSING - Ready for Release
-> **Estimated Total Effort**: 86-130 hours (with reusable components)
+> **Estimated Total Effort**: 180-268 hours
 > **Potential Lines Saved**: ~13,000 lines via shared components
-> **Total Tasks**: 17 improvement areas identified
+> **Total Tasks**: 22 improvement areas identified
 
 ## 🎉 BUILD STATUS: PASSING
 
 The application successfully builds and is ready for release. All critical type errors have been resolved.
 
-### Recent Fixes Applied (January 6, 2025)
+### Recent Fixes Applied (December 3, 2025)
 
-| Issue                      | File(s)                                                                   | Resolution                                                |
-| -------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------- |
-| Email service architecture | `src/services/email.service.ts`, `src/app/api/lib/email/email.service.ts` | Separated frontend/backend email services properly        |
-| Missing DemoStep settings  | `src/app/admin/demo/page.tsx`                                             | Added `settings` step to all status objects (4 locations) |
-| EmptyState prop type       | `src/app/search/page.tsx`                                                 | Changed `href` to `onClick` with router.push              |
-| ShopFormData incomplete    | `src/components/seller/shop-wizard/types.ts`                              | Added all missing fields used by wizard steps             |
-| FormCheckbox missing label | `src/components/seller/shop-wizard/SettingsStep.tsx`                      | Added label prop to FormCheckbox components               |
-| Removed stale files        | `src/app/page.old.tsx`                                                    | Deleted file with outdated types                          |
+| Issue                      | File(s)                                                                   | Resolution                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Email service architecture | `src/services/email.service.ts`, `src/app/api/lib/email/email.service.ts` | Separated frontend/backend email services properly                                                |
+| Missing DemoStep settings  | `src/app/admin/demo/page.tsx`                                             | Added `settings` step to all status objects (4 locations)                                         |
+| EmptyState prop type       | `src/app/search/page.tsx`                                                 | Changed `href` to `onClick` with router.push                                                      |
+| ShopFormData incomplete    | `src/components/seller/shop-wizard/types.ts`                              | Added all missing fields used by wizard steps                                                     |
+| FormCheckbox missing label | `src/components/seller/shop-wizard/SettingsStep.tsx`                      | Added label prop to FormCheckbox components                                                       |
+| Removed stale files        | `src/app/page.old.tsx`                                                    | Deleted file with outdated types                                                                  |
+| **Task 2: COLLECTIONS**    | 15+ API routes                                                            | ✅ Migrated hardcoded collection names to COLLECTIONS constant                                    |
+| **Task 2: SUBCOLLECTIONS** | `src/constants/database.ts`                                               | ✅ Added SHOP_FOLLOWING, SHOP_SETTINGS, REVIEW_HELPFUL_VOTES, TICKET_MESSAGES, SESSIONS           |
+| **Task 11: Dark Mode**     | 10 pages fixed                                                            | ✅ user/won-auctions, watchlist, tickets, messages; seller/messages, support-tickets; admin/users, orders/[id], support-tickets/[id] |
+| **Task 12: Console.log**   | 7 files fixed                                                             | ✅ Removed debug console.log from admin/orders, shops, products, users, hero-slides pages         |
+| **Task 4: DateDisplay**    | 2 files fixed                                                             | ✅ admin/orders/[id] and admin/support-tickets/[id] now use DateDisplay component                 |
+
+---
+
+## ✅ COMPLETED TASKS
+
+### Task 2: COLLECTIONS/SUBCOLLECTIONS Migration (Partial - In Progress)
+
+**Status**: 🟡 IN PROGRESS (70% complete)
+
+**Files Fixed**:
+
+- ✅ `src/app/api/tickets/[id]/route.ts` - Using COLLECTIONS.SUPPORT_TICKETS and COLLECTIONS.USERS
+- ✅ `src/app/api/tickets/route.ts` - Using COLLECTIONS.SUPPORT_TICKETS
+- ✅ `src/app/api/tickets/[id]/reply/route.ts` - Using COLLECTIONS.SUPPORT_TICKETS
+- ✅ `src/app/api/tickets/bulk/route.ts` - Using COLLECTIONS.SUPPORT_TICKETS
+- ✅ `src/app/api/auth/register/route.ts` - Using COLLECTIONS.USERS
+- ✅ `src/app/api/auth/google/route.ts` - Using COLLECTIONS.USERS
+- ✅ `src/app/api/middleware/rbac-auth.ts` - Using COLLECTIONS.USERS
+- ✅ `src/app/api/lib/session.ts` - Using COLLECTIONS.SESSIONS and COLLECTIONS.USERS
+- ✅ `src/app/api/lib/auth.ts` - Using COLLECTIONS.USERS
+- ✅ `src/app/api/lib/bulk-operations.ts` - Using COLLECTIONS.USERS
+- ✅ `src/app/api/user/addresses/route.ts` - Using COLLECTIONS.ADDRESSES
+- ✅ `src/app/api/user/addresses/[id]/route.ts` - Using COLLECTIONS.ADDRESSES
+- ✅ `src/app/api/reviews/[id]/helpful/route.ts` - Using SUBCOLLECTIONS.REVIEW_HELPFUL_VOTES
+- ✅ `src/app/api/shops/[slug]/follow/route.ts` - Using SUBCOLLECTIONS.SHOP_FOLLOWING
+- ✅ `src/app/api/shops/following/route.ts` - Using SUBCOLLECTIONS.SHOP_FOLLOWING
+- ✅ `src/app/api/seller/settings/route.ts` - Using SUBCOLLECTIONS.SHOP_SETTINGS
+
+**Constants Added**:
+
+- ✅ `COLLECTIONS.SESSIONS` - For session management
+- ✅ `SUBCOLLECTIONS.SHOP_FOLLOWING` - For user following shops
+- ✅ `SUBCOLLECTIONS.SHOP_SETTINGS` - For seller settings
+- ✅ `SUBCOLLECTIONS.REVIEW_HELPFUL_VOTES` - For helpful vote tracking
+- ✅ `SUBCOLLECTIONS.TICKET_MESSAGES` - For support ticket messages
+
+### Task 11: Dark Mode Support (Partial - In Progress)
+
+**Status**: 🟡 IN PROGRESS (90% complete)
+
+**Files Fixed**:
+
+- ✅ `src/app/user/won-auctions/page.tsx` - Full dark mode support added
+- ✅ `src/app/user/watchlist/page.tsx` - Full dark mode support added
+- ✅ `src/app/user/tickets/page.tsx` - Full dark mode support added
+- ✅ `src/app/user/tickets/[id]/page.tsx` - Full dark mode support added
+- ✅ `src/app/user/messages/page.tsx` - Full dark mode support added
+- ✅ `src/app/seller/messages/page.tsx` - Full dark mode support added
+- ✅ `src/app/seller/support-tickets/page.tsx` - Full dark mode support added
+- ✅ `src/app/admin/users/page.tsx` - Full dark mode support added
+- ✅ `src/app/admin/orders/[id]/page.tsx` - Full dark mode support added
+- ✅ `src/app/admin/support-tickets/[id]/page.tsx` - Full dark mode support added
+
+**Remaining**:
+
+- `src/app/admin/demo/page.tsx`
+- `src/app/admin/component-demo/page.tsx`
+
+---
+
+### Task 4: Date Formatting Migration (Partial - In Progress)
+
+**Status**: 🟡 IN PROGRESS (40% complete)
+
+**Files Fixed**:
+
+- ✅ `src/app/admin/orders/[id]/page.tsx` - Using DateDisplay component
+- ✅ `src/app/admin/support-tickets/[id]/page.tsx` - Using DateDisplay component
+
+**Remaining**:
+
+- `src/app/admin/demo/page.tsx` - line 1652
+- Other files with inline date formatting
+
+---
+
+## 🔄 Task 22: Reusable Hooks, Contexts & Functions Analysis (NEW)
+
+**Priority**: HIGH
+**Effort**: 8-12 hours
+**Goal**: Consolidate duplicate patterns into reusable hooks and utilities
+
+### Existing Reusable Hooks (Already Available)
+
+These hooks exist and should be used consistently across the codebase:
+
+| Hook                   | Location                          | Purpose                             | Usage Status |
+| ---------------------- | --------------------------------- | ----------------------------------- | ------------ |
+| `useDebounce`          | `src/hooks/useDebounce.ts`        | Debounce values (search, filters)   | ⚠️ Underused |
+| `useDebouncedCallback` | `src/hooks/useDebounce.ts`        | Debounce function calls             | ⚠️ Underused |
+| `useThrottle`          | `src/hooks/useDebounce.ts`        | Throttle rapid updates              | ⚠️ Underused |
+| `useApi`               | `src/hooks/useDebounce.ts`        | API calls with retry & debounce     | ⚠️ Underused |
+| `useFilters`           | `src/hooks/useFilters.ts`         | Filter state with URL sync          | ⚠️ Underused |
+| `useLoadingState`      | `src/hooks/useLoadingState.ts`    | Loading/error/data state management | ⚠️ Underused |
+| `useMultiLoadingState` | `src/hooks/useLoadingState.ts`    | Multiple parallel loading states    | ⚠️ Underused |
+| `useSafeLoad`          | `src/hooks/useSafeLoad.ts`        | Safe data loading with dependencies | ⚠️ Underused |
+| `useAdminLoad`         | `src/hooks/useSafeLoad.ts`        | Admin-specific data loading         | ⚠️ Underused |
+| `useMobile`            | `src/hooks/useMobile.ts`          | Mobile detection                    | ✅ Used      |
+| `useMediaUpload`       | `src/hooks/useMediaUpload.ts`     | Image/file upload handling          | ✅ Used      |
+| `useSlugValidation`    | `src/hooks/useSlugValidation.ts`  | Slug uniqueness checking            | ✅ Used      |
+| `useNavigationGuard`   | `src/hooks/useNavigationGuard.ts` | Unsaved changes protection          | ⚠️ Underused |
+| `useCart`              | `src/hooks/useCart.ts`            | Cart operations                     | ✅ Used      |
+| `useHeaderStats`       | `src/hooks/useHeaderStats.ts`     | Header counts (cart, notifications) | ✅ Used      |
+
+### Existing Contexts (Already Available)
+
+| Context                 | Location                                 | Purpose                    | Hydration Safe |
+| ----------------------- | ---------------------------------------- | -------------------------- | -------------- |
+| `AuthContext`           | `src/contexts/AuthContext.tsx`           | User authentication & role | ✅ Yes         |
+| `ThemeContext`          | `src/contexts/ThemeContext.tsx`          | Dark/light theme           | ✅ Yes         |
+| `ComparisonContext`     | `src/contexts/ComparisonContext.tsx`     | Product comparison         | ⚠️ Check       |
+| `UploadContext`         | `src/contexts/UploadContext.tsx`         | File upload state          | ⚠️ Check       |
+| `ViewingHistoryContext` | `src/contexts/ViewingHistoryContext.tsx` | Recently viewed items      | ⚠️ Check       |
+
+### Existing Utility Functions (Already Available)
+
+| Function                  | Location                | Purpose                  |
+| ------------------------- | ----------------------- | ------------------------ |
+| `cn()`                    | `src/lib/utils.ts`      | Tailwind class merging   |
+| `formatCurrency()`        | `src/lib/formatters.ts` | Price formatting ₹1,499  |
+| `formatCompactCurrency()` | `src/lib/formatters.ts` | Compact price ₹1.5L      |
+| `formatDate()`            | `src/lib/formatters.ts` | Date formatting          |
+| `formatRelativeTime()`    | `src/lib/formatters.ts` | "2 hours ago"            |
+| `formatNumber()`          | `src/lib/formatters.ts` | Number formatting        |
+| `formatCompactNumber()`   | `src/lib/formatters.ts` | 1.5K, 2.3M               |
+| `formatPercentage()`      | `src/lib/formatters.ts` | Percentage display       |
+| `formatPhoneNumber()`     | `src/lib/formatters.ts` | Phone formatting         |
+| `formatFileSize()`        | `src/lib/formatters.ts` | 1.5 MB                   |
+| `formatDuration()`        | `src/lib/formatters.ts` | 2h 30m                   |
+| `formatOrderId()`         | `src/lib/formatters.ts` | #ORD-ABC123              |
+| `formatTimeRemaining()`   | `src/lib/formatters.ts` | Countdown display        |
+| `formatAddress()`         | `src/lib/formatters.ts` | Address formatting       |
+| `truncateText()`          | `src/lib/formatters.ts` | Text truncation          |
+| `slugToTitle()`           | `src/lib/formatters.ts` | Slug to title conversion |
+
+### Patterns to Consolidate
+
+#### Pattern 1: Repeated Loading/Error State (Found in 30+ components)
+
+**Current (Duplicated)**:
+
+```tsx
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState<string | null>(null);
+const [data, setData] = useState<T | null>(null);
+
+const loadData = async () => {
+  setLoading(true);
+  setError(null);
+  try {
+    const result = await service.getData();
+    setData(result);
+  } catch (e) {
+    setError(e.message);
+  } finally {
+    setLoading(false);
+  }
+};
+```
+
+**Should Use**:
+
+```tsx
+import { useLoadingState } from "@/hooks/useLoadingState";
+
+const { data, isLoading, error, execute } = useLoadingState<T>();
+
+useEffect(() => {
+  execute(() => service.getData());
+}, []);
+```
+
+**Files to Migrate**:
+
+- All admin list pages (`/admin/users`, `/admin/products`, etc.)
+- All seller list pages (`/seller/products`, `/seller/orders`, etc.)
+- All user pages with data fetching
+
+#### Pattern 2: URL Filter Sync (Found in 15+ pages)
+
+**Current (Duplicated)**:
+
+```tsx
+const searchParams = useSearchParams();
+const router = useRouter();
+const [filters, setFilters] = useState({});
+
+// Manual URL sync logic repeated...
+```
+
+**Should Use**:
+
+```tsx
+import { useFilters } from "@/hooks/useFilters";
+
+const { filters, appliedFilters, applyFilters, resetFilters } = useFilters(
+  {
+    status: "",
+    sort: "-createdAt",
+  },
+  { syncWithUrl: true }
+);
+```
+
+#### Pattern 3: Debounced Search (Found in 10+ components)
+
+**Current (Duplicated)**:
+
+```tsx
+const [searchTerm, setSearchTerm] = useState("");
+const [debouncedSearch, setDebouncedSearch] = useState("");
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setDebouncedSearch(searchTerm);
+  }, 300);
+  return () => clearTimeout(timer);
+}, [searchTerm]);
+```
+
+**Should Use**:
+
+```tsx
+import { useDebounce } from "@/hooks/useDebounce";
+
+const [searchTerm, setSearchTerm] = useState("");
+const debouncedSearch = useDebounce(searchTerm, 300);
+```
+
+#### Pattern 4: Admin Role Check + Data Load (Found in 12+ admin pages)
+
+**Current (Duplicated)**:
+
+```tsx
+const { user, isAdmin } = useAuth();
+const [loading, setLoading] = useState(false);
+
+useEffect(() => {
+  if (!user || !isAdmin) return;
+  loadData();
+}, [user?.uid, isAdmin]);
+```
+
+**Should Use**:
+
+```tsx
+import { useAdminLoad } from "@/hooks/useSafeLoad";
+
+useAdminLoad(loadData, {
+  user: currentUser,
+  requiredRole: "admin",
+  deps: [filter1, filter2],
+});
+```
+
+### New Hooks to Create
+
+| Hook               | Purpose                               | Reduces Code In        |
+| ------------------ | ------------------------------------- | ---------------------- |
+| `useUrlPagination` | URL-based pagination state            | All list pages         |
+| `useSortableList`  | Sorting + filtering + pagination      | Admin/seller tables    |
+| `useBulkSelection` | Checkbox selection for bulk actions   | All table pages        |
+| `useFormWithDraft` | Auto-save form drafts to localStorage | All create/edit forms  |
+| `useConfirmAction` | Confirm dialog state management       | Delete/bulk operations |
+
+### Migration Checklist
+
+#### Phase 1: Replace Manual Loading States (4-6 hours)
+
+- [ ] Audit pages using `useState(false)` for loading
+- [ ] Replace with `useLoadingState` hook
+- [ ] Test all affected pages
+
+#### Phase 2: Consolidate Filter Logic (4-6 hours)
+
+- [ ] Audit pages with manual filter state
+- [ ] Replace with `useFilters` hook
+- [ ] Ensure URL sync works
+
+#### Phase 3: Add Debounce to Search (2-3 hours)
+
+- [ ] Find all search inputs without debounce
+- [ ] Add `useDebounce` hook
+- [ ] Test search functionality
+
+#### Phase 4: Create New Hooks (6-8 hours)
+
+- [ ] Create `useUrlPagination`
+- [ ] Create `useSortableList`
+- [ ] Create `useBulkSelection`
+- [ ] Create `useFormWithDraft`
 
 ---
 
@@ -69,6 +365,11 @@ This document identifies code quality issues, refactoring opportunities, and imp
 15. [Task 15: User Verification System](#task-15-user-verification-system) ⭐ NEW
 16. [Task 16: IP Tracking & Security](#task-16-ip-tracking--security) ⭐ NEW
 17. [Task 17: Events Management System](#task-17-events-management-system) ⭐ NEW
+18. [Task 18: Navigation, Filters & Dark Mode Consistency](#task-18-navigation-filters--dark-mode-consistency-new---high-priority)
+19. [Task 19: URL-Based Filtering, Sorting & Pagination](#task-19-url-based-filtering-sorting--pagination-new---high-priority)
+20. [Task 20: Firestore Indexes & Query Optimization](#task-20-firestore-indexes--query-optimization-new)
+21. [Task 21: Navigation Component Cleanup & Refactoring](#task-21-navigation-component-cleanup--refactoring-new)
+22. [Task 22: Reusable Hooks, Contexts & Functions](#task-22-reusable-hooks-contexts--functions-analysis-new) ⭐ NEW
 
 ---
 
@@ -2022,40 +2323,53 @@ const dashboardLinks = [
 
 ## Updated Summary Statistics
 
-| Task                               | Priority     | Effort (hours) | Status |
-| ---------------------------------- | ------------ | -------------- | ------ |
-| Task 1: Large Files                | HIGH         | 12-18          | ⬜     |
-| Task 2: Constants Usage            | HIGH         | 8-12           | ⬜     |
-| Task 3: New Constants              | MEDIUM       | 4-6            | ⬜     |
-| Task 4: HTML Wrappers              | HIGH         | 8-12           | ⬜     |
-| Task 5: Sieve Processing           | HIGH         | 6-10           | ⬜     |
-| Task 6: Wizard Navigation          | HIGH         | 4-6            | ⬜     |
-| Task 7: Category/Shop Display      | MEDIUM       | 4-6            | ⬜     |
-| Task 8: API Debouncing             | HIGH         | 4-6            | ⬜     |
-| Task 9: Performance                | MEDIUM       | 6-10           | ⬜     |
-| Task 10: Graph View                | MEDIUM       | 6-8            | ⬜     |
-| Task 11: Mobile/Dark Mode          | HIGH         | 8-12           | 🔄     |
-| Task 12: Code Quality              | MEDIUM       | 4-6            | ⬜     |
-| Task 13: Accessibility             | MEDIUM       | 4-6            | ⬜     |
-| Task 14: Test Coverage             | LOW          | 8-12           | ⬜     |
-| **Task 15: User Verification**     | **CRITICAL** | **20-30**      | ⬜     |
-| **Task 16: IP Tracking**           | **HIGH**     | **6-8**        | ⬜     |
-| **Task 17: Events System**         | **MEDIUM**   | **24-32**      | ⬜     |
-| **Task 18: Nav/Filter/Dark**       | **HIGH**     | **16-24**      | 🔄     |
-| **Task 19: URL Params/Pagination** | **HIGH**     | **20-28**      | ⬜     |
-| **Task 20: Firestore Indexes**     | **HIGH**     | **2-4**        | ✅     |
-| **Task 21: Navigation Cleanup**    | **HIGH**     | **6-12**       | ⬜     |
-| **TOTAL**                          | -            | **180-268**    | -      |
+| Task                                      | Priority     | Effort (hours) | Status |
+| ----------------------------------------- | ------------ | -------------- | ------ |
+| Task 1: Large Files                       | HIGH         | 12-18          | ⬜     |
+| Task 2: Constants Usage                   | HIGH         | 8-12           | ⬜     |
+| Task 3: New Constants                     | MEDIUM       | 4-6            | ⬜     |
+| Task 4: HTML Wrappers                     | HIGH         | 8-12           | ⬜     |
+| Task 5: Sieve Processing                  | HIGH         | 6-10           | ⬜     |
+| Task 6: Wizard Navigation                 | HIGH         | 4-6            | ⬜     |
+| Task 7: Category/Shop Display             | MEDIUM       | 4-6            | ⬜     |
+| Task 8: API Debouncing                    | HIGH         | 4-6            | ⬜     |
+| Task 9: Performance                       | MEDIUM       | 6-10           | ⬜     |
+| Task 10: Graph View                       | MEDIUM       | 6-8            | ⬜     |
+| Task 11: Mobile/Dark Mode                 | HIGH         | 8-12           | 🔄     |
+| Task 12: Code Quality                     | MEDIUM       | 4-6            | ⬜     |
+| Task 13: Accessibility                    | MEDIUM       | 4-6            | ⬜     |
+| Task 14: Test Coverage                    | LOW          | 8-12           | ⬜     |
+| **Task 15: User Verification**            | **CRITICAL** | **20-30**      | ⬜     |
+| **Task 16: IP Tracking**                  | **HIGH**     | **6-8**        | ⬜     |
+| **Task 17: Events System**                | **MEDIUM**   | **24-32**      | ⬜     |
+| **Task 18: Nav/Filter/Dark**              | **HIGH**     | **16-24**      | 🔄     |
+| **Task 19: URL Params/Pagination**        | **HIGH**     | **20-28**      | ⬜     |
+| **Task 20: Firestore Indexes**            | **HIGH**     | **2-4**        | ✅     |
+| **Task 21: Navigation Cleanup**           | **HIGH**     | **6-12**       | ⬜     |
+| **Task 22: Hooks/Contexts Consolidation** | **HIGH**     | **16-24**      | ⬜     |
+| **TOTAL**                                 | -            | **196-292**    | -      |
 
 ### Progress Summary
 
-| Category              | Fixed | Remaining |
-| --------------------- | ----- | --------- |
-| User Page Dark Mode   | 2     | 10+       |
-| Seller Page Dark Mode | 0     | 5+        |
-| Admin Page Dark Mode  | 0     | 6+        |
-| Firestore Indexes     | 3     | Monitor   |
-| Search Issues         | 3     | 2         |
+| Category                 | Fixed | Remaining |
+| ------------------------ | ----- | --------- |
+| User Page Dark Mode      | 2     | 10+       |
+| Seller Page Dark Mode    | 0     | 5+        |
+| Admin Page Dark Mode     | 0     | 6+        |
+| Firestore Indexes        | 3     | Monitor   |
+| Search Issues            | 3     | 2         |
+| Hooks Consolidation      | 0     | 30+ files |
+| Context Hydration Checks | 0     | 3         |
+
+### Reusable Code Summary
+
+| Category          | Existing | To Create | Underutilized |
+| ----------------- | -------- | --------- | ------------- |
+| Hooks             | 15       | 5         | 8             |
+| Contexts          | 5        | 0         | 3             |
+| Utility Functions | 20+      | 0         | Many          |
+| Form Components   | 8        | 0         | ✅ Well used  |
+| Value Components  | 20+      | 0         | ⚠️ Underused  |
 
 ---
 

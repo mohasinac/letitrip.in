@@ -5,6 +5,7 @@
 
 import { NextRequest } from "next/server";
 import { getFirestoreAdmin } from "./firebase/admin";
+import { COLLECTIONS } from "@/constants/database";
 
 export interface BulkOperationResult {
   success: boolean;
@@ -23,12 +24,12 @@ export interface BulkOperationConfig {
   validatePermission?: (userId: string, action: string) => Promise<boolean>;
   validateItem?: (
     item: any,
-    action: string,
+    action: string
   ) => Promise<{ valid: boolean; error?: string }>;
   customHandler?: (
     db: FirebaseFirestore.Firestore,
     id: string,
-    data?: any,
+    data?: any
   ) => Promise<void>;
 }
 
@@ -36,7 +37,7 @@ export interface BulkOperationConfig {
  * Execute a bulk operation with transaction support
  */
 export async function executeBulkOperation(
-  config: BulkOperationConfig,
+  config: BulkOperationConfig
 ): Promise<BulkOperationResult> {
   const { collection, action, ids, data, validateItem, customHandler } = config;
 
@@ -102,7 +103,9 @@ export async function executeBulkOperation(
     successCount,
     failedCount,
     errors: errors.length > 0 ? errors : undefined,
-    message: `${successCount} item(s) ${action} successfully${failedCount > 0 ? `, ${failedCount} failed` : ""}`,
+    message: `${successCount} item(s) ${action} successfully${
+      failedCount > 0 ? `, ${failedCount} failed` : ""
+    }`,
   };
 }
 
@@ -111,14 +114,14 @@ export async function executeBulkOperation(
  */
 export async function validateBulkPermission(
   userId: string,
-  requiredRole: "admin" | "seller" | "user",
+  requiredRole: "admin" | "seller" | "user"
 ): Promise<{ valid: boolean; error?: string }> {
   if (!userId) {
     return { valid: false, error: "Authentication required" };
   }
 
   const db = getFirestoreAdmin();
-  const userDoc = await db.collection("users").doc(userId).get();
+  const userDoc = await db.collection(COLLECTIONS.USERS).doc(userId).get();
 
   if (!userDoc.exists) {
     return { valid: false, error: "User not found" };
@@ -250,7 +253,7 @@ export function createBulkErrorResponse(error: any) {
  * Transaction-based bulk operation (for operations that need atomicity)
  */
 export async function executeBulkOperationWithTransaction(
-  config: BulkOperationConfig,
+  config: BulkOperationConfig
 ): Promise<BulkOperationResult> {
   const { collection, action, ids, data } = config;
 
@@ -271,7 +274,7 @@ export async function executeBulkOperationWithTransaction(
       // Get all documents
       const docRefs = ids.map((id) => db.collection(collection).doc(id));
       const docs = await Promise.all(
-        docRefs.map((ref) => transaction.get(ref)),
+        docRefs.map((ref) => transaction.get(ref))
       );
 
       // Validate all exist

@@ -10,11 +10,12 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
 
 const statusColors = {
-  open: "bg-blue-100 text-blue-800",
-  "in-progress": "bg-yellow-100 text-yellow-800",
-  resolved: "bg-green-100 text-green-800",
-  closed: "bg-gray-100 text-gray-800",
-  escalated: "bg-red-100 text-red-800",
+  open: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+  "in-progress":
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+  resolved: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  closed: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
+  escalated: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
 };
 
 const categoryLabels = {
@@ -84,8 +85,10 @@ export default function TicketDetailsPage() {
       <AuthGuard requireAuth>
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-yellow-500"></div>
-            <p className="mt-4 text-gray-600">Loading ticket...</p>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 dark:border-gray-600 border-t-yellow-500"></div>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">
+              Loading ticket...
+            </p>
           </div>
         </main>
       </AuthGuard>
@@ -96,12 +99,12 @@ export default function TicketDetailsPage() {
     return (
       <AuthGuard requireAuth>
         <main className="container mx-auto px-4 py-8 max-w-4xl">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-red-700">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-red-700 dark:text-red-400">
             {error || "Ticket not found"}
           </div>
           <Link
             href="/user/tickets"
-            className="inline-block mt-4 text-yellow-600 hover:text-yellow-700 font-semibold"
+            className="inline-block mt-4 text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 font-semibold"
           >
             ← Back to Tickets
           </Link>
@@ -117,7 +120,7 @@ export default function TicketDetailsPage() {
         <div className="mb-6">
           <Link
             href="/user/tickets"
-            className="inline-flex items-center text-yellow-600 hover:text-yellow-700 font-semibold mb-4"
+            className="inline-flex items-center text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 font-semibold mb-4"
           >
             <svg
               className="h-5 w-5 mr-1"
@@ -137,10 +140,10 @@ export default function TicketDetailsPage() {
         </div>
 
         {/* Ticket Header */}
-        <div className="bg-white rounded-lg border p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {ticket.subject}
               </h1>
               <div className="flex flex-wrap items-center gap-2">
@@ -151,24 +154,24 @@ export default function TicketDetailsPage() {
                 >
                   {ticket.status}
                 </span>
-                <span className="px-3 py-1 bg-gray-100 rounded text-sm font-medium">
+                <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm font-medium text-gray-800 dark:text-gray-200">
                   {categoryLabels[
                     ticket.category as keyof typeof categoryLabels
                   ] || ticket.category}
                 </span>
                 {ticket.priority === "urgent" && (
-                  <span className="px-3 py-1 bg-red-100 text-red-800 rounded text-sm font-semibold">
+                  <span className="px-3 py-1 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded text-sm font-semibold">
                     Urgent
                   </span>
                 )}
                 {ticket.priority === "high" && (
-                  <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded text-sm font-semibold">
+                  <span className="px-3 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-sm font-semibold">
                     High Priority
                   </span>
                 )}
               </div>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               <p>Ticket #{ticketId.slice(0, 8)}</p>
               <p>
                 Created{" "}
@@ -181,17 +184,21 @@ export default function TicketDetailsPage() {
             </div>
           </div>
 
-          <div className="border-t pt-4">
-            <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
-            <p className="text-gray-700 whitespace-pre-wrap">
+          <div className="border-t dark:border-gray-700 pt-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+              Description
+            </h3>
+            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
               {ticket.description}
             </p>
           </div>
         </div>
 
         {/* Conversation Thread */}
-        <div className="bg-white rounded-lg border p-6 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Conversation</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 p-6 mb-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            Conversation
+          </h2>
 
           <div className="space-y-4">
             {ticket.messages && ticket.messages.length > 0 ? (
@@ -200,30 +207,30 @@ export default function TicketDetailsPage() {
                   key={message.id}
                   className={`p-4 rounded-lg ${
                     message.senderRole === "admin"
-                      ? "bg-blue-50 border border-blue-100"
-                      : "bg-gray-50 border border-gray-100"
+                      ? "bg-blue-50 border border-blue-100 dark:bg-blue-900/20 dark:border-blue-800"
+                      : "bg-gray-50 border border-gray-100 dark:bg-gray-700 dark:border-gray-600"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-gray-900 dark:text-white">
                       {message.senderRole === "admin" ? "Support Team" : "You"}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
                       <DateDisplay date={message.createdAt} includeTime />
                     </span>
                   </div>
-                  <p className="text-gray-700 whitespace-pre-wrap">
+                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                     {message.message}
                   </p>
                   {message.isInternal && (
-                    <span className="inline-block mt-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded">
+                    <span className="inline-block mt-2 px-2 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 text-xs font-semibold rounded">
                       Internal Note
                     </span>
                   )}
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-center py-4">
+              <p className="text-gray-500 dark:text-gray-400 text-center py-4">
                 No messages yet. Be the first to reply!
               </p>
             )}
@@ -232,8 +239,10 @@ export default function TicketDetailsPage() {
 
         {/* Reply Form */}
         {ticket.status !== "closed" && (
-          <div className="bg-white rounded-lg border p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Add Reply</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+              Add Reply
+            </h2>
             <form onSubmit={handleReply}>
               <FormTextarea
                 id="reply-message"
@@ -256,8 +265,8 @@ export default function TicketDetailsPage() {
         )}
 
         {ticket.status === "closed" && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-            <p className="text-gray-700">
+          <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 text-center">
+            <p className="text-gray-700 dark:text-gray-300">
               This ticket is closed. If you need further assistance, please
               create a new ticket.
             </p>

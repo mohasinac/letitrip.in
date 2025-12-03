@@ -12,7 +12,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { getCurrentUser } from "@/app/api/lib/session";
-import { COLLECTIONS } from "@/constants/database";
+import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
 import { FieldValue } from "firebase-admin/firestore";
 
 const DEFAULT_SETTINGS = {
@@ -57,14 +57,14 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     if (user.role !== "seller" && user.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden. Seller access required." },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     const settingsDoc = await db
       .collection(COLLECTIONS.USERS)
       .doc(user.id)
-      .collection("settings")
+      .collection(SUBCOLLECTIONS.SHOP_SETTINGS)
       .doc("seller")
       .get();
 
@@ -118,7 +118,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching seller settings:", error);
     return NextResponse.json(
       { error: "Failed to fetch settings" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -129,14 +129,14 @@ export async function PUT(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     if (user.role !== "seller" && user.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden. Seller access required." },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -147,7 +147,7 @@ export async function PUT(request: NextRequest) {
     const settingsRef = db
       .collection(COLLECTIONS.USERS)
       .doc(user.id)
-      .collection("settings")
+      .collection(SUBCOLLECTIONS.SHOP_SETTINGS)
       .doc("seller");
 
     // Get current settings to preserve full account number
@@ -187,7 +187,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating seller settings:", error);
     return NextResponse.json(
       { error: "Failed to update settings" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

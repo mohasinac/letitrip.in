@@ -31,7 +31,7 @@ export default function WatchlistPage() {
     } catch (error) {
       console.error("Failed to load watchlist:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load watchlist",
+        error instanceof Error ? error.message : "Failed to load watchlist"
       );
     } finally {
       setLoading(false);
@@ -51,10 +51,10 @@ export default function WatchlistPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">
+          <AlertCircle className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
             Please log in to view your watchlist
           </h3>
         </div>
@@ -64,9 +64,9 @@ export default function WatchlistPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <Loader2
-          className="h-8 w-8 animate-spin text-blue-600"
+          className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400"
           data-testid="loading-spinner"
         />
       </div>
@@ -75,14 +75,18 @@ export default function WatchlistPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">Error</h3>
-          <p className="mt-1 text-sm text-gray-500">{error}</p>
+          <AlertCircle className="mx-auto h-12 w-12 text-red-500 dark:text-red-400" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+            Error
+          </h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {error}
+          </p>
           <button
             onClick={loadWatchlist}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
           >
             Try Again
           </button>
@@ -92,34 +96,38 @@ export default function WatchlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Heart className="h-8 w-8 text-red-500" />
-            <h1 className="text-3xl font-bold text-gray-900">My Watchlist</h1>
+            <Heart className="h-8 w-8 text-red-500 dark:text-red-400" />
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              My Watchlist
+            </h1>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             Track your favorite auctions and never miss a bidding opportunity
           </p>
         </div>
 
         {/* Stats */}
         {auctions.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <div className="text-sm text-gray-500 mb-1">Total Watched</div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  Total Watched
+                </div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
                   {auctions.length}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500 mb-1">
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                   Active Auctions
                 </div>
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {
                     auctions.filter((a) => a.status === AuctionStatus.ACTIVE)
                       .length
@@ -127,8 +135,10 @@ export default function WatchlistPage() {
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500 mb-1">Ending Soon</div>
-                <div className="text-2xl font-bold text-red-600">
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  Ending Soon
+                </div>
+                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                   {
                     auctions.filter((a) => {
                       const endTime =
@@ -148,18 +158,18 @@ export default function WatchlistPage() {
 
         {/* Auctions Grid */}
         {auctions.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <Heart className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
+            <Heart className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
               No auctions in your watchlist
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
               Start watching auctions to keep track of items you're interested
               in
             </p>
             <Link
               href="/auctions"
-              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             >
               Browse Auctions
             </Link>

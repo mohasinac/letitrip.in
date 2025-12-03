@@ -14,12 +14,13 @@ import {
   errorToJson,
 } from "@/lib/api-errors";
 import { AuthUser, UserRole, hasAnyRole } from "@/lib/rbac-permissions";
+import { COLLECTIONS } from "@/constants/database";
 
 /**
  * Extract user from request token (using existing session or Firebase token)
  */
 export async function getUserFromRequest(
-  request: NextRequest,
+  request: NextRequest
 ): Promise<AuthUser | null> {
   try {
     // Try Authorization header first (for API calls)
@@ -33,7 +34,7 @@ export async function getUserFromRequest(
 
           const db = getFirestoreAdmin();
           const userDoc = await db
-            .collection("users")
+            .collection(COLLECTIONS.USERS)
             .doc(decodedToken.uid)
             .get();
 
@@ -79,7 +80,7 @@ export async function getUserFromRequest(
  * Require authentication - user must be logged in
  */
 export async function requireAuth(
-  request: NextRequest,
+  request: NextRequest
 ): Promise<
   { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
 > {
@@ -89,7 +90,7 @@ export async function requireAuth(
     return {
       error: NextResponse.json(
         errorToJson(new UnauthorizedError("Authentication required")),
-        { status: 401 },
+        { status: 401 }
       ),
     };
   }
@@ -102,7 +103,7 @@ export async function requireAuth(
  */
 export async function requireRole(
   request: NextRequest,
-  roles: UserRole[],
+  roles: UserRole[]
 ): Promise<
   { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
 > {
@@ -119,10 +120,12 @@ export async function requireRole(
       error: NextResponse.json(
         errorToJson(
           new ForbiddenError(
-            `This action requires one of the following roles: ${roles.join(", ")}`,
-          ),
+            `This action requires one of the following roles: ${roles.join(
+              ", "
+            )}`
+          )
         ),
-        { status: 403 },
+        { status: 403 }
       ),
     };
   }
@@ -134,7 +137,7 @@ export async function requireRole(
  * Require admin role
  */
 export async function requireAdmin(
-  request: NextRequest,
+  request: NextRequest
 ): Promise<
   { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
 > {
@@ -145,7 +148,7 @@ export async function requireAdmin(
  * Require seller role (or admin)
  */
 export async function requireSeller(
-  request: NextRequest,
+  request: NextRequest
 ): Promise<
   { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
 > {
@@ -158,7 +161,7 @@ export async function requireSeller(
 export async function requireOwnership(
   request: NextRequest,
   resourceOwnerId: string,
-  allowAdmin = true,
+  allowAdmin = true
 ): Promise<
   { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
 > {
@@ -181,10 +184,10 @@ export async function requireOwnership(
       error: NextResponse.json(
         errorToJson(
           new ForbiddenError(
-            "You don't have permission to access this resource",
-          ),
+            "You don't have permission to access this resource"
+          )
         ),
-        { status: 403 },
+        { status: 403 }
       ),
     };
   }
@@ -198,7 +201,7 @@ export async function requireOwnership(
 export async function requireShopOwnership(
   request: NextRequest,
   resourceShopId: string,
-  allowAdmin = true,
+  allowAdmin = true
 ): Promise<
   { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
 > {
@@ -224,10 +227,10 @@ export async function requireShopOwnership(
     error: NextResponse.json(
       errorToJson(
         new ForbiddenError(
-          "You don't have permission to access this shop's resources",
-        ),
+          "You don't have permission to access this shop's resources"
+        )
       ),
-      { status: 403 },
+      { status: 403 }
     ),
   };
 }
@@ -236,7 +239,7 @@ export async function requireShopOwnership(
  * Optional authentication - get user if available
  */
 export async function optionalAuth(
-  request: NextRequest,
+  request: NextRequest
 ): Promise<AuthUser | null> {
   return getUserFromRequest(request);
 }
@@ -247,7 +250,7 @@ export async function optionalAuth(
 export async function checkPermission(
   request: NextRequest,
   action: "read" | "write" | "delete",
-  resource: { type: string; ownerId?: string; shopId?: string },
+  resource: { type: string; ownerId?: string; shopId?: string }
 ): Promise<{ allowed: boolean; user: AuthUser | null }> {
   const user = await getUserFromRequest(request);
 
@@ -302,7 +305,7 @@ export async function checkPermission(
  * Helper to wrap route handler with authentication
  */
 export function withAuth(
-  handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>,
+  handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>
 ) {
   return async (request: NextRequest) => {
     const authResult = await requireAuth(request);
@@ -320,7 +323,7 @@ export function withAuth(
  */
 export function withRole(
   roles: UserRole[],
-  handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>,
+  handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>
 ) {
   return async (request: NextRequest) => {
     const authResult = await requireRole(request, roles);

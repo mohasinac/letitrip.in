@@ -12,6 +12,7 @@ import type {
   SupportTicketMessageFE,
 } from "@/types/frontend/support-ticket.types";
 import { TicketStatus } from "@/types/shared/common.types";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 
 interface AssignTicketData {
   assignedTo: string;
@@ -109,7 +110,7 @@ function TicketDetailContent() {
       let uploadedUrls: string[] = [];
       if (attachments.length > 0) {
         uploadedUrls = await Promise.all(
-          attachments.map((file) => supportService.uploadAttachment(file)),
+          attachments.map((file) => supportService.uploadAttachment(file))
         ).then((results) => results.map((r) => r.url));
       }
 
@@ -250,36 +251,28 @@ function TicketDetailContent() {
     return status.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("en-IN", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
-        <span className="ml-3 text-gray-600">Loading ticket...</span>
+        <span className="ml-3 text-gray-600 dark:text-gray-400">
+          Loading ticket...
+        </span>
       </div>
     );
   }
 
   if (error || !ticket) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">❌</div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
             {error || "Ticket not found"}
           </h3>
           <button
             onClick={() => router.push("/admin/support-tickets")}
-            className="text-orange-600 hover:text-orange-700"
+            className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
           >
             ← Back to Support Tickets
           </button>
@@ -289,17 +282,17 @@ function TicketDetailContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <Link
             href="/admin/support-tickets"
-            className="text-sm text-gray-600 hover:text-gray-900 flex items-center mb-4"
+            className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center mb-4"
           >
             ← Back to Support Tickets
           </Link>
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               Ticket #{ticket.id.slice(0, 8)}
             </h1>
             <div className="flex items-center space-x-3">
@@ -327,14 +320,14 @@ function TicketDetailContent() {
                   )}
                   <button
                     onClick={() => setShowEscalateModal(true)}
-                    className="px-4 py-2 border border-red-600 text-red-600 rounded-lg hover:bg-red-50"
+                    className="px-4 py-2 border border-red-600 text-red-600 dark:text-red-400 dark:border-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                   >
                     Escalate
                   </button>
                   <button
                     onClick={handleClose}
                     disabled={closing}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
                   >
                     {closing ? "..." : "Close Ticket"}
                   </button>
@@ -346,17 +339,19 @@ function TicketDetailContent() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Ticket Information
               </h3>
               <dl className="space-y-3">
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Status</dt>
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Status
+                  </dt>
                   <dd className="mt-1">
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded-md border ${getStatusColor(
-                        ticket.status,
+                        ticket.status
                       )}`}
                     >
                       {formatStatus(ticket.status)}
@@ -364,13 +359,13 @@ function TicketDetailContent() {
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Priority
                   </dt>
                   <dd className="mt-1">
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
-                        ticket.priority,
+                        ticket.priority
                       )}`}
                     >
                       {formatStatus(ticket.priority)}
@@ -378,28 +373,30 @@ function TicketDetailContent() {
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Category
                   </dt>
-                  <dd className="mt-1 text-sm text-gray-900">
+                  <dd className="mt-1 text-sm text-gray-900 dark:text-white">
                     {formatStatus(ticket.category)}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Customer
                   </dt>
-                  <dd className="mt-1 text-sm text-gray-900">
+                  <dd className="mt-1 text-sm text-gray-900 dark:text-white">
                     {ticket.userId.slice(0, 8)}
                   </dd>
                 </div>
                 {ticket.orderId && (
                   <div>
-                    <dt className="text-sm font-medium text-gray-500">Order</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Order
+                    </dt>
                     <dd className="mt-1">
                       <Link
                         href={`/admin/orders/${ticket.orderId}`}
-                        className="text-sm text-orange-600 hover:text-orange-700"
+                        className="text-sm text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
                       >
                         {ticket.orderId.slice(0, 8)}
                       </Link>
@@ -408,11 +405,13 @@ function TicketDetailContent() {
                 )}
                 {ticket.shopId && (
                   <div>
-                    <dt className="text-sm font-medium text-gray-500">Shop</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Shop
+                    </dt>
                     <dd className="mt-1">
                       <Link
                         href={`/admin/shops/${ticket.shopId}`}
-                        className="text-sm text-orange-600 hover:text-orange-700"
+                        className="text-sm text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
                       >
                         {ticket.shopId.slice(0, 8)}
                       </Link>
@@ -420,18 +419,20 @@ function TicketDetailContent() {
                   </div>
                 )}
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Created</dt>
-                  <dd className="mt-1 text-sm text-gray-900">
-                    {formatDate(ticket.createdAt)}
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Created
+                  </dt>
+                  <dd className="mt-1">
+                    <DateDisplay date={ticket.createdAt} includeTime className="text-sm text-gray-900 dark:text-white" />
                   </dd>
                 </div>
                 {ticket.resolvedAt && (
                   <div>
-                    <dt className="text-sm font-medium text-gray-500">
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
                       Resolved
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-900">
-                      {formatDate(ticket.resolvedAt)}
+                    <dd className="mt-1">
+                      <DateDisplay date={ticket.resolvedAt} includeTime className="text-sm text-gray-900 dark:text-white" />
                     </dd>
                   </div>
                 )}
@@ -468,16 +469,16 @@ function TicketDetailContent() {
           </div>
 
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 {ticket.subject}
               </h2>
-              <p className="text-gray-700 whitespace-pre-wrap">
+              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                 {ticket.description}
               </p>
               {ticket.attachments && ticket.attachments.length > 0 && (
                 <div className="mt-4">
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">
+                  <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
                     Attachments:
                   </h4>
                   <div className="space-y-1">
@@ -497,15 +498,15 @@ function TicketDetailContent() {
               )}
             </div>
 
-            <div className="bg-white rounded-lg shadow">
-              <div className="p-6 border-b border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                   Conversation ({messages.length})
                 </h3>
               </div>
               <div className="p-6 space-y-4 max-h-[500px] overflow-y-auto">
                 {messages.length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">
+                  <p className="text-center text-gray-500 dark:text-gray-400 py-8">
                     No messages yet. Be the first to reply!
                   </p>
                 ) : (
@@ -514,15 +515,15 @@ function TicketDetailContent() {
                       key={message.id}
                       className={`p-4 rounded-lg ${
                         message.isInternal
-                          ? "bg-yellow-50 border border-yellow-200"
+                          ? "bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700"
                           : message.senderRole === "admin"
-                            ? "bg-blue-50 border border-blue-200"
-                            : "bg-gray-50 border border-gray-200"
+                          ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700"
+                          : "bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600"
                       }`}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm font-medium text-gray-900">
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
                             {message.senderRole === "admin"
                               ? "Admin"
                               : "Customer"}
@@ -533,11 +534,9 @@ function TicketDetailContent() {
                             </span>
                           )}
                         </div>
-                        <span className="text-xs text-gray-500">
-                          {formatDate(message.createdAt)}
-                        </span>
+                        <DateDisplay date={message.createdAt} includeTime className="text-xs" />
                       </div>
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                      <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                         {message.message}
                       </p>
                       {message.attachments &&
@@ -554,7 +553,7 @@ function TicketDetailContent() {
                                 >
                                   📎 Attachment {index + 1}
                                 </a>
-                              ),
+                              )
                             )}
                           </div>
                         )}
@@ -567,7 +566,7 @@ function TicketDetailContent() {
               {ticket.status !== "closed" && (
                 <form
                   onSubmit={handleReply}
-                  className="p-6 border-t border-gray-200"
+                  className="p-6 border-t border-gray-200 dark:border-gray-700"
                 >
                   <div className="space-y-3">
                     <textarea
@@ -575,7 +574,7 @@ function TicketDetailContent() {
                       onChange={(e) => setReplyMessage(e.target.value)}
                       placeholder="Type your reply..."
                       rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                       required
                     />
 
@@ -584,7 +583,7 @@ function TicketDetailContent() {
                         {attachments.map((file, index) => (
                           <div
                             key={index}
-                            className="flex items-center justify-between text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded"
+                            className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded"
                           >
                             <span>📎 {file.name}</span>
                             <button
@@ -606,9 +605,9 @@ function TicketDetailContent() {
                             type="checkbox"
                             checked={isInternal}
                             onChange={(e) => setIsInternal(e.target.checked)}
-                            className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                            className="rounded border-gray-300 dark:border-gray-600 text-orange-600 focus:ring-orange-500"
                           />
-                          <span className="text-sm text-gray-700">
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
                             Internal note (not visible to customer)
                           </span>
                         </label>
@@ -640,7 +639,7 @@ function TicketDetailContent() {
 
         {showEscalateModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
               <div className="p-6">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                   Escalate Ticket

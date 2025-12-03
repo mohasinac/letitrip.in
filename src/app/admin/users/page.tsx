@@ -96,7 +96,6 @@ export default function AdminUsersPage() {
   const loadUsers = useCallback(async () => {
     // Prevent concurrent calls
     if (loadingRef.current) {
-      console.log("[Users] Already loading, skipping...");
       return;
     }
 
@@ -113,7 +112,6 @@ export default function AdminUsersPage() {
       if (roleFilter !== "all") filters.role = roleFilter;
       if (statusFilter !== "all") filters.status = statusFilter;
 
-      console.log("[Users] Loading users with filters:", filters);
       const response = await usersService.list(filters);
       setUsers((response.data || []) as any);
 
@@ -178,7 +176,7 @@ export default function AdminUsersPage() {
 
   // Fields configuration for inline edit - using centralized config
   const fields: InlineField[] = toInlineFields(
-    getFieldsForContext(USER_FIELDS, "table"),
+    getFieldsForContext(USER_FIELDS, "table")
   );
 
   // Bulk actions configuration
@@ -202,7 +200,7 @@ export default function AdminUsersPage() {
               u.phone || "",
               u.is_banned ? "Banned" : "Active",
               new Date(u.createdAt).toLocaleDateString(),
-            ].join(","),
+            ].join(",")
           ),
         ].join("\n");
 
@@ -313,8 +311,8 @@ export default function AdminUsersPage() {
   // Loading state
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
       </div>
     );
   }
@@ -322,10 +320,12 @@ export default function AdminUsersPage() {
   // Admin access check
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md text-center">
-          <h2 className="text-xl font-bold text-red-900 mb-2">Access Denied</h2>
-          <p className="text-red-700">
+      <div className="min-h-screen flex items-center justify-center p-4 dark:bg-gray-900">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 max-w-md text-center">
+          <h2 className="text-xl font-bold text-red-900 dark:text-red-200 mb-2">
+            Access Denied
+          </h2>
+          <p className="text-red-700 dark:text-red-400">
             You do not have permission to access this page.
           </p>
         </div>
@@ -336,14 +336,16 @@ export default function AdminUsersPage() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <h2 className="text-xl font-bold text-red-900 mb-2">Error</h2>
-            <p className="text-red-700 mb-4">{error}</p>
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+            <h2 className="text-xl font-bold text-red-900 dark:text-red-200 mb-2">
+              Error
+            </h2>
+            <p className="text-red-700 dark:text-red-400 mb-4">{error}</p>
             <button
               onClick={loadUsers}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
             >
               Retry
             </button>
@@ -354,31 +356,31 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
             <UserCog className="h-8 w-8" />
             User Management
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
             Manage users, roles, and access permissions
           </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 placeholder="Search by email, name, or phone..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               />
             </div>
 
@@ -390,7 +392,7 @@ export default function AdminUsersPage() {
                   setRoleFilter(e.target.value);
                   handleFilterChange();
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="all">All Roles</option>
                 <option value="user">Users</option>
@@ -407,7 +409,7 @@ export default function AdminUsersPage() {
                   setStatusFilter(e.target.value);
                   handleFilterChange();
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -417,7 +419,7 @@ export default function AdminUsersPage() {
           </div>
 
           {/* Results count */}
-          <div className="mt-4 text-sm text-gray-600">
+          <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
             Showing {filteredUsers.length} of {users.length} users
           </div>
         </div>
@@ -440,7 +442,7 @@ export default function AdminUsersPage() {
         {isMobile && (
           <div className="space-y-3 lg:hidden">
             {filteredUsers.length === 0 ? (
-              <div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center text-gray-500 dark:text-gray-400">
                 {searchQuery
                   ? "No users found matching your search"
                   : "No users found"}
@@ -462,7 +464,7 @@ export default function AdminUsersPage() {
                             setSelectedIds((prev) =>
                               checked
                                 ? [...prev, user.id]
-                                : prev.filter((id) => id !== user.id),
+                                : prev.filter((id) => id !== user.id)
                             );
                           }}
                           aria-label={`Select ${user.name || user.email}`}
@@ -614,13 +616,13 @@ export default function AdminUsersPage() {
 
         {/* Users Table - Desktop Only */}
         <div
-          className={`bg-white rounded-lg border border-gray-200 overflow-hidden ${
+          className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden ${
             isMobile ? "hidden" : ""
           }`}
         >
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                 <tr>
                   <th className="w-12 px-6 py-3">
                     <TableCheckbox
@@ -638,38 +640,38 @@ export default function AdminUsersPage() {
                             ? filteredUsers
                                 .filter((u) => u.id !== currentUser?.uid)
                                 .map((u) => u.id)
-                            : [],
+                            : []
                         );
                       }}
                       aria-label="Select all users"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Verification
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Joined
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredUsers.length === 0 ? (
                   <tr>
                     <td
                       colSpan={7}
-                      className="px-6 py-12 text-center text-gray-500"
+                      className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
                     >
                       {searchQuery
                         ? "No users found matching your search"
@@ -695,11 +697,11 @@ export default function AdminUsersPage() {
                               // Validate form fields
                               const fieldsToValidate = getFieldsForContext(
                                 USER_FIELDS,
-                                "table",
+                                "table"
                               );
                               const { isValid } = validateForm(
                                 values,
-                                fieldsToValidate,
+                                fieldsToValidate
                               );
 
                               if (!isValid) {
@@ -723,7 +725,7 @@ export default function AdminUsersPage() {
                     return (
                       <tr
                         key={user.id}
-                        className="hover:bg-gray-50"
+                        className="hover:bg-gray-50 dark:hover:bg-gray-700"
                         onDoubleClick={() => canEdit && setEditingId(user.id)}
                       >
                         {/* Checkbox */}
@@ -735,7 +737,7 @@ export default function AdminUsersPage() {
                                 setSelectedIds((prev) =>
                                   checked
                                     ? [...prev, user.id]
-                                    : prev.filter((id) => id !== user.id),
+                                    : prev.filter((id) => id !== user.id)
                                 );
                               }}
                               aria-label={`Select ${user.name || user.email}`}
@@ -756,22 +758,22 @@ export default function AdminUsersPage() {
                                 />
                               </div>
                             ) : (
-                              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                <span className="text-blue-600 font-semibold text-sm">
+                              <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                                <span className="text-blue-600 dark:text-blue-300 font-semibold text-sm">
                                   {(user.name || user.email)[0].toUpperCase()}
                                 </span>
                               </div>
                             )}
                             <div>
-                              <div className="font-medium text-gray-900">
+                              <div className="font-medium text-gray-900 dark:text-white">
                                 {user.name || "No name"}
                               </div>
-                              <div className="text-sm text-gray-500 flex items-center gap-1">
+                              <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
                                 <Mail className="h-3 w-3" />
                                 {user.email}
                               </div>
                               {user.phone && (
-                                <div className="text-sm text-gray-500 flex items-center gap-1">
+                                <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
                                   <Phone className="h-3 w-3" />
                                   {user.phone}
                                 </div>
@@ -791,7 +793,7 @@ export default function AdminUsersPage() {
                             <div>
                               <StatusBadge status="banned" />
                               {user.ban_reason && (
-                                <div className="text-xs text-gray-500 mt-1">
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                   {user.ban_reason}
                                 </div>
                               )}
@@ -808,13 +810,15 @@ export default function AdminUsersPage() {
                               {user.emailVerified ? (
                                 <CheckCircle className="h-4 w-4 text-green-500" />
                               ) : (
-                                <span className="h-4 w-4 text-gray-300">✕</span>
+                                <span className="h-4 w-4 text-gray-300 dark:text-gray-600">
+                                  ✕
+                                </span>
                               )}
                               <span
                                 className={
                                   user.emailVerified
-                                    ? "text-green-600"
-                                    : "text-gray-400"
+                                    ? "text-green-600 dark:text-green-400"
+                                    : "text-gray-400 dark:text-gray-500"
                                 }
                               >
                                 Email
@@ -825,15 +829,15 @@ export default function AdminUsersPage() {
                                 {user.phoneVerified ? (
                                   <CheckCircle className="h-4 w-4 text-green-500" />
                                 ) : (
-                                  <span className="h-4 w-4 text-gray-300">
+                                  <span className="h-4 w-4 text-gray-300 dark:text-gray-600">
                                     ✕
                                   </span>
                                 )}
                                 <span
                                   className={
                                     user.phoneVerified
-                                      ? "text-green-600"
-                                      : "text-gray-400"
+                                      ? "text-green-600 dark:text-green-400"
+                                      : "text-gray-400 dark:text-gray-500"
                                   }
                                 >
                                   Phone
@@ -845,7 +849,7 @@ export default function AdminUsersPage() {
 
                         {/* Joined Date */}
                         <td className="px-6 py-4">
-                          <div className="flex items-center gap-1 text-sm text-gray-500">
+                          <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
                             <Calendar className="h-4 w-4" />
                             <DateDisplay
                               date={user.createdAt}
@@ -865,7 +869,7 @@ export default function AdminUsersPage() {
                                   setNewRole(user.role);
                                   setShowRoleDialog(true);
                                 }}
-                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                                 title="Change Role"
                               >
                                 <Shield className="h-4 w-4" />
@@ -880,7 +884,7 @@ export default function AdminUsersPage() {
                                     setSelectedUser(user);
                                     setShowUnbanDialog(true);
                                   }}
-                                  className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                  className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors"
                                   title="Unban User"
                                 >
                                   <CheckCircle className="h-4 w-4" />
@@ -891,7 +895,7 @@ export default function AdminUsersPage() {
                                     setSelectedUser(user);
                                     setShowBanDialog(true);
                                   }}
-                                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                  className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                                   title="Ban User"
                                 >
                                   <Ban className="h-4 w-4" />
@@ -909,25 +913,25 @@ export default function AdminUsersPage() {
 
           {/* Pagination Controls */}
           {filteredUsers.length > 0 && (
-            <div className="border-t border-gray-200 px-6 py-4">
+            <div className="border-t border-gray-200 dark:border-gray-700 px-6 py-4">
               <div className="flex items-center justify-between">
                 <button
                   onClick={handlePrevPage}
                   disabled={currentPage === 1 || loading}
-                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Previous
                 </button>
 
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
                   Page {currentPage} • {filteredUsers.length} users
                 </span>
 
                 <button
                   onClick={handleNextPage}
                   disabled={!hasNextPage || loading}
-                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
                 >
                   Next
                   <ChevronRight className="w-4 h-4" />
@@ -941,9 +945,11 @@ export default function AdminUsersPage() {
       {/* Ban Dialog */}
       {showBanDialog && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Ban User</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+              Ban User
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               Are you sure you want to ban{" "}
               {selectedUser.name || selectedUser.email}?
             </p>
@@ -964,14 +970,14 @@ export default function AdminUsersPage() {
                   setSelectedUser(null);
                   setBanReason("");
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                 disabled={actionLoading}
               >
                 Cancel
               </button>
               <button
                 onClick={handleBan}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 disabled:opacity-50 flex items-center gap-2"
                 disabled={actionLoading || !banReason.trim()}
               >
                 {actionLoading && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -1002,11 +1008,11 @@ export default function AdminUsersPage() {
       {/* Role Change Dialog */}
       {showRoleDialog && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
               Change User Role
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               Change role for {selectedUser.name || selectedUser.email}
             </p>
             <div className="mb-4">
@@ -1027,14 +1033,14 @@ export default function AdminUsersPage() {
                   setShowRoleDialog(false);
                   setSelectedUser(null);
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                 disabled={actionLoading}
               >
                 Cancel
               </button>
               <button
                 onClick={handleRoleChange}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
                 disabled={actionLoading}
               >
                 {actionLoading && <Loader2 className="h-4 w-4 animate-spin" />}

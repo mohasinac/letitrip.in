@@ -6,6 +6,7 @@ import {
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { canReadResource } from "@/lib/rbac-permissions";
 import { ValidationError } from "@/lib/api-errors";
+import { COLLECTIONS } from "@/constants/database";
 
 /**
  * POST /api/tickets/[id]/reply
@@ -16,7 +17,7 @@ import { ValidationError } from "@/lib/api-errors";
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await requireAuth(request);
@@ -38,7 +39,7 @@ export async function POST(
     }
 
     const db = getFirestoreAdmin();
-    const ticketRef = db.collection("support_tickets").doc(ticketId);
+    const ticketRef = db.collection(COLLECTIONS.SUPPORT_TICKETS).doc(ticketId);
     const ticketDoc = await ticketRef.get();
 
     if (!ticketDoc.exists) {
@@ -51,7 +52,7 @@ export async function POST(
     if (!canReadResource(user, "tickets", ticketData)) {
       return NextResponse.json(
         { error: "You don't have permission to reply to this ticket" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -100,7 +101,7 @@ export async function POST(
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { error: error.message, errors: error.errors },
-        { status: 400 },
+        { status: 400 }
       );
     }
     console.error("Error posting reply:", error);

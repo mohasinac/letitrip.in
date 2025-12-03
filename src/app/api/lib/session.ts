@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { serialize, parse } from "cookie";
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "./firebase/config";
+import { COLLECTIONS } from "@/constants/database";
 
 const SESSION_SECRET =
   process.env.SESSION_SECRET || "your-secret-key-change-in-production";
@@ -43,7 +44,7 @@ export async function createSession(
   userId: string,
   email: string,
   role: string,
-  req?: NextRequest,
+  req?: NextRequest
 ): Promise<{ sessionId: string; token: string }> {
   const sessionId = generateSessionId();
   const now = new Date();
@@ -69,7 +70,7 @@ export async function createSession(
     ipAddress,
   };
 
-  await adminDb.collection("sessions").doc(sessionId).set(sessionDoc);
+  await adminDb.collection(COLLECTIONS.SESSIONS).doc(sessionId).set(sessionDoc);
 
   // Generate JWT token
   const token = jwt.sign(
@@ -82,7 +83,7 @@ export async function createSession(
     SESSION_SECRET,
     {
       expiresIn: SESSION_MAX_AGE,
-    },
+    }
   );
 
   return { sessionId, token };
@@ -92,7 +93,7 @@ export async function createSession(
  * Verify and decode a session token
  */
 export async function verifySession(
-  token: string,
+  token: string
 ): Promise<SessionData | null> {
   try {
     // Verify JWT
@@ -100,7 +101,7 @@ export async function verifySession(
 
     // Check if session exists in Firestore
     const sessionDoc = await adminDb
-      .collection("sessions")
+      .collection(COLLECTIONS.SESSIONS)
       .doc(decoded.sessionId)
       .get();
 
@@ -114,14 +115,20 @@ export async function verifySession(
     const expiresAt = new Date(sessionData.expiresAt);
     if (expiresAt < new Date()) {
       // Delete expired session
-      await adminDb.collection("sessions").doc(decoded.sessionId).delete();
+      await adminDb
+        .collection(COLLECTIONS.SESSIONS)
+        .doc(decoded.sessionId)
+        .delete();
       return null;
     }
 
     // Update last activity
-    await adminDb.collection("sessions").doc(decoded.sessionId).update({
-      lastActivity: new Date().toISOString(),
-    });
+    await adminDb
+      .collection(COLLECTIONS.SESSIONS)
+      .doc(decoded.sessionId)
+      .update({
+        lastActivity: new Date().toISOString(),
+      });
 
     return decoded;
   } catch (error) {
@@ -134,7 +141,7 @@ export async function verifySession(
  * Delete a session from Firestore
  */
 export async function deleteSession(sessionId: string): Promise<void> {
-  await adminDb.collection("sessions").doc(sessionId).delete();
+  await adminDb.collection(COLLECTIONS.SESSIONS).doc(sessionId).delete();
 }
 
 /**
@@ -142,7 +149,7 @@ export async function deleteSession(sessionId: string): Promise<void> {
  */
 export async function deleteAllUserSessions(userId: string): Promise<void> {
   const sessionsSnapshot = await adminDb
-    .collection("sessions")
+    .collection(COLLECTIONS.SESSIONS)
     .where("userId", "==", userId)
     .get();
 
@@ -158,10 +165,10 @@ export async function deleteAllUserSessions(userId: string): Promise<void> {
  * Get all active sessions for a user
  */
 export async function getUserSessions(
-  userId: string,
+  userId: string
 ): Promise<SessionDocument[]> {
   const sessionsSnapshot = await adminDb
-    .collection("sessions")
+    .collection(COLLECTIONS.SESSIONS)
     .where("userId", "==", userId)
     .get();
 
@@ -252,7 +259,7 @@ function generateSessionId(): string {
 export async function cleanupExpiredSessions(): Promise<number> {
   const now = new Date().toISOString();
   const expiredSessionsSnapshot = await adminDb
-    .collection("sessions")
+    .collection(COLLECTIONS.SESSIONS)
     .where("expiresAt", "<", now)
     .get();
 
@@ -274,7 +281,7 @@ export async function cleanupExpiredSessions(): Promise<number> {
  * Returns user data if authenticated, null otherwise
  */
 export async function getCurrentUser(
-  request: NextRequest,
+  request: NextRequest
 ): Promise<UserData | null> {
   const token = getSessionToken(request);
   if (!token) return null;
@@ -282,7 +289,10 @@ export async function getCurrentUser(
   const session = await verifySession(token);
   if (!session) return null;
 
-  const userDoc = await adminDb.collection("users").doc(session.userId).get();
+  const userDoc = await adminDb
+    .collection(COLLECTIONS.USERS)
+    .doc(session.userId)
+    .get();
   if (!userDoc.exists) return null;
 
   const userData = userDoc.data();

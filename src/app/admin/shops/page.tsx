@@ -75,7 +75,6 @@ export default function AdminShopsPage() {
   const loadShops = useCallback(async () => {
     // Prevent concurrent calls
     if (loadingRef.current) {
-      console.log("[Shops] Already loading, skipping...");
       return;
     }
 
@@ -94,12 +93,11 @@ export default function AdminShopsPage() {
         ...filterValues,
       };
 
-      console.log("[Shops] Loading with filters:", filters);
       const response = await shopsService.list(filters);
 
       // Deduplicate shops by ID to prevent React key warnings
       const uniqueShops = Array.from(
-        new Map((response.data || []).map((shop) => [shop.id, shop])).values(),
+        new Map((response.data || []).map((shop) => [shop.id, shop])).values()
       );
       setShops(uniqueShops);
       // Calculate total pages from count
@@ -123,7 +121,7 @@ export default function AdminShopsPage() {
 
   // Fields configuration for inline edit - using centralized config
   const fields: InlineField[] = toInlineFields(
-    getFieldsForContext(SHOP_FIELDS, "table"),
+    getFieldsForContext(SHOP_FIELDS, "table")
   );
 
   // Bulk actions configuration
@@ -159,7 +157,7 @@ export default function AdminShopsPage() {
               await shopsService.delete(shop.slug);
               break;
           }
-        }),
+        })
       );
 
       await loadShops();
@@ -180,7 +178,7 @@ export default function AdminShopsPage() {
     } catch (error) {
       console.error("Failed to delete shop:", error);
       toast.error(
-        "Failed to delete shop. It may have active products or orders.",
+        "Failed to delete shop. It may have active products or orders."
       );
     }
   };
@@ -210,7 +208,7 @@ export default function AdminShopsPage() {
     ]);
 
     const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
-      "\n",
+      "\n"
     );
 
     const blob = new Blob([csv], { type: "text/csv" });
@@ -501,16 +499,16 @@ export default function AdminShopsPage() {
                                 // Validate form fields
                                 const fieldsToValidate = getFieldsForContext(
                                   SHOP_FIELDS,
-                                  "table",
+                                  "table"
                                 );
                                 const { isValid } = validateForm(
                                   values,
-                                  fieldsToValidate,
+                                  fieldsToValidate
                                 );
 
                                 if (!isValid) {
                                   throw new Error(
-                                    "Please fix validation errors",
+                                    "Please fix validation errors"
                                   );
                                 }
 
@@ -524,7 +522,7 @@ export default function AdminShopsPage() {
                                     shop.slug,
                                     {
                                       featured: values.featured,
-                                    },
+                                    }
                                   );
                                 }
                                 if (values.name !== shop.name) {
@@ -558,7 +556,7 @@ export default function AdminShopsPage() {
                                 setSelectedIds((prev) =>
                                   checked
                                     ? [...prev, shop.id]
-                                    : prev.filter((id) => id !== shop.id),
+                                    : prev.filter((id) => id !== shop.id)
                                 );
                               }}
                               label={`Select ${shop.name}`}

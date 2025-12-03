@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { apiRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import { getSessionToken, verifySession } from "../../lib/session";
 import { adminDb } from "../../lib/firebase/config";
+import { COLLECTIONS } from "@/constants/database";
 
 async function meHandler(req: NextRequest) {
   try {
@@ -26,7 +27,7 @@ async function meHandler(req: NextRequest) {
     }
 
     // Get user data from Firestore
-    const userDoc = await adminDb.collection("users").doc(session.userId).get();
+    const userDoc = await adminDb.collection(COLLECTIONS.USERS).doc(session.userId).get();
 
     if (!userDoc.exists) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });

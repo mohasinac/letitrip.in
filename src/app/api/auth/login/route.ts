@@ -7,6 +7,7 @@ import {
 } from "../../lib/session";
 import { authRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import bcrypt from "bcryptjs";
+import { COLLECTIONS } from "@/constants/database";
 
 interface LoginRequestBody {
   email: string;
@@ -28,7 +29,7 @@ async function loginHandler(req: NextRequest) {
 
     // Get user from Firestore
     const userSnapshot = await adminDb
-      .collection("users")
+      .collection(COLLECTIONS.USERS)
       .where("email", "==", email.toLowerCase())
       .limit(1)
       .get();
@@ -94,7 +95,7 @@ async function loginHandler(req: NextRequest) {
     );
 
     // Update last login
-    await adminDb.collection("users").doc(userData.uid).update({
+    await adminDb.collection(COLLECTIONS.USERS).doc(userData.uid).update({
       lastLogin: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });

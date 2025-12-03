@@ -4,6 +4,7 @@ import { authRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import { emailService } from "../../lib/email/email.service";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
+import { COLLECTIONS } from "@/constants/database";
 
 const RESET_TOKEN_EXPIRY = 60 * 60 * 1000; // 1 hour in milliseconds
 
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
     const resetTokenExpiry = new Date(Date.now() + RESET_TOKEN_EXPIRY);
 
     // Store reset token in Firestore
-    await adminDb.collection("users").doc(userData.uid).update({
+    await adminDb.collection(COLLECTIONS.USERS).doc(userData.uid).update({
       passwordResetToken: resetTokenHash,
       passwordResetTokenExpiry: resetTokenExpiry.toISOString(),
       updatedAt: new Date().toISOString(),
@@ -134,7 +135,7 @@ export async function PUT(req: NextRequest) {
 
     // Get user from Firestore
     const userSnapshot = await adminDb
-      .collection("users")
+      .collection(COLLECTIONS.USERS)
       .where("email", "==", email.toLowerCase())
       .limit(1)
       .get();
@@ -175,7 +176,7 @@ export async function PUT(req: NextRequest) {
     const hashedPassword = await bcrypt.hash(newPassword, 12);
 
     // Update password and clear reset token
-    await adminDb.collection("users").doc(userData.uid).update({
+    await adminDb.collection(COLLECTIONS.USERS).doc(userData.uid).update({
       hashedPassword,
       passwordResetToken: null,
       passwordResetTokenExpiry: null,
@@ -184,7 +185,7 @@ export async function PUT(req: NextRequest) {
 
     // Invalidate all existing sessions for security
     const sessionsSnapshot = await adminDb
-      .collection("sessions")
+      .collection(COLLECTIONS.SESSIONS)
       .where("userId", "==", userData.uid)
       .get();
 

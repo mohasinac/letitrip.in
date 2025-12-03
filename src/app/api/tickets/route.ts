@@ -10,6 +10,7 @@ import {
   ticketsSieveConfig,
   createPaginationMeta,
 } from "@/app/api/lib/sieve";
+import { COLLECTIONS } from "@/constants/database";
 
 // Extended Sieve config with field mappings for tickets
 const ticketsConfig = {
@@ -66,12 +67,14 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     const db = getFirestoreAdmin();
-    let query: FirebaseFirestore.Query = db.collection("support_tickets");
+    let query: FirebaseFirestore.Query = db.collection(
+      COLLECTIONS.SUPPORT_TICKETS
+    );
 
     // Legacy query params support (for backward compatibility)
     const status = searchParams.get("status");
@@ -85,7 +88,7 @@ export async function GET(request: NextRequest) {
       if (!user) {
         return NextResponse.json(
           { error: "Authentication required" },
-          { status: 401 },
+          { status: 401 }
         );
       }
       query = query.where("userId", "==", user.uid);
@@ -93,7 +96,7 @@ export async function GET(request: NextRequest) {
       if (!shopId) {
         return NextResponse.json(
           { error: "Shop ID required for seller" },
-          { status: 400 },
+          { status: 400 }
         );
       }
       query = query.where("shopId", "==", shopId);
@@ -121,7 +124,7 @@ export async function GET(request: NextRequest) {
         query = query.where(
           dbField,
           filter.operator as FirebaseFirestore.WhereFilterOp,
-          filter.value,
+          filter.value
         );
       }
     }
@@ -154,13 +157,15 @@ export async function GET(request: NextRequest) {
     // Execute query
     const snapshot = await query.get();
     const data = snapshot.docs.map((doc) =>
-      transformTicket(doc.id, doc.data()),
+      transformTicket(doc.id, doc.data())
     );
 
     // Get statistics (admin only)
     let stats = undefined;
     if (user?.role === "admin") {
-      const statsSnapshot = await db.collection("support_tickets").get();
+      const statsSnapshot = await db
+        .collection(COLLECTIONS.SUPPORT_TICKETS)
+        .get();
       stats = {
         total: statsSnapshot.size,
         open: 0,
@@ -259,7 +264,7 @@ export async function POST(request: NextRequest) {
       priority && validPriorities.includes(priority) ? priority : "medium";
 
     const db = getFirestoreAdmin();
-    const ticketsRef = db.collection("support_tickets");
+    const ticketsRef = db.collection(COLLECTIONS.SUPPORT_TICKETS);
 
     const now = new Date();
     const ticket = {
@@ -299,7 +304,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { error: error.message, errors: error.errors },
-        { status: 400 },
+        { status: 400 }
       );
     }
     console.error("Error creating support ticket:", error);
