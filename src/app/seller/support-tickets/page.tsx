@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Filter,
@@ -15,6 +15,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { supportService } from "@/services/support.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { TICKET_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
@@ -28,66 +29,79 @@ export default function SellerSupportTicketsPage() {
   );
 }
 
+interface TicketsData {
+  tickets: SupportTicketFE[];
+  totalTickets: number;
+  stats: {
+    total: number;
+    open: number;
+    inProgress: number;
+    resolved: number;
+  };
+}
+
 function SellerSupportTicketsContent() {
   const isMobile = useIsMobile();
   const [showFilters, setShowFilters] = useState(!isMobile);
-  const [tickets, setTickets] = useState<SupportTicketFE[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading, execute } = useLoadingState<TicketsData>({
+    initialData: {
+      tickets: [],
+      totalTickets: 0,
+      stats: { total: 0, open: 0, inProgress: 0, resolved: 0 },
+    },
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
-  const [totalTickets, setTotalTickets] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [stats, setStats] = useState({
+
+  const tickets = data?.tickets || [];
+  const totalTickets = data?.totalTickets || 0;
+  const stats = data?.stats || {
     total: 0,
     open: 0,
     inProgress: 0,
     resolved: 0,
-  });
-
-  useEffect(() => {
-    loadTickets();
-    loadStats();
-  }, [searchQuery, filterValues, currentPage]);
-
-  const loadTickets = async () => {
-    try {
-      setLoading(true);
-      const response = await supportService.getMyTickets({
-        search: searchQuery || undefined,
-        page: currentPage,
-        limit: 20,
-        ...filterValues,
-      });
-      setTickets(response.data || []);
-      setTotalTickets(response.count || 0);
-    } catch (error) {
-      console.error("Failed to load tickets:", error);
-    } finally {
-      setLoading(false);
-    }
   };
 
-  const loadStats = async () => {
+  const loadData = useCallback(async () => {
     try {
-      const [totalRes, openRes, inProgressRes, resolvedRes] = await Promise.all(
-        [
+      const [ticketsRes, totalRes, openRes, inProgressRes, resolvedRes] =
+        await Promise.all([
+          supportService.getMyTickets({
+            search: searchQuery || undefined,
+            page: currentPage,
+            limit: 20,
+            ...filterValues,
+          }),
           supportService.getTicketCount({}),
           supportService.getTicketCount({ status: TicketStatus.OPEN }),
           supportService.getTicketCount({ status: TicketStatus.IN_PROGRESS }),
           supportService.getTicketCount({ status: TicketStatus.RESOLVED }),
-        ]
-      );
+        ]);
 
-      setStats({
-        total: totalRes.count || 0,
-        open: openRes.count || 0,
-        inProgress: inProgressRes.count || 0,
-        resolved: resolvedRes.count || 0,
-      });
+      return {
+        tickets: ticketsRes.data || [],
+        totalTickets: ticketsRes.count || 0,
+        stats: {
+          total: totalRes.count || 0,
+          open: openRes.count || 0,
+          inProgress: inProgressRes.count || 0,
+          resolved: resolvedRes.count || 0,
+        },
+      };
     } catch (error) {
-      console.error("Failed to load stats:", error);
+      console.error("Failed to load tickets:", error);
+      return {
+        tickets: [],
+        totalTickets: 0,
+        stats: { total: 0, open: 0, inProgress: 0, resolved: 0 },
+      };
     }
-  };
+  }, [searchQuery, filterValues, currentPage]);
+
+  useEffect(() => {
+    execute(loadData);
+  }, [execute, loadData]);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -273,7 +287,7 @@ function SellerSupportTicketsContent() {
 
         {/* Content Area */}
         <div className="flex-1 space-y-4">
-          {loading && (
+          {isLoading && (
             <div className="flex items-center justify-center py-12">
               <div className="text-gray-600 dark:text-gray-400">
                 Loading tickets...
@@ -281,7 +295,7 @@ function SellerSupportTicketsContent() {
             </div>
           )}
 
-          {!loading && tickets.length === 0 && (
+          {!isLoading && tickets.length === 0 && (
             <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-12 text-center">
               <MessageSquare className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
               <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
@@ -302,7 +316,7 @@ function SellerSupportTicketsContent() {
             </div>
           )}
 
-          {!loading && tickets.length > 0 && (
+          {!isLoading && tickets.length > 0 && (
             <div className="space-y-3">
               {tickets.map((ticket) => (
                 <Link
@@ -372,7 +386,7 @@ function SellerSupportTicketsContent() {
           )}
 
           {/* Pagination */}
-          {!loading && totalTickets > 20 && (
+          {!isLoading && totalTickets > 20 && (
             <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 sm:px-6">
               <div className="flex flex-1 justify-between sm:hidden">
                 <button
@@ -458,7 +472,7 @@ function SellerSupportTicketsContent() {
           searchable={true}
           mobile={true}
           resultCount={totalTickets}
-          isLoading={loading}
+          isLoading={isLoading}
           showInlineSearch={true}
           inlineSearchValue={searchQuery}
           onInlineSearchChange={setSearchQuery}
