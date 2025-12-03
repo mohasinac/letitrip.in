@@ -32,7 +32,9 @@ export function LoadingSpinner({
         className={`animate-spin rounded-full border-b-2 ${sizes[size]} ${colors[color]}`}
       />
       {message && (
-        <p className="text-sm text-gray-600 dark:text-gray-400 animate-pulse">{message}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 animate-pulse">
+          {message}
+        </p>
       )}
     </div>
   );

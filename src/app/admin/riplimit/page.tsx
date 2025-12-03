@@ -202,11 +202,11 @@ export default function AdminRipLimitPage() {
         {
           amount: adjustAmount,
           reason: adjustReason,
-        },
+        }
       );
 
       setSuccessMessage(
-        `Balance adjusted by ${adjustAmount >= 0 ? "+" : ""}${adjustAmount} RL`,
+        `Balance adjusted by ${adjustAmount >= 0 ? "+" : ""}${adjustAmount} RL`
       );
       setShowAdjustModal(false);
       setSelectedUser(null);
@@ -260,7 +260,9 @@ export default function AdminRipLimitPage() {
               <Wallet className="w-8 h-8 text-blue-600" />
               RipLimit Administration
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage bidding currency system</p>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Manage bidding currency system
+            </p>
           </div>
           <div className="flex gap-3 mt-4 md:mt-0">
             <Button
@@ -299,7 +301,7 @@ export default function AdminRipLimitPage() {
                       u.availableBalance + u.blockedBalance,
                       u.hasUnpaidAuctions ? "Yes" : "No",
                       u.isBlocked ? "Yes" : "No",
-                    ].join(","),
+                    ].join(",")
                   ),
                 ].join("\n");
 
@@ -372,7 +374,9 @@ export default function AdminRipLimitPage() {
           <Card>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Net Revenue</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+                  Net Revenue
+                </p>
                 {loadingStats ? (
                   <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 animate-pulse rounded mt-1" />
                 ) : (
@@ -471,7 +475,9 @@ export default function AdminRipLimitPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-green-500" />
-                  <span className="text-gray-600 dark:text-gray-400">Available Balance</span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Available Balance
+                  </span>
                 </div>
                 <span className="font-semibold text-gray-900 dark:text-white">
                   {formatRL(stats?.totalAvailable || 0)}
@@ -480,7 +486,9 @@ export default function AdminRipLimitPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-orange-500" />
-                  <span className="text-gray-600 dark:text-gray-400">Blocked (Active Bids)</span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Blocked (Active Bids)
+                  </span>
                 </div>
                 <span className="font-semibold text-gray-900 dark:text-white">
                   {formatRL(stats?.totalBlocked || 0)}
@@ -519,7 +527,9 @@ export default function AdminRipLimitPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <ArrowDownLeft className="w-4 h-4 text-green-500" />
-                  <span className="text-gray-600 dark:text-gray-400">Total Purchases</span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Total Purchases
+                  </span>
                 </div>
                 <span className="font-semibold text-green-600">
                   +{formatINR(stats?.totalRevenue || 0)}
@@ -528,14 +538,18 @@ export default function AdminRipLimitPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <ArrowUpRight className="w-4 h-4 text-red-500" />
-                  <span className="text-gray-600 dark:text-gray-400">Total Refunds</span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Total Refunds
+                  </span>
                 </div>
                 <span className="font-semibold text-red-600">
                   -{formatINR(stats?.totalRefunded || 0)}
                 </span>
               </div>
               <div className="border-t dark:border-gray-700 pt-4 flex items-center justify-between">
-                <span className="font-medium text-gray-900 dark:text-white">Net Revenue</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  Net Revenue
+                </span>
                 <span className="text-xl font-bold text-green-600">
                   {formatINR(stats?.netRevenue || 0)}
                 </span>
@@ -619,7 +633,10 @@ export default function AdminRipLimitPage() {
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {filteredUsers.map((u) => (
-                      <tr key={u.userId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <tr
+                        key={u.userId}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                      >
                         {/* User Info */}
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -800,7 +817,9 @@ export default function AdminRipLimitPage() {
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-gray-500 dark:text-gray-400">Available</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      Available
+                    </p>
                     <p className="font-semibold text-green-600">
                       {formatRL(selectedUser.availableBalance)}
                     </p>

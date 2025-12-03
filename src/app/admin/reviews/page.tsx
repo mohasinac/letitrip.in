@@ -21,7 +21,7 @@ export default function AdminReviewsPage() {
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedReviews, setSelectedReviews] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -64,8 +64,8 @@ export default function AdminReviewsPage() {
         case "approve":
           await Promise.all(
             reviewIds.map((id) =>
-              reviewsService.moderate(id, { isApproved: true }),
-            ),
+              reviewsService.moderate(id, { isApproved: true })
+            )
           );
           toast.success(`${reviewIds.length} reviews approved`);
           break;
@@ -75,8 +75,8 @@ export default function AdminReviewsPage() {
               reviewsService.moderate(id, {
                 isApproved: false,
                 moderationNotes: "Rejected by admin",
-              }),
-            ),
+              })
+            )
           );
           toast.success(`${reviewIds.length} reviews rejected`);
           break;
@@ -86,8 +86,8 @@ export default function AdminReviewsPage() {
               reviewsService.moderate(id, {
                 isApproved: false,
                 moderationNotes: "Flagged for review",
-              }),
-            ),
+              })
+            )
           );
           toast.success(`${reviewIds.length} reviews flagged`);
           break;
@@ -321,10 +321,10 @@ export default function AdminReviewsPage() {
                               review.status === "approved"
                                 ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
                                 : review.status === "rejected"
-                                  ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
-                                  : review.status === "flagged"
-                                    ? "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200"
-                                    : "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
+                                ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+                                : review.status === "flagged"
+                                ? "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200"
+                                : "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
                             }`}
                           >
                             {review.status}

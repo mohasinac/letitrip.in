@@ -56,16 +56,19 @@ href={SELLER_ROUTES.AUCTION_EDIT(auction.slug)}
 
 ```tsx
 // ✅ For loading/error/data state management
-import { useLoadingState } from '@/hooks/useLoadingState';
+import { useLoadingState } from "@/hooks/useLoadingState";
 const { data, isLoading, error, execute } = useLoadingState<DataType>();
 
 // ✅ For debounced values (search, filters)
-import { useDebounce } from '@/hooks/useDebounce';
+import { useDebounce } from "@/hooks/useDebounce";
 const debouncedSearch = useDebounce(searchTerm, 300);
 
 // ✅ For filter state with URL sync
-import { useFilters } from '@/hooks/useFilters';
-const { filters, appliedFilters, applyFilters, resetFilters } = useFilters(defaults, { syncWithUrl: true });
+import { useFilters } from "@/hooks/useFilters";
+const { filters, appliedFilters, applyFilters, resetFilters } = useFilters(
+  defaults,
+  { syncWithUrl: true }
+);
 ```
 
 ---
