@@ -31,7 +31,7 @@ describe("useUrlPagination", () => {
 
   it("calculates offset correctly", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ initialPage: 3, initialLimit: 10 })
+      useUrlPagination({ initialPage: 3, initialLimit: 10 }),
     );
 
     expect(result.current.offset).toBe(20); // (3-1) * 10
@@ -39,7 +39,7 @@ describe("useUrlPagination", () => {
 
   it("calculates total pages correctly", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ initialLimit: 10, totalItems: 95 })
+      useUrlPagination({ initialLimit: 10, totalItems: 95 }),
     );
 
     expect(result.current.totalPages).toBe(10); // Math.ceil(95/10)
@@ -47,7 +47,7 @@ describe("useUrlPagination", () => {
 
   it("checks navigation availability", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ initialPage: 2, totalItems: 100, initialLimit: 20 })
+      useUrlPagination({ initialPage: 2, totalItems: 100, initialLimit: 20 }),
     );
 
     expect(result.current.canGoPrev).toBe(true);
@@ -56,7 +56,7 @@ describe("useUrlPagination", () => {
 
   it("prevents navigation beyond bounds", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ initialPage: 1, totalItems: 20, initialLimit: 20 })
+      useUrlPagination({ initialPage: 1, totalItems: 20, initialLimit: 20 }),
     );
 
     expect(result.current.canGoPrev).toBe(false);
@@ -65,7 +65,7 @@ describe("useUrlPagination", () => {
 
   it("updates page via setPage", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ totalItems: 100, initialLimit: 20 })
+      useUrlPagination({ totalItems: 100, initialLimit: 20 }),
     );
 
     act(() => {
@@ -87,7 +87,7 @@ describe("useUrlPagination", () => {
 
   it("navigates to next page", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ initialPage: 2, totalItems: 100, initialLimit: 20 })
+      useUrlPagination({ initialPage: 2, totalItems: 100, initialLimit: 20 }),
     );
 
     act(() => {
@@ -99,7 +99,7 @@ describe("useUrlPagination", () => {
 
   it("navigates to previous page", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ initialPage: 2, totalItems: 100, initialLimit: 20 })
+      useUrlPagination({ initialPage: 2, totalItems: 100, initialLimit: 20 }),
     );
 
     act(() => {
@@ -111,7 +111,7 @@ describe("useUrlPagination", () => {
 
   it("navigates to first page", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ initialPage: 3, totalItems: 100, initialLimit: 20 })
+      useUrlPagination({ initialPage: 3, totalItems: 100, initialLimit: 20 }),
     );
 
     act(() => {
@@ -123,7 +123,7 @@ describe("useUrlPagination", () => {
 
   it("navigates to last page", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ initialPage: 1, totalItems: 100, initialLimit: 20 })
+      useUrlPagination({ initialPage: 1, totalItems: 100, initialLimit: 20 }),
     );
 
     act(() => {
@@ -135,7 +135,7 @@ describe("useUrlPagination", () => {
 
   it("resets to initial state", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ initialPage: 1, initialLimit: 20 })
+      useUrlPagination({ initialPage: 1, initialLimit: 20 }),
     );
 
     act(() => {

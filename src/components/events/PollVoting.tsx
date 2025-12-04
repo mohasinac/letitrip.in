@@ -54,7 +54,7 @@ export function PollVoting({
   onVote,
 }: PollVotingProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(
-    userVote || null
+    userVote || null,
   );
   const [hasVoted, setHasVoted] = useState<boolean>(!!userVote);
 

@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { ordersService } from "@/services/orders.service";
-import { MobileDataTable } from "@/components/mobile/MobileDataTable";
-import { MobilePullToRefresh } from "@/components/mobile/MobilePullToRefresh";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
 import { PageState } from "@/components/common/PageState";
-import { Price, DateDisplay } from "@/components/common/values";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { DateDisplay, Price } from "@/components/common/values";
+import { MobileDataTable } from "@/components/mobile/MobileDataTable";
+import { MobilePullToRefresh } from "@/components/mobile/MobilePullToRefresh";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFilters } from "@/hooks/useFilters";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { ordersService } from "@/services/orders.service";
 import type { OrderCardFE } from "@/types/frontend/order.types";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -31,12 +32,23 @@ export default function OrdersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
 
-  // Filters from URL
-  const [filters, setFilters] = useState({
-    status: searchParams.get("status") || undefined,
-    sortBy: searchParams.get("sortBy") || "created_at",
-    sortOrder: (searchParams.get("sortOrder") || "desc") as "asc" | "desc",
-  });
+  // Filter state with URL sync
+  const {
+    appliedFilters: filters,
+    updateFilters,
+    applyFilters,
+  } = useFilters<{
+    status?: string;
+    sortBy: string;
+    sortOrder: "asc" | "desc";
+  }>(
+    {
+      status: searchParams.get("status") || undefined,
+      sortBy: searchParams.get("sortBy") || "created_at",
+      sortOrder: (searchParams.get("sortOrder") || "desc") as "asc" | "desc",
+    },
+    { syncWithUrl: true },
+  );
 
   const loadOrders = useCallback(async () => {
     await execute(async () => {

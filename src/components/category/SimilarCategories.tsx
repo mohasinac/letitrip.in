@@ -33,7 +33,7 @@ export function SimilarCategories({
       setLoading(true);
       const response = await categoriesService.getSimilarCategories(
         categorySlug,
-        limit
+        limit,
       );
       setCategories(response || []);
     } catch (error) {
@@ -68,7 +68,7 @@ export function SimilarCategories({
 
     setCanScrollLeft(container.scrollLeft > 0);
     setCanScrollRight(
-      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10
+      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10,
     );
   };
 

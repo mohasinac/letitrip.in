@@ -17,11 +17,11 @@ describe("AdvancedPagination", () => {
         pageSize={20}
         totalItems={200}
         onPageChange={mockOnPageChange}
-      />
+      />,
     );
 
     expect(
-      screen.getByText("Showing 21 to 40 of 200 items")
+      screen.getByText("Showing 21 to 40 of 200 items"),
     ).toBeInTheDocument();
   });
 
@@ -33,7 +33,7 @@ describe("AdvancedPagination", () => {
         pageSize={20}
         totalItems={200}
         onPageChange={mockOnPageChange}
-      />
+      />,
     );
 
     // Next page
@@ -61,7 +61,7 @@ describe("AdvancedPagination", () => {
         pageSize={20}
         totalItems={200}
         onPageChange={mockOnPageChange}
-      />
+      />,
     );
 
     expect(screen.getByLabelText("First page")).toBeDisabled();
@@ -76,7 +76,7 @@ describe("AdvancedPagination", () => {
         pageSize={20}
         totalItems={200}
         onPageChange={mockOnPageChange}
-      />
+      />,
     );
 
     expect(screen.getByLabelText("Last page")).toBeDisabled();
@@ -93,7 +93,7 @@ describe("AdvancedPagination", () => {
         onPageChange={mockOnPageChange}
         onPageSizeChange={mockOnPageSizeChange}
         showPageSizeSelector
-      />
+      />,
     );
 
     const select = screen.getByLabelText(/per page/i);
@@ -110,7 +110,7 @@ describe("AdvancedPagination", () => {
         totalItems={200}
         onPageChange={mockOnPageChange}
         showPageInput
-      />
+      />,
     );
 
     const input = screen.getByLabelText(/go to/i);
@@ -127,7 +127,7 @@ describe("AdvancedPagination", () => {
         pageSize={20}
         totalItems={200}
         onPageChange={mockOnPageChange}
-      />
+      />,
     );
 
     // Should show: 1 ... 4 5 6 ... 10
@@ -147,7 +147,7 @@ describe("AdvancedPagination", () => {
         totalItems={200}
         onPageChange={mockOnPageChange}
         showPageSizeSelector={false}
-      />
+      />,
     );
 
     expect(screen.queryByLabelText(/per page/i)).not.toBeInTheDocument();
@@ -162,7 +162,7 @@ describe("AdvancedPagination", () => {
         totalItems={10}
         onPageChange={mockOnPageChange}
         showPageSizeSelector={false}
-      />
+      />,
     );
 
     expect(container.firstChild).toBeNull();

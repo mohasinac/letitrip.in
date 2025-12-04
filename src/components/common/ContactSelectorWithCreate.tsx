@@ -70,7 +70,9 @@ export function ContactSelectorWithCreate({
   } = useLoadingState<Contact[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error as Error, { component: "ContactSelectorWithCreate.loadContacts" });
+      logError(error as Error, {
+        component: "ContactSelectorWithCreate.loadContacts",
+      });
       toast.error("Failed to load contacts");
     },
   });

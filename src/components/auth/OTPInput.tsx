@@ -96,7 +96,7 @@ export function OTPInput({
 
   const handleInputChange = (
     index: number,
-    e: ChangeEvent<HTMLInputElement>
+    e: ChangeEvent<HTMLInputElement>,
   ) => {
     const digit = e.target.value.slice(-1); // Get only the last character
     handleChange(index, digit);

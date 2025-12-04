@@ -128,7 +128,7 @@ export function AdminResourcePage<T extends { id: string }>({
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
@@ -209,7 +209,7 @@ export function AdminResourcePage<T extends { id: string }>({
     setSelectedIds((prev) =>
       prev.includes(id)
         ? prev.filter((selectedId) => selectedId !== id)
-        : [...prev, id]
+        : [...prev, id],
     );
   };
 
@@ -333,7 +333,7 @@ export function AdminResourcePage<T extends { id: string }>({
           onAction={async (actionId) => {
             // Bulk action handling should be implemented by parent component
             toast.info(
-              `Bulk action: ${actionId} on ${selectedIds.length} items`
+              `Bulk action: ${actionId} on ${selectedIds.length} items`,
             );
           }}
           onClearSelection={() => setSelectedIds([])}

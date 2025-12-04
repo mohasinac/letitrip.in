@@ -1,16 +1,47 @@
 "use client";
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
-import { categoriesService } from "@/services/categories.service";
+import { CategoryTree } from "@/components/category/CategoryTree";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { DateDisplay } from "@/components/common/values";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { FolderTree, CheckCircle, XCircle } from "lucide-react";
 import { getCategoryBulkActions } from "@/constants/bulk-actions";
 import { CATEGORY_FIELDS, toInlineFields } from "@/constants/form-fields";
-import type { CategoryFE } from "@/types/frontend/category.types";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { categoriesService } from "@/services/categories.service";
+import type {
+  CategoryCardFE,
+  CategoryFE,
+} from "@/types/frontend/category.types";
+import { CheckCircle, FolderTree, GitBranch, List } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+
+type ViewMode = "list" | "tree";
 
 export default function AdminCategoriesPage() {
+  const router = useRouter();
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+
+  // Load tree data for tree view
+  const {
+    data: treeData,
+    isLoading: loadingTree,
+    execute: loadTree,
+  } = useLoadingState<CategoryCardFE[]>({
+    initialData: [],
+  });
+
+  const loadTreeData = useCallback(async () => {
+    const response = await categoriesService.getTree();
+    return response.data || [];
+  }, []);
+
+  useEffect(() => {
+    if (viewMode === "tree" && treeData.length === 0) {
+      loadTree(loadTreeData);
+    }
+  }, [viewMode, treeData.length, loadTree, loadTreeData]);
   // Define columns
   const columns = [
     {
@@ -191,17 +222,74 @@ export default function AdminCategoriesPage() {
     await categoriesService.delete(id);
   };
 
+  // Handle node click in tree view
+  const handleNodeClick = (category: CategoryCardFE) => {
+    router.push(`/admin/categories/${category.slug}/edit`);
+  };
+
   return (
-    <AdminResourcePage<CategoryFE>
-      resourceName="Category"
-      resourceNamePlural="Categories"
-      loadData={loadData}
-      columns={columns}
-      fields={toInlineFields(CATEGORY_FIELDS)}
-      bulkActions={getCategoryBulkActions(0)}
-      onSave={handleSave}
-      onDelete={handleDelete}
-      filters={filters}
-    />
+    <div className="space-y-6">
+      {/* View mode toggle */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Categories
+        </h1>
+
+        <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+          <button
+            onClick={() => setViewMode("list")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              viewMode === "list"
+                ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            }`}
+          >
+            <List className="h-4 w-4" />
+            List View
+          </button>
+          <button
+            onClick={() => setViewMode("tree")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              viewMode === "tree"
+                ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            }`}
+          >
+            <GitBranch className="h-4 w-4" />
+            Tree View
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      {viewMode === "list" ? (
+        <AdminResourcePage<CategoryFE>
+          resourceName="Category"
+          resourceNamePlural="Categories"
+          loadData={loadData}
+          columns={columns}
+          fields={toInlineFields(CATEGORY_FIELDS)}
+          bulkActions={getCategoryBulkActions(0)}
+          onSave={handleSave}
+          onDelete={handleDelete}
+          filters={filters}
+        />
+      ) : loadingTree ? (
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
+            <p className="mt-4 text-gray-600 dark:text-gray-400">
+              Loading category tree...
+            </p>
+          </div>
+        </div>
+      ) : (
+        <CategoryTree
+          categories={treeData}
+          onNodeClick={handleNodeClick}
+          height="70vh"
+        />
+      )}
+    </div>
   );
 }

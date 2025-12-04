@@ -137,7 +137,7 @@ export function WinnersSection({
               >
                 <div
                   className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${getRankBadgeColor(
-                    winner.rank
+                    winner.rank,
                   )}`}
                 >
                   <span className="font-bold">#{winner.rank}</span>
@@ -214,7 +214,7 @@ function WinnerCard({
 
       <div
         className={`inline-flex items-center justify-center px-3 py-1 rounded-full border-2 font-bold mb-3 ${getRankBadgeColor(
-          winner.rank
+          winner.rank,
         )}`}
       >
         #{winner.rank}

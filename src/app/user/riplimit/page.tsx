@@ -1,5 +1,6 @@
 "use client";
 
+import { useFilters } from "@/hooks/useFilters";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 
@@ -84,8 +85,23 @@ export default function UserRipLimitPage() {
       toast.error("Failed to load transactions");
     },
   });
-  const [transactionFilter, setTransactionFilter] =
-    useState<TransactionFilter>("ALL");
+
+  // Filter state with URL sync
+  const {
+    filters: { type: transactionFilter = "ALL" },
+    updateFilters,
+    applyFilters,
+  } = useFilters<{ type: TransactionFilter }>(
+    { type: "ALL" },
+    {
+      syncWithUrl: true,
+    },
+  );
+
+  const setTransactionFilter = (type: TransactionFilter) => {
+    updateFilters({ type });
+    applyFilters();
+  };
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [purchaseAmount, setPurchaseAmount] = useState<number>(1000);
