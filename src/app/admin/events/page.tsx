@@ -50,14 +50,24 @@ const filters = [
     type: "select" as const,
     field: "status",
     label: "Status",
-    options: ["draft", "published", "archived"],
+    options: [
+      { value: "draft", label: "Draft" },
+      { value: "published", label: "Published" },
+      { value: "archived", label: "Archived" },
+    ],
   },
   {
     key: "type",
     type: "select" as const,
     field: "type",
     label: "Type",
-    options: ["workshop", "seminar", "competition", "poll", "announcement"],
+    options: [
+      { value: "workshop", label: "Workshop" },
+      { value: "seminar", label: "Seminar" },
+      { value: "competition", label: "Competition" },
+      { value: "poll", label: "Poll" },
+      { value: "announcement", label: "Announcement" },
+    ],
   },
 ];
 

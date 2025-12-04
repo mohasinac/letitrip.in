@@ -88,7 +88,7 @@ export default function AdminEmailSettingsPage() {
   const [showApiKey, setShowApiKey] = useState(false);
   const [testEmail, setTestEmail] = useState("");
   const [activeTab, setActiveTab] = useState<"provider" | "templates">(
-    "provider",
+    "provider"
   );
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function AdminEmailSettingsPage() {
   const loadSettings = () =>
     execute(async () => {
       const response = await apiService.get<{ settings: EmailSettings }>(
-        "/api/admin/settings?category=email",
+        "/api/admin/settings?category=email"
       );
       if (response.settings) {
         return { ...DEFAULT_SETTINGS, ...response.settings };
@@ -122,7 +122,7 @@ export default function AdminEmailSettingsPage() {
     } catch (err) {
       console.error("Error saving settings:", err);
       setFormError(
-        err instanceof Error ? err.message : "Failed to save settings",
+        err instanceof Error ? err.message : "Failed to save settings"
       );
     } finally {
       setSaving(false);
@@ -144,7 +144,7 @@ export default function AdminEmailSettingsPage() {
     } catch (err) {
       console.error("Error sending test email:", err);
       setFormError(
-        err instanceof Error ? err.message : "Failed to send test email",
+        err instanceof Error ? err.message : "Failed to send test email"
       );
     } finally {
       setTesting(false);
