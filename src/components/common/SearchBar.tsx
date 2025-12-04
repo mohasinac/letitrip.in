@@ -73,7 +73,7 @@ export default function SearchBar() {
     } catch (error) {
       logError(error as Error, {
         component: "SearchBar.performSearch",
-        searchQuery,
+        metadata: { searchQuery },
       });
     } finally {
       setLoading(false);

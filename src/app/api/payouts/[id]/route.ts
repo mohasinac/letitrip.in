@@ -1,9 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import {
-  getUserFromRequest,
-  requireAuth,
-} from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import { requireAuth } from "@/app/api/middleware/rbac-auth";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * Individual Payout Operations
@@ -14,10 +12,12 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
 
     const authResult = await requireAuth(request);
     if (authResult.error) return authResult.error;
@@ -30,7 +30,7 @@ export async function GET(
     if (!payoutDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Payout not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -40,7 +40,7 @@ export async function GET(
     if (user.role === "seller" && payout.seller_id !== user.uid) {
       return NextResponse.json(
         { success: false, error: "Access denied" },
-        { status: 403 },
+        { status: 403 }
       );
     }
     // Admin can see all
@@ -50,29 +50,36 @@ export async function GET(
       payout,
     });
   } catch (error: any) {
-    console.error("Error fetching payout:", error);
+    logError(error as Error, {
+      component: "API.payouts.id.GET",
+      metadata: { payoutId: id },
+    });
     return NextResponse.json(
       {
         success: false,
         error: error.message || "Failed to fetch payout",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
+  let data: any;
   try {
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
 
     const authResult = await requireAuth(request);
     if (authResult.error) return authResult.error;
 
     const { user } = authResult;
     const body = await request.json();
+    data = body;
 
     // Fetch payout
     const payoutDoc = await Collections.payouts().doc(id).get();
@@ -80,7 +87,7 @@ export async function PATCH(
     if (!payoutDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Payout not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -92,7 +99,7 @@ export async function PATCH(
     if (!isOwner && !isAdmin) {
       return NextResponse.json(
         { success: false, error: "Access denied" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -124,7 +131,7 @@ export async function PATCH(
           error:
             "Cannot update payout. Only pending payouts can be modified by seller.",
         },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -140,23 +147,28 @@ export async function PATCH(
       message: "Payout updated successfully",
     });
   } catch (error: any) {
-    console.error("Error updating payout:", error);
+    logError(error as Error, {
+      component: "API.payouts.id.PATCH",
+      metadata: { payoutId: id, updates: data },
+    });
     return NextResponse.json(
       {
         success: false,
         error: error.message || "Failed to update payout",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
 
     const authResult = await requireAuth(request);
     if (authResult.error) return authResult.error;
@@ -167,7 +179,7 @@ export async function DELETE(
     if (user.role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Only admins can delete payouts" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -176,7 +188,7 @@ export async function DELETE(
     if (!payoutDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Payout not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -187,13 +199,16 @@ export async function DELETE(
       message: "Payout deleted successfully",
     });
   } catch (error: any) {
-    console.error("Error deleting payout:", error);
+    logError(error as Error, {
+      component: "API.payouts.id.DELETE",
+      metadata: { payoutId: id },
+    });
     return NextResponse.json(
       {
         success: false,
         error: error.message || "Failed to delete payout",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -1,26 +1,26 @@
 "use client";
 
 import {
-  useState,
-  useRef,
-  forwardRef,
-  useImperativeHandle,
-  useEffect,
-  useCallback,
-} from "react";
-import { Search, ArrowRight, Navigation } from "lucide-react";
-import { useRouter } from "next/navigation";
-import {
   ContentTypeFilter,
-  type ContentType,
   getContentTypePlaceholder,
+  type ContentType,
 } from "@/components/common/ContentTypeFilter";
+import { DynamicIcon, type IconName } from "@/components/common/DynamicIcon";
 import {
   searchNavigationRoutes,
   type SearchableRoute,
 } from "@/constants/searchable-routes";
-import { DynamicIcon, type IconName } from "@/components/common/DynamicIcon";
 import { useDebounce } from "@/hooks/useDebounce";
+import { ArrowRight, Navigation, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 export interface SearchBarRef {
   focusSearch: () => void;
@@ -55,7 +55,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
       if (contentType === "all" && debouncedSearchQuery.length > 0) {
         const routes = searchNavigationRoutes(
           debouncedSearchQuery,
-          MAX_SUGGESTIONS,
+          MAX_SUGGESTIONS
         );
         setSuggestions(routes);
         setShowSuggestions(routes.length > 0);
@@ -88,7 +88,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         setSearchQuery("");
         router.push(route.path);
       },
-      [router],
+      [router]
     );
 
     useImperativeHandle(ref, () => ({
@@ -144,13 +144,13 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         case "ArrowDown":
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev < suggestions.length - 1 ? prev + 1 : 0,
+            prev < suggestions.length - 1 ? prev + 1 : 0
           );
           break;
         case "ArrowUp":
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : suggestions.length - 1,
+            prev > 0 ? prev - 1 : suggestions.length - 1
           );
           break;
         case "Enter":
@@ -357,7 +357,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         </div>
       </div>
     );
-  },
+  }
 );
 
 SearchBar.displayName = "SearchBar";

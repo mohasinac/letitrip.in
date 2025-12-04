@@ -6,6 +6,7 @@ import {
   productsSieveConfig,
 } from "@/app/api/lib/sieve";
 import { withCache } from "@/app/api/middleware/cache";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   getUserFromRequest,
   requireAuth,
@@ -225,7 +226,7 @@ export async function GET(request: NextRequest) {
           },
         });
       } catch (error) {
-        console.error("Error fetching products:", error);
+        logError(error as Error, { component: "API.products.GET" });
         return NextResponse.json(
           { success: false, error: "Failed to fetch products" },
           { status: 500 }
@@ -241,6 +242,9 @@ export async function GET(request: NextRequest) {
  * Create new product (seller/admin only)
  */
 export async function POST(request: NextRequest) {
+  let name: string | undefined;
+  let slug: string | undefined;
+  let category_id: string | undefined;
   try {
     const authResult = await requireAuth(request);
     if (authResult.error) {
@@ -262,11 +266,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     // Accept both camelCase and snake_case from client
     const shop_id = body.shop_id || body.shopId;
-    const name = body.name;
-    const slug = body.slug;
+    name = body.name;
+    slug = body.slug;
     const description = body.description || "";
     const price = Number(body.price);
-    const category_id = body.category_id || body.categoryId;
+    category_id = body.category_id || body.categoryId;
     const images = body.images || [];
     const status = body.status || "draft";
     const stock_quantity = body.stock_quantity ?? body.stockCount ?? null;
@@ -289,6 +293,10 @@ export async function POST(request: NextRequest) {
       throw new ValidationError("Validation failed", errors);
     }
 
+    // After validation, these are guaranteed to be strings
+    const validSlug = slug as string;
+    const validCategoryId = category_id as string;
+
     // Validate user owns the shop
     const ownsShop = await userOwnsShop(shop_id, user.uid);
     if (!ownsShop && user.role !== "admin") {
@@ -302,7 +310,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if slug/ID already exists (slug is used as document ID)
-    const existingDoc = await Collections.products().doc(slug).get();
+    const existingDoc = await Collections.products().doc(validSlug).get();
     if (existingDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Product slug already exists" },
@@ -314,10 +322,10 @@ export async function POST(request: NextRequest) {
     const productData = {
       shop_id,
       name,
-      slug,
+      slug: validSlug,
       description,
       price: Number(price),
-      category_id,
+      category_id: validCategoryId,
       images,
       status,
       stock_quantity: stock_quantity !== null ? Number(stock_quantity) : null,
@@ -327,20 +335,23 @@ export async function POST(request: NextRequest) {
     };
 
     // Use slug as document ID for SEO-friendly URLs
-    await Collections.products().doc(slug).set(productData);
+    await Collections.products().doc(validSlug).set(productData);
 
     // Update category product counts (including ancestors)
-    if (category_id && status === "published") {
+    if (status === "published") {
       try {
-        await updateCategoryProductCounts(category_id);
+        await updateCategoryProductCounts(validCategoryId);
       } catch (error) {
-        console.error("Failed to update category counts:", error);
+        logError(error as Error, {
+          component: "API.products.POST.updateCategoryCounts",
+          metadata: { categoryId: validCategoryId },
+        });
         // Don't fail the request if count update fails
       }
     }
 
     return NextResponse.json(
-      { success: true, data: { id: slug, ...productData } },
+      { success: true, data: { id: validSlug, ...productData } },
       { status: 201 }
     );
   } catch (error: any) {
@@ -350,7 +361,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    console.error("Error creating product:", error);
+    logError(error as Error, {
+      component: "API.products.POST",
+      metadata: { productData: { name, slug, category_id } },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to create product" },
       { status: 500 }

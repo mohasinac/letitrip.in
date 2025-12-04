@@ -42,7 +42,7 @@ export function OrderId({
     } catch (error) {
       logError(error as Error, {
         component: "OrderId.handleCopy",
-        orderId: value,
+        metadata: { orderId: value },
       });
     }
   };

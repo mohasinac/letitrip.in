@@ -16,16 +16,18 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
     const user = await getUserFromRequest(request);
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
     const doc = await Collections.orders().doc(id).get();
     if (!doc.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 },
+        { status: 404 }
       );
 
     const orderData: any = doc.data();
@@ -34,7 +36,7 @@ export async function GET(
     if (user?.role === "user" && orderData.user_id !== user.uid) {
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -43,7 +45,7 @@ export async function GET(
       if (!owns) {
         return NextResponse.json(
           { success: false, error: "Not found" },
-          { status: 404 },
+          { status: 404 }
         );
       }
     }
@@ -59,7 +61,7 @@ export async function GET(
     });
     return NextResponse.json(
       { success: false, error: "Failed to load order" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -70,8 +72,9 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
     const { user, error } = await requireAuth(request);
     if (error) return error;
@@ -80,17 +83,18 @@ export async function PATCH(
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Only sellers and admins can update orders" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
     const docRef = Collections.orders().doc(id);
     const doc = await docRef.get();
     if (!doc.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 },
+        { status: 404 }
       );
 
     const order = doc.data() as any;
@@ -99,7 +103,7 @@ export async function PATCH(
       if (!owns)
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
     }
 
@@ -121,7 +125,7 @@ export async function PATCH(
     });
     return NextResponse.json(
       { success: false, error: "Failed to update order" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

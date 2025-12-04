@@ -134,7 +134,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       } else {
         await categoriesService.update(
           initialData?.slug || "",
-          formData as any,
+          formData as any
         );
       }
 
@@ -147,8 +147,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     } catch (error) {
       logError(error as Error, {
         component: "CategoryForm.handleSubmit",
-        formData,
-        isEdit: !!initialData,
+        metadata: { formData, isEdit: !!initialData },
       });
 
       // Failure! Clean up uploaded media
@@ -178,7 +177,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     } catch (error) {
       logError(error as Error, {
         component: "CategoryForm.handleImageUpload",
-        fileName: files[0].file.name,
+        metadata: { fileName: files[0].file.name },
       });
     }
   };

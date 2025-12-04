@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * POST /api/products/batch
@@ -7,14 +8,16 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  * Used by homepage featured sections to display admin-curated products
  */
 export async function POST(request: NextRequest) {
+  let idsLength = 0;
   try {
     const body = await request.json();
     const { ids } = body;
+    idsLength = ids?.length || 0;
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
         { success: false, error: "Product IDs array is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -82,10 +85,13 @@ export async function POST(request: NextRequest) {
       data: orderedProducts,
     });
   } catch (error) {
-    console.error("Error fetching products batch:", error);
+    logError(error as Error, {
+      component: "API.products.batch.POST",
+      metadata: { idsCount: idsLength },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to fetch products" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

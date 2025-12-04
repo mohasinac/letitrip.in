@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { resolveShopSlug } from "@/app/api/lib/utils/shop-slug-resolver";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * Validate Product Slug Uniqueness
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "Slug parameter is required",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "Shop slug parameter is required",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "Shop not found",
         },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -67,13 +68,17 @@ export async function GET(request: NextRequest) {
       shop_id: shopId,
     });
   } catch (error) {
-    console.error("Error validating product slug:", error);
+    logError(error as Error, {
+      component: "API.products.validateSlug.GET",
+      slug,
+      shopSlug,
+    });
     return NextResponse.json(
       {
         success: false,
         error: "Failed to validate slug",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

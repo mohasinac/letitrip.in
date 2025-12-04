@@ -1,26 +1,25 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
-import {
-  Store,
-  Package,
-  ShoppingCart,
-  DollarSign,
-  TrendingUp,
-  AlertCircle,
-  Clock,
-  Eye,
-  Star,
-  ArrowRight,
-  Loader2,
-} from "lucide-react";
+import { PageState } from "@/components/common/PageState";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { CompactPrice, Price } from "@/components/common/values";
-import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { analyticsService } from "@/services/analytics.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
-import { PageState } from "@/components/common/PageState";
+import { analyticsService } from "@/services/analytics.service";
+import {
+  AlertCircle,
+  ArrowRight,
+  Clock,
+  DollarSign,
+  Eye,
+  Package,
+  ShoppingCart,
+  Star,
+  Store,
+  TrendingUp,
+} from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect } from "react";
 
 interface DashboardData {
   stats: {
@@ -169,11 +168,7 @@ export default function SellerDashboardPage() {
         <StatsCard
           title="Revenue (This Month)"
           value={<Price amount={stats.revenue.thisMonth} />}
-          description={
-            <>
-              <Price amount={stats.revenue.lastMonth} /> last month
-            </>
-          }
+          description={`\u20b9${stats.revenue.lastMonth.toFixed(2)} last month`}
           icon={<DollarSign className="h-6 w-6 text-blue-600" />}
           trend={{
             value:
@@ -182,8 +177,8 @@ export default function SellerDashboardPage() {
                     stats.revenue.lastMonth) *
                   100
                 : stats.revenue.thisMonth > 0
-                  ? 100
-                  : 0,
+                ? 100
+                : 0,
             isPositive: stats.revenue.thisMonth > stats.revenue.lastMonth,
           }}
         />
@@ -300,8 +295,8 @@ export default function SellerDashboardPage() {
                         order.status === "pending"
                           ? "bg-yellow-100 text-yellow-800"
                           : order.status === "confirmed"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-green-100 text-green-800"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-green-100 text-green-800"
                       }`}
                     >
                       {order.status}

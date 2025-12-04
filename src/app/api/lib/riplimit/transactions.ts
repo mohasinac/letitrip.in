@@ -6,16 +6,16 @@
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { COLLECTIONS } from "@/constants/database";
 import { nowAsFirebaseTimestamp } from "@/lib/firebase/timestamp-helpers";
 import {
   RipLimitAccountBE,
   RipLimitTransactionBE,
-  RipLimitTransactionType,
   RipLimitTransactionStatus,
+  RipLimitTransactionType,
   ripLimitToInr,
 } from "@/types/backend/riplimit.types";
+import { FieldValue } from "firebase-admin/firestore";
 
 /**
  * Credit RipLimit to user account (purchase, admin adjustment)
@@ -25,7 +25,7 @@ export async function creditBalance(
   amount: number,
   type: RipLimitTransactionType,
   description: string,
-  metadata?: Record<string, unknown>,
+  metadata?: Record<string, unknown>
 ): Promise<RipLimitTransactionBE> {
   const db = getFirestoreAdmin();
   const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
@@ -100,7 +100,7 @@ export async function getTransactionHistory(
     type?: RipLimitTransactionType;
     limit?: number;
     offset?: number;
-  } = {},
+  } = {}
 ): Promise<{ transactions: RipLimitTransactionBE[]; total: number }> {
   const db = getFirestoreAdmin();
   let query = db

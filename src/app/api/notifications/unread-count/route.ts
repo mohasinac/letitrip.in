@@ -5,10 +5,10 @@
  * GET /api/notifications/unread-count - Get unread notification count
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/notifications/unread-count
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     console.error("Error getting notification count:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get notification count" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

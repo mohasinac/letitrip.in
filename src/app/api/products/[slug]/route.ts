@@ -18,9 +18,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  let slug: string | undefined;
   try {
     const user = await getUserFromRequest(request);
-    const { slug } = await params;
+    const awaitedParams = await params;
+    slug = awaitedParams.slug;
 
     // Try direct doc access first (slug as ID), fallback to query for backward compatibility
     let doc = await Collections.products().doc(slug).get();
@@ -97,7 +99,7 @@ export async function GET(
   } catch (error) {
     logError(error as Error, {
       component: "API.products.slug.GET",
-      slug: params.slug,
+      metadata: { slug },
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch product" },
@@ -114,6 +116,7 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  let slug: string | undefined;
   try {
     const authResult = await requireAuth(request);
     if (authResult.error) {
@@ -121,7 +124,8 @@ export async function PATCH(
     }
     const user = authResult.user!;
 
-    const { slug } = await params;
+    const awaitedParams = await params;
+    slug = awaitedParams.slug;
 
     // Try direct doc access first (slug as ID), fallback to query for backward compatibility
     let doc = await Collections.products().doc(slug).get();
@@ -245,7 +249,10 @@ export async function PATCH(
       },
     });
   } catch (error) {
-    console.error("Error updating product:", error);
+    logError(error as Error, {
+      component: "API.products.slug.PATCH",
+      metadata: { slug },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to update product" },
       { status: 500 }
@@ -261,6 +268,7 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  let slug: string | undefined;
   try {
     const authResult = await requireAuth(request);
     if (authResult.error) {
@@ -268,7 +276,8 @@ export async function DELETE(
     }
     const user = authResult.user!;
 
-    const { slug } = await params;
+    const awaitedParams = await params;
+    slug = awaitedParams.slug;
 
     // Try direct doc access first (slug as ID), fallback to query for backward compatibility
     let doc = await Collections.products().doc(slug).get();
@@ -308,7 +317,10 @@ export async function DELETE(
       try {
         await updateCategoryProductCounts(productData.category_id);
       } catch (error) {
-        console.error("Failed to update category counts:", error);
+        logError(error as Error, {
+          component: "API.products.slug.DELETE.updateCategoryCounts",
+          metadata: { categoryId: productData.category_id },
+        });
       }
     }
 
@@ -317,7 +329,10 @@ export async function DELETE(
       message: "Product deleted successfully",
     });
   } catch (error) {
-    console.error("Error deleting product:", error);
+    logError(error as Error, {
+      component: "API.products.slug.DELETE",
+      metadata: { slug },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to delete product" },
       { status: 500 }

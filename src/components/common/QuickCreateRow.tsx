@@ -92,7 +92,7 @@ export function QuickCreateRow({
     } catch (error) {
       logError(error as Error, {
         component: "QuickCreateRow.handleCreate",
-        values,
+        metadata: { values },
       });
     }
   };

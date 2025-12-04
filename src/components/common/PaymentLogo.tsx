@@ -36,7 +36,7 @@ export function PaymentLogo({
       } catch (err) {
         logError(err as Error, {
           component: "PaymentLogo.useEffect",
-          paymentId,
+          metadata: { paymentId },
         });
         if (mounted) {
           setError(true);

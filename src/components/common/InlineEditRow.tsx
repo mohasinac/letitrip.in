@@ -96,7 +96,7 @@ export function InlineEditRow({
     } catch (error) {
       logError(error as Error, {
         component: "InlineEditRow.handleSave",
-        values,
+        metadata: { values },
       });
     }
   };

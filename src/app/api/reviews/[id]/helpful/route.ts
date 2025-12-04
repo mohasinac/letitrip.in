@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
 import { getCurrentUser } from "@/app/api/lib/session";
+import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 // POST /api/reviews/[id]/helpful - Mark review as helpful
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getFirestoreAdmin();
@@ -17,7 +18,7 @@ export async function POST(
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 },
+        { status: 401 }
       );
     }
     const userId = user.id;
@@ -39,7 +40,7 @@ export async function POST(
     if (helpfulDoc.exists) {
       return NextResponse.json(
         { error: "You have already marked this review as helpful" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -67,10 +68,13 @@ export async function POST(
       helpful_count: (doc.data()?.helpful_count || 0) + 1,
     });
   } catch (error) {
-    console.error("Error marking review as helpful:", error);
+    logError(error as Error, {
+      component: "API.reviews.id.helpful.POST",
+      reviewId: id,
+    });
     return NextResponse.json(
       { error: "Failed to mark review as helpful" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

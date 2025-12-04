@@ -58,7 +58,7 @@ export function InlineImageUpload({
     } catch (err) {
       logError(err as Error, {
         component: "InlineImageUpload.handleUpload",
-        context: validContext,
+        metadata: { context: validContext },
       });
       setError("Failed to upload image");
     } finally {

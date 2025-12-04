@@ -3,6 +3,7 @@ import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { requireAuth } from "@/app/api/middleware/rbac-auth";
 import { ValidationError } from "@/lib/api-errors";
 import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
+import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // Actions that affect category counts
@@ -57,6 +58,8 @@ function buildProductUpdate(
  * Sellers can only perform operations on their own products
  */
 export async function POST(request: NextRequest) {
+  let action: string | undefined;
+  let idsLength = 0;
   try {
     const authResult = await requireAuth(request);
     if (authResult.error) {
@@ -73,7 +76,9 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await request.json();
-    const { action, ids, updates } = data;
+    const { action: reqAction, ids, updates } = data;
+    action = reqAction;
+    idsLength = ids?.length || 0;
 
     // Validation
     if (!action) {
@@ -191,10 +196,10 @@ export async function POST(request: NextRequest) {
         try {
           await updateCategoryProductCounts(categoryId);
         } catch (error) {
-          console.error(
-            `Failed to update counts for category ${categoryId}:`,
-            error
-          );
+          logError(error as Error, {
+            component: "API.products.bulk.POST.updateCategoryCounts",
+            metadata: { categoryId },
+          });
           // Don't fail the bulk operation if count update fails
         }
       }
@@ -212,7 +217,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    console.error("Error in bulk product operation:", error);
+    logError(error as Error, {
+      component: "API.products.bulk.POST",
+      metadata: { action, idsCount: idsLength },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to perform bulk operation" },
       { status: 500 }

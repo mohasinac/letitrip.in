@@ -127,8 +127,7 @@ export default function CouponForm({
     } catch (error) {
       logError(error as Error, {
         component: "CouponForm.validateCouponCode",
-        code,
-        shopId: formData.shopId,
+        metadata: { code, shopId: formData.shopId },
       });
     } finally {
       setIsValidatingCode(false);

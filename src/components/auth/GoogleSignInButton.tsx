@@ -80,13 +80,14 @@ function GoogleSignInButtonInner({
       }
 
       // Small delay to ensure state is updated before redirect
+      const redirectUrl = redirect;
       setTimeout(() => {
-        router.replace(redirect);
+        router.replace(redirectUrl);
       }, 100);
     } catch (error: any) {
       logError(error as Error, {
         component: "GoogleSignInButton.handleGoogleSignIn",
-        redirect,
+        metadata: { redirect },
       });
 
       // Handle specific errors
