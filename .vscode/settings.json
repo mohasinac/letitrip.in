@@ -1,0 +1,16 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "editor.formatOnSave": true,
+  "typescript.preferences.organizeImportsOnSave": true,
+  "javascript.preferences.organizeImportsOnSave": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "terminal.integrated.shellArgs.windows": [
+    "-NoLogo",
+    "-ExecutionPolicy", "Bypass",
+    "-Command", "$ConfirmPreference = 'None'; $VerbosePreference = 'SilentlyContinue'; & {}"
+  ]
+}

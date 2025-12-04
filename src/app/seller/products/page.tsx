@@ -99,8 +99,8 @@ export default function ProductsPage() {
                     isOutOfStock
                       ? "text-red-600 dark:text-red-400"
                       : isLowStock
-                        ? "text-yellow-600 dark:text-yellow-400"
-                        : "text-gray-900 dark:text-white"
+                      ? "text-yellow-600 dark:text-yellow-400"
+                      : "text-gray-900 dark:text-white"
                   }`}
                 >
                   {product.stockCount}

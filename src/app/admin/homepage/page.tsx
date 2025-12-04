@@ -1,16 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import {
-  RefreshCw,
-  Save,
-  GripVertical,
-  ChevronDown,
-  ChevronUp,
-  ArrowUp,
-  ArrowDown,
-} from "lucide-react";
-import { FormInput, FormLabel } from "@/components/forms";
+import { RefreshCw, Save } from "lucide-react";
+import { FormLabel } from "@/components/forms";
 import {
   homepageSettingsService,
   HomepageSettings,
@@ -22,8 +14,10 @@ import {
   toast,
 } from "@/components/admin";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import RichTextEditor from "@/components/common/RichTextEditor";
 import { DateDisplay } from "@/components/common/values";
+import { BannerEditor } from "@/components/admin/homepage/BannerEditor";
+import { SectionCard } from "@/components/admin/homepage/SectionCard";
+import { SliderControl } from "@/components/admin/homepage/SliderControl";
 
 // Default section order - matches HomepageSettings.sections keys
 const DEFAULT_SECTION_ORDER = [
@@ -323,171 +317,16 @@ export default function HomepageSettingsPage() {
         )}
 
         {/* Special Event Banner Settings */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Special Event Banner
-              </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Announcement banner at the very top of the site
-              </p>
-            </div>
-            <ToggleSwitch
-              enabled={settings.specialEventBanner.enabled}
-              onToggle={() => {
-                setSettings({
-                  ...settings,
-                  specialEventBanner: {
-                    ...settings.specialEventBanner,
-                    enabled: !settings.specialEventBanner.enabled,
-                  },
-                });
-                setHasChanges(true);
-              }}
-            />
-          </div>
-
-          {settings.specialEventBanner.enabled && (
-            <div className="space-y-4 pt-4 border-t border-gray-200">
-              <div>
-                <FormLabel htmlFor="banner-content">
-                  Banner Content (Rich Text)
-                </FormLabel>
-                <RichTextEditor
-                  value={settings.specialEventBanner.content}
-                  onChange={(value: string) => {
-                    setSettings({
-                      ...settings,
-                      specialEventBanner: {
-                        ...settings.specialEventBanner,
-                        content: value,
-                      },
-                    });
-                    setHasChanges(true);
-                  }}
-                  placeholder="Enter banner content..."
-                  minHeight={150}
-                />
-              </div>
-
-              <FormInput
-                label="Link URL (Optional)"
-                value={settings.specialEventBanner.link || ""}
-                onChange={(e) => {
-                  setSettings({
-                    ...settings,
-                    specialEventBanner: {
-                      ...settings.specialEventBanner,
-                      link: e.target.value,
-                    },
-                  });
-                  setHasChanges(true);
-                }}
-                placeholder="/special-offers"
-              />
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <FormLabel htmlFor="banner-bg-color">
-                    Background Color
-                  </FormLabel>
-                  <div className="flex gap-2">
-                    <input
-                      type="color"
-                      value={
-                        settings.specialEventBanner.backgroundColor || "#2563eb"
-                      }
-                      onChange={(e) => {
-                        setSettings({
-                          ...settings,
-                          specialEventBanner: {
-                            ...settings.specialEventBanner,
-                            backgroundColor: e.target.value,
-                          },
-                        });
-                        setHasChanges(true);
-                      }}
-                      className="h-10 w-20 rounded border border-gray-300 cursor-pointer"
-                    />
-                    <input
-                      type="text"
-                      value={
-                        settings.specialEventBanner.backgroundColor || "#2563eb"
-                      }
-                      onChange={(e) => {
-                        setSettings({
-                          ...settings,
-                          specialEventBanner: {
-                            ...settings.specialEventBanner,
-                            backgroundColor: e.target.value,
-                          },
-                        });
-                        setHasChanges(true);
-                      }}
-                      placeholder="#2563eb"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <FormLabel htmlFor="banner-text-color">Text Color</FormLabel>
-                  <div className="flex gap-2">
-                    <input
-                      type="color"
-                      value={settings.specialEventBanner.textColor || "#ffffff"}
-                      onChange={(e) => {
-                        setSettings({
-                          ...settings,
-                          specialEventBanner: {
-                            ...settings.specialEventBanner,
-                            textColor: e.target.value,
-                          },
-                        });
-                        setHasChanges(true);
-                      }}
-                      className="h-10 w-20 rounded border border-gray-300 cursor-pointer"
-                    />
-                    <input
-                      type="text"
-                      value={settings.specialEventBanner.textColor || "#ffffff"}
-                      onChange={(e) => {
-                        setSettings({
-                          ...settings,
-                          specialEventBanner: {
-                            ...settings.specialEventBanner,
-                            textColor: e.target.value,
-                          },
-                        });
-                        setHasChanges(true);
-                      }}
-                      placeholder="#ffffff"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 p-4 rounded-lg border border-gray-200">
-                <p className="text-sm font-medium text-gray-700 mb-2">
-                  Preview:
-                </p>
-                <div
-                  style={{
-                    backgroundColor:
-                      settings.specialEventBanner.backgroundColor || "#2563eb",
-                    color: settings.specialEventBanner.textColor || "#ffffff",
-                  }}
-                  className="py-2 px-4 rounded text-center"
-                  dangerouslySetInnerHTML={{
-                    __html: settings.specialEventBanner.content,
-                  }}
-                />
-              </div>
-            </div>
-          )}
-        </div>
+        <BannerEditor
+          settings={settings.specialEventBanner}
+          onChange={(bannerSettings) => {
+            setSettings({
+              ...settings,
+              specialEventBanner: bannerSettings,
+            });
+            setHasChanges(true);
+          }}
+        />
 
         {/* Hero Carousel Settings */}
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
@@ -747,141 +586,4 @@ function renderSectionConfig(
     default:
       return null;
   }
-}
-
-// Section Card Component
-interface SectionCardProps {
-  title: string;
-  description: string;
-  enabled: boolean;
-  onToggle: () => void;
-  expanded?: boolean;
-  onToggleExpand?: () => void;
-  children?: React.ReactNode;
-  orderIndex?: number;
-  totalSections?: number;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
-}
-
-function SectionCard({
-  title,
-  description,
-  enabled,
-  onToggle,
-  expanded,
-  onToggleExpand,
-  children,
-  orderIndex,
-  totalSections,
-  onMoveUp,
-  onMoveDown,
-}: SectionCardProps) {
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-      <div className="p-4 flex items-center justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-3">
-            {/* Reorder buttons */}
-            {onMoveUp &&
-              onMoveDown &&
-              orderIndex !== undefined &&
-              totalSections !== undefined && (
-                <div className="flex flex-col gap-0.5">
-                  <button
-                    onClick={onMoveUp}
-                    disabled={orderIndex === 1}
-                    className="p-0.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-                    title="Move up"
-                  >
-                    <ArrowUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                  </button>
-                  <button
-                    onClick={onMoveDown}
-                    disabled={orderIndex === totalSections}
-                    className="p-0.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-                    title="Move down"
-                  >
-                    <ArrowDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                  </button>
-                </div>
-              )}
-            {/* Order number badge */}
-            {orderIndex && (
-              <span className="flex items-center justify-center w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-full text-xs font-medium text-gray-600 dark:text-gray-300">
-                {orderIndex}
-              </span>
-            )}
-            <div>
-              <h3 className="font-medium text-gray-900 dark:text-white">
-                {title}
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {description}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <ToggleSwitch enabled={enabled} onToggle={onToggle} />
-          {children && onToggleExpand && (
-            <button
-              onClick={onToggleExpand}
-              className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-              disabled={!enabled}
-            >
-              {expanded ? (
-                <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              )}
-            </button>
-          )}
-        </div>
-      </div>
-      {expanded && enabled && children && (
-        <div className="px-4 pb-4 pt-2 border-t border-gray-200 dark:border-gray-700">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Slider Control Component
-interface SliderControlProps {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  onChange: (value: number) => void;
-}
-
-function SliderControl({
-  label,
-  value,
-  min,
-  max,
-  onChange,
-}: SliderControlProps) {
-  return (
-    <div>
-      <FormLabel>
-        {label}: {value}
-      </FormLabel>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step="1"
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
-      />
-      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-        <span>{min}</span>
-        <span>{max}</span>
-      </div>
-    </div>
-  );
 }

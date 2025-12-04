@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { logError } from "@/lib/firebase-error-logger";
+import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -213,11 +215,12 @@ function MessagesContent() {
         prev.map((c) =>
           c.id === conversationId
             ? { ...c, unreadCount: 0, isUnread: false }
-            : c,
-        ),
+            : c
+        )
       );
     } catch (err) {
-      console.error("Failed to load messages:", err);
+      logError(err as Error, { component: "MessagesPage.loadMessages" });
+      toast.error("Failed to load messages");
     } finally {
       setMessagesLoading(false);
     }
@@ -278,11 +281,12 @@ function MessagesContent() {
                 },
                 timeAgo: "just now",
               }
-            : c,
-        ),
+            : c
+        )
       );
     } catch (err) {
-      console.error("Failed to send message:", err);
+      logError(err as Error, { component: "MessagesPage.sendMessage" });
+      toast.error("Failed to send message");
     } finally {
       setSendingMessage(false);
     }
@@ -302,12 +306,16 @@ function MessagesContent() {
     try {
       await messagesService.archiveConversation(selectedConversation.id);
       setConversations((prev) =>
-        prev.filter((c) => c.id !== selectedConversation.id),
+        prev.filter((c) => c.id !== selectedConversation.id)
       );
       setSelectedConversation(null);
       setMessages([]);
     } catch (err) {
-      console.error("Failed to archive:", err);
+      logError(err as Error, {
+        component: "MessagesPage.handleArchive",
+        metadata: { conversationId: selectedConversation?.id },
+      });
+      toast.error("Failed to archive conversation");
     }
   };
 
@@ -463,8 +471,8 @@ function MessagesContent() {
                     {searchQuery
                       ? "No conversations found"
                       : showArchived
-                        ? "No archived conversations"
-                        : "No messages yet"}
+                      ? "No archived conversations"
+                      : "No messages yet"}
                   </p>
                 </div>
               ) : (
