@@ -123,7 +123,9 @@ export function CouponSelector({
         toast.error(validation.message || "Invalid coupon");
       }
     } catch (error: any) {
-      logError(error as Error, { component: "CouponSelector.handleApplyCoupon" });
+      logError(error as Error, {
+        component: "CouponSelector.handleApplyCoupon",
+      });
       toast.error(error.message || "Failed to apply coupon");
     } finally {
       setValidating(false);
@@ -160,7 +162,9 @@ export function CouponSelector({
         toast.error(validation.message || "Invalid coupon");
       }
     } catch (error: any) {
-      logError(error as Error, { component: "CouponSelector.handleManualApply" });
+      logError(error as Error, {
+        component: "CouponSelector.handleManualApply",
+      });
       toast.error(error.message || "Failed to apply coupon");
     } finally {
       setValidating(false);

@@ -49,7 +49,7 @@ export function SKU({
       className={cn(
         "inline-flex items-center gap-1.5 font-mono text-sm",
         "text-gray-600 dark:text-gray-400",
-        className
+        className,
       )}
     >
       {label && <span className="text-gray-500 dark:text-gray-500">SKU:</span>}

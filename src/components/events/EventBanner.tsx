@@ -161,8 +161,8 @@ export function EventBanner({
                   {isFull
                     ? "Event Full"
                     : !isUpcoming
-                    ? "Registration Closed"
-                    : "Register Now"}
+                      ? "Registration Closed"
+                      : "Register Now"}
                 </button>
               ) : (
                 <div className="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg flex items-center gap-2">

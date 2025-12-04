@@ -120,7 +120,7 @@ export function SellerResourcePage<T extends { id: string }>({
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
@@ -228,7 +228,9 @@ export function SellerResourcePage<T extends { id: string }>({
 
   const toggleSelectItem = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((itemId) => itemId !== id)
+        : [...prev, id],
     );
   };
 
@@ -242,7 +244,7 @@ export function SellerResourcePage<T extends { id: string }>({
     toast.success(
       `${actionId} applied to ${selectedIds.length} ${
         selectedIds.length === 1 ? resourceName : resourceNamePlural
-      }`
+      }`,
     );
     setSelectedIds([]);
     loadItems();
@@ -437,7 +439,7 @@ export function SellerResourcePage<T extends { id: string }>({
                     {item.id}
                   </p>
                 </div>
-              )
+              ),
             )}
           </div>
         )}

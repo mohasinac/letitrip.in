@@ -18,6 +18,7 @@ import { Price } from "@/components/common/values";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFilters } from "@/hooks/useFilters";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { apiService } from "@/services/api.service";
@@ -109,9 +110,25 @@ export default function AdminRipLimitPage() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Filters
-  const [userFilter, setUserFilter] = useState<UserFilter>("all");
-  const [currentPage, setCurrentPage] = useState(1);
+  // Filters with URL sync
+  const {
+    filters: { userFilter = "all", currentPage = 1 },
+    updateFilters,
+    applyFilters,
+  } = useFilters<{ userFilter: UserFilter; currentPage: number }>(
+    { userFilter: "all", currentPage: 1 },
+    { syncWithUrl: true },
+  );
+
+  const setUserFilter = (filter: UserFilter) => {
+    updateFilters({ userFilter: filter, currentPage: 1 });
+    applyFilters();
+  };
+
+  const setCurrentPage = (page: number) => {
+    updateFilters({ userFilter, currentPage: page });
+    applyFilters();
+  };
 
   // Modal states
   const [selectedUser, setSelectedUser] = useState<RipLimitUser | null>(null);

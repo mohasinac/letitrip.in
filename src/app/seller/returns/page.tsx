@@ -1,33 +1,24 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { Price, DateDisplay } from "@/components/common/values";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
 import { SimplePagination } from "@/components/common/Pagination";
-import {
-  UnifiedFilterSidebar,
-  TableCheckbox,
-} from "@/components/common/inline-edit";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { DateDisplay, Price } from "@/components/common/values";
 import { RETURN_FILTERS } from "@/constants/filters";
-import { returnsService } from "@/services/returns.service";
+import { useFilters } from "@/hooks/useFilters";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { useIsMobile } from "@/hooks/useMobile";
+import { logComponentError } from "@/lib/error-logger";
+import { returnsService } from "@/services/returns.service";
 import type {
   ReturnCardFE,
   ReturnFiltersFE,
 } from "@/types/frontend/return.types";
-import { logComponentError } from "@/lib/error-logger";
-import {
-  Eye,
-  CheckCircle,
-  XCircle,
-  Package,
-  AlertTriangle,
-  Filter,
-} from "lucide-react";
-import { useIsMobile } from "@/hooks/useMobile";
+import { AlertTriangle, CheckCircle, Eye, Filter, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 interface ReturnsData {
   returns: ReturnCardFE[];
@@ -41,9 +32,19 @@ export default function SellerReturnsPage() {
   const { data, isLoading, execute } = useLoadingState<ReturnsData>({
     initialData: { returns: [], totalPages: 1, totalReturns: 0 },
   });
-  const [filterValues, setFilterValues] = useState<Partial<ReturnFiltersFE>>(
-    {},
-  );
+
+  // Filter state with URL sync
+  const {
+    appliedFilters: filterValues,
+    updateFilters,
+    applyFilters,
+  } = useFilters<Partial<ReturnFiltersFE>>({}, { syncWithUrl: true });
+
+  const setFilterValues = (filters: Partial<ReturnFiltersFE>) => {
+    updateFilters(filters);
+    applyFilters();
+  };
+
   const [currentPage, setCurrentPage] = useState(1);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(!isMobile);
