@@ -71,7 +71,7 @@ class EventsService {
    * Check if user is registered for event
    */
   async checkRegistration(
-    eventId: string,
+    eventId: string
   ): Promise<{ success: boolean; registered: boolean }> {
     return apiService.get(`/api/events/${eventId}/register`);
   }
@@ -87,7 +87,7 @@ class EventsService {
    * Check if user has voted in poll
    */
   async checkVote(
-    eventId: string,
+    eventId: string
   ): Promise<{ success: boolean; voted: boolean; optionId?: string }> {
     return apiService.get(`/api/events/${eventId}/vote`);
   }
@@ -104,7 +104,7 @@ class EventsService {
    */
   async update(
     eventId: string,
-    eventData: Partial<Event>,
+    eventData: Partial<Event>
   ): Promise<{ success: boolean }> {
     return apiService.put(`/api/admin/events/${eventId}`, eventData);
   }
@@ -120,7 +120,7 @@ class EventsService {
    * Admin: Get event by ID
    */
   async getByIdAdmin(
-    eventId: string,
+    eventId: string
   ): Promise<{ success: boolean; event: Event }> {
     return apiService.get(`/api/admin/events/${eventId}`);
   }
