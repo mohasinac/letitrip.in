@@ -41,7 +41,7 @@ export default function WatchlistPage() {
 
       // Remove from local state
       const updatedAuctions = (auctions || []).filter(
-        (auction) => auction.id !== auctionId
+        (auction) => auction.id !== auctionId,
       );
       setAuctions(updatedAuctions);
     } catch (error) {

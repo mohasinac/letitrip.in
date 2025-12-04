@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const { slug } = await params;
@@ -29,7 +29,7 @@ export async function GET(
     if (shopsSnapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Shop not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -46,10 +46,10 @@ export async function GET(
       sortBy === "price"
         ? "price"
         : sortBy === "rating"
-        ? "averageRating"
-        : sortBy === "sales"
-        ? "soldCount"
-        : "createdAt";
+          ? "averageRating"
+          : sortBy === "sales"
+            ? "soldCount"
+            : "createdAt";
 
     query = query.orderBy(sortField, sortOrder as "asc" | "desc");
 
@@ -105,7 +105,7 @@ export async function GET(
         success: false,
         error: error.message || "Failed to fetch shop products",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

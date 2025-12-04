@@ -12,7 +12,7 @@ function toNumber(value: string | null, fallback: number): number {
 
 // Resolve category slug to ID
 async function resolveCategorySlug(
-  categorySlug?: string | null
+  categorySlug?: string | null,
 ): Promise<string | null> {
   if (!categorySlug) return null;
   const snap = await Collections.categories()
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
   if (!apiRateLimiter.check(identifier)) {
     return NextResponse.json(
       { success: false, error: "Too many requests. Please try again later." },
-      { status: 429 }
+      { status: 429 },
     );
   }
 
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
     const page = Math.max(1, toNumber(searchParams.get("page"), 1));
     const limit = Math.min(
       100,
-      Math.max(1, toNumber(searchParams.get("limit"), 20))
+      Math.max(1, toNumber(searchParams.get("limit"), 20)),
     );
 
     const shopSlug = searchParams.get("shop_slug");
@@ -69,14 +69,14 @@ export async function GET(req: NextRequest) {
       else
         return NextResponse.json(
           { success: false, error: "Shop not found" },
-          { status: 404 }
+          { status: 404 },
         );
     }
     const categoryId = await resolveCategorySlug(categorySlug);
     if (categorySlug && !categoryId) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -142,8 +142,8 @@ export async function GET(req: NextRequest) {
         (typeof val === "string"
           ? val
           : Array.isArray(val)
-          ? val.join(" ")
-          : ""
+            ? val.join(" ")
+            : ""
         )
           .toString()
           .toLowerCase();
@@ -185,7 +185,7 @@ export async function GET(req: NextRequest) {
           items.sort(
             (a: any, b: any) =>
               (itDate(b.created_at) || itDate(b.createdAt) || 0) -
-              (itDate(a.created_at) || itDate(a.createdAt) || 0)
+              (itDate(a.created_at) || itDate(a.createdAt) || 0),
           );
         else if (sort === "price-asc")
           items.sort((a: any, b: any) => (a.price || 0) - (b.price || 0));
@@ -195,15 +195,15 @@ export async function GET(req: NextRequest) {
         if (sort === "endingsoon" || sort === "ending-soon")
           items.sort(
             (a: any, b: any) =>
-              (itDate(a.end_time) || 0) - (itDate(b.end_time) || 0)
+              (itDate(a.end_time) || 0) - (itDate(b.end_time) || 0),
           );
         else if (sort === "price-asc")
           items.sort(
-            (a: any, b: any) => (a.current_bid || 0) - (b.current_bid || 0)
+            (a: any, b: any) => (a.current_bid || 0) - (b.current_bid || 0),
           );
         else if (sort === "price-desc")
           items.sort(
-            (a: any, b: any) => (b.current_bid || 0) - (a.current_bid || 0)
+            (a: any, b: any) => (b.current_bid || 0) - (a.current_bid || 0),
           );
       }
     }
@@ -222,7 +222,7 @@ export async function GET(req: NextRequest) {
     logError(error as Error, { component: "API.search" });
     return NextResponse.json(
       { success: false, error: "Search failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

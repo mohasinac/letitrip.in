@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
               error: "Invalid query parameters",
               details: errors,
             },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
@@ -192,7 +192,7 @@ export async function GET(request: NextRequest) {
         // Execute query
         const snapshot = await query.get();
         let data = snapshot.docs.map((doc) =>
-          transformProduct(doc.id, doc.data())
+          transformProduct(doc.id, doc.data()),
         );
 
         // Apply text search filter (client-side)
@@ -204,15 +204,15 @@ export async function GET(request: NextRequest) {
               p.description?.toLowerCase().includes(searchLower) ||
               p.slug?.toLowerCase().includes(searchLower) ||
               p.tags?.some((tag: string) =>
-                tag.toLowerCase().includes(searchLower)
-              )
+                tag.toLowerCase().includes(searchLower),
+              ),
           );
         }
 
         // Build response with Sieve pagination meta
         const pagination = createPaginationMeta(
           search ? data.length : totalCount,
-          sieveQuery
+          sieveQuery,
         );
 
         return NextResponse.json({
@@ -229,11 +229,11 @@ export async function GET(request: NextRequest) {
         logError(error as Error, { component: "API.products.GET" });
         return NextResponse.json(
           { success: false, error: "Failed to fetch products" },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
-    { ttl: 120 }
+    { ttl: 120 },
   );
 }
 
@@ -259,7 +259,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Only sellers and admins can create products",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -305,7 +305,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "You do not have permission to add products to this shop",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -314,7 +314,7 @@ export async function POST(request: NextRequest) {
     if (existingDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Product slug already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -352,13 +352,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { success: true, data: { id: validSlug, ...productData } },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { success: false, error: error.message, errors: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
     logError(error as Error, {
@@ -367,7 +367,7 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json(
       { success: false, error: "Failed to create product" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

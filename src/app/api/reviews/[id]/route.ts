@@ -17,7 +17,7 @@ import { NextRequest, NextResponse } from "next/server";
 // GET /api/reviews/[id] - Get review details
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
   try {
@@ -31,7 +31,7 @@ export async function GET(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Review not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function GET(
         if (!user || review.user_id !== user.uid) {
           return NextResponse.json(
             { success: false, error: "Review not found" },
-            { status: 404 }
+            { status: 404 },
           );
         }
       }
@@ -65,7 +65,7 @@ export async function GET(
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch review" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -73,7 +73,7 @@ export async function GET(
 // PATCH /api/reviews/[id] - Update review
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
   try {
@@ -91,7 +91,7 @@ export async function PATCH(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Review not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -102,7 +102,7 @@ export async function PATCH(
     if (!isOwner && !isAdmin) {
       return NextResponse.json(
         { success: false, error: "You can only edit your own reviews" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -125,7 +125,7 @@ export async function PATCH(
     if (updates.rating && (updates.rating < 1 || updates.rating > 5)) {
       return NextResponse.json(
         { error: "Rating must be between 1 and 5" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -148,7 +148,7 @@ export async function PATCH(
     });
     return NextResponse.json(
       { success: false, error: "Failed to update review" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -156,7 +156,7 @@ export async function PATCH(
 // DELETE /api/reviews/[id] - Delete review
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
   try {
@@ -173,7 +173,7 @@ export async function DELETE(
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Review not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -184,7 +184,7 @@ export async function DELETE(
     if (!isOwner && !isAdmin) {
       return NextResponse.json(
         { success: false, error: "You can only delete your own reviews" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -201,7 +201,7 @@ export async function DELETE(
     });
     return NextResponse.json(
       { success: false, error: "Failed to delete review" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

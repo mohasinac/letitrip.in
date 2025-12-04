@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 function buildTicketUpdate(
   action: string,
   now: Date,
-  updates?: any
+  updates?: any,
 ): Record<string, any> | null {
   switch (action) {
     case "update":
@@ -115,8 +115,8 @@ export async function POST(request: NextRequest) {
             action === "update"
               ? "Updates object required"
               : action === "assign"
-              ? "assignedTo field required"
-              : "Unknown action";
+                ? "assignedTo field required"
+                : "Unknown action";
           results.failed.push({ id: ticketId, error: errorMsg });
           continue;
         }
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { error: error.message, errors: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
     logError(error as Error, {

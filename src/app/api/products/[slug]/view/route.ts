@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 // POST /api/products/[slug]/view - increment view count
 export async function POST(
   _: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   let slug: string | undefined;
   try {
@@ -18,7 +18,7 @@ export async function POST(
     if (prodSnap.empty)
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 }
+        { status: 404 },
       );
     const id = prodSnap.docs[0].id;
 
@@ -36,7 +36,7 @@ export async function POST(
     });
     return NextResponse.json(
       { success: false, error: "Failed to increment view" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

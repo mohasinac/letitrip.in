@@ -1,6 +1,7 @@
 "use client";
 
 import { BlogCard } from "@/components/cards/BlogCard";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import type { BlogPost } from "@/services/blog.service";
 import { blogService, type BlogFilters } from "@/services/blog.service";
@@ -12,18 +13,30 @@ export default function BlogListClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [blogs, setBlogs] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   // Cursor pagination state
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
 
+  const {
+    isLoading: loading,
+    error,
+    data: blogs,
+    setData: setBlogs,
+    execute,
+  } = useLoadingState<BlogPost[]>({
+    initialData: [],
+    onLoadError: (err) => {
+      logError(err, {
+        component: "BlogListClient.fetchBlogs",
+        metadata: { filters },
+      });
+    },
+  });
+
   // Filters from URL
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || ""
+    searchParams.get("search") || "",
   );
   const [filters, setFilters] = useState<BlogFilters>({
     status: "published",
@@ -52,10 +65,7 @@ export default function BlogListClient() {
   }, [filters, router]);
 
   const fetchBlogs = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
+    await execute(async () => {
       const startAfter = cursors[currentPage - 1];
       const response = await blogService.list({
         ...filters,
@@ -63,7 +73,7 @@ export default function BlogListClient() {
         search: filters.search || undefined,
       });
 
-      setBlogs(response.data || []);
+      const blogData = response.data || [];
 
       // Check if it's cursor pagination
       if (response.pagination && "hasNextPage" in response.pagination) {
@@ -81,15 +91,9 @@ export default function BlogListClient() {
           }
         }
       }
-    } catch (err) {
-      setError("Failed to load blog posts. Please try again later.");
-      logError(err as Error, {
-        component: "BlogListClient.fetchBlogs",
-        metadata: { filters },
-      });
-    } finally {
-      setLoading(false);
-    }
+
+      return blogData;
+    });
   };
 
   const handleSearch = (searchValue?: string) => {

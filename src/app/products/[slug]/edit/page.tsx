@@ -4,6 +4,7 @@ import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { Card } from "@/components/ui";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
@@ -21,12 +22,26 @@ interface EditProductPageProps {
 function EditProductContent({ params }: EditProductPageProps) {
   const router = useRouter();
   const { user } = useAuth();
-  const [product, setProduct] = useState<ProductFE | null>(null);
-  const [shops, setShops] = useState<ShopCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [slug, setSlug] = useState<string>("");
+
+  const {
+    isLoading: loading,
+    error,
+    data: product,
+    setData: setProduct,
+    execute,
+  } = useLoadingState<ProductFE | null>({
+    initialData: null,
+    onLoadError: (err) => {
+      logError(err, {
+        component: "ProductEdit.loadData",
+        metadata: { slug },
+      });
+    },
+  });
+
+  const [shops, setShops] = useState<ShopCardFE[]>([]);
 
   // Load params
   useEffect(() => {
@@ -42,32 +57,20 @@ function EditProductContent({ params }: EditProductPageProps) {
     const loadData = async () => {
       if (!user || !slug) return;
 
-      try {
-        setLoading(true);
-        setError(null);
-
+      await execute(async () => {
         // Load product
         const productData = await productsService.getBySlug(slug);
-        setProduct(productData);
 
         // Load user's shops
         const shopsData = await shopsService.list({ limit: 50 });
         setShops(shopsData.data);
-      } catch (error: any) {
-        logError(error as Error, {
-          component: "ProductEdit.loadData",
-          metadata: { slug },
-        });
-        setError(
-          error.message || "Failed to load product data. Please try again."
-        );
-      } finally {
-        setLoading(false);
-      }
+
+        return productData;
+      });
     };
 
     loadData();
-  }, [user, slug]);
+  }, [user, slug, execute]);
 
   const handleSubmit = async (formData: ProductFormFE) => {
     if (!user || !product) {
@@ -81,7 +84,7 @@ function EditProductContent({ params }: EditProductPageProps) {
     try {
       const updatedProduct = await productsService.update(
         product.slug,
-        formData
+        formData,
       );
       router.push(`/products/${updatedProduct.slug}`);
     } catch (error: any) {
@@ -133,7 +136,7 @@ function EditProductContent({ params }: EditProductPageProps) {
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Error Loading Product
           </h2>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-gray-600 mb-4">{error.message}</p>
           <Link
             href="/products"
             className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"

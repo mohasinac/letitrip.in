@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 // GET /api/products/[slug]/variants - same leaf category
 export async function GET(
   _: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   let slug: string | undefined;
   try {
@@ -18,7 +18,7 @@ export async function GET(
     if (prodSnap.empty)
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 }
+        { status: 404 },
       );
     const prod: any = { id: prodSnap.docs[0].id, ...prodSnap.docs[0].data() };
 
@@ -50,7 +50,7 @@ export async function GET(
     });
     return NextResponse.json(
       { success: false, error: "Failed to load variants" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

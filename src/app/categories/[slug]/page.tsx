@@ -83,7 +83,7 @@ function CategoryDetailContent({ params }: PageProps) {
 
       // Load breadcrumb using parent hierarchy
       const breadcrumbData = await categoriesService.getBreadcrumb(
-        categoryData.id
+        categoryData.id,
       );
       setBreadcrumb(breadcrumbData);
 
@@ -140,7 +140,7 @@ function CategoryDetailContent({ params }: PageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    }
+    },
   ) => {
     try {
       if (!productDetails) {

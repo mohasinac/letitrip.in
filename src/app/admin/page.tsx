@@ -1,22 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Quantity } from "@/components/common/values";
 import { useAuth } from "@/contexts/AuthContext";
-import { analyticsService } from "@/services/analytics.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
-import Link from "next/link";
+import { analyticsService } from "@/services/analytics.service";
 import {
-  Users,
+  ArrowRight,
   FolderTree,
-  Store,
+  Loader2,
   Package,
   ShoppingCart,
+  Store,
   TrendingUp,
-  ArrowRight,
-  Loader2,
+  Users,
 } from "lucide-react";
-import { Quantity } from "@/components/common/values";
+import Link from "next/link";
+import { useEffect } from "react";
 
 interface DashboardStats {
   totalUsers: number;

@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Build update object for each action
 function buildReviewUpdate(
   action: string,
-  data?: any
+  data?: any,
 ): Record<string, any> | null {
   const now = new Date().toISOString();
   switch (action) {
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Invalid request. Provide action and ids array.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: error.message || "Bulk operation failed",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

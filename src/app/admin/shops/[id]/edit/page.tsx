@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   ArrowLeft,
   Save,
@@ -37,11 +39,8 @@ export default function AdminEditShopPage() {
   const shopId = params.id as string;
   const { user, isAdmin } = useAuth();
 
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [shop, setShop] = useState<ShopFE | null>(null);
   const [shopProducts, setShopProducts] = useState<ProductCardFE[]>([]);
   const [shopStats, setShopStats] = useState<any>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -50,6 +49,22 @@ export default function AdminEditShopPage() {
   const [activeTab, setActiveTab] = useState<
     "info" | "products" | "performance"
   >("info");
+
+  const {
+    isLoading: loading,
+    error,
+    data: shop,
+    setData: setShop,
+    execute,
+  } = useLoadingState<ShopFE | null>({
+    initialData: null,
+    onLoadError: (err) => {
+      logError(err, {
+        component: "AdminEditShop.loadShop",
+        metadata: { shopId },
+      });
+    },
+  });
 
   const [formData, setFormData] = useState({
     name: "",

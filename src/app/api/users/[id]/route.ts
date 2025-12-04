@@ -14,7 +14,7 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
   try {
@@ -26,7 +26,7 @@ export async function GET(
     if (!user || (user.uid !== id && user.role !== "admin")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -35,7 +35,7 @@ export async function GET(
     if (!userDoc.exists) {
       return NextResponse.json(
         { success: false, error: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -50,7 +50,7 @@ export async function GET(
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch user" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -63,7 +63,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
   try {
@@ -74,7 +74,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -84,7 +84,7 @@ export async function PATCH(
     if (!updates) {
       return NextResponse.json(
         { success: false, error: "Updates are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -94,7 +94,7 @@ export async function PATCH(
     if (!isAdmin && !isOwner) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -140,7 +140,7 @@ export async function PATCH(
     if (Object.keys(allowedUpdates).length === 0) {
       return NextResponse.json(
         { success: false, error: "No valid updates provided" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -164,7 +164,7 @@ export async function PATCH(
     });
     return NextResponse.json(
       { success: false, error: "Failed to update user" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -175,7 +175,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
   try {
@@ -189,7 +189,7 @@ export async function DELETE(
     if (!userDoc.exists) {
       return NextResponse.json(
         { success: false, error: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -206,7 +206,7 @@ export async function DELETE(
     });
     return NextResponse.json(
       { success: false, error: "Failed to delete user" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

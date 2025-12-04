@@ -34,7 +34,7 @@ const STATUS_REQUIREMENTS: Record<
 function buildPayoutUpdate(
   action: string,
   userId: string,
-  data?: any
+  data?: any,
 ): Record<string, any> | null {
   const now = new Date();
   switch (action) {
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Invalid request. Provide action and ids array.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: error.message || "Bulk operation failed",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

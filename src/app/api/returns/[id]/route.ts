@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
   try {
@@ -16,7 +16,7 @@ export async function GET(
     if (!doc.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 }
+        { status: 404 },
       );
     return NextResponse.json({
       success: true,
@@ -29,14 +29,14 @@ export async function GET(
     });
     return NextResponse.json(
       { success: false, error: "Failed to load return" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
   try {
@@ -44,13 +44,13 @@ export async function PATCH(
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     const role = user.role;
     if (!(role === "seller" || role === "admin")) {
       return NextResponse.json(
         { success: false, error: "Forbidden" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -61,7 +61,7 @@ export async function PATCH(
     if (!snap.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 }
+        { status: 404 },
       );
     const ret = snap.data() as any;
 
@@ -70,7 +70,7 @@ export async function PATCH(
       if (!owns)
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 }
+          { status: 403 },
         );
     }
 
@@ -92,7 +92,7 @@ export async function PATCH(
     });
     return NextResponse.json(
       { success: false, error: "Failed to update return" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

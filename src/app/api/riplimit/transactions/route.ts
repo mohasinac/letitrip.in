@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     if (
       typeParam &&
       Object.values(RipLimitTransactionType).includes(
-        typeParam as RipLimitTransactionType
+        typeParam as RipLimitTransactionType,
       )
     ) {
       type = typeParam as RipLimitTransactionType;
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     console.error("Error getting RipLimit transactions:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get transactions" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

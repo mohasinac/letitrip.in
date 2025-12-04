@@ -34,7 +34,7 @@ export default function SellerRevenuePage() {
     endDate: string;
   }>({
     startDate: toDateInputValue(
-      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
     ),
     endDate: getTodayDateInputValue(),
   });
@@ -85,7 +85,7 @@ export default function SellerRevenuePage() {
           endDate: dateRange.endDate,
           period,
         },
-        format
+        format,
       );
       const url = globalThis.URL?.createObjectURL(blob) || "";
       const link = document.createElement("a");
@@ -303,7 +303,7 @@ export default function SellerRevenuePage() {
                   <div className="h-64 flex items-end justify-between gap-2">
                     {salesData.map((data, index) => {
                       const maxRevenue = Math.max(
-                        ...salesData.map((d) => d.revenue)
+                        ...salesData.map((d) => d.revenue),
                       );
                       const height = (data.revenue / maxRevenue) * 100;
                       return (

@@ -13,21 +13,20 @@
  * - Currency configuration
  */
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { FormInput, FormSelect } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   settingsService,
   type PaymentSettings,
 } from "@/services/settings.service";
-import { FormInput, FormSelect } from "@/components/forms";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function AdminPaymentSettingsPage() {
   const router = useRouter();
-  const [settings, setSettings] = useState<PaymentSettings | null>(null);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     "razorpay" | "payu" | "cod" | "currency"
@@ -37,22 +36,30 @@ export default function AdminPaymentSettingsPage() {
   const [razorpaySecretModified, setRazorpaySecretModified] = useState(false);
   const [payuSaltModified, setPayuSaltModified] = useState(false);
 
+  const {
+    isLoading: loading,
+    error,
+    data: settings,
+    setData: setSettings,
+    execute,
+  } = useLoadingState<PaymentSettings | null>({
+    initialData: null,
+    onLoadError: (err) => {
+      logError(err, {
+        component: "AdminPaymentSettings.loadSettings",
+      });
+    },
+  });
+
   useEffect(() => {
     loadSettings();
   }, []);
 
   const loadSettings = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    await execute(async () => {
       const data = await settingsService.getPayment();
-      setSettings(data);
-    } catch (err) {
-      console.error("Error loading settings:", err);
-      setError(err instanceof Error ? err.message : "Failed to load settings");
-    } finally {
-      setLoading(false);
-    }
+      return data;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +68,6 @@ export default function AdminPaymentSettingsPage() {
 
     try {
       setSaving(true);
-      setError(null);
       setSuccess(null);
 
       // Prepare settings - only include secrets if modified

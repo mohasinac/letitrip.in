@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -46,10 +46,10 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: `Minimum refund is ${RIPLIMIT_MIN_REFUND} RipLimit (₹${ripLimitToInr(
-            RIPLIMIT_MIN_REFUND
+            RIPLIMIT_MIN_REFUND,
           )})`,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     if (!method || !["original", "bank"].includes(method)) {
       return NextResponse.json(
         { success: false, error: "Invalid refund method" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "Bank details are required for bank transfer refund",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Cannot request refund while you have unpaid won auctions",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: `Insufficient available balance. You have ${balance.availableBalance} RipLimit available.`,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating refund request:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create refund request" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -208,7 +208,7 @@ export async function GET(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -233,7 +233,7 @@ export async function GET(request: NextRequest) {
     console.error("Error getting refund history:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get refund history" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

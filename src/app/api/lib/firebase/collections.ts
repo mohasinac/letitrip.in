@@ -15,7 +15,7 @@ import { getFirestoreAdmin } from "./admin";
  * Get a collection reference
  */
 export function getCollection<T = any>(
-  collectionName: string
+  collectionName: string,
 ): CollectionReference<T> {
   const db = getFirestoreAdmin();
   return db.collection(collectionName) as CollectionReference<T>;
@@ -26,7 +26,7 @@ export function getCollection<T = any>(
  */
 export function getDocument<T = any>(
   collectionName: string,
-  documentId: string
+  documentId: string,
 ): DocumentReference<T> {
   const db = getFirestoreAdmin();
   return db.collection(collectionName).doc(documentId) as DocumentReference<T>;
@@ -91,7 +91,7 @@ export const Collections = {
  */
 export async function getDocumentById<T = any>(
   collectionName: string,
-  documentId: string
+  documentId: string,
 ): Promise<T | null> {
   try {
     const docRef = getDocument<T>(collectionName, documentId);
@@ -105,7 +105,7 @@ export async function getDocumentById<T = any>(
   } catch (error) {
     console.error(
       `Error getting document ${documentId} from ${collectionName}:`,
-      error
+      error,
     );
     throw error;
   }
@@ -116,7 +116,7 @@ export async function getDocumentById<T = any>(
  */
 export async function documentExists(
   collectionName: string,
-  documentId: string
+  documentId: string,
 ): Promise<boolean> {
   try {
     const docRef = getDocument(collectionName, documentId);
@@ -125,7 +125,7 @@ export async function documentExists(
   } catch (error) {
     console.error(
       `Error checking document existence ${documentId} in ${collectionName}:`,
-      error
+      error,
     );
     return false;
   }
@@ -136,7 +136,7 @@ export async function documentExists(
  */
 export async function createDocument<T = any>(
   collectionName: string,
-  data: Partial<T>
+  data: Partial<T>,
 ): Promise<string> {
   try {
     const collectionRef = getCollection<T>(collectionName);
@@ -159,7 +159,7 @@ export async function createDocument<T = any>(
 export async function updateDocument<T = any>(
   collectionName: string,
   documentId: string,
-  data: Partial<T>
+  data: Partial<T>,
 ): Promise<void> {
   try {
     const docRef = getDocument<T>(collectionName, documentId);
@@ -170,7 +170,7 @@ export async function updateDocument<T = any>(
   } catch (error) {
     console.error(
       `Error updating document ${documentId} in ${collectionName}:`,
-      error
+      error,
     );
     throw error;
   }
@@ -181,7 +181,7 @@ export async function updateDocument<T = any>(
  */
 export async function deleteDocument(
   collectionName: string,
-  documentId: string
+  documentId: string,
 ): Promise<void> {
   try {
     const docRef = getDocument(collectionName, documentId);
@@ -189,7 +189,7 @@ export async function deleteDocument(
   } catch (error) {
     console.error(
       `Error deleting document ${documentId} from ${collectionName}:`,
-      error
+      error,
     );
     throw error;
   }

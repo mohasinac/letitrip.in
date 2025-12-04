@@ -84,7 +84,7 @@ export default function CreateProductPage() {
   // Upload state for RequiredInfoStep
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
-    {}
+    {},
   );
 
   // Expandable sections state for OptionalDetailsStep
@@ -142,7 +142,7 @@ export default function CreateProductPage() {
 
       return errors;
     },
-    [formData]
+    [formData],
   );
 
   // Validate all steps
@@ -167,7 +167,7 @@ export default function CreateProductPage() {
       const errorSummary = Object.entries(allErrors)
         .map(
           ([step, errors]) =>
-            `${errors.length} error${errors.length > 1 ? "s" : ""} in ${step}`
+            `${errors.length} error${errors.length > 1 ? "s" : ""} in ${step}`,
         )
         .join(", ");
       toast.error(`Please fix: ${errorSummary}`);
@@ -238,11 +238,11 @@ export default function CreateProductPage() {
   // Check if form has minimum required fields
   const isFormValid = Boolean(
     formData.name.trim() &&
-      formData.slug.trim() &&
-      formData.categoryId &&
-      formData.sku.trim() &&
-      formData.price > 0 &&
-      formData.images.length > 0
+    formData.slug.trim() &&
+    formData.categoryId &&
+    formData.sku.trim() &&
+    formData.price > 0 &&
+    formData.images.length > 0,
   );
 
   return (

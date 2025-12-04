@@ -1,6 +1,7 @@
 "use client";
 
 import { BlogCard } from "@/components/cards/BlogCard";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { safeToISOString } from "@/lib/date-utils";
 import { logError } from "@/lib/firebase-error-logger";
 import { formatDate } from "@/lib/formatters";
@@ -27,37 +28,41 @@ interface BlogPostClientProps {
 
 export default function BlogPostClient({ slug }: BlogPostClientProps) {
   const router = useRouter();
-  const [post, setPost] = useState<BlogPost | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [liked, setLiked] = useState(false);
+
+  const {
+    isLoading: loading,
+    error,
+    data: post,
+    setData: setPost,
+    execute,
+  } = useLoadingState<BlogPost | null>({
+    initialData: null,
+    onLoadError: (err) => {
+      logError(err, {
+        component: "BlogPostClient.fetchPost",
+        metadata: { slug },
+      });
+    },
+  });
 
   useEffect(() => {
     fetchPost();
   }, [slug]);
 
   const fetchPost = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    await execute(async () => {
       const postData = await blogService.getBySlug(slug);
-      setPost(postData);
 
       // Fetch related posts
       if (postData.id) {
         const related = await blogService.getRelated(postData.id, 3);
         setRelatedPosts(related);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to load blog post");
-      logError(err as Error, {
-        component: "BlogPostClient.fetchPost",
-        metadata: { slug },
-      });
-    } finally {
-      setLoading(false);
-    }
+
+      return postData;
+    });
   };
 
   const handleLike = async () => {

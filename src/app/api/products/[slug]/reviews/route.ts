@@ -11,7 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 // GET /api/products/[slug]/reviews
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   let slug: string | undefined;
   try {
@@ -29,7 +29,7 @@ export async function GET(
     if (prodSnap.empty)
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 }
+        { status: 404 },
       );
     const productId = prodSnap.docs[0].id;
 
@@ -53,7 +53,7 @@ export async function GET(
     });
     return NextResponse.json(
       { success: false, error: "Failed to load reviews" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -61,7 +61,7 @@ export async function GET(
 // POST /api/products/[slug]/reviews
 export async function POST(
   req: NextRequest,
-  context: { params: Promise<{ slug: string }> }
+  context: { params: Promise<{ slug: string }> },
 ) {
   let slug: string | undefined;
   let userId: string | undefined;
@@ -76,7 +76,7 @@ export async function POST(
         success: false,
         error: "Too many review submissions. Please try again later.",
       },
-      { status: 429 }
+      { status: 429 },
     );
   }
 
@@ -85,7 +85,7 @@ export async function POST(
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     userId = user.id;
 
@@ -106,7 +106,7 @@ export async function POST(
     ) {
       return NextResponse.json(
         { success: false, error: VALIDATION_MESSAGES.REVIEW.RATING_INVALID },
-        { status: 400 }
+        { status: 400 },
       );
     }
     if (
@@ -118,7 +118,7 @@ export async function POST(
           success: false,
           error: VALIDATION_MESSAGES.REVIEW.CONTENT_TOO_SHORT,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -130,7 +130,7 @@ export async function POST(
     if (prodSnap.empty)
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 }
+        { status: 404 },
       );
     const prodDoc = prodSnap.docs[0];
     const product = prodDoc.data() as any;
@@ -163,7 +163,7 @@ export async function POST(
     });
     return NextResponse.json(
       { success: false, error: "Failed to create review" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
         query = query.where(
           dbField,
           filter.operator as FirebaseFirestore.WhereFilterOp,
-          filter.value
+          filter.value,
         );
       }
     }
@@ -157,7 +157,7 @@ export async function GET(request: NextRequest) {
     // Execute query
     const snapshot = await query.get();
     const notifications = snapshot.docs.map((doc) =>
-      transformNotification(doc.id, doc.data())
+      transformNotification(doc.id, doc.data()),
     );
 
     // Build response with Sieve pagination meta
@@ -179,7 +179,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching notifications:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch notifications" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
     if (!auth.user || auth.role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -209,7 +209,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Missing required fields: userId, type, title, message",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -242,7 +242,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating notification:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create notification" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -258,7 +258,7 @@ export async function PATCH(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -292,7 +292,7 @@ export async function PATCH(request: NextRequest) {
     if (!notificationIds || !Array.isArray(notificationIds)) {
       return NextResponse.json(
         { success: false, error: "notificationIds array required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -316,7 +316,7 @@ export async function PATCH(request: NextRequest) {
     console.error("Error marking notifications as read:", error);
     return NextResponse.json(
       { success: false, error: "Failed to mark notifications as read" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -332,7 +332,7 @@ export async function DELETE(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -384,7 +384,7 @@ export async function DELETE(request: NextRequest) {
     if (!notificationId) {
       return NextResponse.json(
         { success: false, error: "Notification id required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -395,14 +395,14 @@ export async function DELETE(request: NextRequest) {
     if (!doc.exists) {
       return NextResponse.json(
         { success: false, error: "Notification not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (doc.data()?.userId !== auth.user.uid) {
       return NextResponse.json(
         { success: false, error: "Not authorized" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -416,7 +416,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error deleting notifications:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete notifications" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

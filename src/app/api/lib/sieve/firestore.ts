@@ -33,7 +33,7 @@ import {
  */
 export function adaptToFirestore(
   sieveQuery: SieveQuery,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): FirestoreAdapterResult {
   const firestoreFilters: FirestoreFilter[] = [];
   const clientSideFilters: ClientSideFilter[] = [];
@@ -94,7 +94,7 @@ function mapOperatorToFirestore(operator: string): FirestoreOperator | null {
 export async function executeSieveQuery<T extends DocumentData>(
   collectionName: string,
   sieveQuery: SieveQuery,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): Promise<SievePaginatedResponse<T>> {
   const db = getFirestoreAdmin();
   const collectionRef = db.collection(collectionName);
@@ -137,8 +137,8 @@ export async function executeSieveQuery<T extends DocumentData>(
     allData = allData.filter((record) =>
       evaluateFilters(
         adapted.clientSideFilters.map((f) => f.condition),
-        record as Record<string, unknown>
-      )
+        record as Record<string, unknown>,
+      ),
     );
 
     // Update count after client-side filtering
@@ -213,7 +213,7 @@ export async function executeSieveQuery<T extends DocumentData>(
 export function applySieveToQuery(
   baseQuery: Query,
   sieveQuery: SieveQuery,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): Query {
   const adapted = adaptToFirestore(sieveQuery, config);
   let q = baseQuery;
@@ -240,7 +240,7 @@ export function applySieveToQuery(
 export function postProcessResults<T extends Record<string, unknown>>(
   results: T[],
   sieveQuery: SieveQuery,
-  config?: SieveConfig
+  config?: SieveConfig,
 ): { data: T[]; totalCount: number } {
   const adapted = adaptToFirestore(sieveQuery, config);
 
@@ -250,8 +250,8 @@ export function postProcessResults<T extends Record<string, unknown>>(
     filtered = results.filter((record) =>
       evaluateFilters(
         adapted.clientSideFilters.map((f) => f.condition),
-        record
-      )
+        record,
+      ),
     );
   }
 
@@ -298,7 +298,7 @@ export function createEmptyResponse<T>(): SievePaginatedResponse<T> {
  */
 export function createPaginationMeta(
   totalCount: number,
-  sieveQuery: SieveQuery
+  sieveQuery: SieveQuery,
 ): SievePaginationMeta {
   const totalPages = Math.ceil(totalCount / sieveQuery.pageSize);
   return {
