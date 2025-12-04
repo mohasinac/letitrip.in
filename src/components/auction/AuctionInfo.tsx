@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Clock, Eye, Gavel, ShoppingCart, AlertCircle } from "lucide-react";
 import { Price } from "@/components/common/values";
+import { VerificationGate } from "@/components/auth/VerificationGate";
 import { toast } from "sonner";
 
 export interface AuctionInfoProps {
@@ -195,42 +196,46 @@ export function AuctionInfo({
 
       {/* Bid Input */}
       {!hasEnded && canBid && onPlaceBid && (
-        <div className="space-y-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Your Bid
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              value={bidAmount}
-              onChange={(e) => setBidAmount(parseFloat(e.target.value) || 0)}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
-              min={currentBid > 0 ? currentBid + minBidIncrement : startingBid}
-              step={minBidIncrement}
-            />
+        <VerificationGate requireEmail requirePhone actionName="place bid">
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Your Bid
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                value={bidAmount}
+                onChange={(e) => setBidAmount(parseFloat(e.target.value) || 0)}
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+                min={
+                  currentBid > 0 ? currentBid + minBidIncrement : startingBid
+                }
+                step={minBidIncrement}
+              />
+              <button
+                type="button"
+                onClick={() => handleIncrementBid(minBidIncrement)}
+                className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+              >
+                +{minBidIncrement}
+              </button>
+            </div>
+
             <button
               type="button"
-              onClick={() => handleIncrementBid(minBidIncrement)}
-              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+              onClick={handlePlaceBid}
+              disabled={
+                placing ||
+                bidAmount <
+                  (currentBid > 0 ? currentBid + minBidIncrement : startingBid)
+              }
+              className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
             >
-              +{minBidIncrement}
+              <Gavel className="w-5 h-5" />
+              {placing ? "Placing Bid..." : "Place Bid"}
             </button>
           </div>
-
-          <button
-            type="button"
-            onClick={handlePlaceBid}
-            disabled={
-              placing ||
-              bidAmount <
-                (currentBid > 0 ? currentBid + minBidIncrement : startingBid)
-            }
-            className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-          >
-            <Gavel className="w-5 h-5" />
-            {placing ? "Placing Bid..." : "Place Bid"}
-          </button>
-        </div>
+        </VerificationGate>
       )}
 
       {/* Buy Now Button */}

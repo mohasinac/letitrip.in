@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
 import { AddressSelectorWithCreate } from "@/components/common/AddressSelectorWithCreate";
 import { PaymentMethod } from "@/components/checkout/PaymentMethod";
+import { VerificationGate } from "@/components/auth/VerificationGate";
 import { logError } from "@/lib/firebase-error-logger";
 import { ShopOrderSummary } from "@/components/checkout/ShopOrderSummary";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
@@ -336,311 +337,313 @@ export default function CheckoutPage() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-        <div className="max-w-5xl mx-auto px-4">
-          {/* Error Display */}
-          {error && (
-            <div className="mb-6">
-              <ErrorMessage
-                message={error}
-                showRetry={!processing}
-                onRetry={() => {
-                  setError(null);
-                  setValidationErrors({});
-                }}
-              />
-            </div>
-          )}
+      <VerificationGate requireEmail requirePhone actionName="checkout">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+          <div className="max-w-5xl mx-auto px-4">
+            {/* Error Display */}
+            {error && (
+              <div className="mb-6">
+                <ErrorMessage
+                  message={error}
+                  showRetry={!processing}
+                  onRetry={() => {
+                    setError(null);
+                    setValidationErrors({});
+                  }}
+                />
+              </div>
+            )}
 
-          {/* Validation Errors */}
-          {Object.keys(validationErrors).length > 0 && (
-            <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-red-800 dark:text-red-300 mb-2">
-                Please fix the following errors:
-              </h4>
-              <ul className="text-sm text-red-700 dark:text-red-400 space-y-1 list-disc list-inside">
-                {Object.values(validationErrors).map((err, idx) => (
-                  <li key={idx}>{err}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Header - Mobile Optimized */}
-          <div className="mb-8">
-            <button
-              onClick={() => router.push("/cart")}
-              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white active:text-gray-700 transition-colors mb-4 min-h-[44px] touch-manipulation"
-            >
-              <ChevronLeft className="w-5 h-5" />
-              Back to Cart
-            </button>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-              Checkout
-            </h1>
-          </div>
-
-          {/* Progress Steps - Mobile Optimized */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-6">
-            <div className="flex items-center justify-between">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-                const isCompleted = index < currentStepIndex;
-                const isCurrent = index === currentStepIndex;
-
-                return (
-                  <div key={step.id} className="flex items-center flex-1">
-                    <div className="flex flex-col items-center flex-1">
-                      <div
-                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all ${
-                          isCompleted
-                            ? "bg-green-500 text-white"
-                            : isCurrent
-                              ? "bg-primary text-white"
-                              : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
-                        }`}
-                      >
-                        {isCompleted ? (
-                          <Check className="w-5 h-5 sm:w-6 sm:h-6" />
-                        ) : (
-                          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
-                        )}
-                      </div>
-                      <span
-                        className={`mt-1.5 sm:mt-2 text-xs sm:text-sm font-medium ${
-                          isCurrent
-                            ? "text-primary"
-                            : "text-gray-600 dark:text-gray-400"
-                        }`}
-                      >
-                        {step.label}
-                      </span>
-                    </div>
-
-                    {index < steps.length - 1 && (
-                      <div
-                        className={`h-1 flex-1 mx-2 sm:mx-4 rounded transition-all ${
-                          isCompleted
-                            ? "bg-green-500"
-                            : "bg-gray-200 dark:bg-gray-700"
-                        }`}
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Address Step */}
-              {currentStep === "address" && (
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 space-y-6">
-                  <AddressSelectorWithCreate
-                    value={shippingAddressId}
-                    onChange={(id) => setShippingAddressId(id)}
-                    label="Shipping Address"
-                    required
-                    error={validationErrors.shipping}
-                    autoSelectDefault
-                    filterType="all"
-                  />
-
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                    <FormCheckbox
-                      id="sameAddress"
-                      checked={useSameAddress}
-                      onChange={(e) => setUseSameAddress(e.target.checked)}
-                      label="Billing address same as shipping"
-                    />
-
-                    {!useSameAddress && (
-                      <div className="mt-4">
-                        <AddressSelectorWithCreate
-                          value={billingAddressId}
-                          onChange={(id) => setBillingAddressId(id)}
-                          label="Billing Address"
-                          required
-                          error={validationErrors.billing}
-                          autoSelectDefault={false}
-                          filterType="all"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Payment Step */}
-              {currentStep === "payment" && (
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <PaymentMethod
-                    selected={paymentMethod}
-                    onSelect={setPaymentMethod}
-                  />
-                </div>
-              )}
-
-              {/* Review Step */}
-              {currentStep === "review" && (
-                <div className="space-y-6">
-                  {shopGroups.map((shop) => (
-                    <ShopOrderSummary
-                      key={shop.shopId}
-                      shopId={shop.shopId}
-                      shopName={shop.shopName}
-                      items={shop.items}
-                      appliedCoupon={shopCoupons[shop.shopId]}
-                      onApplyCoupon={handleApplyCoupon}
-                      onRemoveCoupon={handleRemoveCoupon}
-                    />
+            {/* Validation Errors */}
+            {Object.keys(validationErrors).length > 0 && (
+              <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                <h4 className="text-sm font-semibold text-red-800 dark:text-red-300 mb-2">
+                  Please fix the following errors:
+                </h4>
+                <ul className="text-sm text-red-700 dark:text-red-400 space-y-1 list-disc list-inside">
+                  {Object.values(validationErrors).map((err, idx) => (
+                    <li key={idx}>{err}</li>
                   ))}
+                </ul>
+              </div>
+            )}
 
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
-                    <FormField
-                      label="Delivery Notes (Optional)"
-                      hint="E.g., ring the doorbell twice, leave at gate"
-                    >
-                      <FormTextarea
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        rows={3}
-                        placeholder="Add any special instructions for delivery..."
-                      />
-                    </FormField>
-                  </div>
-                </div>
-              )}
+            {/* Header - Mobile Optimized */}
+            <div className="mb-8">
+              <button
+                onClick={() => router.push("/cart")}
+                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white active:text-gray-700 transition-colors mb-4 min-h-[44px] touch-manipulation"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                Back to Cart
+              </button>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                Checkout
+              </h1>
+            </div>
 
-              {/* Navigation Buttons - Mobile Optimized */}
-              <div className="flex gap-3">
-                {currentStep !== "address" && (
-                  <button
-                    onClick={handleBack}
-                    className="btn-secondary flex-1 min-h-[48px] touch-manipulation"
-                    disabled={processing}
-                  >
-                    Back
-                  </button>
-                )}
-                {currentStep !== "review" ? (
-                  <button
-                    onClick={handleContinue}
-                    className="btn-primary flex-1 min-h-[48px] touch-manipulation"
-                  >
-                    Continue
-                  </button>
-                ) : (
-                  <button
-                    onClick={handlePlaceOrder}
-                    className="btn-primary flex-1 min-h-[48px] touch-manipulation flex items-center justify-center"
-                    disabled={processing}
-                  >
-                    {processing ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                        Processing...
-                      </>
-                    ) : (
-                      "Place Order"
-                    )}
-                  </button>
-                )}
+            {/* Progress Steps - Mobile Optimized */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+              <div className="flex items-center justify-between">
+                {steps.map((step, index) => {
+                  const Icon = step.icon;
+                  const isCompleted = index < currentStepIndex;
+                  const isCurrent = index === currentStepIndex;
+
+                  return (
+                    <div key={step.id} className="flex items-center flex-1">
+                      <div className="flex flex-col items-center flex-1">
+                        <div
+                          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all ${
+                            isCompleted
+                              ? "bg-green-500 text-white"
+                              : isCurrent
+                                ? "bg-primary text-white"
+                                : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
+                          }`}
+                        >
+                          {isCompleted ? (
+                            <Check className="w-5 h-5 sm:w-6 sm:h-6" />
+                          ) : (
+                            <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                          )}
+                        </div>
+                        <span
+                          className={`mt-1.5 sm:mt-2 text-xs sm:text-sm font-medium ${
+                            isCurrent
+                              ? "text-primary"
+                              : "text-gray-600 dark:text-gray-400"
+                          }`}
+                        >
+                          {step.label}
+                        </span>
+                      </div>
+
+                      {index < steps.length - 1 && (
+                        <div
+                          className={`h-1 flex-1 mx-2 sm:mx-4 rounded transition-all ${
+                            isCompleted
+                              ? "bg-green-500"
+                              : "bg-gray-200 dark:bg-gray-700"
+                          }`}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Order Summary Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-                <h3 className="font-semibold text-gray-900 mb-4">
-                  Order Summary
-                </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Main Content */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Address Step */}
+                {currentStep === "address" && (
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 space-y-6">
+                    <AddressSelectorWithCreate
+                      value={shippingAddressId}
+                      onChange={(id) => setShippingAddressId(id)}
+                      label="Shipping Address"
+                      required
+                      error={validationErrors.shipping}
+                      autoSelectDefault
+                      filterType="all"
+                    />
 
-                <div className="space-y-4 mb-4">
-                  {shopGroups.map((shop) => {
-                    const subtotal = shop.items.reduce(
-                      (sum, item) => sum + item.price * item.quantity,
-                      0,
-                    );
-                    const discount =
-                      shopCoupons[shop.shopId]?.discountAmount || 0;
-                    const shipping = subtotal >= 5000 ? 0 : 100;
-                    const tax = Math.round(subtotal * 0.18);
-                    const shopTotal = subtotal + shipping + tax - discount;
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                      <FormCheckbox
+                        id="sameAddress"
+                        checked={useSameAddress}
+                        onChange={(e) => setUseSameAddress(e.target.checked)}
+                        label="Billing address same as shipping"
+                      />
 
-                    return (
-                      <div
+                      {!useSameAddress && (
+                        <div className="mt-4">
+                          <AddressSelectorWithCreate
+                            value={billingAddressId}
+                            onChange={(id) => setBillingAddressId(id)}
+                            label="Billing Address"
+                            required
+                            error={validationErrors.billing}
+                            autoSelectDefault={false}
+                            filterType="all"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Payment Step */}
+                {currentStep === "payment" && (
+                  <div className="bg-white rounded-lg shadow-sm p-6">
+                    <PaymentMethod
+                      selected={paymentMethod}
+                      onSelect={setPaymentMethod}
+                    />
+                  </div>
+                )}
+
+                {/* Review Step */}
+                {currentStep === "review" && (
+                  <div className="space-y-6">
+                    {shopGroups.map((shop) => (
+                      <ShopOrderSummary
                         key={shop.shopId}
-                        className="pb-4 border-b last:border-b-0"
+                        shopId={shop.shopId}
+                        shopName={shop.shopName}
+                        items={shop.items}
+                        appliedCoupon={shopCoupons[shop.shopId]}
+                        onApplyCoupon={handleApplyCoupon}
+                        onRemoveCoupon={handleRemoveCoupon}
+                      />
+                    ))}
+
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+                      <FormField
+                        label="Delivery Notes (Optional)"
+                        hint="E.g., ring the doorbell twice, leave at gate"
                       >
-                        <p className="text-sm font-medium text-gray-900 mb-2">
-                          {shop.shopName}
-                        </p>
-                        <div className="space-y-1 text-xs text-gray-600">
-                          <div className="flex justify-between">
-                            <span>{shop.items.length} items</span>
-                            <span>
-                              <Price amount={subtotal} />
-                            </span>
-                          </div>
-                          {discount > 0 && (
-                            <div className="flex justify-between text-green-600">
-                              <span>Discount</span>
+                        <FormTextarea
+                          value={notes}
+                          onChange={(e) => setNotes(e.target.value)}
+                          rows={3}
+                          placeholder="Add any special instructions for delivery..."
+                        />
+                      </FormField>
+                    </div>
+                  </div>
+                )}
+
+                {/* Navigation Buttons - Mobile Optimized */}
+                <div className="flex gap-3">
+                  {currentStep !== "address" && (
+                    <button
+                      onClick={handleBack}
+                      className="btn-secondary flex-1 min-h-[48px] touch-manipulation"
+                      disabled={processing}
+                    >
+                      Back
+                    </button>
+                  )}
+                  {currentStep !== "review" ? (
+                    <button
+                      onClick={handleContinue}
+                      className="btn-primary flex-1 min-h-[48px] touch-manipulation"
+                    >
+                      Continue
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handlePlaceOrder}
+                      className="btn-primary flex-1 min-h-[48px] touch-manipulation flex items-center justify-center"
+                      disabled={processing}
+                    >
+                      {processing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          Processing...
+                        </>
+                      ) : (
+                        "Place Order"
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Order Summary Sidebar */}
+              <div className="lg:col-span-1">
+                <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
+                  <h3 className="font-semibold text-gray-900 mb-4">
+                    Order Summary
+                  </h3>
+
+                  <div className="space-y-4 mb-4">
+                    {shopGroups.map((shop) => {
+                      const subtotal = shop.items.reduce(
+                        (sum, item) => sum + item.price * item.quantity,
+                        0,
+                      );
+                      const discount =
+                        shopCoupons[shop.shopId]?.discountAmount || 0;
+                      const shipping = subtotal >= 5000 ? 0 : 100;
+                      const tax = Math.round(subtotal * 0.18);
+                      const shopTotal = subtotal + shipping + tax - discount;
+
+                      return (
+                        <div
+                          key={shop.shopId}
+                          className="pb-4 border-b last:border-b-0"
+                        >
+                          <p className="text-sm font-medium text-gray-900 mb-2">
+                            {shop.shopName}
+                          </p>
+                          <div className="space-y-1 text-xs text-gray-600">
+                            <div className="flex justify-between">
+                              <span>{shop.items.length} items</span>
                               <span>
-                                -<Price amount={discount} />
+                                <Price amount={subtotal} />
                               </span>
                             </div>
-                          )}
-                          <div className="flex justify-between">
-                            <span>Shipping</span>
-                            <span>
-                              {shipping === 0 ? (
-                                "FREE"
-                              ) : (
-                                <Price amount={shipping} />
-                              )}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Tax</span>
-                            <span>
-                              <Price amount={tax} />
-                            </span>
-                          </div>
-                          <div className="flex justify-between font-semibold text-gray-900 pt-1">
-                            <span>Shop Total</span>
-                            <span>
-                              <Price amount={shopTotal} />
-                            </span>
+                            {discount > 0 && (
+                              <div className="flex justify-between text-green-600">
+                                <span>Discount</span>
+                                <span>
+                                  -<Price amount={discount} />
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex justify-between">
+                              <span>Shipping</span>
+                              <span>
+                                {shipping === 0 ? (
+                                  "FREE"
+                                ) : (
+                                  <Price amount={shipping} />
+                                )}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Tax</span>
+                              <span>
+                                <Price amount={tax} />
+                              </span>
+                            </div>
+                            <div className="flex justify-between font-semibold text-gray-900 pt-1">
+                              <span>Shop Total</span>
+                              <span>
+                                <Price amount={shopTotal} />
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
 
-                <div className="flex justify-between text-lg font-bold mb-6 pt-4 border-t">
-                  <span>Grand Total</span>
-                  <span className="text-primary">
-                    <Price amount={grandTotal} />
-                  </span>
-                </div>
+                  <div className="flex justify-between text-lg font-bold mb-6 pt-4 border-t">
+                    <span>Grand Total</span>
+                    <span className="text-primary">
+                      <Price amount={grandTotal} />
+                    </span>
+                  </div>
 
-                <div className="text-xs text-gray-500 space-y-1">
-                  <p>✓ Safe and secure payments</p>
-                  <p>✓ Easy returns and refunds</p>
-                  <p>✓ 100% authentic products</p>
+                  <div className="text-xs text-gray-500 space-y-1">
+                    <p>✓ Safe and secure payments</p>
+                    <p>✓ Easy returns and refunds</p>
+                    <p>✓ 100% authentic products</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Razorpay Script */}
-        <script src="https://checkout.razorpay.com/v1/checkout.js" async />
-      </div>
+          {/* Razorpay Script */}
+          <script src="https://checkout.razorpay.com/v1/checkout.js" async />
+        </div>
+      </VerificationGate>
     </ErrorBoundary>
   );
 }
