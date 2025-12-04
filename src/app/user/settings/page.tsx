@@ -10,15 +10,24 @@ import { FormField, FormInput } from "@/components/forms";
 import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
 import { SettingsSection } from "@/components/common/SettingsSection";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 export default function SettingsPage() {
   const router = useRouter();
   const { user, refreshUser } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [showAvatarUpload, setShowAvatarUpload] = useState(false);
   const [avatarFiles, setAvatarFiles] = useState<MediaFile[]>([]);
+  const [success, setSuccess] = useState(false);
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState<void>({
+    onLoadError: (err) => {
+      logError(err, { component: "SettingsPage.updateProfile" });
+    },
+  });
 
   const [formData, setFormData] = useState({
     name: "",
@@ -55,8 +64,7 @@ export default function SettingsPage() {
   const handleAvatarUpload = async (files: MediaFile[]) => {
     setAvatarFiles(files);
     if (files.length > 0 && files[0].preview) {
-      try {
-        setLoading(true);
+      await execute(async () => {
         await authService.updateProfile({
           photoURL: files[0].preview,
         });
@@ -67,23 +75,15 @@ export default function SettingsPage() {
           await refreshUser();
         }
         setTimeout(() => setSuccess(false), 3000);
-      } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Failed to update avatar.";
-        setError(message);
-      } finally {
-        setLoading(false);
-      }
+      });
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
     setSuccess(false);
 
-    try {
+    await execute(async () => {
       await authService.updateProfile({
         fullName: formData.name,
         email: formData.email,
@@ -95,15 +95,7 @@ export default function SettingsPage() {
         await refreshUser();
       }
       setTimeout(() => setSuccess(false), 3000);
-    } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Failed to update profile. Please try again.";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   return (
@@ -239,7 +231,7 @@ export default function SettingsPage() {
           {/* Error Message */}
           {error && (
             <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
-              {error}
+              {error.message || "Failed to update profile. Please try again."}
             </div>
           )}
 

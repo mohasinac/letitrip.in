@@ -8,6 +8,7 @@ import { COMPANY_NAME } from "@/constants/navigation";
 import { FormField, FormInput } from "@/components/forms";
 import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
@@ -19,35 +20,43 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [validationError, setValidationError] = useState("");
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState<void>({
+    onLoadError: (err) => {
+      // Error is already set by useLoadingState
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setValidationError("");
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setValidationError("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters long");
+      setValidationError("Password must be at least 8 characters long");
       return;
     }
 
     if (!acceptTerms) {
-      setError("Please accept the Terms of Service and Privacy Policy");
+      setValidationError(
+        "Please accept the Terms of Service and Privacy Policy",
+      );
       return;
     }
 
-    setLoading(true);
-
-    try {
+    await execute(async () => {
       await register({
         name: formData.name,
         email: formData.email,
@@ -59,14 +68,7 @@ export default function RegisterPage() {
       setTimeout(() => {
         router.push("/");
       }, 100);
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Registration failed. Please try again.";
-      setError(errorMessage);
-      setLoading(false);
-    }
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,9 +98,13 @@ export default function RegisterPage() {
 
         {/* Register Form */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-          {error && (
+          {(validationError || error) && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {validationError ||
+                  error?.message ||
+                  "Registration failed. Please try again."}
+              </p>
             </div>
           )}
 

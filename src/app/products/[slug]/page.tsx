@@ -12,6 +12,7 @@ import { SimilarProducts } from "@/components/product/SimilarProducts";
 import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
 import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import { useCart } from "@/hooks/useCart";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { formatDiscount, formatINR } from "@/lib/price.utils";
 import { productsService } from "@/services/products.service";
@@ -33,11 +34,22 @@ export default function ProductPage({ params }: ProductPageProps) {
   const router = useRouter();
   const { slug } = use(params);
 
-  const [product, setProduct] = useState<ProductFE | null>(null);
   const [shop, setShop] = useState<ShopFE | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const {
+    isLoading: loading,
+    error,
+    data: product,
+    setData: setProduct,
+    execute,
+  } = useLoadingState<ProductFE>({
+    onLoadError: (err) => {
+      logError(err, {
+        component: "ProductDetail.loadProduct",
+        metadata: { slug },
+      });
+    },
+  });
 
   const { addItem, loading: cartLoading } = useCart();
   const { addToHistory } = useViewingHistory();
@@ -62,12 +74,9 @@ export default function ProductPage({ params }: ProductPageProps) {
     }
   }, [product, shop, addToHistory]);
 
-  const loadProduct = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const loadProduct = () =>
+    execute(async () => {
       const data = await productsService.getBySlug(slug);
-      setProduct(data);
 
       // Load shop info
       if (data.shopId) {
@@ -82,16 +91,8 @@ export default function ProductPage({ params }: ProductPageProps) {
           // Non-critical error, continue showing product
         }
       }
-    } catch (error: any) {
-      logError(error as Error, {
-        component: "ProductDetail.loadProduct",
-        metadata: { slug },
-      });
-      setError(error.message || "Failed to load product. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data;
+    });
 
   if (loading) {
     return (
@@ -110,7 +111,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <ErrorMessage
-          message={error}
+          message={error.message || "Failed to load product. Please try again."}
           showRetry
           onRetry={loadProduct}
           showGoBack
@@ -242,12 +243,12 @@ export default function ProductPage({ params }: ProductPageProps) {
                     <div className="flex items-baseline gap-2 mb-2">
                       {formatDiscount(
                         product.compareAtPrice,
-                        product.price
+                        product.price,
                       ) && (
                         <span className="text-sm font-medium text-red-600 dark:text-red-400">
                           {formatDiscount(
                             product.compareAtPrice,
-                            product.price
+                            product.price,
                           )}
                         </span>
                       )}
@@ -344,7 +345,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                             <option key={i + 1} value={i + 1}>
                               {i + 1}
                             </option>
-                          )
+                          ),
                         )}
                       </select>
                     </div>
@@ -369,10 +370,10 @@ export default function ProductPage({ params }: ProductPageProps) {
                               image: product.images[0],
                               shopId: product.shopId,
                               shopName: shop?.name || product.shopId,
-                            }
+                            },
                           );
                           toast.success(
-                            `Added ${selectedQuantity} item(s) to cart`
+                            `Added ${selectedQuantity} item(s) to cart`,
                           );
                         } catch (error: any) {
                           toast.error(error.message || "Failed to add to cart");
@@ -400,7 +401,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                               image: product.images[0],
                               shopId: product.shopId,
                               shopName: shop?.name || product.shopId,
-                            }
+                            },
                           );
                           router.push("/checkout");
                         } catch (error: any) {
@@ -474,7 +475,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             <SimilarProducts
               productId={product.id}
               parentCategoryIds={product.categoryIds.filter(
-                (id: string) => id !== product.categoryId
+                (id: string) => id !== product.categoryId,
               )}
               currentShopId={product.shopId}
               parentCategoryName="related categories"

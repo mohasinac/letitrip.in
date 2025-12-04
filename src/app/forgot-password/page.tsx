@@ -5,29 +5,26 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Mail, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
 import { authService } from "@/services/auth.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 function ForgotPasswordForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState(searchParams.get("email") || "");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { isLoading, error, execute } = useLoadingState<void>({
+    onLoadError: (err) => {
+      logError(err, { component: "ForgotPasswordForm.handleSubmit" });
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setIsLoading(true);
 
-    try {
+    await execute(async () => {
       await authService.requestPasswordReset(email);
       setIsSuccess(true);
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to send reset link";
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   if (isSuccess) {
@@ -98,7 +95,7 @@ function ForgotPasswordForm() {
           {error && (
             <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
               <div className="text-sm text-red-700 dark:text-red-400">
-                {error}
+                {error.message || "Failed to send reset link"}
               </div>
             </div>
           )}
