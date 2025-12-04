@@ -1,23 +1,23 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { RefreshCw, Save } from "lucide-react";
-import { FormLabel } from "@/components/forms";
-import {
-  homepageSettingsService,
-  HomepageSettings,
-} from "@/services/homepage-settings.service";
 import {
   AdminPageHeader,
   LoadingSpinner,
   ToggleSwitch,
   toast,
 } from "@/components/admin";
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { DateDisplay } from "@/components/common/values";
 import { BannerEditor } from "@/components/admin/homepage/BannerEditor";
 import { SectionCard } from "@/components/admin/homepage/SectionCard";
 import { SliderControl } from "@/components/admin/homepage/SliderControl";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { DateDisplay } from "@/components/common/values";
+import { FormLabel } from "@/components/forms";
+import {
+  HomepageSettings,
+  homepageSettingsService,
+} from "@/services/homepage-settings.service";
+import { RefreshCw, Save } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 // Default section order - matches HomepageSettings.sections keys
 const DEFAULT_SECTION_ORDER = [
@@ -79,7 +79,7 @@ export default function HomepageSettingsPage() {
   const [hasChanges, setHasChanges] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [sectionOrder, setSectionOrder] = useState<string[]>(
-    DEFAULT_SECTION_ORDER,
+    DEFAULT_SECTION_ORDER
   );
 
   useEffect(() => {
@@ -114,7 +114,7 @@ export default function HomepageSettingsPage() {
       setSectionOrder(
         loadedSettings.sectionOrder?.length > 0
           ? loadedSettings.sectionOrder
-          : DEFAULT_SECTION_ORDER,
+          : DEFAULT_SECTION_ORDER
       );
       setHasChanges(false);
     } catch (error) {
@@ -209,7 +209,7 @@ export default function HomepageSettingsPage() {
   const updateSectionValue = (
     sectionKey: string,
     field: string,
-    value: number,
+    value: number
   ) => {
     if (!settings) return;
 
@@ -394,7 +394,7 @@ export default function HomepageSettingsPage() {
               setExpandedSection(
                 expandedSection === "valueProposition"
                   ? null
-                  : "valueProposition",
+                  : "valueProposition"
               )
             }
           />
@@ -418,7 +418,7 @@ export default function HomepageSettingsPage() {
                 expanded={expandedSection === sectionKey}
                 onToggleExpand={() =>
                   setExpandedSection(
-                    expandedSection === sectionKey ? null : sectionKey,
+                    expandedSection === sectionKey ? null : sectionKey
                   )
                 }
                 orderIndex={index + 1}
@@ -449,7 +449,7 @@ export default function HomepageSettingsPage() {
 function renderSectionConfig(
   sectionKey: string,
   settings: HomepageSettings,
-  updateSectionValue: (section: string, field: string, value: number) => void,
+  updateSectionValue: (section: string, field: string, value: number) => void
 ): React.ReactNode {
   switch (sectionKey) {
     case "valueProposition":
@@ -530,7 +530,7 @@ function renderSectionConfig(
               updateSectionValue(
                 "featuredCategories",
                 "productsPerCategory",
-                value,
+                value
               )
             }
           />
