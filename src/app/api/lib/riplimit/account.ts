@@ -8,6 +8,7 @@
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
+import { nowAsFirebaseTimestamp } from "@/lib/firebase/timestamp-helpers";
 import {
   RipLimitAccountBE,
   RipLimitBlockedBidBE,
@@ -29,7 +30,7 @@ export async function getOrCreateAccount(
   }
 
   // Create new account
-  const now = Timestamp.now();
+  const now = nowAsFirebaseTimestamp();
   const newAccount: Omit<RipLimitAccountBE, "userId"> = {
     availableBalance: 0,
     blockedBalance: 0,
@@ -39,10 +40,8 @@ export async function getOrCreateAccount(
     unpaidAuctionIds: [],
     strikes: 0,
     isBlocked: false,
-    createdAt:
-      now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
-    updatedAt:
-      now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+    createdAt: now,
+    updatedAt: now,
   };
 
   await accountRef.set(newAccount);

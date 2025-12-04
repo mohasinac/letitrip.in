@@ -8,6 +8,7 @@
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
+import { nowAsFirebaseTimestamp } from "@/lib/firebase/timestamp-helpers";
 import {
   RipLimitAccountBE,
   RipLimitBlockedBidBE,
@@ -93,8 +94,7 @@ export async function blockForBid(
       bidId,
       amount: ripLimitAmount,
       bidAmountINR,
-      createdAt:
-        Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+      createdAt: nowAsFirebaseTimestamp(),
     };
     t.set(blockedBidRef, blockedBidData);
 
@@ -112,8 +112,7 @@ export async function blockForBid(
       bidId,
       status: RipLimitTransactionStatus.COMPLETED,
       description: `Bid blocked for auction`,
-      createdAt:
-        Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+      createdAt: nowAsFirebaseTimestamp(),
     };
     t.set(transactionRef, transactionRecord);
 
@@ -189,8 +188,7 @@ export async function releaseBlockedBid(
       bidId: blockedBid.bidId,
       status: RipLimitTransactionStatus.COMPLETED,
       description: `RipLimit released: ${reason}`,
-      createdAt:
-        Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+      createdAt: nowAsFirebaseTimestamp(),
     };
     t.set(transactionRef, transactionRecord);
 
@@ -277,8 +275,7 @@ export async function useForAuctionPayment(
       orderId,
       status: RipLimitTransactionStatus.COMPLETED,
       description: `Auction payment completed`,
-      createdAt:
-        Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+      createdAt: nowAsFirebaseTimestamp(),
     };
     t.set(transactionRef, transactionRecord);
 

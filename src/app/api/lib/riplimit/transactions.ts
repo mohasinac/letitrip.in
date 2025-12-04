@@ -8,6 +8,7 @@
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { COLLECTIONS } from "@/constants/database";
+import { nowAsFirebaseTimestamp } from "@/lib/firebase/timestamp-helpers";
 import {
   RipLimitAccountBE,
   RipLimitTransactionBE,
@@ -35,7 +36,7 @@ export async function creditBalance(
 
     if (!accountDoc.exists) {
       // Create account if it doesn't exist
-      const now = Timestamp.now();
+      const now = nowAsFirebaseTimestamp();
       account = {
         userId,
         availableBalance: 0,
@@ -46,10 +47,8 @@ export async function creditBalance(
         unpaidAuctionIds: [],
         strikes: 0,
         isBlocked: false,
-        createdAt:
-          now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
-        updatedAt:
-          now as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+        createdAt: now,
+        updatedAt: now,
       };
       t.set(accountRef, account);
     } else {
@@ -82,8 +81,7 @@ export async function creditBalance(
       status: RipLimitTransactionStatus.COMPLETED,
       description,
       metadata,
-      createdAt:
-        Timestamp.now() as unknown as import("@/types/shared/common.types").FirebaseTimestamp,
+      createdAt: nowAsFirebaseTimestamp(),
     };
     t.set(transactionRef, transactionRecord);
 

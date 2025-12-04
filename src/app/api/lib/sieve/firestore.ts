@@ -126,16 +126,18 @@ export async function executeSieveQuery<T extends DocumentData>(
     // Fetch all matching documents and filter client-side
     // This is less efficient but necessary for operators Firestore doesn't support
     const allDocs = await q.get();
+    // Type assertion needed: Firestore DocumentData to generic T
+    // Caller is responsible for ensuring T matches the collection schema
     let allData = allDocs.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    })) as unknown as T[];
+    })) as T[];
 
     // Apply client-side filters
     allData = allData.filter((record) =>
       evaluateFilters(
         adapted.clientSideFilters.map((f) => f.condition),
-        record as unknown as Record<string, unknown>,
+        record as Record<string, unknown>,
       ),
     );
 
@@ -166,10 +168,12 @@ export async function executeSieveQuery<T extends DocumentData>(
     }
 
     const snapshot = await q.get();
+    // Type assertion needed: Firestore DocumentData to generic T
+    // Caller is responsible for ensuring T matches the collection schema
     data = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    })) as unknown as T[];
+    })) as T[];
   }
 
   // Build pagination meta
