@@ -13,6 +13,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { logError } from "@/lib/firebase-error-logger";
+import { toast } from "sonner";
 import {
   Wallet,
   ArrowUpRight,
@@ -107,7 +109,8 @@ export default function UserRipLimitPage() {
       setTransactions(data.transactions);
       setTransactionsTotal(data.total);
     } catch (err) {
-      console.error("Failed to load transactions:", err);
+      logError(err as Error, { component: "RipLimitPage.loadTransactions" });
+      toast.error("Failed to load transactions");
     } finally {
       setLoadingTransactions(false);
     }

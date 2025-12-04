@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { safeToISOString, toISOStringOrDefault } from "@/lib/date-utils";
+import { logError } from "@/lib/firebase-error-logger";
 
 // Note: This is a server component, we can fetch data directly
 async function fetchProducts() {
@@ -14,7 +15,7 @@ async function fetchProducts() {
     const data = await res.json();
     return data.data || data.products || [];
   } catch (error) {
-    console.error("Failed to fetch products for sitemap:", error);
+    logError(error as Error, { component: "sitemap.products" });
     return [];
   }
 }
@@ -28,7 +29,7 @@ async function fetchCategories() {
     const data = await res.json();
     return data.data || data.categories || [];
   } catch (error) {
-    console.error("Failed to fetch categories for sitemap:", error);
+    logError(error as Error, { component: "sitemap.categories" });
     return [];
   }
 }
@@ -45,7 +46,7 @@ async function fetchShops() {
     const data = await res.json();
     return data.data || data.shops || [];
   } catch (error) {
-    console.error("Failed to fetch shops for sitemap:", error);
+    logError(error as Error, { component: "sitemap.shops" });
     return [];
   }
 }
@@ -62,7 +63,7 @@ async function fetchAuctions() {
     const data = await res.json();
     return data.data || data.auctions || [];
   } catch (error) {
-    console.error("Failed to fetch auctions for sitemap:", error);
+    logError(error as Error, { component: "sitemap.auctions" });
     return [];
   }
 }

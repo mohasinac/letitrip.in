@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { logError } from "@/lib/firebase-error-logger";
+import { toast } from "sonner";
 import {
   Bell,
   Check,
@@ -194,7 +196,7 @@ function NotificationsContent() {
     } catch (err) {
       logError(err as Error, {
         component: "NotificationsPage.handleMarkAsRead",
-        metadata: { notificationId },
+        metadata: { notificationId: id },
       });
       toast.error("Failed to mark notification as read");
     }
@@ -224,7 +226,7 @@ function NotificationsContent() {
     } catch (err) {
       logError(err as Error, {
         component: "NotificationsPage.handleDelete",
-        metadata: { notificationId },
+        metadata: { notificationId: id },
       });
       toast.error("Failed to delete notification");
     }

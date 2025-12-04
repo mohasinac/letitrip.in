@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { logError } from "@/lib/firebase-error-logger";
 
 export default function Error({
   error,
