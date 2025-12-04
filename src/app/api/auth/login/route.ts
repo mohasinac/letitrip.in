@@ -1,5 +1,4 @@
-import { authRateLimiter } from "@/app/api/lib/utils/rate-limiter";
-import { trackActivity } from "@/app/api/middleware/ip-tracker";
+import { withLoginTracking } from "@/app/api/middleware/ip-tracker";
 import { COLLECTIONS } from "@/constants/database";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
@@ -24,7 +23,7 @@ async function loginHandler(req: NextRequest) {
     if (!email || !password) {
       return NextResponse.json(
         { error: "Missing required fields", fields: ["email", "password"] },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -36,15 +35,9 @@ async function loginHandler(req: NextRequest) {
       .get();
 
     if (userSnapshot.empty) {
-      // Track failed login attempt
-      await trackActivity(req, "login_failed", undefined, {
-        reason: "user_not_found",
-        email,
-      });
-
       const response = NextResponse.json(
         { error: "Invalid credentials" },
-        { status: 401 }
+        { status: 401 },
       );
       // Clear any existing invalid session cookie
       clearSessionCookie(response);
@@ -57,19 +50,13 @@ async function loginHandler(req: NextRequest) {
     // Verify password
     const isPasswordValid = await bcrypt.compare(
       password,
-      userData.hashedPassword
+      userData.hashedPassword,
     );
 
     if (!isPasswordValid) {
-      // Track failed login attempt
-      await trackActivity(req, "login_failed", userData.uid, {
-        reason: "invalid_password",
-        email,
-      });
-
       const response = NextResponse.json(
         { error: "Invalid credentials" },
-        { status: 401 }
+        { status: 401 },
       );
       // Clear any existing invalid session cookie
       clearSessionCookie(response);
@@ -82,7 +69,7 @@ async function loginHandler(req: NextRequest) {
       if (userRecord.disabled) {
         const response = NextResponse.json(
           { error: "Account has been disabled" },
-          { status: 403 }
+          { status: 403 },
         );
         // Clear any existing invalid session cookie
         clearSessionCookie(response);
@@ -92,7 +79,7 @@ async function loginHandler(req: NextRequest) {
       console.error("Error checking user status:", error);
       const response = NextResponse.json(
         { error: "Authentication failed" },
-        { status: 500 }
+        { status: 500 },
       );
       // Clear any existing invalid session cookie
       clearSessionCookie(response);
@@ -104,19 +91,13 @@ async function loginHandler(req: NextRequest) {
       userData.uid,
       userData.email,
       userData.role,
-      req
+      req,
     );
 
     // Update last login
     await adminDb.collection(COLLECTIONS.USERS).doc(userData.uid).update({
       lastLogin: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    });
-
-    // Track successful login
-    await trackActivity(req, "login", userData.uid, {
-      email,
-      role: userData.role,
     });
 
     // Create response with session cookie
@@ -133,7 +114,7 @@ async function loginHandler(req: NextRequest) {
         },
         sessionId,
       },
-      { status: 200 }
+      { status: 200 },
     );
 
     // Set session cookie
@@ -151,7 +132,7 @@ async function loginHandler(req: NextRequest) {
             ? "An unexpected error occurred"
             : error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
 
     // Clear any existing invalid session cookie
@@ -160,18 +141,5 @@ async function loginHandler(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
-  // Rate limiting
-  const identifier =
-    req.headers.get("x-forwarded-for") ||
-    req.headers.get("x-real-ip") ||
-    "unknown";
-  if (!authRateLimiter.check(identifier)) {
-    return NextResponse.json(
-      { error: "Too many login attempts. Please try again later." },
-      { status: 429 }
-    );
-  }
-
-  return loginHandler(req);
-}
+// Export with IP tracking and rate limiting (max 5 attempts per 15 minutes)
+export const POST = withLoginTracking(loginHandler);

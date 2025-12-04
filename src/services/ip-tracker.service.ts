@@ -17,7 +17,10 @@
  */
 
 import { logError } from "@/lib/firebase-error-logger";
-import { db } from "@/lib/firebase/config";
+import { adminDb as db } from "@/app/api/lib/firebase/config";
+import { COLLECTIONS } from "@/constants/database";
+
+const { USER_ACTIVITIES } = COLLECTIONS;
 
 export interface ActivityData {
   userId?: string;
@@ -142,7 +145,7 @@ class IPTrackerService {
         .limit(limit)
         .get();
 
-      return snapshot.docs.map((doc) => doc.data());
+      return snapshot.docs.map((doc: any) => doc.data());
     } catch (error) {
       logError(error as Error, {
         component: "IPTrackerService.getActivitiesByIP",
@@ -168,7 +171,7 @@ class IPTrackerService {
         .limit(limit)
         .get();
 
-      return snapshot.docs.map((doc) => doc.data());
+      return snapshot.docs.map((doc: any) => doc.data());
     } catch (error) {
       logError(error as Error, {
         component: "IPTrackerService.getActivitiesByUser",
@@ -191,7 +194,7 @@ class IPTrackerService {
         .get();
 
       const userIds = new Set<string>();
-      snapshot.docs.forEach((doc) => {
+      snapshot.docs.forEach((doc: any) => {
         const userId = doc.data().userId;
         if (userId) userIds.add(userId);
       });
