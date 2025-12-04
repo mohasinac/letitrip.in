@@ -167,6 +167,7 @@ const categoryInfo: Record<
 
 export default function AdminNotificationSettingsPage() {
   const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   const {
@@ -191,7 +192,7 @@ export default function AdminNotificationSettingsPage() {
   const loadSettings = async () => {
     try {
       setLoading(true);
-      setError(null);
+      setFormError(null);
       const response = await apiService.get<{ settings: NotificationSettings }>(
         "/api/admin/settings?category=notifications",
       );
@@ -211,7 +212,7 @@ export default function AdminNotificationSettingsPage() {
 
     try {
       setSaving(true);
-      setError(null);
+      setFormError(null);
       setSuccess(null);
       await apiService.put("/api/admin/settings", {
         category: "notifications",
@@ -221,7 +222,9 @@ export default function AdminNotificationSettingsPage() {
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error("Error saving settings:", err);
-      setError(err instanceof Error ? err.message : "Failed to save settings");
+      setFormError(
+        err instanceof Error ? err.message : "Failed to save settings",
+      );
     } finally {
       setSaving(false);
     }
