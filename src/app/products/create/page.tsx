@@ -53,12 +53,10 @@ function CreateProductContent() {
 
   const handleSubmit = async (formData: ProductFormFE) => {
     if (!user) {
-      setError("You must be logged in to create a product");
       return;
     }
 
     setSubmitting(true);
-    setError(null);
 
     try {
       const product = await productsService.create(formData);
@@ -68,7 +66,6 @@ function CreateProductContent() {
         component: "ProductCreate.handleSubmit",
         metadata: { productData: formData },
       });
-      setError(error.message || "Failed to create product. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -104,7 +101,7 @@ function CreateProductContent() {
     );
   }
 
-  if (shops.length === 0 && !loading && !error) {
+  if (!shops || (shops.length === 0 && !loading && !error)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="max-w-md w-full p-6 text-center">

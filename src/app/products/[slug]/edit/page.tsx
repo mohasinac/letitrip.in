@@ -74,17 +74,15 @@ function EditProductContent({ params }: EditProductPageProps) {
 
   const handleSubmit = async (formData: ProductFormFE) => {
     if (!user || !product) {
-      setError("You must be logged in and product must be loaded");
       return;
     }
 
     setSubmitting(true);
-    setError(null);
 
     try {
       const updatedProduct = await productsService.update(
         product.slug,
-        formData,
+        formData
       );
       router.push(`/products/${updatedProduct.slug}`);
     } catch (error: any) {
@@ -92,7 +90,6 @@ function EditProductContent({ params }: EditProductPageProps) {
         component: "ProductEdit.handleSubmit",
         metadata: { slug: product.slug },
       });
-      setError(error.message || "Failed to update product. Please try again.");
     } finally {
       setSubmitting(false);
     }

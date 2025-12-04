@@ -26,7 +26,7 @@ function SearchContent() {
   >("all");
   const [page, setPage] = useState(pageParam ? parseInt(pageParam) : 1);
   const [pageSize, setPageSize] = useState(
-    pageSizeParam ? parseInt(pageSizeParam) : 20,
+    pageSizeParam ? parseInt(pageSizeParam) : 20
   );
   const [totalCount, setTotalCount] = useState(0);
 
@@ -52,14 +52,13 @@ function SearchContent() {
     } else {
       // No query - show empty state immediately
       setResults(null);
-      setLoading(false);
     }
   }, [query, activeTab, contentType, page, pageSize]);
 
   const performSearch = async (
     searchQuery: string,
     currentPage: number,
-    currentPageSize: number,
+    currentPageSize: number
   ) => {
     await execute(async () => {
       const response = await productsService.list({
@@ -244,6 +243,7 @@ function SearchContent() {
               currentPage={page}
               pageSize={pageSize}
               totalItems={totalCount}
+              totalPages={Math.ceil(totalCount / pageSize)}
               onPageChange={handlePageChange}
               onPageSizeChange={handlePageSizeChange}
             />

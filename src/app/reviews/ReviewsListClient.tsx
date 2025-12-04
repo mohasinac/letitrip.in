@@ -60,13 +60,15 @@ export default function ReviewsListClient() {
     try {
       await reviewsService.markHelpful(reviewId);
       // Update the review in state
-      setReviews((prev) =>
-        prev.map((review) =>
-          review.id === reviewId
-            ? { ...review, helpful: (review.helpful || 0) + 1 }
-            : review,
-        ),
-      );
+      if (reviews) {
+        setReviews(
+          reviews.map((review) =>
+            review.id === reviewId
+              ? { ...review, helpful: (review.helpful || 0) + 1 }
+              : review,
+          ),
+        );
+      }
     } catch (err) {
       logError(err as Error, {
         component: "ReviewsListClient.markHelpful",
@@ -103,16 +105,16 @@ export default function ReviewsListClient() {
   // Calculate rating distribution (would be better from API)
   const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => ({
     rating,
-    count: reviews.filter((r) => r.rating === rating).length,
+    count: reviews?.filter((r) => r.rating === rating).length || 0,
     percentage:
-      reviews.length > 0
+      reviews && reviews.length > 0
         ? (reviews.filter((r) => r.rating === rating).length / reviews.length) *
           100
         : 0,
   }));
 
   const averageRating =
-    reviews.length > 0
+    reviews && reviews.length > 0
       ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
       : 0;
 
@@ -159,7 +161,7 @@ export default function ReviewsListClient() {
                 </span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Based on {reviews.length} reviews
+                Based on {reviews?.length || 0} reviews
               </p>
             </div>
 
@@ -276,7 +278,9 @@ export default function ReviewsListClient() {
           {/* Error State */}
           {error && (
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
-              <p className="text-red-800 dark:text-red-400">{error.message}</p>
+              <p className="text-red-800 dark:text-red-400">
+                {error instanceof Error ? error.message : String(error)}
+              </p>
               <button
                 onClick={fetchReviews}
                 className="mt-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
@@ -311,7 +315,7 @@ export default function ReviewsListClient() {
           )}
 
           {/* Reviews List */}
-          {!loading && reviews.length > 0 && (
+          {!loading && reviews && reviews.length > 0 && (
             <>
               <div className="space-y-4">
                 {reviews.map((review) => (
@@ -373,7 +377,7 @@ export default function ReviewsListClient() {
           )}
 
           {/* Empty State */}
-          {!loading && reviews.length === 0 && (
+          {!loading && (!reviews || reviews.length === 0) && (
             <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
               <Star className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
