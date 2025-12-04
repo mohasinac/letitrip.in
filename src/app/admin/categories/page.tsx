@@ -38,7 +38,7 @@ export default function AdminCategoriesPage() {
   }, []);
 
   useEffect(() => {
-    if (viewMode === "tree" && treeData.length === 0) {
+    if (viewMode === "tree" && (!treeData || treeData.length === 0)) {
       loadTree(loadTreeData);
     }
   }, [viewMode, treeData.length, loadTree, loadTreeData]);
@@ -285,7 +285,7 @@ export default function AdminCategoriesPage() {
         </div>
       ) : (
         <CategoryTree
-          categories={treeData}
+          categories={treeData || []}
           onNodeClick={handleNodeClick}
           height="70vh"
         />

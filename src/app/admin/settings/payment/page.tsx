@@ -255,8 +255,10 @@ export default function AdminPaymentSettingsPage() {
 
       {/* Alerts */}
       {error && (
-        <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <p className="text-red-800 dark:text-red-200">{error}</p>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <p className="text-red-800 dark:text-red-200">
+            {error instanceof Error ? error.message : String(error)}
+          </p>
         </div>
       )}
 

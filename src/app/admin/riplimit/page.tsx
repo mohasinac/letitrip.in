@@ -293,7 +293,7 @@ export default function AdminRipLimitPage() {
                     "Unpaid",
                     "Blocked Status",
                   ].join(","),
-                  ...users.map((u) =>
+                  ...(users || []).map((u) =>
                     [
                       u.userId,
                       u.user?.email || "",
@@ -439,7 +439,7 @@ export default function AdminRipLimitPage() {
 
         {/* User Accounts Table */}
         <UsersTable
-          users={users}
+          users={users || []}
           loading={loadingUsers}
           pagination={pagination}
           userFilter={userFilter}
