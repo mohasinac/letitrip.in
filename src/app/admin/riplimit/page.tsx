@@ -27,6 +27,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
 import { Button } from "@/components/ui/Button";
+import { Price } from "@/components/common/values";
 import { Card } from "@/components/ui/Card";
 import { RipLimitStatsCards } from "@/components/admin/riplimit/RipLimitStats";
 import { UsersTable } from "@/components/admin/riplimit/UsersTable";
@@ -208,10 +209,6 @@ export default function AdminRipLimitPage() {
     }
   };
 
-  // Format currency
-  const formatINR = (amount: number) => `â‚¹${amount.toLocaleString("en-IN")}`;
-  const formatRL = (amount: number) => `${amount.toLocaleString("en-IN")} RL`;
-
   // Loading state
   if (authLoading || !user || !isAdmin) {
     return (
@@ -328,7 +325,7 @@ export default function AdminRipLimitPage() {
                   </span>
                 </div>
                 <span className="font-semibold text-gray-900 dark:text-white">
-                  {formatRL(stats?.totalAvailable || 0)}
+                  {(stats?.totalAvailable || 0).toLocaleString("en-IN")} RL
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -339,7 +336,7 @@ export default function AdminRipLimitPage() {
                   </span>
                 </div>
                 <span className="font-semibold text-gray-900 dark:text-white">
-                  {formatRL(stats?.totalBlocked || 0)}
+                  {(stats?.totalBlocked || 0).toLocaleString("en-IN")} RL
                 </span>
               </div>
               {stats && (
@@ -380,7 +377,7 @@ export default function AdminRipLimitPage() {
                   </span>
                 </div>
                 <span className="font-semibold text-green-600">
-                  +{formatINR(stats?.totalRevenue || 0)}
+                  +<Price amount={stats?.totalRevenue || 0} />
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -391,7 +388,7 @@ export default function AdminRipLimitPage() {
                   </span>
                 </div>
                 <span className="font-semibold text-red-600">
-                  -{formatINR(stats?.totalRefunded || 0)}
+                  -<Price amount={stats?.totalRefunded || 0} />
                 </span>
               </div>
               <div className="border-t dark:border-gray-700 pt-4 flex items-center justify-between">
@@ -399,7 +396,7 @@ export default function AdminRipLimitPage() {
                   Net Revenue
                 </span>
                 <span className="text-xl font-bold text-green-600">
-                  {formatINR(stats?.netRevenue || 0)}
+                  <Price amount={stats?.netRevenue || 0} />
                 </span>
               </div>
             </div>
