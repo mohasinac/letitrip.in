@@ -1188,11 +1188,12 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 - **Files**: `/products`, `/auctions`, `/shops`, `/search`, `/categories/[slug]`
 - **Changes**: Use useUrlFilters hook, sync state with URL
-- **Status**: 🔄 IN PROGRESS
-  - ✅ `/products` - Complete (useUrlFilters + AdvancedPagination integrated)
-  - ✅ `/auctions` - Complete (useUrlFilters + AdvancedPagination integrated)
-  - ✅ `/shops` - Complete (useUrlFilters + AdvancedPagination integrated)
-  - ⬜ `/search` - Pending
+- **Status**: 🔄 IN PROGRESS (3/5 complete)
+  - ✅ `/products` - Complete (useUrlFilters + AdvancedPagination, 117 insertions, 192 deletions)
+  - ✅ `/auctions` - Complete (useUrlFilters + AdvancedPagination, 162 insertions, 234 deletions)
+  - ✅ `/shops` - Complete (useUrlFilters + AdvancedPagination, 101 insertions, 104 deletions)
+  - ✅ TypeScript errors fixed (logError casts, z.record, requireRole, user.phone alias)
+  - 🔄 `/search` - In progress
   - ⬜ `/categories/[slug]` - Pending
 
 ##### ⬜ 134-update-all-admin-list-pages-url-params
