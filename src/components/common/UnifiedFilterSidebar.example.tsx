@@ -16,7 +16,7 @@ export function FilteredListPageExample() {
       initialFilters: {
         category: "",
         status: "",
-        priceRange: { min: "", max: "" },
+        priceRange: [] as string[],
         tags: [] as string[],
       },
       initialPage: 1,
@@ -119,13 +119,12 @@ export function FilteredListPageExample() {
  * Use local state for pending changes, apply to URL only when button clicked
  */
 export function FilteredListWithPendingChangesExample() {
-  const { filters, updateFilter, resetFilters, setMultipleFilters } =
-    useUrlFilters({
-      initialFilters: {
-        category: "",
-        status: "",
-      },
-    });
+  const { filters, updateFilter, resetFilters, updateFilters } = useUrlFilters({
+    initialFilters: {
+      category: "",
+      status: "",
+    },
+  });
 
   const [pendingFilters, setPendingFilters] = useState(filters);
   const [showFilters, setShowFilters] = useState(false);
@@ -149,7 +148,7 @@ export function FilteredListWithPendingChangesExample() {
         onApply={(pending) => {
           if (pending) {
             // Batch update URL params
-            setMultipleFilters(pending);
+            updateFilters(pending);
           }
           setIsLoading(true);
           // Refetch data

@@ -18,7 +18,7 @@ export interface EventCardProps {
     participantCount: number;
     maxParticipants?: number;
     imageUrl?: string;
-    isPollEvent: boolean;
+    isPollEvent?: boolean;
     voteCount?: number;
   };
   href?: string;
@@ -68,9 +68,9 @@ export function EventCard({ event, href, showStatus = false }: EventCardProps) {
           />
           {showStatus && (
             <div className="absolute top-2 right-2">
-              {isActive && <StatusBadge status="active" label="Active" />}
-              {isUpcoming && <StatusBadge status="pending" label="Upcoming" />}
-              {isEnded && <StatusBadge status="inactive" label="Ended" />}
+              {isActive && <StatusBadge status="active" />}
+              {isUpcoming && <StatusBadge status="pending" />}
+              {isEnded && <StatusBadge status="inactive" />}
             </div>
           )}
         </div>

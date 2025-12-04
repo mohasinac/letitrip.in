@@ -1,6 +1,6 @@
 /// <reference types="@testing-library/jest-dom" />
 
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 
 // Mock mediaService
 jest.mock("@/services/media.service", () => ({
@@ -18,8 +18,8 @@ jest.mock("./useNavigationGuard", () => ({
   })),
 }));
 
-import { useMediaUploadWithCleanup } from "./useMediaUploadWithCleanup";
 import { mediaService } from "@/services/media.service";
+import { useMediaUploadWithCleanup } from "./useMediaUploadWithCleanup";
 import { useNavigationGuard } from "./useNavigationGuard";
 
 const mediaServiceMock = mediaService as jest.Mocked<typeof mediaService>;
@@ -36,7 +36,10 @@ describe("useMediaUploadWithCleanup", () => {
       url: "https://example.com/uploaded.jpg",
       id: "media-1",
     });
-    mediaServiceMock.deleteByUrl.mockResolvedValue(undefined);
+    mediaServiceMock.deleteByUrl.mockResolvedValue({
+      success: true,
+      message: "Deleted",
+    });
   });
 
   it("initializes with default state", () => {
@@ -60,7 +63,7 @@ describe("useMediaUploadWithCleanup", () => {
 
     const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
 
-    let uploadResult: string;
+    let uploadResult: string = "";
     await act(async () => {
       uploadResult = await result.current.uploadMedia(file, "product");
     });
@@ -98,11 +101,11 @@ describe("useMediaUploadWithCleanup", () => {
         id: "media-2",
       });
 
-    let uploadResults: string[];
+    let uploadResults: string[] = [];
     await act(async () => {
       uploadResults = await result.current.uploadMultipleMedia(
         files,
-        "product",
+        "product"
       );
     });
 
@@ -122,7 +125,7 @@ describe("useMediaUploadWithCleanup", () => {
     mediaServiceMock.upload.mockRejectedValue(new Error("Upload failed"));
 
     await expect(result.current.uploadMedia(file, "product")).rejects.toThrow(
-      "Upload failed",
+      "Upload failed"
     );
 
     expect(result.current.uploadedMedia).toHaveLength(0);
@@ -149,7 +152,7 @@ describe("useMediaUploadWithCleanup", () => {
     expect(result.current.uploadedMedia).toHaveLength(0);
     expect(result.current.hasUploadedMedia).toBe(false);
     expect(mediaServiceMock.deleteByUrl).toHaveBeenCalledWith(
-      "https://example.com/uploaded.jpg",
+      "https://example.com/uploaded.jpg"
     );
   });
 
@@ -212,7 +215,7 @@ describe("useMediaUploadWithCleanup", () => {
   it("calls success callback", async () => {
     const onUploadSuccess = jest.fn();
     const { result } = renderHook(() =>
-      useMediaUploadWithCleanup({ onUploadSuccess }),
+      useMediaUploadWithCleanup({ onUploadSuccess })
     );
 
     const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
@@ -222,14 +225,14 @@ describe("useMediaUploadWithCleanup", () => {
     });
 
     expect(onUploadSuccess).toHaveBeenCalledWith(
-      "https://example.com/uploaded.jpg",
+      "https://example.com/uploaded.jpg"
     );
   });
 
   it("calls error callback", async () => {
     const onUploadError = jest.fn();
     const { result } = renderHook(() =>
-      useMediaUploadWithCleanup({ onUploadError }),
+      useMediaUploadWithCleanup({ onUploadError })
     );
 
     const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
@@ -237,7 +240,7 @@ describe("useMediaUploadWithCleanup", () => {
     mediaServiceMock.upload.mockRejectedValue(new Error("Upload failed"));
 
     await expect(result.current.uploadMedia(file, "product")).rejects.toThrow(
-      "Upload failed",
+      "Upload failed"
     );
 
     expect(onUploadError).toHaveBeenCalledWith("Upload failed");
@@ -246,7 +249,7 @@ describe("useMediaUploadWithCleanup", () => {
   it("calls cleanup complete callback", async () => {
     const onCleanupComplete = jest.fn();
     const { result } = renderHook(() =>
-      useMediaUploadWithCleanup({ onCleanupComplete }),
+      useMediaUploadWithCleanup({ onCleanupComplete })
     );
 
     // Upload media

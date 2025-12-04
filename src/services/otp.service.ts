@@ -28,6 +28,48 @@ export interface VerifyOTPResponse {
 
 class OTPClientService {
   /**
+   * Send OTP - generic method
+   */
+  async sendOTP(params: {
+    userId: string;
+    type: "email" | "phone";
+    destination: string;
+  }): Promise<any> {
+    if (params.type === "email") {
+      return await this.sendEmailOTP();
+    } else {
+      return await this.sendPhoneOTP();
+    }
+  }
+
+  /**
+   * Verify OTP - generic method
+   */
+  async verifyOTP(params: {
+    userId: string;
+    type: "email" | "phone";
+    destination: string;
+    otp: string;
+  }): Promise<VerifyOTPResponse> {
+    if (params.type === "email") {
+      return await this.verifyEmailOTP(params.otp);
+    } else {
+      return await this.verifyPhoneOTP(params.otp);
+    }
+  }
+
+  /**
+   * Check if user verification is complete
+   */
+  async isVerified(userId: string, type: "email" | "phone"): Promise<boolean> {
+    if (type === "email") {
+      return await this.isEmailVerified();
+    } else {
+      return await this.isPhoneVerified();
+    }
+  }
+
+  /**
    * Send OTP to user's email
    */
   async sendEmailOTP(): Promise<SendOTPResponse> {

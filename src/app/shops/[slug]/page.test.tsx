@@ -1,25 +1,24 @@
-import React from "react";
+import { auctionsService } from "@/services/auctions.service";
+import { productsService } from "@/services/products.service";
+import { shopsService } from "@/services/shops.service";
+import { AuctionCardFE } from "@/types/frontend/auction.types";
+import { ProductCardFE } from "@/types/frontend/product.types";
+import { ShopFE } from "@/types/frontend/shop.types";
 import {
+  AuctionStatus,
+  AuctionType,
+  ProductCondition,
+  ProductStatus,
+  Status,
+} from "@/types/shared/common.types";
+import {
+  act,
+  fireEvent,
   render,
   screen,
   waitFor,
-  fireEvent,
-  act,
 } from "@testing-library/react";
 import ShopPage from "./page";
-import { shopsService } from "@/services/shops.service";
-import { productsService } from "@/services/products.service";
-import { auctionsService } from "@/services/auctions.service";
-import { ShopFE } from "@/types/frontend/shop.types";
-import { ProductCardFE, ProductBadge } from "@/types/frontend/product.types";
-import { AuctionCardFE } from "@/types/frontend/auction.types";
-import {
-  Status,
-  ProductStatus,
-  ProductCondition,
-  AuctionType,
-  AuctionStatus,
-} from "@/types/shared/common.types";
 
 // Mock dependencies
 jest.mock("@/services/shops.service");
@@ -42,7 +41,7 @@ jest.mock("next/navigation", () => {
 jest.mock("@/lib/error-redirects", () => ({
   notFound: {
     shop: jest.fn(
-      (slug: string) => `/not-found?reason=shop-not-found&resource=${slug}`,
+      (slug: string) => `/not-found?reason=shop-not-found&resource=${slug}`
     ),
   },
 }));
@@ -140,7 +139,7 @@ const mockShop: ShopFE = {
   totalSales: 50000,
   rating: 4.5,
   reviewCount: 25,
-  status: Status.ACTIVE,
+  status: Status.PUBLISHED,
   isVerified: true,
   settings: {
     acceptsOrders: true,
@@ -287,7 +286,7 @@ describe("ShopPage", () => {
   describe("Initial Loading", () => {
     it("renders without crashing", () => {
       expect(() =>
-        render(<ShopPage params={Promise.resolve({ slug: "test-shop" })} />),
+        render(<ShopPage params={Promise.resolve({ slug: "test-shop" })} />)
       ).not.toThrow();
     });
 
@@ -395,10 +394,10 @@ describe("ShopPage", () => {
       await waitFor(() => {
         expect(screen.getByTestId("card-grid")).toBeInTheDocument();
         expect(
-          screen.getByTestId("product-card-Test Product 1"),
+          screen.getByTestId("product-card-Test Product 1")
         ).toBeInTheDocument();
         expect(
-          screen.getByTestId("product-card-Test Product 2"),
+          screen.getByTestId("product-card-Test Product 2")
         ).toBeInTheDocument();
       });
     });
@@ -420,7 +419,7 @@ describe("ShopPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByPlaceholderText("Search products in this shop..."),
+          screen.getByPlaceholderText("Search products in this shop...")
         ).toBeInTheDocument();
       });
     });
@@ -432,7 +431,7 @@ describe("ShopPage", () => {
 
       await waitFor(() => {
         const searchInput = screen.getByPlaceholderText(
-          "Search products in this shop...",
+          "Search products in this shop..."
         );
         fireEvent.change(searchInput, { target: { value: "test search" } });
         fireEvent.keyDown(searchInput, { key: "Enter" });
@@ -442,7 +441,7 @@ describe("ShopPage", () => {
         expect(mockProductsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             search: "test search",
-          }),
+          })
         );
       });
     });
@@ -558,7 +557,7 @@ describe("ShopPage", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByPlaceholderText("Search auctions in this shop..."),
+          screen.getByPlaceholderText("Search auctions in this shop...")
         ).toBeInTheDocument();
       });
     });
@@ -611,7 +610,7 @@ describe("ShopPage", () => {
 
       await act(async () => {
         render(
-          <ShopPage params={Promise.resolve({ slug: "nonexistent-shop" })} />,
+          <ShopPage params={Promise.resolve({ slug: "nonexistent-shop" })} />
         );
       });
 
@@ -658,7 +657,7 @@ describe("ShopPage", () => {
   it("redirects when shop not found", async () => {
     const mockPush = require("next/navigation").__mockPush;
     (shopsService.getBySlug as jest.Mock).mockRejectedValue(
-      new Error("Not found"),
+      new Error("Not found")
     );
     await act(async () => {
       render(<ShopPage params={Promise.resolve({ slug: "missing-shop" })} />);
@@ -666,8 +665,8 @@ describe("ShopPage", () => {
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
         expect.stringContaining(
-          "/not-found?reason=shop-not-found&resource=missing-shop",
-        ),
+          "/not-found?reason=shop-not-found&resource=missing-shop"
+        )
       );
     });
   });

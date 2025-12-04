@@ -1,15 +1,14 @@
-import React from "react";
+import { categoriesService } from "@/services/categories.service";
+import { Status } from "@/types/shared/common.types";
 import {
+  act,
+  fireEvent,
   render,
   screen,
   waitFor,
-  fireEvent,
-  act,
 } from "@testing-library/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import CategoriesContent from "./page";
-import { categoriesService } from "@/services/categories.service";
-import { Status } from "@/types/shared/common.types";
 
 jest.mock("@/services/categories.service");
 jest.mock("next/navigation", () => ({
@@ -79,6 +78,10 @@ describe("CategoriesContent", () => {
           order: 2,
           status: Status.PUBLISHED,
           productCount: 0,
+          inStockCount: 0,
+          outOfStockCount: 0,
+          liveAuctionCount: 0,
+          endedAuctionCount: 0,
           isLeaf: true,
           metadata: {},
           createdAt: new Date(),
@@ -119,9 +122,9 @@ describe("CategoriesContent", () => {
                   count: 0,
                 },
               }),
-            100,
-          ),
-        ),
+            100
+          )
+        )
     );
 
     render(<CategoriesContent />);
@@ -151,6 +154,10 @@ describe("CategoriesContent", () => {
           order: 1,
           status: Status.PUBLISHED,
           productCount: 0,
+          inStockCount: 0,
+          outOfStockCount: 0,
+          liveAuctionCount: 0,
+          endedAuctionCount: 0,
           isLeaf: true,
           metadata: {},
           createdAt: new Date(),
@@ -174,7 +181,7 @@ describe("CategoriesContent", () => {
     if (form) fireEvent.submit(form);
     await waitFor(() => {
       expect(mockCategoriesService.list).toHaveBeenCalledWith(
-        expect.objectContaining({ search: "cat" }),
+        expect.objectContaining({ search: "cat" })
       );
     });
   });

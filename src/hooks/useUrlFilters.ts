@@ -64,7 +64,7 @@ export interface UseUrlFiltersReturn {
 }
 
 export function useUrlFilters(
-  options: UseUrlFiltersOptions = {},
+  options: UseUrlFiltersOptions = {}
 ): UseUrlFiltersReturn {
   const {
     initialFilters = {},
@@ -120,7 +120,7 @@ export function useUrlFilters(
 
   // Debounce timer
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
-    null,
+    null
   );
 
   // Build query string from current state
@@ -176,14 +176,14 @@ export function useUrlFilters(
 
   // Update single filter
   const updateFilter = useCallback((key: string, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value } as FilterState));
     // Reset to page 1 when filters change
     setPage(1);
   }, []);
 
   // Update multiple filters
   const updateFilters = useCallback((newFilters: Partial<FilterState>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
+    setFilters((prev) => ({ ...prev, ...newFilters } as FilterState));
     // Reset to page 1 when filters change
     setPage(1);
   }, []);
@@ -214,7 +214,7 @@ export function useUrlFilters(
   // Count active filters
   const activeFilterCount = useMemo(() => {
     return Object.values(filters).filter(
-      (value) => value !== "" && value !== null && value !== undefined,
+      (value) => value !== "" && value !== null && value !== undefined
     ).length;
   }, [filters]);
 

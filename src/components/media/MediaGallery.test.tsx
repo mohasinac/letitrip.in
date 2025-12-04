@@ -4,11 +4,10 @@
  * Session 23 - Task 9: MediaGallery component with mock media services
  */
 
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import MediaGallery from "./MediaGallery";
 import type { MediaFile } from "@/types/media";
+import "@testing-library/jest-dom";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import MediaGallery from "./MediaGallery";
 
 // Mock Next.js Image component
 jest.mock("next/image", () => ({
@@ -23,8 +22,9 @@ const mockImageFile: MediaFile = {
   file: { name: "test-image.jpg", size: 1024000, type: "image/jpeg" } as File,
   preview: "https://example.com/image1.jpg",
   type: "image",
-  progress: 100,
-  uploaded: true,
+  source: "file",
+  uploadStatus: "completed",
+  uploadProgress: 100,
 };
 
 const mockVideoFile: MediaFile = {
@@ -32,8 +32,9 @@ const mockVideoFile: MediaFile = {
   file: { name: "test-video.mp4", size: 5024000, type: "video/mp4" } as File,
   preview: "https://example.com/video1.mp4",
   type: "video",
-  progress: 100,
-  uploaded: true,
+  source: "file",
+  uploadStatus: "completed",
+  uploadProgress: 100,
 };
 
 const mockFiles: MediaFile[] = [
@@ -47,8 +48,9 @@ const mockFiles: MediaFile[] = [
     } as File,
     preview: "https://example.com/image2.jpg",
     type: "image",
-    progress: 100,
-    uploaded: true,
+    source: "file",
+    uploadStatus: "completed",
+    uploadProgress: 100,
   },
   mockVideoFile,
 ];
@@ -81,7 +83,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
 
     it("should apply custom className", () => {
       const { container } = render(
-        <MediaGallery files={mockFiles} className="custom-class" />,
+        <MediaGallery files={mockFiles} className="custom-class" />
       );
 
       expect(container.firstChild).toHaveClass("custom-class");
@@ -103,7 +105,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           allowBulkActions={true}
           onSelect={mockOnSelect}
-        />,
+        />
       );
 
       const checkboxes = screen
@@ -118,7 +120,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           allowBulkActions={false}
           onSelect={mockOnSelect}
-        />,
+        />
       );
 
       const checkboxes = screen
@@ -134,7 +136,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           allowBulkActions={true}
           onSelect={mockOnSelect}
           selectedIds={[]}
-        />,
+        />
       );
 
       const checkboxes = screen
@@ -152,7 +154,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           allowBulkActions={true}
           onSelect={mockOnSelect}
           selectedIds={["img-1"]}
-        />,
+        />
       );
 
       const checkboxes = screen
@@ -170,7 +172,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           allowBulkActions={true}
           onSelect={mockOnSelect}
           selectedIds={["img-1"]}
-        />,
+        />
       );
 
       const checkIcons = container.querySelectorAll(".text-white");
@@ -184,7 +186,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           allowBulkActions={true}
           onSelect={mockOnSelect}
           selectedIds={["img-1"]}
-        />,
+        />
       );
 
       const checkboxes = screen
@@ -205,7 +207,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           allowBulkActions={true}
           onSelect={mockOnSelect}
           selectedIds={[]}
-        />,
+        />
       );
 
       expect(screen.getByText("Select All")).toBeInTheDocument();
@@ -218,7 +220,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           allowBulkActions={true}
           onSelect={mockOnSelect}
           selectedIds={[]}
-        />,
+        />
       );
 
       const selectAllBtn = screen.getByText("Select All");
@@ -234,7 +236,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           allowBulkActions={true}
           onSelect={mockOnSelect}
           selectedIds={["img-1", "img-2"]}
-        />,
+        />
       );
 
       expect(screen.getByText("Deselect All")).toBeInTheDocument();
@@ -247,7 +249,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           allowBulkActions={true}
           onSelect={mockOnSelect}
           selectedIds={["img-1", "img-2"]}
-        />,
+        />
       );
 
       const deselectBtn = screen.getByText("Deselect All");
@@ -267,7 +269,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           onSelect={mockOnSelect}
           onRemove={mockOnRemove}
           selectedIds={["img-1", "img-2"]}
-        />,
+        />
       );
 
       expect(screen.getByText("2 selected")).toBeInTheDocument();
@@ -281,7 +283,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           onSelect={mockOnSelect}
           onRemove={mockOnRemove}
           selectedIds={["img-1"]}
-        />,
+        />
       );
 
       expect(screen.getByText("Delete Selected")).toBeInTheDocument();
@@ -295,7 +297,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           onSelect={mockOnSelect}
           onRemove={mockOnRemove}
           selectedIds={["img-1", "img-2"]}
-        />,
+        />
       );
 
       const deleteBtn = screen.getByText("Delete Selected");
@@ -316,7 +318,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           allowReorder={true}
           onReorder={mockOnReorder}
-        />,
+        />
       );
 
       const dragHandles = container.querySelectorAll(".cursor-move");
@@ -329,7 +331,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           allowReorder={false}
           onReorder={mockOnReorder}
-        />,
+        />
       );
 
       const dragHandles = container.querySelectorAll(".cursor-move");
@@ -342,7 +344,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           allowReorder={true}
           onReorder={mockOnReorder}
-        />,
+        />
       );
 
       const draggableItems = container.querySelectorAll("[draggable='true']");
@@ -358,7 +360,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           allowReorder={true}
           onReorder={mockOnReorder}
-        />,
+        />
       );
 
       const draggableItems = container.querySelectorAll("[draggable='true']");
@@ -374,7 +376,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           allowReorder={true}
           onReorder={mockOnReorder}
-        />,
+        />
       );
 
       const draggableItems = container.querySelectorAll("[draggable='true']");
@@ -395,7 +397,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
         .filter(
           (btn) =>
             btn.className.includes("cursor-pointer") ||
-            btn.closest(".cursor-pointer"),
+            btn.closest(".cursor-pointer")
         );
 
       const firstCard = screen
@@ -423,7 +425,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
       await waitFor(() => {
         expect(screen.getByText("1 / 3")).toBeInTheDocument();
         const lightboxImgs = document.querySelectorAll(
-          'img[alt="test-image.jpg"]',
+          'img[alt="test-image.jpg"]'
         );
         expect(lightboxImgs.length).toBeGreaterThan(1); // Grid image + lightbox image
       });
@@ -444,7 +446,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
         expect(videoElement).toBeInTheDocument();
         expect(videoElement).toHaveAttribute(
           "src",
-          "https://example.com/video1.mp4",
+          "https://example.com/video1.mp4"
         );
       });
     });
@@ -608,7 +610,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           onRemove={mockOnRemove}
           allowBulkActions={false}
-        />,
+        />
       );
 
       // MediaPreviewCard should show delete buttons
@@ -630,7 +632,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           onEdit={mockOnEdit}
           allowBulkActions={false}
-        />,
+        />
       );
 
       // MediaPreviewCard should show edit buttons
@@ -639,7 +641,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
         .filter(
           (btn) =>
             btn.className.includes("text-blue") ||
-            btn.textContent?.includes("Edit"),
+            btn.textContent?.includes("Edit")
         );
 
       if (editButtons[0]) {
@@ -679,7 +681,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           allowBulkActions={true}
           onSelect={mockOnSelect}
           selectedIds={undefined}
-        />,
+        />
       );
 
       expect(screen.getByText("Select All")).toBeInTheDocument();
@@ -691,7 +693,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           allowReorder={false}
           allowBulkActions={false}
-        />,
+        />
       );
 
       expect(screen.getByText("test-image.jpg")).toBeInTheDocument();
@@ -720,7 +722,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           allowBulkActions={true}
           onSelect={mockOnSelect}
-        />,
+        />
       );
 
       const buttons = screen.getAllByRole("button");
@@ -755,7 +757,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
       expect(grid).toHaveClass(
         "grid-cols-2",
         "md:grid-cols-3",
-        "lg:grid-cols-4",
+        "lg:grid-cols-4"
       );
     });
 
@@ -765,7 +767,7 @@ describe("MediaGallery - Comprehensive Tests", () => {
           files={mockFiles}
           allowReorder={true}
           onReorder={mockOnReorder}
-        />,
+        />
       );
 
       const dragHandle = container.querySelector(".group-hover\\:opacity-100");
