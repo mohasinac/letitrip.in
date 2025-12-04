@@ -129,7 +129,9 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
             Post Not Found
           </h1>
           <p className="text-gray-600 mb-6">
-            {error || "This post doesn't exist"}
+            {error instanceof Error
+              ? error.message
+              : error || "This post doesn't exist"}
           </p>
           <Link
             href="/blog"

@@ -62,12 +62,10 @@ function CreateAuctionContent() {
 
   const handleSubmit = async (formData: ProductAuctionFormFE) => {
     if (!user) {
-      setError("You must be logged in to create an auction");
       return;
     }
 
     setSubmitting(true);
-    setError(null);
 
     try {
       // First, create the product
@@ -118,8 +116,10 @@ function CreateAuctionContent() {
       const auction = await auctionsService.create(auctionData);
       router.push(`/auctions/${auction.productSlug}`);
     } catch (error: any) {
-      console.error("Failed to create auction:", error);
-      setError(error.message || "Failed to create auction. Please try again.");
+      logError(error as Error, {
+        component: "AuctionCreate.handleSubmit",
+        metadata: { formData },
+      });
     } finally {
       setSubmitting(false);
     }
@@ -175,7 +175,7 @@ function CreateAuctionContent() {
     );
   }
 
-  if (shops.length === 0) {
+  if (!shops || shops.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="max-w-md w-full p-6 text-center">
@@ -221,7 +221,7 @@ function CreateAuctionContent() {
         <Card className="p-6">
           <AuctionForm
             mode="create"
-            shopId={shops[0]?.id} // Default to first shop, user can change
+            shopId={shops?.[0]?.id} // Default to first shop, user can change
             onSubmit={handleSubmit}
             isSubmitting={submitting}
           />
