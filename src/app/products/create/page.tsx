@@ -1,22 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { Card } from "@/components/ui";
+import { useAuth } from "@/contexts/AuthContext";
+import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
-import type { ShopCardFE } from "@/types/frontend/shop.types";
 import type { ProductFormFE } from "@/types/frontend/product.types";
-import {
-  ProductStatus,
-  ProductCondition,
-  ShippingClass,
-} from "@/types/shared/common.types";
-import { useAuth } from "@/contexts/AuthContext";
-import { Card } from "@/components/ui";
+import type { ShopCardFE } from "@/types/frontend/shop.types";
+import { AlertCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { ArrowLeft, AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 function CreateProductContent() {
   const router = useRouter();
@@ -40,7 +36,9 @@ function CreateProductContent() {
         const shopsData = await shopsService.list({ limit: 50 });
         setShops(shopsData.data);
       } catch (error) {
-        console.error("Failed to load shops:", error);
+        logError(error as Error, {
+          component: "ProductCreate.loadShops",
+        });
         setError("Failed to load your shops. Please try again.");
       } finally {
         setLoading(false);
@@ -63,7 +61,10 @@ function CreateProductContent() {
       const product = await productsService.create(formData);
       router.push(`/products/${product.slug}`);
     } catch (error: any) {
-      console.error("Failed to create product:", error);
+      logError(error as Error, {
+        component: "ProductCreate.handleSubmit",
+        productData: formData,
+      });
       setError(error.message || "Failed to create product. Please try again.");
     } finally {
       setSubmitting(false);

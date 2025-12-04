@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { initializeApp, getApps } from "firebase/app";
+import { logError } from "@/lib/firebase-error-logger";
+import { getApps, initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { toast } from "sonner";
 
 // Initialize Firebase client for Google Auth popup
@@ -83,7 +84,10 @@ function GoogleSignInButtonInner({
         router.replace(redirect);
       }, 100);
     } catch (error: any) {
-      console.error("Google sign-in error:", error);
+      logError(error as Error, {
+        component: "GoogleSignInButton.handleGoogleSignIn",
+        redirect,
+      });
 
       // Handle specific errors
       let errorMessage = "Failed to sign in with Google";

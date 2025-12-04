@@ -1,24 +1,25 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { Price, DateDisplay } from "@/components/common/values";
+import { DateDisplay, Price } from "@/components/common/values";
+import { FormInput, FormSelect } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { getTodayDateInputValue, toDateInputValue } from "@/lib/date-utils";
+import { logError } from "@/lib/firebase-error-logger";
 import { formatCurrency } from "@/lib/formatters";
 import { analyticsService } from "@/services/analytics.service";
-import { toDateInputValue, getTodayDateInputValue } from "@/lib/date-utils";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import {
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  ShoppingCart,
-  Users,
-  CreditCard,
-  Download,
   Calendar,
+  CreditCard,
+  DollarSign,
+  Download,
+  ShoppingCart,
+  TrendingDown,
+  TrendingUp,
+  Users,
 } from "lucide-react";
-import { FormInput, FormSelect } from "@/components/forms";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 interface RevenueData {
   overview: any;
@@ -95,7 +96,11 @@ export default function SellerRevenuePage() {
       document.body.removeChild(link);
       globalThis.URL?.revokeObjectURL(url);
     } catch (error: any) {
-      console.error("Failed to export data:", error);
+      logError(error as Error, {
+        component: "SellerRevenue.handleExportData",
+        dateRange,
+        format,
+      });
     }
   };
 

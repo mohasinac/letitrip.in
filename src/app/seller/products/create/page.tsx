@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { toast } from "sonner";
-import { productsService } from "@/services/products.service";
-import { WizardSteps } from "@/components/forms/WizardSteps";
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
+import { WizardSteps } from "@/components/forms/WizardSteps";
 import {
-  RequiredInfoStep,
   OptionalDetailsStep,
+  RequiredInfoStep,
   type ProductFormData,
 } from "@/components/seller/product-wizard";
+import { logError } from "@/lib/firebase-error-logger";
+import { productsService } from "@/services/products.service";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
+import { toast } from "sonner";
 
 const STEPS = [
   {
@@ -188,7 +189,7 @@ export default function CreateProductPage() {
         router.push(`/seller/products/${result.slug}/edit`);
       }
     } catch (error) {
-      console.error("Failed to save draft:", error);
+      logError(error as Error, { component: "ProductCreate.saveDraft" });
       toast.error("Failed to save draft. Please try again.");
     } finally {
       setIsSaving(false);
@@ -221,7 +222,7 @@ export default function CreateProductPage() {
         router.push("/seller/products");
       }
     } catch (error) {
-      console.error("Failed to create product:", error);
+      logError(error as Error, { component: "ProductCreate.createProduct" });
       toast.error("Failed to create product. Please try again.");
     } finally {
       setLoading(false);

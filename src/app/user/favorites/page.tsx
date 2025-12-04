@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Heart, Package, Store, Folder, Gavel, Loader2 } from "lucide-react";
-import { logError } from "@/lib/firebase-error-logger";
-import { toast } from "sonner";
+import { Price } from "@/components/common/values";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
-import { Price } from "@/components/common/values";
-import Link from "next/link";
+import { logError } from "@/lib/firebase-error-logger";
+import { Folder, Gavel, Heart, Loader2, Package, Store } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 type FavoriteType = "product" | "shop" | "category" | "auction";
 
@@ -56,7 +55,11 @@ export default function FavoritesPage() {
 
       setItems((items || []).filter((item) => item.id !== itemId));
     } catch (err) {
-      console.error("Remove favorite error:", err);
+      logError(err as Error, {
+        component: "UserFavorites.handleRemove",
+        itemType: activeTab,
+        itemId,
+      });
     }
   };
 

@@ -1,40 +1,35 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { logError } from "@/lib/firebase-error-logger";
-import { toast } from "sonner";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import {
-  MessageSquare,
-  Search,
-  Archive,
-  Loader2,
-  ChevronLeft,
-  Send,
-  Store,
-  User,
-  Shield,
-  Package,
-  ArrowLeft,
-  MoreVertical,
-  Check,
-  Trash2,
-  RefreshCw,
-} from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { logError } from "@/lib/firebase-error-logger";
+import AuthGuard from "@/components/auth/AuthGuard";
 import { FormInput, FormTextarea } from "@/components/forms";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import { messagesService } from "@/services/messages.service";
 import {
   ConversationFE,
-  MessageFE,
   ConversationType,
+  MessageFE,
   ParticipantType,
 } from "@/types/frontend/message.types";
-import AuthGuard from "@/components/auth/AuthGuard";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { formatDistanceToNow } from "date-fns";
+import {
+  Archive,
+  ArrowLeft,
+  ChevronLeft,
+  Loader2,
+  MessageSquare,
+  Package,
+  RefreshCw,
+  Search,
+  Send,
+  Shield,
+  Store,
+  User,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 // Participant type icons
 const participantIcons: Record<ParticipantType, React.ReactNode> = {
@@ -215,8 +210,8 @@ function MessagesContent() {
         prev.map((c) =>
           c.id === conversationId
             ? { ...c, unreadCount: 0, isUnread: false }
-            : c
-        )
+            : c,
+        ),
       );
     } catch (err) {
       logError(err as Error, { component: "MessagesPage.loadMessages" });
@@ -281,8 +276,8 @@ function MessagesContent() {
                 },
                 timeAgo: "just now",
               }
-            : c
-        )
+            : c,
+        ),
       );
     } catch (err) {
       logError(err as Error, { component: "MessagesPage.sendMessage" });
@@ -306,7 +301,7 @@ function MessagesContent() {
     try {
       await messagesService.archiveConversation(selectedConversation.id);
       setConversations((prev) =>
-        prev.filter((c) => c.id !== selectedConversation.id)
+        prev.filter((c) => c.id !== selectedConversation.id),
       );
       setSelectedConversation(null);
       setMessages([]);
@@ -471,8 +466,8 @@ function MessagesContent() {
                     {searchQuery
                       ? "No conversations found"
                       : showArchived
-                      ? "No archived conversations"
-                      : "No messages yet"}
+                        ? "No archived conversations"
+                        : "No messages yet"}
                   </p>
                 </div>
               ) : (

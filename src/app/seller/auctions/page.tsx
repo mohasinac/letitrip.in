@@ -1,14 +1,14 @@
 "use client";
 
+import OptimizedImage from "@/components/common/OptimizedImage";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { DateDisplay, Price } from "@/components/common/values";
 import { SellerResourcePage } from "@/components/seller/SellerResourcePage";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { Price, DateDisplay } from "@/components/common/values";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import Link from "next/link";
-import { Eye, ExternalLink, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Clock, ExternalLink, Eye } from "lucide-react";
+import Link from "next/link";
 
 export default function SellerAuctionsPage() {
   return (
@@ -73,11 +73,15 @@ export default function SellerAuctionsPage() {
           render: (auction) => (
             <div>
               <div className="font-medium text-gray-900 dark:text-white">
-                <Price amount={auction.currentPrice || auction.startingPrice} />
+                <Price
+                  amount={auction.currentPrice || auction.startingBid || 0}
+                />
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Start: <Price amount={auction.startingPrice} />
-              </div>
+              {auction.startingBid && (
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Start: <Price amount={auction.startingBid} />
+                </div>
+              )}
             </div>
           ),
         },
@@ -207,7 +211,7 @@ export default function SellerAuctionsPage() {
                 <div>
                   <div className="text-sm font-medium text-gray-900 dark:text-white">
                     <Price
-                      amount={auction.currentPrice || auction.startingPrice}
+                      amount={auction.currentPrice || auction.startingBid || 0}
                     />
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">

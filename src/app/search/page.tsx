@@ -1,16 +1,15 @@
 "use client";
 
-import { useState, useEffect, use, Suspense } from "react";
-import { logError } from "@/lib/firebase-error-logger";
-import { toast } from "sonner";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
-import { productsService } from "@/services/products.service";
+import { CardGrid } from "@/components/cards/CardGrid";
+import { CategoryCard } from "@/components/cards/CategoryCard";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { ShopCard } from "@/components/cards/ShopCard";
-import { CategoryCard } from "@/components/cards/CategoryCard";
-import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
+import { logError } from "@/lib/firebase-error-logger";
+import { productsService } from "@/services/products.service";
+import { Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -49,7 +48,10 @@ function SearchContent() {
         total: response?.count || 0,
       });
     } catch (error) {
-      console.error("Search failed:", error);
+      logError(error as Error, {
+        component: "SearchPage.performSearch",
+        query,
+      });
       setResults({
         products: [],
         shops: [],

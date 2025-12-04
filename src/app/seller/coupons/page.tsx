@@ -1,28 +1,21 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import {
-  Plus,
-  Filter,
-  Edit,
-  Trash2,
-  Copy,
-  Loader2,
-  AlertCircle,
-} from "lucide-react";
-import { ViewToggle } from "@/components/seller/ViewToggle";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { Price, Percentage, DateDisplay } from "@/components/common/values";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import { couponsService } from "@/services/coupons.service";
-import { useAuth } from "@/contexts/AuthContext";
-import { useIsMobile } from "@/hooks/useMobile";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { PageState } from "@/components/common/PageState";
-import type { CouponFE } from "@/types/frontend/coupon.types";
 import { toast } from "@/components/admin/Toast";
 import type { FilterSection } from "@/components/common/FilterSidebar";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { PageState } from "@/components/common/PageState";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { DateDisplay, Percentage, Price } from "@/components/common/values";
+import { ViewToggle } from "@/components/seller/ViewToggle";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { useIsMobile } from "@/hooks/useMobile";
+import { logError } from "@/lib/firebase-error-logger";
+import { couponsService } from "@/services/coupons.service";
+import type { CouponFE } from "@/types/frontend/coupon.types";
+import { Copy, Edit, Filter, Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 const COUPON_FILTERS: FilterSection[] = [
   {
@@ -95,7 +88,10 @@ export default function CouponsPage() {
       setCoupons(coupons.filter((c) => c.code !== code));
       toast.success("Coupon deleted successfully");
     } catch (err) {
-      console.error("Error deleting coupon:", err);
+      logError(err as Error, {
+        component: "SellerCoupons.handleDeleteCoupon",
+        code,
+      });
       toast.error("Failed to delete coupon");
     }
   };

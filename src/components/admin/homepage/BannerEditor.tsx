@@ -8,9 +8,9 @@ interface BannerSettings {
   enabled: boolean;
   title: string;
   content: string;
-  link: string;
-  backgroundColor: string;
-  textColor: string;
+  link?: string;
+  backgroundColor?: string;
+  textColor?: string;
 }
 
 interface BannerEditorProps {

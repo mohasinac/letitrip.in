@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { toast } from "sonner";
-import { ArrowLeft, Trash2, Loader2 } from "lucide-react";
-import Link from "next/link";
-import CouponForm from "@/components/seller/CouponForm";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { PageState } from "@/components/common/PageState";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { couponsService } from "@/services/coupons.service";
+import CouponForm from "@/components/seller/CouponForm";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
-import { PageState } from "@/components/common/PageState";
+import { logError } from "@/lib/firebase-error-logger";
+import { couponsService } from "@/services/coupons.service";
 import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";
+import { ArrowLeft, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function EditCouponPage() {
   const router = useRouter();
@@ -36,7 +37,10 @@ export default function EditCouponPage() {
       const couponData = await couponsService.getByCode(code);
       return couponData;
     } catch (error) {
-      console.error("Failed to load coupon:", error);
+      logError(error as Error, {
+        component: "SellerCouponEdit.loadCoupon",
+        code,
+      });
       toast.error("Coupon not found");
       router.push("/seller/coupons");
       return null;
@@ -56,7 +60,10 @@ export default function EditCouponPage() {
       toast.success("Coupon updated successfully!");
       execute(loadCoupon); // Reload to show updated data
     } catch (error: any) {
-      console.error("Failed to update coupon:", error);
+      logError(error as Error, {
+        component: "SellerCouponEdit.handleSubmit",
+        code,
+      });
       toast.error(
         error.message || "Failed to update coupon. Please try again.",
       );
@@ -72,7 +79,10 @@ export default function EditCouponPage() {
       toast.success("Coupon deleted successfully");
       router.push("/seller/coupons");
     } catch (error) {
-      console.error("Failed to delete coupon:", error);
+      logError(error as Error, {
+        component: "SellerCouponEdit.handleDelete",
+        code,
+      });
       toast.error("Failed to delete coupon. Please try again.");
       setIsDeleting(false);
     }

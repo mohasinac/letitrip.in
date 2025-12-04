@@ -1,20 +1,21 @@
 "use client";
 
-import { useState, useCallback, useRef, ReactNode } from "react";
-import { toast } from "sonner";
+import { BulkActionBar } from "@/components/common/BulkActionBar";
+import { TableCheckbox } from "@/components/common/TableCheckbox";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useIsMobile } from "@/hooks/useMobile";
+import { logError } from "@/lib/firebase-error-logger";
+import type { BulkAction } from "@/types/inline-edit";
 import {
-  Loader2,
-  Search,
   ChevronLeft,
   ChevronRight,
   Grid,
   List,
+  Loader2,
+  Search,
 } from "lucide-react";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useIsMobile } from "@/hooks/useMobile";
-import { BulkActionBar } from "@/components/common/BulkActionBar";
-import { TableCheckbox } from "@/components/common/TableCheckbox";
-import type { BulkAction } from "@/types/inline-edit";
+import { ReactNode, useCallback, useRef, useState } from "react";
+import { toast } from "sonner";
 
 // Define inline types since they're not exported
 interface InlineField {
@@ -162,7 +163,11 @@ export function AdminResourcePage<T extends { id: string }>({
         setCursors((prev) => [...prev, result.nextCursor]);
       }
     } catch (err) {
-      console.error(`Failed to load ${resourceNamePlural}:`, err);
+      logError(err as Error, {
+        component: "AdminResourcePage.loadItems",
+        resource: resourceNamePlural,
+        page: currentPage,
+      });
       setError(`Failed to load ${resourceNamePlural}`);
       toast.error(`Failed to load ${resourceNamePlural}`);
     } finally {
@@ -218,7 +223,11 @@ export function AdminResourcePage<T extends { id: string }>({
       toast.success(`${resourceName} updated successfully`);
       loadItems();
     } catch (err) {
-      console.error(`Failed to update ${resourceName}:`, err);
+      logError(err as Error, {
+        component: "AdminResourcePage.handleSave",
+        resource: resourceName,
+        itemId: id,
+      });
       toast.error(`Failed to update ${resourceName}`);
     }
   };

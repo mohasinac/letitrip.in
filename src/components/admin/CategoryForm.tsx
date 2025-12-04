@@ -1,24 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import SlugInput from "@/components/common/SlugInput";
-import RichTextEditor from "@/components/common/RichTextEditor";
 import CategorySelector, {
   Category as CategoryType,
 } from "@/components/common/CategorySelector";
-import MediaUploader from "@/components/media/MediaUploader";
-import { MediaFile } from "@/types/media";
-import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
-import { categoriesService } from "@/services/categories.service";
-import { Card, Checkbox, FormActions } from "@/components/ui";
+import OptimizedImage from "@/components/common/OptimizedImage";
+import RichTextEditor from "@/components/common/RichTextEditor";
+import SlugInput from "@/components/common/SlugInput";
 import {
   FormField,
   FormInput,
-  FormTextarea,
   FormLabel,
+  FormTextarea,
 } from "@/components/forms";
+import MediaUploader from "@/components/media/MediaUploader";
+import { Card, Checkbox, FormActions } from "@/components/ui";
+import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
+import { logError } from "@/lib/firebase-error-logger";
+import { categoriesService } from "@/services/categories.service";
+import { MediaFile } from "@/types/media";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface CategoryFormProps {
   initialData?: {
@@ -96,7 +97,9 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
         }));
         setCategories(transformed);
       } catch (error) {
-        console.error("Failed to load categories:", error);
+        logError(error as Error, {
+          component: "CategoryForm.loadCategories",
+        });
       }
     };
     loadCategories();
@@ -142,7 +145,11 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       router.push("/admin/categories");
       router.refresh();
     } catch (error) {
-      console.error("Failed to save category:", error);
+      logError(error as Error, {
+        component: "CategoryForm.handleSubmit",
+        formData,
+        isEdit: !!initialData,
+      });
 
       // Failure! Clean up uploaded media
       if (hasUploadedMedia) {
@@ -169,7 +176,10 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     try {
       await uploadMedia(files[0].file, "category");
     } catch (error) {
-      console.error("Failed to upload image:", error);
+      logError(error as Error, {
+        component: "CategoryForm.handleImageUpload",
+        fileName: files[0].file.name,
+      });
     }
   };
 

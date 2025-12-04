@@ -1,27 +1,27 @@
 "use client";
 
-import { use, useState, useEffect, Suspense } from "react";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { useRouter, useSearchParams } from "next/navigation";
-import { FormSelect } from "@/components/forms";
-import { Grid as GridIcon, List, Loader2, Filter } from "lucide-react";
+import { toast } from "@/components/admin/Toast";
 import { ProductCard } from "@/components/cards/ProductCard";
-import { SimilarCategories } from "@/components/category/SimilarCategories";
-import { CategoryHeader } from "@/components/category/CategoryHeader";
-import { SubcategoryGrid } from "@/components/category/SubcategoryGrid";
-import { CategoryProducts } from "@/components/category/CategoryProducts";
-import { CategoryStats } from "@/components/category/CategoryStats";
 import { CategoryFeaturedSellers } from "@/components/category/CategoryFeaturedSellers";
+import { CategoryHeader } from "@/components/category/CategoryHeader";
+import { CategoryStats } from "@/components/category/CategoryStats";
+import { SimilarCategories } from "@/components/category/SimilarCategories";
+import { SubcategoryGrid } from "@/components/category/SubcategoryGrid";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { Price } from "@/components/common/values";
+import { FormSelect } from "@/components/forms";
 import { PRODUCT_FILTERS } from "@/constants/filters";
-import { categoriesService } from "@/services/categories.service";
-import { productsService } from "@/services/products.service";
-import { notFound } from "@/lib/error-redirects";
 import { useCart } from "@/hooks/useCart";
 import { useIsMobile } from "@/hooks/useMobile";
-import { toast } from "@/components/admin/Toast";
+import { notFound } from "@/lib/error-redirects";
+import { logError } from "@/lib/firebase-error-logger";
+import { categoriesService } from "@/services/categories.service";
+import { productsService } from "@/services/products.service";
 import type { CategoryFE, ProductCardFE } from "@/types";
+import { Filter, Grid as GridIcon, List, Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, use, useEffect, useState } from "react";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -78,7 +78,10 @@ function CategoryDetailContent({ params }: PageProps) {
             const cat = await categoriesService.getBySlug(pathSlug);
             pathCategories.push(cat);
           } catch (err) {
-            console.error("Failed to load path category:", pathSlug);
+            logError(err as Error, {
+              component: "CategoryDetail.loadBreadcrumb",
+              pathSlug,
+            });
           }
         }
 
@@ -98,7 +101,10 @@ function CategoryDetailContent({ params }: PageProps) {
       });
       setSubcategories(subcatsResponse.data);
     } catch (error: any) {
-      console.error("Failed to load category:", error);
+      logError(error as Error, {
+        component: "CategoryDetail.loadCategory",
+        slug,
+      });
       router.push(notFound.category(slug, error));
     } finally {
       setLoading(false);
@@ -120,7 +126,11 @@ function CategoryDetailContent({ params }: PageProps) {
       setProducts(response.data || []);
       setTotalProducts(response.count || response.data?.length || 0);
     } catch (error) {
-      console.error("Failed to load products:", error);
+      logError(error as Error, {
+        component: "CategoryDetail.loadProducts",
+        categoryId: category.id,
+        filters: filterValues,
+      });
       setProducts([]);
       setTotalProducts(0);
     } finally {

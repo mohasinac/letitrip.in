@@ -1,30 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  Info,
-  Store,
-  Palette,
-  Phone,
-  FileText,
-  Settings,
-  Loader2,
-} from "lucide-react";
-import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import {
-  FormInput,
-  FormLabel,
-  FormSelect,
-  FormTextarea,
-} from "@/components/forms";
-import SlugInput from "@/components/common/SlugInput";
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
-import { shopsService } from "@/services/shops.service";
 import {
   BasicInfoStep,
   BrandingStep,
@@ -32,6 +8,21 @@ import {
   PoliciesStep,
   SettingsStep,
 } from "@/components/seller/shop-wizard";
+import { logError } from "@/lib/firebase-error-logger";
+import { shopsService } from "@/services/shops.service";
+import {
+  ArrowLeft,
+  Check,
+  FileText,
+  Info,
+  Palette,
+  Phone,
+  Settings,
+  Store,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function CreateShopWizardPage() {
   const router = useRouter();
@@ -191,7 +182,10 @@ export default function CreateShopWizardPage() {
       const newShop = await shopsService.create(shopData);
       router.push(`/seller/my-shops?created=true`);
     } catch (err: any) {
-      console.error("Error creating shop:", err);
+      logError(err as Error, {
+        component: "ShopCreate.handleSubmit",
+        shopData: formData,
+      });
       setError(err.message || "Failed to create shop");
     } finally {
       setIsSubmitting(false);

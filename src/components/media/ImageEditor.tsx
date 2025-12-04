@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
 import { logError } from "@/lib/error-logger";
+import { applyImageEdits } from "@/lib/media/image-processor";
+import { EditorState, MediaFile } from "@/types/media";
 import {
-  X,
-  RotateCw,
+  Crop,
+  Crosshair,
   FlipHorizontal,
   FlipVertical,
-  Crosshair,
-  Crop,
+  RotateCw,
+  X,
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
-import { EditorState, MediaFile } from "@/types/media";
-import { applyImageEdits } from "@/lib/media/image-processor";
 import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
 
 interface ImageEditorProps {
@@ -61,12 +61,12 @@ export default function ImageEditor({
   const [cropZoom, setCropZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [aspectRatio, setAspectRatio] = useState<number | undefined>(
-    initialAspectRatio
+    initialAspectRatio,
   );
 
   // Editor mode: 'crop' | 'adjust' | 'focus'
   const [activeTab, setActiveTab] = useState<"crop" | "adjust" | "focus">(
-    "crop"
+    "crop",
   );
 
   const [previewUrl, setPreviewUrl] = useState<string>(media.preview);
@@ -95,13 +95,13 @@ export default function ImageEditor({
     (_croppedArea: Area, croppedAreaPixels: Area) => {
       setCroppedAreaPixels(croppedAreaPixels);
     },
-    []
+    [],
   );
 
   // Create cropped image from canvas
   const getCroppedImage = async (
     imageSrc: string,
-    pixelCrop: Area
+    pixelCrop: Area,
   ): Promise<Blob> => {
     const image = new window.Image();
     image.src = imageSrc;
@@ -125,7 +125,7 @@ export default function ImageEditor({
       0,
       0,
       pixelCrop.width,
-      pixelCrop.height
+      pixelCrop.height,
     );
 
     return new Promise((resolve, reject) => {
@@ -135,7 +135,7 @@ export default function ImageEditor({
           else reject(new Error("Could not create blob"));
         },
         "image/jpeg",
-        0.92
+        0.92,
       );
     });
   };
@@ -176,7 +176,10 @@ export default function ImageEditor({
 
       onSave(editedMedia);
     } catch (error) {
-      console.error("Error saving edits:", error);
+      logError(error as Error, {
+        component: "ImageEditor.handleSave",
+        mediaId: media.id,
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -211,7 +214,7 @@ export default function ImageEditor({
 
   const updateAdjustment = (
     key: "brightness" | "contrast" | "saturation",
-    value: number
+    value: number,
   ) => {
     setEditorState((prev) => ({
       ...prev,
@@ -265,7 +268,7 @@ export default function ImageEditor({
         },
       }));
     },
-    [focusMode]
+    [focusMode],
   );
 
   return (

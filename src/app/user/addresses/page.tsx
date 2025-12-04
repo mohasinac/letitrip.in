@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
-import { MapPin, Plus, Edit, Trash2, CheckCircle, Loader2 } from "lucide-react";
+import { logError } from "@/lib/firebase-error-logger";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { addressService } from "@/services/address.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { PageState } from "@/components/common/PageState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { PageState } from "@/components/common/PageState";
 import { SmartAddressForm } from "@/components/common/SmartAddressForm";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { addressService } from "@/services/address.service";
 import type { AddressFE } from "@/types/frontend/address.types";
+import { CheckCircle, Edit, MapPin, Plus, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 function AddressesContent() {
   const {
@@ -45,16 +46,20 @@ function AddressesContent() {
     handleFormClose();
   };
 
-  const handleDelete = async () => {
+  const handleConfirmDelete = async () => {
     if (!deleteId) return;
 
     try {
       await addressService.delete(deleteId);
       setDeleteId(null);
       execute(loadAddresses);
+      toast.success("Address deleted successfully");
     } catch (error) {
-      console.error("Failed to delete address:", error);
-      toast.error("Failed to delete address. Please try again.");
+      logError(error as Error, {
+        component: "AddressesPage.handleDelete",
+        metadata: { addressId: deleteId },
+      });
+      toast.error("Failed to delete address");
     }
   };
 
@@ -68,20 +73,6 @@ function AddressesContent() {
         metadata: { addressId: id },
       });
       toast.error("Failed to set default address");
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      await addressesService.delete(id);
-      await loadAddresses();
-      toast.success("Address deleted successfully");
-    } catch (error) {
-      logError(error as Error, {
-        component: "AddressesPage.handleDelete",
-        metadata: { addressId: id },
-      });
-      toast.error("Failed to delete address");
     }
   };
 
@@ -209,7 +200,7 @@ function AddressesContent() {
           isOpen={deleteId !== null}
           title="Delete Address"
           description="Are you sure you want to delete this address? This action cannot be undone."
-          onConfirm={handleDelete}
+          onConfirm={handleConfirmDelete}
           onClose={() => setDeleteId(null)}
           variant="danger"
           confirmLabel="Delete"

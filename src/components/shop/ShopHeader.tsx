@@ -161,8 +161,8 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
                   {checkingFollow
                     ? "..."
                     : isFollowing
-                    ? "Following"
-                    : "Follow"}
+                      ? "Following"
+                      : "Follow"}
                 </button>
                 <button
                   onClick={handleShare}

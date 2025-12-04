@@ -104,11 +104,11 @@ export default function FeaturedShopsSection({
               products: [],
             };
           }
-        })
+        }),
       );
 
       setShopsWithProducts(
-        shopsData2.filter((item: ShopWithProducts) => item.products.length > 0)
+        shopsData2.filter((item: ShopWithProducts) => item.products.length > 0),
       );
     } catch (error) {
       logError(error as Error, {

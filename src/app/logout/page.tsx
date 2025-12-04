@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
 import { COMPANY_NAME } from "@/constants/navigation";
-import { LogOut, CheckCircle, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { logError } from "@/lib/firebase-error-logger";
+import { CheckCircle, Loader2, LogOut } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function LogoutPage() {
   const router = useRouter();
@@ -32,7 +33,9 @@ export default function LogoutPage() {
           router.replace("/");
         }, 1500);
       } catch (err: any) {
-        console.error("Logout error:", err);
+        logError(err as Error, {
+          component: "Logout.performLogout",
+        });
         setStatus("error");
         setError(err.message || "An error occurred during logout");
       }

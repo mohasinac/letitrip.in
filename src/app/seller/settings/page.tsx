@@ -1,5 +1,7 @@
 "use client";
 
+import { logError } from "@/lib/firebase-error-logger";
+
 /**
  * Seller Settings Page
  *
@@ -13,40 +15,38 @@
  * - Business information
  */
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import {
-  User,
-  Bell,
-  CreditCard,
-  Building,
-  Save,
-  Loader2,
-  ArrowLeft,
-  Mail,
-  Phone,
-  MapPin,
-  FileText,
-  BellRing,
-  BellOff,
-  Wallet,
-  Building2,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { apiService } from "@/services/api.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { PageState } from "@/components/common/PageState";
+import { Price } from "@/components/common/values";
 import {
   FormInput,
-  FormSelect,
-  FormCheckbox,
-  FormTextarea,
   FormLabel,
+  FormSelect,
+  FormTextarea,
 } from "@/components/forms";
-import { Price } from "@/components/common/values";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { apiService } from "@/services/api.service";
+import {
+  ArrowLeft,
+  Bell,
+  BellOff,
+  BellRing,
+  Building,
+  Building2,
+  CheckCircle,
+  CreditCard,
+  FileText,
+  Loader2,
+  Mail,
+  MapPin,
+  Phone,
+  Save,
+  User,
+  Wallet,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 interface SellerProfile {
   displayName: string;
@@ -176,7 +176,9 @@ export default function SellerSettingsPage() {
       setSuccess("Settings saved successfully!");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      console.error("Error saving settings:", err);
+      logError(err as Error, {
+        component: "SellerSettings.handleSaveSettings",
+      });
       setSaveError(
         err instanceof Error ? err.message : "Failed to save settings",
       );

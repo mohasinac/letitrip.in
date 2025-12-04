@@ -1,17 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { Card } from "@/components/ui";
+import { useAuth } from "@/contexts/AuthContext";
+import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
-import type { ShopCardFE } from "@/types/frontend/shop.types";
 import type { ProductFE, ProductFormFE } from "@/types/frontend/product.types";
-import { useAuth } from "@/contexts/AuthContext";
-import { Card } from "@/components/ui";
+import type { ShopCardFE } from "@/types/frontend/shop.types";
+import { AlertCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { ArrowLeft, AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface EditProductPageProps {
   params: Promise<{ slug: string }>;
@@ -53,7 +54,10 @@ function EditProductContent({ params }: EditProductPageProps) {
         const shopsData = await shopsService.list({ limit: 50 });
         setShops(shopsData.data);
       } catch (error: any) {
-        console.error("Failed to load data:", error);
+        logError(error as Error, {
+          component: "ProductEdit.loadData",
+          slug,
+        });
         setError(
           error.message || "Failed to load product data. Please try again.",
         );
@@ -81,7 +85,10 @@ function EditProductContent({ params }: EditProductPageProps) {
       );
       router.push(`/products/${updatedProduct.slug}`);
     } catch (error: any) {
-      console.error("Failed to update product:", error);
+      logError(error as Error, {
+        component: "ProductEdit.handleSubmit",
+        slug: product.slug,
+      });
       setError(error.message || "Failed to update product. Please try again.");
     } finally {
       setSubmitting(false);

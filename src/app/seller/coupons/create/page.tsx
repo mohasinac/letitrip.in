@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import CouponForm from "@/components/seller/CouponForm";
+import { logError } from "@/lib/firebase-error-logger";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFormFE } from "@/types/frontend/coupon.types";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function CreateCouponPage() {
   const router = useRouter();
@@ -23,7 +24,10 @@ export default function CreateCouponPage() {
       // Redirect to edit page after successful creation
       router.push(`/seller/coupons/${newCoupon.code}/edit`);
     } catch (error: any) {
-      console.error("Failed to create coupon:", error);
+      logError(error as Error, {
+        component: "SellerCouponCreate.handleSubmit",
+        couponData: data,
+      });
       toast.error(
         error.message || "Failed to create coupon. Please try again.",
       );

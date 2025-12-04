@@ -1,20 +1,21 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Info } from "lucide-react";
-import Link from "next/link";
-import { toast } from "sonner";
-import { auctionsService } from "@/services/auctions.service";
-import { categoriesService } from "@/services/categories.service";
-import { WizardSteps } from "@/components/forms/WizardSteps";
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
+import { WizardSteps } from "@/components/forms/WizardSteps";
 import {
-  RequiredInfoStep,
   OptionalDetailsStep,
+  RequiredInfoStep,
   type AuctionFormData,
 } from "@/components/seller/auction-wizard";
+import { logError } from "@/lib/firebase-error-logger";
+import { auctionsService } from "@/services/auctions.service";
+import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
+import { ArrowLeft, ArrowRight, Info } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 // Step definitions - Simplified 2-step wizard
 const STEPS = [
@@ -115,7 +116,7 @@ export default function CreateAuctionWizardPage() {
         const response = await categoriesService.list({});
         setCategories(response.data || []);
       } catch (err) {
-        console.error("Error loading categories:", err);
+        logError(err as Error, { component: "AuctionCreate.loadCategories" });
       }
     };
     loadCategories();
@@ -137,7 +138,10 @@ export default function CreateAuctionWizardPage() {
         setSlugError("This URL is already taken");
       }
     } catch (error) {
-      console.error("Error validating slug:", error);
+      logError(error as Error, {
+        component: "AuctionCreate.validateSlug",
+        metadata: { slug },
+      });
     } finally {
       setIsValidatingSlug(false);
     }
@@ -265,7 +269,7 @@ export default function CreateAuctionWizardPage() {
       toast.success("Draft saved successfully!");
       router.push("/seller/auctions");
     } catch (err: any) {
-      console.error("Error saving draft:", err);
+      logError(err as Error, { component: "AuctionCreate.saveDraft" });
       setError(err.message || "Failed to save draft");
       toast.error("Failed to save draft");
     } finally {
@@ -305,7 +309,7 @@ export default function CreateAuctionWizardPage() {
       toast.success("Auction created successfully!");
       router.push("/seller/auctions?created=true");
     } catch (err: any) {
-      console.error("Error creating auction:", err);
+      logError(err as Error, { component: "AuctionCreate.createAuction" });
       setError(err.message || "Failed to create auction");
       toast.error("Failed to create auction");
     } finally {

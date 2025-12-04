@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Upload, X, Loader2, Image as ImageIcon } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { InlineImageUploadProps } from "@/types/inline-edit";
+import { logError } from "@/lib/firebase-error-logger";
 import { mediaService } from "@/services/media.service";
+import { InlineImageUploadProps } from "@/types/inline-edit";
+import { Image as ImageIcon, Loader2, Upload, X } from "lucide-react";
+import { useState } from "react";
 
 export function InlineImageUpload({
   value,
@@ -55,7 +56,10 @@ export function InlineImageUpload({
       });
       onChange(response.url);
     } catch (err) {
-      console.error("Failed to upload image:", err);
+      logError(err as Error, {
+        component: "InlineImageUpload.handleUpload",
+        context: validContext,
+      });
       setError("Failed to upload image");
     } finally {
       setUploading(false);

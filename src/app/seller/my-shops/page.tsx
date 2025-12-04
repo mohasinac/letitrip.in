@@ -1,28 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
-import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import {
-  Plus,
-  Search,
-  Filter,
-  Edit,
-  Trash2,
-  Eye,
-  Star,
-  Loader2,
-} from "lucide-react";
-import { ViewToggle } from "@/components/seller/ViewToggle";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { EmptyState } from "@/components/common/EmptyState";
-import { FormInput } from "@/components/forms";
-import { shopsService } from "@/services/shops.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { PageState } from "@/components/common/PageState";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { FormInput } from "@/components/forms";
+import { ViewToggle } from "@/components/seller/ViewToggle";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { shopsService } from "@/services/shops.service";
 import type { ShopFE } from "@/types/frontend/shop.types";
+import { Edit, Eye, Filter, Plus, Search, Star, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function MyShopsPage() {
   const [view, setView] = useState<"grid" | "table">("table");
@@ -58,7 +50,11 @@ export default function MyShopsPage() {
       setShops(shopsList.filter((shop) => shop.id !== shopId));
       setDeleteShopId(null);
     } catch (error) {
-      console.error("Failed to delete shop:", error);
+      logError(error as Error, {
+        component: "SellerShops.handleDelete",
+        shopId,
+        shopSlug: shopToDelete.slug,
+      });
       toast.error("Failed to delete shop. Please try again.");
     }
   };

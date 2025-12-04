@@ -1,14 +1,14 @@
 "use client";
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
-import { usersService } from "@/services/users.service";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { DateDisplay } from "@/components/common/values";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { Mail, Phone, Shield, CheckCircle } from "lucide-react";
-import { UserRole } from "@/types/shared/common.types";
 import { getUserBulkActions } from "@/constants/bulk-actions";
 import { USER_FIELDS, toInlineFields } from "@/constants/form-fields";
+import { usersService } from "@/services/users.service";
+import { UserRole } from "@/types/shared/common.types";
+import { CheckCircle, Mail, Phone, Shield } from "lucide-react";
 
 interface User {
   id: string;
@@ -107,16 +107,16 @@ export default function AdminUsersPage() {
       label: "Status",
       render: (user: User) =>
         user.is_banned ? (
-          <StatusBadge status="banned" label="Banned" />
+          <StatusBadge status="banned" />
         ) : (
-          <StatusBadge status="active" label="Active" />
+          <StatusBadge status="active" />
         ),
     },
     {
       key: "created",
       label: "Joined",
       render: (user: User) => (
-        <DateDisplay date={new Date(user.createdAt)} format="relative" />
+        <DateDisplay date={new Date(user.createdAt)} format="short" />
       ),
     },
   ];
@@ -169,7 +169,17 @@ export default function AdminUsersPage() {
 
     const response = await usersService.list(apiFilters);
     return {
-      items: (response.data || []) as User[],
+      items: (response.data || []).map((user) => ({
+        ...user,
+        createdAt:
+          user.createdAt instanceof Date
+            ? user.createdAt.toISOString()
+            : user.createdAt,
+        updatedAt:
+          user.updatedAt instanceof Date
+            ? user.updatedAt.toISOString()
+            : user.updatedAt,
+      })) as User[],
       nextCursor:
         "nextCursor" in response.pagination
           ? (response.pagination as any).nextCursor
@@ -180,12 +190,23 @@ export default function AdminUsersPage() {
 
   // Handle save
   const handleSave = async (id: string, data: Partial<User>) => {
-    await usersService.update(id, data);
+    // Convert to UserProfileFormFE format
+    const formData = {
+      displayName: data.name || "",
+      firstName: data.name?.split(" ")[0] || "",
+      lastName: data.name?.split(" ").slice(1).join(" ") || "",
+      phoneNumber: data.phone || "",
+      email: data.email || "",
+      role: data.role || "user",
+      emailVerified: data.emailVerified ?? false,
+      phoneVerified: data.phoneVerified ?? false,
+    };
+    await usersService.update(id, formData as any);
   };
 
-  // Handle delete
+  // Handle delete - Users cannot be deleted, use ban instead
   const handleDelete = async (id: string) => {
-    await usersService.delete(id);
+    await usersService.ban(id, true, "Account deleted by admin");
   };
 
   return (

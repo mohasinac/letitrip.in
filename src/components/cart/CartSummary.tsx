@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Tag, X, Loader2, ShoppingBag } from "lucide-react";
-import { FormLabel } from "@/components/forms";
 import { Price } from "@/components/common/values";
+import { FormLabel } from "@/components/forms";
+import { logError } from "@/lib/firebase-error-logger";
+import { Loader2, ShoppingBag, Tag, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface CartSummaryProps {
   subtotal: number;
@@ -60,7 +61,9 @@ export function CartSummary({
       await onRemoveCoupon();
       setCouponError("");
     } catch (error) {
-      console.error("Failed to remove coupon:", error);
+      logError(error as Error, {
+        component: "CartSummary.handleRemoveCoupon",
+      });
     }
   };
 

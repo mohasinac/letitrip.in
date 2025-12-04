@@ -79,7 +79,7 @@ export default function HomepageSettingsPage() {
   const [hasChanges, setHasChanges] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [sectionOrder, setSectionOrder] = useState<string[]>(
-    DEFAULT_SECTION_ORDER
+    DEFAULT_SECTION_ORDER,
   );
 
   useEffect(() => {
@@ -114,7 +114,7 @@ export default function HomepageSettingsPage() {
       setSectionOrder(
         loadedSettings.sectionOrder?.length > 0
           ? loadedSettings.sectionOrder
-          : DEFAULT_SECTION_ORDER
+          : DEFAULT_SECTION_ORDER,
       );
       setHasChanges(false);
     } catch (error) {
@@ -209,7 +209,7 @@ export default function HomepageSettingsPage() {
   const updateSectionValue = (
     sectionKey: string,
     field: string,
-    value: number
+    value: number,
   ) => {
     if (!settings) return;
 
@@ -394,7 +394,7 @@ export default function HomepageSettingsPage() {
               setExpandedSection(
                 expandedSection === "valueProposition"
                   ? null
-                  : "valueProposition"
+                  : "valueProposition",
               )
             }
           />
@@ -418,7 +418,7 @@ export default function HomepageSettingsPage() {
                 expanded={expandedSection === sectionKey}
                 onToggleExpand={() =>
                   setExpandedSection(
-                    expandedSection === sectionKey ? null : sectionKey
+                    expandedSection === sectionKey ? null : sectionKey,
                   )
                 }
                 orderIndex={index + 1}
@@ -449,7 +449,7 @@ export default function HomepageSettingsPage() {
 function renderSectionConfig(
   sectionKey: string,
   settings: HomepageSettings,
-  updateSectionValue: (section: string, field: string, value: number) => void
+  updateSectionValue: (section: string, field: string, value: number) => void,
 ): React.ReactNode {
   switch (sectionKey) {
     case "valueProposition":
@@ -530,7 +530,7 @@ function renderSectionConfig(
               updateSectionValue(
                 "featuredCategories",
                 "productsPerCategory",
-                value
+                value,
               )
             }
           />

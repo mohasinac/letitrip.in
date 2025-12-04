@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Check, X, Loader2 } from "lucide-react";
-import { InlineEditRowProps, InlineField } from "@/types/inline-edit";
-import { InlineImageUpload } from "./InlineImageUpload";
 import InlineCategorySelectorWithCreate from "@/components/seller/InlineCategorySelectorWithCreate";
+import { logError } from "@/lib/firebase-error-logger";
+import { InlineEditRowProps, InlineField } from "@/types/inline-edit";
+import { Check, Loader2, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { InlineImageUpload } from "./InlineImageUpload";
 
 export function InlineEditRow({
   fields,
@@ -93,7 +94,10 @@ export function InlineEditRow({
     try {
       await onSave(values);
     } catch (error) {
-      console.error("Failed to save:", error);
+      logError(error as Error, {
+        component: "InlineEditRow.handleSave",
+        values,
+      });
     }
   };
 

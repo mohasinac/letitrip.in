@@ -1,19 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Loader2, Plus, X } from "lucide-react";
-import { toast } from "sonner";
 import DateTimePicker from "@/components/common/DateTimePicker";
 import TagInput from "@/components/common/TagInput";
-import {
-  FormInput,
-  FormLabel,
-  FormTextarea,
-  FormSelect,
-} from "@/components/forms";
-import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";
-import { CouponType, CouponApplicability } from "@/types/shared/common.types";
+import { FormLabel } from "@/components/forms";
+import { logError } from "@/lib/firebase-error-logger";
 import { couponsService } from "@/services/coupons.service";
+import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";
+import { CouponApplicability, CouponType } from "@/types/shared/common.types";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface CouponFormProps {
   mode: "create" | "edit";
@@ -129,7 +125,11 @@ export default function CouponForm({
         setCodeError("This coupon code is already in use");
       }
     } catch (error) {
-      console.error("Failed to validate code:", error);
+      logError(error as Error, {
+        component: "CouponForm.validateCouponCode",
+        code,
+        shopId: formData.shopId,
+      });
     } finally {
       setIsValidatingCode(false);
     }

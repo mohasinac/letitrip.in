@@ -1,24 +1,24 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { toast } from "sonner";
+import OptimizedImage from "@/components/common/OptimizedImage";
+import { PageState } from "@/components/common/PageState";
+import { Price } from "@/components/common/values";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { shopsService } from "@/services/shops.service";
+import type { ShopFE } from "@/types/frontend/shop.types";
 import {
   ArrowLeft,
-  Eye,
   Edit,
+  Eye,
   Package,
   ShoppingBag,
   TrendingUp,
-  Loader2,
 } from "lucide-react";
 import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { Price } from "@/components/common/values";
-import { shopsService } from "@/services/shops.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { PageState } from "@/components/common/PageState";
-import type { ShopFE } from "@/types/frontend/shop.types";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect } from "react";
+import { toast } from "sonner";
 
 interface ShopWithStats {
   shop: ShopFE;
@@ -44,13 +44,19 @@ export default function ShopDashboardPage() {
       try {
         statsData = await shopsService.getStats(slug);
       } catch (error) {
-        console.error("Failed to load stats:", error);
+        logError(error as Error, {
+          component: "SellerShopDetail.loadShopData.stats",
+          slug,
+        });
         // Continue even if stats fail
       }
 
       return { shop: shopData, stats: statsData };
     } catch (error) {
-      console.error("Failed to load shop:", error);
+      logError(error as Error, {
+        component: "SellerShopDetail.loadShopData",
+        slug,
+      });
       toast.error("Shop not found");
       router.push("/seller/my-shops");
       return null;

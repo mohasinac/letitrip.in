@@ -1,20 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import {
-  Search,
-  X,
-  TrendingUp,
-  Clock,
-  Package,
-  Store,
-  FolderTree,
-} from "lucide-react";
-import { searchService } from "@/services/search.service";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { Price } from "@/components/common/values";
+import { logError } from "@/lib/firebase-error-logger";
+import { searchService } from "@/services/search.service";
 import type { SearchResultFE } from "@/types/frontend/search.types";
+import { Clock, FolderTree, Package, Search, Store, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 export default function SearchBar() {
   const router = useRouter();
@@ -78,7 +71,10 @@ export default function SearchBar() {
       setResults(data);
       setShowResults(true);
     } catch (error) {
-      console.error("Search failed:", error);
+      logError(error as Error, {
+        component: "SearchBar.performSearch",
+        searchQuery,
+      });
     } finally {
       setLoading(false);
     }

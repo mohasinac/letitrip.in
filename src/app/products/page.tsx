@@ -1,25 +1,26 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { Grid, List, Loader2, Filter } from "lucide-react";
-import { FormSelect } from "@/components/forms";
-import { ProductCard } from "@/components/cards/ProductCard";
-import { FavoriteButton } from "@/components/common/FavoriteButton";
-import { Price } from "@/components/common/values";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import { PRODUCT_FILTERS } from "@/constants/filters";
-import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
-import { EmptyStates } from "@/components/common/EmptyState";
-import { useIsMobile } from "@/hooks/useMobile";
-import { productsService } from "@/services/products.service";
-import { categoriesService } from "@/services/categories.service";
-import { shopsService } from "@/services/shops.service";
-import { useCart } from "@/hooks/useCart";
 import { toast } from "@/components/admin/Toast";
+import { ProductCard } from "@/components/cards/ProductCard";
+import { EmptyStates } from "@/components/common/EmptyState";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { FavoriteButton } from "@/components/common/FavoriteButton";
+import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import OptimizedImage from "@/components/common/OptimizedImage";
+import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
+import { Price } from "@/components/common/values";
+import { FormSelect } from "@/components/forms";
+import { PRODUCT_FILTERS } from "@/constants/filters";
+import { useCart } from "@/hooks/useCart";
+import { useIsMobile } from "@/hooks/useMobile";
+import { logError } from "@/lib/firebase-error-logger";
+import { categoriesService } from "@/services/categories.service";
+import { productsService } from "@/services/products.service";
+import { shopsService } from "@/services/shops.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import { Filter, Grid, List, Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 function ProductsContent() {
   const router = useRouter();
@@ -178,7 +179,9 @@ function ProductsContent() {
 
       setFilterOptions(updatedFilters);
     } catch (error) {
-      console.error("Failed to load filter options:", error);
+      logError(error as Error, {
+        component: "ProductsPage.loadFilterOptions",
+      });
     }
   };
 
@@ -212,7 +215,11 @@ function ProductsContent() {
         });
       }
     } catch (error) {
-      console.error("Failed to load products:", error);
+      logError(error as Error, {
+        component: "ProductsPage.loadProducts",
+        page: currentPage,
+        filters: filterValues,
+      });
     } finally {
       setLoading(false);
     }

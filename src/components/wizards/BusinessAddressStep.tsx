@@ -101,7 +101,7 @@ export function BusinessAddressStep({
         });
         toast.error("Failed to get GPS location");
         setLoadingGPS(false);
-      }
+      },
     );
   };
 

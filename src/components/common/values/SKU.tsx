@@ -11,9 +11,10 @@
 
 "use client";
 
-import React, { useState } from "react";
-import { Copy, Check } from "lucide-react";
+import { logError } from "@/lib/firebase-error-logger";
 import { cn } from "@/lib/utils";
+import { Check, Copy } from "lucide-react";
+import { useState } from "react";
 
 interface SKUProps {
   value: string;
@@ -36,7 +37,10 @@ export function SKU({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error("Failed to copy SKU:", err);
+      logError(err as Error, {
+        component: "SKU.handleCopy",
+        sku: value,
+      });
     }
   };
 

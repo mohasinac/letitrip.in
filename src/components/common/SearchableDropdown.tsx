@@ -1,13 +1,14 @@
 "use client";
 
+import { logError } from "@/lib/firebase-error-logger";
 import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useMemo,
   forwardRef,
+  useCallback,
+  useEffect,
   useId,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 
 // ============================================
@@ -401,7 +402,10 @@ function SearchableDropdownInner<T = string>(
         const results = await onSearch(searchQuery);
         setAsyncOptions(results);
       } catch (error) {
-        console.error("Search error:", error);
+        logError(error as Error, {
+          component: "SearchableDropdown.onSearch",
+          searchQuery,
+        });
         setAsyncOptions([]);
       } finally {
         setAsyncLoading(false);
