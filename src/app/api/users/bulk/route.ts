@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { requireRole } from "@/app/api/middleware/rbac-auth";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * POST /api/users/bulk
@@ -109,7 +110,11 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("Bulk operation error:", error);
+    logError(error as Error, {
+      component: "API.users.bulk",
+      action: body?.action,
+      idsCount: body?.ids?.length,
+    });
     return NextResponse.json(
       { success: false, error: "Bulk operation failed" },
       { status: 500 },

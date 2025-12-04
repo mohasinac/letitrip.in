@@ -1,13 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "@/app/api/lib/session";
 import { getReturnsQuery, UserRole } from "@/app/api/lib/firebase/queries";
-import { Query } from "firebase-admin/firestore";
+import { getCurrentUser } from "@/app/api/lib/session";
 import {
+  createPaginationMeta,
   parseSieveQuery,
   returnsSieveConfig,
-  createPaginationMeta,
 } from "@/app/api/lib/sieve";
+import { logError } from "@/lib/firebase-error-logger";
+import { Query } from "firebase-admin/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 // Extended Sieve config with field mappings for returns
 const returnsConfig = {
@@ -151,7 +152,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Returns list error:", error);
+    logError(error as Error, { component: "API.returns.list", role });
     return NextResponse.json(
       { success: false, error: "Failed to load returns" },
       { status: 500 },
@@ -200,7 +201,10 @@ export async function POST(req: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
-    console.error("Return create error:", error);
+    logError(error as Error, {
+      component: "API.returns.create",
+      userId: user?.id,
+    });
     return NextResponse.json(
       { success: false, error: "Failed to initiate return" },
       { status: 500 },

@@ -223,7 +223,7 @@ const throttledValue = useThrottle(value, 1000);
 import { useFilters } from "@/hooks/useFilters";
 const { filters, appliedFilters, applyFilters, resetFilters } = useFilters(
   { status: "", sort: "-createdAt" },
-  { syncWithUrl: true }
+  { syncWithUrl: true },
 );
 ```
 
@@ -253,7 +253,7 @@ useSafeLoad(loadData, {
 import { useSlugValidation } from "@/hooks/useSlugValidation";
 const { slug, isChecking, isAvailable, error } = useSlugValidation(
   name,
-  "products"
+  "products",
 );
 
 // ✅ For unsaved changes protection
@@ -1112,7 +1112,7 @@ const buttonClass = cn(
   "px-4 py-2 rounded",
   isPrimary && "bg-blue-600 text-white",
   isDisabled && "opacity-50 cursor-not-allowed",
-  className // Allow override
+  className, // Allow override
 );
 ```
 
@@ -1361,7 +1361,7 @@ import { useFilters } from "@/hooks/useFilters";
 
 const { filters, applyFilters, resetFilters } = useFilters(
   { status: "", sort: "-createdAt" },
-  { syncWithUrl: true }
+  { syncWithUrl: true },
 );
 ```
 

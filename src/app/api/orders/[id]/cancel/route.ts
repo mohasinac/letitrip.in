@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 // A user can cancel their order if it's not yet shipped
 export async function POST(
@@ -53,7 +54,7 @@ export async function POST(
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
-    console.error("Order cancel error:", error);
+    logError(error as Error, { component: "API.orders.cancel", orderId: id });
     return NextResponse.json(
       { success: false, error: "Failed to cancel order" },
       { status: 500 },

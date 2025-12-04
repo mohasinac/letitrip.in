@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "../../../lib/session";
-import { getFirestoreAdmin } from "../../../lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
+import { getFirestoreAdmin } from "../../../lib/firebase/admin";
+import { getCurrentUser } from "../../../lib/session";
 
 export async function GET(
   request: NextRequest,
@@ -31,7 +32,11 @@ export async function GET(
 
     return NextResponse.json({ address });
   } catch (error: any) {
-    console.error("Get address error:", error);
+    logError(error as Error, {
+      component: "API.user.addresses.getById",
+      addressId: id,
+      userId: user?.id,
+    });
     return NextResponse.json(
       { error: "Failed to fetch address" },
       { status: 500 },
@@ -97,7 +102,11 @@ export async function PATCH(
 
     return NextResponse.json({ address: updatedAddress });
   } catch (error: any) {
-    console.error("Update address error:", error);
+    logError(error as Error, {
+      component: "API.user.addresses.update",
+      addressId: id,
+      userId: user?.id,
+    });
     return NextResponse.json(
       { error: "Failed to update address" },
       { status: 500 },
@@ -135,7 +144,11 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error("Delete address error:", error);
+    logError(error as Error, {
+      component: "API.user.addresses.delete",
+      addressId: id,
+      userId: user?.id,
+    });
     return NextResponse.json(
       { error: "Failed to delete address" },
       { status: 500 },

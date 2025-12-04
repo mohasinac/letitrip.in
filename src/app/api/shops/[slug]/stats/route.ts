@@ -1,13 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "../../../lib/session";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { safeToISOString } from "@/lib/date-utils";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "../../../lib/session";
 
 // GET /api/shops/[slug]/stats - seller/admin analytics
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const { slug } = await params;
@@ -15,7 +16,7 @@ export async function GET(
     if (!user?.email)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     const role = user.role;
 
@@ -26,7 +27,7 @@ export async function GET(
     if (shopSnap.empty)
       return NextResponse.json(
         { success: false, error: "Shop not found" },
-        { status: 404 },
+        { status: 404 }
       );
     const shopDoc = shopSnap.docs[0];
     const shop: any = { id: shopDoc.id, ...shopDoc.data() };
@@ -36,7 +37,7 @@ export async function GET(
       if (!owns)
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
     }
 
@@ -60,7 +61,7 @@ export async function GET(
     const orderCount = orders.length;
     const revenue = orders
       .filter((o: any) =>
-        ["delivered", "confirmed", "processing", "shipped"].includes(o.status),
+        ["delivered", "confirmed", "processing", "shipped"].includes(o.status)
       )
       .reduce((sum: number, o: any) => sum + (o.amount || 0), 0);
 
@@ -84,7 +85,7 @@ export async function GET(
     const lowStock = products.filter(
       (p: any) =>
         (p.stock_quantity ?? p.stockCount ?? 0) <=
-        (p.low_stock_threshold ?? p.lowStockThreshold ?? 5),
+        (p.low_stock_threshold ?? p.lowStockThreshold ?? 5)
     );
 
     // Daily sales last 14 days
@@ -130,10 +131,13 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error("Shop stats error:", error);
+    logError(error as Error, {
+      component: "API.shops.stats",
+      slug: await params.then((p) => p.slug),
+    });
     return NextResponse.json(
       { success: false, error: "Failed to load stats" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

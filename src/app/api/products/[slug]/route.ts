@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import { Collections } from "@/app/api/lib/firebase/collections";
+import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import {
   getUserFromRequest,
   requireAuth,
 } from "@/app/api/middleware/rbac-auth";
-import { Collections } from "@/app/api/lib/firebase/collections";
-import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/products/[slug]
@@ -15,7 +16,7 @@ import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const user = await getUserFromRequest(request);
@@ -31,7 +32,7 @@ export async function GET(
       if (snapshot.empty) {
         return NextResponse.json(
           { success: false, error: "Product not found" },
-          { status: 404 },
+          { status: 404 }
         );
       }
       doc = snapshot.docs[0];
@@ -42,7 +43,7 @@ export async function GET(
     if ((!user || user.role === "user") && data.status !== "published") {
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -52,7 +53,7 @@ export async function GET(
       if (!ownsShop) {
         return NextResponse.json(
           { success: false, error: "Product not found" },
-          { status: 404 },
+          { status: 404 }
         );
       }
     }
@@ -94,10 +95,13 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error("Error fetching product:", error);
+    logError(error as Error, {
+      component: "API.products.slug.GET",
+      slug: params.slug,
+    });
     return NextResponse.json(
       { success: false, error: "Failed to fetch product" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -108,7 +112,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const authResult = await requireAuth(request);
@@ -129,7 +133,7 @@ export async function PATCH(
       if (snapshot.empty) {
         return NextResponse.json(
           { success: false, error: "Product not found" },
-          { status: 404 },
+          { status: 404 }
         );
       }
       doc = snapshot.docs[0];
@@ -145,7 +149,7 @@ export async function PATCH(
             success: false,
             error: "You do not have permission to update this product",
           },
-          { status: 403 },
+          { status: 403 }
         );
       }
     }
@@ -161,7 +165,7 @@ export async function PATCH(
       if (!existingSlug.empty) {
         return NextResponse.json(
           { success: false, error: "Product slug already exists in this shop" },
-          { status: 400 },
+          { status: 400 }
         );
       }
     }
@@ -197,7 +201,9 @@ export async function PATCH(
           await updateCategoryProductCounts(newCategoryId);
         }
       } catch (error) {
-        console.error("Failed to update category counts:", error);
+        logError(error as Error, {
+          component: "API.products.slug.PATCH.updateCategoryCounts",
+        });
         // Don't fail the request if count update fails
       }
     }
@@ -242,7 +248,7 @@ export async function PATCH(
     console.error("Error updating product:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update product" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -253,7 +259,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const authResult = await requireAuth(request);
@@ -274,7 +280,7 @@ export async function DELETE(
       if (snapshot.empty) {
         return NextResponse.json(
           { success: false, error: "Product not found" },
-          { status: 404 },
+          { status: 404 }
         );
       }
       doc = snapshot.docs[0];
@@ -290,7 +296,7 @@ export async function DELETE(
             success: false,
             error: "You do not have permission to delete this product",
           },
-          { status: 403 },
+          { status: 403 }
         );
       }
     }
@@ -314,7 +320,7 @@ export async function DELETE(
     console.error("Error deleting product:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete product" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

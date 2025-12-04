@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
 import { faker } from "@faker-js/faker";
+import { NextRequest, NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 
@@ -127,7 +128,10 @@ export async function POST(req: NextRequest) {
       addresses: addresses,
     });
   } catch (error: any) {
-    console.error("Error generating addresses:", error);
+    logError(error as Error, {
+      component: "API.testData.generateAddresses",
+      addressesPerUser,
+    });
     return NextResponse.json(
       {
         success: false,

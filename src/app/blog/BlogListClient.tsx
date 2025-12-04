@@ -1,18 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { BlogCard } from "@/components/cards/BlogCard";
-import { blogService, type BlogFilters } from "@/services/blog.service";
+import { logError } from "@/lib/firebase-error-logger";
 import type { BlogPost } from "@/services/blog.service";
-import {
-  Search,
-  Filter,
-  Tag,
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { blogService, type BlogFilters } from "@/services/blog.service";
+import { Calendar, ChevronLeft, ChevronRight, Filter, Tag } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function BlogListClient() {
   const router = useRouter();
@@ -89,7 +83,10 @@ export default function BlogListClient() {
       }
     } catch (err) {
       setError("Failed to load blog posts. Please try again later.");
-      console.error("Error fetching blogs:", err);
+      logError(err as Error, {
+        component: "BlogListClient.fetchBlogs",
+        filters,
+      });
     } finally {
       setLoading(false);
     }

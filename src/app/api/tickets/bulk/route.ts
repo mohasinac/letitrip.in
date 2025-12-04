@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { requireRole } from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { ValidationError } from "@/lib/api-errors";
+import { requireRole } from "@/app/api/middleware/rbac-auth";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
+import { ValidationError } from "@/lib/api-errors";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 // Build update object for each action (excluding delete which needs special handling)
 function buildTicketUpdate(
@@ -143,7 +144,11 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    console.error("Error in bulk ticket operation:", error);
+    logError(error as Error, {
+      component: "API.tickets.bulk",
+      action: data?.action,
+      idsCount: data?.ids?.length,
+    });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

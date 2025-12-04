@@ -10,8 +10,10 @@
   "javascript.updateImportsOnFileMove.enabled": "always",
   "terminal.integrated.shellArgs.windows": [
     "-NoLogo",
-    "-ExecutionPolicy", "Bypass",
-    "-Command", "$ConfirmPreference = 'None'; $VerbosePreference = 'SilentlyContinue'; & {}"
+    "-ExecutionPolicy",
+    "Bypass",
+    "-Command",
+    "$ConfirmPreference = 'None'; $VerbosePreference = 'SilentlyContinue'; & {}"
   ],
   "sonarlint.connectedMode.project": {
     "connectionId": "mohasin-ac",

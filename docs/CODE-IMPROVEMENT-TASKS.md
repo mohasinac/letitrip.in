@@ -362,7 +362,7 @@ const { filters, appliedFilters, applyFilters, resetFilters } = useFilters(
     status: "",
     sort: "-createdAt",
   },
-  { syncWithUrl: true }
+  { syncWithUrl: true },
 );
 ```
 
@@ -1080,19 +1080,16 @@ interface WizardActionBarProps {
 ### Required Changes
 
 1. **Product Detail Page** (`src/app/products/[slug]/page.tsx`)
-
    - Show category breadcrumb
    - Show shop info with link
    - Show related products from same category
 
 2. **Auction Detail Page** (`src/app/auctions/[slug]/page.tsx`)
-
    - Show category breadcrumb
    - Show shop info with link
    - Show similar auctions
 
 3. **Product/Auction Cards**
-
    - Show category tag
    - Show shop name
 
@@ -3604,7 +3601,7 @@ interface PaymentMethodSelectorWithCreateProps {
   value: string | null; // payment method ID
   onChange: (
     methodId: string | null,
-    method: SavedPaymentMethod | null
+    method: SavedPaymentMethod | null,
   ) => void;
   userId: string;
   orderValue: number;
@@ -4319,7 +4316,7 @@ export const addressSchema = z.object({
     .string()
     .regex(
       VALIDATION_RULES.ADDRESS.PINCODE.PATTERN,
-      VALIDATION_MESSAGES.ADDRESS.PINCODE_INVALID
+      VALIDATION_MESSAGES.ADDRESS.PINCODE_INVALID,
     ),
 });
 ```
@@ -4487,7 +4484,7 @@ import {
 if (data.name.length < VALIDATION_RULES.PRODUCT.NAME.MIN_LENGTH) {
   return NextResponse.json(
     { error: VALIDATION_MESSAGES.PRODUCT.NAME_TOO_SHORT },
-    { status: 400 }
+    { status: 400 },
   );
 }
 ```
@@ -4672,7 +4669,7 @@ import {
 } from "@/constants/validation-messages";
 z.string().min(
   VALIDATION_RULES.NAME.MIN_LENGTH,
-  VALIDATION_MESSAGES.NAME.TOO_SHORT
+  VALIDATION_MESSAGES.NAME.TOO_SHORT,
 );
 ```
 
@@ -4769,7 +4766,7 @@ import {
 if (data.name.length < VALIDATION_RULES.PRODUCT.NAME.MIN_LENGTH) {
   return NextResponse.json(
     { error: VALIDATION_MESSAGES.PRODUCT.NAME_TOO_SHORT },
-    { status: 400 }
+    { status: 400 },
   );
 }
 ```

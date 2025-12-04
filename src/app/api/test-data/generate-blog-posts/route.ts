@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
 import { faker } from "@faker-js/faker";
+import { NextRequest, NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 
@@ -147,7 +148,10 @@ ${faker.lorem.paragraph()}
       })),
     });
   } catch (error: any) {
-    console.error("Error generating blog posts:", error);
+    logError(error as Error, {
+      component: "API.testData.generateBlogPosts",
+      count,
+    });
     return NextResponse.json(
       {
         success: false,

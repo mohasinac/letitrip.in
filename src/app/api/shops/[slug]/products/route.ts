@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextResponse } from "next/server";
 
 /**
  * GET /api/shops/[slug]/products
@@ -7,7 +8,7 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const { slug } = await params;
@@ -28,7 +29,7 @@ export async function GET(
     if (shopsSnapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Shop not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -45,10 +46,10 @@ export async function GET(
       sortBy === "price"
         ? "price"
         : sortBy === "rating"
-          ? "averageRating"
-          : sortBy === "sales"
-            ? "soldCount"
-            : "createdAt";
+        ? "averageRating"
+        : sortBy === "sales"
+        ? "soldCount"
+        : "createdAt";
 
     query = query.orderBy(sortField, sortOrder as "asc" | "desc");
 
@@ -95,13 +96,16 @@ export async function GET(
       },
     });
   } catch (error: any) {
-    console.error("Shop products error:", error);
+    logError(error as Error, {
+      component: "API.shops.products",
+      slug: await params.then((p) => p.slug),
+    });
     return NextResponse.json(
       {
         success: false,
         error: error.message || "Failed to fetch shop products",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

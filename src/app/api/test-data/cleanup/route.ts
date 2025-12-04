@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 
@@ -197,7 +198,7 @@ export async function POST() {
       message: `Successfully deleted ${totalDeleted} test items`,
     });
   } catch (error: any) {
-    console.error("Error cleaning up test data:", error);
+    logError(error as Error, { component: "API.testData.cleanup" });
     return NextResponse.json(
       { success: false, error: error.message || "Failed to cleanup data" },
       { status: 500 },

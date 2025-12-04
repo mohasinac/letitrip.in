@@ -1,16 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { requireRole } from "@/app/api/middleware/rbac-auth";
 import {
+  createPaginationMeta,
   parseSieveQuery,
   usersSieveConfig,
-  createPaginationMeta,
 } from "@/app/api/lib/sieve";
+import { requireRole } from "@/app/api/middleware/rbac-auth";
 import {
-  VALIDATION_RULES,
   VALIDATION_MESSAGES,
+  VALIDATION_RULES,
   isValidEmail,
 } from "@/constants/validation-messages";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 // Extended Sieve config with field mappings for users
 const usersConfig = {
@@ -161,7 +162,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("Failed to fetch users:", error);
+    logError(error as Error, { component: "API.users.list" });
     return NextResponse.json(
       { success: false, error: "Failed to fetch users" },
       { status: 500 },
@@ -243,7 +244,10 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error: any) {
-    console.error("Failed to create user:", error);
+    logError(error as Error, {
+      component: "API.users.create",
+      email: body?.email,
+    });
 
     return NextResponse.json(
       { success: false, error: "Failed to create user" },

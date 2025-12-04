@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/app/api/lib/session";
+import { getStorageAdmin } from "@/app/api/lib/firebase/admin";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
-import { getStorageAdmin } from "@/app/api/lib/firebase/admin";
-import { randomUUID } from "crypto";
+import { getCurrentUser } from "@/app/api/lib/session";
 import { withRateLimit } from "@/app/api/middleware/ratelimiter";
+import { logError } from "@/lib/firebase-error-logger";
+import { randomUUID } from "crypto";
+import { NextRequest, NextResponse } from "next/server";
 
 const MAX_FILES_PER_CONFIRM = 8;
 const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "mp4", "webm"];
@@ -72,7 +73,10 @@ export async function GET(
 
         return NextResponse.json({ success: true, data: { uploads } });
       } catch (error) {
-        console.error("Signed URL batch error:", error);
+        logError(error as Error, {
+          component: "API.returns.media.getSignedUrls",
+          returnId: id,
+        });
         return NextResponse.json(
           { success: false, error: "Failed to create signed URLs" },
           { status: 500 },
@@ -165,7 +169,10 @@ export async function POST(
         });
         return NextResponse.json({ success: true, data: { urls } });
       } catch (error) {
-        console.error("Return media confirm error:", error);
+        logError(error as Error, {
+          component: "API.returns.media.confirmUpload",
+          returnId: id,
+        });
         return NextResponse.json(
           { success: false, error: "Failed to confirm media" },
           { status: 500 },

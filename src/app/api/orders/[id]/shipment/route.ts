@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "@/app/api/lib/session";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { getCurrentUser } from "@/app/api/lib/session";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   request: NextRequest,
@@ -62,7 +62,7 @@ export async function POST(
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
-    console.error("Order shipment error:", error);
+    logError(error as Error, { component: "API.orders.shipment", orderId: id });
     return NextResponse.json(
       { success: false, error: "Failed to create shipment" },
       { status: 500 },

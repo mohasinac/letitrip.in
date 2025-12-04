@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 
@@ -55,7 +56,7 @@ export async function POST() {
       count: categories.length,
     });
   } catch (error: any) {
-    console.error("Error generating categories:", error);
+    logError(error as Error, { component: "API.testData.generateCategories" });
     return NextResponse.json(
       {
         success: false,

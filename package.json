@@ -13,6 +13,7 @@
     "start": "next start",
     "lint": "eslint src",
     "test": "jest",
+    "prettier": "npx prettier --write .",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "type-check": "tsc --noEmit",

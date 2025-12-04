@@ -1,47 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { toast } from "sonner";
-import {
-  Gavel,
-  Clock,
-  Eye,
-  Heart,
-  Share2,
-  Loader2,
-  User,
-  Calendar,
-  AlertCircle,
-  TrendingUp,
-  Store,
-} from "lucide-react";
-import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { FormInput } from "@/components/forms";
-import { DateDisplay } from "@/components/common/values";
-import { AuctionGallery } from "@/components/auction/AuctionGallery";
-import { AuctionInfo } from "@/components/auction/AuctionInfo";
 import { AuctionDescription } from "@/components/auction/AuctionDescription";
+import { AuctionGallery } from "@/components/auction/AuctionGallery";
 import { AuctionSellerInfo } from "@/components/auction/AuctionSellerInfo";
 import { SimilarAuctions } from "@/components/auction/SimilarAuctions";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
+import OptimizedImage from "@/components/common/OptimizedImage";
+import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
+import { DateDisplay, Price } from "@/components/common/values";
+import { FormInput } from "@/components/forms";
+import { useAuth } from "@/contexts/AuthContext";
+import { logError } from "@/lib/firebase-error-logger";
+import { formatINR } from "@/lib/price.utils";
 import { auctionsService } from "@/services/auctions.service";
 import { shopsService } from "@/services/shops.service";
-import { notFound } from "@/lib/error-redirects";
-import { formatINR, safeToLocaleString } from "@/lib/price.utils";
-import { ErrorMessage } from "@/components/common/ErrorMessage";
-import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
-import { Price } from "@/components/common/values";
 import type {
-  AuctionFE,
   AuctionCardFE,
+  AuctionFE,
   BidFE,
 } from "@/types/frontend/auction.types";
 import type { ShopFE } from "@/types/frontend/shop.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 import { formatDistanceToNow } from "date-fns";
-import { useAuth } from "@/contexts/AuthContext";
-import { CardGrid } from "@/components/cards/CardGrid";
+import {
+  Calendar,
+  Clock,
+  Gavel,
+  Heart,
+  Loader2,
+  Share2,
+  TrendingUp,
+  User,
+} from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function AuctionDetailPage() {
   const params = useParams();
@@ -95,7 +89,11 @@ export default function AuctionDetailPage() {
             (shopAuctionsData.data || []).filter((a) => a.slug !== slug),
           );
         } catch (error) {
-          console.error("Failed to load shop:", error);
+          logError(error as Error, {
+            component: "AuctionDetailPage.loadShop",
+            slug,
+            shopId: data.shopId,
+          });
           // Non-critical error, continue showing auction
         }
       }
@@ -110,7 +108,10 @@ export default function AuctionDetailPage() {
           (similarData.data || []).filter((a) => a.slug !== slug),
         );
       } catch (error) {
-        console.error("Failed to load similar auctions:", error);
+        logError(error as Error, {
+          component: "AuctionDetailPage.loadSimilarAuctions",
+          slug,
+        });
         // Non-critical error, continue showing auction
       }
 
@@ -119,7 +120,10 @@ export default function AuctionDetailPage() {
       const minIncrement = Math.max(100, currentBidValue * 0.05); // 5% or ₹100
       setBidAmount(Math.ceil(currentBidValue + minIncrement).toString());
     } catch (error: any) {
-      console.error("Failed to load auction:", error);
+      logError(error as Error, {
+        component: "AuctionDetailPage.loadAuction",
+        slug,
+      });
       setError(error.message || "Failed to load auction. Please try again.");
     } finally {
       setLoading(false);
@@ -153,7 +157,11 @@ export default function AuctionDetailPage() {
       // Show success message
       toast.success("Bid placed successfully!");
     } catch (error: any) {
-      console.error("Failed to place bid:", error);
+      logError(error as Error, {
+        component: "AuctionDetailPage.handlePlaceBid",
+        slug,
+        amount: parseFloat(bidAmount),
+      });
       const errorMessage =
         error.message || "Failed to place bid. Please try again.";
       setBidError(errorMessage);
@@ -177,7 +185,10 @@ export default function AuctionDetailPage() {
       const result = await auctionsService.toggleWatch(slug);
       setIsWatching(result.watching);
     } catch (error) {
-      console.error("Failed to toggle watch:", error);
+      logError(error as Error, {
+        component: "AuctionDetailPage.handleToggleWatch",
+        slug,
+      });
     }
   };
 
@@ -191,7 +202,10 @@ export default function AuctionDetailPage() {
           url: url,
         });
       } catch (error) {
-        console.error("Error sharing:", error);
+        logError(error as Error, {
+          component: "AuctionDetailPage.handleShare",
+          slug,
+        });
       }
     } else {
       navigator.clipboard.writeText(url);

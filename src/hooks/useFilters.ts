@@ -23,7 +23,7 @@ export function useFilters<T extends Record<string, any>>(
     syncWithUrl?: boolean;
     /** Callback when filters change */
     onChange?: (filters: T) => void;
-  } = {}
+  } = {},
 ) {
   const router = useRouter();
   const pathname = usePathname();
@@ -94,7 +94,7 @@ export function useFilters<T extends Record<string, any>>(
         : pathname;
       router.push(newUrl, { scroll: false });
     },
-    [syncWithUrl, pathname, router]
+    [syncWithUrl, pathname, router],
   );
 
   // Persist filters to localStorage
@@ -111,7 +111,7 @@ export function useFilters<T extends Record<string, any>>(
         });
       }
     },
-    [persist, storageKey]
+    [persist, storageKey],
   );
 
   // Update filters (without applying)
@@ -143,7 +143,7 @@ export function useFilters<T extends Record<string, any>>(
       delete newFilters[key];
       setFilters(newFilters);
     },
-    [filters]
+    [filters],
   );
 
   // Check if filters are active

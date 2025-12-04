@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "../../lib/session";
-import { getFirestoreAdmin } from "../../lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
+import { getFirestoreAdmin } from "../../lib/firebase/admin";
+import { getCurrentUser } from "../../lib/session";
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,7 +26,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ addresses });
   } catch (error: any) {
-    console.error("Get addresses error:", error);
+    logError(error as Error, {
+      component: "API.user.addresses.get",
+      userId: user?.id,
+    });
     return NextResponse.json(
       { error: "Failed to fetch addresses" },
       { status: 500 },
@@ -108,7 +112,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ address: newAddress }, { status: 201 });
   } catch (error: any) {
-    console.error("Create address error:", error);
+    logError(error as Error, {
+      component: "API.user.addresses.create",
+      userId: user?.id,
+    });
     return NextResponse.json(
       { error: "Failed to create address" },
       { status: 500 },
