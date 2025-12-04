@@ -168,10 +168,12 @@ export default function SellerDashboardPage() {
         />
         <StatsCard
           title="Revenue (This Month)"
-          value={`₹${stats.revenue.thisMonth.toLocaleString("en-IN")}`}
-          description={`₹${stats.revenue.lastMonth.toLocaleString(
-            "en-IN",
-          )} last month`}
+          value={<Price amount={stats.revenue.thisMonth} />}
+          description={
+            <>
+              <Price amount={stats.revenue.lastMonth} /> last month
+            </>
+          }
           icon={<DollarSign className="h-6 w-6 text-blue-600" />}
           trend={{
             value:
