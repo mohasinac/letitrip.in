@@ -90,6 +90,39 @@ export const ADMIN_CONTENT_TABS: Tab[] = [
   },
 ];
 
+// Admin Marketplace Tabs (Products & Shops)
+export const ADMIN_MARKETPLACE_TABS: Tab[] = [
+  {
+    id: "products",
+    label: "Products",
+    href: "/admin/products",
+    icon: "package",
+  },
+  { id: "shops", label: "Shops", href: "/admin/shops", icon: "store" },
+];
+
+// Admin Transactions Tabs (Orders, Payments, Payouts)
+export const ADMIN_TRANSACTIONS_TABS: Tab[] = [
+  {
+    id: "orders",
+    label: "Orders",
+    href: "/admin/orders",
+    icon: "shopping-cart",
+  },
+  {
+    id: "payments",
+    label: "Payments",
+    href: "/admin/payments",
+    icon: "credit-card",
+  },
+  {
+    id: "payouts",
+    label: "Payouts",
+    href: "/admin/payouts",
+    icon: "dollar-sign",
+  },
+];
+
 // Admin Support Tabs
 export const ADMIN_SUPPORT_TABS: Tab[] = [
   {
@@ -213,6 +246,8 @@ export const ADMIN_TABS = {
   AUCTIONS: ADMIN_AUCTIONS_TABS,
   CONTENT: ADMIN_CONTENT_TABS,
   SUPPORT: ADMIN_SUPPORT_TABS,
+  MARKETPLACE: ADMIN_MARKETPLACE_TABS,
+  TRANSACTIONS: ADMIN_TRANSACTIONS_TABS,
 };
 
 export const SELLER_TABS = {
