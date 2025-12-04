@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * Admin RipLimit Dashboard Page
@@ -11,24 +11,26 @@
  * - Balance adjustments
  */
 
-import { RipLimitStatsCards } from "@/components/admin/riplimit/RipLimitStats";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Wallet,
+  RefreshCw,
+  Download,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Loader2,
+  X,
+  Check,
+  AlertTriangle,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
-import {
-  AlertTriangle,
-  ArrowDownLeft,
-  ArrowUpRight,
-  Check,
-  Download,
-  Loader2,
-  RefreshCw,
-  Wallet,
-  X,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { RipLimitStatsCards } from "@/components/admin/riplimit/RipLimitStats";
+import { UsersTable } from "@/components/admin/riplimit/UsersTable";
+import { AdjustBalanceModal } from "@/components/admin/riplimit/AdjustBalanceModal";
 
 // Types for admin views
 interface RipLimitStats {
@@ -83,10 +85,8 @@ export default function AdminRipLimitPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Filters
-  const [searchQuery, setSearchQuery] = useState("");
   const [userFilter, setUserFilter] = useState<UserFilter>("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const debouncedSearch = useDebounce(searchQuery, 500);
 
   // Modal states
   const [selectedUser, setSelectedUser] = useState<RipLimitUser | null>(null);
@@ -186,11 +186,11 @@ export default function AdminRipLimitPage() {
         {
           amount,
           reason,
-        }
+        },
       );
 
       setSuccessMessage(
-        `Balance adjusted by ${amount >= 0 ? "+" : ""}${amount} RL`
+        `Balance adjusted by ${amount >= 0 ? "+" : ""}${amount} RL`,
       );
       setShowAdjustModal(false);
       setSelectedUser(null);
@@ -209,7 +209,7 @@ export default function AdminRipLimitPage() {
   };
 
   // Format currency
-  const formatINR = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
+  const formatINR = (amount: number) => `â‚¹${amount.toLocaleString("en-IN")}`;
   const formatRL = (amount: number) => `${amount.toLocaleString("en-IN")} RL`;
 
   // Loading state
@@ -272,7 +272,7 @@ export default function AdminRipLimitPage() {
                       u.availableBalance + u.blockedBalance,
                       u.hasUnpaidAuctions ? "Yes" : "No",
                       u.isBlocked ? "Yes" : "No",
-                    ].join(",")
+                    ].join(","),
                   ),
                 ].join("\n");
 
@@ -433,345 +433,6 @@ export default function AdminRipLimitPage() {
             }}
             onAdjust={handleAdjust}
           />
-        )}
-
-        {/* OLD CODE REMOVED - NOW USING UsersTable COMPONENT */}
-        <div style={{display: 'none'}}><Card
-          title="DELETED"
-          description="DELETED"
-          headerAction={
-            <div className="flex items-center gap-3">
-              {/* Filter */}
-              <select
-                value={userFilter}
-                onChange={(e) => setUserFilter(e.target.value as UserFilter)}
-                className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Users</option>
-                <option value="unpaid">Unpaid Auctions</option>
-                <option value="blocked">Blocked</option>
-              </select>
-
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search users..."
-                  className="pl-9 pr-4 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
-                />
-              </div>
-            </div>
-          }
-          noPadding
-        >
-          {loadingUsers ? (
-            <div className="p-8 text-center">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto" />
-              <p className="text-gray-500 mt-2">Loading users...</p>
-            </div>
-          ) : filteredUsers.length === 0 ? (
-            <div className="p-8 text-center">
-              <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 font-medium">No users found</p>
-              <p className="text-gray-400 text-sm mt-1">
-                {searchQuery
-                  ? "Try adjusting your search"
-                  : "No RipLimit accounts yet"}
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        User
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Available
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Blocked
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Total
-                      </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {filteredUsers.map((u) => (
-                      <tr
-                        key={u.userId}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700"
-                      >
-                        {/* User Info */}
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            {u.user?.photoURL ? (
-                              <Image
-                                src={u.user.photoURL}
-                                alt={u.user.displayName || u.user.email}
-                                width={40}
-                                height={40}
-                                className="h-10 w-10 rounded-full object-cover"
-                              />
-                            ) : (
-                              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                <span className="text-blue-600 font-semibold text-sm">
-                                  {(u.user?.displayName ||
-                                    u.user?.email ||
-                                    "U")[0].toUpperCase()}
-                                </span>
-                              </div>
-                            )}
-                            <div>
-                              <div className="font-medium text-gray-900 dark:text-white">
-                                {u.user?.displayName || "No name"}
-                              </div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">
-                                {u.user?.email || u.userId}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Available Balance */}
-                        <td className="px-6 py-4 text-right">
-                          <span className="font-medium text-green-600">
-                            {formatRL(u.availableBalance)}
-                          </span>
-                        </td>
-
-                        {/* Blocked Balance */}
-                        <td className="px-6 py-4 text-right">
-                          <span className="font-medium text-orange-600">
-                            {formatRL(u.blockedBalance)}
-                          </span>
-                        </td>
-
-                        {/* Total Balance */}
-                        <td className="px-6 py-4 text-right">
-                          <span className="font-bold text-gray-900 dark:text-white">
-                            {formatRL(u.availableBalance + u.blockedBalance)}
-                          </span>
-                        </td>
-
-                        {/* Status */}
-                        <td className="px-6 py-4">
-                          <div className="flex items-center justify-center gap-2">
-                            {u.isBlocked && (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                                <Ban className="w-3 h-3" />
-                                Blocked
-                              </span>
-                            )}
-                            {u.hasUnpaidAuctions && (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                                <AlertTriangle className="w-3 h-3" />
-                                Unpaid
-                              </span>
-                            )}
-                            {!u.isBlocked && !u.hasUnpaidAuctions && (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                <Check className="w-3 h-3" />
-                                Active
-                              </span>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* Actions */}
-                        <td className="px-6 py-4">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() =>
-                                router.push(`/admin/users?search=${u.userId}`)
-                              }
-                              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                              title="View User"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => {
-                                setSelectedUser(u);
-                                setShowAdjustModal(true);
-                              }}
-                              className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                              title="Adjust Balance"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination */}
-              {pagination && pagination.totalPages > 1 && (
-                <div className="border-t border-gray-200 dark:border-gray-700 px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={!pagination.hasPreviousPage || loadingUsers}
-                      className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                      Previous
-                    </button>
-
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      Page {currentPage} of {pagination.totalPages}
-                    </span>
-
-                    <button
-                      onClick={() => setCurrentPage((p) => p + 1)}
-                      disabled={!pagination.hasNextPage || loadingUsers}
-                      className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Next
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </Card>
-
-        {/* Adjust Balance Modal */}
-        {showAdjustModal && selectedUser && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Adjust Balance
-                </h2>
-                <button
-                  onClick={() => {
-                    setShowAdjustModal(false);
-                    setSelectedUser(null);
-                    setAdjustAmount(0);
-                    setAdjustReason("");
-                  }}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              {/* User Info */}
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                    <span className="text-blue-600 dark:text-blue-300 font-semibold text-sm">
-                      {(selectedUser.user?.displayName ||
-                        selectedUser.user?.email ||
-                        "U")[0].toUpperCase()}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {selectedUser.user?.displayName || "No name"}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {selectedUser.user?.email}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-gray-500 dark:text-gray-400">
-                      Available
-                    </p>
-                    <p className="font-semibold text-green-600">
-                      {formatRL(selectedUser.availableBalance)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 dark:text-gray-400">Blocked</p>
-                    <p className="font-semibold text-orange-600">
-                      {formatRL(selectedUser.blockedBalance)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Adjustment Amount */}
-              <div className="mb-6">
-                <FormInput
-                  label="Adjustment Amount (RL)"
-                  type="number"
-                  value={adjustAmount}
-                  onChange={(e) => setAdjustAmount(Number(e.target.value))}
-                  placeholder="Enter positive to add, negative to deduct"
-                  helperText="Positive values add RipLimit, negative values deduct"
-                />
-              </div>
-
-              {/* Reason */}
-              <div className="mb-6">
-                <FormTextarea
-                  label="Reason"
-                  required
-                  value={adjustReason}
-                  onChange={(e) => setAdjustReason(e.target.value)}
-                  placeholder="Enter reason for adjustment..."
-                  rows={3}
-                />
-              </div>
-
-              {/* Preview */}
-              {adjustAmount !== 0 && (
-                <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-                  <p className="text-sm text-blue-800 dark:text-blue-300">
-                    New balance will be:{" "}
-                    <strong>
-                      {formatRL(selectedUser.availableBalance + adjustAmount)}
-                    </strong>
-                  </p>
-                </div>
-              )}
-
-              {/* Actions */}
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  fullWidth
-                  onClick={() => {
-                    setShowAdjustModal(false);
-                    setSelectedUser(null);
-                    setAdjustAmount(0);
-                    setAdjustReason("");
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  fullWidth
-                  isLoading={processingAction}
-                  onClick={handleAdjust}
-                  disabled={adjustAmount === 0 || !adjustReason.trim()}
-                >
-                  Apply Adjustment
-                </Button>
-              </div>
-            </div>
-          </div>
         )}
       </div>
     </main>

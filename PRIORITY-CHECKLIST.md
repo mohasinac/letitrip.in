@@ -518,7 +518,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   // After
   z.string().min(
     VALIDATION_RULES.NAME.MIN_LENGTH,
-    VALIDATION_MESSAGES.NAME.TOO_SHORT
+    VALIDATION_MESSAGES.NAME.TOO_SHORT,
   );
   ```
 
@@ -775,11 +775,16 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - `src/components/admin/homepage/SliderControl.tsx` (39 lines)
 - **Status**: ✅ COMPLETE
 
-##### ⬜ 77-split-admin-riplimit-page
+##### ✅ 77-split-admin-riplimit-page
 
 - **File**: `src/app/admin/riplimit/page.tsx`
-- **Before**: 828 lines
-- **Components to extract**: RipLimitStats, TransactionTable, AccountsTable, RefundModal
+- **Before**: 903 lines
+- **After**: 440 lines (51% reduction)
+- **Components extracted**:
+  - `src/components/admin/riplimit/RipLimitStats.tsx` (142 lines)
+  - `src/components/admin/riplimit/UsersTable.tsx` (287 lines)
+  - `src/components/admin/riplimit/AdjustBalanceModal.tsx` (148 lines)
+- **Status**: ✅ COMPLETE
 
 ##### ⬜ 78-split-unified-filter-sidebar
 
