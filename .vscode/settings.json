@@ -12,5 +12,9 @@
     "-NoLogo",
     "-ExecutionPolicy", "Bypass",
     "-Command", "$ConfirmPreference = 'None'; $VerbosePreference = 'SilentlyContinue'; & {}"
-  ]
+  ],
+  "sonarlint.connectedMode.project": {
+    "connectionId": "mohasin-ac",
+    "projectKey": "mohasinac_letitrip.in"
+  }
 }
