@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Check } from "lucide-react";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { Check } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export interface PollVotingProps {
@@ -54,7 +54,7 @@ export function PollVoting({
   onVote,
 }: PollVotingProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(
-    userVote || null,
+    userVote || null
   );
   const [hasVoted, setHasVoted] = useState<boolean>(!!userVote);
 

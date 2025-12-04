@@ -27,8 +27,8 @@
  * ```
  */
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export interface FilterState {
   [key: string]: string | number | boolean | string[];
@@ -64,7 +64,7 @@ export interface UseUrlFiltersReturn {
 }
 
 export function useUrlFilters(
-  options: UseUrlFiltersOptions = {},
+  options: UseUrlFiltersOptions = {}
 ): UseUrlFiltersReturn {
   const {
     initialFilters = {},
@@ -120,7 +120,7 @@ export function useUrlFilters(
 
   // Debounce timer
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
-    null,
+    null
   );
 
   // Build query string from current state
@@ -214,7 +214,7 @@ export function useUrlFilters(
   // Count active filters
   const activeFilterCount = useMemo(() => {
     return Object.values(filters).filter(
-      (value) => value !== "" && value !== null && value !== undefined,
+      (value) => value !== "" && value !== null && value !== undefined
     ).length;
   }, [filters]);
 

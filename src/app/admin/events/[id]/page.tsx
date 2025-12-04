@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { logError } from "@/lib/firebase-error-logger";
 import {
   FormField,
   FormInput,
-  FormTextarea,
   FormSelect,
+  FormTextarea,
 } from "@/components/forms";
-import { toast } from "sonner";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function AdminEventDetailPage() {
   const router = useRouter();
@@ -388,8 +388,8 @@ export default function AdminEventDetailPage() {
                 {submitting
                   ? "Saving..."
                   : isNew
-                    ? "Create Event"
-                    : "Save Changes"}
+                  ? "Create Event"
+                  : "Save Changes"}
               </button>
             </div>
           </div>

@@ -9,6 +9,7 @@ import {
   WhereFilterOp,
   OrderByDirection,
 } from "firebase-admin/firestore";
+import { COLLECTIONS } from "@/constants/database";
 import { Collections } from "./collections";
 
 /**
@@ -313,5 +314,5 @@ export async function userOwnsShop(
   shopId: string,
   userId: string,
 ): Promise<boolean> {
-  return userOwnsResource("shops", shopId, userId, "owner_id");
+  return userOwnsResource(COLLECTIONS.SHOPS, shopId, userId, "owner_id");
 }

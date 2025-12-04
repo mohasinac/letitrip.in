@@ -2,7 +2,7 @@
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
 import { COLLECTIONS } from "@/constants/database";
-import { Calendar, Users, CheckCircle, XCircle, Clock } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const columns = [
