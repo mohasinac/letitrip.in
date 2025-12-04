@@ -14,6 +14,7 @@ import { Price } from "@/components/common/values";
 import { FormSelect } from "@/components/forms";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useCart } from "@/hooks/useCart";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { useIsMobile } from "@/hooks/useMobile";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { notFound } from "@/lib/error-redirects";
@@ -58,8 +59,22 @@ function CategoryDetailContent({ params }: PageProps) {
   const [subcategories, setSubcategories] = useState<CategoryFE[]>([]);
   const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [productsLoading, setProductsLoading] = useState(false);
+  const {
+    isLoading: loading,
+    error,
+    execute: executeCategoryLoad,
+  } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, { component: "CategoryDetail.loadCategory", slug });
+      router.push(notFound.category(slug, error));
+    },
+  });
+  const { isLoading: productsLoading, execute: executeProductsLoad } =
+    useLoadingState({
+      onLoadError: (error) => {
+        logError(error, { component: "CategoryDetail.loadProducts", slug });
+      },
+    });
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
@@ -74,9 +89,8 @@ function CategoryDetailContent({ params }: PageProps) {
     }
   }, [category, sortField, sortDirection, filters, page, pageSize]);
 
-  const loadCategory = async () => {
-    setLoading(true);
-    try {
+  const loadCategory = () =>
+    executeCategoryLoad(async () => {
       // Load category details
       const categoryData = await categoriesService.getBySlug(slug);
       setCategory(categoryData);
@@ -93,22 +107,12 @@ function CategoryDetailContent({ params }: PageProps) {
         isActive: true,
       });
       setSubcategories(subcatsResponse.data);
-    } catch (error: any) {
-      logError(error as Error, {
-        component: "CategoryDetail.loadCategory",
-        metadata: { slug },
-      });
-      router.push(notFound.category(slug, error));
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
 
-  const loadProducts = async () => {
+  const loadProducts = () => {
     if (!category) return;
 
-    setProductsLoading(true);
-    try {
+    executeProductsLoad(async () => {
       const offset = (page - 1) * pageSize;
       const response = await productsService.list({
         categoryId: category.id,
@@ -120,16 +124,7 @@ function CategoryDetailContent({ params }: PageProps) {
       });
       setProducts(response.data || []);
       setTotalProducts(response.count || response.data?.length || 0);
-    } catch (error) {
-      logError(error as Error, {
-        component: "CategoryDetail.loadProducts",
-        metadata: { categoryId: category.id, filters },
-      });
-      setProducts([]);
-      setTotalProducts(0);
-    } finally {
-      setProductsLoading(false);
-    }
+    });
   };
 
   const handleAddToCart = async (

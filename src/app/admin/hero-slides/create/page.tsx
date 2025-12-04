@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { FormInput, FormCheckbox, FormLabel } from "@/components/forms";
-import MediaUploader from "@/components/media/MediaUploader";
-import { heroSlidesService } from "@/services/hero-slides.service";
 import RichTextEditor from "@/components/common/RichTextEditor";
-import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
-import { MediaFile } from "@/types/media";
+import { FormCheckbox, FormInput, FormLabel } from "@/components/forms";
+import MediaUploader from "@/components/media/MediaUploader";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { logError } from "@/lib/firebase-error-logger";
+import { heroSlidesService } from "@/services/hero-slides.service";
+import { MediaFile } from "@/types/media";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function CreateHeroSlidePage() {
   const router = useRouter();

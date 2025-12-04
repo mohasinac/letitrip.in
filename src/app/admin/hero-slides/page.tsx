@@ -1,36 +1,36 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { toast } from "sonner";
-import {
-  Edit,
-  Power,
-  PowerOff,
-  GripVertical,
-  Star,
-  StarOff,
-  ExternalLink,
-} from "lucide-react";
-import { heroSlidesService, HeroSlide } from "@/services/hero-slides.service";
 import { EmptyState } from "@/components/common/EmptyState";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { logError } from "@/lib/firebase-error-logger";
 import {
-  QuickCreateRow,
-  InlineEditRow,
   BulkActionBar,
+  InlineEditRow,
+  QuickCreateRow,
   TableCheckbox,
 } from "@/components/common/inline-edit";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { getHeroSlideBulkActions } from "@/constants/bulk-actions";
 import {
   HERO_SLIDE_FIELDS,
   getFieldsForContext,
   toInlineFields,
 } from "@/constants/form-fields";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import { validateForm } from "@/lib/form-validation";
+import { HeroSlide, heroSlidesService } from "@/services/hero-slides.service";
 import { InlineField } from "@/types/inline-edit";
+import {
+  Edit,
+  ExternalLink,
+  GripVertical,
+  Power,
+  PowerOff,
+  Star,
+  StarOff,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function HeroSlidesPage() {
   const router = useRouter();

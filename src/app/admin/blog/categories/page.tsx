@@ -1,29 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import {
-  Plus,
-  Search,
-  Edit,
-  Trash2,
-  Folder,
-  FolderOpen,
-  Save,
-  X,
-  Loader2,
-  AlertCircle,
-  FileText,
-  GripVertical,
-  ChevronRight,
-} from "lucide-react";
 import { AdminPageHeader, LoadingSpinner, toast } from "@/components/admin";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { FormInput, FormSelect, FormTextarea } from "@/components/forms";
 import { useAuth } from "@/contexts/AuthContext";
-import { apiService } from "@/services/api.service";
-import { FormInput, FormTextarea, FormSelect } from "@/components/forms";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { apiService } from "@/services/api.service";
+import {
+  AlertCircle,
+  Edit,
+  FileText,
+  Folder,
+  FolderOpen,
+  GripVertical,
+  Loader2,
+  Plus,
+  Save,
+  Search,
+  Trash2,
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 // Types
 interface BlogCategory {
@@ -275,8 +274,19 @@ function CategoryRow({
 
 export default function BlogCategoriesPage() {
   const { isAdmin } = useAuth();
-  const [categories, setCategories] = useState<BlogCategory[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    data: categories,
+    setData: setCategories,
+    execute,
+  } = useLoadingState<BlogCategory[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, { component: "BlogCategoriesPage.loadCategories" });
+      toast.error("Failed to load blog categories");
+    },
+  });
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -287,52 +297,46 @@ export default function BlogCategoriesPage() {
     loadCategories();
   }, []);
 
-  const loadCategories = async () => {
-    try {
-      setLoading(true);
+  const loadCategories = () =>
+    execute(async () => {
       const response = await apiService.get<{ data: BlogCategory[] }>(
         "/blog/categories",
       );
-      setCategories(response.data || []);
-    } catch (error) {
-      console.error("Failed to load categories:", error);
-      // Use mock data for now
-      setCategories([
-        {
-          id: "1",
-          name: "Guides",
-          slug: "guides",
-          description: "How-to guides and tutorials",
-          postCount: 12,
-          order: 0,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "2",
-          name: "News",
-          slug: "news",
-          description: "Latest platform news and updates",
-          postCount: 8,
-          order: 1,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "3",
-          name: "Tips & Tricks",
-          slug: "tips-tricks",
-          description: "Helpful tips for buyers and sellers",
-          postCount: 15,
-          order: 2,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
+      setCategories(
+        response.data || [
+          {
+            id: "1",
+            name: "Guides",
+            slug: "guides",
+            description: "How-to guides and tutorials",
+            postCount: 12,
+            order: 0,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "2",
+            name: "News",
+            slug: "news",
+            description: "Latest platform news and updates",
+            postCount: 8,
+            order: 1,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "3",
+            name: "Tips & Tricks",
+            slug: "tips-tricks",
+            description: "Helpful tips for buyers and sellers",
+            postCount: 15,
+            order: 2,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ],
+      );
+    });
 
   const handleSave = async (data: Partial<BlogCategory>) => {
     try {

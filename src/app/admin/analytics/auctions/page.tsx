@@ -16,6 +16,8 @@
 import { PeriodSelector } from "@/components/common/PeriodSelector";
 import { StatCard } from "@/components/common/StatCard";
 import { CompactPrice, Price, Quantity } from "@/components/common/values";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   Activity,
   ArrowLeft,
@@ -337,7 +339,18 @@ function CategoryPerformance() {
 
 export default function AdminAuctionsAnalyticsPage() {
   const [period, setPeriod] = useState("month");
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, {
+        component: "AdminAuctionsAnalyticsPage.loadData",
+        period,
+      });
+    },
+  });
 
   // Mock stats
   const stats = {
@@ -360,12 +373,12 @@ export default function AdminAuctionsAnalyticsPage() {
     { status: "Cancelled", count: 13, color: "#EF4444" },
   ];
 
-  const loadData = useCallback(async () => {
-    setLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setLoading(false);
-  }, []);
+  const loadData = useCallback(() => {
+    execute(async () => {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    });
+  }, [execute]);
 
   useEffect(() => {
     loadData();

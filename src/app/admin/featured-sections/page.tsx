@@ -1,54 +1,55 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import Image from "next/image";
-import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  Star,
-  StarOff,
-  GripVertical,
-  Save,
-  RefreshCw,
-  Package,
-  Gavel,
-  Store,
-  Grid3X3,
-  Loader2,
-  AlertCircle,
-  Eye,
-  MoveUp,
-  MoveDown,
-} from "lucide-react";
 import { AdminPageHeader, LoadingSpinner, toast } from "@/components/admin";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import { apiService } from "@/services/api.service";
 import {
-  homepageSettingsService,
   FeaturedItem,
+  homepageSettingsService,
 } from "@/services/homepage-settings.service";
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
   useSortable,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import {
+  AlertCircle,
+  Eye,
+  Gavel,
+  Grid3X3,
+  GripVertical,
+  Loader2,
+  MoveDown,
+  MoveUp,
+  Package,
+  Plus,
+  RefreshCw,
+  Save,
+  Search,
+  Star,
+  StarOff,
+  Store,
+  Trash2,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 // Section configuration interface
 interface SectionConfig {
@@ -455,7 +456,15 @@ export default function FeaturedSectionsPage() {
   const { isAdmin } = useAuth();
   const [activeSection, setActiveSection] = useState<string>("products");
   const [items, setItems] = useState<Record<string, FeaturedItem[]>>({});
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, { component: "FeaturedSectionsPage.loadFeaturedItems" });
+    },
+  });
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -472,9 +481,8 @@ export default function FeaturedSectionsPage() {
     loadFeaturedItems();
   }, []);
 
-  const loadFeaturedItems = async () => {
-    try {
-      setLoading(true);
+  const loadFeaturedItems = () =>
+    execute(async () => {
       // Load featured items from homepage settings service
       const featuredItems = await homepageSettingsService.getFeaturedItems();
 
@@ -485,18 +493,14 @@ export default function FeaturedSectionsPage() {
       });
 
       setItems(initialized);
-    } catch (error) {
-      console.error("Failed to load featured items:", error);
+    }).catch(() => {
       // Initialize with empty arrays on error
       const initialized: Record<string, FeaturedItem[]> = {};
       SECTIONS.forEach((section) => {
         initialized[section.key] = [];
       });
       setItems(initialized);
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
 
   const saveChanges = async () => {
     try {

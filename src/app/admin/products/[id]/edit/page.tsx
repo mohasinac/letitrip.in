@@ -1,42 +1,42 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { toast } from "sonner";
-import {
-  ArrowLeft,
-  Save,
-  Loader2,
-  AlertCircle,
-  Trash2,
-  Plus,
-  X,
-} from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { logError } from "@/lib/firebase-error-logger";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import OptimizedImage from "@/components/common/OptimizedImage";
+import SlugInput from "@/components/common/SlugInput";
 import {
   FormInput,
+  FormLabel,
   FormSelect,
   FormTextarea,
-  FormLabel,
 } from "@/components/forms";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { productsService } from "@/services/products.service";
-import { categoriesService } from "@/services/categories.service";
-import { shopsService } from "@/services/shops.service";
-import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import MediaUploader from "@/components/media/MediaUploader";
-import SlugInput from "@/components/common/SlugInput";
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import type { ProductFE } from "@/types/frontend/product.types";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
+import { logError } from "@/lib/firebase-error-logger";
+import { categoriesService } from "@/services/categories.service";
+import { productsService } from "@/services/products.service";
+import { shopsService } from "@/services/shops.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
+import type { ProductFE } from "@/types/frontend/product.types";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 import {
-  ProductStatus,
   ProductCondition,
+  ProductStatus,
   ShippingClass,
 } from "@/types/shared/common.types";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Loader2,
+  Plus,
+  Save,
+  Trash2,
+  X,
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 // Helper type for specifications array in form
 type ProductSpecification = { name: string; value: string };

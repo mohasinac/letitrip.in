@@ -26,7 +26,7 @@ function SearchContent() {
   >("all");
   const [page, setPage] = useState(pageParam ? parseInt(pageParam) : 1);
   const [pageSize, setPageSize] = useState(
-    pageSizeParam ? parseInt(pageSizeParam) : 20
+    pageSizeParam ? parseInt(pageSizeParam) : 20,
   );
   const [totalCount, setTotalCount] = useState(0);
 
@@ -58,7 +58,7 @@ function SearchContent() {
   const performSearch = async (
     searchQuery: string,
     currentPage: number,
-    currentPageSize: number
+    currentPageSize: number,
   ) => {
     await execute(async () => {
       const response = await productsService.list({

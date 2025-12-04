@@ -12,6 +12,8 @@ import { SliderControl } from "@/components/admin/homepage/SliderControl";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { DateDisplay } from "@/components/common/values";
 import { FormLabel } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   HomepageSettings,
   homepageSettingsService,
@@ -72,8 +74,18 @@ const SECTION_NAMES: Record<string, { title: string; description: string }> = {
 };
 
 export default function HomepageSettingsPage() {
-  const [settings, setSettings] = useState<HomepageSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    data: settings,
+    setData: setSettings,
+    execute,
+  } = useLoadingState<HomepageSettings>({
+    onLoadError: (error) => {
+      logError(error, { component: "HomepageSettingsPage.loadSettings" });
+      toast.error("Failed to load homepage settings");
+    },
+  });
   const [saving, setSaving] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
@@ -86,9 +98,8 @@ export default function HomepageSettingsPage() {
     loadSettings();
   }, []);
 
-  const loadSettings = async () => {
-    try {
-      setLoading(true);
+  const loadSettings = () =>
+    execute(async () => {
       const response = await homepageSettingsService.getSettings();
 
       // Ensure specialEventBanner exists with default values
@@ -117,13 +128,7 @@ export default function HomepageSettingsPage() {
           : DEFAULT_SECTION_ORDER,
       );
       setHasChanges(false);
-    } catch (error) {
-      console.error("Failed to load homepage settings:", error);
-      toast.error("Failed to load homepage settings");
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
 
   // Move section up in order
   const moveSectionUp = useCallback((sectionKey: string) => {
