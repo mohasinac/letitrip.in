@@ -748,17 +748,19 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **After**: 320 lines using SellerResourcePage (51% reduction)
 - **Status**: ✅ COMPLETE
 
-##### ⬜ 74-migrate-seller-auctions-page
+##### ✅ 74-migrate-seller-auctions-page
 
 - **File**: `src/app/seller/auctions/page.tsx`
-- **Before**: 644 lines
-- **After**: ~150 lines
+- **Before**: 700 lines
+- **After**: 294 lines using SellerResourcePage (58% reduction)
+- **Status**: ✅ COMPLETE
 
-##### ⬜ 75-migrate-seller-orders-page
+##### ✅ 75-migrate-seller-orders-page
 
 - **File**: `src/app/seller/orders/page.tsx`
-- **Before**: 476 lines
-- **After**: ~120 lines
+- **Before**: 517 lines
+- **After**: 220 lines using SellerResourcePage (57% reduction)
+- **Status**: ✅ COMPLETE
 
 #### 1.3: Other Large Files (4-6 hours)
 
