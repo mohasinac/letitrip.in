@@ -27,15 +27,22 @@ export function LoadingSpinner({
   };
 
   const spinner = (
-    <div className="flex flex-col items-center gap-3">
+    <div
+      className="flex flex-col items-center gap-3"
+      role="status"
+      aria-busy="true"
+      aria-live="polite"
+    >
       <div
         className={`animate-spin rounded-full border-b-2 ${sizes[size]} ${colors[color]}`}
+        aria-hidden="true"
       />
       {message && (
         <p className="text-sm text-gray-600 dark:text-gray-400 animate-pulse">
           {message}
         </p>
       )}
+      {!message && <span className="sr-only">Loading...</span>}
     </div>
   );
 
