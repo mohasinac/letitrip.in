@@ -58,7 +58,9 @@ export default function EditHeroSlidePage() {
     navigationGuardMessage:
       "You have uploaded a new image. Leave and delete it?",
     onUploadSuccess: (url) => {
-      setFormData((prev) => (prev ? { ...prev, image: url } : null));
+      if (formData) {
+        setFormData({ ...formData, image: url });
+      }
     },
     onUploadError: (error) => {
       toast.error(`Upload failed: ${error}`);

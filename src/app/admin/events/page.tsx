@@ -6,22 +6,54 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const columns = [
-  { key: "title", label: "Title", sortable: true },
-  { key: "type", label: "Type", sortable: true },
-  { key: "status", label: "Status", sortable: true },
-  { key: "startDate", label: "Start Date", sortable: true },
-  { key: "participantCount", label: "Participants", sortable: false },
-  { key: "createdAt", label: "Created", sortable: true },
+  {
+    key: "title",
+    label: "Title",
+    sortable: true,
+    render: (event: { id: string }) => event.id,
+  },
+  {
+    key: "type",
+    label: "Type",
+    sortable: true,
+    render: (event: { id: string }) => event.id,
+  },
+  {
+    key: "status",
+    label: "Status",
+    sortable: true,
+    render: (event: { id: string }) => event.id,
+  },
+  {
+    key: "startDate",
+    label: "Start Date",
+    sortable: true,
+    render: (event: { id: string }) => event.id,
+  },
+  {
+    key: "participantCount",
+    label: "Participants",
+    sortable: false,
+    render: (event: { id: string }) => event.id,
+  },
+  {
+    key: "createdAt",
+    label: "Created",
+    sortable: true,
+    render: (event: { id: string }) => event.id,
+  },
 ];
 
 const filters = [
   {
+    key: "status",
     type: "select" as const,
     field: "status",
     label: "Status",
     options: ["draft", "published", "archived"],
   },
   {
+    key: "type",
     type: "select" as const,
     field: "type",
     label: "Type",
@@ -45,7 +77,9 @@ export default function AdminEventsPage() {
       filters={filters}
       bulkActions={bulkActions}
       searchFields={["title", "description"]}
-      onRowClick={(event) => router.push(`/admin/events/${event.id}`)}
+      onRowClick={(event: { id: string }) =>
+        router.push(`/admin/events/${event.id}`)
+      }
       createButtonLabel="Create Event"
       createButtonHref="/admin/events/create"
     />

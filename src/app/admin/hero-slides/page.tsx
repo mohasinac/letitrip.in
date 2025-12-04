@@ -229,14 +229,18 @@ export default function HeroSlidesPage() {
                   <th className="px-4 py-3 text-left">
                     <TableCheckbox
                       checked={
-                        slides &&
-                        selectedIds.length === slides.length &&
-                        slides.length > 0
+                        !!(
+                          slides &&
+                          selectedIds.length === slides.length &&
+                          slides.length > 0
+                        )
                       }
                       indeterminate={
-                        slides &&
-                        selectedIds.length > 0 &&
-                        selectedIds.length < slides.length
+                        !!(
+                          slides &&
+                          selectedIds.length > 0 &&
+                          selectedIds.length < slides.length
+                        )
                       }
                       onChange={(checked) => {
                         setSelectedIds(

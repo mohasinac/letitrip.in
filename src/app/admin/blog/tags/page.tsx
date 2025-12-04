@@ -359,7 +359,7 @@ export default function BlogTagsPage() {
       const newTags: BlogTag[] = [];
       for (const name of tagNames) {
         const slug = generateSlug(name);
-        const existingTag = tags.find((t) => t.slug === slug);
+        const existingTag = tags?.find((t) => t.slug === slug);
         if (!existingTag) {
           try {
             const response = await apiService.post<{ data: BlogTag }>(
@@ -447,13 +447,13 @@ export default function BlogTagsPage() {
       : tags;
 
   // Sort by post count
-  const sortedTags = [...filteredTags].sort(
-    (a, b) => b.postCount - a.postCount,
-  );
+  const sortedTags = filteredTags
+    ? [...filteredTags].sort((a, b) => b.postCount - a.postCount)
+    : [];
 
   // Stats
-  const totalPosts = tags.reduce((sum, t) => sum + t.postCount, 0);
-  const popularTags = tags.filter((t) => t.postCount >= 5).length;
+  const totalPosts = tags?.reduce((sum, t) => sum + t.postCount, 0) ?? 0;
+  const popularTags = tags?.filter((t) => t.postCount >= 5).length ?? 0;
 
   if (!isAdmin) {
     return (
