@@ -125,7 +125,7 @@ export async function GET(
       } catch (error) {
         logError(error as Error, {
           component: "API.orders.invoice",
-          orderId: id,
+          metadata: { orderId: id },
         });
         return NextResponse.json(
           { success: false, error: "Failed to generate invoice" },
