@@ -1445,17 +1445,18 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 - Tasks 89-106: All user/seller/public pages have dark mode and mobile responsive
 
-**Priority #5 (Remaining): 24/60**
+**Priority #5 (Remaining): 27/60**
 
 - ✅ Tasks 144, 145, 151, 152, 153, 154: Value migrations, debouncing, retry/abort
 - ✅ Tasks 161, 162, 163: Code quality (logError, type casts, ARIA labels)
 - ✅ Tasks 107-115: OTP & verification system (services, modals, gate, API routes, enforcement)
 - ✅ Tasks 117-122: IP tracking & rate limiting (service, middleware, activity logging)
-- ⬜ Tasks 116, 123-166: Events, testing, remaining (36 remaining)
+- ✅ Tasks 123-125: Event APIs (admin CRUD, public list/register/vote)
+- ⬜ Tasks 116, 126-166: Event pages/components, testing, remaining (33 remaining)
 
-📊 Overall: **130/166 tasks complete (78.3%)**
-💾 Recent: Tasks 117-122 (IP tracking, rate limiting, activity logging)
-🎯 Next: Task 123-129 (Events management system)
+📊 Overall: **133/166 tasks complete (80.1%)**
+💾 Recent: Tasks 123-125 (Event management APIs)
+🎯 Next: Task 126-129 (Event pages & components)
 
 ### Lines of Code Impact
 

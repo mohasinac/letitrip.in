@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/events/[id]
@@ -8,7 +8,7 @@ import { logError } from "@/lib/firebase-error-logger";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -17,7 +17,7 @@ export async function GET(
     if (!eventDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -27,7 +27,7 @@ export async function GET(
     if (eventData?.status !== "published") {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -60,7 +60,7 @@ export async function GET(
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch event" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

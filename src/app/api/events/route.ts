@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "@/app/api/lib/session";
 import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/events
@@ -52,7 +51,7 @@ export async function GET(request: NextRequest) {
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch events" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

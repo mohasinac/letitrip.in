@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { logError } from "@/lib/firebase-error-logger";
-import { z } from "zod";
+import { requireAuth } from "@/app/api/middleware/rbac-auth";
 import {
-  VALIDATION_RULES,
   VALIDATION_MESSAGES,
+  VALIDATION_RULES,
 } from "@/constants/validation-messages";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 const eventSchema = z.object({
   title: z
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch events" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
           error: "Validation failed",
           details: validation.error.issues,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
     if (endDate <= startDate) {
       return NextResponse.json(
         { success: false, error: "End date must be after start date" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "Registration deadline must be before start date",
           },
-          { status: 400 },
+          { status: 400 }
         );
       }
     }
@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
         success: true,
         event: { id: eventDoc.id, ...eventDoc.data() },
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     logError(error, {
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json(
       { success: false, error: "Failed to create event" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
