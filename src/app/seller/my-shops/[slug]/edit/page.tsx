@@ -53,7 +53,7 @@ export default function EditShopPage() {
     } catch (error: any) {
       logError(error as Error, {
         component: "SellerShopEdit.handleSubmit",
-        slug,
+        metadata: { slug },
       });
       toast.error(error.message || "Failed to update shop. Please try again.");
     } finally {
@@ -72,7 +72,7 @@ export default function EditShopPage() {
     } catch (error: any) {
       logError(error as Error, {
         component: "SellerShopEdit.handleDelete",
-        slug,
+        metadata: { slug },
       });
       toast.error(error.message || "Failed to delete shop. Please try again.");
       setShowDeleteDialog(false);

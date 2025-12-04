@@ -6,39 +6,45 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
     const doc = await Collections.returns().doc(id).get();
     if (!doc.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 },
+        { status: 404 }
       );
     return NextResponse.json({
       success: true,
       data: { id: doc.id, ...doc.data() },
     });
   } catch (error) {
-    logError(error as Error, { component: "API.returns.get", returnId: id });
+    logError(error as Error, {
+      component: "API.returns.get",
+      metadata: { returnId: id },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to load return" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
     const user = await getCurrentUser(req);
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     const role = user.role;
     if (!(role === "seller" || role === "admin")) {
@@ -48,13 +54,14 @@ export async function PATCH(
       );
     }
 
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
     const ref = Collections.returns().doc(id);
     const snap = await ref.get();
     if (!snap.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 },
+        { status: 404 }
       );
     const ret = snap.data() as any;
 
@@ -63,7 +70,7 @@ export async function PATCH(
       if (!owns)
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
     }
 
@@ -79,10 +86,13 @@ export async function PATCH(
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
-    logError(error as Error, { component: "API.returns.update", returnId: id });
+    logError(error as Error, {
+      component: "API.returns.update",
+      metadata: { returnId: id },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to update return" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

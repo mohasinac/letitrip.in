@@ -17,12 +17,13 @@ import { NextRequest, NextResponse } from "next/server";
  * - delete: Delete users
  */
 export async function POST(request: NextRequest) {
+  let body: any;
   try {
     const authResult = await requireRole(request, ["admin"]);
     if (authResult.error) return authResult.error;
 
     const { user } = authResult;
-    const body = await request.json();
+    body = await request.json();
     const { action, ids, data } = body;
 
     if (!action || !Array.isArray(ids) || ids.length === 0) {
@@ -112,8 +113,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     logError(error as Error, {
       component: "API.users.bulk",
-      action: body?.action,
-      idsCount: body?.ids?.length,
+      metadata: { action: body?.action, idsCount: body?.ids?.length },
     });
     return NextResponse.json(
       { success: false, error: "Bulk operation failed" },

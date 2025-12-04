@@ -90,7 +90,7 @@ export default function CouponsPage() {
     } catch (err) {
       logError(err as Error, {
         component: "SellerCoupons.handleDeleteCoupon",
-        code,
+        metadata: { code },
       });
       toast.error("Failed to delete coupon");
     }

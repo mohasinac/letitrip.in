@@ -8,6 +8,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let id: string | undefined;
   try {
     const user = await getCurrentUser(req);
     if (!user?.id)
@@ -23,7 +24,8 @@ export async function POST(
       );
     }
 
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
     const ref = Collections.returns().doc(id);
     const snap = await ref.get();
     if (!snap.exists)
@@ -58,7 +60,7 @@ export async function POST(
   } catch (error) {
     logError(error as Error, {
       component: "API.returns.approve",
-      returnId: id,
+      metadata: { returnId: id },
     });
     return NextResponse.json(
       { success: false, error: "Failed to approve return" },

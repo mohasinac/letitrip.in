@@ -91,8 +91,7 @@ export default function AuctionDetailPage() {
         } catch (error) {
           logError(error as Error, {
             component: "AuctionDetailPage.loadShop",
-            slug,
-            shopId: data.shopId,
+            metadata: { slug, shopId: data.shopId },
           });
           // Non-critical error, continue showing auction
         }
@@ -110,7 +109,7 @@ export default function AuctionDetailPage() {
       } catch (error) {
         logError(error as Error, {
           component: "AuctionDetailPage.loadSimilarAuctions",
-          slug,
+          metadata: { slug },
         });
         // Non-critical error, continue showing auction
       }
@@ -122,7 +121,7 @@ export default function AuctionDetailPage() {
     } catch (error: any) {
       logError(error as Error, {
         component: "AuctionDetailPage.loadAuction",
-        slug,
+        metadata: { slug },
       });
       setError(error.message || "Failed to load auction. Please try again.");
     } finally {
@@ -159,8 +158,7 @@ export default function AuctionDetailPage() {
     } catch (error: any) {
       logError(error as Error, {
         component: "AuctionDetailPage.handlePlaceBid",
-        slug,
-        amount: parseFloat(bidAmount),
+        metadata: { slug, amount: parseFloat(bidAmount) },
       });
       const errorMessage =
         error.message || "Failed to place bid. Please try again.";
@@ -187,7 +185,7 @@ export default function AuctionDetailPage() {
     } catch (error) {
       logError(error as Error, {
         component: "AuctionDetailPage.handleToggleWatch",
-        slug,
+        metadata: { slug },
       });
     }
   };
@@ -204,7 +202,7 @@ export default function AuctionDetailPage() {
       } catch (error) {
         logError(error as Error, {
           component: "AuctionDetailPage.handleShare",
-          slug,
+          metadata: { slug },
         });
       }
     } else {

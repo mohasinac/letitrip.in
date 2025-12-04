@@ -11,6 +11,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let id: string | undefined;
   try {
     const user = await getCurrentUser(req);
     if (!user?.id)
@@ -36,7 +37,8 @@ export async function POST(
       );
     }
 
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
     const retRef = Collections.returns().doc(id);
     const retSnap = await retRef.get();
     if (!retSnap.exists)
@@ -94,7 +96,7 @@ export async function POST(
   } catch (error) {
     logError(error as Error, {
       component: "API.returns.media.uploadDirect",
-      returnId: id,
+      metadata: { returnId: id },
     });
     return NextResponse.json(
       { success: false, error: "Failed to upload media" },

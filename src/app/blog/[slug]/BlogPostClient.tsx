@@ -51,7 +51,7 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
       }
     } catch (err: any) {
       setError(err.message || "Failed to load blog post");
-      logError(err as Error, { component: "BlogPostClient.fetchPost", slug });
+      logError(err as Error, { component: "BlogPostClient.fetchPost", metadata: { slug } });
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
     } catch (err) {
       logError(err as Error, {
         component: "BlogPostClient.handleLike",
-        postId: post.id,
+        metadata: { postId: post.id },
       });
     }
   };
@@ -85,7 +85,7 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
       } catch (err) {
         logError(err as Error, {
           component: "BlogPostClient.handleShare",
-          postId: post?.id,
+          metadata: { postId: post?.id },
         });
       }
     } else {

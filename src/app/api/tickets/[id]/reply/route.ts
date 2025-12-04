@@ -17,14 +17,17 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let ticketId: string | undefined;
+  let user: any;
   try {
     const authResult = await requireAuth(request);
     if (authResult.error) {
       return authResult.error;
     }
-    const user = authResult.user!;
+    user = authResult.user!;
 
-    const { id: ticketId } = await params;
+    const awaitedParams = await params;
+    ticketId = awaitedParams.id;
 
     const data = await request.json();
     const { message, isInternal, attachments } = data;
@@ -106,8 +109,7 @@ export async function POST(
     }
     logError(error as Error, {
       component: "API.tickets.reply",
-      ticketId,
-      userId: user?.uid,
+      metadata: { ticketId, userId: user?.uid },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

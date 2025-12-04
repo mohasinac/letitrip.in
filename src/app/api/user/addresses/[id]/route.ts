@@ -8,13 +8,16 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let id: string | undefined;
+  let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
   try {
-    const user = await getCurrentUser(request);
+    user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
     const db = getFirestoreAdmin();
     const addressDoc = await db.collection(COLLECTIONS.ADDRESSES).doc(id).get();
 
@@ -34,8 +37,7 @@ export async function GET(
   } catch (error: any) {
     logError(error as Error, {
       component: "API.user.addresses.getById",
-      addressId: id,
-      userId: user?.id,
+      metadata: { addressId: id, userId: user?.id },
     });
     return NextResponse.json(
       { error: "Failed to fetch address" },
@@ -48,13 +50,16 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let id: string | undefined;
+  let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
   try {
-    const user = await getCurrentUser(request);
+    user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
     const db = getFirestoreAdmin();
     const addressRef = db.collection(COLLECTIONS.ADDRESSES).doc(id);
     const addressDoc = await addressRef.get();
@@ -104,8 +109,7 @@ export async function PATCH(
   } catch (error: any) {
     logError(error as Error, {
       component: "API.user.addresses.update",
-      addressId: id,
-      userId: user?.id,
+      metadata: { addressId: id, userId: user?.id },
     });
     return NextResponse.json(
       { error: "Failed to update address" },
@@ -118,13 +122,16 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let id: string | undefined;
+  let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
   try {
-    const user = await getCurrentUser(request);
+    user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
     const db = getFirestoreAdmin();
     const addressRef = db.collection(COLLECTIONS.ADDRESSES).doc(id);
     const addressDoc = await addressRef.get();
@@ -146,8 +153,7 @@ export async function DELETE(
   } catch (error: any) {
     logError(error as Error, {
       component: "API.user.addresses.delete",
-      addressId: id,
-      userId: user?.id,
+      metadata: { addressId: id, userId: user?.id },
     });
     return NextResponse.json(
       { error: "Failed to delete address" },

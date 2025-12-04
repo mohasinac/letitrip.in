@@ -5,12 +5,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/reviews/summary - Get review statistics for a product
 export async function GET(request: NextRequest) {
+  let productId: string | null = null;
   return withCache(
     request,
     async (req) => {
       try {
         const { searchParams } = new URL(req.url);
-        const productId = searchParams.get("productId");
+        productId = searchParams.get("productId");
 
         if (!productId) {
           return NextResponse.json(
@@ -66,7 +67,7 @@ export async function GET(request: NextRequest) {
       } catch (error) {
         logError(error as Error, {
           component: "API.reviews.summary.GET",
-          productId,
+          metadata: { productId },
         });
         return NextResponse.json(
           { success: false, error: "Failed to fetch review summary" },

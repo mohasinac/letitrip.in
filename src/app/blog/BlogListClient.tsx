@@ -85,7 +85,7 @@ export default function BlogListClient() {
       setError("Failed to load blog posts. Please try again later.");
       logError(err as Error, {
         component: "BlogListClient.fetchBlogs",
-        filters,
+        metadata: { filters },
       });
     } finally {
       setLoading(false);

@@ -47,9 +47,10 @@ function transformReturn(id: string, data: any) {
  * Query Format: ?page=1&pageSize=20&sorts=-createdAt&filters=status==pending
  */
 export async function GET(req: NextRequest) {
+  let role: UserRole = UserRole.USER;
   try {
     const user = await getCurrentUser(req);
-    const role = (user?.role as UserRole) || UserRole.USER;
+    role = (user?.role as UserRole) || UserRole.USER;
 
     const { searchParams } = new URL(req.url);
 
@@ -152,7 +153,10 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    logError(error as Error, { component: "API.returns.list", role });
+    logError(error as Error, {
+      component: "API.returns.list",
+      metadata: { role: role },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to load returns" },
       { status: 500 },
@@ -161,8 +165,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
   try {
-    const user = await getCurrentUser(req);
+    user = await getCurrentUser(req);
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
@@ -203,7 +208,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     logError(error as Error, {
       component: "API.returns.create",
-      userId: user?.id,
+      metadata: { userId: user?.id },
     });
     return NextResponse.json(
       { success: false, error: "Failed to initiate return" },

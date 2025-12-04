@@ -20,7 +20,7 @@ import { shopsService } from "@/services/shops.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import { Filter, Grid, List, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 function ProductsContent() {
   const router = useRouter();
@@ -217,8 +217,7 @@ function ProductsContent() {
     } catch (error) {
       logError(error as Error, {
         component: "ProductsPage.loadProducts",
-        page: currentPage,
-        filters: filterValues,
+        metadata: { page: currentPage, filters: filterValues },
       });
     } finally {
       setLoading(false);

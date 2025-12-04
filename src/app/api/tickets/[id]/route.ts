@@ -16,14 +16,17 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let ticketId: string | undefined;
+  let user: any;
   try {
     const authResult = await requireAuth(request);
     if (authResult.error) {
       return authResult.error;
     }
-    const user = authResult.user!;
+    user = authResult.user!;
 
-    const { id: ticketId } = await params;
+    const awaitedParams = await params;
+    ticketId = awaitedParams.id;
 
     const db = getFirestoreAdmin();
     const ticketRef = db.collection(COLLECTIONS.SUPPORT_TICKETS).doc(ticketId);
@@ -97,8 +100,7 @@ export async function GET(
   } catch (error: any) {
     logError(error as Error, {
       component: "API.tickets.getDetail",
-      ticketId,
-      userId: user?.uid,
+      metadata: { ticketId, userId: user?.uid },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -115,14 +117,17 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let ticketId: string | undefined;
+  let user: any;
   try {
     const authResult = await requireAuth(request);
     if (authResult.error) {
       return authResult.error;
     }
-    const user = authResult.user!;
+    user = authResult.user!;
 
-    const { id: ticketId } = await params;
+    const awaitedParams = await params;
+    ticketId = awaitedParams.id;
 
     const data = await request.json();
     const { status, assignedTo, priority, subject, description } = data;
@@ -184,8 +189,7 @@ export async function PATCH(
   } catch (error: any) {
     logError(error as Error, {
       component: "API.tickets.update",
-      ticketId,
-      userId: user?.uid,
+      metadata: { ticketId, userId: user?.uid },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -199,13 +203,15 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let ticketId: string | undefined;
   try {
     const roleResult = await requireRole(request, ["admin"]);
     if (roleResult.error) {
       return roleResult.error;
     }
 
-    const { id: ticketId } = await params;
+    const awaitedParams = await params;
+    ticketId = awaitedParams.id;
 
     const db = getFirestoreAdmin();
     const ticketRef = db.collection(COLLECTIONS.SUPPORT_TICKETS).doc(ticketId);
@@ -231,7 +237,7 @@ export async function DELETE(
       message: "Ticket deleted successfully",
     });
   } catch (error: any) {
-    logError(error as Error, { component: "API.tickets.delete", ticketId });
+    logError(error as Error, { component: "API.tickets.delete", metadata: { ticketId } });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

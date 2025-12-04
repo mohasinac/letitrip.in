@@ -50,8 +50,9 @@ function transformTicket(id: string, data: any) {
  * - Admin: All tickets
  */
 export async function GET(request: NextRequest) {
+  let user: any;
   try {
-    const user = await getUserFromRequest(request);
+    user = await getUserFromRequest(request);
     const searchParams = request.nextUrl.searchParams;
 
     // Parse Sieve query
@@ -203,7 +204,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     logError(error as Error, {
       component: "API.tickets.list",
-      userId: user?.uid,
+      metadata: { userId: user?.uid },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -214,14 +215,16 @@ export async function GET(request: NextRequest) {
  * Create a new support ticket (authenticated users only)
  */
 export async function POST(request: NextRequest) {
+  let user: any;
+  let data: any;
   try {
     const authResult = await requireAuth(request);
     if (authResult.error) {
       return authResult.error;
     }
-    const user = authResult.user!;
+    user = authResult.user!;
 
-    const data = await request.json();
+    data = await request.json();
     const {
       subject,
       category,
@@ -313,8 +316,7 @@ export async function POST(request: NextRequest) {
     }
     logError(error as Error, {
       component: "API.tickets.create",
-      userId: user?.uid,
-      subject: data?.subject,
+      metadata: { userId: user?.uid, subject: data?.subject },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

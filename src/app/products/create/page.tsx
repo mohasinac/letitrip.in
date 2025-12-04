@@ -63,7 +63,7 @@ function CreateProductContent() {
     } catch (error: any) {
       logError(error as Error, {
         component: "ProductCreate.handleSubmit",
-        productData: formData,
+        metadata: { productData: formData },
       });
       setError(error.message || "Failed to create product. Please try again.");
     } finally {

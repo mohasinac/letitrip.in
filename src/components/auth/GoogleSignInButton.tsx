@@ -87,7 +87,7 @@ function GoogleSignInButtonInner({
     } catch (error: any) {
       logError(error as Error, {
         component: "GoogleSignInButton.handleGoogleSignIn",
-        metadata: { redirect },
+        metadata: { redirectPath },
       });
 
       // Handle specific errors

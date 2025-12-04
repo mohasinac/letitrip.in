@@ -52,8 +52,7 @@ export default function MyShopsPage() {
     } catch (error) {
       logError(error as Error, {
         component: "SellerShops.handleDelete",
-        shopId,
-        shopSlug: shopToDelete.slug,
+        metadata: { shopId },
       });
       toast.error("Failed to delete shop. Please try again.");
     }

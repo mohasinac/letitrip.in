@@ -131,8 +131,7 @@ function CategoriesContent() {
     } catch (error) {
       logError(error as Error, {
         component: "CategoriesPage.loadCategories",
-        page: currentPage,
-        filters: filterValues,
+        metadata: { page: currentPage, filters: filterValues },
       });
       setCategories([]);
     } finally {

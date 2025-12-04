@@ -46,7 +46,7 @@ export default function ShopDashboardPage() {
       } catch (error) {
         logError(error as Error, {
           component: "SellerShopDetail.loadShopData.stats",
-          slug,
+          metadata: { slug },
         });
         // Continue even if stats fail
       }
@@ -55,7 +55,7 @@ export default function ShopDashboardPage() {
     } catch (error) {
       logError(error as Error, {
         component: "SellerShopDetail.loadShopData",
-        slug,
+        metadata: { slug },
       });
       toast.error("Shop not found");
       router.push("/seller/my-shops");

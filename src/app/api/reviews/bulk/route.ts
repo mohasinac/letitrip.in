@@ -39,13 +39,17 @@ function buildReviewUpdate(
  */
 
 export async function POST(request: NextRequest) {
+  let action: string | undefined;
+  let ids: string[] = [];
   try {
     // Require admin role
     const authResult = await requireAdmin(request);
     if (authResult.error) return authResult.error;
 
     const body = await request.json();
-    const { action, ids, data } = body;
+    action = body.action;
+    ids = body.ids;
+    const data = body.data;
 
     if (!action || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
@@ -113,8 +117,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     logError(error as Error, {
       component: "API.reviews.bulk.POST",
-      action,
-      idsCount: ids.length,
+      metadata: { action, idsCount: ids.length },
     });
     return NextResponse.json(
       {

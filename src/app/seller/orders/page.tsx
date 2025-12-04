@@ -47,10 +47,10 @@ export default function SellerOrdersPage() {
           render: (order) => (
             <div>
               <div className="text-sm font-medium text-gray-900 dark:text-white">
-                {order.customer?.name || "N/A"}
+                {order.shippingAddress?.name || "N/A"}
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400">
-                {order.customer?.email}
+                {order.shippingAddress?.phone || "N/A"}
               </div>
             </div>
           ),
@@ -61,7 +61,7 @@ export default function SellerOrdersPage() {
           sortable: true,
           render: (order) => (
             <div className="font-medium text-gray-900 dark:text-white">
-              <Price amount={order.totalAmount} />
+              <Price amount={order.total} />
             </div>
           ),
         },
@@ -83,7 +83,7 @@ export default function SellerOrdersPage() {
         {
           key: "fulfillmentStatus",
           label: "Fulfillment",
-          render: (order) => <StatusBadge status={order.fulfillmentStatus} />,
+          render: (order) => <StatusBadge status={order.status} />,
         },
         {
           key: "createdAt",
@@ -126,7 +126,7 @@ export default function SellerOrdersPage() {
       ]}
       bulkActions={[]}
       onSave={async (id: string, data: any) => {
-        await ordersService.update(id, data);
+        await ordersService.updateStatus(id, data.status);
       }}
       renderMobileCard={(order) => (
         <div className="p-4">
@@ -136,20 +136,20 @@ export default function SellerOrdersPage() {
                 Order #{order.orderNumber}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {order.customer?.name}
+                {order.shippingAddress?.name || "N/A"}
               </div>
             </div>
             <div className="flex flex-col gap-1 items-end">
               <StatusBadge status={order.paymentStatus} />
-              <StatusBadge status={order.fulfillmentStatus} />
+              <StatusBadge status={order.status} />
             </div>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600 dark:text-gray-400">
               {order.itemCount} items
             </span>
-            <span className="font-semibold text-gray-900 dark:text-white">
-              <Price amount={order.totalAmount} />
+            <span className="font-medium text-gray-900 dark:text-white">
+              <Price amount={order.total} />
             </span>
           </div>
           <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -173,12 +173,12 @@ export default function SellerOrdersPage() {
                 Order #{order.orderNumber}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {order.customer?.name}
+                {order.shippingAddress?.name || "N/A"}
               </div>
             </div>
             <div className="flex flex-col gap-1 items-end">
               <StatusBadge status={order.paymentStatus} />
-              <StatusBadge status={order.fulfillmentStatus} />
+              <StatusBadge status={order.status} />
             </div>
           </div>
           <div className="flex items-center justify-between text-sm mb-2">
@@ -186,7 +186,7 @@ export default function SellerOrdersPage() {
               {order.itemCount} items
             </span>
             <span className="font-semibold text-gray-900 dark:text-white">
-              <Price amount={order.totalAmount} />
+              <Price amount={order.total} />
             </span>
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">

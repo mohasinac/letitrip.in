@@ -109,7 +109,7 @@ export async function GET(
       shop,
     });
   } catch (error) {
-    logError(error as Error, { component: "API.shops.detail.GET", slug: await params.then(p => p.slug) });
+    logError(error as Error, { component: "API.shops.detail.GET", metadata: { slug: await params.then(p => p.slug) } });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },
@@ -219,7 +219,7 @@ export async function PATCH(
       message: "Shop updated successfully",
     });
   } catch (error) {
-    logError(error as Error, { component: "API.shops.detail.PATCH", slug: await params.then(p => p.slug) });
+    logError(error as Error, { component: "API.shops.detail.PATCH", metadata: { slug: await params.then(p => p.slug) } });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },
@@ -316,7 +316,7 @@ export async function DELETE(
       message: "Shop deleted successfully",
     });
   } catch (error) {
-    logError(error as Error, { component: "API.shops.detail.DELETE", slug: await params.then(p => p.slug) });
+    logError(error as Error, { component: "API.shops.detail.DELETE", metadata: { slug: await params.then(p => p.slug) } });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },
