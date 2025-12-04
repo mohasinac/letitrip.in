@@ -3,7 +3,7 @@
 import { FormField, FormInput, FormTextarea } from "@/components/forms";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
-import { eventsService } from "@/services/events.service";
+import { eventsService, type Event } from "@/services/events.service";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -82,6 +82,8 @@ export default function AdminEventDetailPage() {
     await execute(async () => {
       const payload = {
         ...formData,
+        type: formData.type as Event["type"],
+        status: formData.status as Event["status"],
         maxParticipants: formData.maxParticipants
           ? parseInt(formData.maxParticipants)
           : undefined,

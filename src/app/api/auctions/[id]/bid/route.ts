@@ -4,11 +4,12 @@ import { withIPTracking } from "@/app/api/middleware/ip-tracker";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "../../../lib/session";
 
-// GET bids list, POST place bid
+// GET bids list
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { params } = context;
   try {
     const { id } = await params;
     const { searchParams } = new URL(request.url);
@@ -59,30 +60,36 @@ export async function GET(
     console.error("List bids error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to list bids" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 async function placeBidHandler(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  request: Request,
+  context?: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getCurrentUser(request);
+    const user = await getCurrentUser(request as NextRequest);
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
-    const { id } = await params;
+    if (!context?.params) {
+      return NextResponse.json(
+        { success: false, error: "Invalid request" },
+        { status: 400 }
+      );
+    }
+    const { id } = await context.params;
     const body = await request.json();
     // Accept both 'amount' (from service) and 'bidAmount' (legacy) for backwards compatibility
     const bidAmount = Number(body.amount ?? body.bidAmount);
     if (!Number.isFinite(bidAmount) || bidAmount <= 0)
       return NextResponse.json(
         { success: false, error: "Invalid bid amount" },
-        { status: 400 },
+        { status: 400 }
       );
 
     const bidId = await placeBid(id, user.id, bidAmount);
@@ -99,7 +106,7 @@ async function placeBidHandler(
         success: false,
         error: (error as Error).message || "Failed to place bid",
       },
-      { status: 400 },
+      { status: 400 }
     );
   }
 }

@@ -11,7 +11,13 @@ export interface Event {
   imageUrl?: string;
   registrationRequired: boolean;
   maxParticipants?: number;
-  status: "upcoming" | "ongoing" | "completed" | "cancelled";
+  participantCount: number;
+  status: "upcoming" | "ongoing" | "completed" | "cancelled" | "draft";
+  isOnline: boolean;
+  registrationDeadline?: string;
+  isPollEvent?: boolean;
+  allowMultipleVotes?: boolean;
+  voteCount?: number;
   createdAt: string;
   updatedAt: string;
 }
