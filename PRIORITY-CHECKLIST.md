@@ -764,11 +764,16 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 #### 1.3: Other Large Files (4-6 hours)
 
-##### ⬜ 76-split-admin-homepage-page
+##### ✅ 76-split-admin-homepage-page
 
 - **File**: `src/app/admin/homepage/page.tsx`
-- **Before**: 839 lines
-- **Components to extract**: SectionManager, SectionCard, BannerEditor, SectionOrderManager
+- **Before**: 888 lines
+- **After**: 589 lines (34% reduction)
+- **Components extracted**:
+  - `src/components/admin/homepage/BannerEditor.tsx` (142 lines)
+  - `src/components/admin/homepage/SectionCard.tsx` (102 lines)
+  - `src/components/admin/homepage/SliderControl.tsx` (39 lines)
+- **Status**: ✅ COMPLETE
 
 ##### ⬜ 77-split-admin-riplimit-page
 

@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Heart, Package, Store, Folder, Gavel, Loader2 } from "lucide-react";
+import { logError } from "@/lib/firebase-error-logger";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { Price } from "@/components/common/values";

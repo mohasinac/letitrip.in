@@ -68,7 +68,11 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
     try {
       await ordersService.downloadInvoice(orderId);
     } catch (error) {
-      console.error("Failed to download invoice:", error);
+      logError(error as Error, {
+        component: "OrderDetailPage.downloadInvoice",
+        metadata: { orderId: params.id },
+      });
+      toast.error("Failed to download invoice");
     }
   };
 
@@ -369,8 +373,8 @@ function OrderTimeline({ status }: { status: string }) {
                   isCurrent
                     ? "text-primary"
                     : isCompleted
-                      ? "text-gray-900 dark:text-white"
-                      : "text-gray-400 dark:text-gray-500"
+                    ? "text-gray-900 dark:text-white"
+                    : "text-gray-400 dark:text-gray-500"
                 }`}
               >
                 {step.label}
