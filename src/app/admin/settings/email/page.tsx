@@ -311,28 +311,37 @@ export default function AdminEmailSettingsPage() {
                 <FormInput
                   label="From Email"
                   type="email"
-                  value={settings.fromEmail}
-                  onChange={(e) =>
-                    setSettings({ ...settings, fromEmail: e.target.value })
-                  }
+                  value={settings?.fromEmail || ""}
+                  onChange={(e) => {
+                    if (settings) {
+                      setSettings({ ...settings, fromEmail: e.target.value });
+                    }
+                  }}
                   placeholder="noreply@example.com"
                 />
                 <FormInput
                   label="From Name"
-                  value={settings.fromName}
-                  onChange={(e) =>
-                    setSettings({ ...settings, fromName: e.target.value })
-                  }
+                  value={settings?.fromName || ""}
+                  onChange={(e) => {
+                    if (settings) {
+                      setSettings({ ...settings, fromName: e.target.value });
+                    }
+                  }}
                   placeholder="Your Store Name"
                 />
                 <div className="md:col-span-2">
                   <FormInput
                     label="Reply-To Email"
                     type="email"
-                    value={settings.replyToEmail}
-                    onChange={(e) =>
-                      setSettings({ ...settings, replyToEmail: e.target.value })
-                    }
+                    value={settings?.replyToEmail || ""}
+                    onChange={(e) => {
+                      if (settings) {
+                        setSettings({
+                          ...settings,
+                          replyToEmail: e.target.value,
+                        });
+                      }
+                    }}
                     placeholder="support@example.com"
                   />
                 </div>
@@ -423,50 +432,53 @@ export default function AdminEmailSettingsPage() {
               Enable or disable automatic email notifications
             </p>
             <div className="space-y-4">
-              {(
-                Object.keys(settings.templates) as Array<
-                  keyof EmailSettings["templates"]
-                >
-              ).map((template) => (
-                <label
-                  key={template}
-                  className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
-                >
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {templateLabels[template].label}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {templateLabels[template].description}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setSettings({
-                        ...settings,
-                        templates: {
-                          ...settings.templates,
-                          [template]: !settings.templates[template],
-                        },
-                      })
-                    }
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      settings.templates[template]
-                        ? "bg-blue-600"
-                        : "bg-gray-300 dark:bg-gray-600"
-                    }`}
+              {settings &&
+                (
+                  Object.keys(settings.templates) as Array<
+                    keyof EmailSettings["templates"]
                   >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        settings.templates[template]
-                          ? "translate-x-6"
-                          : "translate-x-1"
+                ).map((template) => (
+                  <label
+                    key={template}
+                    className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
+                  >
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {templateLabels[template].label}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {templateLabels[template].description}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (settings) {
+                          setSettings({
+                            ...settings,
+                            templates: {
+                              ...settings.templates,
+                              [template]: !settings.templates[template],
+                            },
+                          });
+                        }
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        settings?.templates[template]
+                          ? "bg-blue-600"
+                          : "bg-gray-300 dark:bg-gray-600"
                       }`}
-                    />
-                  </button>
-                </label>
-              ))}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          settings?.templates[template]
+                            ? "translate-x-6"
+                            : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </label>
+                ))}
             </div>
           </div>
         )}
