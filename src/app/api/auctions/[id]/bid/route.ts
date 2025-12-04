@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "../../../lib/session";
+import { trackActivity } from "@/app/api/middleware/ip-tracker";
 import { placeBid } from "@/app/api/lib/firebase/transactions";
 
 // GET bids list, POST place bid
@@ -86,6 +87,14 @@ export async function POST(
 
     const bidId = await placeBid(id, user.id, bidAmount);
     const bidDoc = await Collections.bids().doc(bidId).get();
+
+    // Track bid placement
+    await trackActivity(request, "bid_placed", user.id, {
+      auctionId: id,
+      bidAmount,
+      bidId,
+    });
+
     return NextResponse.json({
       success: true,
       data: { id: bidDoc.id, ...bidDoc.data() },

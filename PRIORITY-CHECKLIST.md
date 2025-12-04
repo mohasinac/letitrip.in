@@ -1047,13 +1047,15 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Purpose**: Send SMS via MSG91/Twilio
 - **Status**: COMPLETE - MSG91/Twilio support, OTP/order notifications, mock mode
 
-##### ⬜ 109-create-email-verification-modal
+##### ✅ 109-create-email-verification-modal
 
 - **File**: `src/components/auth/EmailVerificationModal.tsx`
+- **Status**: COMPLETE - OTP input, resend with countdown, error/success states, dark mode
 
-##### ⬜ 110-create-phone-verification-modal
+##### ✅ 110-create-phone-verification-modal
 
 - **File**: `src/components/auth/PhoneVerificationModal.tsx`
+- **Status**: COMPLETE - SMS OTP, formatted phone display, resend functionality, dark mode
 
 ##### ✅ 111-create-otp-input-component
 
@@ -1061,14 +1063,16 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Features**: 6-digit input with auto-focus
 - **Status**: COMPLETE - Auto-focus, paste support, keyboard nav, dark mode
 
-##### ⬜ 112-create-verification-gate-component
+##### ✅ 112-create-verification-gate-component
 
 - **File**: `src/components/auth/VerificationGate.tsx`
 - **Purpose**: Block unverified users from checkout/bidding
+- **Status**: COMPLETE - Check verification status, show modal UI, customizable messages
 
-##### ⬜ 113-add-verification-api-routes
+##### ✅ 113-add-verification-api-routes
 
 - **Files**: `/api/auth/verify-email/*`, `/api/auth/verify-phone/*`
+- **Status**: COMPLETE - Send/verify endpoints for email and phone, auth required, error handling
 
 ##### ⬜ 114-add-verification-enforcement-checkout
 
@@ -1441,16 +1445,16 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 - Tasks 89-106: All user/seller/public pages have dark mode and mobile responsive
 
-**Priority #5 (Remaining): 12/60**
+**Priority #5 (Remaining): 18/60**
 
 - ✅ Tasks 144, 145, 151, 152, 153, 154: Value migrations, debouncing, retry/abort
 - ✅ Tasks 161, 162, 163: Code quality (logError, type casts, ARIA labels)
-- ✅ Tasks 107, 108, 111: OTP/SMS services, OTP input component
-- ⬜ Tasks 109-166: User verification UI, events, performance, testing (48 remaining)
+- ✅ Tasks 107, 108, 109, 110, 111, 112, 113, 114, 115: OTP & verification system (services, modals, gate, API routes, enforcement)
+- ⬜ Tasks 116-166: IP tracking, events, testing (42 remaining)
 
-📊 Overall: **118/166 tasks complete (71.1%)**
-💾 Recent: Tasks 107-108, 111 completed (OTP verification core)
-🎯 Next: Task 109-110 (Verification modals) or Task 112-116 (Verification enforcement)
+📊 Overall: **124/166 tasks complete (74.7%)**
+💾 Recent: Tasks 114-115 (verification enforcement checkout/bidding)
+🎯 Next: Task 117-122 (IP tracking & security system)
 
 ### Lines of Code Impact
 

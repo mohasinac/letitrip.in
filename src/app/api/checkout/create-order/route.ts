@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "../../lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
+import { trackActivity } from "@/app/api/middleware/ip-tracker";
 import { strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import { batchGetProducts } from "@/app/api/lib/batch-fetch";
 import { z } from "zod";
@@ -330,6 +331,14 @@ async function createOrderHandler(request: NextRequest) {
       }
       await razorpayBatch.commit();
     }
+
+    // Track order placement
+    await trackActivity(request, "order_placed", user.id, {
+      orderCount: orderRefs.length,
+      totalAmount: grandTotal,
+      paymentMethod,
+      shopIds: shopOrders.map((so: any) => so.shopId),
+    });
 
     return NextResponse.json({
       success: true,

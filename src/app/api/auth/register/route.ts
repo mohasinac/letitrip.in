@@ -1,4 +1,5 @@
 import { authRateLimiter } from "@/app/api/lib/utils/rate-limiter";
+import { trackActivity } from "@/app/api/middleware/ip-tracker";
 import { COLLECTIONS } from "@/constants/database";
 import {
   isValidEmail,
@@ -34,7 +35,7 @@ async function registerHandler(req: NextRequest) {
           error: "Missing required fields",
           fields: ["email", "password", "name"],
         },
-        { status: 400 }
+        { status: 400 },
       );
       clearSessionCookie(response);
       return response;
@@ -48,7 +49,7 @@ async function registerHandler(req: NextRequest) {
     if (!isValidEmail(email)) {
       const response = NextResponse.json(
         { error: VALIDATION_MESSAGES.EMAIL.INVALID },
-        { status: 400 }
+        { status: 400 },
       );
       clearSessionCookie(response);
       return response;
@@ -58,7 +59,7 @@ async function registerHandler(req: NextRequest) {
     if (password.length < VALIDATION_RULES.PASSWORD.MIN_LENGTH) {
       const response = NextResponse.json(
         { error: VALIDATION_MESSAGES.PASSWORD.TOO_SHORT },
-        { status: 400 }
+        { status: 400 },
       );
       clearSessionCookie(response);
       return response;
@@ -74,7 +75,7 @@ async function registerHandler(req: NextRequest) {
     if (!userSnapshot.empty) {
       const response = NextResponse.json(
         { error: "User already exists" },
-        { status: 409 }
+        { status: 409 },
       );
       clearSessionCookie(response);
       return response;
@@ -120,20 +121,18 @@ async function registerHandler(req: NextRequest) {
 
     // Send verification email
     try {
-      const verificationLink = await adminAuth.generateEmailVerificationLink(
-        email
-      );
+      const verificationLink =
+        await adminAuth.generateEmailVerificationLink(email);
 
       // Import email service dynamically to avoid circular dependencies
-      const { emailService } = await import(
-        "@/app/api/lib/email/email.service"
-      );
+      const { emailService } =
+        await import("@/app/api/lib/email/email.service");
 
       // Send verification email
       const emailResult = await emailService.sendVerificationEmail(
         email,
         name,
-        verificationLink
+        verificationLink,
       );
 
       if (emailResult.success) {
@@ -141,7 +140,7 @@ async function registerHandler(req: NextRequest) {
       } else {
         console.error(
           "❌ Failed to send verification email:",
-          emailResult.error
+          emailResult.error,
         );
       }
     } catch (error) {
@@ -149,12 +148,19 @@ async function registerHandler(req: NextRequest) {
       // Don't fail registration if email sending fails
     }
 
+    // Track registration
+    await trackActivity(req, "register", userRecord.uid, {
+      email: email.toLowerCase(),
+      role: userRole,
+      hasPhoneNumber: !!phoneNumber,
+    });
+
     // Create session for immediate login
     const { sessionId, token } = await createSession(
       userRecord.uid,
       email.toLowerCase(),
       userRole, // Use the validated role
-      req
+      req,
     );
 
     // Create response with session cookie
@@ -170,7 +176,7 @@ async function registerHandler(req: NextRequest) {
         },
         sessionId,
       },
-      { status: 201 }
+      { status: 201 },
     );
 
     // Set session cookie
@@ -184,7 +190,7 @@ async function registerHandler(req: NextRequest) {
     if (error.code === "auth/email-already-exists") {
       const response = NextResponse.json(
         { error: "Email already exists" },
-        { status: 409 }
+        { status: 409 },
       );
       clearSessionCookie(response);
       return response;
@@ -193,7 +199,7 @@ async function registerHandler(req: NextRequest) {
     if (error.code === "auth/invalid-email") {
       const response = NextResponse.json(
         { error: "Invalid email address" },
-        { status: 400 }
+        { status: 400 },
       );
       clearSessionCookie(response);
       return response;
@@ -202,7 +208,7 @@ async function registerHandler(req: NextRequest) {
     if (error.code === "auth/invalid-password") {
       const response = NextResponse.json(
         { error: "Invalid password. Password must be at least 6 characters" },
-        { status: 400 }
+        { status: 400 },
       );
       clearSessionCookie(response);
       return response;
@@ -216,7 +222,7 @@ async function registerHandler(req: NextRequest) {
             ? "An unexpected error occurred"
             : error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
     clearSessionCookie(response);
     return response;
@@ -232,7 +238,7 @@ export async function POST(req: NextRequest) {
   if (!authRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many registration attempts. Please try again later." },
-      { status: 429 }
+      { status: 429 },
     );
   }
 
