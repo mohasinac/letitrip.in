@@ -62,7 +62,10 @@ export async function POST(
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
-    logError(error as Error, { component: "API.orders.shipment", orderId: id });
+    logError(error as Error, {
+      component: "API.orders.shipment",
+      metadata: { orderId: id },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to create shipment" },
       { status: 500 },

@@ -53,7 +53,10 @@ export async function GET(
       data: { id: doc.id, ...orderData },
     });
   } catch (error) {
-    logError(error as Error, { component: "API.orders.get", orderId: id });
+    logError(error as Error, {
+      component: "API.orders.get",
+      metadata: { orderId: id },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to load order" },
       { status: 500 },
@@ -112,7 +115,10 @@ export async function PATCH(
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
-    logError(error as Error, { component: "API.orders.update", orderId: id });
+    logError(error as Error, {
+      component: "API.orders.update",
+      metadata: { orderId: id },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to update order" },
       { status: 500 },

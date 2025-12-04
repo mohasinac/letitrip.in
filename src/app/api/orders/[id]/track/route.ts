@@ -30,7 +30,10 @@ export async function GET(
     const status = order.status === "shipped" ? "in_transit" : order.status;
     return NextResponse.json({ success: true, data: { shipment, status } });
   } catch (error) {
-    logError(error as Error, { component: "API.orders.track", orderId: id });
+    logError(error as Error, {
+      component: "API.orders.track",
+      metadata: { orderId: id },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to track order" },
       { status: 500 },
