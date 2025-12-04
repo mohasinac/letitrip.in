@@ -1184,10 +1184,16 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Changes**: Add "Apply Filters" button, integrate with useUrlFilters
 - **Status**: COMPLETE - Added integration examples and documentation
 
-##### ⬜ 133-update-all-public-list-pages-url-params
+##### 🔄 133-update-all-public-list-pages-url-params
 
 - **Files**: `/products`, `/auctions`, `/shops`, `/search`, `/categories/[slug]`
 - **Changes**: Use useUrlFilters hook, sync state with URL
+- **Status**: 🔄 IN PROGRESS
+  - ✅ `/products` - Complete (useUrlFilters + AdvancedPagination integrated)
+  - ⬜ `/auctions` - Pending
+  - ⬜ `/shops` - Pending
+  - ⬜ `/search` - Pending
+  - ⬜ `/categories/[slug]` - Pending
 
 ##### ⬜ 134-update-all-admin-list-pages-url-params
 
