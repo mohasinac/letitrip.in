@@ -1,92 +1,108 @@
 "use client";
 
 import { useState, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Loader2, Filter, Grid, List, AlertCircle } from "lucide-react";
 import { FormSelect } from "@/components/forms";
+import { AdvancedPagination } from "@/components/common/AdvancedPagination";
 import { ShopCard } from "@/components/cards/ShopCard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { SHOP_FILTERS } from "@/constants/filters";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { shopsService } from "@/services/shops.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 
 function ShopsContent() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const isMobile = useIsMobile();
 
+  // Use URL filters hook
+  const {
+    filters,
+    updateFilter,
+    updateFilters,
+    resetFilters: resetUrlFilters,
+    sort,
+    setSort,
+    page,
+    setPage,
+    limit,
+    setLimit,
+  } = useUrlFilters({
+    initialFilters: {
+      categoryId: "",
+      minRating: "",
+      isVerified: "",
+      featured: "",
+      view: "grid",
+    },
+    initialSort: { field: "rating", order: "desc" },
+    initialPage: 1,
+    initialLimit: 20,
+  });
+
   const [shops, setShops] = useState<ShopCardFE[]>([]);
-  const [view, setView] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState<string>(
-    searchParams.get("sortBy") || "rating",
-  );
-  const [sortOrder, setSortOrder] = useState<string>(
-    searchParams.get("sortOrder") || "desc",
-  );
-  const [showFilters, setShowFilters] = useState(false);
   const [totalShops, setTotalShops] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
 
   // Loading state
   const { isLoading, error, execute } = useLoadingState<void>();
 
-  // Cursor-based pagination
-  const [cursors, setCursors] = useState<(string | null)[]>([null]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
-  const limit = 20;
-
-  // Unified filters
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  // Extract view from filters
+  const view = (filters.view as "grid" | "list") || "grid";
 
   const loadShops = useCallback(async () => {
     await execute(async () => {
-      const startAfter = cursors[currentPage - 1];
+      const startAfter = cursors[page - 1];
 
-      const response = await shopsService.list({
+      // Build filter params
+      const apiFilters: any = {
         startAfter: startAfter || undefined,
         limit,
-        sortBy,
-        sortOrder,
-        ...filterValues,
-      });
+        sortBy: sort?.field || "rating",
+        sortOrder: sort?.order || "desc",
+      };
 
+      if (filters.categoryId) apiFilters.categoryId = filters.categoryId;
+      if (filters.minRating) apiFilters.minRating = Number(filters.minRating);
+      if (filters.isVerified === "true") apiFilters.isVerified = true;
+      if (filters.featured === "true") apiFilters.featured = true;
+
+      const response = await shopsService.list(apiFilters);
       setShops(response.data || []);
       setTotalShops(response.count || 0);
 
-      // Check if it's cursor pagination
-      if ("hasNextPage" in response.pagination) {
-        setHasNextPage(response.pagination.hasNextPage || false);
-
-        // Store cursor for next page
-        if ("nextCursor" in response.pagination) {
-          const cursorPagination = response.pagination as any;
-          if (cursorPagination.nextCursor) {
-            setCursors((prev) => {
-              const newCursors = [...prev];
-              newCursors[currentPage] = cursorPagination.nextCursor || null;
-              return newCursors;
-            });
-          }
+      // Store cursor for next page
+      if (
+        "hasNextPage" in response.pagination &&
+        "nextCursor" in response.pagination
+      ) {
+        const cursorPagination = response.pagination as any;
+        if (cursorPagination.nextCursor && !cursors[page]) {
+          setCursors((prev) => {
+            const newCursors = [...prev];
+            newCursors[page] = cursorPagination.nextCursor || null;
+            return newCursors;
+          });
         }
       }
     });
-  }, [cursors, currentPage, limit, sortBy, sortOrder, filterValues, execute]);
+  }, [cursors, page, limit, sort, filters, execute]);
 
-  // Load on sort/page change
+  // Load shops when filters, sort, or page changes
   useEffect(() => {
     loadShops();
   }, [loadShops]);
 
   const handleReset = useCallback(() => {
-    setFilterValues({});
-    setSortBy("rating");
-    setSortOrder("desc");
-    setCurrentPage(1);
-    setCursors([null]);
+    resetUrlFilters();
+    updateFilter("view", "grid");
     setShowFilters(false);
-  }, []);
+    setCursors([null]);
+  }, [resetUrlFilters, updateFilter]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -101,7 +117,7 @@ function ShopsContent() {
           </p>
         </div>
 
-        {/* Controls - No Search (use main search bar) */}
+        {/* Controls */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Filter Toggle */}
@@ -116,8 +132,10 @@ function ShopsContent() {
             {/* Sort */}
             <FormSelect
               id="shops-sort-by"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              value={sort?.field || "rating"}
+              onChange={(e) =>
+                setSort({ field: e.target.value, order: sort?.order || "desc" })
+              }
               options={[
                 { value: "rating", label: "Highest Rated" },
                 { value: "products", label: "Most Products" },
@@ -129,7 +147,7 @@ function ShopsContent() {
             {/* View Toggle */}
             <div className="hidden md:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
               <button
-                onClick={() => setView("grid")}
+                onClick={() => updateFilter("view", "grid")}
                 className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                   view === "grid"
                     ? "bg-blue-600 text-white"
@@ -139,7 +157,7 @@ function ShopsContent() {
                 <Grid className="w-5 h-5" />
               </button>
               <button
-                onClick={() => setView("list")}
+                onClick={() => updateFilter("view", "list")}
                 className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                   view === "list"
                     ? "bg-blue-600 text-white"
@@ -158,15 +176,11 @@ function ShopsContent() {
           {!isMobile && (
             <UnifiedFilterSidebar
               sections={SHOP_FILTERS}
-              values={filterValues}
-              onChange={(key, value) => {
-                setFilterValues((prev) => ({ ...prev, [key]: value }));
-              }}
+              values={filters}
+              onChange={(key, value) => updateFilter(key, value)}
               onApply={(pendingValues) => {
-                if (pendingValues) setFilterValues(pendingValues);
-                setCurrentPage(1);
+                if (pendingValues) updateFilters(pendingValues);
                 setCursors([null]);
-                setTimeout(() => loadShops(), 0);
               }}
               onReset={handleReset}
               isOpen={showFilters}
@@ -258,46 +272,33 @@ function ShopsContent() {
                     ))}
                   </div>
                 )}
+
+                {/* Pagination */}
+                {totalShops > 0 && (
+                  <div className="mt-8">
+                    <AdvancedPagination
+                      currentPage={page}
+                      totalPages={Math.ceil(totalShops / limit)}
+                      pageSize={limit}
+                      totalItems={totalShops}
+                      onPageChange={(newPage) => {
+                        setPage(newPage);
+                        if (newPage === 1) setCursors([null]);
+                        globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
+                      }}
+                      onPageSizeChange={(newLimit) => {
+                        setLimit(newLimit);
+                        setPage(1);
+                        setCursors([null]);
+                      }}
+                      showPageSizeSelector
+                      showPageInput
+                      showFirstLast
+                    />
+                  </div>
+                )}
               </>
             )}
-
-            {/* Pagination */}
-            {!isLoading &&
-              shops.length > 0 &&
-              (hasNextPage || currentPage > 1) && (
-                <div className="flex items-center justify-center gap-4 mt-8">
-                  <button
-                    onClick={() => {
-                      if (currentPage > 1) {
-                        setCurrentPage(currentPage - 1);
-                        globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
-                      }
-                    }}
-                    disabled={currentPage === 1}
-                    className="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Previous
-                  </button>
-
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    Page {currentPage}{" "}
-                    {shops.length > 0 && `(${shops.length} shops)`}
-                  </span>
-
-                  <button
-                    onClick={() => {
-                      if (hasNextPage) {
-                        setCurrentPage(currentPage + 1);
-                        globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
-                      }
-                    }}
-                    disabled={!hasNextPage}
-                    className="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
           </div>
         </div>
 
@@ -305,16 +306,12 @@ function ShopsContent() {
         {isMobile && (
           <UnifiedFilterSidebar
             sections={SHOP_FILTERS}
-            values={filterValues}
-            onChange={(key, value) => {
-              setFilterValues((prev) => ({ ...prev, [key]: value }));
-            }}
+            values={filters}
+            onChange={(key, value) => updateFilter(key, value)}
             onApply={(pendingValues) => {
-              if (pendingValues) setFilterValues(pendingValues);
-              setCurrentPage(1);
+              if (pendingValues) updateFilters(pendingValues);
               setCursors([null]);
               setShowFilters(false);
-              setTimeout(() => loadShops(), 0);
             }}
             onReset={handleReset}
             isOpen={showFilters}
