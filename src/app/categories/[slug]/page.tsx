@@ -7,6 +7,7 @@ import { CategoryHeader } from "@/components/category/CategoryHeader";
 import { CategoryStats } from "@/components/category/CategoryStats";
 import { SimilarCategories } from "@/components/category/SimilarCategories";
 import { SubcategoryGrid } from "@/components/category/SubcategoryGrid";
+import { AdvancedPagination } from "@/components/common/AdvancedPagination";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { Price } from "@/components/common/values";
@@ -14,13 +15,14 @@ import { FormSelect } from "@/components/forms";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useCart } from "@/hooks/useCart";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { notFound } from "@/lib/error-redirects";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
 import type { CategoryFE, ProductCardFE } from "@/types";
 import { Filter, Grid as GridIcon, List, Loader2 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Suspense, use, useEffect, useState } from "react";
 
 interface PageProps {
@@ -30,9 +32,26 @@ interface PageProps {
 function CategoryDetailContent({ params }: PageProps) {
   const { slug } = use(params);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { addItem } = useCart();
   const isMobile = useIsMobile();
+
+  // URL-based filter management
+  const {
+    filters,
+    sortField,
+    sortDirection,
+    page,
+    pageSize,
+    updateFilter,
+    updateSort,
+    updatePagination,
+    resetFilters,
+    getQueryString,
+  } = useUrlFilters({
+    defaultSortField: "createdAt",
+    defaultSortDirection: "desc",
+    defaultPageSize: 20,
+  });
 
   const [category, setCategory] = useState<CategoryFE | null>(null);
   const [breadcrumb, setBreadcrumb] = useState<CategoryFE[]>([]);
@@ -44,10 +63,6 @@ function CategoryDetailContent({ params }: PageProps) {
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<string>("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
     loadCategory();
@@ -57,7 +72,7 @@ function CategoryDetailContent({ params }: PageProps) {
     if (category) {
       loadProducts();
     }
-  }, [category, sortBy, sortOrder, filterValues]);
+  }, [category, sortField, sortDirection, filters, page, pageSize]);
 
   const loadCategory = async () => {
     setLoading(true);
@@ -66,33 +81,11 @@ function CategoryDetailContent({ params }: PageProps) {
       const categoryData = await categoriesService.getBySlug(slug);
       setCategory(categoryData);
 
-      // Check if we have a path in URL (user followed link)
-      const pathParam = searchParams.get("path");
-      if (pathParam) {
-        // Use the path from URL
-        const pathSlugs = pathParam.split(",");
-        const pathCategories: CategoryFE[] = [];
-
-        for (const pathSlug of pathSlugs) {
-          try {
-            const cat = await categoriesService.getBySlug(pathSlug);
-            pathCategories.push(cat);
-          } catch (err) {
-            logError(err as Error, {
-              component: "CategoryDetail.loadBreadcrumb",
-              metadata: { pathSlug },
-            });
-          }
-        }
-
-        setBreadcrumb(pathCategories);
-      } else {
-        // Load default breadcrumb using parent hierarchy
-        const breadcrumbData = await categoriesService.getBreadcrumb(
-          categoryData.id
-        );
-        setBreadcrumb(breadcrumbData);
-      }
+      // Load breadcrumb using parent hierarchy
+      const breadcrumbData = await categoriesService.getBreadcrumb(
+        categoryData.id,
+      );
+      setBreadcrumb(breadcrumbData);
 
       // Load subcategories
       const subcatsResponse = await categoriesService.list({
@@ -116,32 +109,27 @@ function CategoryDetailContent({ params }: PageProps) {
 
     setProductsLoading(true);
     try {
+      const offset = (page - 1) * pageSize;
       const response = await productsService.list({
         categoryId: category.id,
-        search: searchQuery,
-        ...filterValues,
-        sortBy: sortBy as any,
-        limit: 100,
+        ...filters,
+        sortBy: sortField as any,
+        sortOrder: sortDirection,
+        limit: pageSize,
+        offset,
       });
       setProducts(response.data || []);
       setTotalProducts(response.count || response.data?.length || 0);
     } catch (error) {
       logError(error as Error, {
         component: "CategoryDetail.loadProducts",
-        metadata: { categoryId: category.id, filters: filterValues },
+        metadata: { categoryId: category.id, filters },
       });
       setProducts([]);
       setTotalProducts(0);
     } finally {
       setProductsLoading(false);
     }
-  };
-
-  const handleResetFilters = () => {
-    setFilterValues({});
-    setSearchQuery("");
-    setSortBy("createdAt");
-    setSortOrder("desc");
   };
 
   const handleAddToCart = async (
@@ -152,7 +140,7 @@ function CategoryDetailContent({ params }: PageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    }
+    },
   ) => {
     try {
       if (!productDetails) {
@@ -174,12 +162,6 @@ function CategoryDetailContent({ params }: PageProps) {
     } catch (error: any) {
       toast.error(error.message || "Failed to add to cart");
     }
-  };
-
-  const buildCategoryPath = (targetSlug: string): string => {
-    // Build path including current breadcrumb
-    const pathSlugs = [...breadcrumb.map((c) => c.slug), slug];
-    return pathSlugs.join(",");
   };
 
   if (loading) {
@@ -256,8 +238,8 @@ function CategoryDetailContent({ params }: PageProps) {
               <div className="flex-1 flex gap-2">
                 <FormSelect
                   id="sort-by"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
+                  value={sortField}
+                  onChange={(e) => updateSort(e.target.value, sortDirection)}
                   options={[
                     { value: "createdAt", label: "Newest" },
                     { value: "price", label: "Price" },
@@ -269,9 +251,9 @@ function CategoryDetailContent({ params }: PageProps) {
 
                 <FormSelect
                   id="sort-order"
-                  value={sortOrder}
+                  value={sortDirection}
                   onChange={(e) =>
-                    setSortOrder(e.target.value as "asc" | "desc")
+                    updateSort(sortField, e.target.value as "asc" | "desc")
                   }
                   options={[
                     { value: "desc", label: "High to Low" },
@@ -313,9 +295,9 @@ function CategoryDetailContent({ params }: PageProps) {
                 >
                   <Filter className="w-5 h-5" />
                   Filters
-                  {Object.keys(filterValues).length > 0 && (
+                  {Object.keys(filters).length > 0 && (
                     <span className="bg-white text-blue-600 text-xs font-semibold px-2 py-0.5 rounded-full">
-                      {Object.keys(filterValues).length}
+                      {Object.keys(filters).length}
                     </span>
                   )}
                 </button>
@@ -329,16 +311,16 @@ function CategoryDetailContent({ params }: PageProps) {
             {!isMobile && (
               <UnifiedFilterSidebar
                 sections={PRODUCT_FILTERS}
-                values={filterValues}
-                onChange={(key, value) => {
-                  setFilterValues((prev) => ({ ...prev, [key]: value }));
-                }}
+                values={filters}
+                onChange={updateFilter}
                 onApply={(pendingValues) => {
-                  if (pendingValues) setFilterValues(pendingValues);
+                  if (pendingValues) {
+                    Object.entries(pendingValues).forEach(([key, value]) => {
+                      updateFilter(key, value);
+                    });
+                  }
                 }}
-                onReset={() => {
-                  setFilterValues({});
-                }}
+                onReset={resetFilters}
                 isOpen={true}
                 onClose={() => {}}
                 searchable={true}
@@ -352,17 +334,17 @@ function CategoryDetailContent({ params }: PageProps) {
             {isMobile && (
               <UnifiedFilterSidebar
                 sections={PRODUCT_FILTERS}
-                values={filterValues}
-                onChange={(key, value) => {
-                  setFilterValues((prev) => ({ ...prev, [key]: value }));
-                }}
+                values={filters}
+                onChange={updateFilter}
                 onApply={(pendingValues) => {
-                  if (pendingValues) setFilterValues(pendingValues);
+                  if (pendingValues) {
+                    Object.entries(pendingValues).forEach(([key, value]) => {
+                      updateFilter(key, value);
+                    });
+                  }
                   setShowFilters(false);
                 }}
-                onReset={() => {
-                  setFilterValues({});
-                }}
+                onReset={resetFilters}
                 isOpen={showFilters}
                 onClose={() => setShowFilters(false)}
                 searchable={true}
@@ -381,13 +363,13 @@ function CategoryDetailContent({ params }: PageProps) {
               ) : products.length === 0 ? (
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
                   <p className="text-gray-600 dark:text-gray-400 text-lg">
-                    {Object.keys(filterValues).length > 0
+                    {Object.keys(filters).length > 0
                       ? "No products found matching your filters"
                       : "No products found in this category"}
                   </p>
-                  {Object.keys(filterValues).length > 0 && (
+                  {Object.keys(filters).length > 0 && (
                     <button
-                      onClick={handleResetFilters}
+                      onClick={resetFilters}
                       className="mt-4 text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       Clear filters
@@ -529,6 +511,23 @@ function CategoryDetailContent({ params }: PageProps) {
                           ))}
                         </tbody>
                       </table>
+                    </div>
+                  )}
+
+                  {/* Pagination */}
+                  {!productsLoading && products.length > 0 && (
+                    <div className="mt-8">
+                      <AdvancedPagination
+                        currentPage={page}
+                        pageSize={pageSize}
+                        totalItems={totalProducts}
+                        onPageChange={(newPage) =>
+                          updatePagination(newPage, pageSize)
+                        }
+                        onPageSizeChange={(newSize) =>
+                          updatePagination(1, newSize)
+                        }
+                      />
                     </div>
                   )}
                 </>
