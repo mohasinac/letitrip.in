@@ -39,7 +39,7 @@ class ErrorLoggerClass {
   log(
     error: Error | string,
     context: ErrorContext = {},
-    severity: ErrorSeverity = ErrorSeverity.MEDIUM,
+    severity: ErrorSeverity = ErrorSeverity.MEDIUM
   ): void {
     const errorMessage = typeof error === "string" ? error : error.message;
     const errorStack = typeof error === "string" ? undefined : error.stack;
@@ -101,7 +101,7 @@ class ErrorLoggerClass {
 
     // Log to Firebase Analytics
     try {
-      firebaselogError(error as Error, context, severity);
+      firebaseLogError(error as Error, context, severity);
     } catch (firebaseError) {
       // Fail silently to avoid infinite loops
       if (process.env.NODE_ENV === "development") {
@@ -118,7 +118,7 @@ class ErrorLoggerClass {
       console.log(
         `[INFO] [${context.component || "Unknown"}]`,
         message,
-        context,
+        context
       );
     }
   }
@@ -131,7 +131,7 @@ class ErrorLoggerClass {
       console.warn(
         `[WARN] [${context.component || "Unknown"}]`,
         message,
-        context,
+        context
       );
     }
   }
@@ -142,7 +142,7 @@ class ErrorLoggerClass {
   logAPIError(
     endpoint: string,
     error: Error | string,
-    statusCode?: number,
+    statusCode?: number
   ): void {
     this.log(
       error,
@@ -153,7 +153,7 @@ class ErrorLoggerClass {
       },
       statusCode && statusCode >= 500
         ? ErrorSeverity.HIGH
-        : ErrorSeverity.MEDIUM,
+        : ErrorSeverity.MEDIUM
     );
   }
 
@@ -163,7 +163,7 @@ class ErrorLoggerClass {
   logServiceError(
     service: string,
     method: string,
-    error: Error | string,
+    error: Error | string
   ): void {
     this.log(
       error,
@@ -171,7 +171,7 @@ class ErrorLoggerClass {
         component: `${service}Service`,
         action: method,
       },
-      ErrorSeverity.MEDIUM,
+      ErrorSeverity.MEDIUM
     );
   }
 
@@ -181,7 +181,7 @@ class ErrorLoggerClass {
   logComponentError(
     component: string,
     action: string,
-    error: Error | string,
+    error: Error | string
   ): void {
     this.log(
       error,
@@ -189,7 +189,7 @@ class ErrorLoggerClass {
         component,
         action,
       },
-      ErrorSeverity.LOW,
+      ErrorSeverity.LOW
     );
   }
 
@@ -199,7 +199,7 @@ class ErrorLoggerClass {
   logValidationError(
     field: string,
     message: string,
-    context: ErrorContext = {},
+    context: ErrorContext = {}
   ): void {
     this.log(
       `Validation failed for ${field}: ${message}`,
@@ -208,7 +208,7 @@ class ErrorLoggerClass {
         component: context.component || "Validation",
         metadata: { field, ...context.metadata },
       },
-      ErrorSeverity.LOW,
+      ErrorSeverity.LOW
     );
   }
 
@@ -222,7 +222,7 @@ class ErrorLoggerClass {
         ...context,
         component: "Auth",
       },
-      ErrorSeverity.HIGH,
+      ErrorSeverity.HIGH
     );
   }
 
@@ -233,7 +233,7 @@ class ErrorLoggerClass {
     operation: string,
     duration: number,
     threshold: number,
-    context: ErrorContext = {},
+    context: ErrorContext = {}
   ): void {
     if (duration > threshold) {
       this.warn(
@@ -242,7 +242,7 @@ class ErrorLoggerClass {
           ...context,
           component: context.component || "Performance",
           metadata: { operation, duration, threshold, ...context.metadata },
-        },
+        }
       );
     }
   }
@@ -301,31 +301,31 @@ export const ErrorLogger = new ErrorLoggerClass();
 export const logError = (
   error: Error | string,
   context?: ErrorContext,
-  severity?: ErrorSeverity,
+  severity?: ErrorSeverity
 ) => ErrorLogger.log(error, context, severity);
 
 export const logAPIError = (
   endpoint: string,
   error: Error | string,
-  statusCode?: number,
+  statusCode?: number
 ) => ErrorLogger.logAPIError(endpoint, error, statusCode);
 
 export const logServiceError = (
   service: string,
   method: string,
-  error: Error | string,
+  error: Error | string
 ) => ErrorLogger.logServiceError(service, method, error);
 
 export const logComponentError = (
   component: string,
   action: string,
-  error: Error | string,
+  error: Error | string
 ) => ErrorLogger.logComponentError(component, action, error);
 
 export const logValidationError = (
   field: string,
   message: string,
-  context?: ErrorContext,
+  context?: ErrorContext
 ) => ErrorLogger.logValidationError(field, message, context);
 
 export const logAuthError = (error: Error | string, context?: ErrorContext) =>
@@ -335,5 +335,5 @@ export const logPerformanceIssue = (
   operation: string,
   duration: number,
   threshold: number,
-  context?: ErrorContext,
+  context?: ErrorContext
 ) => ErrorLogger.logPerformanceIssue(operation, duration, threshold, context);

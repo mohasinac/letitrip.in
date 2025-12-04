@@ -82,7 +82,7 @@ function EditProductContent({ params }: EditProductPageProps) {
     try {
       const updatedProduct = await productsService.update(
         product.slug,
-        formData,
+        formData
       );
       router.push(`/products/${updatedProduct.slug}`);
     } catch (error: any) {
@@ -192,7 +192,9 @@ function EditProductContent({ params }: EditProductPageProps) {
           <Card className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800">
             <div className="flex items-center">
               <AlertCircle className="h-5 w-5 text-red-500 mr-3" />
-              <p className="text-red-700">{error}</p>
+              <p className="text-red-700">
+                {error?.message || "An error occurred"}
+              </p>
             </div>
           </Card>
         )}

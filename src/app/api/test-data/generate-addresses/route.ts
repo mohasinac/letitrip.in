@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       // Generate 1-3 addresses per user
       const numAddresses = Math.min(
         addressesPerUser,
-        faker.number.int({ min: 1, max: 3 }),
+        faker.number.int({ min: 1, max: 3 })
       );
 
       for (let i = 0; i < numAddresses; i++) {
@@ -130,14 +130,13 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     logError(error as Error, {
       component: "API.testData.generateAddresses",
-      addressesPerUser,
     });
     return NextResponse.json(
       {
         success: false,
         error: error.message || "Failed to generate addresses",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

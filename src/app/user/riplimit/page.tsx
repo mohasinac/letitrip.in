@@ -95,7 +95,7 @@ export default function UserRipLimitPage() {
     { type: "ALL" },
     {
       syncWithUrl: true,
-    },
+    }
   );
 
   const setTransactionFilter = (type: TransactionFilter) => {
@@ -121,24 +121,16 @@ export default function UserRipLimitPage() {
 
   // Load balance
   const loadBalance = useCallback(async () => {
-    try {
-      setLoadingBalance(true);
+    await executeBalance(async () => {
       const data = await ripLimitService.getBalance();
       setBalance(data);
-    } catch (err) {
-      logError(err as Error, {
-        component: "UserRipLimit.loadBalance",
-      });
-      setError("Failed to load RipLimit balance");
-    } finally {
-      setLoadingBalance(false);
-    }
-  }, []);
+      return data;
+    });
+  }, [executeBalance, setBalance]);
 
   // Load transactions
   const loadTransactions = useCallback(async () => {
-    try {
-      setLoadingTransactions(true);
+    await executeTransactions(async () => {
       const filterType =
         transactionFilter === "ALL" ? undefined : transactionFilter;
       const data = await ripLimitService.getTransactions({
@@ -147,13 +139,9 @@ export default function UserRipLimitPage() {
       });
       setTransactions(data.transactions);
       setTransactionsTotal(data.total);
-    } catch (err) {
-      logError(err as Error, { component: "RipLimitPage.loadTransactions" });
-      toast.error("Failed to load transactions");
-    } finally {
-      setLoadingTransactions(false);
-    }
-  }, [transactionFilter]);
+      return data.transactions;
+    });
+  }, [transactionFilter, executeTransactions, setTransactions]);
 
   // Initial data load
   useEffect(() => {
@@ -181,8 +169,9 @@ export default function UserRipLimitPage() {
       setProcessingPurchase(true);
       setError(null);
 
-      const purchaseData =
-        await ripLimitService.initiatePurchase(purchaseAmount);
+      const purchaseData = await ripLimitService.initiatePurchase(
+        purchaseAmount
+      );
 
       // Initialize Razorpay
       const options = {
@@ -252,7 +241,7 @@ export default function UserRipLimitPage() {
 
       const result = await ripLimitService.requestRefund(
         refundAmount,
-        refundReason,
+        refundReason
       );
 
       setSuccessMessage(result.message);
@@ -529,7 +518,7 @@ export default function UserRipLimitPage() {
               </div>
             ))}
           </div>
-        ) : transactions.length === 0 ? (
+        ) : !transactions || transactions.length === 0 ? (
           <div className="text-center py-12">
             <Clock className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
             <p className="text-gray-500 dark:text-gray-400 font-medium">
@@ -548,78 +537,84 @@ export default function UserRipLimitPage() {
           </div>
         ) : (
           <div className="divide-y divide-gray-100 dark:divide-gray-700">
-            {transactions.map((tx) => (
-              <div
-                key={tx.id}
-                className="flex items-center justify-between py-4 first:pt-0 last:pb-0"
-              >
-                <div className="flex items-center gap-4">
-                  <div
-                    className={`p-2 rounded-full ${
-                      tx.isCredit
-                        ? "bg-green-100 dark:bg-green-900/30"
-                        : "bg-gray-100 dark:bg-gray-700"
-                    }`}
-                  >
-                    {getTransactionIcon(tx.type, tx.isCredit)}
+            {transactions &&
+              transactions.map((tx) => (
+                <div
+                  key={tx.id}
+                  className="flex items-center justify-between py-4 first:pt-0 last:pb-0"
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`p-2 rounded-full ${
+                        tx.isCredit
+                          ? "bg-green-100 dark:bg-green-900/30"
+                          : "bg-gray-100 dark:bg-gray-700"
+                      }`}
+                    >
+                      {getTransactionIcon(tx.type, tx.isCredit)}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {tx.typeLabel}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {tx.description}
+                      </p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        {tx.timeAgo}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {tx.typeLabel}
+                  <div className="text-right">
+                    <p
+                      className={`font-semibold ${
+                        tx.isCredit
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
+                      }`}
+                    >
+                      {tx.isCredit ? "+" : "-"}
+                      {tx.formattedAmount}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {tx.description}
-                    </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                      {tx.timeAgo}
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                      Balance: {tx.formattedBalanceAfter}
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p
-                    className={`font-semibold ${
-                      tx.isCredit
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-red-600 dark:text-red-400"
-                    }`}
-                  >
-                    {tx.isCredit ? "+" : "-"}
-                    {tx.formattedAmount}
-                  </p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
-                    Balance: {tx.formattedBalanceAfter}
-                  </p>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
 
         {/* Load More */}
-        {transactions.length > 0 && transactions.length < transactionsTotal && (
-          <div className="mt-6 text-center">
-            <Button
-              variant="outline"
-              onClick={() => {
-                // Load more transactions
-                ripLimitService
-                  .getTransactions({
-                    type:
-                      transactionFilter === "ALL"
-                        ? undefined
-                        : transactionFilter,
-                    limit: 20,
-                    offset: transactions.length,
-                  })
-                  .then((data) => {
-                    setTransactions([...transactions, ...data.transactions]);
-                  });
-              }}
-            >
-              Load More
-            </Button>
-          </div>
-        )}
+        {transactions &&
+          transactions.length > 0 &&
+          transactions.length < transactionsTotal && (
+            <div className="mt-6 text-center">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  // Load more transactions
+                  ripLimitService
+                    .getTransactions({
+                      type:
+                        transactionFilter === "ALL"
+                          ? undefined
+                          : transactionFilter,
+                      limit: 20,
+                      offset: transactions.length,
+                    })
+                    .then((data) => {
+                      setTransactions([
+                        ...(transactions || []),
+                        ...data.transactions,
+                      ]);
+                    });
+                }}
+              >
+                Load More
+              </Button>
+            </div>
+          )}
       </Card>
 
       {/* Refund Link */}

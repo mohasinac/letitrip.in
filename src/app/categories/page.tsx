@@ -51,10 +51,10 @@ function CategoriesContent() {
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [filterOptions, setFilterOptions] = useState(CATEGORY_FILTERS);
   const [sortBy, setSortBy] = useState<string>(
-    searchParams.get("sortBy") || "sort_order",
+    searchParams.get("sortBy") || "sort_order"
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
-    (searchParams.get("sortOrder") as "asc" | "desc") || "asc",
+    (searchParams.get("sortOrder") as "asc" | "desc") || "asc"
   );
 
   // Initialize filters from URL
@@ -152,7 +152,7 @@ function CategoriesContent() {
 
     router.push(
       `/categories${params.toString() ? `?${params.toString()}` : ""}`,
-      { scroll: false },
+      { scroll: false }
     );
     loadCategories();
   }, [filterValues, sortBy, sortOrder, currentPage]);
@@ -182,6 +182,7 @@ function CategoriesContent() {
   // Group categories by level for display
   const categoriesByLevel = useMemo(() => {
     const grouped = new Map<number, CategoryFE[]>();
+    if (!categories) return [];
     categories.forEach((cat) => {
       const level = cat.level || 0;
       if (!grouped.has(level)) {
@@ -194,7 +195,7 @@ function CategoriesContent() {
     return Array.from(grouped.entries()).sort((a, b) => a[0] - b[0]);
   }, [categories]);
 
-  if (loading && categories.length === 0) {
+  if (loading && (!categories || categories.length === 0)) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
@@ -202,7 +203,7 @@ function CategoriesContent() {
     );
   }
 
-  if (!loading && categories.length === 0) {
+  if (!loading && (!categories || categories.length === 0)) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
         <div className="max-w-7xl mx-auto px-4">
@@ -329,14 +330,14 @@ function CategoriesContent() {
             onClose={() => setShowFilters(false)}
             searchable={false}
             mobile={isMobile}
-            resultCount={categories.length}
+            resultCount={categories?.length || 0}
             isLoading={loading}
           />
 
           {/* Categories Content */}
           <div className="flex-1">
             {/* Results Count */}
-            {!loading && categories.length > 0 && (
+            {!loading && categories && categories.length > 0 && (
               <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
                 Showing {categories.length} of {totalCount} categories (Page{" "}
                 {currentPage})
@@ -427,33 +428,35 @@ function CategoriesContent() {
             </div>
 
             {/* Pagination Controls */}
-            {categories.length > 0 && (currentPage > 1 || hasNextPage) && (
-              <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-                <div className="flex items-center justify-between">
-                  <button
-                    onClick={handlePrevPage}
-                    disabled={currentPage === 1 || loading}
-                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    Previous
-                  </button>
+            {categories &&
+              categories.length > 0 &&
+              (currentPage > 1 || hasNextPage) && (
+                <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 1 || loading}
+                      className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      Previous
+                    </button>
 
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Page {currentPage} • {categories.length} categories
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      Page {currentPage} • {categories?.length || 0} categories
+                    </div>
+
+                    <button
+                      onClick={handleNextPage}
+                      disabled={!hasNextPage || loading}
+                      className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   </div>
-
-                  <button
-                    onClick={handleNextPage}
-                    disabled={!hasNextPage || loading}
-                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Next
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         </div>
       </div>

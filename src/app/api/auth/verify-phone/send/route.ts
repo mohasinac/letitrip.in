@@ -1,6 +1,6 @@
+import { otpService } from "@/app/api/lib/services/otp.service";
 import { getUserFromRequest } from "@/app/api/middleware/rbac-auth";
 import { logError } from "@/lib/firebase-error-logger";
-import { otpService } from "@/services/otp.service";
 import { smsService } from "@/services/sms.service";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -15,14 +15,14 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     if (!user.phone) {
       return NextResponse.json(
         { success: false, error: "No phone number found" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     const otpDoc = await (otpService as any).getActiveOTP(
       user.id,
       "phone",
-      user.phone,
+      user.phone
     );
     if (otpDoc) {
       await smsService.sendOTP(user.phone, otpDoc.otp);
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : "Failed to send OTP",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

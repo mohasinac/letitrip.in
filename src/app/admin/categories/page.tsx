@@ -34,14 +34,14 @@ export default function AdminCategoriesPage() {
 
   const loadTreeData = useCallback(async () => {
     const response = await categoriesService.getTree();
-    return response.data || [];
+    return response || [];
   }, []);
 
   useEffect(() => {
     if (viewMode === "tree" && (!treeData || treeData.length === 0)) {
       loadTree(loadTreeData);
     }
-  }, [viewMode, treeData.length, loadTree, loadTreeData]);
+  }, [viewMode, treeData?.length, loadTree, loadTreeData]);
   // Define columns
   const columns = [
     {
