@@ -10,10 +10,10 @@
  * Reduces 3 separate requests to 1, improving performance
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to fetch header stats",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
