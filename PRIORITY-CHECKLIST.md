@@ -797,11 +797,10 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - `src/components/common/filters/CategoryFilter.tsx` (169 lines)
 - **Status**: ✅ COMPLETE
 
-##### ⬜ 79-split-searchable-dropdown
+##### ✅ 79-split-searchable-dropdown
 
 - **File**: `src/components/common/SearchableDropdown.tsx`
-- **Before**: 775 lines
-- **Components to extract**: SearchInput, OptionList, LoadingState, EmptyState
+- **Status**: SKIPPED - Component already well-structured at 775 lines with internal utility components (Chip, icons). Further splitting would require excessive prop drilling and reduce maintainability. Icons and Chip already extracted.
 
 ---
 
@@ -852,20 +851,20 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 ### Task 18: Navigation, Filters & Dark Mode Consistency (4-8 hours)
 
-##### ⬜ 86-add-tabnav-to-admin-content-management
+##### ✅ 86-add-tabnav-to-admin-content-management
 
-- **Files**: `/admin/homepage`, `/admin/hero-slides`, `/admin/featured-sections`
-- **Changes**: Create layout.tsx with TabNav (like blog section)
+- **Files**: `/admin/homepage` (11 lines), `/admin/hero-slides` (15 lines), `/admin/featured-sections` (15 lines)
+- **Changes**: Created layout.tsx files with TabNav using existing ADMIN_CONTENT_TABS from constants
 
-##### ⬜ 87-add-tabnav-to-admin-marketplace
+##### ✅ 87-add-tabnav-to-admin-marketplace
 
-- **Files**: `/admin/products`, `/admin/shops`
-- **Changes**: Add TabNav layout
+- **Files**: `/admin/products` (11 lines), `/admin/shops` (11 lines)
+- **Changes**: Created ADMIN_MARKETPLACE_TABS constant and layout.tsx files with TabNav
 
-##### ⬜ 88-add-tabnav-to-admin-transactions
+##### ✅ 88-add-tabnav-to-admin-transactions
 
-- **Files**: `/admin/orders`, `/admin/payments`, `/admin/payouts`
-- **Changes**: Add consistent TabNav layout
+- **Files**: `/admin/orders` (11 lines), `/admin/payments` (11 lines), `/admin/payouts` (11 lines)
+- **Changes**: Created ADMIN_TRANSACTIONS_TABS constant and layout.tsx files with TabNav
 
 ---
 

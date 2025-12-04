@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { X, Search } from "lucide-react";
-import { FilterSection, FilterField } from "./FilterSidebar";
+import { Search, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { FilterField, FilterSection } from "./FilterSidebar";
 import { FilterSectionComponent } from "./filters/FilterSectionComponent";
 import { PriceRangeFilter } from "./filters/PriceRangeFilter";
 
@@ -112,10 +112,10 @@ export function UnifiedFilterSidebar({
           </mark>
         ) : (
           part
-        ),
+        )
       );
     },
-    [searchQuery, searchable],
+    [searchQuery, searchable]
   );
 
   const handleCheckboxChange = useCallback(
@@ -126,7 +126,7 @@ export function UnifiedFilterSidebar({
         : currentValues.filter((v: any) => v !== optionValue);
       handlePendingChange(key, newValues);
     },
-    [pendingValues, handlePendingChange],
+    [pendingValues, handlePendingChange]
   );
 
   const renderField = useCallback(
@@ -204,7 +204,7 @@ export function UnifiedFilterSidebar({
                       handleCheckboxChange(
                         field.key,
                         option.value,
-                        e.target.checked,
+                        e.target.checked
                       )
                     }
                     className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
@@ -336,7 +336,7 @@ export function UnifiedFilterSidebar({
           return null;
       }
     },
-    [pendingValues, handlePendingChange, handleCheckboxChange, highlightText],
+    [pendingValues, handlePendingChange, handleCheckboxChange, highlightText]
   );
 
   const filteredSections = useMemo(() => {
@@ -352,7 +352,7 @@ export function UnifiedFilterSidebar({
             const fieldMatches = field.label.toLowerCase().includes(query);
             if (field.options) {
               const filteredOptions = field.options.filter((option) =>
-                option.label.toLowerCase().includes(query),
+                option.label.toLowerCase().includes(query)
               );
               if (filteredOptions.length > 0) {
                 return {
@@ -400,9 +400,11 @@ export function UnifiedFilterSidebar({
           mobile
             ? "fixed inset-y-0 left-0 z-50 w-80 transform transition-transform duration-300"
             : isOpen
-              ? "w-72 shrink-0"
-              : "w-0 overflow-hidden"
-        } ${mobile && !isOpen ? "-translate-x-full" : "translate-x-0"} bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ${className}`}
+            ? "w-72 shrink-0"
+            : "w-0 overflow-hidden"
+        } ${
+          mobile && !isOpen ? "-translate-x-full" : "translate-x-0"
+        } bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ${className}`}
       >
         {/* Header */}
         <div className="flex-shrink-0 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
@@ -441,8 +443,8 @@ export function UnifiedFilterSidebar({
                 {isLoading
                   ? "Applying..."
                   : hasPendingChanges
-                    ? "Apply Filters"
-                    : "Filters Applied"}
+                  ? "Apply Filters"
+                  : "Filters Applied"}
               </button>
               {hasActiveFilters && (
                 <button
@@ -554,8 +556,8 @@ export function UnifiedFilterSidebar({
               {isLoading
                 ? "Applying..."
                 : hasPendingChanges
-                  ? "Apply Filters"
-                  : "Filters Applied"}
+                ? "Apply Filters"
+                : "Filters Applied"}
             </button>
             {hasActiveFilters && (
               <button
