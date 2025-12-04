@@ -1,5 +1,6 @@
 "use client";
 
+import { AdvancedPagination } from "@/components/common/AdvancedPagination";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { CategoryCard } from "@/components/cards/CategoryCard";
 import { ProductCard } from "@/components/cards/ProductCard";
@@ -16,29 +17,42 @@ function SearchContent() {
   const router = useRouter();
   const query = searchParams?.get("q") || "";
   const contentType = searchParams?.get("type") || "all";
+  const pageParam = searchParams?.get("page");
+  const pageSizeParam = searchParams?.get("pageSize");
+
   const [activeTab, setActiveTab] = useState<
     "all" | "products" | "shops" | "categories" | "auctions" | "blog"
   >("all");
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(pageParam ? parseInt(pageParam) : 1);
+  const [pageSize, setPageSize] = useState(
+    pageSizeParam ? parseInt(pageSizeParam) : 20,
+  );
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     // Only search if there's a query
     if (query.trim()) {
-      performSearch(query);
+      performSearch(query, page, pageSize);
     } else {
       // No query - show empty state immediately
       setResults(null);
       setLoading(false);
     }
-  }, [query, activeTab, contentType]);
+  }, [query, activeTab, contentType, page, pageSize]);
 
-  const performSearch = async (searchQuery: string) => {
+  const performSearch = async (
+    searchQuery: string,
+    currentPage: number,
+    currentPageSize: number,
+  ) => {
     try {
       setLoading(true);
       const response = await productsService.list({
         search: searchQuery,
-        limit: 50,
+        page: currentPage,
+        limit: currentPageSize,
       });
       // For now, just return products - proper multi-type search would need separate services
       setResults({
@@ -47,6 +61,7 @@ function SearchContent() {
         categories: [],
         total: response?.count || 0,
       });
+      setTotalCount(response?.count || 0);
     } catch (error) {
       logError(error as Error, {
         component: "SearchPage.performSearch",
@@ -58,9 +73,27 @@ function SearchContent() {
         categories: [],
         total: 0,
       });
+      setTotalCount(0);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    const params = new URLSearchParams(searchParams?.toString());
+    params.set("page", newPage.toString());
+    router.push(`/search?${params.toString()}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setPage(1);
+    const params = new URLSearchParams(searchParams?.toString());
+    params.set("pageSize", newPageSize.toString());
+    params.set("page", "1");
+    router.push(`/search?${params.toString()}`);
   };
 
   const tabs = [
@@ -202,6 +235,19 @@ function SearchContent() {
               onClick: () => router.push("/categories"),
             }}
           />
+        )}
+
+        {/* Pagination */}
+        {results && results.total > 0 && (
+          <div className="mt-8">
+            <AdvancedPagination
+              currentPage={page}
+              pageSize={pageSize}
+              totalItems={totalCount}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          </div>
         )}
       </div>
     </div>
