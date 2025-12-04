@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { analyticsService } from "@/services/analytics.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import Link from "next/link";
 import {
   Users,
@@ -29,14 +31,31 @@ interface DashboardStats {
 
 export default function AdminDashboardPage() {
   const { user, isAdmin } = useAuth();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    data: stats,
+    execute,
+  } = useLoadingState<DashboardStats>({
+    initialData: {
+      totalUsers: 0,
+      totalSellers: 0,
+      totalShops: 0,
+      totalCategories: 0,
+      totalProducts: 0,
+      totalOrders: 0,
+      activeUsers: 0,
+      pendingOrders: 0,
+    },
+    onLoadError: (err) => {
+      logError(err, { component: "AdminDashboardPage.loadStats" });
+    },
+  });
 
   useEffect(() => {
-    const loadStats = async () => {
-      try {
+    const loadStats = () =>
+      execute(async () => {
         const data = await analyticsService.getOverview();
-        setStats({
+        return {
           totalUsers: (data as any).totalUsers || data.totalCustomers || 0,
           totalSellers: (data as any).totalSellers || 0,
           totalShops: (data as any).totalShops || 0,
@@ -45,25 +64,8 @@ export default function AdminDashboardPage() {
           totalOrders: data.totalOrders || 0,
           activeUsers: (data as any).activeUsers || 0,
           pendingOrders: (data as any).pendingOrders || 0,
-        });
-      } catch (error) {
-        console.error("Failed to load stats:", error);
-
-        // Set empty data structure
-        setStats({
-          totalUsers: 0,
-          totalSellers: 0,
-          totalShops: 0,
-          totalCategories: 0,
-          totalProducts: 0,
-          totalOrders: 0,
-          activeUsers: 0,
-          pendingOrders: 0,
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+        };
+      });
 
     if (isAdmin) {
       loadStats();
