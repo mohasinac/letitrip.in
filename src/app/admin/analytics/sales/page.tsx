@@ -324,7 +324,9 @@ export default function AdminAnalyticsSalesPage() {
         {/* Error state */}
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-            <p className="text-red-600 dark:text-red-400">{error}</p>
+            <p className="text-red-600 dark:text-red-400">
+              {error.message || "Failed to load sales analytics"}
+            </p>
             <button
               onClick={fetchData}
               className="mt-2 text-sm font-medium text-red-600 hover:text-red-500"

@@ -14,6 +14,7 @@ interface ErrorContext {
   component?: string;
   action?: string;
   metadata?: Record<string, any>;
+  [key: string]: any; // Allow any additional context fields
 }
 
 /**

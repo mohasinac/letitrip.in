@@ -21,17 +21,19 @@ describe("UnifiedFilterSidebar", () => {
     it("should render all filter sections", () => {
       render(
         <UnifiedFilterSidebar
-          filters={PRODUCT_FILTERS}
+          sections={PRODUCT_FILTERS}
           values={{}}
+          onChange={() => {}}
           onApply={mockOnApply}
           onReset={mockOnReset}
+          isOpen={true}
         />,
       );
 
       // Check if filter sections are rendered
       PRODUCT_FILTERS.forEach((filter) => {
-        if (filter.label) {
-          expect(screen.getByText(filter.label)).toBeInTheDocument();
+        if (filter.title) {
+          expect(screen.getByText(filter.title)).toBeInTheDocument();
         }
       });
     });
