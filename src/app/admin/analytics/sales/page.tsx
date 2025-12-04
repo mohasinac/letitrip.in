@@ -1,30 +1,29 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { toast } from "sonner";
-import Link from "next/link";
-import {
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  ShoppingCart,
-  ArrowLeft,
-  RefreshCw,
-  Loader2,
-  Calendar,
-  Download,
-  PieChart,
-  BarChart3,
-} from "lucide-react";
-import { analyticsService } from "@/services/analytics.service";
-import { Price, Quantity, DateDisplay } from "@/components/common/values";
 import { PeriodSelector } from "@/components/common/PeriodSelector";
 import { StatCard } from "@/components/common/StatCard";
+import { DateDisplay, Price, Quantity } from "@/components/common/values";
+import { analyticsService } from "@/services/analytics.service";
 import type {
-  SalesDataPointFE,
   CategoryPerformanceFE,
+  SalesDataPointFE,
   TopProductFE,
 } from "@/types/frontend/analytics.types";
+import {
+  ArrowLeft,
+  BarChart3,
+  Calendar,
+  DollarSign,
+  Download,
+  Loader2,
+  PieChart,
+  RefreshCw,
+  ShoppingCart,
+  TrendingUp,
+} from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 // Revenue trend chart
 function RevenueTrendChart({ data }: { data: SalesDataPointFE[] }) {
@@ -213,8 +212,8 @@ function DetailedProductsTable({ products }: { products: TopProductFE[] }) {
                       conversionRate >= 5
                         ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-400"
                         : conversionRate >= 2
-                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400"
-                          : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
+                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400"
+                        : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
                     }`}
                   >
                     {conversionRate.toFixed(1)}%
@@ -399,8 +398,8 @@ export default function AdminAnalyticsSalesPage() {
                         {salesData.length > 0
                           ? new Date(
                               salesData.reduce((best, day) =>
-                                day.revenue > best.revenue ? day : best,
-                              ).date,
+                                day.revenue > best.revenue ? day : best
+                              ).date
                             ).toLocaleDateString("en-IN", {
                               weekday: "long",
                               month: "short",

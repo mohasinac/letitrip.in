@@ -67,8 +67,7 @@ export function FavoriteButton({
     } catch (error) {
       logError(error as Error, {
         component: "FavoriteButton.handleToggle",
-        itemType,
-        itemId,
+        metadata: { itemType, itemId },
       });
     } finally {
       setIsLoading(false);

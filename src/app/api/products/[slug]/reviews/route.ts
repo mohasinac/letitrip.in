@@ -1,19 +1,22 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import {
-  VALIDATION_RULES,
   VALIDATION_MESSAGES,
+  VALIDATION_RULES,
 } from "@/constants/validation-messages";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/products/[slug]/reviews
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string }> }
 ) {
+  let slug: string | undefined;
   try {
-    const { slug } = await params;
+    const awaitedParams = await params;
+    slug = awaitedParams.slug;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "10", 10);
@@ -26,7 +29,7 @@ export async function GET(
     if (prodSnap.empty)
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 },
+        { status: 404 }
       );
     const productId = prodSnap.docs[0].id;
 
@@ -44,10 +47,13 @@ export async function GET(
       pagination: { page, limit },
     });
   } catch (error) {
-    console.error("Product reviews error:", error);
+    logError(error as Error, {
+      component: "API.products.slug.reviews.GET",
+      metadata: { slug },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to load reviews" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -55,8 +61,10 @@ export async function GET(
 // POST /api/products/[slug]/reviews
 export async function POST(
   req: NextRequest,
-  context: { params: Promise<{ slug: string }> },
+  context: { params: Promise<{ slug: string }> }
 ) {
+  let slug: string | undefined;
+  let userId: string | undefined;
   // Rate limiting
   const identifier =
     req.headers.get("x-forwarded-for") ||
@@ -68,7 +76,7 @@ export async function POST(
         success: false,
         error: "Too many review submissions. Please try again later.",
       },
-      { status: 429 },
+      { status: 429 }
     );
   }
 
@@ -77,10 +85,12 @@ export async function POST(
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
+    userId = user.id;
 
-    const { slug } = await context.params;
+    const awaitedParams = await context.params;
+    slug = awaitedParams.slug;
     const body = await req.json();
     const rating = Number(body?.rating);
     const title: string | undefined = body?.title?.toString();
@@ -96,7 +106,7 @@ export async function POST(
     ) {
       return NextResponse.json(
         { success: false, error: VALIDATION_MESSAGES.REVIEW.RATING_INVALID },
-        { status: 400 },
+        { status: 400 }
       );
     }
     if (
@@ -108,7 +118,7 @@ export async function POST(
           success: false,
           error: VALIDATION_MESSAGES.REVIEW.CONTENT_TOO_SHORT,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -120,7 +130,7 @@ export async function POST(
     if (prodSnap.empty)
       return NextResponse.json(
         { success: false, error: "Product not found" },
-        { status: 404 },
+        { status: 404 }
       );
     const prodDoc = prodSnap.docs[0];
     const product = prodDoc.data() as any;
@@ -147,10 +157,13 @@ export async function POST(
 
     return NextResponse.json({ success: true, id: docRef.id });
   } catch (error) {
-    console.error("Create review error:", error);
+    logError(error as Error, {
+      component: "API.products.slug.reviews.POST",
+      metadata: { slug, userId },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to create review" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

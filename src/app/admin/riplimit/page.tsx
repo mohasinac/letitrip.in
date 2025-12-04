@@ -11,27 +11,27 @@
  * - Balance adjustments
  */
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import {
-  Wallet,
-  RefreshCw,
-  Download,
-  ArrowUpRight,
-  ArrowDownLeft,
-  Loader2,
-  X,
-  Check,
-  AlertTriangle,
-} from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { apiService } from "@/services/api.service";
-import { Button } from "@/components/ui/Button";
-import { Price } from "@/components/common/values";
-import { Card } from "@/components/ui/Card";
+import { AdjustBalanceModal } from "@/components/admin/riplimit/AdjustBalanceModal";
 import { RipLimitStatsCards } from "@/components/admin/riplimit/RipLimitStats";
 import { UsersTable } from "@/components/admin/riplimit/UsersTable";
-import { AdjustBalanceModal } from "@/components/admin/riplimit/AdjustBalanceModal";
+import { Price } from "@/components/common/values";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { useAuth } from "@/contexts/AuthContext";
+import { apiService } from "@/services/api.service";
+import {
+  AlertTriangle,
+  ArrowDownLeft,
+  ArrowUpRight,
+  Check,
+  Download,
+  Loader2,
+  RefreshCw,
+  Wallet,
+  X,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 // Types for admin views
 interface RipLimitStats {
@@ -187,11 +187,11 @@ export default function AdminRipLimitPage() {
         {
           amount,
           reason,
-        },
+        }
       );
 
       setSuccessMessage(
-        `Balance adjusted by ${amount >= 0 ? "+" : ""}${amount} RL`,
+        `Balance adjusted by ${amount >= 0 ? "+" : ""}${amount} RL`
       );
       setShowAdjustModal(false);
       setSelectedUser(null);
@@ -269,7 +269,7 @@ export default function AdminRipLimitPage() {
                       u.availableBalance + u.blockedBalance,
                       u.hasUnpaidAuctions ? "Yes" : "No",
                       u.isBlocked ? "Yes" : "No",
-                    ].join(","),
+                    ].join(",")
                   ),
                 ].join("\n");
 

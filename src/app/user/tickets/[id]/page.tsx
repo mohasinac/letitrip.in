@@ -66,7 +66,7 @@ export default function TicketDetailsPage() {
     } catch (err: any) {
       logError(err as Error, {
         component: "UserTicketDetail.handlePostReply",
-        ticketId,
+        metadata: { ticketId },
       });
       toast.error(err.message || "Failed to post reply");
     } finally {

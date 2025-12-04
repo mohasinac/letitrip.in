@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { apiRateLimiter } from "@/app/api/lib/utils/rate-limiter";
-import { getSessionToken, verifySession } from "../../lib/session";
-import { adminDb } from "../../lib/firebase/config";
 import { COLLECTIONS } from "@/constants/database";
+import { NextRequest, NextResponse } from "next/server";
+import { adminDb } from "../../lib/firebase/config";
+import { getSessionToken, verifySession } from "../../lib/session";
 
 async function meHandler(req: NextRequest) {
   try {
@@ -12,7 +12,7 @@ async function meHandler(req: NextRequest) {
     if (!token) {
       return NextResponse.json(
         { error: "Unauthorized", message: "No session found" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -22,7 +22,7 @@ async function meHandler(req: NextRequest) {
     if (!session) {
       return NextResponse.json(
         { error: "Unauthorized", message: "Invalid or expired session" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -57,7 +57,7 @@ async function meHandler(req: NextRequest) {
             : null,
         },
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error: any) {
     console.error("Get current user error:", error);
@@ -70,7 +70,7 @@ async function meHandler(req: NextRequest) {
             ? "An unexpected error occurred"
             : error.message,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
   if (!apiRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many requests. Please try again later." },
-      { status: 429 },
+      { status: 429 }
     );
   }
 

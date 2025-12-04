@@ -120,7 +120,7 @@ export function SellerResourcePage<T extends { id: string }>({
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    {},
+    {}
   );
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
@@ -163,8 +163,7 @@ export function SellerResourcePage<T extends { id: string }>({
     } catch (err) {
       logError(err as Error, {
         component: "SellerResourcePage.loadItems",
-        page: currentPage,
-        limit: pageSize,
+        metadata: { page: currentPage },
       });
       setError(err instanceof Error ? err.message : "Failed to load items");
       toast.error(`Failed to load ${resourceNamePlural}`);
@@ -195,7 +194,7 @@ export function SellerResourcePage<T extends { id: string }>({
       setCursors([null]);
       loadItems();
     }
-  }, [debouncedSearchQuery, activeFilters]);
+  }, [debouncedSearchQuery, activeFilters, loadItems]);
 
   // Handle filter change
   const handleFilterChange = (key: string, value: string) => {
@@ -229,9 +228,7 @@ export function SellerResourcePage<T extends { id: string }>({
 
   const toggleSelectItem = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id)
-        ? prev.filter((itemId) => itemId !== id)
-        : [...prev, id],
+      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
     );
   };
 
@@ -245,7 +242,7 @@ export function SellerResourcePage<T extends { id: string }>({
     toast.success(
       `${actionId} applied to ${selectedIds.length} ${
         selectedIds.length === 1 ? resourceName : resourceNamePlural
-      }`,
+      }`
     );
     setSelectedIds([]);
     loadItems();
@@ -347,7 +344,7 @@ export function SellerResourcePage<T extends { id: string }>({
           selectedCount={selectedIds.length}
           actions={bulkActions}
           onAction={handleBulkAction}
-          onClear={() => setSelectedIds([])}
+          onClearSelection={() => setSelectedIds([])}
         />
       )}
 
@@ -440,7 +437,7 @@ export function SellerResourcePage<T extends { id: string }>({
                     {item.id}
                   </p>
                 </div>
-              ),
+              )
             )}
           </div>
         )}

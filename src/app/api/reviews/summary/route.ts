@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { withCache } from "@/app/api/middleware/cache";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/reviews/summary - Get review statistics for a product
 export async function GET(request: NextRequest) {
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
         if (!productId) {
           return NextResponse.json(
             { success: false, error: "Product ID is required" },
-            { status: 400 },
+            { status: 400 }
           );
         }
 
@@ -63,18 +64,21 @@ export async function GET(request: NextRequest) {
           ratingDistribution,
         });
       } catch (error) {
-        console.error("Error fetching review summary:", error);
+        logError(error as Error, {
+          component: "API.reviews.summary.GET",
+          productId,
+        });
         return NextResponse.json(
           { success: false, error: "Failed to fetch review summary" },
-          { status: 500 },
+          { status: 500 }
         );
       }
     },
     {
       ttl: 300, // 5 minutes
       key: `reviews:summary:${new URL(request.url).searchParams.get(
-        "productId",
+        "productId"
       )}`,
-    },
+    }
   );
 }

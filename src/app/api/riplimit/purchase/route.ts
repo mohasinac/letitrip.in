@@ -5,17 +5,17 @@
  * POST /api/riplimit/purchase - Initiate RipLimit purchase
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { Timestamp } from "firebase-admin/firestore";
-import Razorpay from "razorpay";
 import { COLLECTIONS } from "@/constants/database";
 import {
-  RIPLIMIT_MIN_PURCHASE,
   inrToRipLimit,
+  RIPLIMIT_MIN_PURCHASE,
   RipLimitPurchaseStatus,
 } from "@/types/backend/riplimit.types";
+import { Timestamp } from "firebase-admin/firestore";
+import { NextRequest, NextResponse } from "next/server";
+import Razorpay from "razorpay";
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     if (!amount || typeof amount !== "number" || amount < 10) {
       return NextResponse.json(
         { success: false, error: "Minimum purchase amount is ₹10" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: `Minimum purchase is ${RIPLIMIT_MIN_PURCHASE} RipLimit (₹10)`,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating RipLimit purchase:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create purchase order" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

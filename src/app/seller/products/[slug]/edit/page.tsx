@@ -97,7 +97,7 @@ export default function EditProductPage() {
     } catch (error) {
       logError(error as Error, {
         component: "SellerProductEdit.handleSubmit",
-        slug,
+        metadata: { slug },
       });
       toast.error("Failed to update product");
     } finally {

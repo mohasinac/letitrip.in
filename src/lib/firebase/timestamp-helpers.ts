@@ -3,8 +3,8 @@
  * Provides type-safe conversion between Firebase Admin Timestamp and FirebaseTimestamp interface
  */
 
-import { Timestamp } from "firebase-admin/firestore";
 import { FirebaseTimestamp } from "@/types/shared/common.types";
+import { Timestamp } from "firebase-admin/firestore";
 
 /**
  * Convert Firebase Admin Timestamp to FirebaseTimestamp interface

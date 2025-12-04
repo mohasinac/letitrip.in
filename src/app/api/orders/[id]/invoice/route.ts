@@ -7,26 +7,28 @@ import PDFDocument from "pdfkit";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   return withRateLimit(
     req,
     async (r) => {
+      let id: string | undefined;
       try {
         const user = await getCurrentUser(r);
         if (!user?.id)
           return NextResponse.json(
             { success: false, error: "Unauthorized" },
-            { status: 401 },
+            { status: 401 }
           );
 
-        const { id } = await params;
+        const awaitedParams = await params;
+        id = awaitedParams.id;
         const ref = Collections.orders().doc(id);
         const snap = await ref.get();
         if (!snap.exists)
           return NextResponse.json(
             { success: false, error: "Not found" },
-            { status: 404 },
+            { status: 404 }
           );
         const order = snap.data() as any;
 
@@ -37,7 +39,7 @@ export async function GET(
         ) {
           return NextResponse.json(
             { success: false, error: "Forbidden" },
-            { status: 403 },
+            { status: 403 }
           );
         }
 
@@ -49,7 +51,7 @@ export async function GET(
         const doc = new PDFDocument({ size: "A4", margin: 50 });
         const chunks: Uint8Array[] = [];
         const stream = doc.on("data", (chunk: Uint8Array) =>
-          chunks.push(chunk),
+          chunks.push(chunk)
         );
 
         // Header
@@ -70,7 +72,7 @@ export async function GET(
           .text(
             `${billing.city || ""} ${billing.state || ""} ${
               billing.pincode || ""
-            }`,
+            }`
           )
           .text(billing.country || "")
           .moveDown();
@@ -89,7 +91,7 @@ export async function GET(
             doc.text(
               `${idx + 1}. ${
                 it.name || it.product_name || "Item"
-              }  x${qty}  -  ₹${lineTotal.toFixed(2)}`,
+              }  x${qty}  -  ₹${lineTotal.toFixed(2)}`
             );
           });
         }
@@ -104,7 +106,7 @@ export async function GET(
           .fontSize(10)
           .fillColor("gray")
           .text(
-            "This is a system generated invoice and does not require a signature.",
+            "This is a system generated invoice and does not require a signature."
           );
 
         doc.end();
@@ -129,10 +131,10 @@ export async function GET(
         });
         return NextResponse.json(
           { success: false, error: "Failed to generate invoice" },
-          { status: 500 },
+          { status: 500 }
         );
       }
     },
-    { maxRequests: 20, windowMs: 60 * 1000 },
+    { maxRequests: 20, windowMs: 60 * 1000 }
   );
 }

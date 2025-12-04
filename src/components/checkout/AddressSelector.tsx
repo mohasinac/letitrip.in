@@ -59,7 +59,7 @@ export function AddressSelector({
     } catch (error) {
       logError(error as Error, {
         component: "AddressSelector.handleDelete",
-        addressId: deleteId,
+        metadata: { addressId: deleteId },
       });
     } finally {
       setDeleteId(null);

@@ -67,7 +67,7 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
     } catch (error) {
       logError(error as Error, {
         component: "OrderDetailPage.downloadInvoice",
-        metadata: { orderId: params.id },
+        metadata: { orderId },
       });
       toast.error("Failed to download invoice");
     }
@@ -84,7 +84,7 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
     } catch (error) {
       logError(error as Error, {
         component: "UserOrderDetail.handleCancelOrder",
-        orderId,
+        metadata: { orderId },
       });
       toast.error("Failed to cancel order");
     }
@@ -373,8 +373,8 @@ function OrderTimeline({ status }: { status: string }) {
                   isCurrent
                     ? "text-primary"
                     : isCompleted
-                      ? "text-gray-900 dark:text-white"
-                      : "text-gray-400 dark:text-gray-500"
+                    ? "text-gray-900 dark:text-white"
+                    : "text-gray-400 dark:text-gray-500"
                 }`}
               >
                 {step.label}

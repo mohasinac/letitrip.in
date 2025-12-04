@@ -57,8 +57,7 @@ export default function FavoritesPage() {
     } catch (err) {
       logError(err as Error, {
         component: "UserFavorites.handleRemove",
-        itemType: activeTab,
-        itemId,
+        metadata: { itemType: activeTab, itemId },
       });
     }
   };

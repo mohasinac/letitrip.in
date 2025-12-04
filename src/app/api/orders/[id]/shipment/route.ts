@@ -1,34 +1,37 @@
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { getCurrentUser } from "@/app/api/lib/session";
+import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
     const user = await getCurrentUser(request);
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     const role = user.role;
     if (!(role === "seller" || role === "admin")) {
       return NextResponse.json(
         { success: false, error: "Forbidden" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
     const orderRef = Collections.orders().doc(id);
     const orderSnap = await orderRef.get();
     if (!orderSnap.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 },
+        { status: 404 }
       );
 
     const order = orderSnap.data() as any;
@@ -37,7 +40,7 @@ export async function POST(
       if (!owns)
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
     }
 
@@ -68,7 +71,7 @@ export async function POST(
     });
     return NextResponse.json(
       { success: false, error: "Failed to create shipment" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

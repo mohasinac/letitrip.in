@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import { requireAdmin } from "@/app/api/middleware/rbac-auth";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 // Status requirements for each action
 const STATUS_REQUIREMENTS: Record<
@@ -33,7 +34,7 @@ const STATUS_REQUIREMENTS: Record<
 function buildPayoutUpdate(
   action: string,
   userId: string,
-  data?: any,
+  data?: any
 ): Record<string, any> | null {
   const now = new Date();
   switch (action) {
@@ -77,6 +78,8 @@ function buildPayoutUpdate(
  */
 
 export async function POST(request: NextRequest) {
+  let operation: string | undefined;
+  let idsLength = 0;
   try {
     // Require admin role
     const authResult = await requireAdmin(request);
@@ -85,6 +88,8 @@ export async function POST(request: NextRequest) {
     const { user } = authResult;
     const body = await request.json();
     const { action, ids, data } = body;
+    operation = action;
+    idsLength = ids?.length || 0;
 
     if (!action || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
@@ -92,7 +97,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Invalid request. Provide action and ids array.",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -170,13 +175,16 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("Bulk payouts operation error:", error);
+    logError(error as Error, {
+      component: "API.payouts.bulk.POST",
+      metadata: { operation, idsCount: idsLength },
+    });
     return NextResponse.json(
       {
         success: false,
         error: error.message || "Bulk operation failed",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

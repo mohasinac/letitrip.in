@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, ReactNode } from "react";
 import { X } from "lucide-react";
+import { ReactNode } from "react";
 
 interface InlineFormModalProps {
   isOpen: boolean;

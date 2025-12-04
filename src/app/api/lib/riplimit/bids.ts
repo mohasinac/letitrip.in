@@ -6,18 +6,18 @@
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
 import { nowAsFirebaseTimestamp } from "@/lib/firebase/timestamp-helpers";
 import {
   RipLimitAccountBE,
   RipLimitBlockedBidBE,
   RipLimitTransactionBE,
-  RipLimitTransactionType,
   RipLimitTransactionStatus,
+  RipLimitTransactionType,
   inrToRipLimit,
   ripLimitToInr,
 } from "@/types/backend/riplimit.types";
+import { FieldValue } from "firebase-admin/firestore";
 
 /**
  * Block RipLimit for a bid
@@ -26,7 +26,7 @@ export async function blockForBid(
   userId: string,
   auctionId: string,
   bidId: string,
-  bidAmountINR: number,
+  bidAmountINR: number
 ): Promise<{
   success: boolean;
   error?: string;
@@ -134,7 +134,7 @@ export async function blockForBid(
 export async function releaseBlockedBid(
   userId: string,
   auctionId: string,
-  reason: string = "Outbid",
+  reason: string = "Outbid"
 ): Promise<{
   success: boolean;
   releasedAmount?: number;
@@ -211,7 +211,7 @@ export async function releaseBlockedBid(
 export async function useForAuctionPayment(
   userId: string,
   auctionId: string,
-  orderId: string,
+  orderId: string
 ): Promise<{
   success: boolean;
   usedAmount?: number;
@@ -245,7 +245,7 @@ export async function useForAuctionPayment(
 
     // Remove from unpaid auctions if present
     const newUnpaidAuctionIds = account.unpaidAuctionIds.filter(
-      (id) => id !== auctionId,
+      (id) => id !== auctionId
     );
     const hasUnpaidAuctions = newUnpaidAuctionIds.length > 0;
 

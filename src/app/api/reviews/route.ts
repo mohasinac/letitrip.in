@@ -219,7 +219,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error fetching reviews:", error);
+    logError(error as Error, { component: "API.reviews.GET" });
     return NextResponse.json(
       { success: false, error: "Failed to fetch reviews" },
       { status: 500 }
@@ -312,7 +312,11 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating review:", error);
+    logError(error as Error, {
+      component: "API.reviews.POST",
+      productId: product_id,
+      userId: user.uid,
+    });
     return NextResponse.json(
       { success: false, error: "Failed to create review" },
       { status: 500 }

@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     if (!user?.id) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
     const snap = await Collections.bids()
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     });
     return NextResponse.json(
       { success: false, error: "Failed to load my bids" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
