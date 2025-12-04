@@ -13,7 +13,7 @@ const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "mp4", "webm"];
 // GET: Generate signed URLs for client-side direct upload (batch)
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let id: string | undefined;
   return withRateLimit(
@@ -24,7 +24,7 @@ export async function GET(
         if (!user?.id)
           return NextResponse.json(
             { success: false, error: "Unauthorized" },
-            { status: 401 },
+            { status: 401 }
           );
 
         const awaitedParams = await params;
@@ -34,7 +34,7 @@ export async function GET(
         if (!retSnap.exists)
           return NextResponse.json(
             { success: false, error: "Return not found" },
-            { status: 404 },
+            { status: 404 }
           );
         const ret = retSnap.data() as any;
 
@@ -50,7 +50,7 @@ export async function GET(
         if (!authorized)
           return NextResponse.json(
             { success: false, error: "Forbidden" },
-            { status: 403 },
+            { status: 403 }
           );
 
         const storage = getStorageAdmin();
@@ -81,18 +81,18 @@ export async function GET(
         });
         return NextResponse.json(
           { success: false, error: "Failed to create signed URLs" },
-          { status: 500 },
+          { status: 500 }
         );
       }
     },
-    { maxRequests: 60, windowMs: 60 * 1000 },
+    { maxRequests: 60, windowMs: 60 * 1000 }
   );
 }
 
 // POST: Confirm uploaded file paths (client performed direct upload). Append to document if valid.
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let postId: string | undefined;
   return withRateLimit(
@@ -103,7 +103,7 @@ export async function POST(
         if (!user?.id)
           return NextResponse.json(
             { success: false, error: "Unauthorized" },
-            { status: 401 },
+            { status: 401 }
           );
 
         const awaitedParams = await params;
@@ -114,7 +114,7 @@ export async function POST(
         if (!retSnap.exists)
           return NextResponse.json(
             { success: false, error: "Return not found" },
-            { status: 404 },
+            { status: 404 }
           );
         const ret = retSnap.data() as any;
 
@@ -130,7 +130,7 @@ export async function POST(
         if (!authorized)
           return NextResponse.json(
             { success: false, error: "Forbidden" },
-            { status: 403 },
+            { status: 403 }
           );
 
         const body = await r.json();
@@ -138,12 +138,12 @@ export async function POST(
         if (!paths.length)
           return NextResponse.json(
             { success: false, error: "No paths provided" },
-            { status: 400 },
+            { status: 400 }
           );
         if (paths.length > MAX_FILES_PER_CONFIRM) {
           return NextResponse.json(
             { success: false, error: "Too many files in single confirm" },
-            { status: 400 },
+            { status: 400 }
           );
         }
 
@@ -158,14 +158,14 @@ export async function POST(
         if (!valid.length)
           return NextResponse.json(
             { success: false, error: "No valid file paths" },
-            { status: 400 },
+            { status: 400 }
           );
 
         // Convert to public URLs (assuming GCS bucket public or served via CDN)
         const storage = getStorageAdmin();
         const bucket = storage.bucket();
         const urls = valid.map(
-          (v) => `https://storage.googleapis.com/${bucket.name}/${v}`,
+          (v) => `https://storage.googleapis.com/${bucket.name}/${v}`
         );
 
         await retRef.update({
@@ -180,10 +180,10 @@ export async function POST(
         });
         return NextResponse.json(
           { success: false, error: "Failed to confirm media" },
-          { status: 500 },
+          { status: 500 }
         );
       }
     },
-    { maxRequests: 30, windowMs: 60 * 1000 },
+    { maxRequests: 30, windowMs: 60 * 1000 }
   );
 }

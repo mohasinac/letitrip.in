@@ -29,7 +29,7 @@ export default function CreateCouponPage() {
         metadata: { couponData: data },
       });
       toast.error(
-        error.message || "Failed to create coupon. Please try again.",
+        error.message || "Failed to create coupon. Please try again."
       );
     } finally {
       setIsSubmitting(false);

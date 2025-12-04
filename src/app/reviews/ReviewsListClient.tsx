@@ -58,8 +58,8 @@ export default function ReviewsListClient() {
         prev.map((review) =>
           review.id === reviewId
             ? { ...review, helpful: (review.helpful || 0) + 1 }
-            : review,
-        ),
+            : review
+        )
       );
     } catch (err) {
       logError(err as Error, {

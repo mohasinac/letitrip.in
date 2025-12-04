@@ -59,14 +59,14 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     if (user.role !== "seller" && user.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden. Seller access required." },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
     });
     return NextResponse.json(
       { error: "Failed to fetch settings" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -135,14 +135,14 @@ export async function PUT(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     if (user.role !== "seller" && user.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden. Seller access required." },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -196,7 +196,7 @@ export async function PUT(request: NextRequest) {
     });
     return NextResponse.json(
       { error: "Failed to update settings" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

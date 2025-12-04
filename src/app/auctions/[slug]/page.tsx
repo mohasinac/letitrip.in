@@ -86,7 +86,7 @@ export default function AuctionDetailPage() {
             limit: 6,
           });
           setShopAuctions(
-            (shopAuctionsData.data || []).filter((a) => a.slug !== slug),
+            (shopAuctionsData.data || []).filter((a) => a.slug !== slug)
           );
         } catch (error) {
           logError(error as Error, {
@@ -104,7 +104,7 @@ export default function AuctionDetailPage() {
           limit: 6,
         });
         setSimilarAuctions(
-          (similarData.data || []).filter((a) => a.slug !== slug),
+          (similarData.data || []).filter((a) => a.slug !== slug)
         );
       } catch (error) {
         logError(error as Error, {
