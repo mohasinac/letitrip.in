@@ -78,6 +78,12 @@ export const Collections = {
   // System collections
   addresses: () => getCollection(COLLECTIONS.ADDRESSES),
   notifications: () => getCollection(COLLECTIONS.NOTIFICATIONS),
+
+  // Event collections
+  events: () => getCollection(COLLECTIONS.EVENTS),
+  eventRegistrations: () => getCollection(COLLECTIONS.EVENT_REGISTRATIONS),
+  eventVotes: () => getCollection(COLLECTIONS.EVENT_VOTES),
+  eventOptions: () => getCollection(COLLECTIONS.EVENT_OPTIONS),
 };
 
 /**

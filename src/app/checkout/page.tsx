@@ -1,28 +1,27 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import {
-  ChevronLeft,
-  Check,
-  Loader2,
-  ShoppingBag,
-  MapPin,
-  CreditCard,
-  FileText,
-} from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCart } from "@/hooks/useCart";
-import { AddressSelectorWithCreate } from "@/components/common/AddressSelectorWithCreate";
-import { PaymentMethod } from "@/components/checkout/PaymentMethod";
 import { VerificationGate } from "@/components/auth/VerificationGate";
-import { logError } from "@/lib/firebase-error-logger";
+import { PaymentMethod } from "@/components/checkout/PaymentMethod";
 import { ShopOrderSummary } from "@/components/checkout/ShopOrderSummary";
+import { AddressSelectorWithCreate } from "@/components/common/AddressSelectorWithCreate";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
 import { Price } from "@/components/common/values";
-import { FormField, FormTextarea, FormCheckbox } from "@/components/forms";
+import { FormCheckbox, FormField, FormTextarea } from "@/components/forms";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/hooks/useCart";
+import { logError } from "@/lib/firebase-error-logger";
 import { checkoutService } from "@/services/checkout.service";
+import {
+  Check,
+  ChevronLeft,
+  CreditCard,
+  FileText,
+  Loader2,
+  MapPin,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 declare global {
   interface Window {
@@ -51,7 +50,7 @@ export default function CheckoutPage() {
   const [shippingAddressId, setShippingAddressId] = useState("");
   const [billingAddressId, setBillingAddressId] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">(
-    "razorpay",
+    "razorpay"
   );
   const [useSameAddress, setUseSameAddress] = useState(true);
   const [notes, setNotes] = useState("");
@@ -90,7 +89,7 @@ export default function CheckoutPage() {
     return shopGroups.reduce((sum, shop) => {
       const subtotal = shop.items.reduce(
         (s, item) => s + item.price * item.quantity,
-        0,
+        0
       );
       const discount = shop.coupon?.discountAmount || 0;
       const shipping = subtotal >= 5000 ? 0 : 100;
@@ -170,7 +169,7 @@ export default function CheckoutPage() {
 
       const subtotal = shop.items.reduce(
         (sum, item) => sum + item.price * item.quantity,
-        0,
+        0
       );
       const discountAmount = Math.round(subtotal * 0.1); // 10% discount
 
@@ -236,7 +235,7 @@ export default function CheckoutPage() {
         // Check if Razorpay is loaded
         if (!window.Razorpay) {
           throw new Error(
-            "Payment gateway not available. Please try Cash on Delivery or refresh the page.",
+            "Payment gateway not available. Please try Cash on Delivery or refresh the page."
           );
         }
 
@@ -260,7 +259,7 @@ export default function CheckoutPage() {
 
               // Redirect to first order (or create a multi-order success page)
               router.push(
-                `/user/orders/${orderIds[0]}?success=true&multi=true`,
+                `/user/orders/${orderIds[0]}?success=true&multi=true`
               );
             } catch (error: any) {
               logError(error, {
@@ -287,7 +286,7 @@ export default function CheckoutPage() {
           modal: {
             ondismiss: function () {
               setError(
-                "Payment was cancelled. Your order has not been placed.",
+                "Payment was cancelled. Your order has not been placed."
               );
               setProcessing(false);
             },
@@ -302,7 +301,7 @@ export default function CheckoutPage() {
           });
           setError(
             response.error.description ||
-              "Payment failed. Please try again or use a different payment method.",
+              "Payment failed. Please try again or use a different payment method."
           );
           setProcessing(false);
         });
@@ -398,8 +397,8 @@ export default function CheckoutPage() {
                             isCompleted
                               ? "bg-green-500 text-white"
                               : isCurrent
-                                ? "bg-primary text-white"
-                                : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
+                              ? "bg-primary text-white"
+                              : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                           }`}
                         >
                           {isCompleted ? (
@@ -564,7 +563,7 @@ export default function CheckoutPage() {
                     {shopGroups.map((shop) => {
                       const subtotal = shop.items.reduce(
                         (sum, item) => sum + item.price * item.quantity,
-                        0,
+                        0
                       );
                       const discount =
                         shopCoupons[shop.shopId]?.discountAmount || 0;

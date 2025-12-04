@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "../../../lib/session";
-import { trackActivity } from "@/app/api/middleware/ip-tracker";
 import { placeBid } from "@/app/api/lib/firebase/transactions";
+import { trackActivity } from "@/app/api/middleware/ip-tracker";
+import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "../../../lib/session";
 
 // GET bids list, POST place bid
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -59,21 +59,21 @@ export async function GET(
     console.error("List bids error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to list bids" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser(request);
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     const { id } = await params;
     const body = await request.json();
@@ -82,7 +82,7 @@ export async function POST(
     if (!Number.isFinite(bidAmount) || bidAmount <= 0)
       return NextResponse.json(
         { success: false, error: "Invalid bid amount" },
-        { status: 400 },
+        { status: 400 }
       );
 
     const bidId = await placeBid(id, user.id, bidAmount);
@@ -106,7 +106,7 @@ export async function POST(
         success: false,
         error: (error as Error).message || "Failed to place bid",
       },
-      { status: 400 },
+      { status: 400 }
     );
   }
 }
