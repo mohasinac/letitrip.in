@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { NextRequest, NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 

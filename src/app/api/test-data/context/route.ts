@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 
@@ -317,7 +318,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, context });
   } catch (error: any) {
-    console.error("Error fetching test data context:", error);
+    logError(error as Error, { component: "API.testData.context.GET" });
     return NextResponse.json(
       { success: false, error: error.message || "Failed to fetch context" },
       { status: 500 },
@@ -337,7 +338,7 @@ export async function DELETE(req: NextRequest) {
       message: "Test data context cache cleared",
     });
   } catch (error: any) {
-    console.error("Error clearing context:", error);
+    logError(error as Error, { component: "API.testData.context.DELETE" });
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 },

@@ -1,12 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import {
-  getUserFromRequest,
-  requireAuth,
-} from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { canReadResource } from "@/lib/rbac-permissions";
-import { ValidationError } from "@/lib/api-errors";
+import { requireAuth } from "@/app/api/middleware/rbac-auth";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
+import { ValidationError } from "@/lib/api-errors";
+import { logError } from "@/lib/firebase-error-logger";
+import { canReadResource } from "@/lib/rbac-permissions";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * POST /api/tickets/[id]/reply
@@ -106,7 +104,11 @@ export async function POST(
         { status: 400 },
       );
     }
-    console.error("Error posting reply:", error);
+    logError(error as Error, {
+      component: "API.tickets.reply",
+      ticketId,
+      userId: user?.uid,
+    });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

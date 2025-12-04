@@ -1,14 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { Collections } from "@/app/api/lib/firebase/collections";
+import {
+  createPaginationMeta,
+  parseSieveQuery,
+  payoutsSieveConfig,
+} from "@/app/api/lib/sieve";
 import {
   getUserFromRequest,
   requireAuth,
 } from "@/app/api/middleware/rbac-auth";
-import { Collections } from "@/app/api/lib/firebase/collections";
-import {
-  parseSieveQuery,
-  payoutsSieveConfig,
-  createPaginationMeta,
-} from "@/app/api/lib/sieve";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 // Extended Sieve config with field mappings for payouts
 const payoutsConfig = {
@@ -61,7 +62,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -81,7 +82,7 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -115,7 +116,7 @@ export async function GET(request: NextRequest) {
         query = query.where(
           dbField,
           filter.operator as FirebaseFirestore.WhereFilterOp,
-          filter.value,
+          filter.value
         );
       }
     }
@@ -148,7 +149,7 @@ export async function GET(request: NextRequest) {
     // Execute query
     const snapshot = await query.get();
     const data = snapshot.docs.map((doc) =>
-      transformPayout(doc.id, doc.data()),
+      transformPayout(doc.id, doc.data())
     );
 
     // Build response with Sieve pagination meta
@@ -165,13 +166,13 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("Error fetching payouts:", error);
+    logError(error as Error, { component: "API.payouts.GET" });
     return NextResponse.json(
       {
         success: false,
         error: error.message || "Failed to fetch payouts",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -190,7 +191,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Only sellers can create payout requests",
         },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -203,7 +204,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Missing required fields: amount, paymentMethod",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -238,13 +239,13 @@ export async function POST(request: NextRequest) {
       message: "Payout request created successfully",
     });
   } catch (error: any) {
-    console.error("Error creating payout:", error);
+    logError(error as Error, { component: "API.payouts.POST" });
     return NextResponse.json(
       {
         success: false,
         error: error.message || "Failed to create payout",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -118,7 +118,7 @@ export interface QueryConfig {
  * ```
  */
 export function buildPaginationConstraints(
-  config: PaginationConfig
+  config: PaginationConfig,
 ): QueryConstraint[] {
   const constraints: QueryConstraint[] = [];
 
@@ -159,10 +159,10 @@ export function buildPaginationConstraints(
  * ```
  */
 export function buildFilterConstraints(
-  filters: QueryFilter[]
+  filters: QueryFilter[],
 ): QueryConstraint[] {
   return filters.map((filter) =>
-    where(filter.field, filter.operator, filter.value)
+    where(filter.field, filter.operator, filter.value),
   );
 }
 
@@ -244,14 +244,14 @@ export function buildQueryConstraints(config: QueryConfig): QueryConstraint[] {
 export function processPaginatedResults<T>(
   docs: QueryDocumentSnapshot<DocumentData>[],
   pageSize: number,
-  hasPrevCursor: boolean = false
+  hasPrevCursor: boolean = false,
 ): PaginatedResult<T> {
-  const data = docs.map((doc) => ({ id: doc.id, ...doc.data() } as T));
+  const data = docs.map((doc) => ({ id: doc.id, ...doc.data() }) as T);
 
   const hasNextPage = docs.length === pageSize;
   const hasPrevPage = hasPrevCursor || docs.length > 0;
 
-  const nextCursor = hasNextPage ? docs.at(-1) ?? null : null;
+  const nextCursor = hasNextPage ? (docs.at(-1) ?? null) : null;
 
   const prevCursor = docs.at(0) ?? null;
 
@@ -285,7 +285,7 @@ export function processPaginatedResults<T>(
 export function firstPage(
   pageSize: number = 20,
   sortField?: string,
-  sortDirection?: OrderByDirection
+  sortDirection?: OrderByDirection,
 ): PaginationConfig {
   return {
     pageSize,
@@ -312,7 +312,7 @@ export function nextPage(
   pageSize: number,
   cursor: QueryDocumentSnapshot<DocumentData>,
   sortField?: string,
-  sortDirection?: OrderByDirection
+  sortDirection?: OrderByDirection,
 ): PaginationConfig {
   return {
     pageSize,
@@ -340,7 +340,7 @@ export function prevPage(
   pageSize: number,
   cursor: QueryDocumentSnapshot<DocumentData>,
   sortField?: string,
-  sortDirection?: OrderByDirection
+  sortDirection?: OrderByDirection,
 ): PaginationConfig {
   return {
     pageSize,
@@ -405,7 +405,7 @@ export function categoryFilter(categoryId: string): QueryFilter {
 export function dateRangeFilter(
   field: string,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
 ): QueryFilter[] {
   return [
     { field, operator: ">=", value: startDate },
@@ -478,7 +478,7 @@ export function sortByPopularity(): QuerySort {
  * @returns Base64 encoded cursor string
  */
 export function encodeCursor(
-  cursor: QueryDocumentSnapshot<DocumentData>
+  cursor: QueryDocumentSnapshot<DocumentData>,
 ): string {
   try {
     const cursorData = {

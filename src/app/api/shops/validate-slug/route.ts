@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * Validate Shop Slug Uniqueness
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
       slug,
     });
   } catch (error) {
-    console.error("Error validating shop slug:", error);
+    logError(error as Error, { component: "API.shops.validateSlug", slug });
     return NextResponse.json(
       {
         success: false,

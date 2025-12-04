@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Plus, MapPin, Edit2, Trash2, Check } from "lucide-react";
-import { toast } from "sonner";
 import { logError } from "@/lib/error-logger";
 import { addressService } from "@/services/address.service";
 import type { AddressFE } from "@/types/frontend/address.types";
+import { Check, Edit2, MapPin, Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { ConfirmDialog } from "../common/ConfirmDialog";
 import { SmartAddressForm } from "../common/SmartAddressForm";
 
@@ -58,7 +57,10 @@ export function AddressSelector({
         onSelect("");
       }
     } catch (error) {
-      console.error("Failed to delete address:", error);
+      logError(error as Error, {
+        component: "AddressSelector.handleDelete",
+        addressId: deleteId,
+      });
     } finally {
       setDeleteId(null);
     }

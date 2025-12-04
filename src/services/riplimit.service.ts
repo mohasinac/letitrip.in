@@ -71,7 +71,7 @@ class RipLimitService {
       type?: string;
       limit?: number;
       offset?: number;
-    } = {}
+    } = {},
   ): Promise<RipLimitTransactionHistoryFE> {
     const params = new URLSearchParams();
     if (options.type) params.set("type", options.type);
@@ -98,7 +98,7 @@ class RipLimitService {
     return toFERipLimitTransactionHistory(
       response.data,
       options.limit || 20,
-      options.offset || 0
+      options.offset || 0,
     );
   }
 
@@ -106,7 +106,7 @@ class RipLimitService {
    * Initiate RipLimit purchase
    */
   async initiatePurchase(
-    ripLimitAmount: number
+    ripLimitAmount: number,
   ): Promise<RipLimitPurchaseResponseFE> {
     const response = await apiService.post<{
       success: boolean;
@@ -158,11 +158,11 @@ class RipLimitService {
       success: true,
       newBalance: response.data.newBalance,
       formattedNewBalance: `${response.data.newBalance.toLocaleString(
-        "en-IN"
+        "en-IN",
       )} RL`,
       purchasedAmount: response.data.purchasedAmount,
       formattedPurchasedAmount: `${response.data.purchasedAmount.toLocaleString(
-        "en-IN"
+        "en-IN",
       )} RL`,
       message: response.message || "Purchase successful!",
     };
@@ -173,7 +173,7 @@ class RipLimitService {
    */
   async requestRefund(
     amount: number,
-    reason?: string
+    reason?: string,
   ): Promise<{
     success: boolean;
     refundId: string;

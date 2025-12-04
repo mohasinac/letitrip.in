@@ -157,7 +157,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
         return false;
       }
     },
-    [enabled, message, onNavigate, onCancel]
+    [enabled, message, onNavigate, onCancel],
   );
 
   return {

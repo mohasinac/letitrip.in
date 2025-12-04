@@ -1,24 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { BlogCard } from "@/components/cards/BlogCard";
 import { safeToISOString } from "@/lib/date-utils";
+import { logError } from "@/lib/firebase-error-logger";
+import { formatDate } from "@/lib/formatters";
+import { blogService, type BlogPost } from "@/services/blog.service";
 import {
+  ArrowLeft,
   Calendar,
-  User,
   Clock,
   Eye,
   Heart,
   Share2,
-  ArrowLeft,
   Tag,
+  User,
 } from "lucide-react";
-import { blogService, type BlogPost } from "@/services/blog.service";
-import { BlogCard } from "@/components/cards/BlogCard";
-import { formatDate } from "@/lib/formatters";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface BlogPostClientProps {
   slug: string;
@@ -50,7 +51,7 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
       }
     } catch (err: any) {
       setError(err.message || "Failed to load blog post");
-      console.error("Error fetching blog post:", err);
+      logError(err as Error, { component: "BlogPostClient.fetchPost", slug });
     } finally {
       setLoading(false);
     }
@@ -66,7 +67,10 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
         likes: liked ? post.likes - 1 : post.likes + 1,
       });
     } catch (err) {
-      console.error("Error liking post:", err);
+      logError(err as Error, {
+        component: "BlogPostClient.handleLike",
+        postId: post.id,
+      });
     }
   };
 
@@ -79,7 +83,10 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
           url: globalThis.location?.href || "",
         });
       } catch (err) {
-        console.error("Error sharing:", err);
+        logError(err as Error, {
+          component: "BlogPostClient.handleShare",
+          postId: post?.id,
+        });
       }
     } else {
       // Fallback: copy to clipboard

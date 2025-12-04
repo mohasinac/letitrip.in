@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
 import { faker } from "@faker-js/faker";
+import { NextRequest, NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 
@@ -249,7 +250,10 @@ export async function POST(req: NextRequest) {
       conversations: conversations.slice(0, 10), // Return first 10 for preview
     });
   } catch (error: any) {
-    console.error("Error generating messages:", error);
+    logError(error as Error, {
+      component: "API.testData.generateMessages",
+      messagesPerConversation,
+    });
     return NextResponse.json(
       {
         success: false,

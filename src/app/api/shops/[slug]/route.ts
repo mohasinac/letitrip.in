@@ -4,6 +4,7 @@ import {
   requireAuth,
 } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import { logError } from "@/lib/firebase-error-logger";
 
 /**
  * Individual Shop API - /api/shops/[slug] with Firebase Integration
@@ -108,7 +109,7 @@ export async function GET(
       shop,
     });
   } catch (error) {
-    console.error("[GET /api/shops/[slug]] Error:", error);
+    logError(error as Error, { component: "API.shops.detail.GET", slug: await params.then(p => p.slug) });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },
@@ -218,7 +219,7 @@ export async function PATCH(
       message: "Shop updated successfully",
     });
   } catch (error) {
-    console.error("[PATCH /api/shops/[slug]] Error:", error);
+    logError(error as Error, { component: "API.shops.detail.PATCH", slug: await params.then(p => p.slug) });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },
@@ -315,7 +316,7 @@ export async function DELETE(
       message: "Shop deleted successfully",
     });
   } catch (error) {
-    console.error("[DELETE /api/shops/[slug]] Error:", error);
+    logError(error as Error, { component: "API.shops.detail.DELETE", slug: await params.then(p => p.slug) });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },

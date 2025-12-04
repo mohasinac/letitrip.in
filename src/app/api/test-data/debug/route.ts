@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 
@@ -136,7 +137,7 @@ export async function GET() {
 
     return NextResponse.json({ success: true, debug });
   } catch (error: any) {
-    console.error("Error in debug endpoint:", error);
+    logError(error as Error, { component: "API.testData.debug" });
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 },

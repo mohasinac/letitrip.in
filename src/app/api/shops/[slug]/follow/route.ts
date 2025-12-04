@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
 
 /**
  * POST /api/shops/[slug]/follow - Follow a shop
@@ -94,7 +95,7 @@ export async function POST(
       message: "Shop followed successfully",
     });
   } catch (error) {
-    console.error("[POST /api/shops/[slug]/follow] Error:", error);
+    logError(error as Error, { component: "API.shops.follow.POST", slug: await params.then(p => p.slug) });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },
@@ -174,7 +175,7 @@ export async function DELETE(
       message: "Shop unfollowed successfully",
     });
   } catch (error) {
-    console.error("[DELETE /api/shops/[slug]/follow] Error:", error);
+    logError(error as Error, { component: "API.shops.follow.DELETE", slug: await params.then(p => p.slug) });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },
@@ -223,7 +224,7 @@ export async function GET(
 
     return NextResponse.json({ isFollowing: followDoc.exists });
   } catch (error) {
-    console.error("[GET /api/shops/[slug]/follow] Error:", error);
+    logError(error as Error, { component: "API.shops.follow.GET", slug: await params.then(p => p.slug) });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },

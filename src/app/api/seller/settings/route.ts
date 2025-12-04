@@ -9,11 +9,12 @@
  * - PUT: Update seller settings
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
 import { FieldValue } from "firebase-admin/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 const DEFAULT_SETTINGS = {
   profile: {
@@ -115,7 +116,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(settings);
   } catch (error) {
-    console.error("Error fetching seller settings:", error);
+    logError(error as Error, {
+      component: "API.seller.settings.get",
+      userId: user?.id,
+    });
     return NextResponse.json(
       { error: "Failed to fetch settings" },
       { status: 500 },
@@ -184,7 +188,10 @@ export async function PUT(request: NextRequest) {
       message: "Settings updated successfully",
     });
   } catch (error) {
-    console.error("Error updating seller settings:", error);
+    logError(error as Error, {
+      component: "API.seller.settings.update",
+      userId: user?.id,
+    });
     return NextResponse.json(
       { error: "Failed to update settings" },
       { status: 500 },

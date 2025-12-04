@@ -125,7 +125,7 @@ export function useSlugValidation({
         setIsValidating(false);
       }
     },
-    [endpoint, params, excludeId]
+    [endpoint, params, excludeId],
   );
 
   // Debounced validation
@@ -142,7 +142,7 @@ export function useSlugValidation({
         setError(null);
       }
     },
-    [debouncedValidate]
+    [debouncedValidate],
   );
 
   // Reset function

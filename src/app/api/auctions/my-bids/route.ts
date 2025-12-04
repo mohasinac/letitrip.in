@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "../../lib/session";
 
 // GET /api/auctions/my-bids - authenticated user's bids
@@ -20,7 +21,10 @@ export async function GET(request: NextRequest) {
     const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error("My bids error:", error);
+    logError(error as Error, {
+      component: "API.auctions.my-bids",
+      userId: user?.id,
+    });
     return NextResponse.json(
       { success: false, error: "Failed to load my bids" },
       { status: 500 },

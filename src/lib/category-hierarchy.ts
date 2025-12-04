@@ -12,7 +12,7 @@ import { logError } from "@/lib/firebase-error-logger";
  * Used for finding all products under a category
  */
 export async function getAllDescendantIds(
-  categoryId: string
+  categoryId: string,
 ): Promise<string[]> {
   const db = getFirestoreAdmin();
   const descendants: string[] = [];
@@ -93,7 +93,7 @@ export async function getAllAncestorIds(categoryId: string): Promise<string[]> {
  */
 export async function wouldCreateCycle(
   categoryId: string,
-  newParentId: string
+  newParentId: string,
 ): Promise<boolean> {
   // Can't be your own parent
   if (categoryId === newParentId) return true;
@@ -108,7 +108,7 @@ export async function wouldCreateCycle(
  * For leaf nodes only - counts unique products
  */
 export async function countLeafCategoryProducts(
-  categoryId: string
+  categoryId: string,
 ): Promise<number> {
   const db = getFirestoreAdmin();
 
@@ -121,7 +121,7 @@ export async function countLeafCategoryProducts(
 
   // Filter out deleted products (handles both is_deleted: true and missing field)
   const validProducts = productsSnapshot.docs.filter(
-    (doc) => doc.data().is_deleted !== true
+    (doc) => doc.data().is_deleted !== true,
   );
 
   return validProducts.length;
@@ -132,7 +132,7 @@ export async function countLeafCategoryProducts(
  * For non-leaf nodes - sums all direct children counts
  */
 export async function countParentCategoryProducts(
-  categoryId: string
+  categoryId: string,
 ): Promise<number> {
   const db = getFirestoreAdmin();
 
@@ -163,7 +163,7 @@ export async function countParentCategoryProducts(
  * - Parent nodes: sum children counts
  */
 export async function countCategoryProducts(
-  categoryId: string
+  categoryId: string,
 ): Promise<number> {
   const isLeaf = await isCategoryLeaf(categoryId);
 
@@ -181,7 +181,7 @@ export async function countCategoryProducts(
  * Updates bottom-up: leaf first, then parents
  */
 export async function updateCategoryProductCounts(
-  categoryId: string
+  categoryId: string,
 ): Promise<void> {
   const db = getFirestoreAdmin();
 
@@ -250,7 +250,7 @@ export async function updateCategoryProductCounts(
  * Get all category IDs for product queries (category + all descendants)
  */
 export async function getCategoryIdsForQuery(
-  categoryId: string
+  categoryId: string,
 ): Promise<string[]> {
   const descendants = await getAllDescendantIds(categoryId);
   return [categoryId, ...descendants];
@@ -261,7 +261,7 @@ export async function getCategoryIdsForQuery(
  */
 export async function validateParentAssignments(
   categoryId: string,
-  parentIds: string[]
+  parentIds: string[],
 ): Promise<{
   valid: boolean;
   errors: string[];
@@ -278,7 +278,7 @@ export async function validateParentAssignments(
     const wouldCycle = await wouldCreateCycle(categoryId, parentId);
     if (wouldCycle) {
       errors.push(
-        `Adding parent ${parentId} would create a circular reference`
+        `Adding parent ${parentId} would create a circular reference`,
       );
     }
   }
@@ -302,7 +302,7 @@ export async function validateParentAssignments(
  * Calculate category level based on deepest path from root
  */
 export async function calculateCategoryLevel(
-  categoryId: string
+  categoryId: string,
 ): Promise<number> {
   const db = getFirestoreAdmin();
   const category = await db.collection("categories").doc(categoryId).get();
@@ -353,7 +353,7 @@ export async function getCategoryProducts(
     limit?: number;
     offset?: number;
     status?: string;
-  }
+  },
 ): Promise<string[]> {
   const db = getFirestoreAdmin();
   const categoryIds = await getCategoryIdsForQuery(categoryId);
@@ -392,7 +392,7 @@ export async function getCategoryProducts(
  * Update auction counts for a category and all its ancestors
  */
 export async function updateCategoryAuctionCounts(
-  categoryId: string
+  categoryId: string,
 ): Promise<void> {
   const db = getFirestoreAdmin();
 
@@ -522,7 +522,7 @@ export async function rebuildAllCategoryCounts(): Promise<{
       };
 
       console.log(
-        `Updated ${categoryData.name} (${categoryId}): ${count} products (${inStockCount} in stock, ${outOfStockCount} out of stock), ${liveAuctionsSnapshot.size} live auctions, ${endedAuctionsSnapshot.size} ended auctions`
+        `Updated ${categoryData.name} (${categoryId}): ${count} products (${inStockCount} in stock, ${outOfStockCount} out of stock), ${liveAuctionsSnapshot.size} live auctions, ${endedAuctionsSnapshot.size} ended auctions`,
       );
       updated++;
     } catch (error: any) {
@@ -535,7 +535,7 @@ export async function rebuildAllCategoryCounts(): Promise<{
   }
 
   console.log(
-    `Rebuild complete: ${updated} categories updated, ${errors.length} errors`
+    `Rebuild complete: ${updated} categories updated, ${errors.length} errors`,
   );
   return { updated, errors, details };
 }

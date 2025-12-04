@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import {
   getUserFromRequest,
   requireAuth,
 } from "@/app/api/middleware/rbac-auth";
-import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/orders/[id]
@@ -52,7 +53,7 @@ export async function GET(
       data: { id: doc.id, ...orderData },
     });
   } catch (error) {
-    console.error("Order detail error:", error);
+    logError(error as Error, { component: "API.orders.get", orderId: id });
     return NextResponse.json(
       { success: false, error: "Failed to load order" },
       { status: 500 },
@@ -111,7 +112,7 @@ export async function PATCH(
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
-    console.error("Order update error:", error);
+    logError(error as Error, { component: "API.orders.update", orderId: id });
     return NextResponse.json(
       { success: false, error: "Failed to update order" },
       { status: 500 },

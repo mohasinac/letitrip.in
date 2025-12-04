@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import {
-  getUserFromRequest,
-  requireAuth,
-  requireRole,
-} from "@/app/api/middleware/rbac-auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { canReadResource, canWriteResource } from "@/lib/rbac-permissions";
+import { requireAuth, requireRole } from "@/app/api/middleware/rbac-auth";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
+import { canReadResource, canWriteResource } from "@/lib/rbac-permissions";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/tickets/[id]
@@ -98,7 +95,11 @@ export async function GET(
       },
     });
   } catch (error: any) {
-    console.error("Error fetching ticket details:", error);
+    logError(error as Error, {
+      component: "API.tickets.getDetail",
+      ticketId,
+      userId: user?.uid,
+    });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -181,7 +182,11 @@ export async function PATCH(
       },
     });
   } catch (error: any) {
-    console.error("Error updating ticket:", error);
+    logError(error as Error, {
+      component: "API.tickets.update",
+      ticketId,
+      userId: user?.uid,
+    });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -226,7 +231,7 @@ export async function DELETE(
       message: "Ticket deleted successfully",
     });
   } catch (error: any) {
-    console.error("Error deleting ticket:", error);
+    logError(error as Error, { component: "API.tickets.delete", ticketId });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

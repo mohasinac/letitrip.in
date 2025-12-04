@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
 import { faker } from "@faker-js/faker";
+import { NextRequest, NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 
@@ -637,7 +638,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, stats, context });
   } catch (error: any) {
-    console.error("Error generating complete data:", error);
+    logError(error as Error, {
+      component: "API.testData.generateComplete",
+      config,
+    });
     return NextResponse.json(
       { success: false, error: error.message || "Failed to generate data" },
       { status: 500 },

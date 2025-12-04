@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import {
   getUserFromRequest,
   requireRole,
 } from "@/app/api/middleware/rbac-auth";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/users/[id]
@@ -41,7 +42,7 @@ export async function GET(
       data: { id: userDoc.id, ...userDoc.data() },
     });
   } catch (error: any) {
-    console.error("Failed to fetch user:", error);
+    logError(error as Error, { component: "API.users.get", userId: id });
     return NextResponse.json(
       { success: false, error: "Failed to fetch user" },
       { status: 500 },
@@ -150,7 +151,7 @@ export async function PATCH(
       data: userData,
     });
   } catch (error: any) {
-    console.error("Failed to update user:", error);
+    logError(error as Error, { component: "API.users.update", userId: id });
     return NextResponse.json(
       { success: false, error: "Failed to update user" },
       { status: 500 },
@@ -187,7 +188,7 @@ export async function DELETE(
       message: "User deleted successfully",
     });
   } catch (error: any) {
-    console.error("Failed to delete user:", error);
+    logError(error as Error, { component: "API.users.delete", userId: id });
     return NextResponse.json(
       { success: false, error: "Failed to delete user" },
       { status: 500 },

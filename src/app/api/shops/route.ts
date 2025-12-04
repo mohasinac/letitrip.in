@@ -5,6 +5,7 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { UserRole } from "@/app/api/lib/firebase/queries";
+import { logError } from "@/lib/firebase-error-logger";
 import { withCache } from "@/app/api/middleware/cache";
 import {
   parseSieveQuery,
@@ -202,7 +203,7 @@ export async function GET(request: NextRequest) {
           },
         });
       } catch (error: any) {
-        console.error("Error fetching shops:", error);
+        logError(error as Error, { component: "API.shops.GET" });
 
         const errorMessage = error?.message || "Failed to fetch shops";
         return NextResponse.json(
@@ -360,7 +361,7 @@ export async function POST(request: NextRequest) {
       message: "Shop created successfully. You can now upload logo and banner.",
     });
   } catch (error) {
-    console.error("Error creating shop:", error);
+    logError(error as Error, { component: "API.shops.POST" });
     return NextResponse.json(
       {
         success: false,

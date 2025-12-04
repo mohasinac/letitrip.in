@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "@/app/api/lib/session";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { getCurrentUser } from "@/app/api/lib/session";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   _req: NextRequest,
@@ -20,7 +21,7 @@ export async function GET(
       data: { id: doc.id, ...doc.data() },
     });
   } catch (error) {
-    console.error("Return detail error:", error);
+    logError(error as Error, { component: "API.returns.get", returnId: id });
     return NextResponse.json(
       { success: false, error: "Failed to load return" },
       { status: 500 },
@@ -78,7 +79,7 @@ export async function PATCH(
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
-    console.error("Return update error:", error);
+    logError(error as Error, { component: "API.returns.update", returnId: id });
     return NextResponse.json(
       { success: false, error: "Failed to update return" },
       { status: 500 },

@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { getCurrentUser } from "@/app/api/lib/session";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { getCurrentUser } from "@/app/api/lib/session";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
@@ -69,7 +70,7 @@ export async function POST(
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
-    console.error("Return refund error:", error);
+    logError(error as Error, { component: "API.returns.refund", returnId: id });
     return NextResponse.json(
       { success: false, error: "Failed to process refund" },
       { status: 500 },

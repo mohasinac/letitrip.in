@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { faker } from "@faker-js/faker";
+import { NextRequest, NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 

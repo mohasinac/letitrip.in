@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * POST /api/shops/batch
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest) {
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
         { success: false, error: "Shop IDs array is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -81,10 +82,10 @@ export async function POST(request: NextRequest) {
       data: orderedShops,
     });
   } catch (error) {
-    console.error("Error fetching shops batch:", error);
+    logError(error as Error, { component: "API.shops.batch" });
     return NextResponse.json(
       { success: false, error: "Failed to fetch shops" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

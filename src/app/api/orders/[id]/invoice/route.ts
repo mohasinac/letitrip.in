@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
-import PDFDocument from "pdfkit";
 import { withRateLimit } from "@/app/api/middleware/ratelimiter";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
+import PDFDocument from "pdfkit";
 
 export async function GET(
   req: NextRequest,
@@ -67,7 +68,9 @@ export async function GET(
           .text(billing.line1 || "")
           .text(billing.line2 || "")
           .text(
-            `${billing.city || ""} ${billing.state || ""} ${billing.pincode || ""}`,
+            `${billing.city || ""} ${billing.state || ""} ${
+              billing.pincode || ""
+            }`,
           )
           .text(billing.country || "")
           .moveDown();
@@ -84,7 +87,9 @@ export async function GET(
             const price = it.price || 0;
             const lineTotal = qty * price;
             doc.text(
-              `${idx + 1}. ${it.name || it.product_name || "Item"}  x${qty}  -  ₹${lineTotal.toFixed(2)}`,
+              `${idx + 1}. ${
+                it.name || it.product_name || "Item"
+              }  x${qty}  -  ₹${lineTotal.toFixed(2)}`,
             );
           });
         }
@@ -118,7 +123,10 @@ export async function GET(
           },
         });
       } catch (error) {
-        console.error("Order invoice error:", error);
+        logError(error as Error, {
+          component: "API.orders.invoice",
+          orderId: id,
+        });
         return NextResponse.json(
           { success: false, error: "Failed to generate invoice" },
           { status: 500 },

@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/app/api/lib/session";
+import { getStorageAdmin } from "@/app/api/lib/firebase/admin";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
-import { getStorageAdmin } from "@/app/api/lib/firebase/admin";
+import { getCurrentUser } from "@/app/api/lib/session";
+import { logError } from "@/lib/firebase-error-logger";
 import { randomUUID } from "crypto";
+import { NextRequest, NextResponse } from "next/server";
 
 // NOTE: This is a simplified stub. In production, validate file type/size and use signed URLs or direct upload tokens.
 export async function POST(
@@ -91,7 +92,10 @@ export async function POST(
     });
     return NextResponse.json({ success: true, data: { urls: uploaded } });
   } catch (error) {
-    console.error("Return media upload error:", error);
+    logError(error as Error, {
+      component: "API.returns.media.uploadDirect",
+      returnId: id,
+    });
     return NextResponse.json(
       { success: false, error: "Failed to upload media" },
       { status: 500 },

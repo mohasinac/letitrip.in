@@ -24,7 +24,7 @@ if (typeof window !== "undefined") {
  */
 export function trackEvent(
   eventName: string,
-  params?: Record<string, any>
+  params?: Record<string, any>,
 ): void {
   if (!analytics) return;
 
@@ -99,7 +99,7 @@ export function trackAddToCart(
   productId: string,
   productName: string,
   price: number,
-  quantity: number
+  quantity: number,
 ): void {
   trackEvent("add_to_cart", {
     item_id: productId,
@@ -111,7 +111,7 @@ export function trackAddToCart(
 
 export function trackRemoveFromCart(
   productId: string,
-  productName: string
+  productName: string,
 ): void {
   trackEvent("remove_from_cart", {
     item_id: productId,
@@ -124,7 +124,7 @@ export function trackRemoveFromCart(
  */
 export function trackBeginCheckout(
   cartItems: any[],
-  totalAmount: number
+  totalAmount: number,
 ): void {
   trackEvent("begin_checkout", {
     value: totalAmount,
@@ -140,7 +140,7 @@ export function trackBeginCheckout(
 export function trackPurchase(
   orderId: string,
   totalAmount: number,
-  items: any[]
+  items: any[],
 ): void {
   trackEvent("purchase", {
     transaction_id: orderId,

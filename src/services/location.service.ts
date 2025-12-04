@@ -108,7 +108,7 @@ class LocationService {
           enableHighAccuracy: true,
           timeout: 10000,
           maximumAge: 30000,
-        }
+        },
       );
     });
   }
@@ -135,7 +135,7 @@ class LocationService {
    * Note: Requires Google Maps API integration
    */
   async reverseGeocode(
-    coords: GeoCoordinates
+    coords: GeoCoordinates,
   ): Promise<ReverseGeocodeResult | null> {
     try {
       const response = await apiService.get<{

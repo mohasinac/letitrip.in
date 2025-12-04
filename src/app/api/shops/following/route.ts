@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/shops/following - Get list of shops the user follows
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -86,10 +87,10 @@ export async function GET(request: NextRequest) {
       count: shops.length,
     });
   } catch (error) {
-    console.error("[GET /api/shops/following] Error:", error);
+    logError(error as Error, { component: "API.shops.following.GET" });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

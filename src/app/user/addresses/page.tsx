@@ -1,11 +1,11 @@
 "use client";
 
-import { logError } from "@/lib/firebase-error-logger";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { PageState } from "@/components/common/PageState";
 import { SmartAddressForm } from "@/components/common/SmartAddressForm";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import { addressService } from "@/services/address.service";
 import type { AddressFE } from "@/types/frontend/address.types";
 import { CheckCircle, Edit, MapPin, Plus, Trash2 } from "lucide-react";

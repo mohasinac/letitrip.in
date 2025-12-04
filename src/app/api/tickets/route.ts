@@ -1,16 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
+import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import {
+  createPaginationMeta,
+  parseSieveQuery,
+  ticketsSieveConfig,
+} from "@/app/api/lib/sieve";
 import {
   getUserFromRequest,
   requireAuth,
 } from "@/app/api/middleware/rbac-auth";
-import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { ValidationError } from "@/lib/api-errors";
-import {
-  parseSieveQuery,
-  ticketsSieveConfig,
-  createPaginationMeta,
-} from "@/app/api/lib/sieve";
 import { COLLECTIONS } from "@/constants/database";
+import { ValidationError } from "@/lib/api-errors";
+import { logError } from "@/lib/firebase-error-logger";
+import { NextRequest, NextResponse } from "next/server";
 
 // Extended Sieve config with field mappings for tickets
 const ticketsConfig = {
@@ -200,7 +201,10 @@ export async function GET(request: NextRequest) {
       ...(stats && { stats }),
     });
   } catch (error: any) {
-    console.error("Error fetching tickets:", error);
+    logError(error as Error, {
+      component: "API.tickets.list",
+      userId: user?.uid,
+    });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -307,7 +311,11 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    console.error("Error creating support ticket:", error);
+    logError(error as Error, {
+      component: "API.tickets.create",
+      userId: user?.uid,
+      subject: data?.subject,
+    });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
