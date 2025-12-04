@@ -13,13 +13,25 @@ import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { notFound } from "@/lib/error-redirects";
 import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 export default function OrderDetailPage() {
   const router = useRouter();
   const params = useParams();
   const orderId = (params.id as string) || "";
-  const [order, setOrder] = useState<OrderFE | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    data: order,
+    setData: setOrder,
+    execute,
+  } = useLoadingState<OrderFE>({
+    onLoadError: (error) => {
+      logError(error, { component: "OrderDetailPage.loadOrder", orderId });
+      router.push(notFound.order(orderId, error));
+    },
+  });
   const [saving, setSaving] = useState(false);
 
   // Status update
@@ -41,18 +53,10 @@ export default function OrderDetailPage() {
     loadOrder();
   }, [orderId]);
 
-  const loadOrder = async () => {
-    try {
-      setLoading(true);
-      const data = await ordersService.getById(orderId);
-      setOrder(data);
-    } catch (err: any) {
-      console.error("Failed to load order:", err);
-      router.push(notFound.order(orderId, err));
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loadOrder = () =>
+    execute(async () => {
+      return await ordersService.getById(orderId);
+    });
 
   const handleStatusUpdate = async () => {
     if (!order) return;

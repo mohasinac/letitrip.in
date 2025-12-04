@@ -11,9 +11,17 @@ import { heroSlidesService } from "@/services/hero-slides.service";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { MediaFile } from "@/types/media";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 export default function CreateHeroSlidePage() {
   const router = useRouter();
+  const { execute } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, { component: "CreateHeroSlidePage.handleSubmit" });
+      toast.error("Failed to create hero slide");
+    },
+  });
   const [loading, setLoading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<MediaFile[]>([]);
   const [formData, setFormData] = useState({
@@ -69,27 +77,14 @@ export default function CreateHeroSlidePage() {
       return;
     }
 
-    try {
-      setLoading(true);
+    setLoading(true);
+    await execute(async () => {
       await heroSlidesService.createHeroSlide(formData);
-
       // Success! Clear tracking
       clearTracking();
-
       router.push("/admin/hero-slides");
-    } catch (error) {
-      console.error("Failed to create slide:", error);
-
-      // Failure! Clean up uploaded media
-      if (hasUploadedMedia) {
-        await cleanupUploadedMedia();
-        setFormData((prev) => ({ ...prev, image: "" }));
-      }
-
-      toast.error("Failed to create slide. Uploaded image deleted.");
-    } finally {
-      setLoading(false);
-    }
+    });
+    setLoading(false);
   };
 
   const handleCancel = async () => {

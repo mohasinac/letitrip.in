@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { heroSlidesService, HeroSlide } from "@/services/hero-slides.service";
 import { EmptyState } from "@/components/common/EmptyState";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   QuickCreateRow,
   InlineEditRow,
@@ -32,8 +34,19 @@ import { InlineField } from "@/types/inline-edit";
 
 export default function HeroSlidesPage() {
   const router = useRouter();
-  const [slides, setSlides] = useState<HeroSlide[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    data: slides,
+    setData: setSlides,
+    execute,
+  } = useLoadingState<HeroSlide[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, { component: "HeroSlidesPage.loadSlides" });
+      toast.error("Failed to load hero slides");
+    },
+  });
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
@@ -51,17 +64,10 @@ export default function HeroSlidesPage() {
     loadSlides();
   }, []);
 
-  const loadSlides = async () => {
-    try {
-      setLoading(true);
-      const slides = await heroSlidesService.getHeroSlides();
-      setSlides(slides);
-    } catch (error) {
-      console.error("Failed to load hero slides:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loadSlides = () =>
+    execute(async () => {
+      return await heroSlidesService.getHeroSlides();
+    });
 
   const handleBulkAction = async (actionId: string) => {
     setActionLoading(true);

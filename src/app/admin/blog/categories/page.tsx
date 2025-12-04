@@ -22,6 +22,8 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
 import { FormInput, FormTextarea, FormSelect } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 // Types
 interface BlogCategory {

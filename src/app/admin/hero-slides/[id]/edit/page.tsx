@@ -15,6 +15,8 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { MediaFile } from "@/types/media";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 interface FormState {
   title: string;
@@ -30,10 +32,20 @@ interface FormState {
 export default function EditHeroSlidePage() {
   const router = useRouter();
   const params = useParams();
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    data: formData,
+    setData: setFormData,
+    execute,
+  } = useLoadingState<FormState>({
+    onLoadError: (error) => {
+      logError(error, { component: "EditHeroSlidePage.loadSlide" });
+      toast.error("Failed to load hero slide");
+    },
+  });
   const [saving, setSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [formData, setFormData] = useState<FormState | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<MediaFile[]>([]);
 
   const {
@@ -63,14 +75,13 @@ export default function EditHeroSlidePage() {
     loadSlide();
   }, [params.id]);
 
-  const loadSlide = async () => {
-    try {
-      setLoading(true);
+  const loadSlide = () =>
+    execute(async () => {
       const slide = await heroSlidesService.getHeroSlideById(
         params.id as string,
       );
       // Transform from service format to form format
-      const data: FormState = {
+      return {
         title: slide.title,
         subtitle: slide.subtitle || "",
         description: slide.description || "",
@@ -80,15 +91,7 @@ export default function EditHeroSlidePage() {
         isActive: slide.isActive,
         order: slide.order,
       };
-      setFormData(data);
-    } catch (error) {
-      console.error("Failed to load slide:", error);
-      toast.error("Failed to load slide");
-      router.push("/admin/hero-slides");
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
 
   const handleFilesAdded = async (files: MediaFile[]) => {
     if (files.length === 0) return;

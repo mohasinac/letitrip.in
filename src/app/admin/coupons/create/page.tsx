@@ -6,6 +6,8 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { couponsService } from "@/services/coupons.service";
 import { toast } from "@/components/admin/Toast";
 import { ArrowLeft } from "lucide-react";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   FormInput,
   FormSelect,
@@ -15,6 +17,12 @@ import {
 
 export default function CreateCouponPage() {
   const router = useRouter();
+  const { execute } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, { component: "CreateCouponPage.handleSubmit" });
+      toast.error("Failed to create coupon");
+    },
+  });
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     code: "",
@@ -33,16 +41,13 @@ export default function CreateCouponPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      setLoading(true);
+    setLoading(true);
+    await execute(async () => {
       await couponsService.create(formData as any);
       toast.success("Coupon created successfully");
       router.push("/admin/coupons");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create coupon");
-    } finally {
-      setLoading(false);
-    }
+    });
+    setLoading(false);
   };
 
   return (

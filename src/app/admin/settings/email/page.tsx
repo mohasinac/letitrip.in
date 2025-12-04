@@ -31,6 +31,8 @@ import {
 import { apiService } from "@/services/api.service";
 import { FormLabel } from "@/components/forms";
 import { FormInput, FormSelect } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 interface EmailSettings {
   provider: "resend";
@@ -68,11 +70,20 @@ const DEFAULT_SETTINGS: EmailSettings = {
 };
 
 export default function AdminEmailSettingsPage() {
-  const [settings, setSettings] = useState<EmailSettings>(DEFAULT_SETTINGS);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    data: settings,
+    setData: setSettings,
+    execute,
+  } = useLoadingState<EmailSettings>({
+    initialData: DEFAULT_SETTINGS,
+    onLoadError: (error) => {
+      logError(error, { component: "AdminEmailSettingsPage.loadSettings" });
+    },
+  });
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showApiKey, setShowApiKey] = useState(false);
   const [testEmail, setTestEmail] = useState("");
@@ -84,23 +95,16 @@ export default function AdminEmailSettingsPage() {
     loadSettings();
   }, []);
 
-  const loadSettings = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const loadSettings = () =>
+    execute(async () => {
       const response = await apiService.get<{ settings: EmailSettings }>(
         "/api/admin/settings?category=email",
       );
       if (response.settings) {
-        setSettings({ ...DEFAULT_SETTINGS, ...response.settings });
+        return { ...DEFAULT_SETTINGS, ...response.settings };
       }
-    } catch (err) {
-      console.error("Error loading settings:", err);
-      // Use defaults if API fails
-    } finally {
-      setLoading(false);
-    }
-  };
+      return DEFAULT_SETTINGS;
+    });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

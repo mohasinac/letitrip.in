@@ -8,6 +8,8 @@ import { categoriesService } from "@/services/categories.service";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "@/lib/error-redirects";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 interface Category {
   id: string;
@@ -28,30 +30,26 @@ export default function EditCategoryPage() {
   const params = useParams();
   const router = useRouter();
   const { user, isAdmin, loading: authLoading } = useAuth();
-  const [category, setCategory] = useState<Category | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error] = useState<string | null>(null);
+  const {
+    isLoading: loading,
+    error,
+    data: category,
+    execute,
+  } = useLoadingState<Category>({
+    onLoadError: (error) => {
+      logError(error, { component: "EditCategoryPage.loadCategory", slug });
+      router.push(notFound.category(slug, error));
+    },
+  });
 
   const slug = params?.slug as string;
 
   // Load category data
   useEffect(() => {
-    const loadCategory = async () => {
-      if (!slug) return;
-
-      try {
-        const categoryData = await categoriesService.getBySlug(slug);
-        setCategory(categoryData as any);
-      } catch (err: any) {
-        console.error("Failed to load category:", err);
-        router.push(notFound.category(slug, err));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (user && isAdmin) {
-      loadCategory();
+    if (user && isAdmin && slug) {
+      execute(async () => {
+        return (await categoriesService.getBySlug(slug)) as any;
+      });
     }
   }, [slug, user, isAdmin]);
 
