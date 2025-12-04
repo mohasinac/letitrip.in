@@ -345,8 +345,8 @@ export default function BlogCategoriesPage() {
       if (editCategory) {
         // Update existing
         await apiService.patch(`/blog/categories/${editCategory.id}`, data);
-        setCategories((prev) =>
-          prev.map((c) =>
+        setCategories((prev: BlogCategory[]) =>
+          prev.map((c: BlogCategory) =>
             c.id === editCategory.id ? ({ ...c, ...data } as BlogCategory) : c,
           ),
         );

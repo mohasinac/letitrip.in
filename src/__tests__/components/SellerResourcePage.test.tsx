@@ -77,7 +77,6 @@ describe("SellerResourcePage", () => {
           fields={fields}
           onSave={mockOnSave}
           onDelete={mockOnDelete}
-          createUrl="/seller/products/create"
         />,
       );
 
