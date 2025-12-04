@@ -81,7 +81,7 @@ export interface SearchableDropdownProps<T = string> {
   /** Custom render for option */
   renderOption?: (
     option: DropdownOption<T>,
-    isSelected: boolean,
+    isSelected: boolean
   ) => React.ReactNode;
   /** Name for form submission */
   name?: string;
@@ -271,7 +271,7 @@ function SearchableDropdownInner<T = string>(
     name,
     id,
   }: SearchableDropdownProps<T>,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const generatedId = useId();
   const inputId = id || generatedId;
@@ -311,7 +311,7 @@ function SearchableDropdownInner<T = string>(
     return displayOptions.filter(
       (option) =>
         option.label.toLowerCase().includes(query) ||
-        option.description?.toLowerCase().includes(query),
+        option.description?.toLowerCase().includes(query)
     );
   }, [displayOptions, searchQuery, minSearchLength]);
 
@@ -338,7 +338,7 @@ function SearchableDropdownInner<T = string>(
     (optionValue: T) => {
       return selectedValues.some((v) => v === optionValue);
     },
-    [selectedValues],
+    [selectedValues]
   );
 
   // Get label for a value
@@ -347,7 +347,7 @@ function SearchableDropdownInner<T = string>(
       const option = options.find((o) => o.value === val);
       return option?.label || String(val);
     },
-    [options],
+    [options]
   );
 
   // Handle option selection
@@ -364,7 +364,7 @@ function SearchableDropdownInner<T = string>(
         setSearchQuery("");
       }
     },
-    [isMulti, isSelected, selectedValues, onChange],
+    [isMulti, isSelected, selectedValues, onChange]
   );
 
   // Handle chip removal
@@ -377,7 +377,7 @@ function SearchableDropdownInner<T = string>(
         onChange(null);
       }
     },
-    [isMulti, selectedValues, onChange],
+    [isMulti, selectedValues, onChange]
   );
 
   // Handle clear all
@@ -426,7 +426,7 @@ function SearchableDropdownInner<T = string>(
             setIsOpen(true);
           } else {
             setHighlightedIndex((prev) =>
-              prev < filteredOptions.length - 1 ? prev + 1 : 0,
+              prev < filteredOptions.length - 1 ? prev + 1 : 0
             );
           }
           break;
@@ -435,7 +435,7 @@ function SearchableDropdownInner<T = string>(
           e.preventDefault();
           if (isOpen) {
             setHighlightedIndex((prev) =>
-              prev > 0 ? prev - 1 : filteredOptions.length - 1,
+              prev > 0 ? prev - 1 : filteredOptions.length - 1
             );
           }
           break;
@@ -485,7 +485,7 @@ function SearchableDropdownInner<T = string>(
       searchQuery,
       selectedValues,
       handleRemove,
-    ],
+    ]
   );
 
   // Close on outside click
@@ -656,8 +656,8 @@ function SearchableDropdownInner<T = string>(
             error
               ? "border-red-500 focus:ring-red-500"
               : isOpen
-                ? "border-yellow-500 ring-1 ring-yellow-500"
-                : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+              ? "border-yellow-500 ring-1 ring-yellow-500"
+              : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
           }
           focus:outline-none focus:ring-1 focus:ring-yellow-500
         `}
@@ -765,7 +765,7 @@ function SearchableDropdownInner<T = string>(
             {!isLoading &&
               groupedOptions.ungrouped.length > 0 &&
               groupedOptions.ungrouped.map((option, index) =>
-                renderOptionItem(option, index),
+                renderOptionItem(option, index)
               )}
 
             {!isLoading &&
@@ -779,12 +779,12 @@ function SearchableDropdownInner<T = string>(
                       {groupOptions.map((option, index) =>
                         renderOptionItem(
                           option,
-                          groupedOptions.ungrouped.length + index,
-                        ),
+                          groupedOptions.ungrouped.length + index
+                        )
                       )}
                     </ul>
                   </li>
-                ),
+                )
               )}
           </ul>
 
@@ -834,11 +834,11 @@ function SearchableDropdownInner<T = string>(
 
 // Export with forwardRef
 export const SearchableDropdown = forwardRef(SearchableDropdownInner) as <
-  T = string,
+  T = string
 >(
   props: SearchableDropdownProps<T> & {
     ref?: React.ForwardedRef<HTMLDivElement>;
-  },
+  }
 ) => React.ReactElement;
 
 export default SearchableDropdown;
