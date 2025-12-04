@@ -55,13 +55,22 @@ export function AdjustBalanceModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="adjust-balance-modal-title"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6"
+      >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          <h2
+            id="adjust-balance-modal-title"
+            className="text-xl font-bold text-gray-900 dark:text-white"
+          >
             Adjust Balance
           </h2>
           <button
             onClick={onClose}
+            aria-label="Close modal"
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <X className="w-6 h-6" />

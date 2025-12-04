@@ -65,16 +65,23 @@ export function FormModal({
       <div className="flex min-h-full items-center justify-center p-4">
         <div
           ref={modalRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
           className={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full ${sizeClasses[size]}`}
         >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2
+              id="modal-title"
+              className="text-xl font-semibold text-gray-900 dark:text-white"
+            >
               {title}
             </h2>
             {showCloseButton && (
               <button
                 onClick={onClose}
+                aria-label="Close modal"
                 className="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-300"
               >
                 <svg
