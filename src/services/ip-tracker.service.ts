@@ -16,9 +16,9 @@
  * - Monitor high-frequency actions
  */
 
-import { db } from "@/lib/firebase/firebase-admin";
 import { USER_ACTIVITIES } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
+import { db } from "@/lib/firebase/firebase-admin";
 
 export interface ActivityData {
   userId?: string;
@@ -88,7 +88,7 @@ class IPTrackerService {
     ipAddress: string,
     action: ActivityAction,
     maxAttempts: number = 5,
-    windowMinutes: number = 15,
+    windowMinutes: number = 15
   ): Promise<RateLimitResult> {
     try {
       const windowStart = new Date(Date.now() - windowMinutes * 60 * 1000);
@@ -133,7 +133,7 @@ class IPTrackerService {
    */
   async getActivitiesByIP(
     ipAddress: string,
-    limit: number = 50,
+    limit: number = 50
   ): Promise<any[]> {
     try {
       const snapshot = await db
@@ -159,7 +159,7 @@ class IPTrackerService {
    */
   async getActivitiesByUser(
     userId: string,
-    limit: number = 50,
+    limit: number = 50
   ): Promise<any[]> {
     try {
       const snapshot = await db
@@ -231,7 +231,7 @@ class IPTrackerService {
       if (failedLoginsSnapshot.size >= 3) {
         score += 30;
         reasons.push(
-          `${failedLoginsSnapshot.size} failed login attempts in last hour`,
+          `${failedLoginsSnapshot.size} failed login attempts in last hour`
         );
       }
 
@@ -253,7 +253,7 @@ class IPTrackerService {
       if (recentActivitiesSnapshot.size >= 50) {
         score += 40;
         reasons.push(
-          `${recentActivitiesSnapshot.size} actions in last 5 minutes (potential bot)`,
+          `${recentActivitiesSnapshot.size} actions in last 5 minutes (potential bot)`
         );
       }
 
@@ -269,7 +269,7 @@ class IPTrackerService {
       if (registrationsSnapshot.size >= 3) {
         score += 50;
         reasons.push(
-          `${registrationsSnapshot.size} registrations in last 24 hours`,
+          `${registrationsSnapshot.size} registrations in last 24 hours`
         );
       }
 

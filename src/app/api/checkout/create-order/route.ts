@@ -1,11 +1,11 @@
+import { batchGetProducts } from "@/app/api/lib/batch-fetch";
+import { strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
+import { trackActivity } from "@/app/api/middleware/ip-tracker";
+import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { Collections } from "../../lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
-import { trackActivity } from "@/app/api/middleware/ip-tracker";
-import { strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
-import { batchGetProducts } from "@/app/api/lib/batch-fetch";
-import { z } from "zod";
-import crypto from "crypto";
 
 const ShopOrderSchema = z.object({
   shopId: z.string(),
@@ -35,7 +35,7 @@ async function createOrderHandler(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: validation.error.issues[0].message },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -50,7 +50,7 @@ async function createOrderHandler(request: NextRequest) {
     if (!shopOrders || shopOrders.length === 0) {
       return NextResponse.json(
         { error: "No shop orders provided" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -61,7 +61,7 @@ async function createOrderHandler(request: NextRequest) {
     if (!shippingAddressDoc.exists) {
       return NextResponse.json(
         { error: "Shipping address not found" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -69,7 +69,7 @@ async function createOrderHandler(request: NextRequest) {
     if (shippingAddress?.user_id !== user.id) {
       return NextResponse.json(
         { error: "Invalid shipping address" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -81,7 +81,7 @@ async function createOrderHandler(request: NextRequest) {
       if (!billingAddressDoc.exists) {
         return NextResponse.json(
           { error: "Billing address not found" },
-          { status: 400 },
+          { status: 400 }
         );
       }
 
@@ -89,7 +89,7 @@ async function createOrderHandler(request: NextRequest) {
       if (billingData?.user_id !== user.id) {
         return NextResponse.json(
           { error: "Invalid billing address" },
-          { status: 403 },
+          { status: 403 }
         );
       }
       billingAddress = billingData;
@@ -118,7 +118,7 @@ async function createOrderHandler(request: NextRequest) {
         if (!product) {
           return NextResponse.json(
             { error: `Product ${item.productName} not found` },
-            { status: 400 },
+            { status: 400 }
           );
         }
 
@@ -127,14 +127,14 @@ async function createOrderHandler(request: NextRequest) {
             {
               error: `Insufficient stock for ${product.name}. Only ${product.stock_count} available`,
             },
-            { status: 400 },
+            { status: 400 }
           );
         }
 
         if (product.status !== "active") {
           return NextResponse.json(
             { error: `Product ${product.name} is no longer available` },
-            { status: 400 },
+            { status: 400 }
           );
         }
       }
@@ -190,7 +190,7 @@ async function createOrderHandler(request: NextRequest) {
             // Calculate discount
             if (coupon.discount_type === "percentage") {
               discount = Math.round(
-                (shopSubtotal * coupon.discount_value) / 100,
+                (shopSubtotal * coupon.discount_value) / 100
               );
               if (coupon.max_discount) {
                 discount = Math.min(discount, coupon.max_discount);
@@ -352,7 +352,7 @@ async function createOrderHandler(request: NextRequest) {
     console.error("Create order error:", error);
     return NextResponse.json(
       { error: error.message || "Failed to create order" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -366,7 +366,7 @@ export async function POST(request: NextRequest) {
   if (!strictRateLimiter.check(identifier)) {
     return NextResponse.json(
       { error: "Too many order creation attempts. Please try again later." },
-      { status: 429 },
+      { status: 429 }
     );
   }
 
