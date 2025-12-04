@@ -4,6 +4,7 @@ import { Price } from "@/components/common/values";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { favoritesService } from "@/services/favorites.service";
 import { Folder, Gavel, Heart, Loader2, Package, Store } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -33,9 +34,7 @@ export default function FavoritesPage() {
   } = useLoadingState<FavoriteItem[]>({ initialData: [] });
 
   const fetchFavorites = useCallback(async () => {
-    const response = await fetch(`/api/favorites/list/${activeTab}`);
-    if (!response.ok) throw new Error("Failed to fetch favorites");
-    const data = await response.json();
+    const data = await favoritesService.listByType(activeTab);
     return data.data || [];
   }, [activeTab]);
 
@@ -47,13 +46,10 @@ export default function FavoritesPage() {
 
   const handleRemove = async (itemId: string) => {
     try {
-      const response = await fetch(`/api/favorites/${activeTab}/${itemId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to remove");
-
-      setItems((items || []).filter((item) => item.id !== itemId));
+      const result = await favoritesService.removeByType(activeTab, itemId);
+      if (result.success) {
+        setItems((items || []).filter((item) => item.id !== itemId));
+      }
     } catch (err) {
       logError(err as Error, {
         component: "UserFavorites.handleRemove",

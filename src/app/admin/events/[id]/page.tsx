@@ -3,6 +3,7 @@
 import { FormField, FormInput, FormTextarea } from "@/components/forms";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { eventsService } from "@/services/events.service";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -52,9 +53,7 @@ export default function AdminEventDetailPage() {
 
   const loadEvent = async () => {
     await execute(async () => {
-      const response = await fetch(`/api/admin/events/${eventId}`);
-      if (!response.ok) throw new Error("Failed to load event");
-      const data = await response.json();
+      const data = await eventsService.getByIdAdmin(eventId);
       if (data.success && data.event) {
         const event = data.event;
         setFormData({
@@ -88,18 +87,10 @@ export default function AdminEventDetailPage() {
           : undefined,
       };
 
-      const url = isNew ? "/api/admin/events" : `/api/admin/events/${eventId}`;
-      const method = isNew ? "POST" : "PUT";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to save event");
+      if (isNew) {
+        await eventsService.create(payload);
+      } else {
+        await eventsService.update(eventId, payload);
       }
 
       toast.success(`Event ${isNew ? "created" : "updated"} successfully`);
@@ -115,14 +106,7 @@ export default function AdminEventDetailPage() {
     setDeleting(true);
 
     await execute(async () => {
-      const response = await fetch(`/api/admin/events/${eventId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to delete event");
-      }
+      await eventsService.delete(eventId);
 
       toast.success("Event deleted successfully");
       router.push("/admin/events");

@@ -76,7 +76,10 @@ export function VerificationGate({
         setPhoneVerified(true); // Not required
       }
     } catch (error) {
-      console.error("Failed to check verification status:", error);
+      logError(error as Error, {
+        component: "VerificationGate.checkStatus",
+        context: { message: "Failed to check verification status" },
+      });
     } finally {
       setChecking(false);
     }
