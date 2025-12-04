@@ -345,11 +345,15 @@ export default function BlogCategoriesPage() {
       if (editCategory) {
         // Update existing
         await apiService.patch(`/blog/categories/${editCategory.id}`, data);
-        setCategories((prev: BlogCategory[]) =>
-          prev.map((c: BlogCategory) =>
-            c.id === editCategory.id ? ({ ...c, ...data } as BlogCategory) : c,
-          ),
-        );
+        if (categories) {
+          setCategories(
+            categories.map((c: BlogCategory) =>
+              c.id === editCategory.id
+                ? ({ ...c, ...data } as BlogCategory)
+                : c,
+            ),
+          );
+        }
         toast.success("Category updated successfully");
       } else {
         // Create new
@@ -357,15 +361,17 @@ export default function BlogCategoriesPage() {
           "/blog/categories",
           data,
         );
-        setCategories((prev) => [
-          ...prev,
-          response.data ||
-            ({
-              ...data,
-              id: Date.now().toString(),
-              postCount: 0,
-            } as BlogCategory),
-        ]);
+        if (categories) {
+          setCategories([
+            ...categories,
+            response.data ||
+              ({
+                ...data,
+                id: Date.now().toString(),
+                postCount: 0,
+              } as BlogCategory),
+          ]);
+        }
         toast.success("Category created successfully");
       }
 
@@ -384,7 +390,11 @@ export default function BlogCategoriesPage() {
 
     try {
       await apiService.delete(`/blog/categories/${deleteId}`);
-      setCategories((prev) => prev.filter((c) => c.id !== deleteId));
+      if (categories) {
+        setCategories(
+          categories.filter((c: BlogCategory) => c.id !== deleteId),
+        );
+      }
       toast.success("Category deleted successfully");
     } catch (error) {
       console.error("Failed to delete category:", error);
@@ -405,19 +415,20 @@ export default function BlogCategoriesPage() {
   };
 
   // Filter categories
-  const filteredCategories = searchQuery.trim()
-    ? categories.filter(
-        (c) =>
-          c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          c.slug.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-    : categories;
+  const filteredCategories =
+    categories && searchQuery.trim()
+      ? categories.filter(
+          (c) =>
+            c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.slug.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+      : categories;
 
   // Get root categories
-  const rootCategories = filteredCategories.filter((c) => !c.parentId);
+  const rootCategories = filteredCategories?.filter((c) => !c.parentId) ?? [];
 
   // Stats
-  const totalPosts = categories.reduce((sum, c) => sum + c.postCount, 0);
+  const totalPosts = categories?.reduce((sum, c) => sum + c.postCount, 0) ?? 0;
 
   if (!isAdmin) {
     return (
@@ -458,7 +469,7 @@ export default function BlogCategoriesPage() {
           setEditCategory(null);
         }}
         category={editCategory}
-        categories={categories}
+        categories={categories || []}
         onSave={handleSave}
         saving={saving}
       />
@@ -492,19 +503,19 @@ export default function BlogCategoriesPage() {
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <p className="text-sm text-gray-500">Total Categories</p>
             <p className="text-2xl font-bold text-gray-900 mt-1">
-              {categories.length}
+              {categories?.length ?? 0}
             </p>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <p className="text-sm text-gray-500">Root Categories</p>
             <p className="text-2xl font-bold text-gray-900 mt-1">
-              {categories.filter((c) => !c.parentId).length}
+              {categories?.filter((c) => !c.parentId).length ?? 0}
             </p>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <p className="text-sm text-gray-500">Sub Categories</p>
             <p className="text-2xl font-bold text-gray-900 mt-1">
-              {categories.filter((c) => c.parentId).length}
+              {categories?.filter((c) => c.parentId).length ?? 0}
             </p>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 p-4">
@@ -579,7 +590,7 @@ export default function BlogCategoriesPage() {
                     <CategoryRow
                       key={category.id}
                       category={category}
-                      categories={filteredCategories}
+                      categories={filteredCategories || []}
                       onEdit={openEditModal}
                       onDelete={(id) => setDeleteId(id)}
                     />

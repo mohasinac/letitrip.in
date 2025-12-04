@@ -101,7 +101,7 @@ export default function HeroSlidesPage() {
 
   const handleDrop = async (e: React.DragEvent, targetSlideId: string) => {
     e.preventDefault();
-    if (!draggedSlide || draggedSlide === targetSlideId) return;
+    if (!draggedSlide || draggedSlide === targetSlideId || !slides) return;
 
     const draggedIndex = slides.findIndex((s) => s.id === draggedSlide);
     const targetIndex = slides.findIndex((s) => s.id === targetSlideId);
@@ -138,7 +138,7 @@ export default function HeroSlidesPage() {
     }
   };
 
-  const carouselCount = slides.filter((s) => s.isActive).length; // Note: Using isActive as proxy - update if show_in_carousel exists
+  const carouselCount = slides?.filter((s) => s.isActive).length ?? 0; // Note: Using isActive as proxy - update if show_in_carousel exists
   const MAX_SLIDES = 10;
   const MAX_CAROUSEL = 5;
 
@@ -171,7 +171,7 @@ export default function HeroSlidesPage() {
       </div>
 
       {/* Carousel Status */}
-      {slides.length > 0 && (
+      {slides && slides.length > 0 && (
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
           <div className="flex items-center gap-4 text-sm">
             <span className="text-gray-700">
@@ -205,13 +205,13 @@ export default function HeroSlidesPage() {
             onClearSelection={() => setSelectedIds([])}
             loading={actionLoading}
             resourceName="slide"
-            totalCount={slides.length}
+            totalCount={slides?.length ?? 0}
           />
         </div>
       )}
 
       {/* Slides Table */}
-      {slides.length === 0 && !loading ? (
+      {(!slides || slides.length === 0) && !loading ? (
         <EmptyState
           title="No hero slides"
           description="Create your first hero slide to display on the homepage"
@@ -229,15 +229,19 @@ export default function HeroSlidesPage() {
                   <th className="px-4 py-3 text-left">
                     <TableCheckbox
                       checked={
+                        slides &&
                         selectedIds.length === slides.length &&
                         slides.length > 0
                       }
                       indeterminate={
+                        slides &&
                         selectedIds.length > 0 &&
                         selectedIds.length < slides.length
                       }
                       onChange={(checked) => {
-                        setSelectedIds(checked ? slides.map((s) => s.id) : []);
+                        setSelectedIds(
+                          checked && slides ? slides.map((s) => s.id) : [],
+                        );
                       }}
                       label="Select all"
                     />
@@ -273,7 +277,7 @@ export default function HeroSlidesPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {/* Quick Create Row */}
-                {slides.length < MAX_SLIDES && (
+                {slides && slides.length < MAX_SLIDES && (
                   <QuickCreateRow
                     fields={fields}
                     onSave={async (values) => {
@@ -312,7 +316,7 @@ export default function HeroSlidesPage() {
                 )}
 
                 {/* Existing Slides */}
-                {slides.map((slide) =>
+                {slides?.map((slide) =>
                   editingId === slide.id ? (
                     <InlineEditRow
                       key={slide.id}

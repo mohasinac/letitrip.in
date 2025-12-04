@@ -304,27 +304,31 @@ export default function BlogTagsPage() {
 
       if (editTag) {
         await apiService.patch(`/blog/tags/${editTag.id}`, data);
-        setTags((prev: BlogTag[]) =>
-          prev.map((t: BlogTag) =>
-            t.id === editTag.id ? { ...t, ...data } : t,
-          ),
-        );
+        if (tags) {
+          setTags(
+            tags.map((t: BlogTag) =>
+              t.id === editTag.id ? { ...t, ...data } : t,
+            ),
+          );
+        }
         toast.success("Tag updated successfully");
       } else {
         const response = await apiService.post<{ data: BlogTag }>(
           "/blog/tags",
           data,
         );
-        setTags((prev: BlogTag[]) => [
-          ...prev,
-          response.data || {
-            ...data,
-            id: Date.now().toString(),
-            postCount: 0,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-        ]);
+        if (tags) {
+          setTags([
+            ...tags,
+            response.data || {
+              ...data,
+              id: Date.now().toString(),
+              postCount: 0,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          ]);
+        }
         toast.success("Tag created successfully");
       }
 
@@ -386,7 +390,9 @@ export default function BlogTagsPage() {
         }
       }
 
-      setTags((prev: BlogTag[]) => [...prev, ...newTags]);
+      if (tags) {
+        setTags([...tags, ...newTags]);
+      }
       toast.success(`Added ${newTags.length} tags successfully`);
       setBulkModalOpen(false);
     } catch (error) {
@@ -402,9 +408,9 @@ export default function BlogTagsPage() {
 
     try {
       await apiService.delete(`/blog/tags/${deleteId}`);
-      setTags((prev: BlogTag[]) =>
-        prev.filter((t: BlogTag) => t.id !== deleteId),
-      );
+      if (tags) {
+        setTags(tags.filter((t: BlogTag) => t.id !== deleteId));
+      }
       toast.success("Tag deleted successfully");
     } catch (error) {
       console.error("Failed to delete tag:", error);
@@ -419,7 +425,9 @@ export default function BlogTagsPage() {
       await Promise.all(
         selectedIds.map((id) => apiService.delete(`/blog/tags/${id}`)),
       );
-      setTags((prev) => prev.filter((t) => !selectedIds.includes(t.id)));
+      if (tags) {
+        setTags(tags.filter((t) => !selectedIds.includes(t.id)));
+      }
       setSelectedIds([]);
       toast.success(`Deleted ${selectedIds.length} tags`);
     } catch (error) {
@@ -429,13 +437,14 @@ export default function BlogTagsPage() {
   };
 
   // Filter tags
-  const filteredTags = searchQuery.trim()
-    ? tags.filter(
-        (t) =>
-          t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          t.slug.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-    : tags;
+  const filteredTags =
+    tags && searchQuery.trim()
+      ? tags.filter(
+          (t) =>
+            t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            t.slug.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+      : tags;
 
   // Sort by post count
   const sortedTags = [...filteredTags].sort(
@@ -535,7 +544,7 @@ export default function BlogTagsPage() {
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <p className="text-sm text-gray-500">Total Tags</p>
             <p className="text-2xl font-bold text-gray-900 mt-1">
-              {tags.length}
+              {tags?.length ?? 0}
             </p>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 p-4">
@@ -553,7 +562,7 @@ export default function BlogTagsPage() {
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <p className="text-sm text-gray-500">Unused Tags</p>
             <p className="text-2xl font-bold text-orange-600 mt-1">
-              {tags.filter((t) => t.postCount === 0).length}
+              {tags?.filter((t) => t.postCount === 0).length ?? 0}
             </p>
           </div>
         </div>
@@ -681,7 +690,7 @@ export default function BlogTagsPage() {
             </div>
             <div className="flex flex-wrap gap-2">
               {tags
-                .filter((t) => t.postCount >= 5)
+                ?.filter((t) => t.postCount >= 5)
                 .sort((a, b) => b.postCount - a.postCount)
                 .slice(0, 10)
                 .map((tag) => (
