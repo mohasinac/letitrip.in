@@ -1207,21 +1207,25 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Changes**: Use useDebounce hook
 - **Status**: COMPLETE - SearchBar already had it, added to SearchableDropdown
 
-##### ⬜ 139-create-use-url-pagination-hook
+##### ✅ 139-create-use-url-pagination-hook
 
 - **File**: `src/hooks/useUrlPagination.ts`
+- **Status**: COMPLETE - URL-based pagination with page/limit/offset
 
-##### ⬜ 140-create-use-sortable-list-hook
+##### ✅ 140-create-use-sortable-list-hook
 
 - **File**: `src/hooks/useSortableList.ts`
+- **Status**: COMPLETE - Drag-and-drop list reordering
 
-##### ⬜ 141-create-use-bulk-selection-hook
+##### ✅ 141-create-use-bulk-selection-hook
 
 - **File**: `src/hooks/useBulkSelection.ts`
+- **Status**: COMPLETE - Bulk selection with select all/none
 
-##### ⬜ 142-create-use-form-with-draft-hook
+##### ✅ 142-create-use-form-with-draft-hook
 
 - **File**: `src/hooks/useFormWithDraft.ts`
+- **Status**: COMPLETE - Auto-save drafts to localStorage
 
 ### Task 2: COLLECTIONS/SUBCOLLECTIONS Migration (6-8 hours)
 
@@ -1427,8 +1431,8 @@ This checklist consolidates all tasks from project documentation into a prioriti
 | Priority #2    | 17      | 20-30           | ✅ COMPLETE | 17/17       |
 | Priority #3    | 9       | 10-16           | ✅ COMPLETE | 9/9         |
 | Priority #4    | 18      | 16-24           | ✅ COMPLETE | 18/18       |
-| Priority #5    | 60      | 168-252         | 🔄 Current  | 35/60       |
-| **TOTAL**      | **166** | **304-442**     | -           | **141/166** |
+| Priority #5    | 60      | 168-252         | 🔄 Current  | 39/60       |
+| **TOTAL**      | **166** | **304-442**     | -           | **145/166** |
 
 **Session Progress** (December 4, 2025):
 
@@ -1450,7 +1454,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 - Tasks 89-106: All user/seller/public pages have dark mode and mobile responsive
 
-**Priority #5 (Remaining): 35/60**
+**Priority #5 (Remaining): 39/60**
 
 - ✅ Tasks 144, 145, 151, 152, 153, 154: Value migrations, debouncing, retry/abort
 - ✅ Tasks 161, 162, 163: Code quality (logError, type casts, ARIA labels)
@@ -1458,12 +1462,12 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - ✅ Tasks 117-122: IP tracking & rate limiting (service, middleware, activity logging)
 - ✅ Tasks 123-128: Event system complete (APIs, components, admin/public pages)
 - ✅ Tasks 130-132: URL filtering (hook, pagination, UnifiedFilterSidebar integration)
-- ✅ Tasks 138, 143: Debounce SearchableDropdown, COLLECTIONS migration
-- ⬜ Tasks 116, 129, 133-137, 139-142, 146-166: Remaining (25 remaining)
+- ✅ Tasks 138-143: Hooks (pagination, sortable, bulk selection, form drafts), debounce, COLLECTIONS
+- ⬜ Tasks 116, 129, 133-137, 146-166: Remaining (21 remaining)
 
-📊 Overall: **141/166 tasks complete (84.9%)**
-💾 Recent: Task 138 (useDebounce in SearchableDropdown), Task 143 (COLLECTIONS)
-🎯 Next: Create remaining hooks (Tasks 139-142)
+📊 Overall: **145/166 tasks complete (87.3%)**
+💾 Recent: Tasks 139-142 (useUrlPagination, useSortableList, useBulkSelection, useFormWithDraft)
+🎯 Next: Sieve implementation (Tasks 146-150)
 
 ### Lines of Code Impact
 
