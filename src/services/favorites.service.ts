@@ -1,6 +1,6 @@
-import { apiService } from "./api.service";
-import type { ProductCardFE } from "@/types/frontend/product.types";
 import { logServiceError } from "@/lib/error-logger";
+import type { ProductCardFE } from "@/types/frontend/product.types";
+import { apiService } from "./api.service";
 
 interface FavoriteItem {
   id: string;
@@ -17,9 +17,9 @@ class FavoritesService {
     data: FavoriteItem[];
   }> {
     try {
-      const response = await fetch(`/api/favorites/list/${type}`);
-      if (!response.ok) throw new Error("Failed to fetch favorites");
-      return await response.json();
+      return await apiService.get<{ success: boolean; data: FavoriteItem[] }>(
+        `/api/favorites/list/${type}`,
+      );
     } catch (error) {
       logServiceError("FavoritesService", "listByType", error as Error);
       return { success: false, data: [] };
@@ -42,10 +42,9 @@ class FavoritesService {
     itemId: string,
   ): Promise<{ success: boolean }> {
     try {
-      const response = await fetch(`/api/favorites/${type}/${itemId}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to remove");
+      await apiService.delete<{ success: boolean }>(
+        `/api/favorites/${type}/${itemId}`,
+      );
       return { success: true };
     } catch (error) {
       logServiceError("FavoritesService", "removeByType", error as Error);
