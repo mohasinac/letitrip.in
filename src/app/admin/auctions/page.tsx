@@ -23,7 +23,7 @@ export default function AdminAuctionsPage() {
           {auction.images && auction.images[0] ? (
             <OptimizedImage
               src={auction.images[0]}
-              alt={auction.title}
+              alt={auction.productName}
               width={60}
               height={60}
               className="rounded-lg object-cover"
@@ -35,10 +35,10 @@ export default function AdminAuctionsPage() {
           )}
           <div>
             <div className="font-medium text-gray-900 dark:text-white">
-              {auction.title}
+              {auction.productName}
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              {auction.slug}
+              {auction.productSlug}
             </div>
           </div>
         </div>
@@ -49,7 +49,7 @@ export default function AdminAuctionsPage() {
       label: "Current Bid",
       render: (auction: AuctionCardFE) => (
         <div>
-          <Price amount={auction.currentBid || auction.startingBid} />
+          <Price amount={auction.currentPrice || 0} />
           <div className="text-xs text-gray-500 dark:text-gray-400">
             {auction.totalBids || 0} bids
           </div>
@@ -64,27 +64,21 @@ export default function AdminAuctionsPage() {
           <div className="flex items-center gap-1 text-sm">
             <Clock className="w-3 h-3 text-gray-400" />
             <span className="text-gray-600 dark:text-gray-400">
-              <DateDisplay date={new Date(auction.startTime)} format="short" />
+              <DateDisplay date={auction.startTime} format="short" />
             </span>
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
-            Ends:{" "}
-            <DateDisplay date={new Date(auction.endTime)} format="short" />
+            Ends: <DateDisplay date={auction.endTime} format="short" />
           </div>
         </div>
       ),
     },
     {
-      key: "seller",
-      label: "Seller",
+      key: "product",
+      label: "Product Slug",
       render: (auction: AuctionCardFE) => (
-        <div className="text-sm">
-          <div className="text-gray-900 dark:text-white">
-            {auction.seller?.name || "Unknown"}
-          </div>
-          <div className="text-gray-500 dark:text-gray-400">
-            {auction.shop?.name || "No shop"}
-          </div>
+        <div className="text-sm text-gray-600 dark:text-gray-400">
+          {auction.productSlug}
         </div>
       ),
     },
@@ -92,32 +86,21 @@ export default function AdminAuctionsPage() {
       key: "status",
       label: "Status",
       render: (auction: AuctionCardFE) => {
-        const statusMap: Record<string, { status: string; label: string }> = {
-          [AuctionStatus.SCHEDULED]: {
-            status: "scheduled",
-            label: "Scheduled",
-          },
-          [AuctionStatus.LIVE]: { status: "active", label: "Live" },
-          [AuctionStatus.ENDED]: { status: "completed", label: "Ended" },
-          [AuctionStatus.CANCELLED]: {
-            status: "cancelled",
-            label: "Cancelled",
-          },
+        const statusMap: Record<string, string> = {
+          [AuctionStatus.SCHEDULED]: "scheduled",
+          [AuctionStatus.ACTIVE]: "active",
+          [AuctionStatus.ENDED]: "completed",
+          [AuctionStatus.CANCELLED]: "cancelled",
         };
-        const statusInfo = statusMap[auction.status] || {
-          status: "pending",
-          label: auction.status,
-        };
-        return (
-          <StatusBadge status={statusInfo.status} label={statusInfo.label} />
-        );
+        const status = statusMap[auction.status] || "pending";
+        return <StatusBadge status={status} />;
       },
     },
     {
       key: "created",
       label: "Created",
       render: (auction: AuctionCardFE) => (
-        <DateDisplay date={new Date(auction.createdAt)} format="relative" />
+        <DateDisplay date={auction.startTime} format="medium" />
       ),
     },
   ];
@@ -131,7 +114,7 @@ export default function AdminAuctionsPage() {
       options: [
         { value: "all", label: "All Status" },
         { value: AuctionStatus.SCHEDULED, label: "Scheduled" },
-        { value: AuctionStatus.LIVE, label: "Live" },
+        { value: AuctionStatus.ACTIVE, label: "Live" },
         { value: AuctionStatus.ENDED, label: "Ended" },
         { value: AuctionStatus.CANCELLED, label: "Cancelled" },
       ],
@@ -185,7 +168,7 @@ export default function AdminAuctionsPage() {
 
   // Handle save
   const handleSave = async (id: string, data: Partial<AuctionCardFE>) => {
-    await auctionsService.update(id, data);
+    await auctionsService.update(id, data as any);
   };
 
   // Handle delete

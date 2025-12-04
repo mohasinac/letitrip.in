@@ -47,7 +47,7 @@ export default function AdminShopsPage() {
       label: "Owner",
       render: (shop: ShopCardFE) => (
         <div className="text-sm text-gray-900 dark:text-white">
-          {shop.owner?.name || shop.owner?.email || "Unknown"}
+          {shop.ownerId || "Unknown"}
         </div>
       ),
     },
@@ -71,10 +71,7 @@ export default function AdminShopsPage() {
       key: "status",
       label: "Status",
       render: (shop: ShopCardFE) => (
-        <StatusBadge
-          status={shop.isActive ? "active" : "inactive"}
-          label={shop.isActive ? "Active" : "Inactive"}
-        />
+        <StatusBadge status={shop.featured ? "active" : "inactive"} />
       ),
     },
     {
@@ -99,7 +96,7 @@ export default function AdminShopsPage() {
       key: "created",
       label: "Created",
       render: (shop: ShopCardFE) => (
-        <DateDisplay date={new Date(shop.createdAt)} format="relative" />
+        <DateDisplay date={shop.createdAt} format="medium" />
       ),
     },
   ];
@@ -162,7 +159,7 @@ export default function AdminShopsPage() {
 
   // Handle save
   const handleSave = async (id: string, data: Partial<ShopCardFE>) => {
-    await shopsService.update(id, data);
+    await shopsService.update(id, data as any);
   };
 
   // Handle delete

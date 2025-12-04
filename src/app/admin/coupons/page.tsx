@@ -7,7 +7,8 @@ import { DateDisplay } from "@/components/common/values";
 import { Ticket, Percent } from "lucide-react";
 import { getCouponBulkActions } from "@/constants/bulk-actions";
 import { COUPON_FIELDS, toInlineFields } from "@/constants/form-fields";
-import type { Coupon } from "@/types/frontend/coupon.types";
+import type { CouponFE } from "@/types/frontend/coupon.types";
+type Coupon = CouponFE;
 
 export default function AdminCouponsPage() {
   // Define columns
@@ -36,7 +37,7 @@ export default function AdminCouponsPage() {
       label: "Discount",
       render: (coupon: Coupon) => (
         <div className="flex items-center gap-1 text-gray-900 dark:text-white">
-          {coupon.discountType === "percentage" ? (
+          {coupon.type === "percentage" ? (
             <>
               <Percent className="w-4 h-4" />
               <span>{coupon.discountValue}%</span>
@@ -53,10 +54,11 @@ export default function AdminCouponsPage() {
       render: (coupon: Coupon) => (
         <div className="text-sm">
           <div className="text-gray-900 dark:text-white">
-            {coupon.usedCount || 0} / {coupon.maxUses || "∞"}
+            {coupon.usageCount || 0} / {coupon.usageLimit || "∞"}
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
-            {coupon.maxUsesPerUser && `Max ${coupon.maxUsesPerUser} per user`}
+            {coupon.usageLimitPerUser &&
+              `Max ${coupon.usageLimitPerUser} per user`}
           </div>
         </div>
       ),
@@ -66,16 +68,14 @@ export default function AdminCouponsPage() {
       label: "Validity",
       render: (coupon: Coupon) => (
         <div className="text-sm">
-          {coupon.validFrom && (
+          {coupon.startDate && (
             <div className="text-gray-600 dark:text-gray-400">
-              From:{" "}
-              <DateDisplay date={new Date(coupon.validFrom)} format="short" />
+              From: <DateDisplay date={coupon.startDate} format="short" />
             </div>
           )}
-          {coupon.validUntil && (
+          {coupon.endDate && (
             <div className="text-gray-600 dark:text-gray-400">
-              Until:{" "}
-              <DateDisplay date={new Date(coupon.validUntil)} format="short" />
+              Until: <DateDisplay date={coupon.endDate} format="short" />
             </div>
           )}
         </div>
@@ -86,22 +86,22 @@ export default function AdminCouponsPage() {
       label: "Status",
       render: (coupon: Coupon) => {
         const now = new Date();
-        const isExpired =
-          coupon.validUntil && new Date(coupon.validUntil) < now;
+        const isExpired = coupon.endDate && new Date(coupon.endDate) < now;
         const isNotStarted =
-          coupon.validFrom && new Date(coupon.validFrom) > now;
-        const isMaxedOut = coupon.maxUses && coupon.usedCount >= coupon.maxUses;
+          coupon.startDate && new Date(coupon.startDate) > now;
+        const isMaxedOut =
+          coupon.usageLimit && coupon.usageCount >= coupon.usageLimit;
 
         if (!coupon.isActive) {
-          return <StatusBadge status="inactive" label="Inactive" />;
+          return <StatusBadge status="inactive" />;
         } else if (isExpired) {
-          return <StatusBadge status="expired" label="Expired" />;
+          return <StatusBadge status="error" />;
         } else if (isMaxedOut) {
-          return <StatusBadge status="completed" label="Maxed Out" />;
+          return <StatusBadge status="warning" />;
         } else if (isNotStarted) {
-          return <StatusBadge status="scheduled" label="Scheduled" />;
+          return <StatusBadge status="pending" />;
         } else {
-          return <StatusBadge status="active" label="Active" />;
+          return <StatusBadge status="active" />;
         }
       },
     },
@@ -109,7 +109,7 @@ export default function AdminCouponsPage() {
       key: "created",
       label: "Created",
       render: (coupon: Coupon) => (
-        <DateDisplay date={new Date(coupon.createdAt)} format="relative" />
+        <DateDisplay date={coupon.createdAt} format="medium" />
       ),
     },
   ];
