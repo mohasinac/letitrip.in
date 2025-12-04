@@ -19,12 +19,11 @@ import { useIsMobile } from "@/hooks/useMobile";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { notFound } from "@/lib/error-redirects";
 import { logError } from "@/lib/firebase-error-logger";
-import { useSearchParams } from "next/navigation";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
 import type { CategoryFE, ProductCardFE } from "@/types";
 import { Filter, Grid as GridIcon, List, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, use, useEffect, useState } from "react";
 
 interface PageProps {
@@ -92,7 +91,7 @@ function CategoryDetailContent({ params }: PageProps) {
 
       // Load breadcrumb using parent hierarchy
       const breadcrumbData = await categoriesService.getBreadcrumb(
-        categoryData.id,
+        categoryData.id
       );
       setBreadcrumb(breadcrumbData);
 
@@ -129,7 +128,7 @@ function CategoryDetailContent({ params }: PageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    },
+    }
   ) => {
     try {
       if (!productDetails) {
@@ -519,14 +518,14 @@ function CategoryDetailContent({ params }: PageProps) {
                         totalPages={Math.ceil(totalProducts / pageSize)}
                         onPageChange={(newPage) => {
                           const params = new URLSearchParams(
-                            window.location.search,
+                            window.location.search
                           );
                           params.set("page", newPage.toString());
                           router.push(`?${params.toString()}`);
                         }}
                         onPageSizeChange={(newSize) => {
                           const params = new URLSearchParams(
-                            window.location.search,
+                            window.location.search
                           );
                           params.set("page", "1");
                           params.set("pageSize", newSize.toString());

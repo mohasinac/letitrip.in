@@ -97,7 +97,7 @@ export function CategoryTree({
         // Find the category by ID (recursive search)
         const findCategory = (
           cats: CategoryCardFE[],
-          id: string,
+          id: string
         ): CategoryCardFE | null => {
           for (const cat of cats) {
             if (cat.id === id) return cat;
@@ -115,7 +115,7 @@ export function CategoryTree({
         }
       }
     },
-    [categories, onNodeClick],
+    [categories, onNodeClick]
   );
 
   // Zoom controls

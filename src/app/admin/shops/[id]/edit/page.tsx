@@ -267,7 +267,7 @@ export default function AdminEditShopPage() {
     } catch (error) {
       console.error("Failed to delete shop:", error);
       toast.error(
-        "Failed to delete shop. It may have active products or orders.",
+        "Failed to delete shop. It may have active products or orders."
       );
       setShowDeleteDialog(false);
     } finally {

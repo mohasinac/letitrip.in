@@ -95,7 +95,7 @@ export default function AdminShippingSettingsPage() {
     } catch (err) {
       console.error("Error saving settings:", err);
       setFormError(
-        err instanceof Error ? err.message : "Failed to save settings",
+        err instanceof Error ? err.message : "Failed to save settings"
       );
     } finally {
       setSaving(false);
@@ -123,7 +123,7 @@ export default function AdminShippingSettingsPage() {
     setSettings({
       ...settings,
       restrictedPincodes: settings.restrictedPincodes.filter(
-        (p) => p !== pincode,
+        (p) => p !== pincode
       ),
     });
   };

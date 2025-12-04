@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     if (!phone) {
       return NextResponse.json(
         { success: false, error: "No phone number found" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     if (!otp || otp.length !== 6) {
       return NextResponse.json(
         { success: false, error: "Invalid OTP format" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: result.message,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
   } catch (error) {
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : "Failed to verify OTP",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
