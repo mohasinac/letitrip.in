@@ -15,6 +15,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let id: string | undefined;
   return withRateLimit(
     req,
     async (r) => {
@@ -26,7 +27,8 @@ export async function GET(
             { status: 401 },
           );
 
-        const { id } = await params;
+        const awaitedParams = await params;
+        id = awaitedParams.id;
         const retRef = Collections.returns().doc(id);
         const retSnap = await retRef.get();
         if (!retSnap.exists)
@@ -75,7 +77,7 @@ export async function GET(
       } catch (error) {
         logError(error as Error, {
           component: "API.returns.media.getSignedUrls",
-          returnId: id,
+          metadata: { returnId: id },
         });
         return NextResponse.json(
           { success: false, error: "Failed to create signed URLs" },
@@ -92,6 +94,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let postId: string | undefined;
   return withRateLimit(
     req,
     async (r) => {
@@ -103,7 +106,9 @@ export async function POST(
             { status: 401 },
           );
 
-        const { id } = await params;
+        const awaitedParams = await params;
+        postId = awaitedParams.id;
+        const id = postId;
         const retRef = Collections.returns().doc(id);
         const retSnap = await retRef.get();
         if (!retSnap.exists)
@@ -171,7 +176,7 @@ export async function POST(
       } catch (error) {
         logError(error as Error, {
           component: "API.returns.media.confirmUpload",
-          returnId: id,
+          metadata: { returnId: postId },
         });
         return NextResponse.json(
           { success: false, error: "Failed to confirm media" },

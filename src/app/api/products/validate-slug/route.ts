@@ -11,10 +11,12 @@ import { NextRequest, NextResponse } from "next/server";
  * Accepts shop_slug parameter and resolves to shop_id internally
  */
 export async function GET(request: NextRequest) {
+  let slug: string | null = null;
+  let shopSlug: string | null = null;
   try {
     const { searchParams } = new URL(request.url);
-    const slug = searchParams.get("slug");
-    const shopSlug = searchParams.get("shop_slug");
+    slug = searchParams.get("slug");
+    shopSlug = searchParams.get("shop_slug");
     const excludeId = searchParams.get("exclude_id"); // For edit mode
 
     if (!slug) {
@@ -70,8 +72,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logError(error as Error, {
       component: "API.products.validateSlug.GET",
-      slug,
-      shopSlug,
+      metadata: { slug, shopSlug },
     });
     return NextResponse.json(
       {

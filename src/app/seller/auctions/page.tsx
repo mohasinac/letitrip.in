@@ -266,7 +266,7 @@ export default function SellerAuctionsPage() {
               <div>
                 <div className="text-lg font-semibold text-gray-900 dark:text-white">
                   <Price
-                    amount={auction.currentPrice || auction.startingPrice}
+                    amount={auction.currentPrice}
                   />
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">

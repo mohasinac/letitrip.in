@@ -56,7 +56,7 @@ function EditProductContent({ params }: EditProductPageProps) {
       } catch (error: any) {
         logError(error as Error, {
           component: "ProductEdit.loadData",
-          slug,
+          metadata: { slug },
         });
         setError(
           error.message || "Failed to load product data. Please try again.",
@@ -87,7 +87,7 @@ function EditProductContent({ params }: EditProductPageProps) {
     } catch (error: any) {
       logError(error as Error, {
         component: "ProductEdit.handleSubmit",
-        slug: product.slug,
+        metadata: { slug: product.slug },
       });
       setError(error.message || "Failed to update product. Please try again.");
     } finally {

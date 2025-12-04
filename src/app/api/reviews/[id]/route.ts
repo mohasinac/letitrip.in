@@ -19,10 +19,12 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
     const db = getFirestoreAdmin();
     const user = await getUserFromRequest(req);
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
 
     const doc = await db.collection(COLLECTIONS.REVIEWS).doc(id).get();
 
@@ -57,7 +59,10 @@ export async function GET(
       },
     });
   } catch (error) {
-    logError(error as Error, { component: "API.reviews.id.GET", reviewId: id });
+    logError(error as Error, {
+      component: "API.reviews.id.GET",
+      metadata: { reviewId: id },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to fetch review" },
       { status: 500 }
@@ -70,13 +75,15 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
     const authResult = await requireAuth(req);
     if (authResult.error) return authResult.error;
 
     const { user } = authResult;
     const db = getFirestoreAdmin();
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
     const body = await req.json();
 
     // Check if review exists
@@ -137,7 +144,7 @@ export async function PATCH(
   } catch (error) {
     logError(error as Error, {
       component: "API.reviews.id.PATCH",
-      reviewId: id,
+      metadata: { reviewId: id },
     });
     return NextResponse.json(
       { success: false, error: "Failed to update review" },
@@ -151,13 +158,15 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
     const authResult = await requireAuth(req);
     if (authResult.error) return authResult.error;
 
     const { user } = authResult;
     const db = getFirestoreAdmin();
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
 
     // Check if review exists
     const doc = await db.collection(COLLECTIONS.REVIEWS).doc(id).get();
@@ -188,7 +197,7 @@ export async function DELETE(
   } catch (error) {
     logError(error as Error, {
       component: "API.reviews.id.DELETE",
-      reviewId: id,
+      metadata: { reviewId: id },
     });
     return NextResponse.json(
       { success: false, error: "Failed to delete review" },

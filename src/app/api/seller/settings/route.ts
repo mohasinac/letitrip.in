@@ -53,8 +53,9 @@ const DEFAULT_SETTINGS = {
 };
 
 export async function GET(request: NextRequest) {
+  let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
   try {
-    const user = await getCurrentUser(request);
+    user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
@@ -118,7 +119,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logError(error as Error, {
       component: "API.seller.settings.get",
-      userId: user?.id,
+      metadata: { userId: user?.id },
     });
     return NextResponse.json(
       { error: "Failed to fetch settings" },
@@ -128,8 +129,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
   try {
-    const user = await getCurrentUser(request);
+    user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
@@ -190,7 +192,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     logError(error as Error, {
       component: "API.seller.settings.update",
-      userId: user?.id,
+      metadata: { userId: user?.id },
     });
     return NextResponse.json(
       { error: "Failed to update settings" },

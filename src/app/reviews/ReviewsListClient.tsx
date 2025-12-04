@@ -43,7 +43,7 @@ export default function ReviewsListClient() {
       setError("Failed to load reviews. Please try again later.");
       logError(err as Error, {
         component: "ReviewsListClient.fetchReviews",
-        filters: activeFilters,
+        metadata: { filters: filters },
       });
     } finally {
       setLoading(false);

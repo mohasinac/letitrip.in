@@ -51,7 +51,7 @@ export default function SellerOrderDetailPage() {
     } catch (error: any) {
       logError(error as Error, {
         component: "SellerOrderDetail.loadOrder",
-        orderId,
+        metadata: { orderId },
       });
       router.push(notFound.order(orderId, error));
       return null;
@@ -70,8 +70,7 @@ export default function SellerOrderDetailPage() {
     } catch (error: any) {
       logError(error as Error, {
         component: "SellerOrderDetail.handleUpdateStatus",
-        orderId,
-        status,
+        metadata: { orderId, status },
       });
     } finally {
       setUpdating(false);
@@ -100,8 +99,7 @@ export default function SellerOrderDetailPage() {
     } catch (error: any) {
       logError(error as Error, {
         component: "SellerOrderDetail.handleAddShipping",
-        orderId,
-        shippingData,
+        metadata: { orderId, shippingData },
       });
     } finally {
       setUpdating(false);
@@ -122,7 +120,7 @@ export default function SellerOrderDetailPage() {
     } catch (error: any) {
       logError(error as Error, {
         component: "SellerOrderDetail.handleDownloadInvoice",
-        orderId,
+        metadata: { orderId },
       });
     }
   };

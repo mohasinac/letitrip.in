@@ -133,7 +133,7 @@ export async function GET(
   } catch (error) {
     logError(error as Error, {
       component: "API.shops.stats",
-      slug: await params.then((p) => p.slug),
+      metadata: { slug: await params.then((p) => p.slug) },
     });
     return NextResponse.json(
       { success: false, error: "Failed to load stats" },

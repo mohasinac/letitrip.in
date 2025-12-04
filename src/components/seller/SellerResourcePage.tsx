@@ -14,7 +14,7 @@ import {
   Loader2,
   Search,
 } from "lucide-react";
-import { ReactNode, useCallback, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 // Define inline types
@@ -188,7 +188,7 @@ export function SellerResourcePage<T extends { id: string }>({
   });
 
   // Reload on filter changes
-  useState(() => {
+  useEffect(() => {
     if (hasLoadedRef.current) {
       setCurrentPage(1);
       setCursors([null]);

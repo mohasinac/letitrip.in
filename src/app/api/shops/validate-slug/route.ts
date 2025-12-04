@@ -9,9 +9,10 @@ import { NextRequest, NextResponse } from "next/server";
  * Slugs are globally unique across all shops
  */
 export async function GET(request: NextRequest) {
+  let slug: string | null = null;
   try {
     const { searchParams } = new URL(request.url);
-    const slug = searchParams.get("slug");
+    slug = searchParams.get("slug");
     const excludeId = searchParams.get("exclude_id"); // For edit mode
 
     if (!slug) {
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest) {
       slug,
     });
   } catch (error) {
-    logError(error as Error, { component: "API.shops.validateSlug", slug });
+    logError(error as Error, { component: "API.shops.validateSlug", metadata: { slug } });
     return NextResponse.json(
       {
         success: false,

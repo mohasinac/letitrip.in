@@ -50,7 +50,7 @@ function SearchContent() {
     } catch (error) {
       logError(error as Error, {
         component: "SearchPage.performSearch",
-        query,
+        metadata: { query },
       });
       setResults({
         products: [],

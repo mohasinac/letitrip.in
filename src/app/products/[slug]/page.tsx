@@ -21,7 +21,7 @@ import type { ShopFE } from "@/types/frontend/shop.types";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 interface ProductPageProps {
   params: Promise<{
@@ -77,7 +77,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         } catch (error) {
           logError(error as Error, {
             component: "ProductDetail.loadShop",
-            shopId: data.shopId,
+            metadata: { shopId: data.shopId },
           });
           // Non-critical error, continue showing product
         }
@@ -85,7 +85,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     } catch (error: any) {
       logError(error as Error, {
         component: "ProductDetail.loadProduct",
-        slug,
+        metadata: { slug },
       });
       setError(error.message || "Failed to load product. Please try again.");
     } finally {

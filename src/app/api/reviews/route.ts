@@ -9,6 +9,7 @@ import {
   requireAuth,
 } from "@/app/api/middleware/rbac-auth";
 import { COLLECTIONS } from "@/constants/database";
+import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // Extended Sieve config with field mappings for reviews
@@ -229,15 +230,18 @@ export async function GET(req: NextRequest) {
 
 // POST /api/reviews - Create review
 export async function POST(req: NextRequest) {
+  let product_id: string | undefined;
+  let user: any;
   try {
     const authResult = await requireAuth(req);
     if (authResult.error) return authResult.error;
 
-    const { user } = authResult;
+    user = authResult.user;
     const db = getFirestoreAdmin();
     const body = await req.json();
 
-    const { product_id, order_id, rating, title, comment, images } = body;
+    product_id = body.product_id;
+    const { order_id, rating, title, comment, images } = body;
 
     // Validate required fields
     if (!product_id || !rating || !comment) {
@@ -314,8 +318,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     logError(error as Error, {
       component: "API.reviews.POST",
-      productId: product_id,
-      userId: user.uid,
+      metadata: { product_id, userId: user?.uid },
     });
     return NextResponse.json(
       { success: false, error: "Failed to create review" },

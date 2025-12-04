@@ -9,9 +9,11 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
     const db = getFirestoreAdmin();
-    const { id } = await params;
+    const awaitedParams = await params;
+    id = awaitedParams.id;
 
     // Get user from session
     const user = await getCurrentUser(req);
@@ -70,7 +72,7 @@ export async function POST(
   } catch (error) {
     logError(error as Error, {
       component: "API.reviews.id.helpful.POST",
-      reviewId: id,
+      metadata: { reviewId: id },
     });
     return NextResponse.json(
       { error: "Failed to mark review as helpful" },

@@ -175,11 +175,12 @@ export async function GET(request: NextRequest) {
  * Create a new user (admin only)
  */
 export async function POST(request: NextRequest) {
+  let body: any;
   try {
     const authResult = await requireRole(request, ["admin"]);
     if (authResult.error) return authResult.error;
 
-    const body = await request.json();
+    body = await request.json();
     const { email, name, role = "user", phone } = body;
 
     // Validation
@@ -246,7 +247,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     logError(error as Error, {
       component: "API.users.create",
-      email: body?.email,
+      metadata: { email: body?.email },
     });
 
     return NextResponse.json(

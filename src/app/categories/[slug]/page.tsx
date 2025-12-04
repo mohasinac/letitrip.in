@@ -80,7 +80,7 @@ function CategoryDetailContent({ params }: PageProps) {
           } catch (err) {
             logError(err as Error, {
               component: "CategoryDetail.loadBreadcrumb",
-              pathSlug,
+              metadata: { pathSlug },
             });
           }
         }
@@ -103,7 +103,7 @@ function CategoryDetailContent({ params }: PageProps) {
     } catch (error: any) {
       logError(error as Error, {
         component: "CategoryDetail.loadCategory",
-        slug,
+        metadata: { slug },
       });
       router.push(notFound.category(slug, error));
     } finally {
@@ -128,8 +128,7 @@ function CategoryDetailContent({ params }: PageProps) {
     } catch (error) {
       logError(error as Error, {
         component: "CategoryDetail.loadProducts",
-        categoryId: category.id,
-        filters: filterValues,
+        metadata: { categoryId: category.id, filters: filterValues },
       });
       setProducts([]);
       setTotalProducts(0);

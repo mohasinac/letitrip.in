@@ -95,7 +95,7 @@ export async function POST(
       message: "Shop followed successfully",
     });
   } catch (error) {
-    logError(error as Error, { component: "API.shops.follow.POST", slug: await params.then(p => p.slug) });
+    logError(error as Error, { component: "API.shops.follow.POST", metadata: { slug: await params.then(p => p.slug) } });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },
@@ -175,7 +175,7 @@ export async function DELETE(
       message: "Shop unfollowed successfully",
     });
   } catch (error) {
-    logError(error as Error, { component: "API.shops.follow.DELETE", slug: await params.then(p => p.slug) });
+    logError(error as Error, { component: "API.shops.follow.DELETE", metadata: { slug: await params.then(p => p.slug) } });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },
@@ -224,7 +224,7 @@ export async function GET(
 
     return NextResponse.json({ isFollowing: followDoc.exists });
   } catch (error) {
-    logError(error as Error, { component: "API.shops.follow.GET", slug: await params.then(p => p.slug) });
+    logError(error as Error, { component: "API.shops.follow.GET", metadata: { slug: await params.then(p => p.slug) } });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },

@@ -39,13 +39,14 @@ function buildTicketUpdate(
  * Actions: delete, update, assign, resolve, close, escalate
  */
 export async function POST(request: NextRequest) {
+  let data: any;
   try {
     const roleResult = await requireRole(request, ["admin"]);
     if (roleResult.error) {
       return roleResult.error;
     }
 
-    const data = await request.json();
+    data = await request.json();
     const { action, ids, updates } = data;
 
     // Validation
@@ -146,8 +147,7 @@ export async function POST(request: NextRequest) {
     }
     logError(error as Error, {
       component: "API.tickets.bulk",
-      action: data?.action,
-      idsCount: data?.ids?.length,
+      metadata: { action: data?.action, idsCount: data?.ids?.length },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

@@ -6,7 +6,6 @@ import {
   productsSieveConfig,
 } from "@/app/api/lib/sieve";
 import { withCache } from "@/app/api/middleware/cache";
-import { logError } from "@/lib/firebase-error-logger";
 import {
   getUserFromRequest,
   requireAuth,
@@ -17,6 +16,7 @@ import {
 } from "@/constants/validation-messages";
 import { ValidationError } from "@/lib/api-errors";
 import { updateCategoryProductCounts } from "@/lib/category-hierarchy";
+import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // Extended Sieve config with field mappings for products

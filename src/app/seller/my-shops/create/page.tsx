@@ -184,7 +184,7 @@ export default function CreateShopWizardPage() {
     } catch (err: any) {
       logError(err as Error, {
         component: "ShopCreate.handleSubmit",
-        shopData: formData,
+        metadata: { shopData: formData },
       });
       setError(err.message || "Failed to create shop");
     } finally {

@@ -39,7 +39,7 @@ export default function EditCouponPage() {
     } catch (error) {
       logError(error as Error, {
         component: "SellerCouponEdit.loadCoupon",
-        code,
+        metadata: { code },
       });
       toast.error("Coupon not found");
       router.push("/seller/coupons");
@@ -62,7 +62,7 @@ export default function EditCouponPage() {
     } catch (error: any) {
       logError(error as Error, {
         component: "SellerCouponEdit.handleSubmit",
-        code,
+        metadata: { code },
       });
       toast.error(
         error.message || "Failed to update coupon. Please try again.",
@@ -81,7 +81,7 @@ export default function EditCouponPage() {
     } catch (error) {
       logError(error as Error, {
         component: "SellerCouponEdit.handleDelete",
-        code,
+        metadata: { code },
       });
       toast.error("Failed to delete coupon. Please try again.");
       setIsDeleting(false);

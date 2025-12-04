@@ -26,7 +26,7 @@ export default function CreateCouponPage() {
     } catch (error: any) {
       logError(error as Error, {
         component: "SellerCouponCreate.handleSubmit",
-        couponData: data,
+        metadata: { couponData: data },
       });
       toast.error(
         error.message || "Failed to create coupon. Please try again.",

@@ -83,7 +83,7 @@ export async function GET(
   } catch (error: any) {
     logError(error as Error, {
       component: "API.shops.reviews",
-      slug: await params.then((p) => p.slug),
+      metadata: { slug: await params.then((p) => p.slug) },
     });
     return NextResponse.json(
       {

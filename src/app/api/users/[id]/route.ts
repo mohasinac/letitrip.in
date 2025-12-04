@@ -16,8 +16,10 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await context.params;
+    const awaitedParams = await context.params;
+    id = awaitedParams.id;
     const user = await getUserFromRequest(request);
 
     // Users can view their own profile, admins can view any profile
@@ -42,7 +44,7 @@ export async function GET(
       data: { id: userDoc.id, ...userDoc.data() },
     });
   } catch (error: any) {
-    logError(error as Error, { component: "API.users.get", userId: id });
+    logError(error as Error, { component: "API.users.get", metadata: { userId: id } });
     return NextResponse.json(
       { success: false, error: "Failed to fetch user" },
       { status: 500 },
@@ -60,8 +62,10 @@ export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await context.params;
+    const awaitedParams = await context.params;
+    id = awaitedParams.id;
     const user = await getUserFromRequest(request);
 
     if (!user) {
@@ -151,7 +155,7 @@ export async function PATCH(
       data: userData,
     });
   } catch (error: any) {
-    logError(error as Error, { component: "API.users.update", userId: id });
+    logError(error as Error, { component: "API.users.update", metadata: { userId: id } });
     return NextResponse.json(
       { success: false, error: "Failed to update user" },
       { status: 500 },
@@ -167,8 +171,10 @@ export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await context.params;
+    const awaitedParams = await context.params;
+    id = awaitedParams.id;
     const authResult = await requireRole(request, ["admin"]);
     if (authResult.error) return authResult.error;
 
@@ -188,7 +194,7 @@ export async function DELETE(
       message: "User deleted successfully",
     });
   } catch (error: any) {
-    logError(error as Error, { component: "API.users.delete", userId: id });
+    logError(error as Error, { component: "API.users.delete", metadata: { userId: id } });
     return NextResponse.json(
       { success: false, error: "Failed to delete user" },
       { status: 500 },
