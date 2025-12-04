@@ -1239,7 +1239,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 - **Files**: 30+ pages with manual loading state
 - **Changes**: Replace with useLoadingState hook
-- **Progress**: 10/50+ pages complete (20%)
+- **Progress**: 14/50+ pages complete (28%)
   - ✅ login/page.tsx - Replaced manual loading/error with useLoadingState
   - ✅ register/page.tsx - Replaced manual loading/error with useLoadingState  
   - ✅ user/settings/page.tsx - Replaced manual loading/error with useLoadingState
@@ -1250,9 +1250,11 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - ✅ auctions/[slug]/page.tsx - Replaced manual loading/error/data with useLoadingState
   - ✅ shops/[slug]/page.tsx - Replaced manual loading with useLoadingState for shop data
   - ✅ admin/page.tsx - Replaced manual loading/stats with useLoadingState + proper error logging
-- **Remaining**: seller/products/create, admin settings pages, categories, user/riplimit (40+ files)
-
-##### ⬜ 137-migrate-pages-to-use-filters-hook
+  - ✅ seller/products/create/page.tsx - Replaced manual loading with useLoadingState
+  - ✅ categories/page.tsx - Replaced manual loading with useLoadingState for categories list
+  - ✅ user/riplimit/page.tsx - Replaced multiple loading states (balance, transactions) with useLoadingState
+  - ✅ admin/dashboard/page.tsx - Replaced manual loading/stats with useLoadingState + proper error logging
+- **Remaining**: admin settings pages, blog pages, seller auction create (35+ files)##### ⬜ 137-migrate-pages-to-use-filters-hook
 
 - **Files**: 15+ pages with manual filter state
 - **Changes**: Replace with useFilters hook

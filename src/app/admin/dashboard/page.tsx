@@ -1,25 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import { analyticsService } from "@/services/analytics.service";
-import Link from "next/link";
 import {
-  Users,
-  Store,
-  Package,
-  ShoppingCart,
-  TrendingUp,
-  TrendingDown,
-  Loader2,
-  DollarSign,
   Activity,
   AlertCircle,
   Clock,
+  DollarSign,
   Gavel,
-  Ticket,
+  Loader2,
+  Package,
   RefreshCw,
+  ShoppingCart,
+  Store,
+  Ticket,
+  TrendingDown,
+  TrendingUp,
+  Users,
 } from "lucide-react";
+import Link from "next/link";
+import { useEffect } from "react";
 
 interface DashboardStats {
   overview: {
@@ -56,16 +58,23 @@ interface DashboardStats {
 
 export default function AdminDashboardPage() {
   const { user, isAdmin } = useAuth();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    data: stats,
+    execute,
+  } = useLoadingState<DashboardStats>({
+    onLoadError: (err) => {
+      logError(err, { component: "AdminDashboardPage.loadStats" });
+    },
+  });
 
   useEffect(() => {
-    const loadStats = async () => {
-      try {
+    const loadStats = () =>
+      execute(async () => {
         const data = await analyticsService.getOverview();
 
         // Map analytics data to dashboard stats format
-        setStats({
+        return {
           overview: {
             totalUsers: (data as any).totalUsers || data.totalCustomers || 0,
             totalSellers: (data as any).totalSellers || 0,
@@ -96,41 +105,8 @@ export default function AdminDashboardPage() {
             pendingReturns: 0,
             openTickets: 0,
           },
-        });
-      } catch (error) {
-        console.error("Failed to load stats:", error);
-
-        // Set empty data structure
-        setStats({
-          overview: {
-            totalUsers: 0,
-            totalSellers: 0,
-            totalShops: 0,
-            totalProducts: 0,
-            totalOrders: 0,
-            totalRevenue: 0,
-            activeAuctions: 0,
-            totalCoupons: 0,
-          },
-          trends: {
-            users: { value: 0, isPositive: true },
-            shops: { value: 0, isPositive: true },
-            products: { value: 0, isPositive: true },
-            orders: { value: 0, isPositive: true },
-            revenue: { value: 0, isPositive: true },
-          },
-          recentActivity: [],
-          pendingActions: {
-            pendingShops: 0,
-            pendingProducts: 0,
-            pendingReturns: 0,
-            openTickets: 0,
-          },
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+        };
+      });
 
     if (isAdmin) {
       loadStats();
