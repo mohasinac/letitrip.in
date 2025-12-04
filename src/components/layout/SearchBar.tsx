@@ -134,7 +134,8 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (!showSuggestions || suggestions.length === 0) {
         if (e.key === "Enter") {
-          handleSearch(e as unknown as React.FormEvent);
+          e.preventDefault();
+          handleSearch(e as React.FormEvent<HTMLInputElement>);
         }
         return;
       }
@@ -157,7 +158,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
           if (selectedIndex >= 0 && suggestions[selectedIndex]) {
             navigateToRoute(suggestions[selectedIndex]);
           } else {
-            handleSearch(e as unknown as React.FormEvent);
+            handleSearch(e as React.FormEvent<HTMLInputElement>);
           }
           break;
         case "Escape":

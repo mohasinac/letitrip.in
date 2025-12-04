@@ -182,11 +182,11 @@ export function useLoadingState<T = any>(
           isLoading: false,
           isInitialized: true,
           isRefreshing: false,
-          ...(shouldSetData && { data: result as unknown as T }),
+          ...(shouldSetData && { data: result as T }),
         }));
 
         if (shouldSetData) {
-          onLoadSuccess?.(result as unknown as T);
+          onLoadSuccess?.(result as T);
         }
 
         return result;
