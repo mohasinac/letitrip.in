@@ -96,7 +96,7 @@ export default function AdminEditProductPage() {
   });
 
   const [specifications, setSpecifications] = useState<ProductSpecification[]>(
-    [],
+    []
   );
   const [newSpec, setNewSpec] = useState({ name: "", value: "" });
   const [tagInput, setTagInput] = useState("");
@@ -123,11 +123,8 @@ export default function AdminEditProductPage() {
     }
   }, [user, isAdmin, productId]);
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
+  const loadData = () =>
+    execute(async () => {
       const [productData, categoriesData, shopsData] = await Promise.all([
         productsService.getById(productId),
         categoriesService.list({}),
@@ -176,15 +173,7 @@ export default function AdminEditProductPage() {
           }))
         : [];
       setSpecifications(specsArray);
-    } catch (error) {
-      console.error("Failed to load product:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to load product",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
 
   const handleAddSpecification = () => {
     if (newSpec.name && newSpec.value) {
@@ -235,13 +224,10 @@ export default function AdminEditProductPage() {
       setSaving(true);
 
       // Convert specifications array to Record for API
-      const specsRecord = specifications.reduce(
-        (acc, spec) => {
-          acc[spec.name] = spec.value;
-          return acc;
-        },
-        {} as Record<string, string>,
-      );
+      const specsRecord = specifications.reduce((acc, spec) => {
+        acc[spec.name] = spec.value;
+        return acc;
+      }, {} as Record<string, string>);
 
       const updateData = {
         ...formData,
