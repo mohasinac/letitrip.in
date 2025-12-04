@@ -102,7 +102,7 @@ function CategoryModal({
 
   // Filter out current category and its children from parent options
   const availableParents = categories.filter(
-    (c) => c.id !== category?.id && c.parentId !== category?.id
+    (c) => c.id !== category?.id && c.parentId !== category?.id,
   );
 
   return (
@@ -300,7 +300,7 @@ export default function BlogCategoriesPage() {
   const loadCategories = () =>
     execute(async () => {
       const response = await apiService.get<{ data: BlogCategory[] }>(
-        "/blog/categories"
+        "/blog/categories",
       );
       setCategories(
         response.data || [
@@ -334,7 +334,7 @@ export default function BlogCategoriesPage() {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           },
-        ]
+        ],
       );
     });
 
@@ -347,15 +347,15 @@ export default function BlogCategoriesPage() {
         await apiService.patch(`/blog/categories/${editCategory.id}`, data);
         setCategories((prev) =>
           prev.map((c) =>
-            c.id === editCategory.id ? ({ ...c, ...data } as BlogCategory) : c
-          )
+            c.id === editCategory.id ? ({ ...c, ...data } as BlogCategory) : c,
+          ),
         );
         toast.success("Category updated successfully");
       } else {
         // Create new
         const response = await apiService.post<{ data: BlogCategory }>(
           "/blog/categories",
-          data
+          data,
         );
         setCategories((prev) => [
           ...prev,
@@ -409,7 +409,7 @@ export default function BlogCategoriesPage() {
     ? categories.filter(
         (c) =>
           c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          c.slug.toLowerCase().includes(searchQuery.toLowerCase())
+          c.slug.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     : categories;
 

@@ -128,11 +128,8 @@ export default function AdminEditShopPage() {
     }
   }, [user, isAdmin, shopId]);
 
-  const loadShopData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
+  const loadShopData = () =>
+    execute(async () => {
       // Load shop by slug (shopId is actually slug in route)
       const shopData = await shopsService.getBySlug(shopId);
       setShop(shopData);
@@ -187,13 +184,7 @@ export default function AdminEditShopPage() {
         },
         upiId: shopData.upiId || "",
       });
-    } catch (error) {
-      console.error("Failed to load shop:", error);
-      setError(error instanceof Error ? error.message : "Failed to load shop");
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
 
   const handleLogoUpload = async (files: any[]) => {
     if (files.length > 0) {

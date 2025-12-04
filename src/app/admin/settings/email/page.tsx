@@ -83,6 +83,7 @@ export default function AdminEmailSettingsPage() {
   });
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showApiKey, setShowApiKey] = useState(false);
   const [testEmail, setTestEmail] = useState("");
@@ -110,7 +111,7 @@ export default function AdminEmailSettingsPage() {
 
     try {
       setSaving(true);
-      setError(null);
+      setFormError(null);
       setSuccess(null);
       await apiService.put("/api/admin/settings", {
         category: "email",
@@ -120,7 +121,9 @@ export default function AdminEmailSettingsPage() {
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error("Error saving settings:", err);
-      setError(err instanceof Error ? err.message : "Failed to save settings");
+      setFormError(
+        err instanceof Error ? err.message : "Failed to save settings",
+      );
     } finally {
       setSaving(false);
     }
@@ -128,19 +131,19 @@ export default function AdminEmailSettingsPage() {
 
   const handleTestEmail = async () => {
     if (!testEmail) {
-      setError("Please enter a test email address");
+      setFormError("Please enter a test email address");
       return;
     }
 
     try {
       setTesting(true);
-      setError(null);
+      setFormError(null);
       await apiService.post("/api/admin/email/test", { to: testEmail });
       setSuccess("Test email sent successfully!");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error("Error sending test email:", err);
-      setError(
+      setFormError(
         err instanceof Error ? err.message : "Failed to send test email",
       );
     } finally {

@@ -51,6 +51,7 @@ const DEFAULT_SETTINGS: ShippingSettings = {
 
 export default function AdminShippingSettingsPage() {
   const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [newPincode, setNewPincode] = useState("");
 
@@ -85,14 +86,16 @@ export default function AdminShippingSettingsPage() {
 
     try {
       setSaving(true);
-      setError(null);
+      setFormError(null);
       setSuccess(null);
       await settingsService.updateShipping(settings);
       setSuccess("Shipping settings saved successfully!");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error("Error saving settings:", err);
-      setError(err instanceof Error ? err.message : "Failed to save settings");
+      setFormError(
+        err instanceof Error ? err.message : "Failed to save settings",
+      );
     } finally {
       setSaving(false);
     }

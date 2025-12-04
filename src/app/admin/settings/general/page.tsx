@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 export default function AdminGeneralSettingsPage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     "basic" | "contact" | "social" | "maintenance"
@@ -65,14 +66,16 @@ export default function AdminGeneralSettingsPage() {
 
     try {
       setSaving(true);
-      setError(null);
+      setFormError(null);
       setSuccess(null);
       await settingsService.updateGeneral(settings);
       setSuccess("Settings saved successfully!");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error("Error saving settings:", err);
-      setError(err instanceof Error ? err.message : "Failed to save settings");
+      setFormError(
+        err instanceof Error ? err.message : "Failed to save settings",
+      );
     } finally {
       setSaving(false);
     }
