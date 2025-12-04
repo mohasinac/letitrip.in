@@ -449,6 +449,66 @@ const filteredProducts = filterDataByRole(user, "products", products);
 | Update theme colors   | ✅    | ❌     | ❌   | ❌    |
 | View design tokens    | ✅    | ❌     | ❌   | ❌    |
 
+### Resource: User Verification (E038 - Tasks 107-116)
+
+| Action                   | Admin | Seller   | User     | Guest |
+| ------------------------ | ----- | -------- | -------- | ----- |
+| Send email OTP           | ✅    | Own only | Own only | ❌    |
+| Verify email OTP         | ✅    | Own only | Own only | ❌    |
+| Send phone OTP           | ✅    | Own only | Own only | ❌    |
+| Verify phone OTP         | ✅    | Own only | Own only | ❌    |
+| View verification status | ✅    | Own only | Own only | ❌    |
+| Bypass verification gate | ✅    | ❌       | ❌       | ❌    |
+| Reset verification       | ✅    | ❌       | ❌       | ❌    |
+
+**Enforcement**:
+
+- Checkout requires email + phone verification
+- Bidding requires email + phone verification
+- VerificationGate blocks unverified users
+
+### Resource: IP Tracking & Security (E038 - Tasks 117-122)
+
+| Action                      | Admin | Seller | User | Guest |
+| --------------------------- | ----- | ------ | ---- | ----- |
+| View IP activity logs       | ✅    | ❌     | ❌   | ❌    |
+| View login history          | ✅    | ❌     | ❌   | ❌    |
+| View registration history   | ✅    | ❌     | ❌   | ❌    |
+| Track suspicious activity   | ✅    | ❌     | ❌   | ❌    |
+| View rate limit status      | ✅    | ❌     | ❌   | ❌    |
+| Block IP address            | ✅    | ❌     | ❌   | ❌    |
+| View user activity timeline | ✅    | ❌     | ❌   | ❌    |
+
+**Features**:
+
+- Automatic IP logging on login/registration
+- Rate limiting per IP
+- Suspicious activity detection
+- Activity timeline in USER_ACTIVITIES collection
+
+### Resource: Events & Ticketing (E038 - Tasks 123-128)
+
+| Action               | Admin | Seller | User      | Guest     |
+| -------------------- | ----- | ------ | --------- | --------- |
+| List all events      | ✅    | ❌     | Published | Published |
+| View event details   | ✅    | ❌     | Published | Published |
+| Create event         | ✅    | ❌     | ❌        | ❌        |
+| Update event         | ✅    | ❌     | ❌        | ❌        |
+| Delete event         | ✅    | ❌     | ❌        | ❌        |
+| Register for event   | ✅    | ✅     | ✅        | ❌        |
+| View registrations   | ✅    | ❌     | Own only  | ❌        |
+| Cancel registration  | ✅    | Own    | Own only  | ❌        |
+| Purchase tickets     | ✅    | ✅     | ✅        | ❌        |
+| Check registration   | ✅    | ✅     | ✅        | ❌        |
+| View event analytics | ✅    | ❌     | ❌        | ❌        |
+
+**Features**:
+
+- Event creation/management (admin only)
+- Ticketing & booking integration
+- Registration tracking
+- Capacity management
+
 ## API Middleware Pattern
 
 ```typescript
