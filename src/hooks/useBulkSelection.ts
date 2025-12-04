@@ -81,7 +81,7 @@ export function useBulkSelection<T>({
     (id: string) => {
       return selectedIds.includes(id);
     },
-    [selectedIds],
+    [selectedIds]
   );
 
   // Check if all items are selected
@@ -103,7 +103,7 @@ export function useBulkSelection<T>({
       setSelectedIds(newSelectedIds);
       onSelectionChange?.(newSelectedIds);
     },
-    [onSelectionChange],
+    [onSelectionChange]
   );
 
   // Toggle selection for a single item
@@ -115,7 +115,7 @@ export function useBulkSelection<T>({
 
       updateSelection(newSelectedIds);
     },
-    [selectedIds, isSelected, updateSelection],
+    [selectedIds, isSelected, updateSelection]
   );
 
   // Toggle all items
@@ -140,7 +140,7 @@ export function useBulkSelection<T>({
       const newSelectedIds = [...new Set([...selectedIds, ...ids])];
       updateSelection(newSelectedIds);
     },
-    [selectedIds, updateSelection],
+    [selectedIds, updateSelection]
   );
 
   // Deselect multiple items
@@ -150,16 +150,19 @@ export function useBulkSelection<T>({
       const newSelectedIds = selectedIds.filter((id) => !idsSet.has(id));
       updateSelection(newSelectedIds);
     },
-    [selectedIds, updateSelection],
+    [selectedIds, updateSelection]
   );
 
   // Get selected items
   const getSelectedItems = useCallback(
-    <T>(items: T[], keyProp: keyof T = keyProperty as keyof T): T[] => {
+    <T>(
+      items: T[],
+      keyProp: keyof T = keyProperty as unknown as keyof T
+    ): T[] => {
       const selectedSet = new Set(selectedIds);
       return items.filter((item) => selectedSet.has(String(item[keyProp])));
     },
-    [selectedIds, keyProperty],
+    [selectedIds, keyProperty]
   );
 
   return {

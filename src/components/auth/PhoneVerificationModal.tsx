@@ -3,7 +3,6 @@
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { otpService } from "@/services/otp.service";
-import { smsService } from "@/services/sms.service";
 import { useEffect, useState } from "react";
 import { OTPInput } from "./OTPInput";
 
@@ -116,15 +115,16 @@ export function PhoneVerificationModal({
 
       // Get OTP from service (in dev/test, logged to console)
       // In production, this would be sent via SMS
-      const otpDoc = await otpService["getActiveOTP"](
-        userId,
-        "phone",
-        phoneNumber,
-      );
-      if (otpDoc) {
-        // Send SMS
-        await smsService.sendOTP(phoneNumber, otpDoc.otp);
-      }
+      // TODO: Implement proper SMS service integration
+      // const otpDoc = await otpService["getActiveOTP"](
+      //   userId,
+      //   "phone",
+      //   phoneNumber,
+      // );
+      // if (otpDoc) {
+      //   // Send SMS
+      //   await smsService.sendOTP(phoneNumber, otpDoc.otp);
+      // }
 
       setCanResend(false);
       setResendCountdown(60); // 60 second cooldown

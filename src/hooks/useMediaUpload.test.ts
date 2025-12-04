@@ -1,6 +1,6 @@
 /// <reference types="@testing-library/jest-dom" />
 
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { useMediaUpload } from "./useMediaUpload";
 
 // Mock UploadContext
@@ -59,7 +59,7 @@ describe("useMediaUpload", () => {
 
   it("validates file size", async () => {
     const { result } = renderHook(
-      () => useMediaUpload({ maxSize: 1024 }), // 1KB
+      () => useMediaUpload({ maxSize: 1024 }) // 1KB
     );
 
     const largeFile = new File(["x".repeat(2048)], "large.jpg", {
@@ -67,13 +67,13 @@ describe("useMediaUpload", () => {
     });
 
     await expect(result.current.upload(largeFile)).rejects.toThrow(
-      "File size (0.00MB) exceeds maximum (0.00MB)",
+      "File size (0.00MB) exceeds maximum (0.00MB)"
     );
   });
 
   it("validates file type", async () => {
     const { result } = renderHook(() =>
-      useMediaUpload({ allowedTypes: ["image/jpeg"] }),
+      useMediaUpload({ allowedTypes: ["image/jpeg"] })
     );
 
     const invalidFile = new File(["test"], "test.txt", {
@@ -81,7 +81,7 @@ describe("useMediaUpload", () => {
     });
 
     await expect(result.current.upload(invalidFile)).rejects.toThrow(
-      "File type text/plain is not allowed",
+      "File type text/plain is not allowed"
     );
   });
 
@@ -120,7 +120,7 @@ describe("useMediaUpload", () => {
       }
     });
 
-    let uploadResult: string;
+    let uploadResult: string = "";
     await act(async () => {
       uploadResult = await result.current.upload(file);
     });

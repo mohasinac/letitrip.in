@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { logError } from "@/lib/error-logger";
 import { otpService } from "@/services/otp.service";
 import React, { useEffect, useState } from "react";
 import { EmailVerificationModal } from "./EmailVerificationModal";
@@ -78,7 +79,7 @@ export function VerificationGate({
     } catch (error) {
       logError(error as Error, {
         component: "VerificationGate.checkStatus",
-        context: { message: "Failed to check verification status" },
+        metadata: { message: "Failed to check verification status" },
       });
     } finally {
       setChecking(false);

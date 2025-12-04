@@ -1,6 +1,6 @@
 /// <reference types="@testing-library/jest-dom" />
 
-import { renderHook, act } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { useNavigationGuard } from "./useNavigationGuard";
 
 // Mock window methods
@@ -43,7 +43,7 @@ describe("useNavigationGuard", () => {
 
   it("returns confirmNavigation function", () => {
     const { result } = renderHook(() =>
-      useNavigationGuard({ enabled: false, message: "Test message" }),
+      useNavigationGuard({ enabled: false, message: "Test message" })
     );
 
     expect(typeof result.current.confirmNavigation).toBe("function");
@@ -52,7 +52,7 @@ describe("useNavigationGuard", () => {
 
   it("does not set up guards when disabled", () => {
     renderHook(() =>
-      useNavigationGuard({ enabled: false, message: "Test message" }),
+      useNavigationGuard({ enabled: false, message: "Test message" })
     );
 
     expect(window.addEventListener).not.toHaveBeenCalled();
@@ -60,12 +60,12 @@ describe("useNavigationGuard", () => {
 
   it("sets up beforeunload handler when enabled", () => {
     renderHook(() =>
-      useNavigationGuard({ enabled: true, message: "Test message" }),
+      useNavigationGuard({ enabled: true, message: "Test message" })
     );
 
     expect(window.addEventListener).toHaveBeenCalledWith(
       "beforeunload",
-      expect.any(Function),
+      expect.any(Function)
     );
   });
 
@@ -82,12 +82,12 @@ describe("useNavigationGuard", () => {
 
   it("sets up popstate handler when enabled", () => {
     renderHook(() =>
-      useNavigationGuard({ enabled: true, message: "Test message" }),
+      useNavigationGuard({ enabled: true, message: "Test message" })
     );
 
     expect(window.addEventListener).toHaveBeenCalledWith(
       "popstate",
-      expect.any(Function),
+      expect.any(Function)
     );
   });
 
@@ -98,7 +98,7 @@ describe("useNavigationGuard", () => {
         enabled: true,
         message: "Test message",
         onNavigate,
-      }),
+      })
     );
 
     mockConfirm.mockReturnValue(true);
@@ -116,7 +116,7 @@ describe("useNavigationGuard", () => {
         enabled: true,
         message: "Test message",
         onCancel,
-      }),
+      })
     );
 
     mockConfirm.mockReturnValue(false);
@@ -135,13 +135,13 @@ describe("useNavigationGuard", () => {
         enabled: true,
         message: "Test message",
         onNavigate,
-      }),
+      })
     );
 
     mockConfirm.mockReturnValue(true);
     const callback = jest.fn();
 
-    let returnValue: boolean;
+    let returnValue: boolean = false;
     await act(async () => {
       returnValue = await result.current.confirmNavigation(callback);
     });
@@ -159,13 +159,13 @@ describe("useNavigationGuard", () => {
         enabled: true,
         message: "Test message",
         onCancel,
-      }),
+      })
     );
 
     mockConfirm.mockReturnValue(false);
     const callback = jest.fn();
 
-    let returnValue: boolean;
+    let returnValue: boolean = false;
     await act(async () => {
       returnValue = await result.current.confirmNavigation(callback);
     });
@@ -178,12 +178,12 @@ describe("useNavigationGuard", () => {
 
   it("confirmNavigation does not show confirm when disabled", async () => {
     const { result } = renderHook(() =>
-      useNavigationGuard({ enabled: false, message: "Test message" }),
+      useNavigationGuard({ enabled: false, message: "Test message" })
     );
 
     const callback = jest.fn();
 
-    let returnValue: boolean;
+    let returnValue: boolean = false;
     await act(async () => {
       returnValue = await result.current.confirmNavigation(callback);
     });
@@ -195,18 +195,18 @@ describe("useNavigationGuard", () => {
 
   it("cleans up event listeners on unmount", () => {
     const { unmount } = renderHook(() =>
-      useNavigationGuard({ enabled: true, message: "Test message" }),
+      useNavigationGuard({ enabled: true, message: "Test message" })
     );
 
     unmount();
 
     expect(window.removeEventListener).toHaveBeenCalledWith(
       "beforeunload",
-      expect.any(Function),
+      expect.any(Function)
     );
     expect(window.removeEventListener).toHaveBeenCalledWith(
       "popstate",
-      expect.any(Function),
+      expect.any(Function)
     );
   });
 });

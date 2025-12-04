@@ -156,10 +156,10 @@ export default function SellerReturnsPage() {
               sections={RETURN_FILTERS}
               values={filterValues}
               onChange={(key, value) => {
-                setFilterValues((prev) => ({
-                  ...prev,
+                setFilterValues({
+                  ...filterValues,
                   [key]: value,
-                }));
+                } as ReturnFiltersFE);
               }}
               onApply={() => {
                 setCurrentPage(1);
@@ -242,7 +242,7 @@ export default function SellerReturnsPage() {
                                 <button
                                   onClick={() =>
                                     router.push(
-                                      `/seller/orders/${returnItem.orderId}`,
+                                      `/seller/orders/${returnItem.orderId}`
                                     )
                                   }
                                   className="text-sm text-indigo-600 hover:text-indigo-900 font-mono"
@@ -252,7 +252,7 @@ export default function SellerReturnsPage() {
                               </div>
                               <span
                                 className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                                  returnItem.status,
+                                  returnItem.status
                                 )}`}
                               >
                                 {returnItem.status}
@@ -308,7 +308,7 @@ export default function SellerReturnsPage() {
                                 <button
                                   onClick={() => {
                                     const notes = prompt(
-                                      "Reason for rejection (optional):",
+                                      "Reason for rejection (optional):"
                                     );
                                     if (notes !== null) {
                                       handleReject(returnItem.id, notes);
@@ -328,7 +328,7 @@ export default function SellerReturnsPage() {
                                 <button
                                   onClick={() =>
                                     router.push(
-                                      `/seller/orders/${returnItem.orderId}`,
+                                      `/seller/orders/${returnItem.orderId}`
                                     )
                                   }
                                   className="flex-1 py-2 text-center text-indigo-600 font-medium border border-indigo-300 rounded-lg hover:bg-indigo-50 transition-colors text-sm flex items-center justify-center gap-1"
@@ -384,7 +384,7 @@ export default function SellerReturnsPage() {
                                 <button
                                   onClick={() =>
                                     router.push(
-                                      `/seller/orders/${returnItem.orderId}`,
+                                      `/seller/orders/${returnItem.orderId}`
                                     )
                                   }
                                   className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-mono"
@@ -410,7 +410,7 @@ export default function SellerReturnsPage() {
                               <td className="px-6 py-4">
                                 <span
                                   className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                                    returnItem.status,
+                                    returnItem.status
                                   )}`}
                                 >
                                   {returnItem.status}
@@ -438,7 +438,7 @@ export default function SellerReturnsPage() {
                                     <button
                                       onClick={() => {
                                         const notes = prompt(
-                                          "Reason for rejection (optional):",
+                                          "Reason for rejection (optional):"
                                         );
                                         if (notes !== null) {
                                           handleReject(returnItem.id, notes);
@@ -455,7 +455,7 @@ export default function SellerReturnsPage() {
                                 <button
                                   onClick={() =>
                                     router.push(
-                                      `/seller/returns/${returnItem.id}`,
+                                      `/seller/returns/${returnItem.id}`
                                     )
                                   }
                                   className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"

@@ -1,15 +1,18 @@
-import React from "react";
+import CreateAuctionWizardPage from "@/app/seller/auctions/create/page";
+import type { AuctionFE } from "@/types/frontend/auction.types";
 import {
+  AuctionStatus,
+  AuctionType,
+  Status,
+} from "@/types/shared/common.types";
+import {
+  act,
+  fireEvent,
   render,
   screen,
   waitFor,
-  fireEvent,
-  act,
 } from "@testing-library/react";
-import CreateAuctionWizardPage from "@/app/seller/auctions/create/page";
-import { Status } from "@/types/shared/common.types";
-import type { AuctionFE } from "@/types/frontend/auction.types";
-import { AuctionType, AuctionStatus } from "@/types/shared/common.types";
+import React from "react";
 
 // Mock Firebase
 jest.mock("@/app/api/lib/firebase/app", () => ({
@@ -41,7 +44,7 @@ jest.mock("@/components/common/SlugInput", () => {
         onChange: (e: any) => onChange(e.target.value),
         className: error ? "border-red-500" : "",
       }),
-      error && React.createElement("div", {}, error),
+      error && React.createElement("div", {}, error)
     );
   };
   return {
@@ -123,6 +126,10 @@ const mockCategories = [
     order: 1,
     status: Status.PUBLISHED,
     productCount: 100,
+    inStockCount: 80,
+    outOfStockCount: 20,
+    liveAuctionCount: 10,
+    endedAuctionCount: 5,
     isLeaf: false,
     metadata: {},
     createdAt: new Date(),
@@ -146,6 +153,10 @@ const mockCategories = [
     order: 2,
     status: Status.PUBLISHED,
     productCount: 50,
+    inStockCount: 40,
+    outOfStockCount: 10,
+    liveAuctionCount: 5,
+    endedAuctionCount: 3,
     isLeaf: false,
     metadata: {},
     createdAt: new Date(),
@@ -333,7 +344,7 @@ describe("CreateAuctionWizardPage", () => {
 
     // Fill title but not slug or category
     const titleInput = screen.getByPlaceholderText(
-      "e.g., Vintage Rolex Watch - Limited Edition",
+      "e.g., Vintage Rolex Watch - Limited Edition"
     );
     fireEvent.change(titleInput, { target: { value: "Test Auction" } });
 
@@ -355,7 +366,7 @@ describe("CreateAuctionWizardPage", () => {
 
     // Fill step 1
     const titleInput = screen.getByPlaceholderText(
-      "e.g., Vintage Rolex Watch - Limited Edition",
+      "e.g., Vintage Rolex Watch - Limited Edition"
     );
     fireEvent.change(titleInput, { target: { value: "Test Auction" } });
 
@@ -387,7 +398,7 @@ describe("CreateAuctionWizardPage", () => {
 
     // Go to step 2
     const titleInput = screen.getByPlaceholderText(
-      "e.g., Vintage Rolex Watch - Limited Edition",
+      "e.g., Vintage Rolex Watch - Limited Edition"
     );
     fireEvent.change(titleInput, { target: { value: "Test Auction" } });
 
@@ -408,7 +419,7 @@ describe("CreateAuctionWizardPage", () => {
     // Try to go to next step without starting bid
     fireEvent.click(screen.getByText("Next"));
     expect(
-      screen.getByText("Starting bid must be greater than 0"),
+      screen.getByText("Starting bid must be greater than 0")
     ).toBeInTheDocument();
 
     // Fill starting bid
@@ -421,8 +432,8 @@ describe("CreateAuctionWizardPage", () => {
     fireEvent.click(screen.getByText("Next"));
     expect(
       screen.getByText(
-        "Reserve price must be greater than or equal to starting bid",
-      ),
+        "Reserve price must be greater than or equal to starting bid"
+      )
     ).toBeInTheDocument();
   });
 
@@ -433,7 +444,7 @@ describe("CreateAuctionWizardPage", () => {
 
     // Go to step 3
     const titleInput = screen.getByPlaceholderText(
-      "e.g., Vintage Rolex Watch - Limited Edition",
+      "e.g., Vintage Rolex Watch - Limited Edition"
     );
     fireEvent.change(titleInput, { target: { value: "Test Auction" } });
 
@@ -463,7 +474,7 @@ describe("CreateAuctionWizardPage", () => {
 
     fireEvent.click(screen.getByText("Next"));
     expect(
-      screen.getByText("End time must be after start time"),
+      screen.getByText("End time must be after start time")
     ).toBeInTheDocument();
   });
 
@@ -474,7 +485,7 @@ describe("CreateAuctionWizardPage", () => {
 
     // Go to step 4
     const titleInput = screen.getByPlaceholderText(
-      "e.g., Vintage Rolex Watch - Limited Edition",
+      "e.g., Vintage Rolex Watch - Limited Edition"
     );
     fireEvent.change(titleInput, { target: { value: "Test Auction" } });
 
@@ -497,7 +508,7 @@ describe("CreateAuctionWizardPage", () => {
     // Try to go to next step without images
     fireEvent.click(screen.getByText("Next"));
     expect(
-      screen.getByText("At least one image is required"),
+      screen.getByText("At least one image is required")
     ).toBeInTheDocument();
   });
 
@@ -527,7 +538,7 @@ describe("CreateAuctionWizardPage", () => {
 
     // Fill all required fields across all steps
     const titleInput = screen.getByPlaceholderText(
-      "e.g., Vintage Rolex Watch - Limited Edition",
+      "e.g., Vintage Rolex Watch - Limited Edition"
     );
     fireEvent.change(titleInput, { target: { value: "Test Auction" } });
 
@@ -572,7 +583,7 @@ describe("CreateAuctionWizardPage", () => {
 
   it("handles auction creation error", async () => {
     mockAuctionsService.create.mockRejectedValueOnce(
-      new Error("Creation failed"),
+      new Error("Creation failed")
     );
 
     await act(async () => {
@@ -581,7 +592,7 @@ describe("CreateAuctionWizardPage", () => {
 
     // Fill minimal required fields and go to final step
     const titleInput = screen.getByPlaceholderText(
-      "e.g., Vintage Rolex Watch - Limited Edition",
+      "e.g., Vintage Rolex Watch - Limited Edition"
     );
     fireEvent.change(titleInput, { target: { value: "Test Auction" } });
 
@@ -638,7 +649,7 @@ describe("CreateAuctionWizardPage", () => {
     await waitFor(() => {
       expect(mockAuctionsService.validateSlug).toHaveBeenCalledWith(
         "taken-slug",
-        "",
+        ""
       );
     });
 

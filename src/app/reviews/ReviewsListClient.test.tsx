@@ -1,7 +1,6 @@
-import React from "react";
-import { render, screen, waitFor, act } from "@testing-library/react";
-import ReviewsListClient from "./ReviewsListClient";
 import { reviewsService } from "@/services/reviews.service";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import ReviewsListClient from "./ReviewsListClient";
 
 jest.mock("@/services/reviews.service");
 jest.mock("lucide-react", () => ({
@@ -30,7 +29,9 @@ describe("ReviewsListClient", () => {
         {
           id: "1",
           productId: null,
+          productSlug: null,
           shopId: null,
+          shopSlug: null,
           userId: "u1",
           userName: "User One",
           userEmail: "user1@example.com",
@@ -56,7 +57,9 @@ describe("ReviewsListClient", () => {
         {
           id: "2",
           productId: null,
+          productSlug: null,
           shopId: null,
+          shopSlug: null,
           userId: "u2",
           userName: "User Two",
           userEmail: "user2@example.com",
@@ -111,7 +114,7 @@ describe("ReviewsListClient", () => {
     });
     await waitFor(() => {
       expect(
-        screen.getByText("Failed to load reviews. Please try again later."),
+        screen.getByText("Failed to load reviews. Please try again later.")
       ).toBeInTheDocument();
     });
   });

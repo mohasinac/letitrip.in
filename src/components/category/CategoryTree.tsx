@@ -195,7 +195,7 @@ export function CategoryTree({
         {/* Search */}
         <div className="flex-1 min-w-[200px] max-w-md">
           <FormInput
-            icon={<Search className="h-4 w-4" />}
+            leftIcon={<Search className="h-4 w-4" />}
             placeholder="Search categories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -266,12 +266,7 @@ export function CategoryTree({
           enableLegacyTransitions
           transitionDuration={300}
           depthFactor={150}
-          styles={{
-            links: {
-              stroke: "#94a3b8",
-              strokeWidth: 2,
-            },
-          }}
+          pathClassFunc={() => "stroke-gray-400 dark:stroke-gray-600"}
         />
       </div>
 
