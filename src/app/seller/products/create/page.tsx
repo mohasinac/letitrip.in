@@ -7,6 +7,7 @@ import {
   RequiredInfoStep,
   type ProductFormData,
 } from "@/components/seller/product-wizard";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -31,8 +32,13 @@ const STEPS = [
 export default function CreateProductPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const { isLoading: loading, execute } = useLoadingState<void>({
+    onLoadError: (err) => {
+      logError(err, { component: "CreateProductPage.handleSubmit" });
+      toast.error("Failed to create product");
+    },
+  });
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [errorSteps, setErrorSteps] = useState<number[]>([]);
   const [formData, setFormData] = useState<ProductFormData>({
@@ -78,7 +84,7 @@ export default function CreateProductPage() {
   // Upload state for RequiredInfoStep
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
-    {},
+    {}
   );
 
   // Expandable sections state for OptionalDetailsStep
@@ -136,7 +142,7 @@ export default function CreateProductPage() {
 
       return errors;
     },
-    [formData],
+    [formData]
   );
 
   // Validate all steps
@@ -161,7 +167,7 @@ export default function CreateProductPage() {
       const errorSummary = Object.entries(allErrors)
         .map(
           ([step, errors]) =>
-            `${errors.length} error${errors.length > 1 ? "s" : ""} in ${step}`,
+            `${errors.length} error${errors.length > 1 ? "s" : ""} in ${step}`
         )
         .join(", ");
       toast.error(`Please fix: ${errorSummary}`);
@@ -232,11 +238,11 @@ export default function CreateProductPage() {
   // Check if form has minimum required fields
   const isFormValid = Boolean(
     formData.name.trim() &&
-    formData.slug.trim() &&
-    formData.categoryId &&
-    formData.sku.trim() &&
-    formData.price > 0 &&
-    formData.images.length > 0,
+      formData.slug.trim() &&
+      formData.categoryId &&
+      formData.sku.trim() &&
+      formData.price > 0 &&
+      formData.images.length > 0
   );
 
   return (

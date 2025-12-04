@@ -5,6 +5,7 @@ import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { FormSelect } from "@/components/forms";
 import { CATEGORY_FILTERS } from "@/constants/filters";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { useIsMobile } from "@/hooks/useMobile";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
@@ -27,9 +28,18 @@ function CategoriesContent() {
   const searchParams = useSearchParams();
   const isMobile = useIsMobile();
 
-  const [categories, setCategories] = useState<CategoryFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "list">("grid");
+  const {
+    isLoading: loading,
+    data: categories,
+    setData: setCategories,
+    execute,
+  } = useLoadingState<CategoryFE[]>({
+    initialData: [],
+    onLoadError: (err) => {
+      logError(err, { component: "CategoriesPage.loadCategories" });
+    },
+  });
   const [showFilters, setShowFilters] = useState(false);
 
   // Pagination state
@@ -112,9 +122,8 @@ function CategoriesContent() {
     }
   };
 
-  const loadCategories = async () => {
-    setLoading(true);
-    try {
+  const loadCategories = () =>
+    execute(async () => {
       const response = await categoriesService.list({
         page: currentPage,
         limit: 50,
@@ -125,19 +134,10 @@ function CategoriesContent() {
         parentId: filterValues.parent_id || undefined,
       });
 
-      setCategories(response.data || []);
       setTotalCount(response.count || response.data?.length || 0);
       setHasNextPage(response.pagination?.hasNextPage || false);
-    } catch (error) {
-      logError(error as Error, {
-        component: "CategoriesPage.loadCategories",
-        metadata: { page: currentPage, filters: filterValues },
-      });
-      setCategories([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return response.data || [];
+    });
 
   const updateUrlAndLoad = useCallback(() => {
     const params = new URLSearchParams();

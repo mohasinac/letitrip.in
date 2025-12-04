@@ -1,5 +1,6 @@
 "use client";
 
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 
 /**
@@ -59,11 +60,30 @@ export default function UserRipLimitPage() {
   const { user, loading: authLoading } = useAuth();
 
   // State
-  const [balance, setBalance] = useState<RipLimitBalanceFE | null>(null);
-  const [transactions, setTransactions] = useState<RipLimitTransactionFE[]>([]);
   const [transactionsTotal, setTransactionsTotal] = useState(0);
-  const [loadingBalance, setLoadingBalance] = useState(true);
-  const [loadingTransactions, setLoadingTransactions] = useState(true);
+  const {
+    isLoading: loadingBalance,
+    data: balance,
+    setData: setBalance,
+    execute: executeBalance,
+  } = useLoadingState<RipLimitBalanceFE>({
+    onLoadError: (err) => {
+      logError(err, { component: "UserRipLimitPage.loadBalance" });
+      toast.error("Failed to load balance");
+    },
+  });
+  const {
+    isLoading: loadingTransactions,
+    data: transactions,
+    setData: setTransactions,
+    execute: executeTransactions,
+  } = useLoadingState<RipLimitTransactionFE[]>({
+    initialData: [],
+    onLoadError: (err) => {
+      logError(err, { component: "UserRipLimitPage.loadTransactions" });
+      toast.error("Failed to load transactions");
+    },
+  });
   const [transactionFilter, setTransactionFilter] =
     useState<TransactionFilter>("ALL");
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
