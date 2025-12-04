@@ -63,7 +63,25 @@ function AddressesContent() {
       await addressService.setDefault(id);
       execute(loadAddresses);
     } catch (error) {
-      console.error("Failed to set default address:", error);
+      logError(error as Error, {
+        component: "AddressesPage.setDefault",
+        metadata: { addressId: id },
+      });
+      toast.error("Failed to set default address");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await addressesService.delete(id);
+      await loadAddresses();
+      toast.success("Address deleted successfully");
+    } catch (error) {
+      logError(error as Error, {
+        component: "AddressesPage.handleDelete",
+        metadata: { addressId: id },
+      });
+      toast.error("Failed to delete address");
     }
   };
 

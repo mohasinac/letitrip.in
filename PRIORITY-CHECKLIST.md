@@ -518,7 +518,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   // After
   z.string().min(
     VALIDATION_RULES.NAME.MIN_LENGTH,
-    VALIDATION_MESSAGES.NAME.TOO_SHORT
+    VALIDATION_MESSAGES.NAME.TOO_SHORT,
   );
   ```
 
@@ -676,53 +676,61 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Lines**: ~400 lines
 - **Impact**: Reduces 12 admin pages from 600-900 lines to 100-200 lines each
 
-##### ⬜ 64-migrate-admin-users-page
+##### ✅ 64-migrate-admin-users-page
 
 - **File**: `src/app/admin/users/page.tsx`
-- **Before**: 976 lines
-- **After**: ~150 lines using AdminResourcePage
+- **Before**: 1056 lines
+- **After**: 198 lines using AdminResourcePage
+- **Status**: COMPLETE - Reduced by ~858 lines (81% reduction)
 
-##### ⬜ 65-migrate-admin-auctions-page
+##### 🔄 65-migrate-admin-auctions-page
 
 - **File**: `src/app/admin/auctions/page.tsx`
-- **Before**: 777 lines
-- **After**: ~150 lines using AdminResourcePage
+- **Before**: 825 lines
+- **After**: 207 lines using AdminResourcePage
+- **Status**: IN PROGRESS - Type fixes needed (AuctionCardFE fields, DateDisplay format, StatusBadge props)
 
-##### ⬜ 66-migrate-admin-shops-page
+##### 🔄 66-migrate-admin-shops-page
 
 - **File**: `src/app/admin/shops/page.tsx`
-- **Before**: 730 lines
-- **After**: ~150 lines using AdminResourcePage
+- **Before**: 768 lines
+- **After**: 181 lines using AdminResourcePage
+- **Status**: IN PROGRESS - Type fixes needed
 
-##### ⬜ 67-migrate-admin-categories-page
+##### 🔄 67-migrate-admin-categories-page
 
 - **File**: `src/app/admin/categories/page.tsx`
 - **Before**: 686 lines
-- **After**: ~150 lines using AdminResourcePage
+- **After**: 205 lines using AdminResourcePage
+- **Status**: IN PROGRESS - CategoryWithStats type import issue
 
-##### ⬜ 68-migrate-admin-products-page
+##### 🔄 68-migrate-admin-products-page
 
 - **File**: `src/app/admin/products/page.tsx`
 - **Before**: 679 lines
-- **After**: ~150 lines using AdminResourcePage
+- **After**: 194 lines using AdminResourcePage
+- **Status**: IN PROGRESS - Type fixes needed
 
-##### ⬜ 69-migrate-admin-blog-page
+##### 🔄 69-migrate-admin-blog-page
 
 - **File**: `src/app/admin/blog/page.tsx`
 - **Before**: 665 lines
-- **After**: ~150 lines using AdminResourcePage
+- **After**: 189 lines using AdminResourcePage
+- **Status**: IN PROGRESS - BlogPost type missing, field type fixes needed
 
-##### ⬜ 70-migrate-admin-coupons-page
+##### 🔄 70-migrate-admin-coupons-page
 
 - **File**: `src/app/admin/coupons/page.tsx`
 - **Before**: 652 lines
-- **After**: ~150 lines using AdminResourcePage
+- **After**: 193 lines using AdminResourcePage
+- **Status**: IN PROGRESS - Coupon → CouponFE type fix needed
 
-##### ⬜ 71-migrate-admin-orders-page
+##### 🔄 71-migrate-admin-orders-page
 
 - **File**: `src/app/admin/orders/page.tsx`
 - **Before**: 626 lines
-- **After**: ~150 lines using AdminResourcePage
+- **After**: 216 lines using AdminResourcePage
+- **Status**: IN PROGRESS - Order type fixes needed
 
 #### 1.2: Seller Resource Pages (4-6 hours)
 
