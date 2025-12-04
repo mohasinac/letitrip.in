@@ -18,6 +18,8 @@ import { Price } from "@/components/common/values";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import { apiService } from "@/services/api.service";
 import {
   AlertTriangle,
@@ -76,12 +78,34 @@ export default function AdminRipLimitPage() {
   const router = useRouter();
   const { user, isAdmin, loading: authLoading } = useAuth();
 
-  // State
-  const [stats, setStats] = useState<RipLimitStats | null>(null);
-  const [users, setUsers] = useState<RipLimitUser[]>([]);
+  // State - Stats loading
+  const {
+    data: stats,
+    setData: setStats,
+    isLoading: loadingStats,
+    execute: executeLoadStats,
+  } = useLoadingState<RipLimitStats | null>({
+    initialData: null,
+    onLoadError: (error) => {
+      logError(error, { component: "AdminRipLimit.loadStats" });
+      setError("Failed to load RipLimit statistics");
+    },
+  });
+
+  // State - Users loading
+  const {
+    data: users,
+    setData: setUsers,
+    isLoading: loadingUsers,
+    execute: executeLoadUsers,
+  } = useLoadingState<RipLimitUser[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, { component: "AdminRipLimit.loadUsers" });
+    },
+  });
+
   const [pagination, setPagination] = useState<Pagination | null>(null);
-  const [loadingStats, setLoadingStats] = useState(true);
-  const [loadingUsers, setLoadingUsers] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -102,55 +126,48 @@ export default function AdminRipLimitPage() {
   }, [user, isAdmin, authLoading, router]);
 
   // Load stats
-  const loadStats = useCallback(async () => {
-    try {
-      setLoadingStats(true);
-      const response = await apiService.get<{
-        success: boolean;
-        data: RipLimitStats;
-      }>("/admin/riplimit/stats");
+  const loadStats = useCallback(
+    () =>
+      executeLoadStats(async () => {
+        const response = await apiService.get<{
+          success: boolean;
+          data: RipLimitStats;
+        }>("/admin/riplimit/stats");
 
-      if (response.success) {
-        setStats(response.data);
-      }
-    } catch (err) {
-      console.error("Failed to load stats:", err);
-      setError("Failed to load RipLimit statistics");
-    } finally {
-      setLoadingStats(false);
-    }
-  }, []);
+        if (response.success) {
+          setStats(response.data);
+        }
+      }),
+    [executeLoadStats, setStats]
+  );
 
   // Load users
-  const loadUsers = useCallback(async () => {
-    try {
-      setLoadingUsers(true);
-      const params = new URLSearchParams();
-      params.set("page", currentPage.toString());
-      params.set("pageSize", "20");
+  const loadUsers = useCallback(
+    () =>
+      executeLoadUsers(async () => {
+        const params = new URLSearchParams();
+        params.set("page", currentPage.toString());
+        params.set("pageSize", "20");
 
-      if (userFilter === "unpaid") {
-        params.set("hasUnpaid", "true");
-      } else if (userFilter === "blocked") {
-        params.set("isBlocked", "true");
-      }
+        if (userFilter === "unpaid") {
+          params.set("hasUnpaid", "true");
+        } else if (userFilter === "blocked") {
+          params.set("isBlocked", "true");
+        }
 
-      const response = await apiService.get<{
-        success: boolean;
-        data: RipLimitUser[];
-        pagination: Pagination;
-      }>(`/admin/riplimit/users?${params.toString()}`);
+        const response = await apiService.get<{
+          success: boolean;
+          data: RipLimitUser[];
+          pagination: Pagination;
+        }>(`/admin/riplimit/users?${params.toString()}`);
 
-      if (response.success) {
-        setUsers(response.data);
-        setPagination(response.pagination);
-      }
-    } catch (err) {
-      console.error("Failed to load users:", err);
-    } finally {
-      setLoadingUsers(false);
-    }
-  }, [currentPage, userFilter]);
+        if (response.success) {
+          setUsers(response.data);
+          setPagination(response.pagination);
+        }
+      }),
+    [currentPage, userFilter, executeLoadUsers, setUsers]
+  );
 
   // Initial load
   useEffect(() => {
@@ -187,11 +204,11 @@ export default function AdminRipLimitPage() {
         {
           amount,
           reason,
-        },
+        }
       );
 
       setSuccessMessage(
-        `Balance adjusted by ${amount >= 0 ? "+" : ""}${amount} RL`,
+        `Balance adjusted by ${amount >= 0 ? "+" : ""}${amount} RL`
       );
       setShowAdjustModal(false);
       setSelectedUser(null);
@@ -269,7 +286,7 @@ export default function AdminRipLimitPage() {
                       u.availableBalance + u.blockedBalance,
                       u.hasUnpaidAuctions ? "Yes" : "No",
                       u.isBlocked ? "Yes" : "No",
-                    ].join(","),
+                    ].join(",")
                   ),
                 ].join("\n");
 
