@@ -1239,35 +1239,67 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 - **Files**: 30+ pages with manual loading state
 - **Changes**: Replace with useLoadingState hook
-- **Progress**: 22/50+ pages complete (44%)
-  - ✅ login/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ register/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ user/settings/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ products/[slug]/page.tsx - Replaced manual loading/error/data with useLoadingState
-  - ✅ forgot-password/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ reset-password/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ contact/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ auctions/[slug]/page.tsx - Replaced manual loading/error/data with useLoadingState
-  - ✅ shops/[slug]/page.tsx - Replaced manual loading with useLoadingState for shop data
-  - ✅ admin/page.tsx - Replaced manual loading/stats with useLoadingState + proper error logging
-  - ✅ seller/products/create/page.tsx - Replaced manual loading with useLoadingState
-  - ✅ categories/page.tsx - Replaced manual loading with useLoadingState for categories list
-  - ✅ user/riplimit/page.tsx - Replaced multiple loading states (balance, transactions) with useLoadingState
-  - ✅ admin/dashboard/page.tsx - Replaced manual loading/stats with useLoadingState + proper error logging
-  - ✅ search/page.tsx - Replaced manual loading/results with useLoadingState
-  - ✅ products/[slug]/edit/page.tsx - Replaced manual loading/error/data with useLoadingState
-  - ✅ products/create/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ auctions/create/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ reviews/ReviewsListClient.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ blog/BlogListClient.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ blog/[slug]/BlogPostClient.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ admin/static-assets/page.tsx - Replaced manual loading with useLoadingState
-  - ✅ admin/settings/general/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ admin/settings/notifications/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ admin/settings/shipping/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ admin/settings/payment/page.tsx - Replaced manual loading/error with useLoadingState
-  - 🔄 admin/shops/[id]/edit/page.tsx - Partially migrated (needs loadShopData completion)
-  - 🔄 admin/support-tickets/[id]/page.tsx - Partially migrated (needs loadTicket completion)
+- **Progress**: 46/50+ pages complete (92%)
+
+**Batch 1 (Commit 63bcdcb2 - 12 pages):**
+
+- ✅ admin/hero-slides/[id]/edit/page.tsx - Replaced manual loading with useLoadingState
+- ✅ admin/hero-slides/create/page.tsx - Added execute wrapper for submit
+- ✅ admin/orders/[id]/page.tsx - Migrated order loading
+- ✅ admin/settings/email/page.tsx - Migrated settings loading
+- ✅ admin/hero-slides/page.tsx - Migrated slides list loading
+- ✅ admin/products/[id]/edit/page.tsx - Migrated product edit loading
+- ✅ admin/coupons/[id]/edit/page.tsx - Migrated coupon edit loading
+- ✅ admin/coupons/create/page.tsx - Added execute wrapper for create
+- ✅ admin/categories/[slug]/edit/page.tsx - Migrated category loading
+- ✅ admin/blog/[id]/edit/page.tsx - Migrated blog post loading
+- ✅ admin/blog/create/page.tsx - Added execute wrapper for create
+- ✅ admin/blog/categories/page.tsx - Completed migration
+
+**Batch 2 (Commit d6740ce1 - 12 pages):**
+
+- ✅ admin/homepage/page.tsx - Settings loading with execute wrapper
+- ✅ admin/demo/page.tsx - Stats fetching with execute wrapper
+- ✅ admin/blog/tags/page.tsx - Tags loading with mock fallback
+- ✅ admin/auctions/live/page.tsx - Live auctions with refresh state
+- ✅ admin/analytics/page.tsx - Overview analytics
+- ✅ admin/analytics/auctions/page.tsx - Auctions analytics
+- ✅ admin/analytics/users/page.tsx - Users analytics
+- ✅ admin/analytics/sales/page.tsx - Sales analytics
+- ✅ products/page.tsx - Products list with pagination
+- ✅ categories/[slug]/page.tsx - Category detail with products loading
+- ✅ admin/featured-sections/page.tsx - Featured items loading
+
+**Previously Completed (22 pages):**
+
+- ✅ login/page.tsx - Replaced manual loading/error with useLoadingState
+- ✅ register/page.tsx - Replaced manual loading/error with useLoadingState
+- ✅ user/settings/page.tsx - Replaced manual loading/error with useLoadingState
+- ✅ products/[slug]/page.tsx - Replaced manual loading/error/data with useLoadingState
+- ✅ forgot-password/page.tsx - Replaced manual loading/error with useLoadingState
+- ✅ reset-password/page.tsx - Replaced manual loading/error with useLoadingState
+- ✅ contact/page.tsx - Replaced manual loading/error with useLoadingState
+- ✅ auctions/[slug]/page.tsx - Replaced manual loading/error/data with useLoadingState
+- ✅ shops/[slug]/page.tsx - Replaced manual loading with useLoadingState for shop data
+- ✅ admin/page.tsx - Replaced manual loading/stats with useLoadingState + proper error logging
+- ✅ seller/products/create/page.tsx - Replaced manual loading with useLoadingState
+- ✅ categories/page.tsx - Replaced manual loading with useLoadingState for categories list
+- ✅ user/riplimit/page.tsx - Replaced multiple loading states (balance, transactions) with useLoadingState
+- ✅ admin/dashboard/page.tsx - Replaced manual loading/stats with useLoadingState + proper error logging
+- ✅ search/page.tsx - Replaced manual loading/results with useLoadingState
+- ✅ products/[slug]/edit/page.tsx - Replaced manual loading/error/data with useLoadingState
+- ✅ products/create/page.tsx - Replaced manual loading/error with useLoadingState
+- ✅ auctions/create/page.tsx - Replaced manual loading/error with useLoadingState
+- ✅ reviews/ReviewsListClient.tsx - Replaced manual loading/error with useLoadingState
+- ✅ blog/BlogListClient.tsx - Replaced manual loading/error with useLoadingState
+- ✅ blog/[slug]/BlogPostClient.tsx - Replaced manual loading/error with useLoadingState
+- ✅ admin/static-assets/page.tsx - Replaced manual loading with useLoadingState
+
+**Remaining (~4 pages to reach 50):**
+
+- 🔄 admin/riplimit/page.tsx - Has 2 loading states (loadingStats, loadingUsers)
+- 🔄 admin/shops/[id]/edit/page.tsx - Partially migrated (needs loadShopData completion)
+- 🔄 admin/support-tickets/[id]/page.tsx - Partially migrated (needs loadTicket completion)
 - **Remaining**: ~28 files (56% complete)##### ⬜ 137-migrate-pages-to-use-filters-hook
 
 - **Files**: 15+ pages with manual filter state
