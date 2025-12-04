@@ -95,7 +95,7 @@ export default function AdminShippingSettingsPage() {
     } catch (err) {
       console.error("Error saving settings:", err);
       setFormError(
-        err instanceof Error ? err.message : "Failed to save settings",
+        err instanceof Error ? err.message : "Failed to save settings"
       );
     } finally {
       setSaving(false);
@@ -123,7 +123,7 @@ export default function AdminShippingSettingsPage() {
     setSettings({
       ...settings,
       restrictedPincodes: settings.restrictedPincodes.filter(
-        (p) => p !== pincode,
+        (p) => p !== pincode
       ),
     });
   };
@@ -225,13 +225,15 @@ export default function AdminShippingSettingsPage() {
                 <input
                   id="shipping-free-threshold"
                   type="number"
-                  value={settings.freeShippingThreshold}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      freeShippingThreshold: parseInt(e.target.value) || 0,
-                    })
-                  }
+                  value={settings?.freeShippingThreshold ?? 0}
+                  onChange={(e) => {
+                    if (settings) {
+                      setSettings({
+                        ...settings,
+                        freeShippingThreshold: parseInt(e.target.value) || 0,
+                      });
+                    }
+                  }}
                   min="0"
                   className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                 />
@@ -258,13 +260,15 @@ export default function AdminShippingSettingsPage() {
                 <input
                   id="shipping-standard-charge"
                   type="number"
-                  value={settings.defaultShippingCharge}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      defaultShippingCharge: parseInt(e.target.value) || 0,
-                    })
-                  }
+                  value={settings?.defaultShippingCharge ?? 0}
+                  onChange={(e) => {
+                    if (settings) {
+                      setSettings({
+                        ...settings,
+                        defaultShippingCharge: parseInt(e.target.value) || 0,
+                      });
+                    }
+                  }}
                   min="0"
                   className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                 />
@@ -282,15 +286,17 @@ export default function AdminShippingSettingsPage() {
                 <input
                   id="shipping-express-charge"
                   type="number"
-                  value={settings.expressShippingCharge}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      expressShippingCharge: parseInt(e.target.value) || 0,
-                    })
-                  }
+                  value={settings?.expressShippingCharge ?? 0}
+                  onChange={(e) => {
+                    if (settings) {
+                      setSettings({
+                        ...settings,
+                        expressShippingCharge: parseInt(e.target.value) || 0,
+                      });
+                    }
+                  }}
                   min="0"
-                  disabled={!settings.expressShippingEnabled}
+                  disabled={!settings?.expressShippingEnabled}
                   className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                 />
               </div>
@@ -308,12 +314,14 @@ export default function AdminShippingSettingsPage() {
               </div>
               <button
                 type="button"
-                onClick={() =>
-                  setSettings({
-                    ...settings,
-                    expressShippingEnabled: !settings.expressShippingEnabled,
-                  })
-                }
+                onClick={() => {
+                  if (settings) {
+                    setSettings({
+                      ...settings,
+                      expressShippingEnabled: !settings.expressShippingEnabled,
+                    });
+                  }
+                }}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   settings.expressShippingEnabled
                     ? "bg-blue-600"
@@ -348,38 +356,42 @@ export default function AdminShippingSettingsPage() {
                 <input
                   id="shipping-standard-min"
                   type="number"
-                  value={settings.estimatedDeliveryDays.standard.min}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      estimatedDeliveryDays: {
-                        ...settings.estimatedDeliveryDays,
-                        standard: {
-                          ...settings.estimatedDeliveryDays.standard,
-                          min: parseInt(e.target.value) || 1,
+                  value={settings?.estimatedDeliveryDays?.standard?.min ?? 3}
+                  onChange={(e) => {
+                    if (settings) {
+                      setSettings({
+                        ...settings,
+                        estimatedDeliveryDays: {
+                          ...settings.estimatedDeliveryDays,
+                          standard: {
+                            ...settings.estimatedDeliveryDays.standard,
+                            min: parseInt(e.target.value) || 1,
+                          },
                         },
-                      },
-                    })
-                  }
+                      });
+                    }
+                  }}
                   min="1"
                   className="w-20 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-center"
                 />
                 <span className="text-gray-500 dark:text-gray-400">to</span>
                 <input
                   type="number"
-                  value={settings.estimatedDeliveryDays.standard.max}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      estimatedDeliveryDays: {
-                        ...settings.estimatedDeliveryDays,
-                        standard: {
-                          ...settings.estimatedDeliveryDays.standard,
-                          max: parseInt(e.target.value) || 7,
+                  value={settings?.estimatedDeliveryDays?.standard?.max ?? 7}
+                  onChange={(e) => {
+                    if (settings) {
+                      setSettings({
+                        ...settings,
+                        estimatedDeliveryDays: {
+                          ...settings.estimatedDeliveryDays,
+                          standard: {
+                            ...settings.estimatedDeliveryDays.standard,
+                            max: parseInt(e.target.value) || 7,
+                          },
                         },
-                      },
-                    })
-                  }
+                      });
+                    }
+                  }}
                   min="1"
                   className="w-20 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-center"
                 />
@@ -398,41 +410,45 @@ export default function AdminShippingSettingsPage() {
                 <input
                   id="shipping-express-min"
                   type="number"
-                  value={settings.estimatedDeliveryDays.express.min}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      estimatedDeliveryDays: {
-                        ...settings.estimatedDeliveryDays,
-                        express: {
-                          ...settings.estimatedDeliveryDays.express,
-                          min: parseInt(e.target.value) || 1,
+                  value={settings?.estimatedDeliveryDays?.express?.min ?? 1}
+                  onChange={(e) => {
+                    if (settings) {
+                      setSettings({
+                        ...settings,
+                        estimatedDeliveryDays: {
+                          ...settings.estimatedDeliveryDays,
+                          express: {
+                            ...settings.estimatedDeliveryDays.express,
+                            min: parseInt(e.target.value) || 1,
+                          },
                         },
-                      },
-                    })
-                  }
+                      });
+                    }
+                  }}
                   min="1"
-                  disabled={!settings.expressShippingEnabled}
+                  disabled={!settings?.expressShippingEnabled}
                   className="w-20 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-center disabled:opacity-50"
                 />
                 <span className="text-gray-500 dark:text-gray-400">to</span>
                 <input
                   type="number"
-                  value={settings.estimatedDeliveryDays.express.max}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      estimatedDeliveryDays: {
-                        ...settings.estimatedDeliveryDays,
-                        express: {
-                          ...settings.estimatedDeliveryDays.express,
-                          max: parseInt(e.target.value) || 3,
+                  value={settings?.estimatedDeliveryDays?.express?.max ?? 3}
+                  onChange={(e) => {
+                    if (settings) {
+                      setSettings({
+                        ...settings,
+                        estimatedDeliveryDays: {
+                          ...settings.estimatedDeliveryDays,
+                          express: {
+                            ...settings.estimatedDeliveryDays.express,
+                            max: parseInt(e.target.value) || 3,
+                          },
                         },
-                      },
-                    })
-                  }
+                      });
+                    }
+                  }}
                   min="1"
-                  disabled={!settings.expressShippingEnabled}
+                  disabled={!settings?.expressShippingEnabled}
                   className="w-20 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-center disabled:opacity-50"
                 />
                 <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -474,7 +490,7 @@ export default function AdminShippingSettingsPage() {
             </button>
           </div>
 
-          {settings.restrictedPincodes.length > 0 ? (
+          {settings && settings.restrictedPincodes.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {settings.restrictedPincodes.map((pincode) => (
                 <div

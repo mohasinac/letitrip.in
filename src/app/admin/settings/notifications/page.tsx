@@ -193,7 +193,7 @@ export default function AdminNotificationSettingsPage() {
     await execute(async () => {
       setFormError(null);
       const response = await apiService.get<{ settings: NotificationSettings }>(
-        "/api/admin/settings?category=notifications",
+        "/api/admin/settings?category=notifications"
       );
       if (response.settings) {
         return { ...DEFAULT_SETTINGS, ...response.settings };
@@ -219,7 +219,7 @@ export default function AdminNotificationSettingsPage() {
     } catch (err) {
       console.error("Error saving settings:", err);
       setFormError(
-        err instanceof Error ? err.message : "Failed to save settings",
+        err instanceof Error ? err.message : "Failed to save settings"
       );
     } finally {
       setSaving(false);
@@ -227,7 +227,7 @@ export default function AdminNotificationSettingsPage() {
   };
 
   const toggleCategory = (
-    category: keyof NotificationSettings["categories"],
+    category: keyof NotificationSettings["categories"]
   ) => {
     if (!settings) return;
     setSettings({
@@ -244,7 +244,7 @@ export default function AdminNotificationSettingsPage() {
 
   const toggleChannel = (
     category: keyof NotificationSettings["categories"],
-    channel: "email" | "push" | "inApp",
+    channel: "email" | "push" | "inApp"
   ) => {
     if (!settings) return;
     setSettings({
@@ -350,21 +350,23 @@ export default function AdminNotificationSettingsPage() {
             </div>
             <button
               type="button"
-              onClick={() =>
-                setSettings({
-                  ...settings,
-                  globalEnabled: !settings.globalEnabled,
-                })
-              }
+              onClick={() => {
+                if (settings) {
+                  setSettings({
+                    ...settings,
+                    globalEnabled: !settings.globalEnabled,
+                  });
+                }
+              }}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                settings.globalEnabled
+                settings?.globalEnabled
                   ? "bg-blue-600"
                   : "bg-gray-300 dark:bg-gray-600"
               }`}
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  settings.globalEnabled ? "translate-x-6" : "translate-x-1"
+                  settings?.globalEnabled ? "translate-x-6" : "translate-x-1"
                 }`}
               />
             </button>
