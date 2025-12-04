@@ -10,6 +10,7 @@ import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCa
 import { DateDisplay, Price } from "@/components/common/values";
 import { FormInput } from "@/components/forms";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { formatINR } from "@/lib/price.utils";
 import { auctionsService } from "@/services/auctions.service";
@@ -43,18 +44,29 @@ export default function AuctionDetailPage() {
   const { user } = useAuth();
   const slug = params.slug as string;
 
-  const [auction, setAuction] = useState<AuctionFE | null>(null);
   const [bids, setBids] = useState<BidFE[]>([]);
   const [shop, setShop] = useState<ShopFE | null>(null);
   const [similarAuctions, setSimilarAuctions] = useState<AuctionCardFE[]>([]);
   const [shopAuctions, setShopAuctions] = useState<AuctionCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [bidAmount, setBidAmount] = useState("");
   const [isPlacingBid, setIsPlacingBid] = useState(false);
   const [bidError, setBidError] = useState("");
   const [isWatching, setIsWatching] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
+  const {
+    isLoading: loading,
+    error,
+    data: auction,
+    setData: setAuction,
+    execute,
+  } = useLoadingState<AuctionFE>({
+    onLoadError: (err) => {
+      logError(err, {
+        component: "AuctionDetailPage.loadAuction",
+        metadata: { slug },
+      });
+    },
+  });
 
   useEffect(() => {
     if (slug) {
@@ -62,12 +74,9 @@ export default function AuctionDetailPage() {
     }
   }, [slug]);
 
-  const loadAuction = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const loadAuction = () =>
+    execute(async () => {
       const data = await auctionsService.getBySlug(slug);
-      setAuction(data);
 
       // Load bids using slug
       const bidsResponse = await auctionsService.getBids(slug, 20, null);
@@ -86,7 +95,7 @@ export default function AuctionDetailPage() {
             limit: 6,
           });
           setShopAuctions(
-            (shopAuctionsData.data || []).filter((a) => a.slug !== slug)
+            (shopAuctionsData.data || []).filter((a) => a.slug !== slug),
           );
         } catch (error) {
           logError(error as Error, {
@@ -104,7 +113,7 @@ export default function AuctionDetailPage() {
           limit: 6,
         });
         setSimilarAuctions(
-          (similarData.data || []).filter((a) => a.slug !== slug)
+          (similarData.data || []).filter((a) => a.slug !== slug),
         );
       } catch (error) {
         logError(error as Error, {
@@ -118,16 +127,8 @@ export default function AuctionDetailPage() {
       const currentBidValue = data.currentBid || data.currentPrice;
       const minIncrement = Math.max(100, currentBidValue * 0.05); // 5% or ₹100
       setBidAmount(Math.ceil(currentBidValue + minIncrement).toString());
-    } catch (error: any) {
-      logError(error as Error, {
-        component: "AuctionDetailPage.loadAuction",
-        metadata: { slug },
-      });
-      setError(error.message || "Failed to load auction. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data;
+    });
 
   const handlePlaceBid = async () => {
     if (!user) {
@@ -253,9 +254,9 @@ export default function AuctionDetailPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <ErrorMessage
-          message={error}
+          message={error.message || "Failed to load auction. Please try again."}
           showRetry
           onRetry={loadAuction}
           onGoBack={() => router.back()}

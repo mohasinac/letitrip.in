@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { Loader2, Gavel } from "lucide-react";
 import { shopsService } from "@/services/shops.service";
@@ -36,12 +37,24 @@ export default function ShopPage({ params }: ShopPageProps) {
   const { addItem } = useCart();
   const { slug } = use(params);
 
-  const [shop, setShop] = useState<ShopFE | null>(null);
   const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [productsLoading, setProductsLoading] = useState(false);
   const [auctionsLoading, setAuctionsLoading] = useState(false);
+  const {
+    isLoading: loading,
+    data: shop,
+    setData: setShop,
+    execute,
+  } = useLoadingState<ShopFE>({
+    onLoadError: (err) => {
+      logError(err, {
+        component: "ShopPage.loadShop",
+        metadata: { slug },
+      });
+      router.push(notFound.shop(slug, err));
+    },
+  });
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabType>("products");
@@ -70,21 +83,10 @@ export default function ShopPage({ params }: ShopPageProps) {
     }
   }, [shop, sortBy, sortOrder, activeTab]);
 
-  const loadShop = async () => {
-    try {
-      setLoading(true);
-      const data = await shopsService.getBySlug(slug);
-      setShop(data);
-    } catch (error: any) {
-      logError(error as Error, {
-        component: "ShopPage.loadShop",
-        metadata: { slug },
-      });
-      router.push(notFound.shop(slug, error));
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loadShop = () =>
+    execute(async () => {
+      return await shopsService.getBySlug(slug);
+    });
 
   const loadProducts = async () => {
     try {
