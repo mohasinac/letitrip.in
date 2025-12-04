@@ -2,6 +2,7 @@
 
 import { toast } from "@/components/admin/Toast";
 import { ProductCard } from "@/components/cards/ProductCard";
+import { AdvancedPagination } from "@/components/common/AdvancedPagination";
 import { EmptyStates } from "@/components/common/EmptyState";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
@@ -13,120 +14,68 @@ import { FormSelect } from "@/components/forms";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useCart } from "@/hooks/useCart";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import { Filter, Grid, List, Loader2 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
 
 function ProductsContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { addItem } = useCart();
   const isMobile = useIsMobile();
 
+  // Use URL filters hook
+  const {
+    filters,
+    updateFilter,
+    updateFilters,
+    resetFilters: resetUrlFilters,
+    sort,
+    setSort,
+    page,
+    setPage,
+    limit,
+    setLimit,
+  } = useUrlFilters({
+    initialFilters: {
+      categoryId: "",
+      shopId: "",
+      minPrice: "",
+      maxPrice: "",
+      status: "",
+      featured: "",
+      search: "",
+      view: "grid",
+    },
+    initialSort: { field: "createdAt", order: "desc" },
+    initialPage: 1,
+    initialLimit: 20,
+  });
+
   const [products, setProducts] = useState<ProductCardFE[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
-  const [cursors, setCursors] = useState<(string | null)[]>([null]); // Track cursors for each page
-  const itemsPerPage = 20;
-
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [filterOptions, setFilterOptions] = useState(PRODUCT_FILTERS);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<string>("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [view, setView] = useState<"grid" | "table">("grid");
-  const [initialized, setInitialized] = useState(false);
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
 
-  // Initialize filters from URL on mount
+  // Extract view from filters
+  const view = (filters.view as "grid" | "table") || "grid";
+
+  // Load filter options on mount
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    const initialFilters: Record<string, any> = {};
-
-    // Extract filter values from URL
-    if (params.get("categoryId"))
-      initialFilters.categoryId = params.get("categoryId");
-    if (params.get("shopId")) initialFilters.shopId = params.get("shopId");
-    if (params.get("minPrice"))
-      initialFilters.priceRange = { min: Number(params.get("minPrice")) };
-    if (params.get("maxPrice")) {
-      initialFilters.priceRange = {
-        ...initialFilters.priceRange,
-        max: Number(params.get("maxPrice")),
-      };
-    }
-    if (params.get("status")) initialFilters.status = [params.get("status")];
-    if (params.get("featured") === "true") initialFilters.featured = true;
-
-    // Get search, sort, view, and page from URL
-    const urlSearch = params.get("search") || "";
-    const urlSortBy = params.get("sortBy") || "createdAt";
-    const urlSortOrder = (params.get("sortOrder") as "asc" | "desc") || "desc";
-    const urlPage = Number(params.get("page")) || 1;
-    const urlView = (params.get("view") as "grid" | "table") || "grid";
-
-    setSearchQuery(urlSearch);
-    setSortBy(urlSortBy);
-    setSortOrder(urlSortOrder);
-    setCurrentPage(urlPage);
-    setView(urlView);
-
-    if (Object.keys(initialFilters).length > 0) {
-      setFilterValues(initialFilters);
-    }
-
     loadFilterOptions();
-    setInitialized(true);
-  }, [searchParams]);
+  }, []);
 
-  // Update URL when filters change
-  const updateUrl = useCallback(() => {
-    const params = new URLSearchParams();
-
-    // Add filter values to URL
-    if (filterValues.categoryId)
-      params.set("categoryId", filterValues.categoryId);
-    if (filterValues.shopId) params.set("shopId", filterValues.shopId);
-    if (filterValues.priceRange?.min)
-      params.set("minPrice", String(filterValues.priceRange.min));
-    if (filterValues.priceRange?.max)
-      params.set("maxPrice", String(filterValues.priceRange.max));
-    if (filterValues.status?.length)
-      params.set("status", filterValues.status[0]);
-    if (filterValues.featured) params.set("featured", "true");
-    if (searchQuery) params.set("search", searchQuery);
-    if (sortBy !== "createdAt") params.set("sortBy", sortBy);
-    if (sortOrder !== "desc") params.set("sortOrder", sortOrder);
-    if (view !== "grid") params.set("view", view);
-    if (currentPage > 1) params.set("page", String(currentPage));
-
-    // Update URL without reloading page
-    const newUrl = params.toString() ? `?${params.toString()}` : "/products";
-    router.replace(newUrl, { scroll: false });
-  }, [filterValues, sortBy, sortOrder, view, currentPage, searchQuery, router]);
-
-  // Load products whenever sort/page changes
+  // Load products when filters, sort, or page changes
   useEffect(() => {
-    if (initialized) {
-      updateUrl();
-      loadProducts();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialized, sortBy, sortOrder, currentPage]);
-
-  // Update URL when view changes (no reload needed)
-  useEffect(() => {
-    if (initialized) {
-      updateUrl();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view]);
+    loadProducts();
+  }, [filters, sort, page, limit]);
 
   const loadFilterOptions = async () => {
     try {
@@ -189,35 +138,43 @@ function ProductsContent() {
     try {
       setLoading(true);
 
+      // Build filter params
+      const filterParams: any = {};
+      if (filters.categoryId) filterParams.categoryId = filters.categoryId;
+      if (filters.shopId) filterParams.shopId = filters.shopId;
+      if (filters.minPrice) filterParams.minPrice = Number(filters.minPrice);
+      if (filters.maxPrice) filterParams.maxPrice = Number(filters.maxPrice);
+      if (filters.status) filterParams.status = filters.status;
+      if (filters.featured === "true") filterParams.featured = true;
+      if (filters.search) filterParams.search = filters.search;
+
       // Get cursor for current page
-      const startAfter = cursors[currentPage - 1];
+      const startAfter = cursors[page - 1];
 
       const response = await productsService.list({
-        search: searchQuery || undefined,
-        ...filterValues,
-        sortBy: sortBy as any,
+        ...filterParams,
+        sortBy: sort?.field || "createdAt",
+        sortOrder: sort?.order || "desc",
         startAfter: startAfter || undefined,
-        limit: itemsPerPage,
+        limit,
       } as any);
 
       const productsData = response.data || [];
       setProducts(productsData);
+      setTotalItems(response.pagination?.total || productsData.length);
 
-      // Update pagination state
-      setHasNextPage(response.pagination?.hasNextPage || false);
-
-      // Store cursor for next page if we don't have it yet
-      if (response.pagination?.nextCursor && !cursors[currentPage]) {
+      // Store cursor for next page
+      if (response.pagination?.nextCursor && !cursors[page]) {
         setCursors((prev) => {
           const newCursors = [...prev];
-          newCursors[currentPage] = response.pagination.nextCursor;
+          newCursors[page] = response.pagination.nextCursor;
           return newCursors;
         });
       }
     } catch (error) {
       logError(error as Error, {
         component: "ProductsPage.loadProducts",
-        metadata: { page: currentPage, filters: filterValues },
+        metadata: { page, filters },
       });
     } finally {
       setLoading(false);
@@ -225,15 +182,10 @@ function ProductsContent() {
   };
 
   const handleResetFilters = useCallback(() => {
-    setFilterValues({});
-    setSearchQuery("");
-    setSortBy("createdAt");
-    setSortOrder("desc");
-    setView("grid");
-    setCurrentPage(1);
-    setCursors([null]); // Reset pagination cursors
-    router.push("/products", { scroll: false }); // Clear URL params
-  }, [router]);
+    resetUrlFilters();
+    updateFilter("view", "grid");
+    setCursors([null]);
+  }, [resetUrlFilters, updateFilter]);
 
   const handleAddToCart = useCallback(
     async (
@@ -244,7 +196,7 @@ function ProductsContent() {
         image: string;
         shopId: string;
         shopName: string;
-      }
+      },
     ) => {
       try {
         if (!productDetails) {
@@ -268,7 +220,7 @@ function ProductsContent() {
         toast.error(error.message || "Failed to add to cart");
       }
     },
-    [products, addItem]
+    [products, addItem],
   );
 
   return (
@@ -284,15 +236,20 @@ function ProductsContent() {
           </p>
         </div>
 
-        {/* Controls - No Search (use main search bar) */}
+        {/* Controls */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Sort */}
             <div className="flex gap-2 flex-wrap sm:flex-nowrap flex-1">
               <FormSelect
                 id="sort-by"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                value={sort?.field || "createdAt"}
+                onChange={(e) =>
+                  setSort({
+                    field: e.target.value,
+                    order: sort?.order || "desc",
+                  })
+                }
                 options={[
                   { value: "createdAt", label: "Newest" },
                   { value: "price", label: "Price" },
@@ -304,8 +261,13 @@ function ProductsContent() {
 
               <FormSelect
                 id="sort-order"
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
+                value={sort?.order || "desc"}
+                onChange={(e) =>
+                  setSort({
+                    field: sort?.field || "createdAt",
+                    order: e.target.value as "asc" | "desc",
+                  })
+                }
                 options={[
                   { value: "desc", label: "High to Low" },
                   { value: "asc", label: "Low to High" },
@@ -316,7 +278,7 @@ function ProductsContent() {
               {/* View Toggle - Hidden on mobile */}
               <div className="hidden sm:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
                 <button
-                  onClick={() => setView("grid")}
+                  onClick={() => updateFilter("view", "grid")}
                   className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                     view === "grid"
                       ? "bg-blue-600 text-white"
@@ -326,7 +288,7 @@ function ProductsContent() {
                   <Grid className="w-5 h-5" />
                 </button>
                 <button
-                  onClick={() => setView("table")}
+                  onClick={() => updateFilter("view", "table")}
                   className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                     view === "table"
                       ? "bg-blue-600 text-white"
@@ -351,23 +313,15 @@ function ProductsContent() {
 
         {/* Main Content */}
         <div className="flex gap-6 relative">
-          {/* Filter Sidebar - Overlays everything */}
+          {/* Filter Sidebar */}
           <UnifiedFilterSidebar
             sections={filterOptions}
-            values={filterValues}
-            onChange={(key, value) => {
-              setFilterValues((prev) => ({ ...prev, [key]: value }));
-            }}
+            values={filters}
+            onChange={(key, value) => updateFilter(key, value)}
             onApply={(pendingValues) => {
-              if (pendingValues) setFilterValues(pendingValues);
-              setCurrentPage(1);
-              setCursors([null]); // Reset pagination when filters change
+              if (pendingValues) updateFilters(pendingValues);
+              setCursors([null]);
               if (isMobile) setShowFilters(false);
-              // Trigger load after state updates
-              setTimeout(() => {
-                updateUrl();
-                loadProducts();
-              }, 0);
             }}
             onReset={handleResetFilters}
             isOpen={showFilters}
@@ -383,7 +337,7 @@ function ProductsContent() {
             {/* Results Count */}
             {!loading && products.length > 0 && (
               <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                Showing {products.length} products (Page {currentPage})
+                Showing {products.length} products (Page {page})
               </div>
             )}
 
@@ -544,68 +498,33 @@ function ProductsContent() {
                   </div>
                 )}
 
-                {/* Pagination - Mobile Optimized */}
-                {(currentPage > 1 || hasNextPage) && (
-                  <div className="mt-8 flex justify-center items-center gap-4">
-                    <button
-                      onClick={() => {
-                        setCurrentPage((p) => Math.max(1, p - 1));
-                        // Reset to start if going back to page 1
-                        if (currentPage === 2) {
-                          setCursors([null]);
-                        }
+                {/* Pagination */}
+                {totalItems > 0 && (
+                  <div className="mt-8">
+                    <AdvancedPagination
+                      currentPage={page}
+                      totalPages={Math.ceil(totalItems / limit)}
+                      pageSize={limit}
+                      totalItems={totalItems}
+                      onPageChange={(newPage) => {
+                        setPage(newPage);
+                        if (newPage === 1) setCursors([null]);
                       }}
-                      disabled={currentPage === 1}
-                      className="px-6 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors touch-manipulation"
-                    >
-                      Previous
-                    </button>
-
-                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                      Page {currentPage}
-                    </span>
-
-                    <button
-                      onClick={() => setCurrentPage((p) => p + 1)}
-                      disabled={!hasNextPage}
-                      className="px-6 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors touch-manipulation"
-                    >
-                      Next
-                    </button>
+                      onPageSizeChange={(newLimit) => {
+                        setLimit(newLimit);
+                        setPage(1);
+                        setCursors([null]);
+                      }}
+                      showPageSizeSelector
+                      showPageInput
+                      showFirstLast
+                    />
                   </div>
                 )}
               </>
             )}
           </div>
         </div>
-
-        {/* Mobile Filter Drawer */}
-        {isMobile && (
-          <UnifiedFilterSidebar
-            sections={filterOptions}
-            values={filterValues}
-            onChange={(key, value) => {
-              setFilterValues((prev) => ({ ...prev, [key]: value }));
-            }}
-            onApply={(pendingValues) => {
-              if (pendingValues) setFilterValues(pendingValues);
-              setCurrentPage(1);
-              setCursors([null]);
-              setShowFilters(false);
-              setTimeout(() => {
-                updateUrl();
-                loadProducts();
-              }, 0);
-            }}
-            onReset={handleResetFilters}
-            isOpen={showFilters}
-            onClose={() => setShowFilters(false)}
-            searchable={true}
-            mobile={true}
-            resultCount={products.length}
-            isLoading={loading}
-          />
-        )}
       </div>
     </div>
   );
