@@ -304,8 +304,10 @@ export default function BlogTagsPage() {
 
       if (editTag) {
         await apiService.patch(`/blog/tags/${editTag.id}`, data);
-        setTags((prev) =>
-          prev.map((t) => (t.id === editTag.id ? { ...t, ...data } : t)),
+        setTags((prev: BlogTag[]) =>
+          prev.map((t: BlogTag) =>
+            t.id === editTag.id ? { ...t, ...data } : t,
+          ),
         );
         toast.success("Tag updated successfully");
       } else {
@@ -313,7 +315,7 @@ export default function BlogTagsPage() {
           "/blog/tags",
           data,
         );
-        setTags((prev) => [
+        setTags((prev: BlogTag[]) => [
           ...prev,
           response.data || {
             ...data,
@@ -384,7 +386,7 @@ export default function BlogTagsPage() {
         }
       }
 
-      setTags((prev) => [...prev, ...newTags]);
+      setTags((prev: BlogTag[]) => [...prev, ...newTags]);
       toast.success(`Added ${newTags.length} tags successfully`);
       setBulkModalOpen(false);
     } catch (error) {
@@ -400,7 +402,9 @@ export default function BlogTagsPage() {
 
     try {
       await apiService.delete(`/blog/tags/${deleteId}`);
-      setTags((prev) => prev.filter((t) => t.id !== deleteId));
+      setTags((prev: BlogTag[]) =>
+        prev.filter((t: BlogTag) => t.id !== deleteId),
+      );
       toast.success("Tag deleted successfully");
     } catch (error) {
       console.error("Failed to delete tag:", error);

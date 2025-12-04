@@ -27,7 +27,7 @@ describe("UnifiedFilterSidebar", () => {
           onApply={mockOnApply}
           onReset={mockOnReset}
           isOpen={true}
-        />,
+        />
       );
 
       // Check if filter sections are rendered

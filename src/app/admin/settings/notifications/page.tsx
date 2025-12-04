@@ -190,21 +190,16 @@ export default function AdminNotificationSettingsPage() {
   }, []);
 
   const loadSettings = async () => {
-    try {
-      setLoading(true);
+    await execute(async () => {
       setFormError(null);
       const response = await apiService.get<{ settings: NotificationSettings }>(
         "/api/admin/settings?category=notifications",
       );
       if (response.settings) {
-        setSettings({ ...DEFAULT_SETTINGS, ...response.settings });
+        return { ...DEFAULT_SETTINGS, ...response.settings };
       }
-    } catch (err) {
-      console.error("Error loading settings:", err);
-      // Use defaults if API fails
-    } finally {
-      setLoading(false);
-    }
+      return DEFAULT_SETTINGS;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -214,6 +209,7 @@ export default function AdminNotificationSettingsPage() {
       setSaving(true);
       setFormError(null);
       setSuccess(null);
+      if (!settings) return;
       await apiService.put("/api/admin/settings", {
         category: "notifications",
         settings,
@@ -233,6 +229,7 @@ export default function AdminNotificationSettingsPage() {
   const toggleCategory = (
     category: keyof NotificationSettings["categories"],
   ) => {
+    if (!settings) return;
     setSettings({
       ...settings,
       categories: {
@@ -249,6 +246,7 @@ export default function AdminNotificationSettingsPage() {
     category: keyof NotificationSettings["categories"],
     channel: "email" | "push" | "inApp",
   ) => {
+    if (!settings) return;
     setSettings({
       ...settings,
       categories: {

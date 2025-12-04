@@ -23,7 +23,7 @@ interface ErrorContext {
 export async function logError(
   error: Error | string,
   context: ErrorContext = {},
-  severity: ErrorSeverity = "medium",
+  severity: ErrorSeverity = "medium"
 ): Promise<void> {
   const errorMessage = typeof error === "string" ? error : error.message;
   const errorStack = typeof error === "string" ? undefined : error.stack;
@@ -72,7 +72,7 @@ export async function logError(
 export function logPerformance(
   metricName: string,
   duration: number,
-  metadata?: Record<string, any>,
+  metadata?: Record<string, any>
 ): void {
   try {
     if (analytics && typeof globalThis !== "undefined" && globalThis.document) {
@@ -92,7 +92,7 @@ export function logPerformance(
  */
 export function logUserAction(
   action: string,
-  metadata?: Record<string, any>,
+  metadata?: Record<string, any>
 ): void {
   try {
     if (analytics && typeof globalThis !== "undefined" && globalThis.document) {
@@ -120,7 +120,7 @@ export function initErrorHandlers(): void {
         url: globalThis.location?.href,
         component: "global",
       },
-      "high",
+      "high"
     );
   });
 
@@ -134,7 +134,7 @@ export function initErrorHandlers(): void {
         url: globalThis.location?.href,
         component: "promise",
       },
-      "high",
+      "high"
     );
   });
 }
