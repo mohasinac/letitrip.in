@@ -29,7 +29,7 @@ const updateEventSchema = z.object({
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await requireRole(request, ["admin"]);
@@ -42,7 +42,7 @@ export async function GET(
     if (!eventDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -57,7 +57,7 @@ export async function GET(
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch event" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -68,7 +68,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await requireRole(request, ["admin"]);
@@ -81,7 +81,7 @@ export async function PUT(
     if (!eventDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -95,7 +95,7 @@ export async function PUT(
           error: "Validation failed",
           details: validation.error.issues,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -109,7 +109,7 @@ export async function PUT(
       if (endDate <= startDate) {
         return NextResponse.json(
           { success: false, error: "End date must be after start date" },
-          { status: 400 },
+          { status: 400 }
         );
       }
     }
@@ -135,7 +135,7 @@ export async function PUT(
     });
     return NextResponse.json(
       { success: false, error: "Failed to update event" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -146,7 +146,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await requireRole(request, ["admin"]);
@@ -159,7 +159,7 @@ export async function DELETE(
     if (!eventDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -206,7 +206,7 @@ export async function DELETE(
     });
     return NextResponse.json(
       { success: false, error: "Failed to delete event" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -1,14 +1,13 @@
-import React from "react";
+import { reviewsService } from "@/services/reviews.service";
 import {
+  act,
+  fireEvent,
   render,
   screen,
   waitFor,
-  fireEvent,
-  act,
 } from "@testing-library/react";
 import ReviewsPage from "./page";
 import ReviewsListClient from "./ReviewsListClient";
-import { reviewsService } from "@/services/reviews.service";
 
 jest.mock("@/services/reviews.service");
 jest.mock("lucide-react", () => ({
@@ -141,7 +140,7 @@ describe("ReviewsListClient", () => {
         () =>
           new Promise(() => {
             // Never resolves to keep loading state
-          }),
+          })
       );
 
       render(<ReviewsListClient />);
@@ -171,7 +170,7 @@ describe("ReviewsListClient", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/Very satisfied with this purchase/),
+          screen.getByText(/Very satisfied with this purchase/)
         ).toBeInTheDocument();
         expect(screen.getByText(/Good value/)).toBeInTheDocument();
       });
@@ -197,7 +196,7 @@ describe("ReviewsListClient", () => {
       await waitFor(() => {
         expect(screen.getByText("Customer Reviews")).toBeInTheDocument();
         expect(
-          screen.getByText(/Authentic reviews from verified purchases/),
+          screen.getByText(/Authentic reviews from verified purchases/)
         ).toBeInTheDocument();
       });
     });
@@ -279,7 +278,7 @@ describe("ReviewsListClient", () => {
       // Find and click 5 star filter
       const ratingButtons = screen.getAllByRole("button");
       const fiveStarButton = ratingButtons.find((btn) =>
-        btn.textContent?.includes("5"),
+        btn.textContent?.includes("5")
       );
 
       mockReviewsService.list.mockResolvedValue({
@@ -303,7 +302,7 @@ describe("ReviewsListClient", () => {
           expect(mockReviewsService.list).toHaveBeenCalledWith(
             expect.objectContaining({
               rating: 5,
-            }),
+            })
           );
         });
       }
@@ -333,7 +332,7 @@ describe("ReviewsListClient", () => {
       // Click rating filter
       const ratingButtons = screen.getAllByRole("button");
       const fiveStarButton = ratingButtons.find((btn) =>
-        btn.textContent?.includes("5"),
+        btn.textContent?.includes("5")
       );
 
       if (fiveStarButton) {
@@ -372,7 +371,7 @@ describe("ReviewsListClient", () => {
       // Click to filter
       const ratingButtons = screen.getAllByRole("button");
       const fourStarButton = ratingButtons.find((btn) =>
-        btn.textContent?.includes("4"),
+        btn.textContent?.includes("4")
       );
 
       if (fourStarButton) {
@@ -384,7 +383,7 @@ describe("ReviewsListClient", () => {
           expect(mockReviewsService.list).toHaveBeenCalledWith(
             expect.objectContaining({
               rating: 4,
-            }),
+            })
           );
         });
 
@@ -397,7 +396,7 @@ describe("ReviewsListClient", () => {
           expect(mockReviewsService.list).toHaveBeenCalledWith(
             expect.objectContaining({
               rating: undefined,
-            }),
+            })
           );
         });
       }
@@ -444,7 +443,7 @@ describe("ReviewsListClient", () => {
         expect(mockReviewsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             isVerifiedPurchase: true,
-          }),
+          })
         );
       });
     });
@@ -507,7 +506,7 @@ describe("ReviewsListClient", () => {
 
       const removeButtons = screen.getAllByText("×");
       const verifiedRemove = removeButtons.find((btn) =>
-        btn.parentElement?.textContent?.includes("Verified"),
+        btn.parentElement?.textContent?.includes("Verified")
       );
 
       if (verifiedRemove) {
@@ -519,7 +518,7 @@ describe("ReviewsListClient", () => {
           expect(mockReviewsService.list).toHaveBeenCalledWith(
             expect.objectContaining({
               isVerifiedPurchase: false,
-            }),
+            })
           );
         });
       }
@@ -578,7 +577,7 @@ describe("ReviewsListClient", () => {
         expect(mockReviewsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             sortBy: "helpful",
-          }),
+          })
         );
       });
     });
@@ -610,7 +609,7 @@ describe("ReviewsListClient", () => {
         expect(mockReviewsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             sortBy: "rating",
-          }),
+          })
         );
       });
     });
@@ -807,7 +806,7 @@ describe("ReviewsListClient", () => {
         expect(mockReviewsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             page: 2,
-          }),
+          })
         );
       });
     });
@@ -865,7 +864,7 @@ describe("ReviewsListClient", () => {
         expect(mockReviewsService.list).toHaveBeenCalledWith(
           expect.objectContaining({
             page: 1,
-          }),
+          })
         );
       });
     });
@@ -915,7 +914,7 @@ describe("ReviewsListClient", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/Very satisfied with this purchase/),
+          screen.getByText(/Very satisfied with this purchase/)
         ).toBeInTheDocument();
       });
     });
@@ -964,7 +963,7 @@ describe("ReviewsListClient", () => {
       // Apply rating filter
       const ratingButtons = screen.getAllByRole("button");
       const twoStarButton = ratingButtons.find((btn) =>
-        btn.textContent?.includes("2"),
+        btn.textContent?.includes("2")
       );
 
       mockReviewsService.list.mockResolvedValue({
@@ -986,7 +985,7 @@ describe("ReviewsListClient", () => {
 
         await waitFor(() => {
           expect(
-            screen.getByText(/Try adjusting your filters/),
+            screen.getByText(/Try adjusting your filters/)
           ).toBeInTheDocument();
         });
       }
@@ -1012,7 +1011,7 @@ describe("ReviewsListClient", () => {
       // Apply rating filter
       const ratingButtons = screen.getAllByRole("button");
       const oneStarButton = ratingButtons.find((btn) =>
-        btn.textContent?.includes("1"),
+        btn.textContent?.includes("1")
       );
 
       mockReviewsService.list.mockResolvedValue({
@@ -1061,7 +1060,7 @@ describe("ReviewsListClient", () => {
               page: 1,
               limit: 20,
               sortBy: "recent",
-            }),
+            })
           );
         });
       }

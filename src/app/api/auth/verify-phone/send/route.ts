@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -25,14 +25,14 @@ export async function POST(request: NextRequest) {
     if (!phone) {
       return NextResponse.json(
         { success: false, error: "No phone number found" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     if (!phone) {
       return NextResponse.json(
         { success: false, error: "No phone number found" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     const otpDoc = await (otpService as any).getActiveOTP(
       user.uid,
       "phone",
-      phone,
+      phone
     );
     if (otpDoc) {
       await smsService.sendOTP(phone, otpDoc.otp);
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : "Failed to send OTP",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch events" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
           error: "Validation failed",
           details: validation.error.issues,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
     if (endDate <= startDate) {
       return NextResponse.json(
         { success: false, error: "End date must be after start date" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
             success: false,
             error: "Registration deadline must be before start date",
           },
-          { status: 400 },
+          { status: 400 }
         );
       }
     }
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
         success: true,
         event: { id: eventDoc.id, ...eventDoc.data() },
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     logError(error as Error, {
@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(
       { success: false, error: "Failed to create event" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
