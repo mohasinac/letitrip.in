@@ -50,7 +50,7 @@ export async function PATCH(
     if (!(role === "seller" || role === "admin")) {
       return NextResponse.json(
         { success: false, error: "Forbidden" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 

@@ -265,9 +265,7 @@ export default function SellerAuctionsPage() {
             <div className="mt-3 flex items-center justify-between">
               <div>
                 <div className="text-lg font-semibold text-gray-900 dark:text-white">
-                  <Price
-                    amount={auction.currentPrice}
-                  />
+                  <Price amount={auction.currentPrice} />
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
                   {auction.bidCount || 0} bids

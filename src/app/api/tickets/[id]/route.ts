@@ -14,7 +14,7 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let ticketId: string | undefined;
   let user: any;
@@ -42,7 +42,7 @@ export async function GET(
     if (!canReadResource(user, "tickets", ticketData)) {
       return NextResponse.json(
         { error: "You don't have permission to view this ticket" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -115,7 +115,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let ticketId: string | undefined;
   let user: any;
@@ -146,7 +146,7 @@ export async function PATCH(
     if (!canWriteResource(user, "tickets", ticketData as any)) {
       return NextResponse.json(
         { error: "You don't have permission to update this ticket" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -170,7 +170,7 @@ export async function PATCH(
       if (ticketData?.status !== "open") {
         return NextResponse.json(
           { error: "Can only update open tickets" },
-          { status: 403 },
+          { status: 403 }
         );
       }
       if (subject) updates.subject = subject;
@@ -201,7 +201,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let ticketId: string | undefined;
   try {
@@ -237,7 +237,10 @@ export async function DELETE(
       message: "Ticket deleted successfully",
     });
   } catch (error: any) {
-    logError(error as Error, { component: "API.tickets.delete", metadata: { ticketId } });
+    logError(error as Error, {
+      component: "API.tickets.delete",
+      metadata: { ticketId },
+    });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

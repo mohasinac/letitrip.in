@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let id: string | undefined;
   try {
@@ -13,13 +13,13 @@ export async function POST(
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     const role = user.role;
     if (role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Forbidden" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -30,7 +30,7 @@ export async function POST(
     if (!snap.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 },
+        { status: 404 }
       );
 
     const { resolution, refundAmount, notes } = await req.json();
@@ -62,7 +62,7 @@ export async function POST(
     });
     return NextResponse.json(
       { success: false, error: "Failed to resolve return" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

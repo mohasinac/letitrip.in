@@ -51,7 +51,10 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
       }
     } catch (err: any) {
       setError(err.message || "Failed to load blog post");
-      logError(err as Error, { component: "BlogPostClient.fetchPost", metadata: { slug } });
+      logError(err as Error, {
+        component: "BlogPostClient.fetchPost",
+        metadata: { slug },
+      });
     } finally {
       setLoading(false);
     }

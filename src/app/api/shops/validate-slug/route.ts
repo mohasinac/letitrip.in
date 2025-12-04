@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "Slug parameter is required",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -38,13 +38,16 @@ export async function GET(request: NextRequest) {
       slug,
     });
   } catch (error) {
-    logError(error as Error, { component: "API.shops.validateSlug", metadata: { slug } });
+    logError(error as Error, {
+      component: "API.shops.validateSlug",
+      metadata: { slug },
+    });
     return NextResponse.json(
       {
         success: false,
         error: "Failed to validate slug",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

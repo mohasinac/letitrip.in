@@ -59,7 +59,7 @@ function EditProductContent({ params }: EditProductPageProps) {
           metadata: { slug },
         });
         setError(
-          error.message || "Failed to load product data. Please try again.",
+          error.message || "Failed to load product data. Please try again."
         );
       } finally {
         setLoading(false);
@@ -81,7 +81,7 @@ function EditProductContent({ params }: EditProductPageProps) {
     try {
       const updatedProduct = await productsService.update(
         product.slug,
-        formData,
+        formData
       );
       router.push(`/products/${updatedProduct.slug}`);
     } catch (error: any) {

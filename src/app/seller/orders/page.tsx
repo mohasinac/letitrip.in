@@ -1,12 +1,12 @@
 "use client";
 
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { DateDisplay, Price } from "@/components/common/values";
 import { SellerResourcePage } from "@/components/seller/SellerResourcePage";
 import { ordersService } from "@/services/orders.service";
 import type { OrderCardFE } from "@/types/frontend/order.types";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { Price, DateDisplay } from "@/components/common/values";
-import Link from "next/link";
 import { Eye, Package } from "lucide-react";
+import Link from "next/link";
 
 export default function SellerOrdersPage() {
   return (

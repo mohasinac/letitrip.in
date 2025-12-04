@@ -6,7 +6,7 @@ import { getCurrentUser } from "../../../lib/session";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let id: string | undefined;
   let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
@@ -41,14 +41,14 @@ export async function GET(
     });
     return NextResponse.json(
       { error: "Failed to fetch address" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let id: string | undefined;
   let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
@@ -113,14 +113,14 @@ export async function PATCH(
     });
     return NextResponse.json(
       { error: "Failed to update address" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   let id: string | undefined;
   let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
@@ -157,7 +157,7 @@ export async function DELETE(
     });
     return NextResponse.json(
       { error: "Failed to delete address" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -41,10 +41,10 @@ function CategoriesContent() {
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [filterOptions, setFilterOptions] = useState(CATEGORY_FILTERS);
   const [sortBy, setSortBy] = useState<string>(
-    searchParams.get("sortBy") || "sort_order",
+    searchParams.get("sortBy") || "sort_order"
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
-    (searchParams.get("sortOrder") as "asc" | "desc") || "asc",
+    (searchParams.get("sortOrder") as "asc" | "desc") || "asc"
   );
 
   // Initialize filters from URL
@@ -152,7 +152,7 @@ function CategoriesContent() {
 
     router.push(
       `/categories${params.toString() ? `?${params.toString()}` : ""}`,
-      { scroll: false },
+      { scroll: false }
     );
     loadCategories();
   }, [filterValues, sortBy, sortOrder, currentPage]);
