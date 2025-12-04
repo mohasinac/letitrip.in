@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  FormField,
-  FormInput,
-  FormSelect,
-  FormTextarea,
-} from "@/components/forms";
+import { FormField, FormInput, FormTextarea } from "@/components/forms";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
@@ -390,8 +385,8 @@ export default function AdminEventDetailPage() {
                 {submitting
                   ? "Saving..."
                   : isNew
-                    ? "Create Event"
-                    : "Save Changes"}
+                  ? "Create Event"
+                  : "Save Changes"}
               </button>
             </div>
           </div>
