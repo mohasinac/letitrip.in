@@ -11,6 +11,8 @@ import RichTextEditor from "@/components/common/RichTextEditor";
 import { blogService, type BlogPost } from "@/services/blog.service";
 import { DateDisplay } from "@/components/common/values";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   FormInput,
   FormSelect,
@@ -22,10 +24,23 @@ export default function EditBlogPostPage() {
   const router = useRouter();
   const params = useParams();
   const { isAdmin } = useAuth();
+  const {
+    isLoading: loadingPost,
+    error,
+    data: post,
+    setData: setPost,
+    execute,
+  } = useLoadingState<BlogPost>({
+    onLoadError: (error) => {
+      logError(error, {
+        component: "EditBlogPostPage.loadPost",
+        postId: params.id,
+      });
+      toast.error("Failed to load blog post");
+    },
+  });
   const [loading, setLoading] = useState(false);
-  const [loadingPost, setLoadingPost] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [post, setPost] = useState<BlogPost | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -65,11 +80,9 @@ export default function EditBlogPostPage() {
     }
   }, [params.id, isAdmin]);
 
-  const loadPost = async () => {
-    try {
-      setLoadingPost(true);
+  const loadPost = () =>
+    execute(async () => {
       const data = await blogService.getById(params.id as string);
-      setPost(data);
       setFormData({
         title: data.title,
         slug: data.slug,
@@ -81,14 +94,8 @@ export default function EditBlogPostPage() {
         featured: data.featured,
         featuredImage: data.featuredImage || "",
       });
-    } catch (error) {
-      console.error("Failed to load post:", error);
-      toast.error("Failed to load blog post");
-      router.push("/admin/blog");
-    } finally {
-      setLoadingPost(false);
-    }
-  };
+      return data;
+    });
 
   const handleInputChange = (
     e: React.ChangeEvent<

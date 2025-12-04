@@ -6,6 +6,8 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { couponsService } from "@/services/coupons.service";
 import { toast } from "@/components/admin/Toast";
 import { ArrowLeft, Save } from "lucide-react";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   FormInput,
   FormSelect,
@@ -18,7 +20,16 @@ export default function EditCouponPage() {
   const params = useParams();
   const couponId = params.id as string;
 
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, { component: "EditCouponPage.loadCoupon", couponId });
+      toast.error("Failed to load coupon");
+    },
+  });
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     code: "",
@@ -38,9 +49,8 @@ export default function EditCouponPage() {
     loadCoupon();
   }, [couponId]);
 
-  const loadCoupon = async () => {
-    try {
-      setLoading(true);
+  const loadCoupon = () =>
+    execute(async () => {
       const coupon: any = await couponsService.getById(couponId);
 
       setFormData({
@@ -60,13 +70,7 @@ export default function EditCouponPage() {
         isActive: coupon.isActive ?? true,
         applicableTo: coupon.applicableTo || "all",
       });
-    } catch (error: any) {
-      console.error("Failed to load coupon:", error);
-      toast.error(error.message || "Failed to load coupon");
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

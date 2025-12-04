@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { toast } from "sonner";
-import Link from "next/link";
+import AuthGuard from "@/components/auth/AuthGuard";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { FormInput, FormTextarea } from "@/components/forms";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
-import AuthGuard from "@/components/auth/AuthGuard";
-import { FormInput, FormTextarea } from "@/components/forms";
 import { supportService } from "@/services/support.service";
 import type {
   SupportTicketFE,
   SupportTicketMessageFE,
 } from "@/types/frontend/support-ticket.types";
 import { TicketStatus } from "@/types/shared/common.types";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface AssignTicketData {
   assignedTo: string;

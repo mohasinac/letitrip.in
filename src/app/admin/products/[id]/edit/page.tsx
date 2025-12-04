@@ -13,6 +13,8 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   FormInput,
   FormSelect,
@@ -45,10 +47,21 @@ export default function AdminEditProductPage() {
   const productId = params.id as string;
   const { user, isAdmin } = useAuth();
 
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, {
+        component: "AdminEditProductPage.loadData",
+        productId,
+      });
+      toast.error("Failed to load product");
+    },
+  });
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [product, setProduct] = useState<ProductFE | null>(null);
   const [categories, setCategories] = useState<CategoryFE[]>([]);
   const [shops, setShops] = useState<ShopCardFE[]>([]);

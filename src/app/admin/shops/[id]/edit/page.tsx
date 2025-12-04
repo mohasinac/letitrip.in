@@ -1,37 +1,37 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import OptimizedImage from "@/components/common/OptimizedImage";
+import SlugInput from "@/components/common/SlugInput";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { DateDisplay, Percentage, Price } from "@/components/common/values";
+import { FormInput, FormTextarea } from "@/components/forms";
+import MediaUploader from "@/components/media/MediaUploader";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { logError } from "@/lib/firebase-error-logger";
+import { shopsService } from "@/services/shops.service";
+import type { ProductCardFE } from "@/types/frontend/product.types";
+import type { ShopFE } from "@/types/frontend/shop.types";
 import {
-  ArrowLeft,
-  Save,
-  Loader2,
   AlertCircle,
-  Trash2,
+  ArrowLeft,
   Ban,
   CheckCircle,
-  Package,
-  Star,
-  Users,
-  Eye,
   Edit,
+  Eye,
+  Loader2,
+  Package,
+  Save,
+  Star,
+  Trash2,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { FormInput, FormTextarea } from "@/components/forms";
-import { useAuth } from "@/contexts/AuthContext";
-import { shopsService } from "@/services/shops.service";
-import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
-import MediaUploader from "@/components/media/MediaUploader";
-import SlugInput from "@/components/common/SlugInput";
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { Price, Percentage, DateDisplay } from "@/components/common/values";
-import type { ShopFE } from "@/types/frontend/shop.types";
-import type { ProductCardFE } from "@/types/frontend/product.types";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function AdminEditShopPage() {
   const router = useRouter();

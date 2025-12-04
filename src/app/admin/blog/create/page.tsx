@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   ArrowLeft,
   Save,
@@ -42,6 +44,12 @@ const STEPS = [
 export default function CreateBlogPostPage() {
   const router = useRouter();
   const { isAdmin } = useAuth();
+  const { execute } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, { component: "CreateBlogPostPage.handleSubmit" });
+      toast.error("Failed to create blog post");
+    },
+  });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [currentStep, setCurrentStep] = useState(1);
