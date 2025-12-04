@@ -147,13 +147,13 @@ export async function POST(req: NextRequest) {
           phone: `+91${faker.number.int({ min: 6000000000, max: 9999999999 })}`,
           location: faker.location.city() + ", India",
           logo: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-            shopName,
+            shopName
           )}&background=random`,
           banner: getUnsplashImage("shop", shops.length),
           rating: parseFloat(
             faker.number
               .float({ min: 3.5, max: 5.0, fractionDigits: 1 })
-              .toFixed(1),
+              .toFixed(1)
           ),
           review_count: faker.number.int({ min: 0, max: 100 }),
           product_count: 0,
@@ -212,17 +212,17 @@ export async function POST(req: NextRequest) {
           images: [
             getUnsplashImage(
               category.name.replace(PREFIX, "").toLowerCase(),
-              products.length,
+              products.length
             ),
             getUnsplashImage(
               category.name.replace(PREFIX, "").toLowerCase(),
-              products.length + 1000,
+              products.length + 1000
             ),
           ],
           rating: parseFloat(
             faker.number
               .float({ min: 3.0, max: 5.0, fractionDigits: 1 })
-              .toFixed(1),
+              .toFixed(1)
           ),
           review_count: 0,
           created_at: new Date().toISOString(),
@@ -265,11 +265,11 @@ export async function POST(req: NextRequest) {
 
         const now = new Date();
         const startTime = new Date(
-          now.getTime() + faker.number.int({ min: 0, max: 24 }) * 3600000,
+          now.getTime() + faker.number.int({ min: 0, max: 24 }) * 3600000
         );
         const endTime = new Date(
           startTime.getTime() +
-            faker.number.int({ min: 48, max: 168 }) * 3600000,
+            faker.number.int({ min: 48, max: 168 }) * 3600000
         );
 
         const auctionData: any = {
@@ -290,8 +290,8 @@ export async function POST(req: NextRequest) {
             Math.random() < 0.5
               ? "live"
               : Math.random() < 0.5
-                ? "scheduled"
-                : "draft",
+              ? "scheduled"
+              : "draft",
           is_featured: Math.random() < config.featuredPercentage / 100,
           show_on_homepage: Math.random() < config.homepagePercentage / 100,
           start_time: startTime.toISOString(),
@@ -299,11 +299,11 @@ export async function POST(req: NextRequest) {
           images: [
             getUnsplashImage(
               category.name.replace(PREFIX, "").toLowerCase(),
-              auctions.length + 5000,
+              auctions.length + 5000
             ),
             getUnsplashImage(
               category.name.replace(PREFIX, "").toLowerCase(),
-              auctions.length + 6000,
+              auctions.length + 6000
             ),
           ],
           condition: faker.helpers.arrayElement([
@@ -416,7 +416,7 @@ export async function POST(req: NextRequest) {
     // Step 8: Generate Support Tickets
     for (const user of users.slice(
       0,
-      Math.min(users.length, config.users * 0.5),
+      Math.min(users.length, config.users * 0.5)
     )) {
       for (let i = 0; i < config.ticketsPerUser; i++) {
         const ticketData = {
@@ -640,11 +640,10 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     logError(error as Error, {
       component: "API.testData.generateComplete",
-      config,
     });
     return NextResponse.json(
       { success: false, error: error.message || "Failed to generate data" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

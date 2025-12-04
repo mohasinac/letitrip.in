@@ -36,7 +36,7 @@ export default function BlogListClient() {
 
   // Filters from URL
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || "",
+    searchParams.get("search") || ""
   );
   const [filters, setFilters] = useState<BlogFilters>({
     status: "published",
@@ -206,7 +206,9 @@ export default function BlogListClient() {
       {/* Error State */}
       {error && (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-8">
-          <p className="text-red-800 dark:text-red-400">{error}</p>
+          <p className="text-red-800 dark:text-red-400">
+            {error?.message || "An error occurred"}
+          </p>
           <button
             onClick={fetchBlogs}
             className="mt-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"

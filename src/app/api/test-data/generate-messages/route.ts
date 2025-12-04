@@ -252,14 +252,13 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     logError(error as Error, {
       component: "API.testData.generateMessages",
-      messagesPerConversation,
     });
     return NextResponse.json(
       {
         success: false,
         error: error.message || "Failed to generate messages",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

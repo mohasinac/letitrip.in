@@ -42,11 +42,10 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     logError(error as Error, {
       component: "API.testData.generateUsers",
-      count,
     });
     return NextResponse.json(
       { success: false, error: error.message || "Failed to generate users" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

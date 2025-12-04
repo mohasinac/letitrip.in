@@ -358,8 +358,9 @@ export default function AdminEmailSettingsPage() {
                 <div className="relative">
                   <input
                     type={showApiKey ? "text" : "password"}
-                    value={settings.apiKey || ""}
+                    value={settings?.apiKey || ""}
                     onChange={(e) =>
+                      settings &&
                       setSettings({ ...settings, apiKey: e.target.value })
                     }
                     placeholder="re_xxxxxxxxxxxxxxxxxxxx"
