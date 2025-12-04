@@ -192,31 +192,33 @@ export default function AdminEventDetailPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <FormField label="Type" required>
-              <FormSelect
+              <select
                 value={formData.type}
                 onChange={(e) =>
                   setFormData({ ...formData, type: e.target.value })
                 }
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-gray-900 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               >
                 <option value="workshop">Workshop</option>
                 <option value="seminar">Seminar</option>
                 <option value="competition">Competition</option>
                 <option value="poll">Poll</option>
                 <option value="announcement">Announcement</option>
-              </FormSelect>
+              </select>
             </FormField>
 
             <FormField label="Status" required>
-              <FormSelect
+              <select
                 value={formData.status}
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value })
                 }
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-gray-900 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               >
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
                 <option value="archived">Archived</option>
-              </FormSelect>
+              </select>
             </FormField>
           </div>
 
@@ -388,8 +390,8 @@ export default function AdminEventDetailPage() {
                 {submitting
                   ? "Saving..."
                   : isNew
-                  ? "Create Event"
-                  : "Save Changes"}
+                    ? "Create Event"
+                    : "Save Changes"}
               </button>
             </div>
           </div>
