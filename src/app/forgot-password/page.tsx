@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { Mail, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
-import { authService } from "@/services/auth.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { authService } from "@/services/auth.service";
+import { ArrowLeft, CheckCircle, Loader2, Mail } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
 function ForgotPasswordForm() {
   const searchParams = useSearchParams();

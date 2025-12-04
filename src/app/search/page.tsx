@@ -1,11 +1,12 @@
 "use client";
 
-import { AdvancedPagination } from "@/components/common/AdvancedPagination";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { CategoryCard } from "@/components/cards/CategoryCard";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { ShopCard } from "@/components/cards/ShopCard";
+import { AdvancedPagination } from "@/components/common/AdvancedPagination";
 import { EmptyState } from "@/components/common/EmptyState";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import { Loader2 } from "lucide-react";
@@ -23,13 +24,26 @@ function SearchContent() {
   const [activeTab, setActiveTab] = useState<
     "all" | "products" | "shops" | "categories" | "auctions" | "blog"
   >("all");
-  const [results, setResults] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(pageParam ? parseInt(pageParam) : 1);
   const [pageSize, setPageSize] = useState(
     pageSizeParam ? parseInt(pageSizeParam) : 20,
   );
   const [totalCount, setTotalCount] = useState(0);
+
+  const {
+    isLoading: loading,
+    data: results,
+    setData: setResults,
+    execute,
+  } = useLoadingState<any>({
+    initialData: null,
+    onLoadError: (error) => {
+      logError(error, {
+        component: "SearchPage.performSearch",
+        metadata: { query },
+      });
+    },
+  });
 
   useEffect(() => {
     // Only search if there's a query
@@ -47,36 +61,22 @@ function SearchContent() {
     currentPage: number,
     currentPageSize: number,
   ) => {
-    try {
-      setLoading(true);
+    await execute(async () => {
       const response = await productsService.list({
         search: searchQuery,
         page: currentPage,
         limit: currentPageSize,
       });
       // For now, just return products - proper multi-type search would need separate services
-      setResults({
+      const searchResults = {
         products: response?.data || [],
         shops: [],
         categories: [],
         total: response?.count || 0,
-      });
+      };
       setTotalCount(response?.count || 0);
-    } catch (error) {
-      logError(error as Error, {
-        component: "SearchPage.performSearch",
-        metadata: { query },
-      });
-      setResults({
-        products: [],
-        shops: [],
-        categories: [],
-        total: 0,
-      });
-      setTotalCount(0);
-    } finally {
-      setLoading(false);
-    }
+      return searchResults;
+    });
   };
 
   const handlePageChange = (newPage: number) => {

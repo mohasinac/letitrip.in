@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "Slug parameter is required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "Shop slug parameter is required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: "Shop not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to validate slug",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

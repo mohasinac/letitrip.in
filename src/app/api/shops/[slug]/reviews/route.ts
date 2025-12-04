@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const { slug } = await params;
@@ -27,7 +27,7 @@ export async function GET(
     if (shopsSnapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Shop not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -90,7 +90,7 @@ export async function GET(
         success: false,
         error: error.message || "Failed to fetch shop reviews",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 // NOTE: This is a simplified stub. In production, validate file type/size and use signed URLs or direct upload tokens.
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
   try {
@@ -17,14 +17,14 @@ export async function POST(
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
 
     const contentType = req.headers.get("content-type") || "";
     if (!contentType.includes("multipart/form-data")) {
       return NextResponse.json(
         { success: false, error: "Invalid content type" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -33,7 +33,7 @@ export async function POST(
     if (!files.length) {
       return NextResponse.json(
         { success: false, error: "No files provided" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(
     if (!retSnap.exists)
       return NextResponse.json(
         { success: false, error: "Return not found" },
-        { status: 404 }
+        { status: 404 },
       );
     const ret = retSnap.data() as any;
 
@@ -59,7 +59,7 @@ export async function POST(
     if (!authorized)
       return NextResponse.json(
         { success: false, error: "Forbidden" },
-        { status: 403 }
+        { status: 403 },
       );
 
     const storage = getStorageAdmin();
@@ -100,7 +100,7 @@ export async function POST(
     });
     return NextResponse.json(
       { success: false, error: "Failed to upload media" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

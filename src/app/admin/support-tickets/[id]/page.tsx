@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { FormInput, FormTextarea } from "@/components/forms";
 import { supportService } from "@/services/support.service";
@@ -38,15 +40,27 @@ function TicketDetailContent() {
   const router = useRouter();
   const ticketId = params.id as string;
 
-  const [ticket, setTicket] = useState<SupportTicketFE | null>(null);
   const [messages, setMessages] = useState<SupportTicketMessageFE[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const [replyMessage, setReplyMessage] = useState("");
   const [isInternal, setIsInternal] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [replying, setReplying] = useState(false);
+
+  const {
+    isLoading: loading,
+    error,
+    data: ticket,
+    setData: setTicket,
+    execute,
+  } = useLoadingState<SupportTicketFE | null>({
+    initialData: null,
+    onLoadError: (err) => {
+      logError(err, {
+        component: "SupportTicketDetail.loadTicket",
+        metadata: { ticketId },
+      });
+    },
+  });
 
   const [assignedTo, setAssignedTo] = useState("");
   const [assignNotes, setAssignNotes] = useState("");
@@ -77,18 +91,11 @@ function TicketDetailContent() {
   };
 
   const loadTicket = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    await execute(async () => {
       const data = await supportService.getTicket(ticketId);
-      setTicket(data);
       setAssignedTo(data.assignedTo || "");
-    } catch (err: any) {
-      console.error("Failed to load ticket:", err);
-      setError(err.message || "Failed to load ticket");
-    } finally {
-      setLoading(false);
-    }
+      return data;
+    });
   };
 
   const loadMessages = async () => {

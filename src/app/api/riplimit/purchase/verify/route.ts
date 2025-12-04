@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     if (!auth.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Missing required payment verification fields",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     if (purchasesQuery.empty) {
       return NextResponse.json(
         { success: false, error: "Purchase order not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     if (purchase.status === RipLimitPurchaseStatus.COMPLETED) {
       return NextResponse.json(
         { success: false, error: "Purchase already completed" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         { success: false, error: "Invalid payment signature" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
         razorpayOrderId,
         razorpayPaymentId,
         inrAmount: purchase.inrAmount,
-      }
+      },
     );
 
     // Update purchase record
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     console.error("Error verifying RipLimit purchase:", error);
     return NextResponse.json(
       { success: false, error: "Failed to verify purchase" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

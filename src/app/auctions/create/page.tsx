@@ -1,58 +1,64 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import AuctionForm from "@/components/seller/AuctionForm";
-import { auctionsService } from "@/services/auctions.service";
-import { shopsService } from "@/services/shops.service";
-import { productsService } from "@/services/products.service";
-import type { ProductAuctionFormFE } from "@/types/frontend/auction.types";
-import type { ShopCardFE } from "@/types/frontend/shop.types";
-import type { ProductFormFE } from "@/types/frontend/product.types";
-import {
-  ProductStatus,
-  ProductCondition,
-  ShippingClass,
-  AuctionType,
-} from "@/types/shared/common.types";
-import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { auctionsService } from "@/services/auctions.service";
+import { productsService } from "@/services/products.service";
+import { shopsService } from "@/services/shops.service";
+import type { ProductAuctionFormFE } from "@/types/frontend/auction.types";
+import type { ProductFormFE } from "@/types/frontend/product.types";
+import type { ShopCardFE } from "@/types/frontend/shop.types";
+import {
+  AuctionType,
+  ProductCondition,
+  ProductStatus,
+  ShippingClass,
+} from "@/types/shared/common.types";
+import { AlertCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { ArrowLeft, AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 function CreateAuctionContent() {
   const router = useRouter();
   const { user } = useAuth();
-  const [shops, setShops] = useState<ShopCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const {
+    isLoading: loading,
+    error,
+    data: shops,
+    setData: setShops,
+    execute,
+  } = useLoadingState<ShopCardFE[]>({
+    initialData: [],
+    onLoadError: (err) => {
+      logError(err, {
+        component: "AuctionCreate.loadShops",
+      });
+    },
+  });
 
   // Load user's shops
   useEffect(() => {
     const loadShops = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+      if (!user) return;
 
-      try {
+      await execute(async () => {
         // For now, we'll assume the user has access to create auctions
         // In a real app, you'd filter shops where user is owner/admin
         const shopsData = await shopsService.list({ limit: 50 });
-        setShops(shopsData.data);
-      } catch (error) {
-        console.error("Failed to load shops:", error);
-        setError("Failed to load your shops. Please try again.");
-      } finally {
-        setLoading(false);
-      }
+        return shopsData.data;
+      });
     };
 
     loadShops();
-  }, [user]);
+  }, [user, execute]);
 
   const handleSubmit = async (formData: ProductAuctionFormFE) => {
     if (!user) {
@@ -157,7 +163,7 @@ function CreateAuctionContent() {
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Error Loading Shops
           </h2>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-gray-600 mb-4">{error.message}</p>
           <button
             onClick={() => globalThis.location?.reload()}
             className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
@@ -210,16 +216,6 @@ function CreateAuctionContent() {
             Set up your auction details and start selling your items.
           </p>
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <Card className="mb-6 p-4 bg-red-50 border-red-200">
-            <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-500 mr-3" />
-              <p className="text-red-700">{error}</p>
-            </div>
-          </Card>
-        )}
 
         {/* Auction Form */}
         <Card className="p-6">

@@ -13,27 +13,29 @@
  * - Restricted pincodes
  */
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import {
-  Save,
-  Loader2,
-  ArrowLeft,
-  Truck,
-  Package,
-  MapPin,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Plus,
-  X,
-  Zap,
-} from "lucide-react";
 import { FormLabel } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   settingsService,
   type ShippingSettings,
 } from "@/services/settings.service";
+import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle,
+  Clock,
+  Loader2,
+  MapPin,
+  Package,
+  Plus,
+  Save,
+  Truck,
+  X,
+  Zap,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const DEFAULT_SETTINGS: ShippingSettings = {
   freeShippingThreshold: 999,
@@ -48,30 +50,34 @@ const DEFAULT_SETTINGS: ShippingSettings = {
 };
 
 export default function AdminShippingSettingsPage() {
-  const [settings, setSettings] = useState<ShippingSettings>(DEFAULT_SETTINGS);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [newPincode, setNewPincode] = useState("");
+
+  const {
+    isLoading: loading,
+    error,
+    data: settings,
+    setData: setSettings,
+    execute,
+  } = useLoadingState<ShippingSettings>({
+    initialData: DEFAULT_SETTINGS,
+    onLoadError: (err) => {
+      logError(err, {
+        component: "AdminShippingSettings.loadSettings",
+      });
+    },
+  });
 
   useEffect(() => {
     loadSettings();
   }, []);
 
   const loadSettings = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    await execute(async () => {
       const data = await settingsService.getShipping();
-      setSettings({ ...DEFAULT_SETTINGS, ...data });
-    } catch (err) {
-      console.error("Error loading settings:", err);
-      // Use defaults if API fails
-      setSettings(DEFAULT_SETTINGS);
-    } finally {
-      setLoading(false);
-    }
+      return { ...DEFAULT_SETTINGS, ...data };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

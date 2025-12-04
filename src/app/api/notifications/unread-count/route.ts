@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     console.error("Error getting notification count:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get notification count" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

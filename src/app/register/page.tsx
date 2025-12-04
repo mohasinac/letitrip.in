@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
-import { COMPANY_NAME } from "@/constants/navigation";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { FormField, FormInput } from "@/components/forms";
 import { FormCheckbox } from "@/components/forms/FormCheckbox";
-import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { COMPANY_NAME } from "@/constants/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function RegisterPage() {
   const router = useRouter();

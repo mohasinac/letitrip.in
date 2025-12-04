@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { MapPin, Save, Camera, User } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { authService } from "@/services/auth.service";
+import { SettingsSection } from "@/components/common/SettingsSection";
 import { FormField, FormInput } from "@/components/forms";
 import MediaUploader from "@/components/media/MediaUploader";
-import { MediaFile } from "@/types/media";
-import { SettingsSection } from "@/components/common/SettingsSection";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { authService } from "@/services/auth.service";
+import { MediaFile } from "@/types/media";
+import { Camera, MapPin, Save } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function SettingsPage() {
   const router = useRouter();

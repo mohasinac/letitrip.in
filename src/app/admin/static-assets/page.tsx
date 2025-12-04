@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { FormInput } from "@/components/forms";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
-  uploadAsset,
-  getAssetsByType,
   deleteAsset,
+  getAssetsByType,
   updateAsset,
+  uploadAsset,
   type StaticAsset,
 } from "@/services/static-assets-client.service";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 // Icons will be inline SVGs
 
 const ASSET_TYPES = [
@@ -26,12 +28,25 @@ const ASSET_TYPES = [
 export default function StaticAssetsPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [assets, setAssets] = useState<StaticAsset[]>([]);
   const [selectedType, setSelectedType] =
     useState<StaticAsset["type"]>("payment-logo");
-  const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [editingAsset, setEditingAsset] = useState<StaticAsset | null>(null);
+
+  const {
+    isLoading: loading,
+    data: assets,
+    setData: setAssets,
+    execute,
+  } = useLoadingState<StaticAsset[]>({
+    initialData: [],
+    onLoadError: (err) => {
+      logError(err, {
+        component: "StaticAssetsPage.loadAssets",
+        metadata: { selectedType },
+      });
+    },
+  });
 
   useEffect(() => {
     if (!user) {
@@ -42,15 +57,10 @@ export default function StaticAssetsPage() {
   }, [user, selectedType]);
 
   const loadAssets = async () => {
-    try {
-      setLoading(true);
+    await execute(async () => {
       const data = await getAssetsByType(selectedType);
-      setAssets(data);
-    } catch (error) {
-      console.error("Error loading assets:", error);
-    } finally {
-      setLoading(false);
-    }
+      return data;
+    });
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

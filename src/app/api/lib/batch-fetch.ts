@@ -16,7 +16,7 @@ import { COLLECTIONS } from "@/constants/database";
  */
 export async function batchFetchDocuments<T = any>(
   collectionName: string,
-  ids: string[]
+  ids: string[],
 ): Promise<Map<string, T>> {
   const resultMap = new Map<string, T>();
 
@@ -61,7 +61,7 @@ export async function batchFetchDocuments<T = any>(
  * ```
  */
 export async function batchGetProducts(
-  productIds: string[]
+  productIds: string[],
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.PRODUCTS, productIds);
 }
@@ -76,7 +76,7 @@ export async function batchGetProducts(
  * ```
  */
 export async function batchGetShops(
-  shopIds: string[]
+  shopIds: string[],
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.SHOPS, shopIds);
 }
@@ -91,7 +91,7 @@ export async function batchGetShops(
  * ```
  */
 export async function batchGetCategories(
-  categoryIds: string[]
+  categoryIds: string[],
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.CATEGORIES, categoryIds);
 }
@@ -106,7 +106,7 @@ export async function batchGetCategories(
  * ```
  */
 export async function batchGetUsers(
-  userIds: string[]
+  userIds: string[],
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.USERS, userIds);
 }
@@ -121,7 +121,7 @@ export async function batchGetUsers(
  * ```
  */
 export async function batchGetOrders(
-  orderIds: string[]
+  orderIds: string[],
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.ORDERS, orderIds);
 }
@@ -136,7 +136,7 @@ export async function batchGetOrders(
  * ```
  */
 export async function batchGetAuctions(
-  auctionIds: string[]
+  auctionIds: string[],
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.AUCTIONS, auctionIds);
 }
@@ -151,7 +151,7 @@ export async function batchGetAuctions(
  * ```
  */
 export async function batchGetCoupons(
-  couponIds: string[]
+  couponIds: string[],
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.COUPONS, couponIds);
 }
@@ -168,7 +168,7 @@ export async function batchGetCoupons(
  */
 export async function batchGetByCollection(
   collectionName: string,
-  ids: string[]
+  ids: string[],
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(collectionName, ids);
 }
@@ -186,7 +186,7 @@ export async function batchGetByCollection(
  */
 export function mapToOrderedArray<T>(
   map: Map<string, T>,
-  orderedIds: string[]
+  orderedIds: string[],
 ): (T | null)[] {
   return orderedIds.map((id) => map.get(id) || null);
 }

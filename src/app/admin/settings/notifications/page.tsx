@@ -12,30 +12,31 @@
  * - Notification preferences
  */
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { FormInput, FormSelect } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { apiService } from "@/services/api.service";
 import {
-  Save,
-  Loader2,
+  AlertCircle,
+  AlertTriangle,
   ArrowLeft,
   Bell,
-  BellRing,
   BellOff,
+  BellRing,
   CheckCircle,
-  AlertCircle,
-  Smartphone,
-  Monitor,
+  CreditCard,
+  Loader2,
   Mail,
   MessageSquare,
-  ShoppingBag,
+  Monitor,
   Package,
-  CreditCard,
+  Save,
+  ShoppingBag,
+  Smartphone,
   Star,
-  Users,
-  AlertTriangle,
 } from "lucide-react";
-import { FormInput, FormLabel, FormSelect } from "@/components/forms";
-import { apiService } from "@/services/api.service";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface NotificationCategory {
   enabled: boolean;
@@ -165,12 +166,23 @@ const categoryInfo: Record<
 };
 
 export default function AdminNotificationSettingsPage() {
-  const [settings, setSettings] =
-    useState<NotificationSettings>(DEFAULT_SETTINGS);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const {
+    isLoading: loading,
+    error,
+    data: settings,
+    setData: setSettings,
+    execute,
+  } = useLoadingState<NotificationSettings>({
+    initialData: DEFAULT_SETTINGS,
+    onLoadError: (err) => {
+      logError(err, {
+        component: "AdminNotificationSettings.loadSettings",
+      });
+    },
+  });
 
   useEffect(() => {
     loadSettings();

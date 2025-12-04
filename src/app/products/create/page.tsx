@@ -4,6 +4,7 @@ import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { Card } from "@/components/ui";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
@@ -17,36 +18,38 @@ import { useEffect, useState } from "react";
 function CreateProductContent() {
   const router = useRouter();
   const { user } = useAuth();
-  const [shops, setShops] = useState<ShopCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const {
+    isLoading: loading,
+    error,
+    data: shops,
+    setData: setShops,
+    execute,
+  } = useLoadingState<ShopCardFE[]>({
+    initialData: [],
+    onLoadError: (err) => {
+      logError(err, {
+        component: "ProductCreate.loadShops",
+      });
+    },
+  });
 
   // Load user's shops
   useEffect(() => {
     const loadShops = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+      if (!user) return;
 
-      try {
+      await execute(async () => {
         // For now, we'll assume the user has access to create products
         // In a real app, you'd filter shops where user is owner/admin
         const shopsData = await shopsService.list({ limit: 50 });
-        setShops(shopsData.data);
-      } catch (error) {
-        logError(error as Error, {
-          component: "ProductCreate.loadShops",
-        });
-        setError("Failed to load your shops. Please try again.");
-      } finally {
-        setLoading(false);
-      }
+        return shopsData.data;
+      });
     };
 
     loadShops();
-  }, [user]);
+  }, [user, execute]);
 
   const handleSubmit = async (formData: ProductFormFE) => {
     if (!user) {
@@ -148,7 +151,7 @@ function CreateProductContent() {
           <Card className="mb-6 p-4 bg-red-50 border-red-200">
             <div className="flex items-center">
               <AlertCircle className="h-5 w-5 text-red-500 mr-3" />
-              <p className="text-red-700">{error}</p>
+              <p className="text-red-700">{error.message}</p>
             </div>
           </Card>
         )}

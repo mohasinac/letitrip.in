@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Track shipment status (stub). In production, integrate with carrier API.
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
   try {
@@ -16,7 +16,7 @@ export async function GET(
     if (!snap.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 }
+        { status: 404 },
       );
     const order = snap.data() as any;
     const shipment = order.shipment || null;
@@ -38,7 +38,7 @@ export async function GET(
     });
     return NextResponse.json(
       { success: false, error: "Failed to track order" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

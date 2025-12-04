@@ -279,7 +279,7 @@ function AuctionsContent() {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {
                         auctions.filter(
-                          (a) => a.status === AuctionStatus.ACTIVE
+                          (a) => a.status === AuctionStatus.ACTIVE,
                         ).length
                       }
                     </p>

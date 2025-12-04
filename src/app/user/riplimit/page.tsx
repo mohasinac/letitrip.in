@@ -165,9 +165,8 @@ export default function UserRipLimitPage() {
       setProcessingPurchase(true);
       setError(null);
 
-      const purchaseData = await ripLimitService.initiatePurchase(
-        purchaseAmount
-      );
+      const purchaseData =
+        await ripLimitService.initiatePurchase(purchaseAmount);
 
       // Initialize Razorpay
       const options = {
@@ -237,7 +236,7 @@ export default function UserRipLimitPage() {
 
       const result = await ripLimitService.requestRefund(
         refundAmount,
-        refundReason
+        refundReason,
       );
 
       setSuccessMessage(result.message);

@@ -6,14 +6,14 @@ import { NextRequest, NextResponse } from "next/server";
 // A user can cancel their order if it's not yet shipped
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getCurrentUser(req);
     if (!user?.id)
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
 
     const { id } = await params;
@@ -22,21 +22,21 @@ export async function POST(
     if (!snap.exists)
       return NextResponse.json(
         { success: false, error: "Not found" },
-        { status: 404 }
+        { status: 404 },
       );
     const order = snap.data() as any;
 
     if (order.user_id !== user.id && user.role !== "admin") {
       return NextResponse.json(
         { success: false, error: "Forbidden" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     if (order.status === "shipped" || order.status === "delivered") {
       return NextResponse.json(
         { success: false, error: "Order cannot be canceled" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -61,7 +61,7 @@ export async function POST(
     });
     return NextResponse.json(
       { success: false, error: "Failed to cancel order" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

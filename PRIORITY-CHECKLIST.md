@@ -1239,9 +1239,9 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 - **Files**: 30+ pages with manual loading state
 - **Changes**: Replace with useLoadingState hook
-- **Progress**: 14/50+ pages complete (28%)
+- **Progress**: 22/50+ pages complete (44%)
   - ✅ login/page.tsx - Replaced manual loading/error with useLoadingState
-  - ✅ register/page.tsx - Replaced manual loading/error with useLoadingState  
+  - ✅ register/page.tsx - Replaced manual loading/error with useLoadingState
   - ✅ user/settings/page.tsx - Replaced manual loading/error with useLoadingState
   - ✅ products/[slug]/page.tsx - Replaced manual loading/error/data with useLoadingState
   - ✅ forgot-password/page.tsx - Replaced manual loading/error with useLoadingState
@@ -1254,7 +1254,21 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - ✅ categories/page.tsx - Replaced manual loading with useLoadingState for categories list
   - ✅ user/riplimit/page.tsx - Replaced multiple loading states (balance, transactions) with useLoadingState
   - ✅ admin/dashboard/page.tsx - Replaced manual loading/stats with useLoadingState + proper error logging
-- **Remaining**: admin settings pages, blog pages, seller auction create (35+ files)##### ⬜ 137-migrate-pages-to-use-filters-hook
+  - ✅ search/page.tsx - Replaced manual loading/results with useLoadingState
+  - ✅ products/[slug]/edit/page.tsx - Replaced manual loading/error/data with useLoadingState
+  - ✅ products/create/page.tsx - Replaced manual loading/error with useLoadingState
+  - ✅ auctions/create/page.tsx - Replaced manual loading/error with useLoadingState
+  - ✅ reviews/ReviewsListClient.tsx - Replaced manual loading/error with useLoadingState
+  - ✅ blog/BlogListClient.tsx - Replaced manual loading/error with useLoadingState
+  - ✅ blog/[slug]/BlogPostClient.tsx - Replaced manual loading/error with useLoadingState
+  - ✅ admin/static-assets/page.tsx - Replaced manual loading with useLoadingState
+  - ✅ admin/settings/general/page.tsx - Replaced manual loading/error with useLoadingState
+  - ✅ admin/settings/notifications/page.tsx - Replaced manual loading/error with useLoadingState
+  - ✅ admin/settings/shipping/page.tsx - Replaced manual loading/error with useLoadingState
+  - ✅ admin/settings/payment/page.tsx - Replaced manual loading/error with useLoadingState
+  - 🔄 admin/shops/[id]/edit/page.tsx - Partially migrated (needs loadShopData completion)
+  - 🔄 admin/support-tickets/[id]/page.tsx - Partially migrated (needs loadTicket completion)
+- **Remaining**: ~28 files (56% complete)##### ⬜ 137-migrate-pages-to-use-filters-hook
 
 - **Files**: 15+ pages with manual filter state
 - **Changes**: Replace with useFilters hook

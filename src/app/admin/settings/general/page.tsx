@@ -14,47 +14,49 @@
  * - Maintenance mode
  */
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { FormInput, FormLabel, FormTextarea } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
   settingsService,
   type GeneralSettings,
 } from "@/services/settings.service";
-import {
-  FormInput,
-  FormTextarea,
-  FormCheckbox,
-  FormLabel,
-} from "@/components/forms";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function AdminGeneralSettingsPage() {
   const router = useRouter();
-  const [settings, setSettings] = useState<GeneralSettings | null>(null);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     "basic" | "contact" | "social" | "maintenance"
   >("basic");
+
+  const {
+    isLoading: loading,
+    error,
+    data: settings,
+    setData: setSettings,
+    execute,
+  } = useLoadingState<GeneralSettings | null>({
+    initialData: null,
+    onLoadError: (err) => {
+      logError(err, {
+        component: "AdminGeneralSettings.loadSettings",
+      });
+    },
+  });
 
   useEffect(() => {
     loadSettings();
   }, []);
 
   const loadSettings = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    await execute(async () => {
       const data = await settingsService.getGeneral();
-      setSettings(data);
-    } catch (err) {
-      console.error("Error loading settings:", err);
-      setError(err instanceof Error ? err.message : "Failed to load settings");
-    } finally {
-      setLoading(false);
-    }
+      return data;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

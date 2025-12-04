@@ -25,7 +25,7 @@ export async function creditBalance(
   amount: number,
   type: RipLimitTransactionType,
   description: string,
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown>,
 ): Promise<RipLimitTransactionBE> {
   const db = getFirestoreAdmin();
   const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
@@ -100,7 +100,7 @@ export async function getTransactionHistory(
     type?: RipLimitTransactionType;
     limit?: number;
     offset?: number;
-  } = {}
+  } = {},
 ): Promise<{ transactions: RipLimitTransactionBE[]; total: number }> {
   const db = getFirestoreAdmin();
   let query = db

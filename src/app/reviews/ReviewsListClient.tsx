@@ -1,6 +1,7 @@
 "use client";
 
 import { ReviewCard } from "@/components/cards/ReviewCard";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { reviewsService } from "@/services/reviews.service";
 import type { ReviewFE, ReviewFiltersFE } from "@/types/frontend/review.types";
@@ -9,9 +10,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function ReviewsListClient() {
-  const [reviews, setReviews] = useState<ReviewFE[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<ReviewFiltersFE>({
     status: "approved",
     page: 1,
@@ -20,34 +18,42 @@ export default function ReviewsListClient() {
   });
   const [totalPages, setTotalPages] = useState(1);
 
+  const {
+    isLoading: loading,
+    error,
+    data: reviews,
+    setData: setReviews,
+    execute,
+  } = useLoadingState<ReviewFE[]>({
+    initialData: [],
+    onLoadError: (err) => {
+      logError(err, {
+        component: "ReviewsListClient.fetchReviews",
+        metadata: { filters },
+      });
+    },
+  });
+
   useEffect(() => {
     fetchReviews();
   }, [filters]);
 
   const fetchReviews = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    await execute(async () => {
       const response = await reviewsService.list(filters);
 
       // Handle both array and paginated response
+      let reviewsData: ReviewFE[];
       if (Array.isArray(response)) {
-        setReviews(response);
+        reviewsData = response;
         setTotalPages(1);
       } else {
-        setReviews(response.data || []);
+        reviewsData = response.data || [];
         // Calculate total pages from count
         setTotalPages(Math.ceil((response.count || 0) / 20));
       }
-    } catch (err) {
-      setError("Failed to load reviews. Please try again later.");
-      logError(err as Error, {
-        component: "ReviewsListClient.fetchReviews",
-        metadata: { filters: filters },
-      });
-    } finally {
-      setLoading(false);
-    }
+      return reviewsData;
+    });
   };
 
   const handleMarkHelpful = async (reviewId: string) => {
@@ -58,8 +64,8 @@ export default function ReviewsListClient() {
         prev.map((review) =>
           review.id === reviewId
             ? { ...review, helpful: (review.helpful || 0) + 1 }
-            : review
-        )
+            : review,
+        ),
       );
     } catch (err) {
       logError(err as Error, {
@@ -270,7 +276,7 @@ export default function ReviewsListClient() {
           {/* Error State */}
           {error && (
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
-              <p className="text-red-800 dark:text-red-400">{error}</p>
+              <p className="text-red-800 dark:text-red-400">{error.message}</p>
               <button
                 onClick={fetchReviews}
                 className="mt-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"

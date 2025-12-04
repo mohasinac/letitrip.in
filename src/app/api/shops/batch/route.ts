@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
         { success: false, error: "Shop IDs array is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     logError(error as Error, { component: "API.shops.batch" });
     return NextResponse.json(
       { success: false, error: "Failed to fetch shops" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

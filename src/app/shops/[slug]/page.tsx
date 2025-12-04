@@ -1,28 +1,28 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { logError } from "@/lib/firebase-error-logger";
-import { Loader2, Gavel } from "lucide-react";
-import { shopsService } from "@/services/shops.service";
-import { productsService } from "@/services/products.service";
-import { auctionsService } from "@/services/auctions.service";
-import { notFound } from "@/lib/error-redirects";
-import { ShopHeader } from "@/components/shop/ShopHeader";
-import { ShopAbout } from "@/components/shop/ShopAbout";
-import { ShopStats } from "@/components/shop/ShopStats";
-import { ShopProducts } from "@/components/shop/ShopProducts";
-import { ShopAuctions } from "@/components/shop/ShopAuctions";
-import { ShopReviews } from "@/components/shop/ShopReviews";
-import { ShopPolicies } from "@/components/shop/ShopPolicies";
-import { useCart } from "@/hooks/useCart";
-import type { ShopFE } from "@/types/frontend/shop.types";
-import type { ProductCardFE } from "@/types/frontend/product.types";
-import type { AuctionCardFE } from "@/types/frontend/auction.types";
-import { ProductFilterValues } from "@/components/filters/ProductFilters";
 import { AuctionFilterValues } from "@/components/filters/AuctionFilters";
+import { ProductFilterValues } from "@/components/filters/ProductFilters";
+import { ShopAbout } from "@/components/shop/ShopAbout";
+import { ShopAuctions } from "@/components/shop/ShopAuctions";
+import { ShopHeader } from "@/components/shop/ShopHeader";
+import { ShopPolicies } from "@/components/shop/ShopPolicies";
+import { ShopProducts } from "@/components/shop/ShopProducts";
+import { ShopReviews } from "@/components/shop/ShopReviews";
+import { ShopStats } from "@/components/shop/ShopStats";
+import { useCart } from "@/hooks/useCart";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { notFound } from "@/lib/error-redirects";
+import { logError } from "@/lib/firebase-error-logger";
+import { auctionsService } from "@/services/auctions.service";
+import { productsService } from "@/services/products.service";
+import { shopsService } from "@/services/shops.service";
+import type { AuctionCardFE } from "@/types/frontend/auction.types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
+import type { ShopFE } from "@/types/frontend/shop.types";
+import { Gavel, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface ShopPageProps {
   params: Promise<{

@@ -19,7 +19,7 @@ import { FieldValue } from "firebase-admin/firestore";
  * Get or create RipLimit account for a user
  */
 export async function getOrCreateAccount(
-  userId: string
+  userId: string,
 ): Promise<RipLimitAccountBE> {
   const db = getFirestoreAdmin();
   const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
@@ -52,7 +52,7 @@ export async function getOrCreateAccount(
  * Get blocked bids for a user
  */
 export async function getBlockedBids(
-  userId: string
+  userId: string,
 ): Promise<RipLimitBlockedBidBE[]> {
   const db = getFirestoreAdmin();
   const blockedBidsRef = db
@@ -116,7 +116,7 @@ export async function getBalanceDetails(userId: string): Promise<{
  */
 export async function markAuctionUnpaid(
   userId: string,
-  auctionId: string
+  auctionId: string,
 ): Promise<void> {
   const db = getFirestoreAdmin();
   const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
@@ -132,7 +132,7 @@ export async function markAuctionUnpaid(
  * Add strike to user account
  */
 export async function addStrike(
-  userId: string
+  userId: string,
 ): Promise<{ strikes: number; isBlocked: boolean }> {
   const db = getFirestoreAdmin();
   const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);

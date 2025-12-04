@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
         { success: false, error: "Product IDs array is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch products" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
