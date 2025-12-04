@@ -119,7 +119,7 @@ export async function PUT(
       .update({
         ...updateData,
         updatedAt: new Date().toISOString(),
-        updatedBy: user.id,
+        updatedBy: user.uid,
       });
 
     const updatedDoc = await Collections.events().doc(id).get();

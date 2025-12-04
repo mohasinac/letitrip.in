@@ -19,6 +19,7 @@ import { useIsMobile } from "@/hooks/useMobile";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { notFound } from "@/lib/error-redirects";
 import { logError } from "@/lib/firebase-error-logger";
+import { useSearchParams } from "next/navigation";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
 import type { CategoryFE, ProductCardFE } from "@/types";
@@ -37,22 +38,16 @@ function CategoryDetailContent({ params }: PageProps) {
   const isMobile = useIsMobile();
 
   // URL-based filter management
-  const {
-    filters,
-    sortField,
-    sortDirection,
-    page,
-    pageSize,
-    updateFilter,
-    updateSort,
-    updatePagination,
-    resetFilters,
-    getQueryString,
-  } = useUrlFilters({
-    defaultSortField: "createdAt",
-    defaultSortDirection: "desc",
-    defaultPageSize: 20,
-  });
+  const { filters, updateFilter, resetFilters } = useUrlFilters();
+
+  // Get page params from URL
+  const searchParams = useSearchParams();
+  const page = parseInt(searchParams.get("page") || "1");
+  const pageSize = parseInt(searchParams.get("pageSize") || "20");
+  const sortField = searchParams.get("sortField") || "createdAt";
+  const sortDirection = (searchParams.get("sortDirection") || "desc") as
+    | "asc"
+    | "desc";
 
   const [category, setCategory] = useState<CategoryFE | null>(null);
   const [breadcrumb, setBreadcrumb] = useState<CategoryFE[]>([]);
@@ -118,7 +113,6 @@ function CategoryDetailContent({ params }: PageProps) {
         categoryId: category.id,
         ...filters,
         sortBy: sortField as any,
-        sortOrder: sortDirection,
         limit: pageSize,
         offset,
       });
@@ -234,7 +228,11 @@ function CategoryDetailContent({ params }: PageProps) {
                 <FormSelect
                   id="sort-by"
                   value={sortField}
-                  onChange={(e) => updateSort(e.target.value, sortDirection)}
+                  onChange={(e) => {
+                    const params = new URLSearchParams(window.location.search);
+                    params.set("sortField", e.target.value);
+                    router.push(`?${params.toString()}`);
+                  }}
                   options={[
                     { value: "createdAt", label: "Newest" },
                     { value: "price", label: "Price" },
@@ -247,9 +245,11 @@ function CategoryDetailContent({ params }: PageProps) {
                 <FormSelect
                   id="sort-order"
                   value={sortDirection}
-                  onChange={(e) =>
-                    updateSort(sortField, e.target.value as "asc" | "desc")
-                  }
+                  onChange={(e) => {
+                    const params = new URLSearchParams(window.location.search);
+                    params.set("sortDirection", e.target.value);
+                    router.push(`?${params.toString()}`);
+                  }}
                   options={[
                     { value: "desc", label: "High to Low" },
                     { value: "asc", label: "Low to High" },
@@ -516,12 +516,22 @@ function CategoryDetailContent({ params }: PageProps) {
                         currentPage={page}
                         pageSize={pageSize}
                         totalItems={totalProducts}
-                        onPageChange={(newPage) =>
-                          updatePagination(newPage, pageSize)
-                        }
-                        onPageSizeChange={(newSize) =>
-                          updatePagination(1, newSize)
-                        }
+                        totalPages={Math.ceil(totalProducts / pageSize)}
+                        onPageChange={(newPage) => {
+                          const params = new URLSearchParams(
+                            window.location.search,
+                          );
+                          params.set("page", newPage.toString());
+                          router.push(`?${params.toString()}`);
+                        }}
+                        onPageSizeChange={(newSize) => {
+                          const params = new URLSearchParams(
+                            window.location.search,
+                          );
+                          params.set("page", "1");
+                          params.set("pageSize", newSize.toString());
+                          router.push(`?${params.toString()}`);
+                        }}
                       />
                     </div>
                   )}

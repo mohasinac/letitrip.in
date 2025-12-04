@@ -275,7 +275,8 @@ function TicketDetailContent() {
         <div className="text-center">
           <div className="text-6xl mb-4">❌</div>
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            {error || "Ticket not found"}
+            {(error instanceof Error ? error.message : error) ||
+              "Ticket not found"}
           </h3>
           <button
             onClick={() => router.push("/admin/support-tickets")}

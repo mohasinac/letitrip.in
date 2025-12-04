@@ -60,9 +60,11 @@ export function CategoryTree({
         attributes: {
           slug: cat.slug,
           productCount: cat.productCount || 0,
-          isLeaf: cat.isLeaf ? "Yes" : "No",
+          isLeaf: (cat as any).isLeaf ? "Yes" : "No",
         },
-        children: cat.children?.length ? buildTree(cat.children) : undefined,
+        children: (cat as any).children?.length
+          ? buildTree((cat as any).children)
+          : undefined,
         __rd3t: {
           id: cat.id,
           collapsed: false,
@@ -99,8 +101,8 @@ export function CategoryTree({
         ): CategoryCardFE | null => {
           for (const cat of cats) {
             if (cat.id === id) return cat;
-            if (cat.children) {
-              const found = findCategory(cat.children, id);
+            if ((cat as any).children) {
+              const found = findCategory((cat as any).children, id);
               if (found) return found;
             }
           }

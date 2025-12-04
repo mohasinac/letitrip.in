@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
       id: eventRef.id,
       createdAt: now,
       updatedAt: now,
-      createdBy: user.id,
+      createdBy: user.uid,
       participantCount: 0,
       voteCount: 0,
     });
