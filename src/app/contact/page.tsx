@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Mail, Phone, MapPin, Send, Loader2, CheckCircle } from "lucide-react";
 import { supportService } from "@/services/support.service";
 import { FormField, FormInput, FormTextarea } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -14,17 +16,22 @@ export default function ContactPage() {
     subject: "",
     message: "",
   });
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState<void>({
+    onLoadError: (err) => {
+      logError(err, { component: "ContactPage.handleSubmit" });
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setSuccess(false);
-    setLoading(true);
 
-    try {
+    await execute(async () => {
       await supportService.createTicket({
         ...formData,
         category: "general",
@@ -41,11 +48,7 @@ export default function ContactPage() {
       });
 
       setTimeout(() => setSuccess(false), 5000);
-    } catch (err: any) {
-      setError(err.message || "Failed to submit. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const handleChange = (
@@ -182,7 +185,9 @@ export default function ContactPage() {
 
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-900 font-semibold">{error}</p>
+                <p className="text-red-900 font-semibold">
+                  {error.message || "Failed to submit. Please try again."}
+                </p>
               </div>
             )}
 

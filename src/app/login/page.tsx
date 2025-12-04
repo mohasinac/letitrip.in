@@ -8,6 +8,7 @@ import { COMPANY_NAME } from "@/constants/navigation";
 import { FormField, FormInput } from "@/components/forms";
 import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { Eye, EyeOff } from "lucide-react";
 
 function LoginForm() {
@@ -18,9 +19,16 @@ function LoginForm() {
     email: "",
     password: "",
   });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState<void>({
+    onLoadError: (err) => {
+      // Error is already set by useLoadingState
+    },
+  });
 
   // Prevent redirect loop: if already authenticated, redirect to home or specified page
   useEffect(() => {
@@ -32,10 +40,8 @@ function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
 
-    try {
+    await execute(async () => {
       await login(formData.email, formData.password);
       // Get redirect URL from query params or default to home
       const redirect = searchParams.get("redirect") || "/";
@@ -43,12 +49,7 @@ function LoginForm() {
       setTimeout(() => {
         router.replace(redirect);
       }, 100);
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Login failed. Please try again.";
-      setError(errorMessage);
-      setLoading(false);
-    }
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +81,9 @@ function LoginForm() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
           {error && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {error.message || "Login failed. Please try again."}
+              </p>
             </div>
           )}
 

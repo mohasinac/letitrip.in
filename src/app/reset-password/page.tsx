@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { FormLabel } from "@/components/forms";
 import { apiService } from "@/services/api.service";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -25,9 +27,13 @@ function ResetPasswordForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const { isLoading, error, execute } = useLoadingState<void>({
+    onLoadError: (err) => {
+      logError(err, { component: "ResetPasswordForm.handleSubmit" });
+    },
+  });
 
   const validatePassword = useCallback((pwd: string): string | null => {
     if (pwd.length < 8) {
@@ -47,37 +53,29 @@ function ResetPasswordForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setValidationError(null);
 
     // Validate passwords match
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setValidationError("Passwords do not match");
       return;
     }
 
     // Validate password strength
     const passwordError = validatePassword(password);
     if (passwordError) {
-      setError(passwordError);
+      setValidationError(passwordError);
       return;
     }
 
-    setIsLoading(true);
-
-    try {
+    await execute(async () => {
       await apiService.put("/auth/reset-password", {
         email,
         token,
         newPassword: password,
       });
       setIsSuccess(true);
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to reset password";
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   // Check if token and email are present
@@ -159,10 +157,12 @@ function ResetPasswordForm() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
+          {(validationError || error) && (
             <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
               <div className="text-sm text-red-700 dark:text-red-400">
-                {error}
+                {validationError ||
+                  error?.message ||
+                  "Failed to reset password"}
               </div>
             </div>
           )}
