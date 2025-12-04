@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, use, Suspense } from "react";
+import { logError } from "@/lib/firebase-error-logger";
+import { toast } from "sonner";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { productsService } from "@/services/products.service";

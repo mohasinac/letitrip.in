@@ -5,6 +5,8 @@ import { ReviewCard } from "@/components/cards/ReviewCard";
 import { reviewsService } from "@/services/reviews.service";
 import type { ReviewFE, ReviewFiltersFE } from "@/types/frontend/review.types";
 import { Search, Filter, Star, ShieldCheck } from "lucide-react";
+import { logError } from "@/lib/firebase-error-logger";
+import { toast } from "sonner";
 
 export default function ReviewsListClient() {
   const [reviews, setReviews] = useState<ReviewFE[]>([]);
@@ -57,7 +59,11 @@ export default function ReviewsListClient() {
         ),
       );
     } catch (err) {
-      console.error("Error marking review as helpful:", err);
+      logError(err as Error, {
+        component: "ReviewsListClient.markHelpful",
+        metadata: { reviewId },
+      });
+      toast.error("Failed to mark review as helpful");
     }
   };
 
