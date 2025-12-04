@@ -5,8 +5,10 @@ import { getCurrentUser } from "../../lib/session";
 
 // GET /api/auctions/my-bids - authenticated user's bids
 export async function GET(request: NextRequest) {
+  let userId: string | undefined;
   try {
     const user = await getCurrentUser(request);
+    userId = user?.id;
     if (!user?.id) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
@@ -23,7 +25,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logError(error as Error, {
       component: "API.auctions.my-bids",
-      userId: user?.id,
+      userId,
     });
     return NextResponse.json(
       { success: false, error: "Failed to load my bids" },
