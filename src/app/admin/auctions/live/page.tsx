@@ -1,32 +1,33 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import {
-  RefreshCw,
-  Eye,
-  Pause,
-  Play,
-  XCircle,
-  Gavel,
-  Clock,
-  TrendingUp,
-  Users,
-  DollarSign,
-  AlertTriangle,
-  Activity,
-  ArrowUpRight,
-  Timer,
-  Loader2,
-  AlertCircle,
-} from "lucide-react";
 import { AdminPageHeader, LoadingSpinner, toast } from "@/components/admin";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import { auctionsService } from "@/services/auctions.service";
-import { AuctionStatus } from "@/types/shared/common.types";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
+import { AuctionStatus } from "@/types/shared/common.types";
+import {
+  Activity,
+  AlertCircle,
+  AlertTriangle,
+  ArrowUpRight,
+  Clock,
+  DollarSign,
+  Eye,
+  Gavel,
+  Pause,
+  Play,
+  RefreshCw,
+  Timer,
+  TrendingUp,
+  Users,
+  XCircle,
+} from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 // Stats card component
 function StatCard({
@@ -251,8 +252,19 @@ function LiveAuctionRow({
 
 export default function LiveAuctionsPage() {
   const { isAdmin } = useAuth();
-  const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    data: auctions,
+    setData: setAuctions,
+    execute,
+  } = useLoadingState<AuctionCardFE[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, { component: "LiveAuctionsPage.loadLiveAuctions" });
+      toast.error("Failed to load live auctions");
+    },
+  });
   const [refreshing, setRefreshing] = useState(false);
   const [endAuctionId, setEndAuctionId] = useState<string | null>(null);
   const [pauseAuctionId, setPauseAuctionId] = useState<string | null>(null);
@@ -269,17 +281,15 @@ export default function LiveAuctionsPage() {
   });
 
   const loadLiveAuctions = useCallback(async (showRefresh = false) => {
-    try {
-      if (showRefresh) setRefreshing(true);
-      else setLoading(true);
+    if (showRefresh) setRefreshing(true);
 
+    await execute(async () => {
       const response = await auctionsService.list({
         status: AuctionStatus.ACTIVE,
         limit: 50,
       });
 
       const liveAuctions = response.data || [];
-      setAuctions(liveAuctions);
 
       // Calculate stats
       const now = Date.now();
@@ -310,13 +320,9 @@ export default function LiveAuctionsPage() {
       }));
 
       setLastRefresh(new Date());
-    } catch (error) {
-      console.error("Failed to load live auctions:", error);
-      toast.error("Failed to load live auctions");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
+    });
+
+    if (showRefresh) setRefreshing(false);
   }, []);
 
   useEffect(() => {

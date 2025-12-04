@@ -1,30 +1,31 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import {
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  Package,
-  Users,
-  ShoppingCart,
-  BarChart2,
-  Calendar,
-  RefreshCw,
-  Loader2,
-  Gavel,
-  ArrowRight,
-} from "lucide-react";
-import { analyticsService } from "@/services/analytics.service";
-import { Price, Quantity, DateDisplay } from "@/components/common/values";
 import { PeriodSelector } from "@/components/common/PeriodSelector";
 import { StatCard } from "@/components/common/StatCard";
+import { DateDisplay, Price, Quantity } from "@/components/common/values";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { analyticsService } from "@/services/analytics.service";
 import type {
   AnalyticsOverviewFE,
   SalesDataPointFE,
   TopProductFE,
 } from "@/types/frontend/analytics.types";
+import {
+  ArrowRight,
+  BarChart2,
+  Calendar,
+  DollarSign,
+  Gavel,
+  Loader2,
+  Package,
+  RefreshCw,
+  ShoppingCart,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 // Simple bar chart for sales
 function SalesChart({ data }: { data: SalesDataPointFE[] }) {
@@ -126,16 +127,24 @@ function TopProductsTable({ products }: { products: TopProductFE[] }) {
 
 export default function AdminAnalyticsPage() {
   const [period, setPeriod] = useState("month");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, {
+        component: "AdminAnalyticsPage.fetchAnalytics",
+        period,
+      });
+    },
+  });
   const [overview, setOverview] = useState<AnalyticsOverviewFE | null>(null);
   const [salesData, setSalesData] = useState<SalesDataPointFE[]>([]);
   const [topProducts, setTopProducts] = useState<TopProductFE[]>([]);
 
-  const fetchAnalytics = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
+  const fetchAnalytics = useCallback(() => {
+    execute(async () => {
       const filters = { period: period as "day" | "week" | "month" | "year" };
       const [overviewData, salesPoints, products] = await Promise.all([
         analyticsService.getOverview(filters),
@@ -145,13 +154,8 @@ export default function AdminAnalyticsPage() {
       setOverview(overviewData);
       setSalesData(salesPoints);
       setTopProducts(products);
-    } catch (err) {
-      console.error("Failed to load analytics:", err);
-      setError("Failed to load analytics data. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [period]);
+    });
+  }, [period, execute]);
 
   useEffect(() => {
     fetchAnalytics();

@@ -3,6 +3,8 @@
 import { PeriodSelector } from "@/components/common/PeriodSelector";
 import { StatCard } from "@/components/common/StatCard";
 import { DateDisplay, Price, Quantity } from "@/components/common/values";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import { analyticsService } from "@/services/analytics.service";
 import type {
   CategoryPerformanceFE,
@@ -230,16 +232,24 @@ function DetailedProductsTable({ products }: { products: TopProductFE[] }) {
 
 export default function AdminAnalyticsSalesPage() {
   const [period, setPeriod] = useState("month");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, {
+        component: "AdminAnalyticsSalesPage.fetchData",
+        period,
+      });
+    },
+  });
   const [salesData, setSalesData] = useState<SalesDataPointFE[]>([]);
   const [categories, setCategories] = useState<CategoryPerformanceFE[]>([]);
   const [topProducts, setTopProducts] = useState<TopProductFE[]>([]);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
+  const fetchData = useCallback(() => {
+    execute(async () => {
       const filters = { period: period as "day" | "week" | "month" | "year" };
       const [sales, cats, products] = await Promise.all([
         analyticsService.getSalesData(filters),
@@ -249,13 +259,8 @@ export default function AdminAnalyticsSalesPage() {
       setSalesData(sales);
       setCategories(cats);
       setTopProducts(products);
-    } catch (err) {
-      console.error("Failed to load sales data:", err);
-      setError("Failed to load sales analytics. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [period]);
+    });
+  }, [period, execute]);
 
   useEffect(() => {
     fetchData();

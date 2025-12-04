@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
 import CategoryForm from "@/components/admin/CategoryForm";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { notFound } from "@/lib/error-redirects";
+import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "@/lib/error-redirects";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { logError } from "@/lib/firebase-error-logger";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface Category {
   id: string;

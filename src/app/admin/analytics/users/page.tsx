@@ -13,27 +13,29 @@
  * - User activity metrics
  */
 
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import {
-  Users,
-  TrendingUp,
-  ArrowLeft,
-  RefreshCw,
-  Loader2,
-  UserPlus,
-  ShoppingBag,
-  Store,
-  Shield,
-  Crown,
-  Activity,
-  TrendingDown,
-} from "lucide-react";
-import { analyticsService } from "@/services/analytics.service";
-import { Price, DateDisplay, Quantity } from "@/components/common/values";
 import { PeriodSelector } from "@/components/common/PeriodSelector";
 import { StatCard } from "@/components/common/StatCard";
+import { DateDisplay, Price, Quantity } from "@/components/common/values";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { analyticsService } from "@/services/analytics.service";
 import type { CustomerAnalyticsFE } from "@/types/frontend/analytics.types";
+import {
+  Activity,
+  ArrowLeft,
+  Crown,
+  Loader2,
+  RefreshCw,
+  Shield,
+  ShoppingBag,
+  Store,
+  TrendingDown,
+  TrendingUp,
+  UserPlus,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 // User segment chart
 function UserSegmentChart({
@@ -289,8 +291,18 @@ function ActivityTimeline() {
 
 export default function AdminUsersAnalyticsPage() {
   const [period, setPeriod] = useState("month");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, {
+        component: "AdminUsersAnalyticsPage.loadData",
+        period,
+      });
+    },
+  });
   const [customers, setCustomers] = useState<CustomerAnalyticsFE[]>([]);
 
   // Mock stats for now - these would come from an API
@@ -312,21 +324,14 @@ export default function AdminUsersAnalyticsPage() {
     { label: "Inactive", value: 375, color: "#6B7280" },
   ];
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const loadData = useCallback(() => {
+    execute(async () => {
       const customerData = await analyticsService.getCustomerAnalytics({
         period: period as "day" | "week" | "month" | "year",
       });
       setCustomers(customerData);
-    } catch (err) {
-      console.error("Error loading user analytics:", err);
-      setError(err instanceof Error ? err.message : "Failed to load analytics");
-    } finally {
-      setLoading(false);
-    }
-  }, [period]);
+    });
+  }, [period, execute]);
 
   useEffect(() => {
     loadData();

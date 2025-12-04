@@ -13,6 +13,7 @@ import { Price } from "@/components/common/values";
 import { FormSelect } from "@/components/forms";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useCart } from "@/hooks/useCart";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { useIsMobile } from "@/hooks/useMobile";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { logError } from "@/lib/firebase-error-logger";
@@ -57,9 +58,18 @@ function ProductsContent() {
     initialLimit: 20,
   });
 
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, { component: "ProductsContent.loadProducts" });
+      toast.error("Failed to load products");
+    },
+  });
   const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [totalItems, setTotalItems] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [filterOptions, setFilterOptions] = useState(PRODUCT_FILTERS);
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
@@ -134,10 +144,8 @@ function ProductsContent() {
     }
   };
 
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-
+  const loadProducts = () =>
+    execute(async () => {
       // Build filter params
       const filterParams: any = {};
       if (filters.categoryId) filterParams.categoryId = filters.categoryId;
@@ -171,15 +179,7 @@ function ProductsContent() {
           return newCursors;
         });
       }
-    } catch (error) {
-      logError(error as Error, {
-        component: "ProductsPage.loadProducts",
-        metadata: { page, filters },
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
 
   const handleResetFilters = useCallback(() => {
     resetUrlFilters();

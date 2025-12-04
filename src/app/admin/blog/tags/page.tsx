@@ -21,6 +21,8 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
 import { FormInput, FormTextarea } from "@/components/forms";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 
 // Types
 interface BlogTag {
@@ -222,8 +224,19 @@ function BulkAddModal({
 
 export default function BlogTagsPage() {
   const { isAdmin } = useAuth();
-  const [tags, setTags] = useState<BlogTag[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    data: tags,
+    setData: setTags,
+    execute,
+  } = useLoadingState<BlogTag[]>({
+    initialData: [],
+    onLoadError: (error) => {
+      logError(error, { component: "BlogTagsPage.loadTags" });
+      toast.error("Failed to load blog tags");
+    },
+  });
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -236,60 +249,54 @@ export default function BlogTagsPage() {
     loadTags();
   }, []);
 
-  const loadTags = async () => {
-    try {
-      setLoading(true);
+  const loadTags = () =>
+    execute(async () => {
       const response = await apiService.get<{ data: BlogTag[] }>("/blog/tags");
-      setTags(response.data || []);
-    } catch (error) {
-      console.error("Failed to load tags:", error);
-      // Use mock data for now
-      setTags([
-        {
-          id: "1",
-          name: "Tutorial",
-          slug: "tutorial",
-          postCount: 8,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "2",
-          name: "News",
-          slug: "news",
-          postCount: 5,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "3",
-          name: "Tips",
-          slug: "tips",
-          postCount: 12,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "4",
-          name: "Guide",
-          slug: "guide",
-          postCount: 6,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "5",
-          name: "Announcement",
-          slug: "announcement",
-          postCount: 3,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
+      setTags(
+        response.data || [
+          {
+            id: "1",
+            name: "Tutorial",
+            slug: "tutorial",
+            postCount: 8,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "2",
+            name: "News",
+            slug: "news",
+            postCount: 5,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "3",
+            name: "Tips",
+            slug: "tips",
+            postCount: 12,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "4",
+            name: "Guide",
+            slug: "guide",
+            postCount: 6,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "5",
+            name: "Announcement",
+            slug: "announcement",
+            postCount: 3,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ],
+      );
+    });
 
   const handleSave = async (data: { name: string; slug: string }) => {
     try {

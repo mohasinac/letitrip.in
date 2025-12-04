@@ -1,36 +1,47 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import { Loader2, AlertTriangle } from "lucide-react";
-import { toast } from "sonner";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
 import {
+  CLEANUP_STEPS,
   demoDataService,
   DemoStep,
   GenerationState,
   StepResult,
-  CLEANUP_STEPS,
 } from "@/services/demo-data.service";
+import { AlertTriangle, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import {
-  DemoStepCard,
-  DemoStats,
-  DemoCredentials,
-  DemoScaleControl,
+  CLEANUP_STEP_CONFIG,
+  CredentialsData,
+  DeletionBreakdown,
+  DEMO_PREFIX,
   DemoActionButtons,
+  DemoCredentials,
   DemoDeletionResult,
   DemoProgressBar,
+  DemoScaleControl,
+  DemoStats,
+  DemoStepCard,
   ExtendedSummary,
-  CredentialsData,
-  StepStatus,
-  DeletionBreakdown,
   GENERATION_STEPS,
-  CLEANUP_STEP_CONFIG,
-  getInitialStepStatuses,
   getEmptySummary,
-  DEMO_PREFIX,
+  getInitialStepStatuses,
+  StepStatus,
 } from "./components";
 
 export default function AdminDemoPage() {
-  const [loading, setLoading] = useState(true);
+  const {
+    isLoading: loading,
+    error,
+    execute,
+  } = useLoadingState({
+    onLoadError: (error) => {
+      logError(error, { component: "AdminDemoPage.fetchExistingData" });
+      setSummary(getEmptySummary());
+    },
+  });
   const [generating, setGenerating] = useState(false);
   const [cleaning, setCleaning] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -86,23 +97,15 @@ export default function AdminDemoPage() {
 
   // Fetch existing demo data on mount
   useEffect(() => {
-    const fetchExistingData = async () => {
-      try {
-        const data = await demoDataService.getStats();
-        setSummary(
-          data.exists && data.summary
-            ? (data.summary as ExtendedSummary)
-            : getEmptySummary(),
-        );
-      } catch {
-        setSummary(getEmptySummary());
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchExistingData();
-  }, []);
+    execute(async () => {
+      const data = await demoDataService.getStats();
+      setSummary(
+        data.exists && data.summary
+          ? (data.summary as ExtendedSummary)
+          : getEmptySummary(),
+      );
+    });
+  }, [execute]);
 
   // Poll stats during generation
   useEffect(() => {

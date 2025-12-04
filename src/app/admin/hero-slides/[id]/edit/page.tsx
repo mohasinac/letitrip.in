@@ -1,22 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
-import { FormInput, FormCheckbox, FormLabel } from "@/components/forms";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import MediaUploader from "@/components/media/MediaUploader";
-import {
-  heroSlidesService,
-  type HeroSlideFormData,
-} from "@/services/hero-slides.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import RichTextEditor from "@/components/common/RichTextEditor";
-import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
-import { MediaFile } from "@/types/media";
+import { FormCheckbox, FormInput, FormLabel } from "@/components/forms";
+import MediaUploader from "@/components/media/MediaUploader";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { logError } from "@/lib/firebase-error-logger";
+import { heroSlidesService } from "@/services/hero-slides.service";
+import { MediaFile } from "@/types/media";
+import { ArrowLeft } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface FormState {
   title: string;

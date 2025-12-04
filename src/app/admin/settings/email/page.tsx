@@ -12,27 +12,26 @@
  * - Sender information
  */
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import {
-  Save,
-  Loader2,
-  ArrowLeft,
-  Mail,
-  Send,
-  CheckCircle,
-  AlertCircle,
-  Eye,
-  EyeOff,
-  TestTube,
-  Settings,
-  FileText,
-} from "lucide-react";
-import { apiService } from "@/services/api.service";
-import { FormLabel } from "@/components/forms";
-import { FormInput, FormSelect } from "@/components/forms";
+import { FormInput, FormLabel } from "@/components/forms";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { apiService } from "@/services/api.service";
+import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle,
+  Eye,
+  EyeOff,
+  FileText,
+  Loader2,
+  Mail,
+  Save,
+  Send,
+  Settings,
+  TestTube,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface EmailSettings {
   provider: "resend";
