@@ -13,22 +13,22 @@
  * - Popular categories
  */
 
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import { Price, Quantity } from "@/components/common/values";
 import { PeriodSelector } from "@/components/common/PeriodSelector";
 import { StatCard } from "@/components/common/StatCard";
+import { CompactPrice, Price, Quantity } from "@/components/common/values";
 import {
-  Gavel,
+  Activity,
   ArrowLeft,
-  RefreshCw,
-  Loader2,
   CheckCircle,
   Clock,
-  Users,
-  Activity,
   Eye,
+  Gavel,
+  Loader2,
+  RefreshCw,
+  Users,
 } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 // Auction status distribution
 function AuctionStatusChart({
@@ -322,7 +322,7 @@ function CategoryPerformance() {
             </div>
             <div className="text-right">
               <p className="text-sm font-medium text-gray-900 dark:text-white">
-                ₹{(category.revenue / 100000).toFixed(1)}L
+                <CompactPrice amount={category.revenue} />
               </p>
               <p className="text-xs text-green-600 dark:text-green-400">
                 {category.success}% success

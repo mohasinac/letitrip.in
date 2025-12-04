@@ -395,17 +395,20 @@ export default function AdminAnalyticsSalesPage() {
                         Best Day
                       </p>
                       <p className="font-semibold text-gray-900 dark:text-white">
-                        {salesData.length > 0
-                          ? new Date(
-                              salesData.reduce((best, day) =>
-                                day.revenue > best.revenue ? day : best
-                              ).date
-                            ).toLocaleDateString("en-IN", {
-                              weekday: "long",
-                              month: "short",
-                              day: "numeric",
-                            })
-                          : "N/A"}
+                        {salesData.length > 0 ? (
+                          <DateDisplay
+                            date={
+                              new Date(
+                                salesData.reduce((best, day) =>
+                                  day.revenue > best.revenue ? day : best
+                                ).date
+                              )
+                            }
+                            format="full"
+                          />
+                        ) : (
+                          "N/A"
+                        )}
                       </p>
                     </div>
                     <div className="text-right">

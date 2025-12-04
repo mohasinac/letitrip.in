@@ -565,7 +565,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   // After
   z.string().min(
     VALIDATION_RULES.NAME.MIN_LENGTH,
-    VALIDATION_MESSAGES.NAME.TOO_SHORT,
+    VALIDATION_MESSAGES.NAME.TOO_SHORT
   );
   ```
 
@@ -1035,15 +1035,17 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 ### Task 15: User Verification System (20-30 hours) 🔴 CRITICAL
 
-##### ⬜ 107-create-otp-service
+##### ✅ 107-create-otp-service
 
 - **File**: `src/services/otp.service.ts`
 - **Purpose**: Generate and verify OTPs for email/phone
+- **Status**: COMPLETE - Full OTP service with rate limiting, expiry, attempts tracking
 
-##### ⬜ 108-create-sms-service
+##### ✅ 108-create-sms-service
 
 - **File**: `src/services/sms.service.ts`
 - **Purpose**: Send SMS via MSG91/Twilio
+- **Status**: COMPLETE - MSG91/Twilio support, OTP/order notifications, mock mode
 
 ##### ⬜ 109-create-email-verification-modal
 
@@ -1053,10 +1055,11 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 - **File**: `src/components/auth/PhoneVerificationModal.tsx`
 
-##### ⬜ 111-create-otp-input-component
+##### ✅ 111-create-otp-input-component
 
 - **File**: `src/components/auth/OTPInput.tsx`
 - **Features**: 6-digit input with auto-focus
+- **Status**: COMPLETE - Auto-focus, paste support, keyboard nav, dark mode
 
 ##### ⬜ 112-create-verification-gate-component
 
@@ -1438,15 +1441,16 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 - Tasks 89-106: All user/seller/public pages have dark mode and mobile responsive
 
-**Priority #5 (Remaining): 9/60**
+**Priority #5 (Remaining): 12/60**
 
 - ✅ Tasks 144, 145, 151, 152, 153, 154: Value migrations, debouncing, retry/abort
 - ✅ Tasks 161, 162, 163: Code quality (logError, type casts, ARIA labels)
-- ⬜ Tasks 107-166: User verification, events, performance, testing (51 remaining)
+- ✅ Tasks 107, 108, 111: OTP/SMS services, OTP input component
+- ⬜ Tasks 109-166: User verification UI, events, performance, testing (48 remaining)
 
-📊 Overall: **115/166 tasks complete (69.3%)**
-💾 Recent: Tasks 153-154 completed (retry limits & abort controllers)
-🎯 Next: Task 146-150 (Sieve processing) or Task 107-116 (User verification - CRITICAL)
+📊 Overall: **118/166 tasks complete (71.1%)**
+💾 Recent: Tasks 107-108, 111 completed (OTP verification core)
+🎯 Next: Task 109-110 (Verification modals) or Task 112-116 (Verification enforcement)
 
 ### Lines of Code Impact
 
