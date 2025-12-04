@@ -369,8 +369,8 @@ export default function AdminEventDetailPage() {
                 {submitting
                   ? "Saving..."
                   : isNew
-                    ? "Create Event"
-                    : "Save Changes"}
+                  ? "Create Event"
+                  : "Save Changes"}
               </button>
             </div>
           </div>

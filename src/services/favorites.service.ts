@@ -18,7 +18,7 @@ class FavoritesService {
   }> {
     try {
       return await apiService.get<{ success: boolean; data: FavoriteItem[] }>(
-        `/api/favorites/list/${type}`,
+        `/api/favorites/list/${type}`
       );
     } catch (error) {
       logServiceError("FavoritesService", "listByType", error as Error);
@@ -39,11 +39,11 @@ class FavoritesService {
   // Remove favorite by type and ID
   async removeByType(
     type: "product" | "shop" | "category" | "auction",
-    itemId: string,
+    itemId: string
   ): Promise<{ success: boolean }> {
     try {
       await apiService.delete<{ success: boolean }>(
-        `/api/favorites/${type}/${itemId}`,
+        `/api/favorites/${type}/${itemId}`
       );
       return { success: true };
     } catch (error) {
@@ -60,16 +60,16 @@ class FavoritesService {
   // Remove by product ID
   async removeByProductId(productId: string): Promise<{ message: string }> {
     return apiService.delete<{ message: string }>(
-      `/favorites/product/${productId}`,
+      `/favorites/product/${productId}`
     );
   }
 
   // Check if product is favorited
   async isFavorited(
-    productId: string,
+    productId: string
   ): Promise<{ isFavorited: boolean; favoriteId?: string }> {
     return apiService.get<{ isFavorited: boolean; favoriteId?: string }>(
-      `/favorites/check/${productId}`,
+      `/favorites/check/${productId}`
     );
   }
 
@@ -145,7 +145,7 @@ class FavoritesService {
         "/favorites/sync",
         {
           productIds: guestFavorites,
-        },
+        }
       );
 
       // Clear guest favorites after sync
