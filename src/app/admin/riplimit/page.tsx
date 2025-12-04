@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 /**
  * Admin RipLimit Dashboard Page

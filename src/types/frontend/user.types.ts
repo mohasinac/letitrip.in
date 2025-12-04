@@ -20,6 +20,7 @@ export interface UserFE {
   displayName: string | null;
   photoURL: string | null;
   phoneNumber: string | null;
+  phone?: string | null; // Alias for phoneNumber
   role: UserRole;
   status: UserStatus;
 

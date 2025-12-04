@@ -56,7 +56,7 @@ export function ShippingMethodSelector({
   } = useLoadingState<ShippingMethod[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "ShippingMethodSelector.loadShippingMethods",
       });
       toast.error("Failed to load shipping methods");

@@ -45,13 +45,13 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    logError(error, {
+    logError(error as Error, {
       component: "EventsAPI.GET",
       action: "list_events",
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch events" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

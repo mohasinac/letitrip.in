@@ -42,7 +42,7 @@ export function EmailVerificationModal({
 
   const { isLoading: sending, execute: executeSend } = useLoadingState({
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "EmailVerificationModal.sendOTP",
         metadata: { userId, email },
       });
@@ -52,7 +52,7 @@ export function EmailVerificationModal({
 
   const { isLoading: verifying, execute: executeVerify } = useLoadingState({
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "EmailVerificationModal.verifyOTP",
         metadata: { userId, email },
       });

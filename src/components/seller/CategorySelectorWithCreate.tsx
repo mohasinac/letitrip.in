@@ -45,7 +45,7 @@ export default function CategorySelectorWithCreate({
   } = useLoadingState<CategoryType[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "CategorySelectorWithCreate.loadCategories",
       });
     },

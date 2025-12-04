@@ -41,7 +41,7 @@ export function ProductVariantSelector({
   } = useLoadingState<ProductCardFE[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, { component: "ProductVariantSelector.loadVariants" });
+      logError(error as Error, { component: "ProductVariantSelector.loadVariants" });
       toast.error("Failed to load similar products");
     },
   });

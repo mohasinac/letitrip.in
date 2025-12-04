@@ -60,7 +60,7 @@ export function PollVoting({
 
   const { execute } = useLoadingState({
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "PollVoting.handleVote",
         metadata: { eventId, selectedOption },
       });

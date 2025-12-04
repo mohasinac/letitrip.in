@@ -13,7 +13,7 @@ export default function EventsPage() {
   const { isLoading: loading, execute } = useLoadingState({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, { component: "EventsPage.loadEvents" });
+      logError(error as Error, { component: "EventsPage.loadEvents" });
     },
   });
 

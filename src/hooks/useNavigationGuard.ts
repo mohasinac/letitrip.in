@@ -89,7 +89,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
           try {
             await onNavigate();
           } catch (error: any) {
-            logError(error, {
+            logError(error as Error, {
               component: "useNavigationGuard.onNavigate.beforeUnload",
             });
           }
@@ -139,7 +139,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
           try {
             await onNavigate();
           } catch (error: any) {
-            logError(error, {
+            logError(error as Error, {
               component: "useNavigationGuard.onNavigate.confirmNavigation",
             });
           }

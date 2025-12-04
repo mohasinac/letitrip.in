@@ -96,7 +96,7 @@ export function TaxDetailsSelectorWithCreate({
   } = useLoadingState<TaxDetails[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "TaxDetailsSelectorWithCreate.loadTaxDetails",
       });
       toast.error("Failed to load tax details");

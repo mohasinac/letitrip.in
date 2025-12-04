@@ -1,6 +1,6 @@
 import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
-import { db } from "@/lib/firebase/firebase-admin";
+import { db } from "@/lib/firebase/config";
 
 /**
  * OTP Service - Generate and verify OTPs for email/phone verification
@@ -57,7 +57,7 @@ class OTPService {
    */
   private async checkRateLimit(
     userId: string,
-    type: "email" | "phone"
+    type: "email" | "phone",
   ): Promise<boolean> {
     try {
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
@@ -85,7 +85,7 @@ class OTPService {
   private async getActiveOTP(
     userId: string,
     type: "email" | "phone",
-    destination: string
+    destination: string,
   ): Promise<OTPVerification | null> {
     try {
       const now = new Date();
@@ -127,13 +127,13 @@ class OTPService {
    * Returns the OTP ID for verification
    */
   async sendOTP(
-    request: SendOTPRequest
+    request: SendOTPRequest,
   ): Promise<{ id: string; expiresAt: Date }> {
     try {
       // Check rate limit
       const withinLimit = await this.checkRateLimit(
         request.userId,
-        request.type
+        request.type,
       );
       if (!withinLimit) {
         throw new Error("Too many OTP requests. Please try again later.");
@@ -143,7 +143,7 @@ class OTPService {
       const existingOTP = await this.getActiveOTP(
         request.userId,
         request.type,
-        request.destination
+        request.destination,
       );
 
       if (existingOTP) {
@@ -158,7 +158,7 @@ class OTPService {
       const otp = this.generateOTP();
       const now = new Date();
       const expiresAt = new Date(
-        now.getTime() + this.OTP_EXPIRY_MINUTES * 60 * 1000
+        now.getTime() + this.OTP_EXPIRY_MINUTES * 60 * 1000,
       );
 
       const otpData: Omit<OTPVerification, "id"> = {
@@ -181,7 +181,7 @@ class OTPService {
       // TODO: Send OTP via email/SMS service
       // This will be implemented in Task 108 (SMS) and email templates
       console.log(
-        `[OTP] Generated OTP for ${request.type} ${request.destination}: ${otp}`
+        `[OTP] Generated OTP for ${request.type} ${request.destination}: ${otp}`,
       );
 
       return {
@@ -201,14 +201,14 @@ class OTPService {
    * Verify OTP entered by user
    */
   async verifyOTP(
-    request: VerifyOTPRequest
+    request: VerifyOTPRequest,
   ): Promise<{ success: boolean; message: string }> {
     try {
       // Get active OTP
       const otpDoc = await this.getActiveOTP(
         request.userId,
         request.type,
-        request.destination
+        request.destination,
       );
 
       if (!otpDoc) {
@@ -282,7 +282,7 @@ class OTPService {
    */
   private async updateUserVerificationStatus(
     userId: string,
-    type: "email" | "phone"
+    type: "email" | "phone",
   ): Promise<void> {
     try {
       const field = type === "email" ? "emailVerified" : "phoneVerified";
@@ -309,14 +309,14 @@ class OTPService {
    * Resend OTP (invalidates previous OTP and generates new one)
    */
   async resendOTP(
-    request: SendOTPRequest
+    request: SendOTPRequest,
   ): Promise<{ id: string; expiresAt: Date }> {
     try {
       // Invalidate any existing OTPs for this destination
       const existingOTP = await this.getActiveOTP(
         request.userId,
         request.type,
-        request.destination
+        request.destination,
       );
 
       if (existingOTP && existingOTP.id) {

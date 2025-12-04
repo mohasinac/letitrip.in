@@ -178,7 +178,7 @@ export default function CheckoutPage() {
         [shopId]: { code, discountAmount },
       }));
     } catch (error: any) {
-      logError(error, {
+      logError(error as Error, {
         component: "CheckoutPage.handleApplyCoupon",
         metadata: { shopId, code },
       });
@@ -195,7 +195,7 @@ export default function CheckoutPage() {
         return updated;
       });
     } catch (error: any) {
-      logError(error, {
+      logError(error as Error, {
         component: "CheckoutPage.handleRemoveCoupon",
         metadata: { shopId },
       });
@@ -262,7 +262,7 @@ export default function CheckoutPage() {
                 `/user/orders/${orderIds[0]}?success=true&multi=true`
               );
             } catch (error: any) {
-              logError(error, {
+              logError(error as Error, {
                 component: "CheckoutPage.razorpayHandler",
                 metadata: {
                   orderIds,
@@ -312,7 +312,7 @@ export default function CheckoutPage() {
         router.push(`/user/orders/${firstOrderId}?success=true&multi=true`);
       }
     } catch (error: any) {
-      logError(error, {
+      logError(error as Error, {
         component: "CheckoutPage.handlePlaceOrder",
         metadata: {
           shippingAddressId,

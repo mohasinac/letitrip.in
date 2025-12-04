@@ -144,7 +144,7 @@ class LocationService {
       }>(`/location/geocode?lat=${coords.latitude}&lng=${coords.longitude}`);
       return response.data;
     } catch (error: any) {
-      logError(error, {
+      logError(error as Error, {
         component: "LocationService.reverseGeocode",
         metadata: { coords },
       });

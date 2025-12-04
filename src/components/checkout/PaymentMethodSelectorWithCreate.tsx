@@ -77,7 +77,7 @@ export function PaymentMethodSelectorWithCreate({
   } = useLoadingState<PaymentMethod[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "PaymentMethodSelectorWithCreate.loadPaymentMethods",
       });
       toast.error("Failed to load payment methods");

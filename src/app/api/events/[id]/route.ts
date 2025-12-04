@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -17,7 +17,7 @@ export async function GET(
     if (!eventDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -27,7 +27,7 @@ export async function GET(
     if (eventData?.status !== "published") {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -54,13 +54,13 @@ export async function GET(
       },
     });
   } catch (error) {
-    logError(error, {
+    logError(error as Error, {
       component: "EventsAPI.GET",
       action: "get_event",
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

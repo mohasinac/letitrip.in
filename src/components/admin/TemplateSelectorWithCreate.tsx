@@ -94,7 +94,7 @@ export function TemplateSelectorWithCreate({
   } = useLoadingState<Template[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "TemplateSelectorWithCreate.loadTemplates",
       });
       toast.error("Failed to load templates");
