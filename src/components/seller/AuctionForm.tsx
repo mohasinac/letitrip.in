@@ -117,7 +117,7 @@ export default function AuctionForm({
 
     if (formData.reservePrice && formData.reservePrice < formData.startingBid) {
       toast.error(
-        "Reserve price must be greater than or equal to starting bid"
+        "Reserve price must be greater than or equal to starting bid",
       );
       return;
     }
@@ -276,7 +276,7 @@ export default function AuctionForm({
                   e.target.value
                     .split(",")
                     .map((s) => s.trim())
-                    .filter(Boolean)
+                    .filter(Boolean),
                 )
               }
               rows={3}
@@ -297,7 +297,7 @@ export default function AuctionForm({
                   e.target.value
                     .split(",")
                     .map((s) => s.trim())
-                    .filter(Boolean)
+                    .filter(Boolean),
                 )
               }
               rows={2}
@@ -316,12 +316,12 @@ export default function AuctionForm({
             formData.status === AuctionStatus.DRAFT
               ? "Draft auctions are not visible to buyers"
               : formData.status === AuctionStatus.SCHEDULED
-              ? "Auction will go live at the scheduled start time"
-              : formData.status === AuctionStatus.ACTIVE
-              ? "Auction is currently accepting bids"
-              : formData.status === AuctionStatus.ENDED
-              ? "Auction has ended"
-              : "Auction has been cancelled"
+                ? "Auction will go live at the scheduled start time"
+                : formData.status === AuctionStatus.ACTIVE
+                  ? "Auction is currently accepting bids"
+                  : formData.status === AuctionStatus.ENDED
+                    ? "Auction has ended"
+                    : "Auction has been cancelled"
           }
         >
           <FormSelect

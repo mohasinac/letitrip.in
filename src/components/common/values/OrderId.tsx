@@ -11,10 +11,11 @@
 
 "use client";
 
-import React, { useState } from "react";
-import { Copy, Check } from "lucide-react";
+import { logError } from "@/lib/firebase-error-logger";
 import { formatOrderId } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
+import { Check, Copy } from "lucide-react";
+import { useState } from "react";
 
 interface OrderIdProps {
   value: string;
@@ -39,7 +40,10 @@ export function OrderId({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error("Failed to copy:", error);
+      logError(error as Error, {
+        component: "OrderId.handleCopy",
+        orderId: value,
+      });
     }
   };
 

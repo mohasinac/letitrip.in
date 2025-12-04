@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { logError } from "@/lib/error-logger";
 import { BlogCard } from "@/components/cards/BlogCard";
 import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
-import { blogService } from "@/services/blog.service";
+import { logError } from "@/lib/error-logger";
 import type { BlogPost } from "@/services/blog.service";
+import { blogService } from "@/services/blog.service";
+import { useEffect, useState } from "react";
 
 export default function FeaturedBlogsSection() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
@@ -21,7 +21,9 @@ export default function FeaturedBlogsSection() {
       const blogsList = await blogService.getHomepage();
       setBlogs(blogsList.slice(0, 10));
     } catch (error) {
-      console.error("Error fetching featured blogs:", error);
+      logError(error as Error, {
+        component: "FeaturedBlogsSection.fetchFeaturedBlogs",
+      });
       setBlogs([]);
     } finally {
       setLoading(false);

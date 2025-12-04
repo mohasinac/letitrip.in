@@ -1,37 +1,38 @@
 "use client";
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import { logError } from "@/lib/firebase-error-logger";
 import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
   Bold,
-  Italic,
-  Underline,
-  Strikethrough,
+  Code2,
+  ExternalLink,
   Heading1,
   Heading2,
   Heading3,
+  Highlighter,
+  Image as ImageIcon,
+  Italic,
+  Link as LinkIcon,
   List,
   ListOrdered,
-  Link as LinkIcon,
+  Minus,
+  Palette,
   Quote,
-  Undo2,
   Redo2,
   RemoveFormatting,
-  Image as ImageIcon,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
-  Highlighter,
-  Palette,
-  Table as TableIcon,
-  Minus,
-  Code2,
+  Strikethrough,
   Subscript,
   Superscript,
-  X,
+  Table as TableIcon,
+  Underline,
+  Undo2,
   Upload,
-  ExternalLink,
+  X,
 } from "lucide-react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 /**
  * Rich Text Editor Component
@@ -564,7 +565,11 @@ export default function RichTextEditor({
           throw new Error(result.error || "Upload failed");
         }
       } catch (error) {
-        console.error("Image upload failed:", error);
+        logError(error as Error, {
+          component: "RichTextEditor.handleImageUpload",
+          context: imageUploadContext,
+          contextId: imageUploadContextId,
+        });
         alert("Failed to upload image. Please try again.");
       } finally {
         setIsUploading(false);
@@ -1183,5 +1188,5 @@ export default function RichTextEditor({
 }
 
 // Export tool presets for convenience
-export { DEFAULT_TOOLS, BASIC_TOOLS };
+export { BASIC_TOOLS, DEFAULT_TOOLS };
 export type { EditorTool, RichTextEditorProps };

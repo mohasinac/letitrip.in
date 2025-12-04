@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
-import Link from "next/link";
-import AuctionForm from "@/components/seller/AuctionForm";
-import { auctionsService } from "@/services/auctions.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { PageState } from "@/components/common/PageState";
+import AuctionForm from "@/components/seller/AuctionForm";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { auctionsService } from "@/services/auctions.service";
 import type { AuctionFE } from "@/types/frontend/auction.types";
-import { notFound } from "@/lib/error-redirects";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export default function EditAuctionPage() {
   const router = useRouter();
@@ -64,7 +64,10 @@ export default function EditAuctionPage() {
       await auctionsService.update(auction!.id, updateData);
       router.push("/seller/auctions");
     } catch (err: any) {
-      console.error("Error updating auction:", err);
+      logError(err as Error, {
+        component: "AuctionEdit.updateAuction",
+        metadata: { slug, auctionId: auction?.id },
+      });
       setSubmitError(err.message || "Failed to update auction");
     } finally {
       setIsSubmitting(false);

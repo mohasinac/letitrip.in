@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { ReviewCard } from "@/components/cards/ReviewCard";
+import { logError } from "@/lib/firebase-error-logger";
 import { reviewsService } from "@/services/reviews.service";
 import type { ReviewFE, ReviewFiltersFE } from "@/types/frontend/review.types";
-import { Search, Filter, Star, ShieldCheck } from "lucide-react";
-import { logError } from "@/lib/firebase-error-logger";
+import { ShieldCheck, Star } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function ReviewsListClient() {
@@ -41,7 +41,10 @@ export default function ReviewsListClient() {
       }
     } catch (err) {
       setError("Failed to load reviews. Please try again later.");
-      console.error("Error fetching reviews:", err);
+      logError(err as Error, {
+        component: "ReviewsListClient.fetchReviews",
+        filters: activeFilters,
+      });
     } finally {
       setLoading(false);
     }

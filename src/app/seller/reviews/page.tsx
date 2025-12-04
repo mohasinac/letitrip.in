@@ -1,5 +1,7 @@
 "use client";
 
+import { logError } from "@/lib/firebase-error-logger";
+
 /**
  * Seller Reviews Page
  *
@@ -12,34 +14,31 @@
  * - View review analytics
  */
 
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import {
-  Star,
-  MessageSquare,
-  ArrowLeft,
-  Filter,
-  Search,
-  ThumbsUp,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Package,
-  User,
-  Send,
-  X,
-  BarChart3,
-} from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { FormInput, FormSelect } from "@/components/forms";
-import { reviewsService } from "@/services/reviews.service";
-import { productsService } from "@/services/products.service";
-import { apiService } from "@/services/api.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { PageState } from "@/components/common/PageState";
 import { SimplePagination } from "@/components/common/Pagination";
+import { FormInput, FormSelect } from "@/components/forms";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { apiService } from "@/services/api.service";
+import { productsService } from "@/services/products.service";
+import { reviewsService } from "@/services/reviews.service";
 import { formatDistanceToNow } from "date-fns";
+import {
+  ArrowLeft,
+  BarChart3,
+  CheckCircle,
+  Clock,
+  MessageSquare,
+  Package,
+  Search,
+  Send,
+  Star,
+  ThumbsUp,
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 interface Review {
   id: string;
@@ -126,7 +125,9 @@ export default function SellerReviewsPage() {
         })),
       );
     } catch (error) {
-      console.error("Error loading products:", error);
+      logError(error as Error, {
+        component: "SellerReviews.loadProducts",
+      });
     }
   };
 
@@ -261,7 +262,10 @@ export default function SellerReviewsPage() {
       setRespondingTo(null);
       setResponseText("");
     } catch (error) {
-      console.error("Error submitting response:", error);
+      logError(error as Error, {
+        component: "SellerReviews.handleSubmitResponse",
+        reviewId: respondingTo,
+      });
     } finally {
       setSubmitting(false);
     }

@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
-import Link from "next/link";
-import { Heart, AlertCircle, Loader2, Eye, Clock } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { auctionsService } from "@/services/auctions.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import AuctionCard from "@/components/cards/AuctionCard";
 import { PageState } from "@/components/common/PageState";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
-import AuctionCard from "@/components/cards/AuctionCard";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
+import { AlertCircle, Clock, Eye, Heart } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect } from "react";
 
 export default function WatchlistPage() {
   const { user } = useAuth();
@@ -44,7 +45,10 @@ export default function WatchlistPage() {
       );
       setAuctions(updatedAuctions);
     } catch (error) {
-      console.error("Failed to remove from watchlist:", error);
+      logError(error as Error, {
+        component: "UserWatchlist.removeFromWatchlist",
+        auctionId,
+      });
     }
   };
 

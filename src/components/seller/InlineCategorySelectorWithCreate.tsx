@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Plus, X, Loader2, ChevronDown } from "lucide-react";
-import { logError } from "@/lib/firebase-error-logger";
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput, FormLabel, FormTextarea } from "@/components/forms";
+import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
+import { Loader2, Plus, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface Category {
   id: string;
@@ -56,7 +56,7 @@ export default function InlineCategorySelectorWithCreate({
       const leafCategories = response.data
         .filter(
           (cat: any) =>
-            cat.isLeaf || (!cat.childrenIds?.length && !cat.hasChildren)
+            cat.isLeaf || (!cat.childrenIds?.length && !cat.hasChildren),
         )
         .map((cat: any) => ({
           id: cat.id,
@@ -131,7 +131,10 @@ export default function InlineCategorySelectorWithCreate({
       setCreateErrors({});
       setShowCreateDialog(false);
     } catch (error: any) {
-      console.error("Failed to create category:", error);
+      logError(error as Error, {
+        component: "InlineCategorySelectorWithCreate.handleCreateCategory",
+        formData: createForm,
+      });
       setCreateErrors({
         submit:
           error?.message || "Failed to create category. Please try again.",

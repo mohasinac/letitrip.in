@@ -1,13 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
-import Link from "next/link";
-import { WizardSteps } from "@/components/forms/WizardSteps";
 import { PageState } from "@/components/common/PageState";
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
+import { WizardSteps } from "@/components/forms/WizardSteps";
 import {
   BasicInfoStep,
   DetailsStep,
@@ -15,10 +10,16 @@ import {
   ReviewStep,
   type ProductEditFormData,
 } from "@/components/seller/product-edit-wizard";
-import { productsService } from "@/services/products.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { productsService } from "@/services/products.service";
 import type { ProductFE } from "@/types/frontend/product.types";
-import { ProductStatus, ProductCondition } from "@/types/shared/common.types";
+import { ProductCondition, ProductStatus } from "@/types/shared/common.types";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const STEPS = [
   { id: "basic", name: "Basic Info", description: "Name, price, and category" },
@@ -94,7 +95,10 @@ export default function EditProductPage() {
       await productsService.update(slug, formData);
       router.push("/seller/products");
     } catch (error) {
-      console.error("Failed to update product:", error);
+      logError(error as Error, {
+        component: "SellerProductEdit.handleSubmit",
+        slug,
+      });
       toast.error("Failed to update product");
     } finally {
       setSaving(false);

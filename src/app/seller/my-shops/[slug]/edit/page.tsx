@@ -1,17 +1,18 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { toast } from "sonner";
-import { ArrowLeft, Trash2, Eye } from "lucide-react";
-import Link from "next/link";
-import ShopForm from "@/components/seller/ShopForm";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { PageState } from "@/components/common/PageState";
-import { shopsService } from "@/services/shops.service";
+import ShopForm from "@/components/seller/ShopForm";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { shopsService } from "@/services/shops.service";
 import type { ShopFE } from "@/types/frontend/shop.types";
+import { ArrowLeft, Eye, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function EditShopPage() {
   const router = useRouter();
@@ -50,7 +51,10 @@ export default function EditShopPage() {
 
       toast.success("Shop updated successfully!");
     } catch (error: any) {
-      console.error("Failed to update shop:", error);
+      logError(error as Error, {
+        component: "SellerShopEdit.handleSubmit",
+        slug,
+      });
       toast.error(error.message || "Failed to update shop. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -66,7 +70,10 @@ export default function EditShopPage() {
       toast.success("Shop deleted successfully");
       router.push("/seller/my-shops");
     } catch (error: any) {
-      console.error("Failed to delete shop:", error);
+      logError(error as Error, {
+        component: "SellerShopEdit.handleDelete",
+        slug,
+      });
       toast.error(error.message || "Failed to delete shop. Please try again.");
       setShowDeleteDialog(false);
       setIsDeleting(false);

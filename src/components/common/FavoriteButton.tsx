@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Heart } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { logError } from "@/lib/firebase-error-logger";
+import { Heart } from "lucide-react";
+import { useState } from "react";
 
 interface FavoriteButtonProps {
   itemId: string;
@@ -64,7 +65,11 @@ export function FavoriteButton({
       setIsFavorite(!isFavorite);
       onToggle?.(!isFavorite);
     } catch (error) {
-      console.error("Failed to toggle favorite:", error);
+      logError(error as Error, {
+        component: "FavoriteButton.handleToggle",
+        itemType,
+        itemId,
+      });
     } finally {
       setIsLoading(false);
     }

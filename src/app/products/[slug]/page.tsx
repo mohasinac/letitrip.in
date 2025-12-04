@@ -1,28 +1,27 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Loader2, Star, Store } from "lucide-react";
-import { ProductGallery } from "@/components/product/ProductGallery";
-import { ProductInfo } from "@/components/product/ProductInfo";
+import { toast } from "@/components/admin/Toast";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
+import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
 import { ProductDescription } from "@/components/product/ProductDescription";
+import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductReviews } from "@/components/product/ProductReviews";
 import { ProductVariants } from "@/components/product/ProductVariants";
 import { SellerProducts } from "@/components/product/SellerProducts";
 import { SimilarProducts } from "@/components/product/SimilarProducts";
+import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
+import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
+import { useCart } from "@/hooks/useCart";
+import { logError } from "@/lib/firebase-error-logger";
+import { formatDiscount, formatINR } from "@/lib/price.utils";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
-import { notFound } from "@/lib/error-redirects";
-import { formatINR, formatDiscount } from "@/lib/price.utils";
-import { useCart } from "@/hooks/useCart";
-import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
-import { toast } from "@/components/admin/Toast";
-import { ErrorMessage } from "@/components/common/ErrorMessage";
-import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
-import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
-import type { ProductFE, ProductCardFE } from "@/types/frontend/product.types";
+import type { ProductFE } from "@/types/frontend/product.types";
 import type { ShopFE } from "@/types/frontend/shop.types";
+import { Star } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface ProductPageProps {
   params: Promise<{
@@ -76,12 +75,18 @@ export default function ProductPage({ params }: ProductPageProps) {
           const shopData = await shopsService.getById(data.shopId);
           setShop(shopData);
         } catch (error) {
-          console.error("Failed to load shop:", error);
+          logError(error as Error, {
+            component: "ProductDetail.loadShop",
+            shopId: data.shopId,
+          });
           // Non-critical error, continue showing product
         }
       }
     } catch (error: any) {
-      console.error("Failed to load product:", error);
+      logError(error as Error, {
+        component: "ProductDetail.loadProduct",
+        slug,
+      });
       setError(error.message || "Failed to load product. Please try again.");
     } finally {
       setLoading(false);

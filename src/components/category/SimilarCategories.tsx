@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { ChevronLeft, ChevronRight, Grid3X3, Folder } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
+import { ChevronLeft, ChevronRight, Folder, Grid3X3 } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface SimilarCategoriesProps {
   categorySlug: string;
@@ -36,7 +37,11 @@ export function SimilarCategories({
       );
       setCategories(response || []);
     } catch (error) {
-      console.error("Failed to load similar categories:", error);
+      logError(error as Error, {
+        component: "SimilarCategories.loadCategories",
+        categorySlug,
+        limit,
+      });
     } finally {
       setLoading(false);
     }

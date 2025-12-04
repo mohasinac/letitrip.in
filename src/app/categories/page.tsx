@@ -1,25 +1,26 @@
 "use client";
 
-import { Suspense, useState, useEffect, useMemo, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { FormSelect } from "@/components/forms";
-import {
-  ChevronRight,
-  Tag,
-  Loader2,
-  List,
-  ChevronLeft,
-  Filter,
-  Grid,
-} from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import OptimizedImage from "@/components/common/OptimizedImage";
+import { FormSelect } from "@/components/forms";
 import { CATEGORY_FILTERS } from "@/constants/filters";
-import { categoriesService } from "@/services/categories.service";
 import { useIsMobile } from "@/hooks/useMobile";
+import { logError } from "@/lib/firebase-error-logger";
+import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  Grid,
+  List,
+  Loader2,
+  Tag,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
 function CategoriesContent() {
   const router = useRouter();
@@ -105,7 +106,9 @@ function CategoriesContent() {
 
       setFilterOptions(updatedFilters);
     } catch (error) {
-      console.error("Failed to load filter options:", error);
+      logError(error as Error, {
+        component: "CategoriesPage.loadFilterOptions",
+      });
     }
   };
 
@@ -126,7 +129,11 @@ function CategoriesContent() {
       setTotalCount(response.count || response.data?.length || 0);
       setHasNextPage(response.pagination?.hasNextPage || false);
     } catch (error) {
-      console.error("Failed to load categories:", error);
+      logError(error as Error, {
+        component: "CategoriesPage.loadCategories",
+        page: currentPage,
+        filters: filterValues,
+      });
       setCategories([]);
     } finally {
       setLoading(false);

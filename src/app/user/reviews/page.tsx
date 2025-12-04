@@ -303,10 +303,10 @@ export default function UserReviewsPage() {
       // Calculate stats
       const allReviews = response.data || [];
       const approvedCount = allReviews.filter(
-        (r) => r.status === "approved"
+        (r) => r.status === "approved",
       ).length;
       const pendingCount = allReviews.filter(
-        (r) => r.status === "pending"
+        (r) => r.status === "pending",
       ).length;
       const avgRating =
         allReviews.length > 0

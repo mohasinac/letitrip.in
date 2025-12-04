@@ -1,20 +1,21 @@
 "use client";
 
-import { useState, useCallback, useRef, ReactNode } from "react";
-import { toast } from "sonner";
+import { BulkActionBar } from "@/components/common/BulkActionBar";
+import { TableCheckbox } from "@/components/common/TableCheckbox";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useIsMobile } from "@/hooks/useMobile";
+import { logError } from "@/lib/firebase-error-logger";
+import type { BulkAction } from "@/types/inline-edit";
 import {
-  Loader2,
-  Search,
   ChevronLeft,
   ChevronRight,
   Grid,
   List,
+  Loader2,
+  Search,
 } from "lucide-react";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useIsMobile } from "@/hooks/useMobile";
-import { BulkActionBar } from "@/components/common/BulkActionBar";
-import { TableCheckbox } from "@/components/common/TableCheckbox";
-import type { BulkAction } from "@/types/inline-edit";
+import { ReactNode, useCallback, useRef, useState } from "react";
+import { toast } from "sonner";
 
 // Define inline types
 interface InlineField {
@@ -119,7 +120,7 @@ export function SellerResourcePage<T extends { id: string }>({
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
@@ -160,7 +161,11 @@ export function SellerResourcePage<T extends { id: string }>({
 
       hasLoadedRef.current = true;
     } catch (err) {
-      console.error("Failed to load items:", err);
+      logError(err as Error, {
+        component: "SellerResourcePage.loadItems",
+        page: currentPage,
+        limit: pageSize,
+      });
       setError(err instanceof Error ? err.message : "Failed to load items");
       toast.error(`Failed to load ${resourceNamePlural}`);
     } finally {
@@ -224,7 +229,9 @@ export function SellerResourcePage<T extends { id: string }>({
 
   const toggleSelectItem = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((itemId) => itemId !== id)
+        : [...prev, id],
     );
   };
 
@@ -238,7 +245,7 @@ export function SellerResourcePage<T extends { id: string }>({
     toast.success(
       `${actionId} applied to ${selectedIds.length} ${
         selectedIds.length === 1 ? resourceName : resourceNamePlural
-      }`
+      }`,
     );
     setSelectedIds([]);
     loadItems();
@@ -433,7 +440,7 @@ export function SellerResourcePage<T extends { id: string }>({
                     {item.id}
                   </p>
                 </div>
-              )
+              ),
             )}
           </div>
         )}

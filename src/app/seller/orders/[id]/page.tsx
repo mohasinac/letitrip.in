@@ -1,27 +1,28 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { DateDisplay, Price } from "@/components/common/values";
 import { FormInput, FormSelect } from "@/components/forms";
-import { ordersService } from "@/services/orders.service";
-import { notFound } from "@/lib/error-redirects";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { notFound } from "@/lib/error-redirects";
+import { logError } from "@/lib/firebase-error-logger";
+import { ordersService } from "@/services/orders.service";
 import {
   ArrowLeft,
-  Package,
-  Truck,
   CheckCircle,
-  XCircle,
-  Download,
-  Mail,
-  Phone,
-  MapPin,
   CreditCard,
+  Download,
   FileText,
+  Mail,
+  MapPin,
+  Package,
+  Phone,
+  Truck,
+  XCircle,
 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export default function SellerOrderDetailPage() {
   const params = useParams();
@@ -48,7 +49,10 @@ export default function SellerOrderDetailPage() {
       const data: any = await ordersService.getById(orderId);
       return data;
     } catch (error: any) {
-      console.error("Failed to load order:", error);
+      logError(error as Error, {
+        component: "SellerOrderDetail.loadOrder",
+        orderId,
+      });
       router.push(notFound.order(orderId, error));
       return null;
     }
@@ -64,7 +68,11 @@ export default function SellerOrderDetailPage() {
       await ordersService.updateStatus(orderId, status);
       await execute(loadOrder);
     } catch (error: any) {
-      console.error("Failed to update status:", error);
+      logError(error as Error, {
+        component: "SellerOrderDetail.handleUpdateStatus",
+        orderId,
+        status,
+      });
     } finally {
       setUpdating(false);
     }
@@ -90,7 +98,11 @@ export default function SellerOrderDetailPage() {
       });
       await execute(loadOrder);
     } catch (error: any) {
-      console.error("Failed to add shipping:", error);
+      logError(error as Error, {
+        component: "SellerOrderDetail.handleAddShipping",
+        orderId,
+        shippingData,
+      });
     } finally {
       setUpdating(false);
     }
@@ -108,7 +120,10 @@ export default function SellerOrderDetailPage() {
       document.body.removeChild(link);
       globalThis.URL?.revokeObjectURL(url);
     } catch (error: any) {
-      console.error("Failed to download invoice:", error);
+      logError(error as Error, {
+        component: "SellerOrderDetail.handleDownloadInvoice",
+        orderId,
+      });
     }
   };
 

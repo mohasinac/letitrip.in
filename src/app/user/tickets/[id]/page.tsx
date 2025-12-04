@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { toast } from "sonner";
-import Link from "next/link";
+import AuthGuard from "@/components/auth/AuthGuard";
 import { DateDisplay } from "@/components/common/values";
 import { FormTextarea } from "@/components/forms";
-import AuthGuard from "@/components/auth/AuthGuard";
-import { supportService } from "@/services/support.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { supportService } from "@/services/support.service";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
@@ -63,7 +64,10 @@ export default function TicketDetailsPage() {
       setReplyMessage("");
       await fetchTicket(); // Refresh ticket with new message
     } catch (err: any) {
-      console.error("Error posting reply:", err);
+      logError(err as Error, {
+        component: "UserTicketDetail.handlePostReply",
+        ticketId,
+      });
       toast.error(err.message || "Failed to post reply");
     } finally {
       setIsSubmitting(false);

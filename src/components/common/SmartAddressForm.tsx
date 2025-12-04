@@ -1,37 +1,38 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { toast } from "sonner";
-import {
-  X,
-  Loader2,
-  Home,
-  Briefcase,
-  MapPin as MapPinIcon,
-} from "lucide-react";
-import { PincodeInput } from "./PincodeInput";
-import { MobileInput } from "./MobileInput";
-import { GPSButton } from "./GPSButton";
-import { StateSelector } from "./StateSelector";
 import { FormLabel } from "@/components/forms";
-import { addressService } from "@/services/address.service";
 import { MobileBottomSheet } from "@/components/mobile/MobileBottomSheet";
-import type { AddressFE } from "@/types/frontend/address.types";
-import type {
-  PincodeLookupResult,
-  GeoCoordinates,
-  ReverseGeocodeResult,
-} from "@/types/shared/location.types";
 import {
   ADDRESS_TYPES,
+  ALL_INDIAN_STATES,
   DEFAULT_COUNTRY_CODE,
   isValidIndianPhone,
   isValidPincode,
-  ALL_INDIAN_STATES,
 } from "@/constants/location";
+import { logError } from "@/lib/firebase-error-logger";
+import { addressService } from "@/services/address.service";
+import type { AddressFE } from "@/types/frontend/address.types";
+import type {
+  GeoCoordinates,
+  PincodeLookupResult,
+  ReverseGeocodeResult,
+} from "@/types/shared/location.types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Briefcase,
+  Home,
+  Loader2,
+  MapPin as MapPinIcon,
+  X,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { GPSButton } from "./GPSButton";
+import { MobileInput } from "./MobileInput";
+import { PincodeInput } from "./PincodeInput";
+import { StateSelector } from "./StateSelector";
 
 // Validation schema
 const SmartAddressSchema = z.object({
@@ -150,7 +151,10 @@ export function SmartAddressForm({
       setValue("type", address.addressType);
       setValue("isDefault", address.isDefault);
     } catch (error) {
-      console.error("Failed to load address:", error);
+      logError(error as Error, {
+        component: "SmartAddressForm.fetchAddress",
+        addressId,
+      });
     } finally {
       setFetchLoading(false);
     }
@@ -240,7 +244,11 @@ export function SmartAddressForm({
       onSuccess?.(result);
       onClose();
     } catch (error: any) {
-      console.error("Form error:", error);
+      logError(error as Error, {
+        component: "SmartAddressForm.onSubmit",
+        isEditing,
+        addressId,
+      });
       toast.error(error.message || "Something went wrong");
     } finally {
       setLoading(false);

@@ -1,25 +1,25 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import {
-  Filter,
-  MessageSquare,
-  Clock,
-  AlertCircle,
-  CheckCircle,
-  Search,
-  Plus,
-} from "lucide-react";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { supportService } from "@/services/support.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { TICKET_FILTERS } from "@/constants/filters";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { useIsMobile } from "@/hooks/useMobile";
+import { logError } from "@/lib/firebase-error-logger";
+import { supportService } from "@/services/support.service";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
 import { TicketStatus } from "@/types/shared/common.types";
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Filter,
+  MessageSquare,
+  Plus,
+} from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 export default function SellerSupportTicketsPage() {
   return (
@@ -90,7 +90,7 @@ function SellerSupportTicketsContent() {
         },
       };
     } catch (error) {
-      console.error("Failed to load tickets:", error);
+      logError(error as Error, { component: "SellerSupportTickets.loadData" });
       return {
         tickets: [],
         totalTickets: 0,

@@ -1,5 +1,7 @@
 "use client";
 
+import { logError } from "@/lib/firebase-error-logger";
+
 /**
  * User RipLimit Dashboard Page
  * Epic: E028 - RipLimit Bidding Currency
@@ -11,40 +13,39 @@
  * - Purchase and refund actions
  */
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { logError } from "@/lib/firebase-error-logger";
-import { toast } from "sonner";
-import {
-  Wallet,
-  ArrowUpRight,
-  ArrowDownLeft,
-  Clock,
-  Plus,
-  RefreshCw,
-  Gavel,
-  ExternalLink,
-  TrendingUp,
-  Lock,
-  AlertCircle,
-  Check,
-  X,
-} from "lucide-react";
+import { Price } from "@/components/common/values";
 import {
   FormInput,
-  FormTextarea,
   FormLabel,
   FormSelect,
+  FormTextarea,
 } from "@/components/forms";
-import { useAuth } from "@/contexts/AuthContext";
-import { ripLimitService } from "@/services/riplimit.service";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Price } from "@/components/common/values";
+import { useAuth } from "@/contexts/AuthContext";
+import { ripLimitService } from "@/services/riplimit.service";
 import {
   RipLimitBalanceFE,
   RipLimitTransactionFE,
 } from "@/types/frontend/riplimit.types";
+import {
+  AlertCircle,
+  ArrowDownLeft,
+  ArrowUpRight,
+  Check,
+  Clock,
+  ExternalLink,
+  Gavel,
+  Lock,
+  Plus,
+  RefreshCw,
+  TrendingUp,
+  Wallet,
+  X,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 type TransactionFilter =
   | "ALL"
@@ -89,7 +90,9 @@ export default function UserRipLimitPage() {
       const data = await ripLimitService.getBalance();
       setBalance(data);
     } catch (err) {
-      console.error("Failed to load balance:", err);
+      logError(err as Error, {
+        component: "UserRipLimit.loadBalance",
+      });
       setError("Failed to load RipLimit balance");
     } finally {
       setLoadingBalance(false);

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getPaymentLogo } from "@/lib/payment-logos";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { logError } from "@/lib/firebase-error-logger";
+import { getPaymentLogo } from "@/lib/payment-logos";
+import { useEffect, useState } from "react";
 
 interface PaymentLogoProps {
   paymentId: string;
@@ -33,7 +34,10 @@ export function PaymentLogo({
           setError(false);
         }
       } catch (err) {
-        console.error(`Failed to load logo for ${paymentId}:`, err);
+        logError(err as Error, {
+          component: "PaymentLogo.useEffect",
+          paymentId,
+        });
         if (mounted) {
           setError(true);
         }

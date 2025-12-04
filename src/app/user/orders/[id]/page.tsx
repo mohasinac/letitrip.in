@@ -1,28 +1,25 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { PageState } from "@/components/common/PageState";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { DateDisplay, Price } from "@/components/common/values";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { ordersService } from "@/services/orders.service";
+import type { OrderFE } from "@/types/frontend/order.types";
 import {
+  CheckCircle,
   ChevronLeft,
-  Loader2,
+  Download,
   Package,
   Truck,
-  CheckCircle,
   XCircle,
-  Download,
-  AlertCircle,
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { ordersService } from "@/services/orders.service";
-import { OrderStatus } from "@/types";
-import { notFound } from "@/lib/error-redirects";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { Price, DateDisplay } from "@/components/common/values";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { PageState } from "@/components/common/PageState";
-import type { OrderFE } from "@/types/frontend/order.types";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface OrderPageProps {
   params: Promise<{
@@ -85,7 +82,10 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
       await loadOrder();
       toast.success("Order cancelled successfully");
     } catch (error) {
-      console.error("Failed to cancel order:", error);
+      logError(error as Error, {
+        component: "UserOrderDetail.handleCancelOrder",
+        orderId,
+      });
       toast.error("Failed to cancel order");
     }
   };
@@ -373,8 +373,8 @@ function OrderTimeline({ status }: { status: string }) {
                   isCurrent
                     ? "text-primary"
                     : isCompleted
-                    ? "text-gray-900 dark:text-white"
-                    : "text-gray-400 dark:text-gray-500"
+                      ? "text-gray-900 dark:text-white"
+                      : "text-gray-400 dark:text-gray-500"
                 }`}
               >
                 {step.label}

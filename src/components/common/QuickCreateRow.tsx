@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, X, Loader2 } from "lucide-react";
-import { QuickCreateRowProps, InlineField } from "@/types/inline-edit";
-import { InlineImageUpload } from "./InlineImageUpload";
 import InlineCategorySelectorWithCreate from "@/components/seller/InlineCategorySelectorWithCreate";
+import { logError } from "@/lib/firebase-error-logger";
+import { InlineField, QuickCreateRowProps } from "@/types/inline-edit";
+import { Loader2, Plus, X } from "lucide-react";
+import { useState } from "react";
+import { InlineImageUpload } from "./InlineImageUpload";
 
 export function QuickCreateRow({
   fields,
@@ -89,7 +90,10 @@ export function QuickCreateRow({
       setTouched({});
       setIsExpanded(false);
     } catch (error) {
-      console.error("Failed to create:", error);
+      logError(error as Error, {
+        component: "QuickCreateRow.handleCreate",
+        values,
+      });
     }
   };
 
