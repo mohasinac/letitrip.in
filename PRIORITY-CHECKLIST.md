@@ -41,6 +41,7 @@
 - [ ] Use `useLoadingState` hook (not manual loading states)
 - [ ] Use `logError()` for error logging (not `console.log`)
 - [ ] Use service layer (not direct `fetch()` calls)
+- [ ] **Firebase Architecture**: UI only uses Auth + Realtime DB, backend uses Admin SDK for Firestore + Storage
 - [ ] TypeScript strict mode (no `any`, proper type definitions)
 - [ ] Accessibility (ARIA labels, keyboard navigation)
 - [ ] commit every 10 completed tasks
@@ -49,6 +50,25 @@
 - [ ] UPDATE CHECKLIST AFTER AND BEFORE DOING TASKS
 - [ ] type check aand fix beeforre commit or update
 - [ ] stop every 30 tasks to build check
+
+**Firebase Folder Structure**:
+
+```
+src/
+├── lib/firebase/              # CLIENT-SIDE ONLY (UI)
+│   ├── query-helpers.ts       # Query utilities for UI
+│   └── timestamp-helpers.ts   # Date utilities
+│   # ❌ NO Firestore/Storage - Auth + Realtime DB only
+│
+└── app/api/lib/firebase/      # BACKEND ONLY (Admin SDK)
+    ├── admin.ts               # Firebase Admin initialization
+    ├── config.ts              # adminDb, adminAuth, adminStorage
+    ├── collections.ts         # Firestore collections helpers
+    ├── queries.ts             # Reusable Firestore queries
+    └── transactions.ts        # Firestore transactions
+    # ✅ ALL database operations here
+```
+
 - [ ] try bulk fixes
 - [ ] no summary just pending tasks count
 - [ ] for orphaned code it is faster to rewrite the file rather than finding places to put new code
@@ -1199,7 +1219,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - ✅ `/auctions` - Complete (useUrlFilters + AdvancedPagination, 162 insertions, 234 deletions)
   - ✅ `/shops` - Complete (useUrlFilters + AdvancedPagination, 101 insertions, 104 deletions)
   - ✅ `/categories/[slug]` - Complete (useUrlFilters + AdvancedPagination, 83 insertions, 83 deletions)
-  - ✅ `/search` - Not applicable (simple query string, no filters/pagination)
+  - ✅ `/search` - Complete (Added AdvancedPagination with page/pageSize URL params)
 
 ##### ✅ 134-update-all-admin-list-pages-url-params
 

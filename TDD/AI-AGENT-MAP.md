@@ -284,9 +284,19 @@ src/
 │   ├── admin/             # Admin dashboard pages
 │   ├── seller/            # Seller dashboard pages
 │   ├── user/              # User dashboard pages
-│   ├── api/               # API routes
+│   ├── api/               # API routes (Backend)
+│   │   ├── lib/          # API utilities
+│   │   │   ├── firebase/  # Backend Firebase (Admin SDK, Firestore, Storage)
+│   │   │   │   ├── admin.ts      # Firebase Admin initialization
+│   │   │   │   ├── config.ts     # Firestore & Storage config
+│   │   │   │   ├── collections.ts # Firestore collections helpers
+│   │   │   │   ├── queries.ts    # Reusable Firestore queries
+│   │   │   │   └── transactions.ts # Firestore transactions
+│   │   │   ├── auth.ts    # Auth middleware
+│   │   │   └── session.ts # Session management
+│   │   └── [resource]/   # Resource-specific routes (products, users, etc.)
 │   └── [public]/          # Public pages (products, auctions, shops)
-├── components/            # React components
+├── components/            # React components (UI only)
 │   ├── common/           # Shared components (Price, DateDisplay, StatusBadge)
 │   ├── forms/            # Form components (FormField, FormInput)
 │   ├── layout/           # Layout components (Header, Footer, Sidebar)
@@ -295,10 +305,30 @@ src/
 │   └── [feature]/        # Feature-specific components
 ├── constants/            # App-wide constants
 ├── hooks/                # Custom React hooks
-├── lib/                  # Utilities and helpers
-├── services/             # API service layer
+├── lib/                  # Client-side utilities (UI only)
+│   ├── firebase/         # Client Firebase (Auth, Realtime DB only)
+│   │   ├── query-helpers.ts    # Client-side query helpers
+│   │   └── timestamp-helpers.ts # Date/time utilities
+│   └── [utility]/        # Other client utilities
+├── services/             # API service layer (calls API routes)
 ├── types/                # TypeScript type definitions
 └── styles/               # Global styles
+
+Firebase Architecture:
+┌─────────────────────────────────────────────────────────────┐
+│ FRONTEND (src/lib/firebase/)                                │
+│ - Firebase Auth (Client SDK)                                │
+│ - Realtime Database (Client SDK) - Only for real-time UI    │
+│ - NO direct Firestore/Storage access                        │
+└─────────────────────────────────────────────────────────────┘
+                          ↓ API Calls
+┌─────────────────────────────────────────────────────────────┐
+│ BACKEND (src/app/api/lib/firebase/)                         │
+│ - Firebase Admin SDK                                         │
+│ - Firestore (Admin SDK) - All database operations           │
+│ - Storage (Admin SDK) - File uploads/downloads              │
+│ - Auth verification                                          │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ### Naming Conventions
@@ -499,27 +529,35 @@ export async function GET(request: NextRequest) {
 
 ### Database Operations
 
-**Use COLLECTIONS constant**:
+**IMPORTANT: Firestore is BACKEND ONLY**
 
 ```typescript
-import { COLLECTIONS } from "@/constants/database";
+// ❌ NEVER in frontend/components:
 import { db } from "@/lib/firebase/config";
+const usersRef = db.collection("users"); // NO DIRECT FIRESTORE ACCESS
 
-// ❌ DON'T:
-const usersRef = db.collection("users");
+// ✅ ALWAYS use services in frontend:
+import { usersService } from "@/services/users.service";
+const users = await usersService.list(); // API call to backend
 
-// ✅ DO:
-const usersRef = db.collection(COLLECTIONS.USERS);
+// ✅ Firestore ONLY in backend (src/app/api/**):
+import { COLLECTIONS } from "@/constants/database";
+import { adminDb } from "@/app/api/lib/firebase/config";
+
+const usersRef = adminDb.collection(COLLECTIONS.USERS);
 ```
 
-**Firestore query patterns**:
+**Firestore query patterns (BACKEND ONLY - src/app/api/**):\*\*
 
 ```typescript
+import { adminDb } from "@/app/api/lib/firebase/config";
+import { COLLECTIONS } from "@/constants/database";
+
 // Get by ID
-const doc = await db.collection(COLLECTIONS.USERS).doc(userId).get();
+const doc = await adminDb.collection(COLLECTIONS.USERS).doc(userId).get();
 
 // Query with filters
-const snapshot = await db
+const snapshot = await adminDb
   .collection(COLLECTIONS.PRODUCTS)
   .where("status", "==", "active")
   .where("price", "<=", 1000)
@@ -528,7 +566,7 @@ const snapshot = await db
   .get();
 
 // Subcollection
-const reviewsRef = db
+const reviewsRef = adminDb
   .collection(COLLECTIONS.PRODUCTS)
   .doc(productId)
   .collection(COLLECTIONS.REVIEWS);
