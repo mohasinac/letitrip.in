@@ -565,7 +565,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   // After
   z.string().min(
     VALIDATION_RULES.NAME.MIN_LENGTH,
-    VALIDATION_MESSAGES.NAME.TOO_SHORT
+    VALIDATION_MESSAGES.NAME.TOO_SHORT,
   );
   ```
 
@@ -1092,34 +1092,40 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **Changes**: Add OTP_VERIFICATIONS collection constant
 - **Status**: COMPLETE - OTP_VERIFICATIONS and USER_ACTIVITIES already defined in COLLECTIONS
 
-### Task 16: IP Tracking & Security (6-8 hours) 🟠 HIGH
+### Task 16: IP Tracking & Security (6-8 hours) ✅ COMPLETE
 
-##### ⬜ 117-create-ip-tracker-middleware
+##### ✅ 117-create-ip-tracker-middleware
 
 - **File**: `src/app/api/middleware/ip-tracker.ts`
+- **Status**: COMPLETE - withIPTracking, withLoginTracking, withRegistrationTracking wrappers
 
-##### ⬜ 118-create-ip-tracker-service
+##### ✅ 118-create-ip-tracker-service
 
 - **File**: `src/services/ip-tracker.service.ts`
+- **Status**: COMPLETE - Activity logging, rate limiting, suspicious activity detection
 
-##### ⬜ 119-add-user-activities-collection
+##### ✅ 119-add-user-activities-collection
 
 - **File**: `src/constants/database.ts`
+- **Status**: COMPLETE - USER_ACTIVITIES collection constant exists
 
-##### ⬜ 120-log-ip-on-login-registration
+##### ✅ 120-log-ip-on-login-registration
 
 - **Files**: Auth API routes
 - **Changes**: Track IP on login/registration
+- **Status**: COMPLETE - Using withLoginTracking (5 attempts/15min) and withRegistrationTracking (3/hour)
 
-##### ⬜ 121-log-ip-on-orders-bids
+##### ✅ 121-log-ip-on-orders-bids
 
 - **Files**: Order/Auction API routes
 - **Changes**: Track IP on critical actions
+- **Status**: COMPLETE - Orders (10/15min), Bids (20/15min) with automatic tracking
 
-##### ⬜ 122-add-rate-limiting-by-ip
+##### ✅ 122-add-rate-limiting-by-ip
 
 - **Files**: API middleware
 - **Changes**: Max 5 login attempts per IP per 15 minutes
+- **Status**: COMPLETE - Declarative rate limiting via withIPTracking wrapper
 
 ### Task 17: Events Management System (24-32 hours) 🟡 MEDIUM
 
@@ -1500,6 +1506,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
 📊 Overall: **164/166 tasks complete (98.8%)** - 2 remaining (165-166 test coverage)
 
 💾 **Recent Session (Dec 4, 2025 - Active)**:
+
 - Task 133 (4/5 complete): URL filtering migration for public pages
   - ✅ `/products` - useUrlFilters + AdvancedPagination (117+/192-)
   - ✅ `/auctions` - useUrlFilters + AdvancedPagination (162+/234-)
@@ -1508,7 +1515,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - ✅ TypeScript fixes: logError casts, z.record, requireRole, user.phone alias
   - 5 commits, 546+ lines removed, URL as single source of truth
   - Remaining: `/search` (intentionally simple, no filters needed)
-  
+
 🎯 **Next**: Tasks 134-135 (admin/seller pages URL migration) or build check at 30 tasks
 
 ### Lines of Code Impact
