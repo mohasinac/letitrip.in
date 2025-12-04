@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useCallback } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
 
 /**
  * Category Selector Component
@@ -46,6 +47,7 @@ export default function CategorySelector({
 }: CategorySelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(),
   );
@@ -97,17 +99,17 @@ export default function CategorySelector({
     return tree;
   }, [categories]);
 
-  // Filter categories by search
+  // Filter categories based on search
   const filteredCategories = useMemo(() => {
-    if (!searchQuery.trim()) return categories;
+    if (!debouncedSearchQuery.trim()) return categories;
 
-    const query = searchQuery.toLowerCase();
+    const query = debouncedSearchQuery.toLowerCase();
     return categories.filter(
       (cat) =>
         cat.name.toLowerCase().includes(query) ||
         cat.slug.toLowerCase().includes(query),
     );
-  }, [categories, searchQuery]);
+  }, [categories, debouncedSearchQuery]);
   // Get category path for search results (use first parent path)
   const getCategoryPath = useCallback(
     (category: Category): string => {
@@ -349,7 +351,7 @@ export default function CategorySelector({
 
             {/* Category list */}
             <div className="overflow-y-auto">
-              {searchQuery.trim() ? (
+              {debouncedSearchQuery.trim() ? (
                 // Search results (flat list with paths)
                 filteredCategories.length > 0 ? (
                   filteredCategories.map((category) => {
