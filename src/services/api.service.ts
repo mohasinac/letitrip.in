@@ -18,6 +18,13 @@ interface CacheConfig {
   staleWhileRevalidate?: number; // Additional time to serve stale content
 }
 
+// Retry configuration
+interface RetryConfig {
+  maxRetries: number;
+  retryDelay: number; // milliseconds
+  retryableStatuses: number[];
+}
+
 // API Service - Base HTTP client with request deduplication and stale-while-revalidate caching
 class ApiService {
   private baseUrl: string;
@@ -26,6 +33,8 @@ class ApiService {
   private cacheMisses: Map<string, number>;
   private cache: Map<string, CacheEntry<any>>;
   private cacheConfig: Map<string, CacheConfig>;
+  private abortControllers: Map<string, AbortController>;
+  private retryConfig: RetryConfig;
 
   constructor(baseUrl: string = "/api") {
     this.baseUrl = baseUrl;
@@ -34,6 +43,14 @@ class ApiService {
     this.cacheMisses = new Map();
     this.cache = new Map();
     this.cacheConfig = new Map();
+    this.abortControllers = new Map();
+
+    // Default retry configuration
+    this.retryConfig = {
+      maxRetries: 3,
+      retryDelay: 1000, // Start with 1 second
+      retryableStatuses: [408, 429, 500, 502, 503, 504],
+    };
 
     // Set default cache configurations
     this.initializeCacheConfig();
@@ -141,6 +158,67 @@ class ApiService {
   }
 
   /**
+   * Sleep for exponential backoff retry
+   */
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Exponential backoff calculation
+   */
+  private getRetryDelay(attempt: number): number {
+    return this.retryConfig.retryDelay * Math.pow(2, attempt - 1);
+  }
+
+  /**
+   * Check if error is retryable
+   */
+  private isRetryableError(error: any): boolean {
+    // Network errors
+    if (error.name === "TypeError" && error.message.includes("fetch")) {
+      return true;
+    }
+
+    // Retryable status codes
+    if (
+      error.status &&
+      this.retryConfig.retryableStatuses.includes(error.status)
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Abort pending request
+   */
+  abortRequest(cacheKey: string): void {
+    const controller = this.abortControllers.get(cacheKey);
+    if (controller) {
+      controller.abort();
+      this.abortControllers.delete(cacheKey);
+      this.pendingRequests.delete(cacheKey);
+      console.log(`[API] Aborted request: ${cacheKey}`);
+    }
+  }
+
+  /**
+   * Abort all pending requests matching pattern
+   */
+  abortRequestsMatching(pattern: string): void {
+    let count = 0;
+    for (const key of this.abortControllers.keys()) {
+      if (key.includes(pattern)) {
+        this.abortRequest(key);
+        count++;
+      }
+    }
+    console.log(`[API] Aborted ${count} requests matching: ${pattern}`);
+  }
+
+  /**
    * Check if there's a pending request for the same endpoint
    * If yes, return the existing promise to avoid duplicate requests
    */
@@ -167,6 +245,7 @@ class ApiService {
     const requestPromise = requestFn().finally(() => {
       // Remove from pending requests when complete
       this.pendingRequests.delete(cacheKey);
+      this.abortControllers.delete(cacheKey);
     });
 
     // Store in pending requests
@@ -178,6 +257,7 @@ class ApiService {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
+    attempt: number = 1,
   ): Promise<T> {
     // Handle server-side requests (when baseUrl is relative)
     let url = `${this.baseUrl}${endpoint}`;
@@ -188,12 +268,22 @@ class ApiService {
       url = `${host}${url}`;
     }
 
+    // Create AbortController for this request
+    const cacheKey = this.getCacheKey(
+      url,
+      options.method || "GET",
+      typeof options.body === "string" ? options.body : undefined,
+    );
+    const controller = new AbortController();
+    this.abortControllers.set(cacheKey, controller);
+
     const config: RequestInit = {
       ...options,
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      signal: controller.signal,
     };
 
     // Track request start time
@@ -209,9 +299,11 @@ class ApiService {
       // Handle rate limiting
       if (response.status === 429) {
         const retryAfter = response.headers.get("Retry-After");
-        throw new Error(
+        const error = new Error(
           `Too many requests. Please try again in ${retryAfter} seconds.`,
-        );
+        ) as any;
+        error.status = 429;
+        throw error;
       }
 
       // Handle unauthorized
@@ -231,24 +323,60 @@ class ApiService {
 
       // Handle forbidden
       if (response.status === 403) {
-        throw new Error("Access forbidden. You do not have permission.");
+        const error = new Error(
+          "Access forbidden. You do not have permission.",
+        ) as any;
+        error.status = 403;
+        throw error;
       }
 
       // Handle not found
       if (response.status === 404) {
-        throw new Error("Resource not found.");
+        const error = new Error("Resource not found.") as any;
+        error.status = 404;
+        throw error;
       }
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || data.message || "Request failed");
+        const error = new Error(
+          data.error || data.message || "Request failed",
+        ) as any;
+        error.status = response.status;
+        throw error;
       }
 
+      // Clean up abort controller on success
+      this.abortControllers.delete(cacheKey);
+
       return data;
-    } catch (error) {
+    } catch (error: any) {
+      // Clean up abort controller
+      this.abortControllers.delete(cacheKey);
+
+      // Don't retry if request was aborted
+      if (error.name === "AbortError") {
+        console.log(`[API] Request aborted: ${endpoint}`);
+        throw new Error("Request cancelled");
+      }
+
       // Track API errors
       trackAPIError(endpoint, error);
+
+      // Retry logic with exponential backoff
+      if (
+        attempt < this.retryConfig.maxRetries &&
+        this.isRetryableError(error)
+      ) {
+        const delay = this.getRetryDelay(attempt);
+        console.log(
+          `[API] Retry ${attempt}/${this.retryConfig.maxRetries} after ${delay}ms: ${endpoint}`,
+        );
+
+        await this.sleep(delay);
+        return this.request<T>(endpoint, options, attempt + 1);
+      }
 
       if (error instanceof Error) {
         throw error;
@@ -518,6 +646,48 @@ class ApiService {
     console.log(
       `[API Cache] Batch configured ${Object.keys(configs).length} endpoints`,
     );
+  }
+
+  /**
+   * Configure retry settings
+   *
+   * @example
+   * ```typescript
+   * apiService.configureRetry({
+   *   maxRetries: 3,
+   *   retryDelay: 1000,
+   *   retryableStatuses: [408, 429, 500, 502, 503, 504]
+   * });
+   * ```
+   */
+  configureRetry(config: Partial<RetryConfig>): void {
+    this.retryConfig = { ...this.retryConfig, ...config };
+    console.log(`[API] Configured retry settings:`, this.retryConfig);
+  }
+
+  /**
+   * Get current retry configuration
+   */
+  getRetryConfig(): RetryConfig {
+    return { ...this.retryConfig };
+  }
+
+  /**
+   * Get all active abort controllers (for debugging)
+   */
+  getActiveRequests(): string[] {
+    return Array.from(this.abortControllers.keys());
+  }
+
+  /**
+   * Abort all pending requests
+   */
+  abortAllRequests(): void {
+    const count = this.abortControllers.size;
+    for (const key of Array.from(this.abortControllers.keys())) {
+      this.abortRequest(key);
+    }
+    console.log(`[API] Aborted all ${count} pending requests`);
   }
 }
 
