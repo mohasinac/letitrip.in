@@ -1,169 +1,124 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import {
-  Gavel,
-  Loader2,
-  Clock,
-  TrendingUp,
-  Grid,
-  List,
-  Filter as FilterIcon,
-  AlertCircle,
-} from "lucide-react";
 import AuctionCard from "@/components/cards/AuctionCard";
 import { CardGrid } from "@/components/cards/CardGrid";
-import { EmptyState, EmptyStates } from "@/components/common/EmptyState";
+import { AdvancedPagination } from "@/components/common/AdvancedPagination";
+import { EmptyStates } from "@/components/common/EmptyState";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
 import { AUCTION_FILTERS } from "@/constants/filters";
-import { useIsMobile } from "@/hooks/useMobile";
-import { auctionsService } from "@/services/auctions.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { useIsMobile } from "@/hooks/useMobile";
+import { useUrlFilters } from "@/hooks/useUrlFilters";
+import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
+import {
+  AlertCircle,
+  Clock,
+  Filter as FilterIcon,
+  Gavel,
+  Grid,
+  List,
+  Loader2,
+  TrendingUp,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 function AuctionsContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const isMobile = useIsMobile();
+
+  // Use URL filters hook
+  const {
+    filters,
+    updateFilter,
+    updateFilters,
+    resetFilters: resetUrlFilters,
+    sort,
+    setSort,
+    page,
+    setPage,
+    limit,
+    setLimit,
+  } = useUrlFilters({
+    initialFilters: {
+      status: "active",
+      categoryId: "",
+      minBid: "",
+      maxBid: "",
+      featured: "",
+      view: "grid",
+    },
+    initialSort: { field: "created_at", order: "desc" },
+    initialPage: 1,
+    initialLimit: 12,
+  });
+
   const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [view, setView] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
 
   // Loading state
   const { isLoading, error, execute } = useLoadingState<void>();
 
-  // Cursor-based pagination
-  const [cursors, setCursors] = useState<(string | null)[]>([null]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
-
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
-
-  const status = searchParams.get("status") as AuctionStatus | null;
-  const featured = searchParams.get("featured");
-  const sortBy = searchParams.get("sortBy") || "created_at";
-  const sortOrder = searchParams.get("sortOrder") || "desc";
-  const itemsPerPage = 12;
+  // Extract view from filters
+  const view = (filters.view as "grid" | "list") || "grid";
 
   const loadAuctions = useCallback(async () => {
     await execute(async () => {
-      const startAfter = cursors[currentPage - 1];
+      const startAfter = cursors[page - 1];
 
+      // Build filter params
       const apiFilters: any = {
         startAfter: startAfter || undefined,
-        limit: itemsPerPage,
-        sortBy,
-        sortOrder,
-        ...filterValues,
+        limit,
+        sortBy: sort?.field || "created_at",
+        sortOrder: sort?.order || "desc",
       };
 
-      if (status) {
-        apiFilters.status = status;
-      } else if (!filterValues.status) {
-        apiFilters.status = "active"; // Default to active auctions
-      }
-
-      if (featured === "true") {
-        apiFilters.featured = true;
-      }
+      if (filters.status) apiFilters.status = filters.status;
+      if (filters.categoryId) apiFilters.categoryId = filters.categoryId;
+      if (filters.minBid) apiFilters.minBid = Number(filters.minBid);
+      if (filters.maxBid) apiFilters.maxBid = Number(filters.maxBid);
+      if (filters.featured === "true") apiFilters.featured = true;
 
       const response = await auctionsService.list(apiFilters);
       setAuctions(response.data || []);
       setTotalCount(response.count || 0);
 
-      // Check if it's cursor pagination
-      if ("hasNextPage" in response.pagination) {
-        setHasNextPage(response.pagination.hasNextPage || false);
-
-        // Store cursor for next page
-        if ("nextCursor" in response.pagination) {
-          const cursorPagination = response.pagination as any;
-          if (cursorPagination.nextCursor) {
-            setCursors((prev) => {
-              const newCursors = [...prev];
-              newCursors[currentPage] = cursorPagination.nextCursor || null;
-              return newCursors;
-            });
-          }
+      // Store cursor for next page
+      if (
+        "hasNextPage" in response.pagination &&
+        "nextCursor" in response.pagination
+      ) {
+        const cursorPagination = response.pagination as any;
+        if (cursorPagination.nextCursor && !cursors[page]) {
+          setCursors((prev) => {
+            const newCursors = [...prev];
+            newCursors[page] = cursorPagination.nextCursor || null;
+            return newCursors;
+          });
         }
       }
     });
-  }, [
-    cursors,
-    currentPage,
-    itemsPerPage,
-    sortBy,
-    sortOrder,
-    filterValues,
-    status,
-    featured,
-    execute,
-  ]);
+  }, [cursors, page, limit, sort, filters, execute]);
 
-  // Sync filter values with URL on mount
-  useEffect(() => {
-    const initialFilters: Record<string, any> = {};
-    if (status) initialFilters.status = status;
-    if (featured) initialFilters.featured = featured;
-    setFilterValues(initialFilters);
-  }, [status, featured]);
-
-  // Reload when sort/page/filters change via URL
+  // Load auctions when filters, sort, or page changes
   useEffect(() => {
     loadAuctions();
   }, [loadAuctions]);
 
   const handleResetFilters = useCallback(() => {
-    setFilterValues({});
+    resetUrlFilters();
+    updateFilter("view", "grid");
+    updateFilter("status", "active");
     setShowFilters(false);
-    setCurrentPage(1);
     setCursors([null]);
-    // Clear URL and reload
-    router.push("/auctions", { scroll: false });
-  }, [router]);
-
-  const renderPagination = () => {
-    if (!hasNextPage && currentPage === 1) return null;
-
-    return (
-      <div className="flex items-center justify-center gap-4 mt-8">
-        <button
-          onClick={() => {
-            if (currentPage > 1) {
-              setCurrentPage(currentPage - 1);
-              globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
-            }
-          }}
-          disabled={currentPage === 1}
-          className="px-6 py-3 min-h-[48px] rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
-        >
-          Previous
-        </button>
-
-        <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-          Page {currentPage}
-        </span>
-
-        <button
-          onClick={() => {
-            if (hasNextPage) {
-              setCurrentPage(currentPage + 1);
-              globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
-            }
-          }}
-          disabled={!hasNextPage}
-          className="px-6 py-3 min-h-[48px] rounded-lg border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
-        >
-          Next
-        </button>
-      </div>
-    );
-  };
+  }, [resetUrlFilters, updateFilter]);
 
   if (error) {
     return (
@@ -213,31 +168,11 @@ function AuctionsContent() {
           {!isMobile && (
             <UnifiedFilterSidebar
               sections={AUCTION_FILTERS}
-              values={filterValues}
-              onChange={(key, value) => {
-                setFilterValues((prev) => ({ ...prev, [key]: value }));
-              }}
+              values={filters}
+              onChange={(key, value) => updateFilter(key, value)}
               onApply={(pendingValues) => {
-                if (pendingValues) setFilterValues(pendingValues);
-                setCurrentPage(1);
+                if (pendingValues) updateFilters(pendingValues);
                 setCursors([null]);
-                // Update URL with new filter values and reload
-                const params = new URLSearchParams();
-                if (pendingValues?.status)
-                  params.set("status", pendingValues.status);
-                if (pendingValues?.categoryId)
-                  params.set("categoryId", pendingValues.categoryId);
-                if (pendingValues?.minBid)
-                  params.set("minBid", String(pendingValues.minBid));
-                if (pendingValues?.maxBid)
-                  params.set("maxBid", String(pendingValues.maxBid));
-                if (pendingValues?.featured) params.set("featured", "true");
-                if (sortBy !== "created_at") params.set("sortBy", sortBy);
-                if (sortOrder !== "desc") params.set("sortOrder", sortOrder);
-                const newUrl = params.toString()
-                  ? `/auctions?${params.toString()}`
-                  : "/auctions";
-                router.push(newUrl, { scroll: false });
               }}
               onReset={handleResetFilters}
               isOpen={showFilters}
@@ -257,18 +192,13 @@ function AuctionsContent() {
                 {/* Sort Controls */}
                 <div className="flex gap-2 flex-wrap sm:flex-nowrap flex-1">
                   <select
-                    value={sortBy}
-                    onChange={(e) => {
-                      const newSortBy = e.target.value;
-                      // Update URL with new sort
-                      const params = new URLSearchParams(
-                        searchParams.toString(),
-                      );
-                      params.set("sortBy", newSortBy);
-                      router.push(`/auctions?${params.toString()}`, {
-                        scroll: false,
-                      });
-                    }}
+                    value={sort?.field || "created_at"}
+                    onChange={(e) =>
+                      setSort({
+                        field: e.target.value,
+                        order: sort?.order || "desc",
+                      })
+                    }
                     className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
                   >
                     <option value="created_at">Newest</option>
@@ -278,18 +208,13 @@ function AuctionsContent() {
                   </select>
 
                   <select
-                    value={sortOrder}
-                    onChange={(e) => {
-                      const newSortOrder = e.target.value as "asc" | "desc";
-                      // Update URL with new sort order
-                      const params = new URLSearchParams(
-                        searchParams.toString(),
-                      );
-                      params.set("sortOrder", newSortOrder);
-                      router.push(`/auctions?${params.toString()}`, {
-                        scroll: false,
-                      });
-                    }}
+                    value={sort?.order || "desc"}
+                    onChange={(e) =>
+                      setSort({
+                        field: sort?.field || "created_at",
+                        order: e.target.value as "asc" | "desc",
+                      })
+                    }
                     className="flex-1 sm:flex-none px-4 py-3 min-h-[48px] text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 touch-manipulation"
                   >
                     <option value="desc">High to Low</option>
@@ -299,7 +224,7 @@ function AuctionsContent() {
                   {/* View Toggle - Hidden on mobile */}
                   <div className="hidden md:flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
                     <button
-                      onClick={() => setView("grid")}
+                      onClick={() => updateFilter("view", "grid")}
                       className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                         view === "grid"
                           ? "bg-blue-600 text-white"
@@ -309,7 +234,7 @@ function AuctionsContent() {
                       <Grid className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={() => setView("list")}
+                      onClick={() => updateFilter("view", "list")}
                       className={`px-4 py-3 min-h-[48px] touch-manipulation ${
                         view === "list"
                           ? "bg-blue-600 text-white"
@@ -333,11 +258,10 @@ function AuctionsContent() {
             </div>
 
             {/* Results Count */}
-            {!isLoading && (
+            {!isLoading && totalCount > 0 && (
               <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                Showing {(currentPage - 1) * itemsPerPage + 1}-
-                {Math.min(currentPage * itemsPerPage, totalCount)} of{" "}
-                {totalCount} results
+                Showing {(page - 1) * limit + 1}-
+                {Math.min(page * limit, totalCount)} of {totalCount} results
               </p>
             )}
 
@@ -355,7 +279,7 @@ function AuctionsContent() {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {
                         auctions.filter(
-                          (a) => a.status === AuctionStatus.ACTIVE,
+                          (a) => a.status === AuctionStatus.ACTIVE
                         ).length
                       }
                     </p>
@@ -404,7 +328,7 @@ function AuctionsContent() {
               </div>
             </div>
 
-            {/* Auctions Grid/List - Using unified AuctionCard component */}
+            {/* Auctions Grid/List */}
             {isLoading ? (
               <AuctionCardSkeletonGrid count={view === "grid" ? 12 : 8} />
             ) : auctions.length === 0 ? (
@@ -417,42 +341,66 @@ function AuctionsContent() {
                 />
               </div>
             ) : (
-              <CardGrid>
-                {auctions.map((auction) => (
-                  <AuctionCard
-                    key={auction.id}
-                    auction={{
-                      id: auction.id,
-                      name: auction.name || auction.productName || "",
-                      slug: auction.slug || auction.productSlug || "",
-                      images:
-                        auction.images ||
-                        (auction.productImage ? [auction.productImage] : []),
-                      currentBid:
-                        auction.currentBid ||
-                        auction.currentPrice ||
-                        auction.startingBid ||
-                        0,
-                      startingBid: auction.startingBid || 0,
-                      bidCount: auction.bidCount || auction.totalBids || 0,
-                      endTime: auction.endTime,
-                      status: auction.status as any,
-                      featured: auction.featured,
-                      shop: auction.shopId
-                        ? {
-                            id: auction.shopId,
-                            name: (auction as any).shopName || "Shop",
-                          }
-                        : undefined,
-                    }}
-                    showShopInfo={true}
-                  />
-                ))}
-              </CardGrid>
-            )}
+              <>
+                <CardGrid>
+                  {auctions.map((auction) => (
+                    <AuctionCard
+                      key={auction.id}
+                      auction={{
+                        id: auction.id,
+                        name: auction.name || auction.productName || "",
+                        slug: auction.slug || auction.productSlug || "",
+                        images:
+                          auction.images ||
+                          (auction.productImage ? [auction.productImage] : []),
+                        currentBid:
+                          auction.currentBid ||
+                          auction.currentPrice ||
+                          auction.startingBid ||
+                          0,
+                        startingBid: auction.startingBid || 0,
+                        bidCount: auction.bidCount || auction.totalBids || 0,
+                        endTime: auction.endTime,
+                        status: auction.status as any,
+                        featured: auction.featured,
+                        shop: auction.shopId
+                          ? {
+                              id: auction.shopId,
+                              name: (auction as any).shopName || "Shop",
+                            }
+                          : undefined,
+                      }}
+                      showShopInfo={true}
+                    />
+                  ))}
+                </CardGrid>
 
-            {/* Pagination */}
-            {renderPagination()}
+                {/* Pagination */}
+                {totalCount > 0 && (
+                  <div className="mt-8">
+                    <AdvancedPagination
+                      currentPage={page}
+                      totalPages={Math.ceil(totalCount / limit)}
+                      pageSize={limit}
+                      totalItems={totalCount}
+                      onPageChange={(newPage) => {
+                        setPage(newPage);
+                        if (newPage === 1) setCursors([null]);
+                        globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
+                      }}
+                      onPageSizeChange={(newLimit) => {
+                        setLimit(newLimit);
+                        setPage(1);
+                        setCursors([null]);
+                      }}
+                      showPageSizeSelector
+                      showPageInput
+                      showFirstLast
+                    />
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
 
@@ -460,32 +408,12 @@ function AuctionsContent() {
         {isMobile && (
           <UnifiedFilterSidebar
             sections={AUCTION_FILTERS}
-            values={filterValues}
-            onChange={(key, value) => {
-              setFilterValues((prev) => ({ ...prev, [key]: value }));
-            }}
+            values={filters}
+            onChange={(key, value) => updateFilter(key, value)}
             onApply={(pendingValues) => {
-              if (pendingValues) setFilterValues(pendingValues);
-              setCurrentPage(1);
+              if (pendingValues) updateFilters(pendingValues);
               setCursors([null]);
               setShowFilters(false);
-              // Update URL with new filter values and reload
-              const params = new URLSearchParams();
-              if (pendingValues?.status)
-                params.set("status", pendingValues.status);
-              if (pendingValues?.categoryId)
-                params.set("categoryId", pendingValues.categoryId);
-              if (pendingValues?.minBid)
-                params.set("minBid", String(pendingValues.minBid));
-              if (pendingValues?.maxBid)
-                params.set("maxBid", String(pendingValues.maxBid));
-              if (pendingValues?.featured) params.set("featured", "true");
-              if (sortBy !== "created_at") params.set("sortBy", sortBy);
-              if (sortOrder !== "desc") params.set("sortOrder", sortOrder);
-              const newUrl = params.toString()
-                ? `/auctions?${params.toString()}`
-                : "/auctions";
-              router.push(newUrl, { scroll: false });
             }}
             onReset={handleResetFilters}
             isOpen={showFilters}
