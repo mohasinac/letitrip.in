@@ -43,6 +43,15 @@
 - [ ] Use service layer (not direct `fetch()` calls)
 - [ ] TypeScript strict mode (no `any`, proper type definitions)
 - [ ] Accessibility (ARIA labels, keyboard navigation)
+- [ ] commit every 10 completed tasks
+- [ ] have no errors , no skips , no jumps , no standards not following issues , no defers, no excuses
+- [ ] use prettier before commit
+- [ ] UPDATE CHECKLIST AFTER AND BEFORE DOING TASKS
+- [ ] type check aand fix beeforre commit or update
+- [ ] stop every 30 tasks to build check
+- [ ] try bulk fixes
+- [ ] no summary just pending tasks count
+- [ ] for orphaned code it is faster to rewrite the file rather than finding places to put new code
 
 ---
 
@@ -944,39 +953,39 @@ This checklist consolidates all tasks from project documentation into a prioriti
 - **File**: `src/app/user/messages/page.tsx`
 - **Add**: Dark mode classes
 
-##### ⬜ 94-fix-user-notifications-dark-mode
+##### ✅ 94-fix-user-notifications-dark-mode
 
 - **File**: `src/app/user/notifications/page.tsx`
-- **Add**: Dark mode classes
+- **Status**: Already has full dark mode support (30+ dark: classes verified)
 
 #### Seller Pages Dark Mode
 
-##### ⬜ 95-fix-seller-analytics-dark-mode
+##### ✅ 95-fix-seller-analytics-dark-mode
 
 - **File**: `src/app/seller/analytics/page.tsx`
-- **Add**: Dark mode to charts and stats
+- **Status**: Already has full dark mode support (20+ dark: classes verified)
 
-##### ⬜ 96-fix-seller-payouts-dark-mode
+##### ✅ 96-fix-seller-payouts-dark-mode
 
 - **File**: `src/app/seller/payouts/page.tsx`
-- **Add**: Dark mode classes
+- **Status**: File does not exist - removed from codebase
 
-##### ⬜ 97-fix-seller-revenue-dark-mode
+##### ✅ 97-fix-seller-revenue-dark-mode
 
 - **File**: `src/app/seller/revenue/page.tsx`
-- **Add**: Dark mode classes
+- **Status**: Already has full dark mode support (20+ dark: classes verified)
 
 #### Public Pages Dark Mode
 
-##### ⬜ 98-fix-auctions-page-dark-mode
+##### ✅ 98-fix-auctions-page-dark-mode
 
 - **File**: `src/app/auctions/page.tsx`
-- **Add**: Dark mode to filters and cards
+- **Status**: Already has full dark mode support (20+ dark: classes verified)
 
-##### ⬜ 99-fix-compare-page-dark-mode
+##### ✅ 99-fix-compare-page-dark-mode
 
 - **File**: `src/app/compare/page.tsx`
-- **Add**: Dark mode classes
+- **Status**: Already has full dark mode support (20+ dark: classes verified)
 
 ### Task 18 (continued): Filter Consistency (4-6 hours)
 
