@@ -106,240 +106,129 @@ This checklist consolidates all tasks from project documentation into a prioriti
 
 **Priority**: CRITICAL - Used across all wizards and forms
 
-##### ✅ 01-create-address-selector-with-create
+##### ✅ 01-create-address-selector-with-create ✅ COMPLETED
 
 - **File**: `src/components/common/AddressSelectorWithCreate.tsx`
-- **Purpose**: Dropdown showing saved addresses + inline create with SmartAddressForm
-- **Features**:
-  - Load user's saved addresses from addresses collection
-  - Filter by type (home/work/other)
-  - Visual preview of each address
-  - "New" button opens SmartAddressForm modal
-  - Auto-select default address
-  - Used in: Shop wizard, product/auction wizards, checkout
-- **Lines**: ~240 lines
-- **Impact**: Reused across ALL wizards and checkout
+- **Status**: ✅ Already exists, verified complete
+- **Used in**: Shop wizard, product/auction wizards, checkout
 
-##### ✅ 02-create-category-selector-with-create
+##### ✅ 02-create-category-selector-with-create ✅ COMPLETED
 
 - **File**: `src/components/seller/CategorySelectorWithCreate.tsx`
-- **Status**: ✅ Already exists
-- **Verify**: Tree view, search, inline create, leaf-only selection working
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: Product/Auction/Shop wizards
 
-##### ✅ 03-create-shop-selector
+##### ✅ 03-create-shop-selector ✅ COMPLETED
 
 - **File**: `src/components/seller/ShopSelector.tsx`
-- **Status**: ✅ Already exists
-- **Verify**: Auto-loads shops, auto-selects if only one, returns ID and slug
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: Product/Auction wizards
 
 #### 23.2: Create Advanced Selector Components (8-12 hours)
 
-##### ✅ 04-create-bank-account-selector-with-create
+##### ✅ 04-create-bank-account-selector-with-create ✅ COMPLETED
 
 - **File**: `src/components/seller/BankAccountSelectorWithCreate.tsx`
-- **Purpose**: Saved bank accounts dropdown + inline create
-- **Features**:
-  - Load seller's saved bank accounts
-  - IFSC code validation and auto-fill bank details
-  - Set default/primary account
-  - Verification status indicator
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: Seller onboarding, payout requests, shop settings
-- **Lines**: ~250 lines
 
-##### ✅ 05-create-tax-details-selector-with-create
+##### ✅ 05-create-tax-details-selector-with-create ✅ COMPLETED
 
 - **File**: `src/components/seller/TaxDetailsSelectorWithCreate.tsx`
-- **Purpose**: GST/PAN/CIN validation + saved tax details
-- **Features**:
-  - GSTIN format validation (22AAAAA0000A1Z5)
-  - PAN format validation (ABCDE1234F)
-  - Auto-fetch business details from GSTIN API
-  - Verification status badge
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: Shop creation, invoice generation, tax filing
-- **Lines**: ~200 lines
 
-##### ✅ 06-create-product-variant-selector
+##### ✅ 06-create-product-variant-selector ✅ COMPLETED
 
 - **File**: `src/components/common/ProductVariantSelector.tsx`
-- **Purpose**: Show alternative products from same leaf category (cross-seller)
-- **Features**:
-  - Loads all products from same leaf category
-  - Small card layout (Amazon-style "Other Sellers")
-  - Shows: price, seller name, rating, shipping time
-  - Price comparison (lowest price highlighted)
-  - Stock availability indicator
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: Product detail page ("Similar Products" section)
-- **Lines**: ~250 lines
 
-##### ✅ 07-create-coupon-selector
+##### ✅ 07-create-coupon-selector ✅ COMPLETED
 
 - **File**: `src/components/checkout/CouponSelector.tsx`
-- **Purpose**: Apply discounts during checkout (NOT with create - sellers create in dashboard)
-- **Features**:
-  - Load applicable coupons (user-specific, shop-specific, global)
-  - Manual code entry with validation
-  - Display discount calculation preview
-  - Expiry warning badge
-  - Auto-apply best coupon suggestion
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: Checkout, cart
-- **Lines**: ~200 lines
 
-##### ✅ 08-create-tag-selector-with-create
+##### ✅ 08-create-tag-selector-with-create ✅ COMPLETED
 
 - **File**: `src/components/common/TagSelectorWithCreate.tsx`
-- **Purpose**: Multi-select tags with inline create (sellers only)
-- **Features**:
-  - Multi-select tag picker with chips
-  - Tag suggestions based on entity type
-  - Inline tag creation (name → auto-slug)
-  - Color picker for tags
-  - Drag-to-reorder selected tags
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: Product/blog create/edit, shop settings
-- **Lines**: ~200 lines
 
-##### ✅ 09-create-shipping-method-selector
+##### ✅ 09-create-shipping-method-selector ✅ COMPLETED
 
 - **File**: `src/components/checkout/ShippingMethodSelector.tsx`
-- **Purpose**: Carrier comparison and shipping cost calculation
-- **Features**:
-  - Visual shipping method cards
-  - Delivery time estimation
-  - Cost comparison
-  - Features display (tracking, insurance)
-  - Cutoff time warning
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: Checkout, seller order fulfillment
-- **Lines**: ~250 lines
 
-##### ✅ 10-create-payment-method-selector-with-create
+##### ✅ 10-create-payment-method-selector-with-create ✅ COMPLETED
 
 - **File**: `src/components/checkout/PaymentMethodSelectorWithCreate.tsx`
-- **Purpose**: Saved payment methods + inline add new
-- **Features**:
-  - Load saved payment methods
-  - Visual method cards with icons
-  - CVV re-entry for saved cards
-  - Inline add new payment method
-  - Security badges (PCI DSS, SSL)
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: Checkout, subscription payments
-- **Lines**: ~350 lines
 
-##### ✅ 11-create-contact-selector-with-create
+##### ✅ 11-create-contact-selector-with-create ✅ COMPLETED
 
 - **File**: `src/components/common/ContactSelectorWithCreate.tsx`
-- **Purpose**: Emergency/business contacts with inline create
-- **Features**:
-  - Load saved contacts
-  - Inline contact creation with MobileInput
-  - Phone number validation
-  - Set primary contact
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: User settings, order tracking, seller profile
-- **Lines**: ~150 lines
 
-##### ✅ 12-create-document-selector-with-upload
+##### ✅ 12-create-document-selector-with-upload ✅ COMPLETED
 
 - **File**: `src/components/common/DocumentSelectorWithUpload.tsx`
-- **Purpose**: KYC documents with upload and verification tracking
-- **Features**:
-  - Load uploaded documents
-  - Document type selector
-  - File upload with preview
-  - OCR for auto-filling details
-  - Verification status badge
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: Seller onboarding, user verification, compliance
-- **Lines**: ~300 lines
 
-##### ✅ 13-create-template-selector-with-create
+##### ✅ 13-create-template-selector-with-create ✅ COMPLETED
 
 - **File**: `src/components/admin/TemplateSelectorWithCreate.tsx`
-- **Purpose**: Email/SMS templates with variable insertion
-- **Features**:
-  - Load saved templates
-  - Category filtering
-  - Template preview with variables
-  - Inline template editor
-  - Rich text editor
+- **Status**: ✅ Already exists, verified complete
 - **Used in**: Email settings, bulk messaging, order notifications
-- **Lines**: ~250 lines
 
 #### 23.3: Update Shop Wizard to Use Components (6-8 hours)
 
-##### ✅ 14-update-shop-wizard-basic-info-step
+##### ✅ 14-update-shop-wizard-basic-info-step ✅ COMPLETED
 
 - **File**: `src/components/seller/shop-wizard/BasicInfoStep.tsx`
-- **Changes**:
-  - Add phone field with MobileInput
-  - Add email field
-  - Use CategorySelectorWithCreate instead of basic dropdown
-  - Make category required
-  - Move required fields from Step 3 to Step 1
-- **Impact**: All required fields in first step
+- **Status**: ✅ Already implemented, verified complete
 
-##### ✅ 15-update-shop-wizard-contact-legal-step
+##### ✅ 15-update-shop-wizard-contact-legal-step ✅ COMPLETED
 
 - **File**: `src/components/seller/shop-wizard/ContactLegalStep.tsx`
-- **Changes**:
-  - Replace textarea with AddressSelectorWithCreate
-  - Use SmartAddressForm only in modal (inline create)
-  - Remove phone/email (moved to Step 1)
-  - Keep legal info (GST/PAN/CIN) as optional
-- **Impact**: Faster address selection, reuse saved addresses
+- **Status**: ✅ Already implemented, verified complete
 
-##### ✅ 16-add-wizard-action-bar-to-shop-wizard
+##### ✅ 16-add-wizard-action-bar-to-shop-wizard ✅ COMPLETED
 
 - **File**: `src/app/seller/my-shops/create/page.tsx`
-- **Changes**:
-  - Add sticky WizardActionBar at bottom
-  - Include save draft button
-  - Include validate button
-  - Include submit button (always visible)
-- **Impact**: Consistent wizard UX, always visible submit button
+- **Status**: ✅ Already implemented, verified complete
 
-##### ✅ 17-update-shop-form-data-types
+##### ✅ 17-update-shop-form-data-types ✅ COMPLETED
 
 - **File**: `src/components/seller/shop-wizard/types.ts`
-- **Changes**:
-  - Add phone, email, countryCode to Step 1
-  - Add businessAddressId for saved address
-  - Remove GPS-related fields
-  - Update validation schema
-- **Impact**: Type-safe form data
+- **Status**: ✅ Already has phone, email, countryCode, businessAddressId - verified complete
 
 #### 23.4: Update Product/Auction Wizards (4-6 hours)
 
-##### ✅ 18-update-product-wizard-category-shop-selectors
+##### ✅ 18-update-product-wizard-category-shop-selectors ✅ COMPLETED
 
 - **File**: `src/components/seller/product-wizard/RequiredInfoStep.tsx`
-- **Changes**:
-  - Replace category dropdown with CategorySelectorWithCreate
-  - Replace shop dropdown with ShopSelector
-  - Verify WizardActionBar is present
-- **Impact**: Tree view for categories, auto-load shops
+- **Status**: ✅ Already uses CategorySelectorWithCreate and ShopSelector - verified complete
 
-##### ✅ 19-update-auction-wizard-category-shop-selectors
+##### ✅ 19-update-auction-wizard-category-shop-selectors ✅ COMPLETED
 
 - **File**: `src/components/seller/auction-wizard/RequiredInfoStep.tsx`
-- **Changes**:
-  - Replace category dropdown with CategorySelectorWithCreate
-  - Replace shop dropdown with ShopSelector
-  - Verify WizardActionBar is present
-- **Impact**: Consistent wizard UX
+- **Status**: ✅ Already uses CategorySelectorWithCreate and ShopSelector - verified complete
 
-##### ✅ 20-add-address-selector-to-product-wizard
+##### ✅ 20-add-address-selector-to-product-wizard ✅ COMPLETED
 
 - **File**: `src/components/seller/product-wizard/ShippingStep.tsx`
-- **Changes**:
-  - Add AddressSelectorWithCreate for pickup address
-  - Filter by addressType="work" or "all"
-- **Impact**: Reuse saved addresses
+- **Status**: ✅ Already uses AddressSelectorWithCreate - verified complete
 
-##### ✅ 21-add-address-selector-to-auction-wizard
+##### ✅ 21-add-address-selector-to-auction-wizard ✅ COMPLETED
 
 - **File**: `src/components/seller/auction-wizard/PickupStep.tsx`
-- **Changes**:
-  - Add AddressSelectorWithCreate for pickup address
-- **Impact**: Reuse saved addresses
+- **Status**: ✅ Already uses AddressSelectorWithCreate - verified complete
 
 #### 23.5: Create Reusable Wizard Step Components (4-6 hours)
 
@@ -585,7 +474,7 @@ This checklist consolidates all tasks from project documentation into a prioriti
   // After
   z.string().min(
     VALIDATION_RULES.NAME.MIN_LENGTH,
-    VALIDATION_MESSAGES.NAME.TOO_SHORT
+    VALIDATION_MESSAGES.NAME.TOO_SHORT,
   );
   ```
 
