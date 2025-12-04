@@ -8,6 +8,44 @@
 
 ---
 
+## ⚠️ CRITICAL: CODE WITH FULL DOCUMENT SCOPE
+
+**BEFORE starting ANY task:**
+
+1. ✅ **Check AI-AGENT-MAP.md** - Verify existing reusable components, hooks, and patterns
+2. ✅ **Search codebase** - Confirm component doesn't already exist (different name/location)
+3. ✅ **Review standards** - Follow naming conventions, file size limits, dark mode requirements
+4. ✅ **Check dependencies** - Use existing wrappers (AdminResourcePage, FormField, Price, etc.)
+5. ✅ **Avoid duplicates** - Don't recreate TabNav, CategorySelector, ShopSelector, etc. if they exist
+
+**Key Existing Components** (✅ DO NOT DUPLICATE):
+
+- `AdminResourcePage` - Wrapper for ALL admin list pages (600-900 lines → 150 lines)
+- `SellerResourcePage` - Wrapper for seller list pages
+- `TabNav` - Route-based tabbed navigation (exists at `src/components/navigation/TabNav.tsx`)
+- `CategorySelectorWithCreate` - Tree view category selector with inline create
+- `ShopSelector` - Auto-loads shops, auto-selects if only one
+- `AddressSelectorWithCreate` - Saved addresses dropdown with inline create
+- `UnifiedFilterSidebar` - Consistent filter sidebar for all list pages
+- `FilterSectionComponent`, `PriceRangeFilter`, `CategoryFilter` - Filter sub-components
+- `FormField`, `FormInput`, `FormTextarea`, `FormSelect` - Form components
+- `Price`, `DateDisplay`, `StatusBadge` - Value display components
+
+**Standards Checklist**:
+
+- [ ] Dark mode support (`dark:bg-gray-800 dark:text-white dark:border-gray-700`)
+- [ ] Mobile responsive (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`)
+- [ ] Use `COLLECTIONS.*` constants (not hardcoded strings)
+- [ ] Use `ROUTES.*` constants (not hardcoded URLs)
+- [ ] Use `VALIDATION_RULES` and `VALIDATION_MESSAGES` constants
+- [ ] Use `useLoadingState` hook (not manual loading states)
+- [ ] Use `logError()` for error logging (not `console.log`)
+- [ ] Use service layer (not direct `fetch()` calls)
+- [ ] TypeScript strict mode (no `any`, proper type definitions)
+- [ ] Accessibility (ARIA labels, keyboard navigation)
+
+---
+
 ## 📋 How to Use This Checklist
 
 This checklist consolidates all tasks from project documentation into a prioritized implementation order. Tasks are grouped by priority level (#1 through #5) and numbered sequentially.
