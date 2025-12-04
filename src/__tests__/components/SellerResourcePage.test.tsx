@@ -77,7 +77,7 @@ describe("SellerResourcePage", () => {
           fields={fields}
           onSave={mockOnSave}
           onDelete={mockOnDelete}
-        />,
+        />
       );
 
       await waitFor(() => {

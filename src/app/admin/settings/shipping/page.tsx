@@ -88,6 +88,7 @@ export default function AdminShippingSettingsPage() {
       setSaving(true);
       setFormError(null);
       setSuccess(null);
+      if (!settings) return;
       await settingsService.updateShipping(settings);
       setSuccess("Shipping settings saved successfully!");
       setTimeout(() => setSuccess(null), 3000);
@@ -106,6 +107,7 @@ export default function AdminShippingSettingsPage() {
     if (
       pincode &&
       /^\d{6}$/.test(pincode) &&
+      settings &&
       !settings.restrictedPincodes.includes(pincode)
     ) {
       setSettings({
@@ -117,6 +119,7 @@ export default function AdminShippingSettingsPage() {
   };
 
   const removeRestrictedPincode = (pincode: string) => {
+    if (!settings) return;
     setSettings({
       ...settings,
       restrictedPincodes: settings.restrictedPincodes.filter(
