@@ -11,7 +11,22 @@ interface FavoriteItem {
 }
 
 class FavoritesService {
-  // Get user favorites
+  // Get user favorites by type
+  async listByType(type: "product" | "shop" | "category" | "auction"): Promise<{
+    success: boolean;
+    data: FavoriteItem[];
+  }> {
+    try {
+      const response = await fetch(`/api/favorites/list/${type}`);
+      if (!response.ok) throw new Error("Failed to fetch favorites");
+      return await response.json();
+    } catch (error) {
+      logServiceError("FavoritesService", "listByType", error as Error);
+      return { success: false, data: [] };
+    }
+  }
+
+  // Get user favorites (products only - legacy)
   async list(): Promise<FavoriteItem[]> {
     return apiService.get<FavoriteItem[]>("/favorites");
   }
@@ -21,7 +36,24 @@ class FavoritesService {
     return apiService.post<FavoriteItem>("/favorites", { productId });
   }
 
-  // Remove product from favorites
+  // Remove favorite by type and ID
+  async removeByType(
+    type: "product" | "shop" | "category" | "auction",
+    itemId: string,
+  ): Promise<{ success: boolean }> {
+    try {
+      const response = await fetch(`/api/favorites/${type}/${itemId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to remove");
+      return { success: true };
+    } catch (error) {
+      logServiceError("FavoritesService", "removeByType", error as Error);
+      return { success: false };
+    }
+  }
+
+  // Remove product from favorites (legacy)
   async remove(favoriteId: string): Promise<{ message: string }> {
     return apiService.delete<{ message: string }>(`/favorites/${favoriteId}`);
   }

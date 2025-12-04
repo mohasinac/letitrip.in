@@ -3,11 +3,12 @@
 import { EventCard } from "@/components/events/EventCard";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { eventsService, type Event } from "@/services/events.service";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function EventsPage() {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [filter, setFilter] = useState<string>("all");
 
   const { isLoading: loading, execute } = useLoadingState({
@@ -23,16 +24,11 @@ export default function EventsPage() {
 
   const loadEvents = async () => {
     await execute(async () => {
-      const params = new URLSearchParams();
-      if (filter !== "all") {
-        params.append("type", filter);
-      }
-      params.append("upcoming", "true");
+      const data = await eventsService.list({
+        type: filter !== "all" ? filter : undefined,
+        upcoming: true,
+      });
 
-      const response = await fetch(`/api/events?${params.toString()}`);
-      if (!response.ok) throw new Error("Failed to load events");
-
-      const data = await response.json();
       if (data.success) {
         setEvents(data.events);
       }

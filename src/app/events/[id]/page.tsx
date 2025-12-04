@@ -6,6 +6,7 @@ import { PollVoting } from "@/components/events/PollVoting";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { eventsService, type Event } from "@/services/events.service";
 import { Loader2, Users } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -18,7 +19,7 @@ export default function EventDetailPage() {
   const { user } = useAuth();
   const eventId = params.id as string;
 
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<Event | null>(null);
   const [isRegistered, setIsRegistered] = useState(false);
   const [pollResults, setPollResults] = useState<any>(null);
   const [registering, setRegistering] = useState(false);
@@ -38,15 +39,12 @@ export default function EventDetailPage() {
 
   const loadEvent = async () => {
     await execute(async () => {
-      const response = await fetch(`/api/events/${eventId}`);
-      if (!response.ok) throw new Error("Failed to load event");
-
-      const data = await response.json();
+      const data = await eventsService.getById(eventId);
       if (data.success) {
         setEvent(data.event);
 
         // Load poll results if poll event
-        if (data.event.isPollEvent) {
+        if ((data.event as any).isPollEvent) {
           await loadPollResults();
         }
       }
@@ -55,24 +53,18 @@ export default function EventDetailPage() {
 
   const checkRegistration = async () => {
     await execute(async () => {
-      const response = await fetch(`/api/events/${eventId}/register`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setIsRegistered(data.registered);
-        }
+      const data = await eventsService.checkRegistration(eventId);
+      if (data.success) {
+        setIsRegistered(data.registered);
       }
     });
   };
 
   const loadPollResults = async () => {
     await execute(async () => {
-      const response = await fetch(`/api/events/${eventId}/vote`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setPollResults(data.results);
-        }
+      const data = await eventsService.checkVote(eventId);
+      if (data.success) {
+        setPollResults(data);
       }
     });
   };
@@ -87,17 +79,7 @@ export default function EventDetailPage() {
     setRegistering(true);
 
     await execute(async () => {
-      const response = await fetch(`/api/events/${eventId}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to register");
-      }
-
+      await eventsService.register(eventId);
       toast.success("Successfully registered for event!");
       setIsRegistered(true);
       await loadEvent();
@@ -113,19 +95,17 @@ export default function EventDetailPage() {
       return;
     }
 
-    const response = await fetch(`/api/events/${eventId}/vote`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ optionId }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to vote");
+    try {
+      await eventsService.vote(eventId, optionId);
+      // Reload poll results
+      await loadPollResults();
+    } catch (error) {
+      logError(error as Error, {
+        component: "EventDetail.handleVote",
+        context: { eventId, optionId },
+      });
+      toast.error("Failed to vote");
     }
-
-    // Reload poll results
-    await loadPollResults();
   };
 
   if (loading && !event) {
