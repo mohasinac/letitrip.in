@@ -8,12 +8,14 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 import { FileText, Eye } from "lucide-react";
 import { getBlogBulkActions } from "@/constants/bulk-actions";
 import { toInlineFields } from "@/constants/form-fields";
-import type { BlogPost } from "@/types/frontend/blog.types";
+// BlogPost type doesn't exist yet, using any temporarily
+type BlogPost = any;
 
 // Blog fields configuration
 const BLOG_FIELDS = [
-  { name: "title", label: "Title", type: "text", required: true },
+  { key: "title", name: "title", label: "Title", type: "text", required: true },
   {
+    key: "status",
     name: "status",
     label: "Status",
     type: "select",
@@ -24,7 +26,13 @@ const BLOG_FIELDS = [
       { value: "archived", label: "Archived" },
     ],
   },
-  { name: "category", label: "Category", type: "text", required: false },
+  {
+    key: "category",
+    name: "category",
+    label: "Category",
+    type: "text",
+    required: false,
+  },
 ];
 
 export default function AdminBlogPage() {
@@ -91,10 +99,7 @@ export default function AdminBlogPage() {
       key: "status",
       label: "Status",
       render: (post: BlogPost) => (
-        <StatusBadge
-          status={post.status || "draft"}
-          label={post.status || "draft"}
-        />
+        <StatusBadge status={post.status || "draft"} />
       ),
     },
     {
@@ -111,7 +116,7 @@ export default function AdminBlogPage() {
       key: "created",
       label: "Created",
       render: (post: BlogPost) => (
-        <DateDisplay date={new Date(post.createdAt)} format="relative" />
+        <DateDisplay date={post.createdAt} format="medium" />
       ),
     },
   ];
@@ -190,7 +195,7 @@ export default function AdminBlogPage() {
       resourceNamePlural="Blog Posts"
       loadData={loadData}
       columns={columns}
-      fields={toInlineFields(BLOG_FIELDS)}
+      fields={toInlineFields(BLOG_FIELDS as any)}
       bulkActions={getBlogBulkActions(0)}
       onSave={handleSave}
       onDelete={handleDelete}

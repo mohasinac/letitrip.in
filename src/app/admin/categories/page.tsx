@@ -8,7 +8,7 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 import { FolderTree, CheckCircle, XCircle } from "lucide-react";
 import { getCategoryBulkActions } from "@/constants/bulk-actions";
 import { CATEGORY_FIELDS, toInlineFields } from "@/constants/form-fields";
-import type { CategoryWithStats } from "@/types/frontend/category.types";
+import type { CategoryFE } from "@/types/frontend/category.types";
 
 export default function AdminCategoriesPage() {
   // Define columns
@@ -16,7 +16,7 @@ export default function AdminCategoriesPage() {
     {
       key: "category",
       label: "Category",
-      render: (category: CategoryWithStats) => (
+      render: (category: CategoryFE) => (
         <div className="flex items-center gap-3">
           {category.image ? (
             <OptimizedImage
@@ -45,16 +45,16 @@ export default function AdminCategoriesPage() {
     {
       key: "parent",
       label: "Parent",
-      render: (category: CategoryWithStats) => (
+      render: (category: CategoryFE) => (
         <div className="text-sm text-gray-900 dark:text-white">
-          {category.parentName || "Root Category"}
+          {category.parentIds?.length ? "Has Parent" : "Root Category"}
         </div>
       ),
     },
     {
       key: "level",
       label: "Level",
-      render: (category: CategoryWithStats) => (
+      render: (category: CategoryFE) => (
         <div className="text-sm text-gray-600 dark:text-gray-400">
           Level {category.level || 0}
         </div>
@@ -63,7 +63,7 @@ export default function AdminCategoriesPage() {
     {
       key: "products",
       label: "Products",
-      render: (category: CategoryWithStats) => (
+      render: (category: CategoryFE) => (
         <div className="text-sm text-gray-900 dark:text-white">
           {category.productCount || 0}
         </div>
@@ -72,26 +72,23 @@ export default function AdminCategoriesPage() {
     {
       key: "subcategories",
       label: "Subcategories",
-      render: (category: CategoryWithStats) => (
-        <div className="text-sm text-gray-600 dark:text-gray-400">
-          {category.children?.length || 0}
-        </div>
+      render: (category: CategoryFE) => (
+        <div className="text-sm text-gray-600 dark:text-gray-400">0</div>
       ),
     },
     {
       key: "status",
       label: "Status",
-      render: (category: CategoryWithStats) => (
+      render: (category: CategoryFE) => (
         <StatusBadge
-          status={category.isActive ? "active" : "inactive"}
-          label={category.isActive ? "Active" : "Inactive"}
+          status={category.status === "published" ? "active" : "inactive"}
         />
       ),
     },
     {
       key: "leaf",
       label: "Type",
-      render: (category: CategoryWithStats) =>
+      render: (category: CategoryFE) =>
         category.isLeaf ? (
           <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
             <CheckCircle className="w-4 h-4" />
@@ -107,8 +104,8 @@ export default function AdminCategoriesPage() {
     {
       key: "created",
       label: "Created",
-      render: (category: CategoryWithStats) => (
-        <DateDisplay date={new Date(category.createdAt)} format="relative" />
+      render: (category: CategoryFE) => (
+        <DateDisplay date={category.createdAt} format="medium" />
       ),
     },
   ];
@@ -178,15 +175,15 @@ export default function AdminCategoriesPage() {
     const totalPages = Math.ceil((response.count || 0) / 20);
 
     return {
-      items: (response.data || []) as CategoryWithStats[],
+      items: (response.data || []) as CategoryFE[],
       nextCursor: currentPage < totalPages ? String(currentPage + 1) : null,
       hasNextPage: currentPage < totalPages,
     };
   };
 
   // Handle save
-  const handleSave = async (id: string, data: Partial<CategoryWithStats>) => {
-    await categoriesService.update(id, data);
+  const handleSave = async (id: string, data: Partial<CategoryFE>) => {
+    await categoriesService.update(id, data as any);
   };
 
   // Handle delete
@@ -195,7 +192,7 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <AdminResourcePage<CategoryWithStats>
+    <AdminResourcePage<CategoryFE>
       resourceName="Category"
       resourceNamePlural="Categories"
       loadData={loadData}

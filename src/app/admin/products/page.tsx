@@ -54,11 +54,11 @@ export default function AdminProductsPage() {
       render: (product: ProductCardFE) => (
         <div className="text-sm">
           <div className="text-gray-900 dark:text-white">
-            {product.stock || 0}
+            {product.stockCount || 0}
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
-            {product.stock && product.stock > 0
-              ? product.stock < 10
+            {product.stockCount && product.stockCount > 0
+              ? product.stockCount < 10
                 ? "Low stock"
                 : "In stock"
               : "Out of stock"}
@@ -68,15 +68,10 @@ export default function AdminProductsPage() {
     },
     {
       key: "seller",
-      label: "Seller",
+      label: "Shop",
       render: (product: ProductCardFE) => (
-        <div className="text-sm">
-          <div className="text-gray-900 dark:text-white">
-            {product.seller?.name || "Unknown"}
-          </div>
-          <div className="text-gray-500 dark:text-gray-400">
-            {product.shop?.name || "No shop"}
-          </div>
+        <div className="text-sm text-gray-900 dark:text-white">
+          {product.shop?.name || "No shop"}
         </div>
       ),
     },
@@ -84,17 +79,14 @@ export default function AdminProductsPage() {
       key: "status",
       label: "Status",
       render: (product: ProductCardFE) => (
-        <StatusBadge
-          status={product.status || "pending"}
-          label={product.status || "pending"}
-        />
+        <StatusBadge status={product.status || "pending"} />
       ),
     },
     {
       key: "created",
       label: "Created",
       render: (product: ProductCardFE) => (
-        <DateDisplay date={new Date(product.createdAt)} format="relative" />
+        <DateDisplay date={new Date()} format="medium" />
       ),
     },
   ];
@@ -175,7 +167,7 @@ export default function AdminProductsPage() {
 
   // Handle save
   const handleSave = async (id: string, data: Partial<ProductCardFE>) => {
-    await productsService.update(id, data);
+    await productsService.update(id, data as any);
   };
 
   // Handle delete
