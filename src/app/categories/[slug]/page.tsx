@@ -107,13 +107,12 @@ function CategoryDetailContent({ params }: PageProps) {
     if (!category) return;
 
     executeProductsLoad(async () => {
-      const offset = (page - 1) * pageSize;
       const response = await productsService.list({
         categoryId: category.id,
         ...filters,
         sortBy: sortField as any,
         limit: pageSize,
-        offset,
+        page,
       });
       setProducts(response.data || []);
       setTotalProducts(response.count || response.data?.length || 0);
