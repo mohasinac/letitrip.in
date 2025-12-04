@@ -54,7 +54,11 @@ export async function POST(
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
-    logError(error as Error, { component: "API.orders.cancel", orderId: id });
+    const { id } = await params;
+    logError(error as Error, {
+      component: "API.orders.cancel",
+      metadata: { orderId: id },
+    });
     return NextResponse.json(
       { success: false, error: "Failed to cancel order" },
       { status: 500 },
