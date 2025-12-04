@@ -723,9 +723,11 @@ export default function UserRipLimitPage() {
                 onChange={(e) => setRefundAmount(Number(e.target.value))}
                 max={balance?.availableBalance || 0}
                 min={1}
-                helperText={`You will receive ₹${refundAmount.toLocaleString(
-                  "en-IN",
-                )}`}
+                helperText={
+                  <>
+                    You will receive <Price amount={refundAmount} />
+                  </>
+                }
               />
             </div>
 

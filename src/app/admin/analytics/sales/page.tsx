@@ -411,12 +411,13 @@ export default function AdminAnalyticsSalesPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-bold text-green-600 dark:text-green-400">
-                        ₹
-                        {salesData.length > 0
-                          ? Math.max(
-                              ...salesData.map((d) => d.revenue),
-                            ).toLocaleString("en-IN")
-                          : 0}
+                        <Price
+                          amount={
+                            salesData.length > 0
+                              ? Math.max(...salesData.map((d) => d.revenue))
+                              : 0
+                          }
+                        />
                       </p>
                     </div>
                   </div>
@@ -453,10 +454,11 @@ export default function AdminAnalyticsSalesPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                        ₹
-                        {topProducts.length > 0
-                          ? topProducts[0].revenue.toLocaleString("en-IN")
-                          : 0}
+                        <Price
+                          amount={
+                            topProducts.length > 0 ? topProducts[0].revenue : 0
+                          }
+                        />
                       </p>
                     </div>
                   </div>
