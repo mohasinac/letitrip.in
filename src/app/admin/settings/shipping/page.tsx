@@ -95,7 +95,7 @@ export default function AdminShippingSettingsPage() {
     } catch (err) {
       console.error("Error saving settings:", err);
       setFormError(
-        err instanceof Error ? err.message : "Failed to save settings"
+        err instanceof Error ? err.message : "Failed to save settings",
       );
     } finally {
       setSaving(false);
@@ -123,7 +123,7 @@ export default function AdminShippingSettingsPage() {
     setSettings({
       ...settings,
       restrictedPincodes: settings.restrictedPincodes.filter(
-        (p) => p !== pincode
+        (p) => p !== pincode,
       ),
     });
   };
@@ -323,14 +323,14 @@ export default function AdminShippingSettingsPage() {
                   }
                 }}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  settings.expressShippingEnabled
+                  settings?.expressShippingEnabled
                     ? "bg-blue-600"
                     : "bg-gray-300 dark:bg-gray-600"
                 }`}
               >
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    settings.expressShippingEnabled
+                    settings?.expressShippingEnabled
                       ? "translate-x-6"
                       : "translate-x-1"
                   }`}
@@ -358,7 +358,11 @@ export default function AdminShippingSettingsPage() {
                   type="number"
                   value={settings?.estimatedDeliveryDays?.standard?.min ?? 3}
                   onChange={(e) => {
-                    if (settings) {
+                    if (
+                      settings &&
+                      settings.estimatedDeliveryDays &&
+                      settings.estimatedDeliveryDays.standard
+                    ) {
                       setSettings({
                         ...settings,
                         estimatedDeliveryDays: {
@@ -523,25 +527,35 @@ export default function AdminShippingSettingsPage() {
           <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
             <li>
               • Free shipping on orders above{" "}
-              <strong>{formatCurrency(settings.freeShippingThreshold)}</strong>
+              <strong>
+                {settings
+                  ? formatCurrency(settings.freeShippingThreshold)
+                  : "N/A"}
+              </strong>
             </li>
             <li>
               • Standard shipping:{" "}
-              <strong>{formatCurrency(settings.defaultShippingCharge)}</strong>{" "}
-              ({settings.estimatedDeliveryDays.standard.min}-
-              {settings.estimatedDeliveryDays.standard.max} days)
+              <strong>
+                {settings
+                  ? formatCurrency(settings.defaultShippingCharge)
+                  : "N/A"}
+              </strong>{" "}
+              ({settings?.estimatedDeliveryDays?.standard?.min || 0}-
+              {settings?.estimatedDeliveryDays?.standard?.max || 0} days)
             </li>
-            {settings.expressShippingEnabled && (
+            {settings?.expressShippingEnabled && (
               <li>
                 • Express shipping:{" "}
                 <strong>
                   {formatCurrency(settings.expressShippingCharge)}
                 </strong>{" "}
-                ({settings.estimatedDeliveryDays.express.min}-
-                {settings.estimatedDeliveryDays.express.max} days)
+                ({settings?.estimatedDeliveryDays?.express?.min || 0}-
+                {settings?.estimatedDeliveryDays?.express?.max || 0} days)
               </li>
             )}
-            <li>• {settings.restrictedPincodes.length} restricted pincodes</li>
+            <li>
+              • {settings?.restrictedPincodes?.length || 0} restricted pincodes
+            </li>
           </ul>
         </div>
 

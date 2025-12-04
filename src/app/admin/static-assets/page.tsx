@@ -192,7 +192,7 @@ export default function StaticAssetsPage() {
               Loading assets...
             </p>
           </div>
-        ) : assets.length === 0 ? (
+        ) : !assets || assets.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
             <p className="text-gray-500 dark:text-gray-400 text-lg">
               No assets found

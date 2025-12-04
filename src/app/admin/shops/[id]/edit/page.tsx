@@ -106,7 +106,7 @@ export default function AdminEditShopPage() {
     clearTracking: clearLogoTracking,
   } = useMediaUploadWithCleanup({
     onUploadSuccess: (url) => {
-      setShop((prev: ShopFE | null) => (prev ? { ...prev, logo: url } : null));
+      if (shop) setShop({ ...shop, logo: url });
     },
   });
 
@@ -116,9 +116,7 @@ export default function AdminEditShopPage() {
     clearTracking: clearBannerTracking,
   } = useMediaUploadWithCleanup({
     onUploadSuccess: (url) => {
-      setShop((prev: ShopFE | null) =>
-        prev ? { ...prev, banner: url } : null,
-      );
+      if (shop) setShop({ ...shop, banner: url });
     },
   });
 
@@ -308,7 +306,8 @@ export default function AdminEditShopPage() {
           <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">Error</h3>
           <p className="mt-1 text-sm text-gray-500">
-            {error || "Shop not found"}
+            {(error instanceof Error ? error.message : error) ||
+              "Shop not found"}
           </p>
           <button
             onClick={() => router.back()}

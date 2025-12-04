@@ -15,19 +15,29 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    if (!user.phone) {
+    // Get phone from user claims or metadata
+    const phone = (user as any).phoneNumber || (user as any).phone;
+
+    if (!phone) {
       return NextResponse.json(
         { success: false, error: "No phone number found" },
-        { status: 400 }
+        { status: 400 },
+      );
+    }
+
+    if (!phone) {
+      return NextResponse.json(
+        { success: false, error: "No phone number found" },
+        { status: 400 },
       );
     }
 
     // Check if already verified
-    const isVerified = await otpService.isVerified(user.id, "phone");
+    const isVerified = await otpService.isVerified(user.uid, "phone");
     if (isVerified) {
       return NextResponse.json({
         success: true,
@@ -38,21 +48,21 @@ export async function POST(request: NextRequest) {
 
     // Send OTP
     const result = await otpService.sendOTP({
-      userId: user.id,
+      userId: user.uid,
       type: "phone",
-      destination: user.phone,
+      destination: phone,
     });
 
     // Get OTP and send via SMS
     // Note: In production, the OTP would only be sent via SMS, not returned
     // This is for development/testing purposes
     const otpDoc = await (otpService as any).getActiveOTP(
-      user.id,
+      user.uid,
       "phone",
-      user.phone
+      phone,
     );
     if (otpDoc) {
-      await smsService.sendOTP(user.phone, otpDoc.otp);
+      await smsService.sendOTP(phone, otpDoc.otp);
     }
 
     return NextResponse.json({
@@ -71,7 +81,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : "Failed to send OTP",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
