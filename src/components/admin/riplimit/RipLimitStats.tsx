@@ -20,7 +20,10 @@ interface RipLimitStatsProps {
   loading: boolean;
 }
 
-export function RipLimitStatsCards({ stats, loading }: RipLimitStatsProps) {
+export function RipLimitStatsCards({
+  stats,
+  loading,
+}: Readonly<RipLimitStatsProps>) {
   const formatINR = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
   const formatRL = (amount: number) => `${amount.toLocaleString("en-IN")} RL`;
 

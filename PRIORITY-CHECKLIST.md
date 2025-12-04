@@ -786,11 +786,16 @@ This checklist consolidates all tasks from project documentation into a prioriti
   - `src/components/admin/riplimit/AdjustBalanceModal.tsx` (148 lines)
 - **Status**: ✅ COMPLETE
 
-##### ⬜ 78-split-unified-filter-sidebar
+##### ✅ 78-split-unified-filter-sidebar
 
 - **File**: `src/components/common/UnifiedFilterSidebar.tsx`
 - **Before**: 629 lines
-- **Components to extract**: FilterSection, PriceRangeFilter, CategoryFilter
+- **After**: 484 lines (23% reduction)
+- **Components extracted**:
+  - `src/components/common/filters/FilterSectionComponent.tsx` (108 lines)
+  - `src/components/common/filters/PriceRangeFilter.tsx` (75 lines)
+  - `src/components/common/filters/CategoryFilter.tsx` (169 lines)
+- **Status**: ✅ COMPLETE
 
 ##### ⬜ 79-split-searchable-dropdown
 
