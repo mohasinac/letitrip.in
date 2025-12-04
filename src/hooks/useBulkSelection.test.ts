@@ -1,4 +1,4 @@
-import { renderHook, act } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { useBulkSelection } from "./useBulkSelection";
 
 describe("useBulkSelection", () => {
@@ -19,7 +19,7 @@ describe("useBulkSelection", () => {
 
   it("initializes with initial selection", () => {
     const { result } = renderHook(() =>
-      useBulkSelection({ items: mockItems, initialSelected: ["1", "2"] }),
+      useBulkSelection({ items: mockItems, initialSelected: ["1", "2"] })
     );
 
     expect(result.current.selectedIds).toEqual(["1", "2"]);
@@ -28,7 +28,7 @@ describe("useBulkSelection", () => {
 
   it("checks if item is selected", () => {
     const { result } = renderHook(() =>
-      useBulkSelection({ items: mockItems, initialSelected: ["1"] }),
+      useBulkSelection({ items: mockItems, initialSelected: ["1"] })
     );
 
     expect(result.current.isSelected("1")).toBe(true);
@@ -64,7 +64,7 @@ describe("useBulkSelection", () => {
 
   it("clears all selections", () => {
     const { result } = renderHook(() =>
-      useBulkSelection({ items: mockItems, initialSelected: ["1", "2"] }),
+      useBulkSelection({ items: mockItems, initialSelected: ["1", "2"] })
     );
 
     act(() => {
@@ -116,7 +116,7 @@ describe("useBulkSelection", () => {
 
   it("deselects multiple items", () => {
     const { result } = renderHook(() =>
-      useBulkSelection({ items: mockItems, initialSelected: ["1", "2", "3"] }),
+      useBulkSelection({ items: mockItems, initialSelected: ["1", "2", "3"] })
     );
 
     act(() => {
@@ -128,7 +128,7 @@ describe("useBulkSelection", () => {
 
   it("gets selected items", () => {
     const { result } = renderHook(() =>
-      useBulkSelection({ items: mockItems, initialSelected: ["1", "3"] }),
+      useBulkSelection({ items: mockItems, initialSelected: ["1", "3"] })
     );
 
     const selectedItems = result.current.getSelectedItems(mockItems);
@@ -142,7 +142,7 @@ describe("useBulkSelection", () => {
   it("calls onSelectionChange callback", () => {
     const mockCallback = jest.fn();
     const { result } = renderHook(() =>
-      useBulkSelection({ items: mockItems, onSelectionChange: mockCallback }),
+      useBulkSelection({ items: mockItems, onSelectionChange: mockCallback })
     );
 
     act(() => {
