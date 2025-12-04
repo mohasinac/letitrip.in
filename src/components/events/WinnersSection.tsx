@@ -1,6 +1,6 @@
 "use client";
 
-import { Trophy, Medal, Award } from "lucide-react";
+import { Award, Medal, Trophy } from "lucide-react";
 
 export interface Winner {
   id: string;
@@ -136,7 +136,9 @@ export function WinnersSection({
                 className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
               >
                 <div
-                  className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${getRankBadgeColor(winner.rank)}`}
+                  className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${getRankBadgeColor(
+                    winner.rank
+                  )}`}
                 >
                   <span className="font-bold">#{winner.rank}</span>
                 </div>
@@ -211,7 +213,9 @@ function WinnerCard({
       )}
 
       <div
-        className={`inline-flex items-center justify-center px-3 py-1 rounded-full border-2 font-bold mb-3 ${getRankBadgeColor(winner.rank)}`}
+        className={`inline-flex items-center justify-center px-3 py-1 rounded-full border-2 font-bold mb-3 ${getRankBadgeColor(
+          winner.rank
+        )}`}
       >
         #{winner.rank}
       </div>

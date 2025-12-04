@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { EventCard } from "@/components/events/EventCard";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
-import { EventCard } from "@/components/events/EventCard";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function EventsPage() {
   const [events, setEvents] = useState<any[]>([]);

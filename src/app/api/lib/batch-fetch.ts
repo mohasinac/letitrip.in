@@ -8,7 +8,7 @@
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { Collections } from "@/app/api/lib/firebase/collections";
+import { COLLECTIONS } from "@/constants/database";
 
 /**
  * Generic batch fetch function
@@ -63,7 +63,7 @@ export async function batchFetchDocuments<T = any>(
 export async function batchGetProducts(
   productIds: string[],
 ): Promise<Map<string, any>> {
-  return batchFetchDocuments("products", productIds);
+  return batchFetchDocuments(COLLECTIONS.PRODUCTS, productIds);
 }
 
 /**
@@ -78,7 +78,7 @@ export async function batchGetProducts(
 export async function batchGetShops(
   shopIds: string[],
 ): Promise<Map<string, any>> {
-  return batchFetchDocuments("shops", shopIds);
+  return batchFetchDocuments(COLLECTIONS.SHOPS, shopIds);
 }
 
 /**
@@ -93,7 +93,7 @@ export async function batchGetShops(
 export async function batchGetCategories(
   categoryIds: string[],
 ): Promise<Map<string, any>> {
-  return batchFetchDocuments("categories", categoryIds);
+  return batchFetchDocuments(COLLECTIONS.CATEGORIES, categoryIds);
 }
 
 /**
@@ -108,7 +108,7 @@ export async function batchGetCategories(
 export async function batchGetUsers(
   userIds: string[],
 ): Promise<Map<string, any>> {
-  return batchFetchDocuments("users", userIds);
+  return batchFetchDocuments(COLLECTIONS.USERS, userIds);
 }
 
 /**
@@ -123,7 +123,7 @@ export async function batchGetUsers(
 export async function batchGetOrders(
   orderIds: string[],
 ): Promise<Map<string, any>> {
-  return batchFetchDocuments("orders", orderIds);
+  return batchFetchDocuments(COLLECTIONS.ORDERS, orderIds);
 }
 
 /**
@@ -138,7 +138,7 @@ export async function batchGetOrders(
 export async function batchGetAuctions(
   auctionIds: string[],
 ): Promise<Map<string, any>> {
-  return batchFetchDocuments("auctions", auctionIds);
+  return batchFetchDocuments(COLLECTIONS.AUCTIONS, auctionIds);
 }
 
 /**
@@ -153,7 +153,7 @@ export async function batchGetAuctions(
 export async function batchGetCoupons(
   couponIds: string[],
 ): Promise<Map<string, any>> {
-  return batchFetchDocuments("coupons", couponIds);
+  return batchFetchDocuments(COLLECTIONS.COUPONS, couponIds);
 }
 
 /**

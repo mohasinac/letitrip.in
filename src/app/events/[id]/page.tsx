@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { useAuth } from "@/contexts/AuthContext";
-import { logError } from "@/lib/firebase-error-logger";
 import { EventBanner } from "@/components/events/EventBanner";
 import { EventCountdown } from "@/components/events/EventCountdown";
 import { PollVoting } from "@/components/events/PollVoting";
-import { Loader2, Users, Calendar } from "lucide-react";
-import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { logError } from "@/lib/firebase-error-logger";
+import { Loader2, Users } from "lucide-react";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function EventDetailPage() {
   const params = useParams();
