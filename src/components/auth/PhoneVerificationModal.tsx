@@ -43,7 +43,7 @@ export function PhoneVerificationModal({
 
   const { isLoading: sending, execute: executeSend } = useLoadingState({
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "PhoneVerificationModal.sendOTP",
         metadata: { userId, phoneNumber },
       });
@@ -53,7 +53,7 @@ export function PhoneVerificationModal({
 
   const { isLoading: verifying, execute: executeVerify } = useLoadingState({
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "PhoneVerificationModal.verifyOTP",
         metadata: { userId, phoneNumber },
       });

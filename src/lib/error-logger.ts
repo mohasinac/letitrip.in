@@ -101,7 +101,7 @@ class ErrorLoggerClass {
 
     // Log to Firebase Analytics
     try {
-      firebaseLogError(error, context, severity);
+      firebaselogError(error as Error, context, severity);
     } catch (firebaseError) {
       // Fail silently to avoid infinite loops
       if (process.env.NODE_ENV === "development") {

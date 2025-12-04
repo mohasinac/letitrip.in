@@ -1,7 +1,7 @@
-import { apiService } from "./api.service";
+import { logServiceError } from "@/lib/error-logger";
 import { UserFE } from "@/types/frontend/user.types";
 import { UserRole, UserStatus } from "@/types/shared/common.types";
-import { logServiceError } from "@/lib/error-logger";
+import { apiService } from "./api.service";
 
 /**
  * Auth API response user (simplified, not full UserBE)
@@ -33,6 +33,7 @@ function toFEAuthUser(authUser: AuthUserBE): UserFE {
     displayName: authUser.name,
     photoURL: authUser.profile?.avatar || null,
     phoneNumber: null,
+    phone: null, // Alias for compatibility
     role: authUser.role as UserRole,
     status: UserStatus.ACTIVE,
 
@@ -365,4 +366,4 @@ class AuthService {
 }
 
 export const authService = new AuthService();
-export type { UserFE as User, AuthResponse, LoginCredentials, RegisterData };
+export type { AuthResponse, LoginCredentials, RegisterData, UserFE as User };

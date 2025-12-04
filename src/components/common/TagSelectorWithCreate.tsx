@@ -106,7 +106,7 @@ export function TagSelectorWithCreate({
   } = useLoadingState<Tag[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, { component: "TagSelectorWithCreate.loadTags" });
+      logError(error as Error, { component: "TagSelectorWithCreate.loadTags" });
       toast.error("Failed to load tags");
     },
   });

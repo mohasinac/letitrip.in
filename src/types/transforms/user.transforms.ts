@@ -7,18 +7,17 @@
 
 import { Timestamp } from "firebase/firestore";
 import {
+  UpdateUserPreferencesBE,
+  UpdateUserProfileBE,
   UserBE,
   UserListItemBE,
-  UpdateUserProfileBE,
-  UpdateUserPreferencesBE,
 } from "../backend/user.types";
 import {
-  UserFE,
   UserCardFE,
-  UserProfileFormFE,
+  UserFE,
   UserPreferencesFormFE,
+  UserProfileFormFE,
 } from "../frontend/user.types";
-import { UserRole, UserStatus } from "../shared/common.types";
 
 /**
  * Parse Firestore Timestamp or ISO string to Date
@@ -213,6 +212,7 @@ export function toFEUser(userBE: UserBE): UserFE {
     displayName: userBE.displayName,
     photoURL: userBE.photoURL,
     phoneNumber: userBE.phoneNumber,
+    phone: userBE.phoneNumber, // Alias for compatibility
     role: userBE.role,
     status: userBE.status,
 

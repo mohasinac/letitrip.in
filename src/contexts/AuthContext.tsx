@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Session expired, cached user cleared automatically by authService
       }
     } catch (error: any) {
-      logError(error, { component: "AuthContext.initializeAuth" });
+      logError(error as Error, { component: "AuthContext.initializeAuth" });
       setUser(null);
     } finally {
       setLoading(false);
@@ -149,7 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await authService.logout();
     } catch (error: any) {
-      logError(error, { component: "AuthContext.logout" });
+      logError(error as Error, { component: "AuthContext.logout" });
     } finally {
       setUser(null);
     }
@@ -161,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const currentUser = await authService.getCurrentUser();
       setUser(currentUser);
     } catch (error: any) {
-      logError(error, { component: "AuthContext.refreshUser" });
+      logError(error as Error, { component: "AuthContext.refreshUser" });
       setUser(null);
     }
   }, []);

@@ -25,7 +25,7 @@ export default function EventDetailPage() {
 
   const { isLoading: loading, execute } = useLoadingState({
     onLoadError: (error) => {
-      logError(error, { component: "EventDetail.loadEvent" });
+      logError(error as Error, { component: "EventDetail.loadEvent" });
     },
   });
 

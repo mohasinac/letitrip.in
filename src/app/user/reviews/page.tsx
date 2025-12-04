@@ -337,7 +337,7 @@ export default function UserReviewsPage() {
       setReviews((prev) => prev.filter((r) => r.id !== deleteId));
       setDeleteId(null);
     } catch (error: any) {
-      logError(error, {
+      logError(error as Error, {
         component: "ReviewsPage.handleDelete",
         metadata: { reviewId: deleteId },
       });

@@ -33,7 +33,7 @@ export default function AdminEventDetailPage() {
 
   const { isLoading: loading, execute } = useLoadingState({
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "AdminEventDetail",
         action: isNew ? "create" : "update",
       });
@@ -385,8 +385,8 @@ export default function AdminEventDetailPage() {
                 {submitting
                   ? "Saving..."
                   : isNew
-                  ? "Create Event"
-                  : "Save Changes"}
+                    ? "Create Event"
+                    : "Save Changes"}
               </button>
             </div>
           </div>

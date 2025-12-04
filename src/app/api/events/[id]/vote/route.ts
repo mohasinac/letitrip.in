@@ -14,14 +14,14 @@ const voteSchema = z.object({
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -31,7 +31,7 @@ export async function POST(
     if (!eventDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -41,7 +41,7 @@ export async function POST(
     if (!eventData?.isPollEvent) {
       return NextResponse.json(
         { success: false, error: "This event is not a poll" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -49,7 +49,7 @@ export async function POST(
     if (eventData.status !== "published") {
       return NextResponse.json(
         { success: false, error: "Event not available for voting" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -61,7 +61,7 @@ export async function POST(
     if (now < startDate || now > endDate) {
       return NextResponse.json(
         { success: false, error: "Voting period is not active" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -75,7 +75,7 @@ export async function POST(
           error: "Validation failed",
           details: validation.error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -86,7 +86,7 @@ export async function POST(
     if (!optionDoc.exists || optionDoc.data()?.eventId !== id) {
       return NextResponse.json(
         { success: false, error: "Invalid option" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -100,7 +100,7 @@ export async function POST(
     if (!existingVote.empty && !eventData.allowMultipleVotes) {
       return NextResponse.json(
         { success: false, error: "You have already voted" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -143,16 +143,16 @@ export async function POST(
           optionId,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
-    logError(error, {
+    logError(error as Error, {
       component: "EventsAPI.vote",
       action: "vote_in_poll",
     });
     return NextResponse.json(
       { success: false, error: "Failed to record vote" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -163,7 +163,7 @@ export async function POST(
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -172,7 +172,7 @@ export async function GET(
     if (!eventDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -181,7 +181,7 @@ export async function GET(
     if (!eventData?.isPollEvent) {
       return NextResponse.json(
         { success: false, error: "This event is not a poll" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -214,13 +214,13 @@ export async function GET(
       },
     });
   } catch (error) {
-    logError(error, {
+    logError(error as Error, {
       component: "EventsAPI.getResults",
       action: "get_voting_results",
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch voting results" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

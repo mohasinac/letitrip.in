@@ -38,7 +38,7 @@ export function AddressSelectorWithCreate({
   } = useLoadingState<AddressFE[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "AddressSelectorWithCreate",
         action: "loadAddresses",
       });

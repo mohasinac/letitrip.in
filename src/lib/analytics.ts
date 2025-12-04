@@ -31,7 +31,7 @@ export function trackEvent(
   try {
     logEvent(analytics, eventName, params);
   } catch (error: any) {
-    logError(error, {
+    logError(error as Error, {
       component: "analytics.trackEvent",
       metadata: { eventName, params },
     });

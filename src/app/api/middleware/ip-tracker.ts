@@ -127,7 +127,7 @@ export function withIPTracking(
 
       return response;
     } catch (error) {
-      logError(error, {
+      logError(error as Error, {
         component: "IPTrackerMiddleware.withIPTracking",
         action: "ip_tracking_middleware",
         metadata: {

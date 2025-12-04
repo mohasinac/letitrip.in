@@ -47,7 +47,7 @@ export function CouponSelector({
   } = useLoadingState<CouponFE[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, { component: "CouponSelector.loadCoupons" });
+      logError(error as Error, { component: "CouponSelector.loadCoupons" });
       toast.error("Failed to load coupons");
     },
   });
@@ -123,7 +123,7 @@ export function CouponSelector({
         toast.error(validation.message || "Invalid coupon");
       }
     } catch (error: any) {
-      logError(error, { component: "CouponSelector.handleApplyCoupon" });
+      logError(error as Error, { component: "CouponSelector.handleApplyCoupon" });
       toast.error(error.message || "Failed to apply coupon");
     } finally {
       setValidating(false);
@@ -160,7 +160,7 @@ export function CouponSelector({
         toast.error(validation.message || "Invalid coupon");
       }
     } catch (error: any) {
-      logError(error, { component: "CouponSelector.handleManualApply" });
+      logError(error as Error, { component: "CouponSelector.handleManualApply" });
       toast.error(error.message || "Failed to apply coupon");
     } finally {
       setValidating(false);

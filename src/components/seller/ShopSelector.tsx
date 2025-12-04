@@ -34,7 +34,7 @@ export default function ShopSelector({
   } = useLoadingState<Option[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, { component: "ShopSelector.loadShops" });
+      logError(error as Error, { component: "ShopSelector.loadShops" });
     },
   });
 

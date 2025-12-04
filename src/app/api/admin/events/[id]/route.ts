@@ -1,5 +1,5 @@
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { requireAuth } from "@/app/api/middleware/rbac-auth";
+import { requireRole } from "@/app/api/middleware/rbac-auth";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -20,7 +20,7 @@ const updateEventSchema = z.object({
   isPollEvent: z.boolean().optional(),
   allowMultipleVotes: z.boolean().optional(),
   imageUrl: z.string().url().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 /**
@@ -29,16 +29,12 @@ const updateEventSchema = z.object({
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const user = await requireAuth(request, ["admin"]);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const authResult = await requireRole(request, ["admin"]);
+    if (authResult.error) return authResult.error;
+    const { user } = authResult;
 
     const { id } = await params;
     const eventDoc = await Collections.events().doc(id).get();
@@ -46,7 +42,7 @@ export async function GET(
     if (!eventDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -55,13 +51,13 @@ export async function GET(
       event: { id: eventDoc.id, ...eventDoc.data() },
     });
   } catch (error) {
-    logError(error, {
+    logError(error as Error, {
       component: "AdminEventsAPI.GET",
       action: "get_event",
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -72,16 +68,12 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const user = await requireAuth(request, ["admin"]);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const authResult = await requireRole(request, ["admin"]);
+    if (authResult.error) return authResult.error;
+    const { user } = authResult;
 
     const { id } = await params;
     const eventDoc = await Collections.events().doc(id).get();
@@ -89,7 +81,7 @@ export async function PUT(
     if (!eventDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -103,7 +95,7 @@ export async function PUT(
           error: "Validation failed",
           details: validation.error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -117,7 +109,7 @@ export async function PUT(
       if (endDate <= startDate) {
         return NextResponse.json(
           { success: false, error: "End date must be after start date" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -137,13 +129,13 @@ export async function PUT(
       event: { id: updatedDoc.id, ...updatedDoc.data() },
     });
   } catch (error) {
-    logError(error, {
+    logError(error as Error, {
       component: "AdminEventsAPI.PUT",
       action: "update_event",
     });
     return NextResponse.json(
       { success: false, error: "Failed to update event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -154,16 +146,12 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const user = await requireAuth(request, ["admin"]);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const authResult = await requireRole(request, ["admin"]);
+    if (authResult.error) return authResult.error;
+    const { user } = authResult;
 
     const { id } = await params;
     const eventDoc = await Collections.events().doc(id).get();
@@ -171,7 +159,7 @@ export async function DELETE(
     if (!eventDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -212,13 +200,13 @@ export async function DELETE(
       message: "Event deleted successfully",
     });
   } catch (error) {
-    logError(error, {
+    logError(error as Error, {
       component: "AdminEventsAPI.DELETE",
       action: "delete_event",
     });
     return NextResponse.json(
       { success: false, error: "Failed to delete event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

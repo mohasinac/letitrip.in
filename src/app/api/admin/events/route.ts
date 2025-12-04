@@ -1,5 +1,5 @@
 import { Collections } from "@/app/api/lib/firebase/collections";
-import { requireAuth } from "@/app/api/middleware/rbac-auth";
+import { requireRole } from "@/app/api/middleware/rbac-auth";
 import {
   VALIDATION_MESSAGES,
   VALIDATION_RULES,
@@ -25,7 +25,7 @@ const eventSchema = z.object({
   isPollEvent: z.boolean().default(false),
   allowMultipleVotes: z.boolean().default(false),
   imageUrl: z.string().url().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 /**
@@ -34,13 +34,9 @@ const eventSchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    const user = await requireAuth(request, ["admin"]);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const authResult = await requireRole(request, ["admin"]);
+    if (authResult.error) return authResult.error;
+    const { user } = authResult;
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
@@ -75,13 +71,13 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    logError(error, {
+    logError(error as Error, {
       component: "AdminEventsAPI.GET",
       action: "list_events",
     });
     return NextResponse.json(
       { success: false, error: "Failed to fetch events" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -90,17 +86,13 @@ export async function GET(request: NextRequest) {
  * POST /api/admin/events
  * Create new event (admin only)
  */
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const user = await requireAuth(request, ["admin"]);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const authResult = await requireRole(req, ["admin"]);
+    if (authResult.error) return authResult.error;
+    const { user } = authResult;
 
-    const body = await request.json();
+    const body = await req.json();
     const validation = eventSchema.safeParse(body);
 
     if (!validation.success) {
@@ -110,7 +102,7 @@ export async function POST(request: NextRequest) {
           error: "Validation failed",
           details: validation.error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -123,7 +115,7 @@ export async function POST(request: NextRequest) {
     if (endDate <= startDate) {
       return NextResponse.json(
         { success: false, error: "End date must be after start date" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -135,7 +127,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "Registration deadline must be before start date",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -160,16 +152,16 @@ export async function POST(request: NextRequest) {
         success: true,
         event: { id: eventDoc.id, ...eventDoc.data() },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
-    logError(error, {
+    logError(error as Error, {
       component: "AdminEventsAPI.POST",
       action: "create_event",
     });
     return NextResponse.json(
       { success: false, error: "Failed to create event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

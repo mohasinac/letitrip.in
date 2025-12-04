@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const registerSchema = z.object({
-  formData: z.record(z.any()).optional(),
+  formData: z.record(z.string(), z.any()).optional(),
   additionalInfo: z.string().optional(),
 });
 
@@ -15,14 +15,14 @@ const registerSchema = z.object({
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -32,7 +32,7 @@ export async function POST(
     if (!eventDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Event not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -42,7 +42,7 @@ export async function POST(
     if (eventData?.status !== "published") {
       return NextResponse.json(
         { success: false, error: "Event not available for registration" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -52,7 +52,7 @@ export async function POST(
       if (new Date() > deadline) {
         return NextResponse.json(
           { success: false, error: "Registration deadline has passed" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -67,7 +67,7 @@ export async function POST(
     if (!existingRegistration.empty) {
       return NextResponse.json(
         { success: false, error: "Already registered for this event" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -76,7 +76,7 @@ export async function POST(
       if (eventData.participantCount >= eventData.maxParticipants) {
         return NextResponse.json(
           { success: false, error: "Event is full" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -91,7 +91,7 @@ export async function POST(
           error: "Validation failed",
           details: validation.error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -130,16 +130,16 @@ export async function POST(
           userId: user.id,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
-    logError(error, {
+    logError(error as Error, {
       component: "EventsAPI.register",
       action: "register_for_event",
     });
     return NextResponse.json(
       { success: false, error: "Failed to register for event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -150,14 +150,14 @@ export async function POST(
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -186,13 +186,13 @@ export async function GET(
       },
     });
   } catch (error) {
-    logError(error, {
+    logError(error as Error, {
       component: "EventsAPI.checkRegistration",
       action: "check_registration_status",
     });
     return NextResponse.json(
       { success: false, error: "Failed to check registration status" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

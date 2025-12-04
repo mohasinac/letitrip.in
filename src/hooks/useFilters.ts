@@ -63,7 +63,7 @@ export function useFilters<T extends Record<string, any>>(
           return { ...initialFilters, ...JSON.parse(stored) };
         }
       } catch (error: any) {
-        logError(error, {
+        logError(error as Error, {
           component: "useFilters.loadInitialFilters",
           metadata: { storageKey },
         });

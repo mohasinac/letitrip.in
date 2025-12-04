@@ -97,7 +97,7 @@ export function DocumentSelectorWithUpload({
   } = useLoadingState<Document[]>({
     initialData: [],
     onLoadError: (error) => {
-      logError(error, {
+      logError(error as Error, {
         component: "DocumentSelectorWithUpload.loadDocuments",
       });
       toast.error("Failed to load documents");
