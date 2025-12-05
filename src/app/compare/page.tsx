@@ -5,7 +5,7 @@ import Link from "next/link";
 import { X, ShoppingCart, Heart, ArrowLeft, GitCompare } from "lucide-react";
 import { useComparison } from "@/contexts/ComparisonContext";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { formatCurrency } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 import { COMPARISON_FIELDS } from "@/constants/comparison";
 import type { ComparisonProduct } from "@/services/comparison.service";
 
@@ -56,7 +56,7 @@ export default function ComparePage() {
       case "price":
         return (
           <span className="font-semibold text-gray-900 dark:text-white">
-            {formatCurrency(value as number)}
+            {formatPrice(value as number)}
           </span>
         );
       case "rating":

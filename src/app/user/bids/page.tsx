@@ -7,7 +7,8 @@ import { auctionsService } from "@/services/auctions.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { PageState } from "@/components/common/PageState";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
-import { formatCurrency, formatDate } from "@/lib/formatters";
+import { formatDate } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -246,7 +247,7 @@ export default function MyBidsPage() {
                             Your Bid
                           </div>
                           <div className="font-semibold text-gray-900 dark:text-white">
-                            {formatCurrency(bid.amount)}
+                            {formatPrice(bid.amount)}
                           </div>
                         </div>
                         <div>
@@ -254,7 +255,7 @@ export default function MyBidsPage() {
                             Current Bid
                           </div>
                           <div className="font-semibold text-gray-900 dark:text-white">
-                            {formatCurrency(
+                            {formatPrice(
                               bid.auction?.currentBid || bid.amount,
                             )}
                           </div>

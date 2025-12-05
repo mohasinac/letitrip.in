@@ -1,6 +1,6 @@
 /**
  * Validation Utilities
- * 
+ *
  * Centralized validation functions for common data types
  * Use these instead of inline validation logic
  */
@@ -62,9 +62,10 @@ export function validatePincode(pincode: string): boolean {
  * @param password - Password to validate
  * @returns Object with validation result and error messages
  */
-export function validatePassword(
-  password: string
-): { isValid: boolean; errors: string[] } {
+export function validatePassword(password: string): {
+  isValid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
 
   if (password.length < 8) {

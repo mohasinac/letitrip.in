@@ -9,7 +9,7 @@
 import { useState } from "react";
 import { Zap, X, Check, AlertTriangle } from "lucide-react";
 import { FormLabel } from "@/components/forms/FormLabel";
-import { formatCurrency } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 
 interface AutoBidSetupProps {
   auctionId: string;
@@ -143,14 +143,14 @@ export default function AutoBidSetup({
               type="number"
               value={maxBid}
               onChange={(e) => setMaxBid(e.target.value)}
-              placeholder={`Min: ${formatCurrency(currentBid + minIncrement)}`}
+              placeholder={`Min: ${formatPrice(currentBid + minIncrement)}`}
               className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
             />
           </div>
           {!isValid && maxBid && (
             <p className="mt-1 text-sm text-red-600">
               Maximum bid must be higher than current bid (
-              {formatCurrency(currentBid)})
+              {formatPrice(currentBid)})
             </p>
           )}
         </div>
@@ -164,7 +164,7 @@ export default function AutoBidSetup({
                 onClick={() => setMaxBid(amount.toString())}
                 className="px-3 py-2 bg-gray-50 hover:bg-yellow-50 border border-gray-200 hover:border-yellow-300 rounded-lg text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
               >
-                {formatCurrency(amount)}
+                {formatPrice(amount)}
               </button>
             ))}
           </div>

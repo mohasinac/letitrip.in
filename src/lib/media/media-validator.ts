@@ -329,6 +329,3 @@ export function getMediaType(file: File): MediaType | null {
 
   return null;
 }
-
-// Re-export formatting utilities from formatters.ts to avoid duplication
-export { formatDuration, formatFileSize } from "@/lib/formatters";

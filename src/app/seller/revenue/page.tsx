@@ -8,7 +8,7 @@ import { FormSelect } from "@/components/forms/FormSelect";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { getTodayDateInputValue, toDateInputValue } from "@/lib/date-utils";
 import { logError } from "@/lib/firebase-error-logger";
-import { formatCurrency } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 import { analyticsService } from "@/services/analytics.service";
 import {
   Calendar,
@@ -317,9 +317,7 @@ export default function SellerRevenuePage() {
                             <div
                               className="bg-indigo-500 rounded-t hover:bg-indigo-600 transition-all cursor-pointer"
                               style={{ height: `${height}%`, minHeight: "4px" }}
-                              title={`${formatCurrency(data.revenue, {
-                                showDecimals: false,
-                              })} - ${data.orders} orders`}
+                              title={`${formatPrice(data.revenue)} - ${data.orders} orders`}
                             >
                               <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                                 <Price amount={data.revenue} />

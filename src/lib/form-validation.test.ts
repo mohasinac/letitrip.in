@@ -3,15 +3,15 @@
  * Testing form validation utilities
  */
 
-import { describe, it, expect } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import {
   validateEmail,
-  validatePhone as validatePhoneNumber,
   validatePassword,
+  validatePhone as validatePhoneNumber,
 } from "./validators";
 
 const validateUsername = (
-  username: string,
+  username: string
 ): { isValid: boolean; error?: string } => {
   if (username.length < 3) {
     return {
@@ -74,7 +74,7 @@ const validateCreditCard = (cardNumber: string): boolean => {
 
 const validatePostalCode = (
   postalCode: string,
-  country: string = "IN",
+  country: string = "IN"
 ): boolean => {
   switch (country.toUpperCase()) {
     case "IN":
@@ -90,7 +90,7 @@ const validatePostalCode = (
 
 const validateField = (
   value: any,
-  rules: any[],
+  rules: any[]
 ): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
 
@@ -105,7 +105,7 @@ const validateField = (
       case "minLength":
         if (typeof value === "string" && value.length < rule.value) {
           errors.push(
-            rule.message || `Minimum length is ${rule.value} characters`,
+            rule.message || `Minimum length is ${rule.value} characters`
           );
         }
         break;
@@ -113,7 +113,7 @@ const validateField = (
       case "maxLength":
         if (typeof value === "string" && value.length > rule.value) {
           errors.push(
-            rule.message || `Maximum length is ${rule.value} characters`,
+            rule.message || `Maximum length is ${rule.value} characters`
           );
         }
         break;
@@ -164,7 +164,7 @@ const validateField = (
 
 const validateForm = (
   formData: Record<string, any>,
-  validationRules: Record<string, any[]>,
+  validationRules: Record<string, any[]>
 ): Record<string, { isValid: boolean; errors: string[] }> => {
   const results: Record<string, { isValid: boolean; errors: string[] }> = {};
 
@@ -219,37 +219,37 @@ describe("Form Validation", () => {
       let result = validatePassword("weak");
       expect(result.isValid).toBe(false);
       expect(
-        result.errors.includes("Password must be at least 8 characters long"),
+        result.errors.includes("Password must be at least 8 characters long")
       ).toBe(true);
 
       result = validatePassword("weakpassword");
       expect(result.isValid).toBe(false);
       expect(
         result.errors.includes(
-          "Password must contain at least one uppercase letter",
-        ),
+          "Password must contain at least one uppercase letter"
+        )
       ).toBe(true);
 
       result = validatePassword("WEAKPASSWORD");
       expect(result.isValid).toBe(false);
       expect(
         result.errors.includes(
-          "Password must contain at least one lowercase letter",
-        ),
+          "Password must contain at least one lowercase letter"
+        )
       ).toBe(true);
 
       result = validatePassword("WeakPassword");
       expect(result.isValid).toBe(false);
       expect(
-        result.errors.includes("Password must contain at least one number"),
+        result.errors.includes("Password must contain at least one number")
       ).toBe(true);
 
       result = validatePassword("WeakPassword123");
       expect(result.isValid).toBe(false);
       expect(
         result.errors.includes(
-          "Password must contain at least one special character",
-        ),
+          "Password must contain at least one special character"
+        )
       ).toBe(true);
     });
   });
@@ -273,13 +273,13 @@ describe("Form Validation", () => {
       result = validateUsername("test user");
       expect(result.isValid).toBe(false);
       expect(result.error).toBe(
-        "Username can only contain letters, numbers, and underscores",
+        "Username can only contain letters, numbers, and underscores"
       );
 
       result = validateUsername("test@user");
       expect(result.isValid).toBe(false);
       expect(result.error).toBe(
-        "Username can only contain letters, numbers, and underscores",
+        "Username can only contain letters, numbers, and underscores"
       );
     });
   });
@@ -349,13 +349,13 @@ describe("Form Validation", () => {
       let result = validateField("ab", [{ type: "minLength", value: 3 }]);
       expect(result.isValid).toBe(false);
       expect(
-        result.errors.some((error) => error.includes("Minimum length")),
+        result.errors.some((error) => error.includes("Minimum length"))
       ).toBe(true);
 
       result = validateField("abcd", [{ type: "maxLength", value: 3 }]);
       expect(result.isValid).toBe(false);
       expect(
-        result.errors.some((error) => error.includes("Maximum length")),
+        result.errors.some((error) => error.includes("Maximum length"))
       ).toBe(true);
     });
 
@@ -372,13 +372,13 @@ describe("Form Validation", () => {
       let result = validateField(5, [{ type: "min", value: 10 }]);
       expect(result.isValid).toBe(false);
       expect(
-        result.errors.some((error) => error.includes("Minimum value")),
+        result.errors.some((error) => error.includes("Minimum value"))
       ).toBe(true);
 
       result = validateField(15, [{ type: "max", value: 10 }]);
       expect(result.isValid).toBe(false);
       expect(
-        result.errors.some((error) => error.includes("Maximum value")),
+        result.errors.some((error) => error.includes("Maximum value"))
       ).toBe(true);
     });
 
@@ -426,9 +426,7 @@ describe("Form Validation", () => {
       expect(result.phone.isValid).toBe(true);
       expect(result.password.isValid).toBe(false);
       expect(
-        result.password.errors.some((error) =>
-          error.includes("Minimum length"),
-        ),
+        result.password.errors.some((error) => error.includes("Minimum length"))
       ).toBe(true);
     });
 

@@ -5,32 +5,6 @@
  * Used throughout the application for display purposes
  */
 
-import { formatPrice } from "@/lib/price.utils";
-
-/**
- * Format currency in Indian Rupees
- * @deprecated Use formatPrice from @/lib/price.utils for better null handling and consistency
- */
-export function formatCurrency(
-  amount: number,
-  options: {
-    showDecimals?: boolean;
-    showSymbol?: boolean;
-    locale?: string;
-  } = {},
-): string {
-  const { showDecimals = true, showSymbol = true, locale = "en-IN" } = options;
-
-  const formatted = new Intl.NumberFormat(locale, {
-    style: showSymbol ? "currency" : "decimal",
-    currency: "INR",
-    minimumFractionDigits: showDecimals ? 2 : 0,
-    maximumFractionDigits: showDecimals ? 2 : 0,
-  }).format(amount);
-
-  return formatted;
-}
-
 /**
  * Format compact currency (1K, 1L, 1Cr for Indian numbering)
  */
@@ -58,7 +32,7 @@ export function formatDate(
     includeTime?: boolean;
     locale?: string;
     fallback?: string;
-  } = {},
+  } = {}
 ): string {
   const {
     format = "medium",
@@ -101,7 +75,7 @@ export function formatRelativeTime(
   options: {
     locale?: string;
     style?: "long" | "short" | "narrow";
-  } = {},
+  } = {}
 ): string {
   const { locale = "en-IN", style = "long" } = options;
 
@@ -144,7 +118,7 @@ export function formatNumber(
     locale?: string;
     minimumFractionDigits?: number;
     maximumFractionDigits?: number;
-  } = {},
+  } = {}
 ): string {
   const {
     locale = "en-IN",
@@ -163,7 +137,7 @@ export function formatNumber(
  */
 export function formatCompactNumber(
   num: number,
-  locale: string = "en-IN",
+  locale: string = "en-IN"
 ): string {
   return new Intl.NumberFormat(locale, {
     notation: "compact",
@@ -179,7 +153,7 @@ export function formatPercentage(
   options: {
     decimals?: number;
     showSign?: boolean;
-  } = {},
+  } = {}
 ): string {
   const { decimals = 0, showSign = false } = options;
   const sign = showSign && value > 0 ? "+" : "";
@@ -287,7 +261,7 @@ export function slugToTitle(slug: string): string {
  */
 export function formatDiscount(
   originalPrice: number,
-  currentPrice: number,
+  currentPrice: number
 ): string {
   if (originalPrice <= currentPrice) return "0%";
   const discount = ((originalPrice - currentPrice) / originalPrice) * 100;
@@ -323,7 +297,7 @@ export function formatStockStatus(stock: number): string {
  * Format auction time remaining
  */
 export function formatTimeRemaining(
-  endTime: Date | string | null | undefined,
+  endTime: Date | string | null | undefined
 ): string {
   if (!endTime) return "Auction ended";
 
@@ -341,7 +315,7 @@ export function formatTimeRemaining(
 
   const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
   const hours = Math.floor(
-    (diffInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+    (diffInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
   );
   const minutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
 
@@ -402,7 +376,7 @@ export function formatBankAccount(accountNumber: string): string {
  */
 export function formatDateRange(
   startDate: Date | string,
-  endDate: Date | string,
+  endDate: Date | string
 ): string {
   const start = formatDate(startDate, { format: "medium" });
   const end = formatDate(endDate, { format: "medium" });

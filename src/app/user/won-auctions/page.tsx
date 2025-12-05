@@ -12,7 +12,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { formatCurrency, formatDate } from "@/lib/formatters";
+import { formatDate } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 import { auctionsService } from "@/services/auctions.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { PageState } from "@/components/common/PageState";
@@ -104,7 +105,7 @@ export default function WonAuctionsPage() {
             />
             <StatsCard
               title="Total Value"
-              value={formatCurrency(totalWinnings)}
+              value={formatPrice(totalWinnings)}
               icon={<DollarSign className="w-5 h-5 text-green-600" />}
             />
             <StatsCard
@@ -219,7 +220,7 @@ export default function WonAuctionsPage() {
                               Winning Bid
                             </div>
                             <div className="font-bold text-green-600 text-lg">
-                              {formatCurrency(auction.currentBid || 0)}
+                              {formatPrice(auction.currentBid || 0)}
                             </div>
                           </div>
                           <div>
