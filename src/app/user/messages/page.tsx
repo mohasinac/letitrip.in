@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -52,6 +53,31 @@ const participantIcons: Record<ParticipantType, React.ReactNode> = {
 };
 
 // Conversation type colors
+/**
+ * Performs type colors operation
+ *
+ * @param {{
+  
+  /** Conversation */
+  conversation: ConversationFE;
+  
+  /** IsSelected */
+  isSelected: boolean;
+  
+  /** OnClick */
+  onClick: (} {
+  conversation,
+  isSelected,
+  onClick,
+} - The {
+  conversation,
+  isselected,
+  onclick,
+}
+ *
+ * @returns {any} The typecolors result
+ *
+ */
 const typeColors: Record<ConversationType, string> = {
   buyer_seller:
     "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
@@ -239,6 +265,14 @@ function MessagesContent() {
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showArchived, setShowArchived] = useState(false);
+/**
+ * Performs load conversations operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadconversations result
+ *
+ */
 
   // Loading state
   const { isLoading, error, execute } = useLoadingState<void>();
@@ -251,7 +285,15 @@ function MessagesContent() {
   }, [user?.uid]);
 
   // Load conversations
-  const loadConversations = useCallback(async () => {
+  const loadConvers/**
+ * Performs load messages operation
+ *
+ * @param {string} async(conversationId - The async(conversationid
+ *
+ * @returns {Promise<any>} The loadmessages result
+ *
+ */
+ations = useCallback(async () => {
     await execute(async () => {
       const response = await messagesService.getConversations({
         /** Status */
@@ -301,7 +343,13 @@ function MessagesContent() {
   /**
    * Performs async operation
    *
-   * @returns {Promise<any>} Promise resolving to async  result
+   * @returns {Promise<any>} Promise resolving to a/**
+ * Performs optimistic message operation
+ *
+ * @returns {any} The optimisticmessage result
+ *
+ */
+sync  result
    *
    * @throws {Error} When operation fails or validation errors occur
    */
@@ -430,7 +478,15 @@ function MessagesContent() {
    *
    * @returns {Promise<any>} Promise resolving to async  result
    *
-   * @throws {Error} When operation fails or validation errors occur
+   * @throws {Error} When operation /**
+ * Performs filtered conversations operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The filteredconversations result
+ *
+ */
+fails or validation errors occur
    */
 
   const handleArchive = async () => {
@@ -736,7 +792,13 @@ function MessagesContent() {
   );
 }
 
-export default function MessagesPage() {
+export default /**
+ * Performs messages page operation
+ *
+ * @returns {any} The messagespage result
+ *
+ */
+function MessagesPage() {
   return (
     <AuthGuard>
       <MessagesContent />

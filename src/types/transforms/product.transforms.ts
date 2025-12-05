@@ -4,7 +4,8 @@
  * @description This file contains functionality related to product.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -751,6 +752,16 @@ export function toFEProducts(productsBE: ProductBE[]): ProductFE[] {
   productsBE);
  */
 
+/**
+ * Performs to f e product cards operation
+ *
+ * @param {ProductListItemBE[]} productsBE - The productsbe
+ *
+ * @returns {ProductCardFE[]} The tofeproductcards result
+ *
+ * @example
+ * toFEProductCards([]);
+ */
 export function toFEProductCards(
   /** Products B E */
   productsBE: ProductListItemBE[]

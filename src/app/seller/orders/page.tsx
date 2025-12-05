@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -26,7 +27,13 @@ import Link from "next/link";
  * @example
  * const result = SellerOrdersPage();
  */
-export default function SellerOrdersPage() {
+export default /**
+ * Performs seller orders page operation
+ *
+ * @returns {any} The sellerorderspage result
+ *
+ */
+function SellerOrdersPage() {
   return (
     <SellerResourcePage<OrderCardFE>
       resourceName="Order"

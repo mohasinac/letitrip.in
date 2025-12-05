@@ -4,7 +4,8 @@
  * @description This file contains the WizardSteps component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -24,6 +25,7 @@ export interface WizardStep {
   id?: string;
   /** Name */
   name?: string;
+  /** Label */
   label?: string; // Alternative to name
   /** Description */
   description?: string;
@@ -63,6 +65,7 @@ export interface WizardStepsProps {
   completedSteps?: number[];
   /** Error Steps */
   errorSteps?: number[];
+  /** StepStates */
   stepStates?: StepState[]; // Alternative to completedSteps/errorSteps
   /** On Step Click */
   onStepClick?: (index: number) => void;
@@ -118,7 +121,15 @@ export const WizardSteps: React.FC<WizardStepsProps> = ({
   className,
   variant = "numbered",
 }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  /**
+ * Performs scroll ref operation
+ *
+ * @param {any} null - The null
+ *
+ * @returns {any} The scrollref result
+ *
+ */
+const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to current step when it changes
   useEffect(() => {

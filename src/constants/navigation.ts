@@ -4,7 +4,8 @@
  * @description This file contains functionality related to navigation
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 // Navigation Constants
@@ -868,7 +869,10 @@ export interface ViewingHistoryItem {
   image: string;
   /** Price */
   price: number;
+  /** Shop_id */
   shop_id: string;
+  /** Shop_name */
   shop_name: string;
+  /** Viewed_at */
   viewed_at: number; // Timestamp
 }

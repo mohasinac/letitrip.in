@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useSafeLoad
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { useEffect, useRef, useCallback, useState } from "react";
@@ -32,6 +33,12 @@ import { logError } from "@/lib/firebase-error-logger";
  * ```
  */
 
+/**
+ * UseSafeLoadOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UseSafeLoadOptions
+ */
 interface UseSafeLoadOptions {
   /** Whether the load should execute */
   enabled?: boolean;
@@ -88,7 +95,15 @@ export function useSafeLoad(
   const [hasLoaded, setHasLoaded] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
-  const safeLoad = useCallback(async () => {
+  /**
+ * Performs safe load operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The safeload result
+ *
+ */
+const safeLoad = useCallback(async () => {
     // Skip if not enabled
     if (!enabled) return;
 

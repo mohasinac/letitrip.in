@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -28,11 +29,13 @@ import { NextRequest, NextResponse } from "next/server";
  * @description Defines the structure and contract for EmailPreferences
  */
 interface EmailPreferences {
+  /** Transactional */
   transactional: boolean; // Always true (cannot disable)
   /** Marketing */
   marketing: boolean;
   /** Notifications */
   notifications: boolean;
+  /** Account */
   account: boolean; // Always true (cannot disable)
 }
 
@@ -71,6 +74,17 @@ interface EmailPreferences {
   req, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params: { userId: string } }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(req, {});
+ */
 export async function GET(
   /** Req */
   req: NextRequest,
@@ -147,7 +161,18 @@ export async function GET(
  * @param {NextRequest} /** Req */
   req - The /**  req */
   req
- * @param {{ params} { params } - The { params }
+ * @param {{ params}/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params: { userId: string } }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The put result
+ *
+ * @example
+ * PUT(req, {});
+ */
+ { params } - The { params }
  *
  * @returns {Promise<any>} Promise resolving to put result
  *

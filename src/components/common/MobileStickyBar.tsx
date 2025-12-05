@@ -4,7 +4,8 @@
  * @description This file contains the MobileStickyBar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -51,7 +52,41 @@ interface MobileStickyBarProps {
   className?: string;
 }
 
-export default function MobileStickyBar({
+export default /**
+ * Performs mobile sticky bar operation
+ *
+ * @param {MobileStickyBarProps} [{
+  type = "product",
+  price,
+  originalPrice,
+  currentBid,
+  onAddToCart,
+  onBuyNow,
+  onPlaceBid,
+  onAddToWishlist,
+  inStock = true,
+  isActive = true,
+  disabled = false,
+  className = "",
+}] - The {
+  type = "product",
+  price,
+  originalprice,
+  currentbid,
+  onaddtocart,
+  onbuynow,
+  onplacebid,
+  onaddtowishlist,
+  instock = true,
+  isactive = true,
+  disabled = false,
+  classname = "",
+}
+ *
+ * @returns {any} The mobilestickybar result
+ *
+ */
+function MobileStickyBar({
   type = "product",
   price,
   originalPrice,

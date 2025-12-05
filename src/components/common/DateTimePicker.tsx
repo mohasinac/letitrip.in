@@ -4,7 +4,8 @@
  * @description This file contains the DateTimePicker component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -38,7 +39,9 @@ interface DateTimePickerProps {
   minDate?: Date;
   /** Max Date */
   maxDate?: Date;
+  /** MinTime */
   minTime?: string; // Format: "HH:mm"
+  /** MaxTime */
   maxTime?: string; // Format: "HH:mm"
   /** Placeholder */
   placeholder?: string;
@@ -54,6 +57,13 @@ interface DateTimePickerProps {
   className?: string;
 }
 
+/**
+ * MONTHS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for months
+ */
 const MONTHS = [
   "January",
   "February",
@@ -71,7 +81,43 @@ const MONTHS = [
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export default function DateTimePicker({
+export default /**
+ * Performs date time picker operation
+ *
+ * @param {DateTimePickerProps} [{
+  value,
+  onChange,
+  mode = "datetime",
+  minDate,
+  maxDate,
+  minTime,
+  maxTime,
+  placeholder = "Select date/time",
+  disabled = false,
+  error,
+  showClear = true,
+  use12Hour = false,
+  className = "",
+}] - The {
+  value,
+  onchange,
+  mode = "datetime",
+  mindate,
+  maxdate,
+  mintime,
+  maxtime,
+  placeholder = "select date/time",
+  disabled = false,
+  error,
+  showclear = true,
+  use12hour = false,
+  classname = "",
+}
+ *
+ * @returns {any} The datetimepicker result
+ *
+ */
+function DateTimePicker({
   value,
   onChange,
   mode = "datetime",
@@ -90,7 +136,15 @@ export default function DateTimePicker({
   const [viewDate, setViewDate] = useState(value || new Date());
 
   // Format display value
-  const displayValue = useMemo(() => {
+  /**
+ * Performs display value operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The displayvalue result
+ *
+ */
+const displayValue = useMemo(() => {
     if (!value) return "";
 
     const dateStr = value.toLocaleDateString("en-IN", {
@@ -112,7 +166,15 @@ export default function DateTimePicker({
     });
 
     if (mode === "date") return dateStr;
-    if (mode === "time") return timeStr;
+    if (mode === "time") return timeS/**
+ * Performs calendar days operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The calendardays result
+ *
+ */
+tr;
     return `${dateStr} ${timeStr}`;
   }, [value, mode, use12Hour]);
 
@@ -131,13 +193,29 @@ export default function DateTimePicker({
 
     for (let i = 0; i < 42; i++) {
       // 6 weeks
-      if (current.getMonth() === month) {
+      if (current.ge/**
+ * Checks if date disabled
+ *
+ * @param {Date | null} (date - The (date
+ *
+ * @returns {any} The isdatedisabled result
+ *
+ */
+tMonth() === month) {
         days.push(new Date(current));
       } else {
         days.push(null);
       }
       current.setDate(current.getDate() + 1);
-    }
+    }/**
+ * Checks if date selected
+ *
+ * @param {Date | null} (date - The (date
+ *
+ * @returns {any} The isdateselected result
+ *
+ */
+
 
     return days;
   }, [viewDate]);
@@ -146,7 +224,15 @@ export default function DateTimePicker({
   const isDateDisabled = useCallback(
     (date: Date | null) => {
       if (!date) return true;
-      if (minDate && date < minDate) return true;
+      if (minDate && date < minDate) ret/**
+ * Checks if today
+ *
+ * @param {Date | null} (date - The (date
+ *
+ * @returns {any} The istoday result
+ *
+ */
+urn true;
       if (maxDate && date > maxDate) return true;
       return false;
     },
@@ -155,7 +241,15 @@ export default function DateTimePicker({
 
   // Check if date is selected
   const isDateSelected = useCallback(
-    (date: Date | null) => {
+    (date: D/**
+ * Handles date select
+ *
+ * @param {Date} (date - The (date
+ *
+ * @returns {any} The handledateselect result
+ *
+ */
+ate | null) => {
       if (!date || !value) return false;
       return (
         date.getDate() === value.getDate() &&
@@ -170,15 +264,40 @@ export default function DateTimePicker({
   const isToday = useCallback((date: Date | null) => {
     if (!date) return false;
     const today = new Date();
-    return (
+  /**
+ * Handles time change
+ *
+ * @param {number} (hours - The (hours
+ * @param {number} minutes - The minutes
+ *
+ * @returns {any} The handletimechange result
+ *
+ */
+  return (
       date.getDate() === today.getDate() &&
       date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
+      dat/**
+ * Performs navigate month operation
+ *
+ * @param {"prev" | "next"} (direction - The (direction
+ *
+ * @returns {any} The navigatemonth result
+ *
+ */
+e.getFullYear() === today.getFullYear()
     );
   }, []);
 
   // Handle date selection
-  const handleDateSelect = useCallback(
+  const handleDateSelect = useCallback(/**
+ * Handles clear
+ *
+ * @param {React.MouseEvent} (e - The (e
+ *
+ * @returns {any} The handleclear result
+ *
+ */
+
     (date: Date) => {
       if (isDateDisabled(date)) return;
 

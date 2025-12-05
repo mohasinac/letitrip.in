@@ -4,7 +4,8 @@
  * @description This file contains functionality related to sitemap
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { MetadataRoute } from "next";
@@ -189,7 +190,13 @@ async function fetchAuctions() {
  * @example
  * const result = sitemap();
  */
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default /**
+ * Performs sitemap operation
+ *
+ * @returns {Promise<MetadataRoute.Sitemap>} The sitemap result
+ *
+ */
+async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://letitrip.in";
   const currentDate = new Date();
 
@@ -348,7 +355,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   // Dynamic product pages
-  const productPages: MetadataRoute.Sitemap = products
+  /**
+ * Performs product pages operation
+ *
+ * @param {any} (product - The (product
+ *
+ * @returns {any} The productpages result
+ *
+ */
+const productPages: MetadataRoute.Sitemap = products
     .filter((product: any) => product.slug) // Only include products with valid slugs
     .map((product: any) => {
       const lastMod = safeToISOString(product.updated_at || product.updatedAt);
@@ -358,7 +373,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         /** Last Modified */
         lastModified: lastMod ? new Date(lastMod) : currentDate,
         /** Change Frequency */
-        changeFrequency: "weekly" as const,
+        ch/**
+ * Performs category pages operation
+ *
+ * @param {any} (category - The (category
+ *
+ * @returns {any} The categorypages result
+ *
+ */
+angeFrequency: "weekly" as const,
         /** Priority */
         priority: 0.8,
       };
@@ -373,7 +396,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       );
       return {
         /** Url */
-        url: `${baseUrl}/categories/${category.slug}`,
+        url: `${baseUrl}/categories/${category.sl/**
+ * Performs shop pages operation
+ *
+ * @param {any} (shop - The (shop
+ *
+ * @returns {any} The shoppages result
+ *
+ */
+ug}`,
         /** Last Modified */
         lastModified: lastMod ? new Date(lastMod) : currentDate,
         /** Change Frequency */
@@ -387,7 +418,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const shopPages: MetadataRoute.Sitemap = shops
     .filter((shop: any) => shop.slug)
     .map((shop: any) => {
-      const lastMod = safeToISOString(shop.updated_at || shop.updatedAt);
+      const lastMod = safeToIS/**
+ * Performs auction pages operation
+ *
+ * @param {any} (auction - The (auction
+ *
+ * @returns {any} The auctionpages result
+ *
+ */
+OString(shop.updated_at || shop.updatedAt);
       return {
         /** Url */
         url: `${baseUrl}/shops/${shop.slug}`,

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -46,7 +47,13 @@ import { PageState } from "@/components/common/PageState";
 import type { ReturnCardFE } from "@/types/frontend/return.types";
 import { formatDistanceToNow } from "date-fns";
 
-export default function UserReturnsPage() {
+export default /**
+ * Performs user returns page operation
+ *
+ * @returns {any} The userreturnspage result
+ *
+ */
+function UserReturnsPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [returns, setReturns] = useState<ReturnCardFE[]>([]);
@@ -57,12 +64,28 @@ export default function UserReturnsPage() {
   // Loading state
   const { isLoading, error, execute } = useLoadingState<void>();
 
-  const loadReturns = useCallback(async () => {
+  /**
+ * Performs load returns operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadreturns result
+ *
+ */
+const loadReturns = useCallback(async () => {
     await execute(async () => {
       const filters: Record<string, unknown> = {
         /** Page */
         page: currentPage,
-        /** Limit */
+        //**
+ * Performs response operation
+ *
+ * @param {any} filters - The filters
+ *
+ * @returns {any} The response result
+ *
+ */
+** Limit */
         limit: 10,
       };
 

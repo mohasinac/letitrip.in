@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useMediaUpload
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -23,8 +24,11 @@ import { useUploadContext } from "@/contexts/UploadContext";
  * @description Defines the structure and contract for MediaUploadOptions
  */
 export interface MediaUploadOptions {
+  /** MaxSize */
   maxSize?: number; // Max file size in bytes
+  /** AllowedTypes */
   allowedTypes?: string[]; // Allowed MIME types
+  /** MaxRetries */
   maxRetries?: number; // Maximum retry attempts
   /** On Progress */
   onProgress?: (progress: number) => void;
@@ -159,7 +163,15 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
 
   // Validate and upload file
-  const upload = useCallback(
+  /**
+ * Performs upload operation
+ *
+ * @param {File} async(file - The async(file
+ *
+ * @returns {Promise<string> =>} The upload result
+ *
+ */
+const upload = useCallback(
     async (file: File): Promise<string> => {
       setError(null);
       setProgress(0);
@@ -186,7 +198,16 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
 
         // Create form data
         const formData = new FormData();
-        formData.append("file", file);
+        f/**
+ * Performs upload promise operation
+ *
+ * @param {any} (resolve - The (resolve
+ * @param {any} reject - The reject
+ *
+ * @returns {any} The uploadpromise result
+ *
+ */
+ormData.append("file", file);
 
         // Upload with XMLHttpRequest for progress tracking
         const xhr = new XMLHttpRequest();
@@ -268,7 +289,15 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
             /** Error */
             error: errorMessage,
             /** Progress */
-            progress: 0,
+  /**
+ * Performs retry operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<string | null> =>} The retry result
+ *
+ */
+          progress: 0,
           });
         }
 
@@ -286,12 +315,28 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
       onSuccess,
       onError,
       uploadId,
-    ],
+  /**
+ * Performs cancel operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The cancel result
+ *
+ */
+  ],
   );
 
   // Retry failed upload
   const retry = useCallback(async (): Promise<string | null> => {
-    if (!uploadId) return null;
+    if (!uploadId) return null;/**
+ * Performs reset operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The reset result
+ *
+ */
+
 
     const uploadFile =
       document.querySelector<HTMLInputElement>('input[type="file"]')

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to cache
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -32,8 +33,11 @@ interface CacheEntry {
  * @description Defines the structure and contract for CacheConfig
  */
 interface CacheConfig {
+  /** Ttl */
   ttl?: number; // Time to live in seconds
+  /** Key */
   key?: string; // Custom cache key
+  /** Revalidate */
   revalidate?: number; // Next.js revalidation time
 }
 
@@ -123,7 +127,13 @@ export function cache(config: CacheConfig = {}) {
       const cacheKey = customKey || `cache:${url.pathname}${url.search}`;
 
       const etag = generateETag(data);
-      const entry: CacheEntry = {
+      /**
+ * Performs entry operation
+ *
+ * @returns {void =>} The entry result
+ *
+ */
+const entry: CacheEntry = {
         data,
         /** Timestamp */
         timestamp: Date.now(),

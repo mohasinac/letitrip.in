@@ -4,7 +4,8 @@
  * @description This file contains the ProductFilters component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -101,7 +102,15 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
   );
   const [categorySearch, setCategorySearch] = useState("");
 
-  const hasActiveFilters = Object.keys(filters).length > 0;
+  /**
+ * Checks if has active filters
+ *
+ * @param {any} filters - The filters
+ *
+ * @returns {any} The hasactivefilters result
+ *
+ */
+const hasActiveFilters = Object.keys(filters).length > 0;
 
   useEffect(() => {
     loadCategories();
@@ -128,7 +137,16 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
       const response = await categoriesService.list({ isActive: true });
       setCategories(response.data);
     } catch (error) {
-      logError(error as Error, { component: "ProductFilters.loadCategories" });
+      logError(err/**
+ * Updates filter
+ *
+ * @param {K} key - The key
+ * @param {ProductFilterValues[K]} value - The value
+ *
+ * @returns {any} The updatefilter result
+ *
+ */
+or as Error, { component: "ProductFilters.loadCategories" });
     } finally {
       setLoadingCategories(false);
     }
@@ -159,7 +177,15 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
      * @returns {any} The current result
      */
 
-    /**
+    /*/**
+ * Updates d
+ *
+ * @param {any} value - The value
+ *
+ * @returns {any} The updated result
+ *
+ */
+*
      * Performs current operation
      *
      * @param {any} [filters[key] as string[]) || [];
@@ -187,7 +213,15 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
   /**
    * Performs toggle category expand operation
    *
-   * @param {string} categoryId - category identifier
+   * @param {string} categor/**
+ * Performs filtered categories operation
+ *
+ * @param {any} (cat - The (cat
+ *
+ * @returns {any} The filteredcategories result
+ *
+ */
+yId - category identifier
    *
    * @returns {string} The togglecategoryexpand result
    */

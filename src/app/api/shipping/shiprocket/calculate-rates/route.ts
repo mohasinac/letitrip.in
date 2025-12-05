@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -25,6 +26,13 @@ import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // Mock implementation - replace with actual Shiprocket API calls
+/**
+ * SHIPROCKET_API_URL constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for shiprocket api url
+ */
 const SHIPROCKET_API_URL = "https://apiv2.shiprocket.in/v1/external";
 
 /**

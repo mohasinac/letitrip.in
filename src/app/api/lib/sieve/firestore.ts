@@ -4,7 +4,8 @@
  * @description This file contains functionality related to firestore
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -223,7 +224,15 @@ export async function executeSieveQuery<T extends DocumentData>(
     const allDocs = await q.get();
     // Type assertion needed: Firestore DocumentData to generic T
     // Caller is responsible for ensuring T matches the collection schema
-    let allData = allDocs.docs.map((doc) => ({
+    /**
+ * Performs all data operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The alldata result
+ *
+ */
+let allData = allDocs.docs.map((doc) => ({
       /** Id */
       id: doc.id,
       ...doc.data(),

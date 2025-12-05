@@ -4,7 +4,8 @@
  * @description This file contains the DemoDeletionResult component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -69,6 +70,25 @@ interface DemoDeletionResultProps {
 });
  */
 
+/**
+ * Performs demo deletion result operation
+ *
+ * @param {DemoDeletionResultProps} {
+  total,
+  breakdown,
+} - The {
+  total,
+  breakdown,
+}
+ *
+ * @returns {any} The demodeletionresult result
+ *
+ * @example
+ * DemoDeletionResult({
+  total,
+  breakdown,
+});
+ */
 export function DemoDeletionResult({
   total,
   breakdown,

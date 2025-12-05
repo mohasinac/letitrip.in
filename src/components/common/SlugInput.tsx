@@ -4,7 +4,8 @@
  * @description This file contains the SlugInput component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -24,7 +25,9 @@ interface SlugInputProps {
   value: string;
   /** On Change */
   onChange: (slug: string) => void;
+  /** SourceText */
   sourceText?: string; // Text to auto-generate slug from (e.g., title)
+  /** BaseUrl */
   baseUrl?: string; // Base URL for preview
   /** Placeholder */
   placeholder?: string;
@@ -32,10 +35,13 @@ interface SlugInputProps {
   disabled?: boolean;
   /** Error */
   error?: string;
+  /** ValidateUnique */
   validateUnique?: (slug: string) => Promise<boolean>; // Check if slug is unique
   /** Max Length */
   maxLength?: number;
+  /** Prefix */
   prefix?: string; // Optional prefix (e.g., "product-", "shop-")
+  /** Suffix */
   suffix?: string; // Optional suffix (e.g., "-2024")
   /** Show Preview */
   showPreview?: boolean;
@@ -86,7 +92,23 @@ function generateSlug(text: string, prefix = "", suffix = ""): string {
   return slug;
 }
 
-export default function SlugInput({
+export default /**
+ * Performs slug input operation
+ *
+ * @param {SlugInputProps} [{
+  value,
+  onChange,
+  sourceText,
+  baseUrl = "https] - The {
+  value,
+  onchange,
+  sourcetext,
+  baseurl = "https
+ *
+ * @returns {any} The sluginput result
+ *
+ */
+function SlugInput({
   value,
   onChange,
   sourceText,
@@ -123,7 +145,15 @@ export default function SlugInput({
   useEffect(() => {
     if (!validateUnique || !localValue) return;
 
-    const timeoutId = setTimeout(async () => {
+    /**
+ * Performs timeout id operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The timeoutid result
+ *
+ */
+const timeoutId = setTimeout(async () => {
       setIsValidating(true);
       setValidationError(null);
 
@@ -183,14 +213,30 @@ export default function SlugInput({
 
   const handleRegenerate = () => {
     if (sourceText) {
-      const newSlug = generateSlug(sourceText, prefix, suffix);
+      const newSlug = generateSlug(sourceText, pref/**
+ * Performs preview url operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The previewurl result
+ *
+ */
+ix, suffix);
       setLocalValue(newSlug);
       onChange(newSlug);
       setIsManualEdit(false);
     }
   };
 
-  // Full preview URL
+  // Full preview U/**
+ * Checks if valid format
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The isvalidformat result
+ *
+ */
+RL
   const previewUrl = useMemo(() => {
     if (!localValue) return "";
     return `${baseUrl}/${localValue}`;

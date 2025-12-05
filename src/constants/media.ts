@@ -4,7 +4,8 @@
  * @description This file contains functionality related to media
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -427,6 +428,7 @@ export const validateFile = {
   /**
    * Check if file type is allowed
    */
+  /** Type */
   type: (file: File, allowedTypes: string[]): boolean => {
     return allowedTypes.includes(file.type);
   },
@@ -434,14 +436,22 @@ export const validateFile = {
   /**
    * Check if file extension is allowed
    */
+  /** Extension */
   extension: (filename: string, allowedExtensions: string[]): boolean => {
-    const ext = filename.toLowerCase().substring(filename.lastIndexOf("."));
+    /**
+ * Performs ext operation
+ *
+ * @returns {Promise<} The ext result
+ *
+ */
+const ext = filename.toLowerCase().substring(filename.lastIndexOf("."));
     return allowedExtensions.includes(ext);
   },
 
   /**
    * Check if image dimensions are within constraints
    */
+  /** ImageDimensions */
   imageDimensions: async (
     /** File */
     file: File,

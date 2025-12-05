@@ -4,7 +4,8 @@
  * @description This file contains the SubNavbar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -21,6 +22,13 @@ import {
   Gavel,
 } from "lucide-react";
 
+/**
+ * NAV_ITEMS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for nav items
+ */
 const NAV_ITEMS = [
   { id: "home", name: "Home", href: "/", icon: Home },
   { id: "products", name: "Products", href: "/products", icon: ShoppingBag },
@@ -36,7 +44,13 @@ const NAV_ITEMS = [
  * Hidden on mobile (< lg breakpoint) as MobileSidebar provides navigation
  * Shows on desktop with dark mode support
  */
-export default function SubNavbar() {
+export default /**
+ * Performs sub navbar operation
+ *
+ * @returns {any} The subnavbar result
+ *
+ */
+function SubNavbar() {
   const pathname = usePathname();
 
   /**

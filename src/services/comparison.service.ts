@@ -4,7 +4,8 @@
  * @description This file contains service functions for comparison operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -61,7 +62,15 @@ class ComparisonService {
     if (typeof window === "undefined") return [];
 
     try {
-      const stored = localStorage.getItem(this.getStorageKey());
+      /**
+ * Performs stored operation
+ *
+ * @param {any} this.getStorageKey( - The this.getstoragekey(
+ *
+ * @returns {string[]} The stored result
+ *
+ */
+const stored = localStorage.getItem(this.getStorageKey());
       if (!stored) return [];
       return JSON.parse(stored) as ComparisonProduct[];
     } catch {
@@ -78,7 +87,13 @@ class ComparisonService {
 
   /**
    * Add a product to comparison
-   * @returns true if added, false if already exists or max reached
+   * @returns true if added, false if already exists/**
+ * Performs products operation
+ *
+ * @returns {any} The products result
+ *
+ */
+ or max reached
    */
   addToComparison(product: ComparisonProduct): boolean {
     if (typeof window === "undefined") return false;
@@ -100,7 +115,15 @@ class ComparisonService {
       localStorage.setItem(this.getStorageKey(), JSON.stringify(products));
       return true;
     } catch {
-      return false;
+      return fal/**
+ * Performs filtered operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The filtered result
+ *
+ */
+se;
     }
   }
 

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to faq
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 // FAQ Data Structure
@@ -859,7 +860,13 @@ export function getCategoriesWithCounts() {
  */
 
 export function searchFAQs(query: string): FAQItem[] {
-  const lowerQuery = query.toLowerCase();
+  /**
+ * Performs lower query operation
+ *
+ * @returns {any} The lowerquery result
+ *
+ */
+const lowerQuery = query.toLowerCase();
   return FAQ_ITEMS.filter(
     (item) =>
       item.question.toLowerCase().includes(lowerQuery) ||

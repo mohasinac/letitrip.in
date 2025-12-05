@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -153,7 +154,15 @@ export async function POST(request: NextRequest) {
       });
 
       // Collect product IDs for stock update
-      const productIds =
+      /**
+ * Performs product ids operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The productids result
+ *
+ */
+const productIds =
         order?.items?.map((item: any) => item.product_id) || [];
       allProductIds.push(...productIds);
 

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -60,7 +61,15 @@ function ResetPasswordForm() {
     },
   });
 
-  const validatePassword = useCallback((pwd: string): string | null => {
+  /**
+ * Validates password
+ *
+ * @param {string} (pwd - The (pwd
+ *
+ * @returns {string | null =>} The validatepassword result
+ *
+ */
+const validatePassword = useCallback((pwd: string): string | null => {
     if (pwd.length < 8) {
       return "Password must be at least 8 characters long";
     }
@@ -101,7 +110,15 @@ function ResetPasswordForm() {
     setValidationError(null);
 
     // Validate passwords match
-    if (password !== confirmPassword) {
+    if (password !== con/**
+ * Performs password error operation
+ *
+ * @param {any} password - The password
+ *
+ * @returns {Promise<any>} The passworderror result
+ *
+ */
+firmPassword) {
       setValidationError("Passwords do not match");
       return;
     }
@@ -343,7 +360,13 @@ function ResetPasswordForm() {
   );
 }
 
-export default function ResetPasswordPage() {
+export default /**
+ * Performs reset password page operation
+ *
+ * @returns {any} The resetpasswordpage result
+ *
+ */
+function ResetPasswordPage() {
   return (
     <Suspense
       fallback={

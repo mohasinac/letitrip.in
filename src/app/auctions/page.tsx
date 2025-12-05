@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -136,7 +137,15 @@ function AuctionsContent() {
 
   const view = (filters.view as "grid" | "list") || "grid";
 
-  const loadAuctions = useCallback(async () => {
+  /**
+ * Performs load auctions operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadauctions result
+ *
+ */
+const loadAuctions = useCallback(async () => {
     await execute(async () => {
       const startAfter = cursors[page - 1];
 
@@ -161,7 +170,15 @@ function AuctionsContent() {
       setAuctions(response.data || []);
       setTotalCount(response.count || 0);
 
-      // Store cursor for next page
+      // Store cursor /**
+ * Performs cursor pagination operation
+ *
+ * @param {any} cursorPagination.nextCursor&&!cursors[page] - The cursorpagination.nextcursor&&!cursors[page]
+ *
+ * @returns {any} The cursorpagination result
+ *
+ */
+for next page
       if (
         "hasNextPage" in response.pagination &&
         "nextCursor" in response.pagination
@@ -169,7 +186,15 @@ function AuctionsContent() {
         const cursorPagination = response.pagination as any;
         if (cursorPagination.nextCursor && !cursors[page]) {
           setCursors((prev) => {
-            const newCursors = [...prev];
+            const/**
+ * Handles reset filters
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handleresetfilters result
+ *
+ */
+ newCursors = [...prev];
             newCursors[page] = cursorPagination.nextCursor || null;
             return newCursors;
           });
@@ -527,7 +552,13 @@ function AuctionsContent() {
  * @example
  * const result = AuctionsPage();
  */
-export default function AuctionsPage() {
+export default /**
+ * Performs auctions page operation
+ *
+ * @returns {any} The auctionspage result
+ *
+ */
+function AuctionsPage() {
   return (
     <ErrorBoundary>
       <Suspense

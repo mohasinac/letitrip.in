@@ -4,7 +4,8 @@
  * @description This file contains the RecentReviewsSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -63,6 +64,25 @@ interface RecentReviewsSectionProps {
   limit);
  */
 
+/**
+ * Performs recent reviews section operation
+ *
+ * @param {RecentReviewsSectionProps} [{
+  limit = 10,
+  className = "",
+}] - The {
+  limit = 10,
+  classname = "",
+}
+ *
+ * @returns {any} The recentreviewssection result
+ *
+ * @example
+ * RecentReviewsSection({
+  limit = 10,
+  className = "",
+});
+ */
 export function RecentReviewsSection({
   limit = 10,
   className = "",

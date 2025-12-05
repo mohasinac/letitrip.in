@@ -4,7 +4,8 @@
  * @description This file contains functionality related to form-validation
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -351,7 +352,15 @@ export function validateFields(
   /** Field Keys */
   fieldKeys: string[],
 ): ValidationResult {
-  const fieldsToValidate = fields.filter((f) => fieldKeys.includes(f.key));
+  /**
+ * Performs fields to validate operation
+ *
+ * @param {any} (f - The (f
+ *
+ * @returns {any} The fieldstovalidate result
+ *
+ */
+const fieldsToValidate = fields.filter((f) => fieldKeys.includes(f.key));
   return validateForm(values, fieldsToValidate);
 }
 
@@ -378,7 +387,17 @@ export function validateFields(
  *
  * @returns {string} The firsterror result
  *
- * @throws {Error} When operation fails or validation errors occur
+ * @throws {Error} When operation fails or validation errors oc/**
+ * Performs first key operation
+ *
+ * @param {any} errors - The errors
+ *
+ * @returns {ValidationError[]} The firstkey result
+ *
+ * @example
+ * firstKey(errors);
+ */
+cur
  *
  * @example
  * getFirstError(errors);
@@ -421,6 +440,17 @@ export function getFirstError(errors: Record<string, string>): string | null {
   errors);
  */
 
+/**
+ * Formats errors
+ *
+ * @param {Record<string} errors - The errors
+ * @param {any} string> - The string>
+ *
+ * @returns {ValidationError[]} The formaterrors result
+ *
+ * @example
+ * formatErrors(errors, string>);
+ */
 export function formatErrors(
   /** Errors */
   errors: Record<string, string>,

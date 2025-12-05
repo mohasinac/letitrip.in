@@ -4,7 +4,8 @@
  * @description This file contains the PoliciesStep component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -28,7 +29,23 @@ interface PoliciesStepProps {
   errors: Record<string, string>;
 }
 
-export default function PoliciesStep({
+export default /**
+ * Performs policies step operation
+ *
+ * @param {PoliciesStepProps} {
+  formData,
+  onChange,
+  errors,
+} - The {
+  formdata,
+  onchange,
+  errors,
+}
+ *
+ * @returns {any} The policiesstep result
+ *
+ */
+function PoliciesStep({
   formData,
   onChange,
   errors,

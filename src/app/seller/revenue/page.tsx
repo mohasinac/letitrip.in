@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -47,7 +48,13 @@ interface RevenueData {
   topProducts: any[];
 }
 
-export default function SellerRevenuePage() {
+export default /**
+ * Performs seller revenue page operation
+ *
+ * @returns {any} The sellerrevenuepage result
+ *
+ */
+function SellerRevenuePage() {
   const router = useRouter();
   const [dateRange, setDateRange] = useState<{
     /** Start Date */
@@ -74,7 +81,15 @@ export default function SellerRevenuePage() {
     initialData: { overview: null, salesData: [], topProducts: [] },
   });
 
-  const loadData = useCallback(async () => {
+  /**
+ * Performs load data operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loaddata result
+ *
+ */
+const loadData = useCallback(async () => {
     const filters = {
       /** Start Date */
       startDate: dateRange.startDate,
@@ -396,7 +411,15 @@ export default function SellerRevenuePage() {
             ) : (
               <div className="overflow-x-auto">
                 <div className="min-w-full">
-                  <div className="h-64 flex items-end justify-between gap-2">
+                  <div c/**
+ * Performs max revenue operation
+ *
+ * @param {any} ...salesData.map((d - The ...salesdata.map((d
+ *
+ * @returns {any} The maxrevenue result
+ *
+ */
+lassName="h-64 flex items-end justify-between gap-2">
                     {salesData.map((data, index) => {
                       const maxRevenue = Math.max(
                         ...salesData.map((d) => d.revenue)

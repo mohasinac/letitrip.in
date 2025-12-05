@@ -4,7 +4,8 @@
  * @description This file contains the ShopReviews component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -264,13 +265,29 @@ export function ShopReviews({
   const [submitting, setSubmitting] = useState(false);
 
   // Calculate rating breakdown
-  const ratingBreakdown = [5, 4, 3, 2, 1].map((rating) => ({
+  /**
+ * Performs rating breakdown operation
+ *
+ * @param {any} (rating - The (rating
+ *
+ * @returns {any} The ratingbreakdown result
+ *
+ */
+const ratingBreakdown = [5, 4, 3, 2, 1].map((rating) => ({
     rating,
     /** Count */
     count: reviews.filter((r) => r.rating === rating).length,
     /** Percentage */
     percentage: reviews.length
-      ? (reviews.filter((r) => r.rating === rating).length / reviews.length) *
+      ? /**
+ * Performs filtered reviews operation
+ *
+ * @param {any} (r - The (r
+ *
+ * @returns {any} The filteredreviews result
+ *
+ */
+(reviews.filter((r) => r.rating === rating).length / reviews.length) *
         100
       : 0,
   }));

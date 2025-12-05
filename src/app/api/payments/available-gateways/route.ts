@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -182,9 +183,25 @@ export async function GET(request: NextRequest) {
 
     // Sort by priority (lower priority number = higher preference)
     availableGateways.sort((a, b) => {
-      const aGateway = PAYMENT_GATEWAYS.find((g) => g.id === a.id);
+      /**
+ * Performs a gateway operation
+ *
+ * @param {any} (g - The (g
+ *
+ * @returns {any} The agateway result
+ *
+ */
+const aGateway = PAYMENT_GATEWAYS.find((g) => g.id === a.id);
       const bGateway = PAYMENT_GATEWAYS.find((g) => g.id === b.id);
-      return (aGateway?.priority || 999) - (bGateway?.priority || 999);
+      return (aGateway?.priority/**
+ * Performs gateways with fees operation
+ *
+ * @param {any} (gateway - The (gateway
+ *
+ * @returns {any} The gatewayswithfees result
+ *
+ */
+ || 999) - (bGateway?.priority || 999);
     });
 
     // Calculate fees for each gateway if amount provided

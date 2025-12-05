@@ -4,7 +4,8 @@
  * @description This file contains the ContactSelectorWithCreate component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -51,6 +52,18 @@ export interface Contact {
   createdAt: Date;
 }
 
+/**
+ * Performs contact schema operation
+ *
+ * @param {object} {
+  
+  name - The {
+  
+  name
+ *
+ * @returns {any} The contactschema result
+ *
+ */
 const ContactSchema = z.object({
   /** Name */
   name: z

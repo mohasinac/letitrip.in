@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -116,6 +117,13 @@ interface NotificationSettings {
   };
 }
 
+/**
+ * DEFAULT_SETTINGS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for default settings
+ */
 const DEFAULT_SETTINGS: NotificationSettings = {
   /** Global Enabled */
   globalEnabled: true,
@@ -276,7 +284,13 @@ const categoryInfo: Record<
   },
 };
 
-export default function AdminNotificationSettingsPage() {
+export default /**
+ * Performs admin notification settings page operation
+ *
+ * @returns {any} The adminnotificationsettingspage result
+ *
+ */
+function AdminNotificationSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -398,7 +412,15 @@ export default function AdminNotificationSettingsPage() {
    * @returns {any} The togglecategory result
    */
 
-  const toggleCategory = (
+  /**
+ * Performs toggle category operation
+ *
+ * @param {keyof NotificationSettings["categories"]} category - The category
+ *
+ * @returns {any} The togglecategory result
+ *
+ */
+const toggleCategory = (
     /** Category */
     category: keyof NotificationSettings["categories"]
   ) => {

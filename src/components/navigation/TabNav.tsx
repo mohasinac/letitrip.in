@@ -4,7 +4,8 @@
  * @description This file contains the TabNav component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -76,6 +77,28 @@ interface TabNavProps {
   variant);
  */
 
+/**
+ * Performs tab nav operation
+ *
+ * @param {TabNavProps} [{
+  tabs,
+  className,
+  variant = "underline",
+}] - The {
+  tabs,
+  classname,
+  variant = "underline",
+}
+ *
+ * @returns {any} The tabnav result
+ *
+ * @example
+ * TabNav({
+  tabs,
+  className,
+  variant = "underline",
+});
+ */
 export function TabNav({
   tabs,
   className,

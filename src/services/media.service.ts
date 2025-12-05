@@ -4,7 +4,8 @@
  * @description This file contains service functions for media operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiService } from "./api.service";
@@ -120,7 +121,13 @@ class MediaService {
     });
 
     if (!response.ok) {
-      const error = await response
+      /**
+ * Performs error operation
+ *
+ * @returns {any} The error result
+ *
+ */
+const error = await response
         .json()
         .catch(() => ({ error: "Failed to upload media" }));
       throw new Error(error.error || error.message || "Failed to upload media");
@@ -149,7 +156,13 @@ class MediaService {
     files: File[],
     /** Context */
     context: string,
-    /** Context Id */
+    /** Con/**
+ * Performs form data operation
+ *
+ * @returns {any} The formdata result
+ *
+ */
+text Id */
     contextId?: string,
   ): Promise<MediaUploadResponse[]> {
     const formData = new FormData();
@@ -157,7 +170,13 @@ class MediaService {
     formData.append("context", context);
     if (contextId) formData.append("contextId", contextId);
 
-    const response = await fetch("/api/media/upload-multiple", {
+    const response = awai/**
+ * Performs error operation
+ *
+ * @returns {any} The error result
+ *
+ */
+t fetch("/api/media/upload-multiple", {
       /** Method */
       method: "POST",
       /** Body */

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to handler-factory
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -131,6 +132,16 @@ export interface HandlerOptions {
   handler);
  */
 
+/**
+ * Performs with error handler operation
+ *
+ * @param {RouteHandler<T>} handler - The handler
+ *
+ * @returns {RouteHandler<T>} The witherrorhandler result
+ *
+ * @example
+ * withErrorHandler(handler);
+ */
 export function withErrorHandler<T extends HandlerContext>(
   /** Handler */
   handler: RouteHandler<T>,
@@ -322,7 +333,25 @@ export function paginatedResponse<T>(
  *
  * @example
  * // Role-restricted handler
- * export const DELETE = createHandler(
+ * /**
+ * Deletes 
+ *
+ * @param {any} *async(req - The *async(req
+ * @param {any} ctx - The ctx
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ * @example
+ * DELETE(*async(req, ctx);
+ */
+/**
+ * DELETE constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for delete
+ */
+export const DELETE = createHandler(
  *   async (req, ctx) => {
  *     await deleteResource(ctx.params.id);
  *     return successResponse({ deleted: true });
@@ -359,7 +388,15 @@ export function createHandler<TAuth extends boolean = false>(
   /** Request */
   request: NextRequest,
   /** Context */
-  context?: { params?: Promise<Record<string, string>> },
+  context?: { params?: Promise<Record<strin/**
+ * Performs require authentication operation
+ *
+ * @param {any} roles&&roles.length>0 - The roles&&roles.length>0
+ *
+ * @returns {Promise<any>} The requireauthentication result
+ *
+ */
+g, string>> },
 ) => Promise<NextResponse> {
   const { auth = false, roles, parseBody = false, logging = false } = options;
 
@@ -472,7 +509,16 @@ export interface CrudHandlerConfig<T = any> {
  * @returns {any} The crudhandlers result
  *
  * @example
- * createCrudHandlers(config);
+ * createCrudHandlers(con/**
+ * Retrieves 
+ *
+ * @param {any} async(request - The async(request
+ * @param {any} ctx - The ctx
+ *
+ * @returns {Promise<any>} The get result
+ *
+ */
+fig);
  */
 
 export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
@@ -482,13 +528,29 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
     transform = (id, data) => ({ id, ...data }),
     validate,
     canAccess = () => true,
-    canModify = (user) => user.role === "admin",
+    canModify = (user) => user.role ==/**
+ * GET constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for get
+ */
+= "admin",
     allowedUpdateFields,
     requiredFields = [],
   } = config;
 
   // GET single resource
-  const GET = createHandler(async (request, ctx) => {
+  const GET = createHandler(async (r/**
+ * Performs p o s t operation
+ *
+ * @param {any} async(request - The async(request
+ * @param {any} ctx - The ctx
+ *
+ * @returns {Promise<any>} The post result
+ *
+ */
+equest, ctx) => {
     const { id } = ctx.params;
     if (!id) {
       throw new BadRequestError("ID is required");
@@ -502,7 +564,14 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
 
     const data = doc.data();
 
-    // Check access
+    // Che/**
+ * POST constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for post
+ */
+ck access
     if (!canAccess(ctx.user, data)) {
       throw new NotFoundError(`${resourceName} not found`);
     }
@@ -525,7 +594,16 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
 
       // Custom validation
       if (validate) {
-        const errors = validate(body, false);
+        const errors = v/**
+ * Performs p a t c h operation
+ *
+ * @param {any} async(request - The async(request
+ * @param {any} ctx - The ctx
+ *
+ * @returns {Promise<any>} The patch result
+ *
+ */
+alidate(body, false);
         if (errors && errors.length > 0) {
           throw new BadRequestError(errors.join(", "));
         }
@@ -540,7 +618,14 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
         created_by: ctx.user.uid,
       };
 
-      const docRef = await collection().add(docData);
+      const docRef = aw/**
+ * PATCH constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for patch
+ */
+ait collection().add(docData);
 
       return successResponse(transform(docRef.id, docData), {
         /** Status */
@@ -583,7 +668,16 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
         const errors = validate(body, true);
         if (errors && errors.length > 0) {
           throw new BadRequestError(errors.join(", "));
-        }
+        /**
+ * Deletes 
+ *
+ * @param {any} async(request - The async(request
+ * @param {any} ctx - The ctx
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ */
+}
       }
 
       // Filter allowed fields if specified
@@ -601,7 +695,14 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
       const updateData = {
         ...updates,
         updated_at: new Date().toISOString(),
-        updated_by: ctx.user.uid,
+        updated_by: c/**
+ * DELETE constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for delete
+ */
+tx.user.uid,
       };
 
       await collection().doc(id).update(updateData);
@@ -688,7 +789,16 @@ export function getPaginationParams(searchParams: URLSearchParams) {
     /** Limit */
     limit: Math.min(parseInt(searchParams.get("limit") || "20"), 100),
     /** Start After */
-    startAfter: searchParams.get("startAfter") || searchParams.get("cursor"),
+    start/**
+ * Performs pagination keys operation
+ *
+ * @param {any} (value - The (value
+ * @param {any} key - The key
+ *
+ * @returns {any} The paginationkeys result
+ *
+ */
+After: searchParams.get("startAfter") || searchParams.get("cursor"),
     /** Page */
     page: parseInt(searchParams.get("page") || "1"),
     /** Sort By */

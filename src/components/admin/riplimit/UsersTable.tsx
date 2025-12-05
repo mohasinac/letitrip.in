@@ -4,7 +4,8 @@
  * @description This file contains the UsersTable component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -154,7 +155,15 @@ export function UsersTable({
 
   const formatRL = (amount: number) => `${amount.toLocaleString("en-IN")} RL`;
 
-  const filteredUsers = users.filter((u) => {
+  /**
+ * Performs filtered users operation
+ *
+ * @param {any} (u - The (u
+ *
+ * @returns {any} The filteredusers result
+ *
+ */
+const filteredUsers = users.filter((u) => {
     if (!searchQuery) return true;
     const searchLower = searchQuery.toLowerCase();
     return (

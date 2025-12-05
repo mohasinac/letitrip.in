@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -54,7 +55,13 @@ interface ReplyToTicketData {
   isInternal: boolean;
 }
 
-export default function TicketDetailPage() {
+export default /**
+ * Performs ticket detail page operation
+ *
+ * @returns {any} The ticketdetailpage result
+ *
+ */
+function TicketDetailPage() {
   return (
     <AuthGuard requireAuth allowedRoles={["admin"]}>
       <TicketDetailContent />
@@ -124,7 +131,15 @@ function TicketDetailContent() {
   const [closing, setClosing] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  /**
+ * Performs file input ref operation
+ *
+ * @param {any} null - The null
+ *
+ * @returns {any} The fileinputref result
+ *
+ */
+const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadTicket();
@@ -414,7 +429,15 @@ function TicketDetailContent() {
    *
    * @param {React.ChangeEvent<HTMLInputElement>} e - The e
    *
-   * @returns {any} The handlefilechange result
+   * /**
+ * Performs files operation
+ *
+ * @param {any} e.target.files||[] - The e.target.files||[]
+ *
+ * @returns {any} The files result
+ *
+ */
+@returns {any} The handlefilechange result
    */
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
@@ -52,7 +53,15 @@ export async function GET() {
       .orderBy("featured_priority", "desc")
       .limit(50)
       .get();
-    const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    /**
+ * Performs data operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The data result
+ *
+ */
+const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     return NextResponse.json({ success: true, data });
   } catch (error) {
     console.error("Featured auctions error:", error);

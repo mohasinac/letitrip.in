@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -67,7 +68,13 @@ interface AnalyticsData {
   revenueByCategory: Array<{ category: string; revenue: number }>;
 }
 
-export default function AnalyticsPage() {
+export default /**
+ * Performs analytics page operation
+ *
+ * @returns {any} The analyticspage result
+ *
+ */
+function AnalyticsPage() {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -102,7 +109,15 @@ export default function AnalyticsPage() {
   }, [user, router]);
 
   // Fetch analytics data
-  const fetchAnalytics = useCallback(async () => {
+  /**
+ * Fetches analytics
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The fetchanalytics result
+ *
+ */
+const fetchAnalytics = useCallback(async () => {
     const data = await analyticsService.getOverview({
       /** Shop Id */
       shopId: selectedShopId || undefined,

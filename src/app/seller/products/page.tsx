@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -26,7 +27,13 @@ import { Eye, ExternalLink } from "lucide-react";
  * @example
  * const result = ProductsPage();
  */
-export default function ProductsPage() {
+export default /**
+ * Performs products page operation
+ *
+ * @returns {any} The productspage result
+ *
+ */
+function ProductsPage() {
   return (
     <SellerResourcePage<ProductCardFE>
       resourceName="Product"

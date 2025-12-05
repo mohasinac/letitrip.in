@@ -4,7 +4,8 @@
  * @description This file contains the VideoThumbnailGenerator component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -34,7 +35,25 @@ interface VideoThumbnailGeneratorProps {
   thumbnailCount?: number;
 }
 
-export default function VideoThumbnailGenerator({
+export default /**
+ * Performs video thumbnail generator operation
+ *
+ * @param {VideoThumbnailGeneratorProps} [{
+  media,
+  onSelect,
+  onCancel,
+  thumbnailCount = 5,
+}] - The {
+  media,
+  onselect,
+  oncancel,
+  thumbnailcount = 5,
+}
+ *
+ * @returns {any} The videothumbnailgenerator result
+ *
+ */
+function VideoThumbnailGenerator({
   media,
   onSelect,
   onCancel,
@@ -120,7 +139,16 @@ export default function VideoThumbnailGenerator({
     try {
       const { extractVideoThumbnail } =
         await import("@/lib/media/video-processor");
-      const thumbnailDataUrl = await extractVideoThumbnail(
+      /**
+ * Performs thumbnail data url operation
+ *
+ * @param {any} media.file - The media.file
+ * @param {any} timestamp - The timestamp
+ *
+ * @returns {any} The thumbnaildataurl result
+ *
+ */
+const thumbnailDataUrl = await extractVideoThumbnail(
         media.file,
         timestamp,
       );

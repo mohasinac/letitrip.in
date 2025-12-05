@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -66,6 +67,17 @@ interface RouteParams {
   request, { params });
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {RouteParams} { params } - The { params }
+ *
+ * @returns {Promise<NextResponse>} The get result
+ *
+ * @example
+ * GET(request, { params });
+ */
 export async function GET(
   /** Request */
   request: NextRequest,

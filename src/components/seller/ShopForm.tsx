@@ -4,7 +4,8 @@
  * @description This file contains the ShopForm component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -39,7 +40,25 @@ interface ShopFormProps {
   mode: "create" | "edit";
 }
 
-export default function ShopForm({
+export default /**
+ * Performs shop form operation
+ *
+ * @param {ShopFormProps} {
+  shop,
+  onSubmit,
+  isSubmitting,
+  mode,
+} - The {
+  shop,
+  onsubmit,
+  issubmitting,
+  mode,
+}
+ *
+ * @returns {any} The shopform result
+ *
+ */
+function ShopForm({
   shop,
   onSubmit,
   isSubmitting,
@@ -53,7 +72,16 @@ export default function ShopForm({
   const [email, setEmail] = useState(shop?.email || "");
   const [website, setWebsite] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const slugValidation = useShopSlugValidation(slug, shop?.id);
+  /**
+ * Performs slug validation operation
+ *
+ * @param {any} slug - The slug
+ * @param {any} [shop.id] - The shop.id
+ *
+ * @returns {any} The slugvalidation result
+ *
+ */
+const slugValidation = useShopSlugValidation(slug, shop?.id);
 
   useEffect(() => {
     if (mode === "create" && name && !slug) {

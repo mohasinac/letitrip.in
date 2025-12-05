@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -48,7 +49,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function AuctionDetailPage() {
+export default /**
+ * Performs auction detail page operation
+ *
+ * @returns {any} The auctiondetailpage result
+ *
+ */
+function AuctionDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -121,7 +128,19 @@ export default function AuctionDetailPage() {
           setShop(shopData);
 
           // Load other auctions from this shop
-          const shopAuctionsData = await auctionsService.list({
+          /**
+ * Performs shop auctions data operation
+ *
+ * @param {object} {
+            
+            shopId - The {
+            
+            shopid
+ *
+ * @returns {any} The shopauctionsdata result
+ *
+ */
+const shopAuctionsData = await auctionsService.list({
             /** Shop Id */
             shopId: data.shopId,
             /** Status */
@@ -137,7 +156,19 @@ export default function AuctionDetailPage() {
             /** Component */
             component: "AuctionDetailPage.loadShop",
             /** Metadata */
-            metadata: { slug, shopId: data.shopId },
+            metadata: { slug, /**
+ * Performs similar data operation
+ *
+ * @param {object} {
+          
+          status - The {
+          
+          status
+ *
+ * @returns {any} The similardata result
+ *
+ */
+shopId: data.shopId },
           });
           // Non-critical error, continue showing auction
         }

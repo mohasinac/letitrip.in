@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -43,7 +44,16 @@ import { NextRequest, NextResponse } from "next/server";
  */
 
 export async function GET(request: NextRequest) {
-  let productId: string | null = null;
+  /**
+ * Performs product id operation
+ *
+ * @param {any} request - The request
+ * @param {any} async(req - The async(req
+ *
+ * @returns {Promise<any>} The productid result
+ *
+ */
+let productId: string | null = null;
   return withCache(
     request,
     async (req) => {
@@ -59,8 +69,24 @@ export async function GET(request: NextRequest) {
         }
 
         // Get all reviews for the product
-        const reviewsSnapshot = await Collections.reviews()
-          .where("product_id", "==", productId)
+      /**
+ * Performs reviews operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The reviews result
+ *
+ */
+  const reviewsSnapshot = await Collections.reviews()
+          .w/**
+ * Performs rating counts operation
+ *
+ * @param {any} (review - The (review
+ *
+ * @returns {any} The ratingcounts result
+ *
+ */
+here("product_id", "==", productId)
           .where("is_approved", "==", true)
           .get();
 

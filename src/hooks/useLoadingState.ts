@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useLoadingState
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -101,7 +102,15 @@ export interface UseLoadingStateReturn<T> extends LoadingState<T> {
  * ```tsx
  * const { data, isLoading, error, execute, retry } = useLoadingState<Order>();
  *
- * const loadOrder = useCallback(async () => {
+ * /**
+ * Performs load order operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadorder result
+ *
+ */
+const loadOrder = useCallback(async () => {
  *   await execute(() => orderService.getOrder(orderId));
  * }, [orderId]);
  *
@@ -142,6 +151,16 @@ export interface UseLoadingStateReturn<T> extends LoadingState<T> {
   options);
  */
 
+/**
+ * Custom React hook for loading state
+ *
+ * @param {UseLoadingStateOptions<T>} [options] - The options
+ *
+ * @returns {UseLoadingStateReturn<T>} The useloadingstate result
+ *
+ * @example
+ * useLoadingState(options);
+ */
 export function useLoadingState<T = any>(
   /** Options */
   options: UseLoadingStateOptions<T> = {},
@@ -160,14 +179,30 @@ export function useLoadingState<T = any>(
     /** Error */
     error: null,
     /** Data */
-    data: initialData,
+    d/**
+ * Performs last operation ref operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The lastoperationref result
+ *
+ */
+ata: initialData,
     /** Is Initialized */
     isInitialized: false,
     /** Is Refreshing */
     isRefreshing: false,
   });
 
-  const lastOperationRef = useRef<(() => Promise<T>) | null>(null);
+  const lastOperationRef = useRef<(() => Promise<T>) | null>(nu/**
+ * Sets data
+ *
+ * @param {T | null} (data - The (data
+ *
+ * @returns {any} The setdata result
+ *
+ */
+ll);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const clearErrorTimeout = useCallback(() => {
@@ -181,7 +216,15 @@ export function useLoadingState<T = any>(
     setState((prev) => ({ ...prev, data, error: null }));
   }, []);
 
-  const setError = useCallback(
+  const setError = useCallback(/**
+ * Performs clear error operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The clearerror result
+ *
+ */
+
     (error: Error | null) => {
       clearErrorTimeout();
 
@@ -225,7 +268,13 @@ export function useLoadingState<T = any>(
       /** Execute Options */
       executeOptions: { setData?: boolean; isRefresh?: boolean } = {},
     ): Promise<R | null> => {
-      const { setData: shouldSetData = true, isRefresh = false } =
+  /**
+ * Performs result operation
+ *
+ * @returns {Promise<any>} The result result
+ *
+ */
+    const { setData: shouldSetData = true, isRefresh = false } =
         executeOptions;
 
       clearErrorTimeout();
@@ -240,7 +289,15 @@ export function useLoadingState<T = any>(
         isLoading: true,
         /** Error */
         error: null,
-        /** Is Refreshing */
+        /** Is Refreshing /**
+ * Performs error operation
+ *
+ * @param {any} String(err - The string(err
+ *
+ * @returns {any} The error result
+ *
+ */
+*/
         isRefreshing: isRefresh && prev.isInitialized,
       }));
 
@@ -264,7 +321,15 @@ export function useLoadingState<T = any>(
 
         return result;
       } catch (err) {
-        const error = err instanceof Error ? err : new Error(String(err));
+        const error = err instanceof Error ? err : new/**
+ * Performs retry operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<T | null> =>} The retry result
+ *
+ */
+ Error(String(err));
 
         setState((prev) => ({
           ...prev,
@@ -324,20 +389,53 @@ export function useLoadingState<T = any>(
  * const { states, executeAll, isAnyLoading, hasAnyError } = useMultiLoadingState({
  *   users: () => userService.getUsers(),
  *   orders: () => orderService.getOrders(),
- *   stats: () => statsService.getDashboardStats(),
+ *   stats: () => statsService.getDashboardStats(),/**
+ * Performs states operation
+ *
+ * @param {any} (acc - The (acc
+ * @param {any} key - The key
+ *
+ * @returns {any} The states result
+ *
+ */
+
  * });
  *
  * if (isAnyLoading) return <Spinner />;
- * if (hasAnyError) return <ErrorMessage errors={Object.values(states).map(s => s.error).filter(Boolean)} />;
+ * if (hasAnyError) return <ErrorMessage errors={Object.values(states).map(s => s.error).filte/**
+ * Performs execute all operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The executeall result
+ *
+ */
+r(Boolean)} />;
  *
  * return (
  *   <Dashboard
  *     users={states.users.data}
- *     orders={states.orders.data}
+ * /**
+ * Performs execute one operation
+ *
+ * @param {K} async<KextendskeyofT>(key - The async<kextendskeyoft>(key
+ *
+ * @returns {Promise<any>} The executeone result
+ *
+ */
+    orders={states.orders.data}
  *     stats={states.stats.data}
  *   />
  * );
- * ```
+ /**
+ * Checks if all loading
+ *
+ * @param {any} (key - The (key
+ *
+ * @returns {any} The isallloading result
+ *
+ */
+* ```
  */
 /**
  * Custom React hook for multi loading state

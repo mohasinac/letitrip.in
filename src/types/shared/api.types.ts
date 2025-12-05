@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for api
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -217,6 +218,16 @@ export class ValidationErrorClass extends Error {
   response);
  */
 
+/**
+ * Checks if success response
+ *
+ * @param {APIResult<T>} response - The response
+ *
+ * @returns {response is APIResponse<T>} The issuccessresponse result
+ *
+ * @example
+ * isSuccessResponse(response);
+ */
 export function isSuccessResponse<T>(
   /** Response */
   response: APIResult<T>,
@@ -244,7 +255,17 @@ export function isSuccessResponse<T>(
  * Checks if error response
  *
  * @param {APIResult<any>} /** Response */
-  response - The /**  response */
+  response - The /** /**
+ * Checks if error response
+ *
+ * @param {APIResult<any>} response - The response
+ *
+ * @returns {response is APIErrorResponse} The iserrorresponse result
+ *
+ * @example
+ * isErrorResponse(response);
+ */
+ response */
   response
  *
  * @returns {any} The iserrorresponse result
@@ -265,7 +286,17 @@ export function isErrorResponse(
 
 /**
  * Check if response is paginated
+ /**
+ * Checks if paginated response
+ *
+ * @param {any} data - The data
+ *
+ * @returns {data is PaginatedResponse<T>} The ispaginatedresponse result
+ *
+ * @example
+ * isPaginatedResponse(data);
  */
+*/
 /**
  * Checks if paginated response
  *

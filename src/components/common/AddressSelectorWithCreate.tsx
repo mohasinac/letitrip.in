@@ -4,7 +4,8 @@
  * @description This file contains the AddressSelectorWithCreate component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -108,7 +109,15 @@ export function AddressSelectorWithCreate({
   // Auto-select default address
   useEffect(() => {
     if (autoSelectDefault && addresses && addresses.length > 0 && !selectedId) {
-      const defaultAddress = addresses.find((addr) => addr.isDefault);
+      /**
+ * Performs default address operation
+ *
+ * @param {any} (addr - The (addr
+ *
+ * @returns {any} The defaultaddress result
+ *
+ */
+const defaultAddress = addresses.find((addr) => addr.isDefault);
       if (defaultAddress) {
         setSelectedId(defaultAddress.id);
         onChange(defaultAddress.id, defaultAddress);

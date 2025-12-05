@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -28,7 +29,13 @@ export const metadata: Metadata = {
  * @example
  * const result = RefundPolicyPage();
  */
-export default function RefundPolicyPage() {
+export default /**
+ * Performs refund policy page operation
+ *
+ * @returns {any} The refundpolicypage result
+ *
+ */
+function RefundPolicyPage() {
   return (
     <LegalPageLayout
       title="Refund & Return Policy"

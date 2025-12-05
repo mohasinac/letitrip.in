@@ -4,7 +4,8 @@
  * @description This file contains functionality related to pincode
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -18,6 +19,13 @@ import type {
 } from "@/types/shared/location.types";
 
 // India Post API endpoint
+/**
+ * INDIA_POST_API constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for india post api
+ */
 const INDIA_POST_API = "https://api.postalpincode.in/pincode";
 
 /**
@@ -51,6 +59,16 @@ const INDIA_POST_API = "https://api.postalpincode.in/pincode";
  * fetchPincodeData("example");
  */
 
+/**
+ * Fetches pincode data
+ *
+ * @param {string} pincode - The pincode
+ *
+ * @returns {Promise<PincodeLookupResult>} The fetchpincodedata result
+ *
+ * @example
+ * fetchPincodeData("example");
+ */
 export async function fetchPincodeData(
   /** Pincode */
   pincode: string
@@ -134,7 +152,15 @@ export async function fetchPincodeData(
     }
 
     // Extract unique areas
-    const areas = [...new Set(result.PostOffice.map((po) => po.Name))];
+    /**
+ * Performs areas operation
+ *
+ * @param {any} result.PostOffice.map((po - The result.postoffice.map((po
+ *
+ * @returns {any} The areas result
+ *
+ */
+const areas = [...new Set(result.PostOffice.map((po) => po.Name))];
 
     // Use first post office for common data
     const firstPO = result.PostOffice[0];
@@ -179,7 +205,17 @@ export async function fetchPincodeData(
 /**
  * Transforms pincode response
  *
- * @param {IndiaPostPincodeResponse[]} /** Response */
+ * @param {IndiaPostPincodeResponse[]/**
+ * Transforms pincode response
+ *
+ * @param {IndiaPostPincodeResponse[]} response - The response
+ *
+ * @returns {PincodeData | null} The transformpincoderesponse result
+ *
+ * @example
+ * transformPincodeResponse([]);
+ */
+} /** Response */
   response - The /**  response */
   response
  *
@@ -194,7 +230,15 @@ export function transformPincodeResponse(
   /** Response */
   response: IndiaPostPincodeResponse[]
 ): PincodeData | null {
-  const result = response[0];
+  const /**
+ * Performs first p o operation
+ *
+ * @param {any} (po - The (po
+ *
+ * @returns {any} The firstpo result
+ *
+ */
+result = response[0];
 
   if (result.Status !== "Success" || !result.PostOffice) {
     return null;

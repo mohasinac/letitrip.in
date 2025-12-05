@@ -4,7 +4,8 @@
  * @description This file contains the PhoneVerificationModal component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -114,14 +115,30 @@ export function PhoneVerificationModal({
   // Countdown timer for resend
   useEffect(() => {
     if (resendCountdown > 0) {
-      const timer = setTimeout(() => {
+      /**
+ * Performs timer operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The timer result
+ *
+ */
+const timer = setTimeout(() => {
         setResendCountdown(resendCountdown - 1);
       }, 1000);
       return () => clearTimeout(timer);
     } else {
       setCanResend(true);
     }
-  }, [resendCountdown]);
+ /**
+ * Performs timer operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The timer result
+ *
+ */
+ }, [resendCountdown]);
 
   // Expiry countdown
   useEffect(() => {
@@ -210,7 +227,21 @@ export function PhoneVerificationModal({
    * @throws {Error} When operation fails or validation errors occur
    */
 
-  const verifyOTP = async () => {
+  const verifyOTP = a/**
+ * Performs result operation
+ *
+ * @param {object} {
+        userId,
+        
+        type - The {
+        userid,
+        
+        type
+ *
+ * @returns {any} The result result
+ *
+ */
+sync () => {
     if (otp.length !== 6) {
       setError("Please enter the complete 6-digit OTP");
       return;

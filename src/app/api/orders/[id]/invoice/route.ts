@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -48,6 +49,17 @@ import PDFDocument from "pdfkit";
   req, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(req, {});
+ */
 export async function GET(
   /** Req */
   req: NextRequest,
@@ -94,7 +106,16 @@ export async function GET(
         // Build PDF in memory
         const doc = new PDFDocument({ size: "A4", margin: 50 });
         const chunks: Uint8Array[] = [];
-        const stream = doc.on("data", (chunk: Uint8Array) =>
+        /**
+ * Performs stream operation
+ *
+ * @param {any} "data" - The "data"
+ * @param {Uint8Array} (chunk - The (chunk
+ *
+ * @returns {any} The stream result
+ *
+ */
+const stream = doc.on("data", (chunk: Uint8Array) =>
           chunks.push(chunk),
         );
 
@@ -127,7 +148,15 @@ export async function GET(
         const items = order.items || [];
         if (items.length === 0) {
           doc.text("No items recorded");
-        } else {
+       /**
+ * Performs line total operation
+ *
+ * @param {any} `${idx+1}.${it.name||it.product_name||"Item"}x${qty}-₹${lineTotal.toFixed(2 - The `${idx+1}.${it.name||it.product_name||"item"}x${qty}-₹${linetotal.tofixed(2
+ *
+ * @returns {₹$} The linetotal result
+ *
+ */
+ } else {
           items.forEach((it: any, idx: number) => {
             const qty = it.quantity || 1;
             const price = it.price || 0;

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
@@ -56,13 +57,27 @@ export async function GET() {
       .select("demoSession", "createdAt")
       .get();
 
-    const sessionsMap = new Map<string, Date>();
+    /**
+ * Performs sessions map operation
+ *
+ * @returns {any} The sessionsmap result
+ *
+ */
+const sessionsMap = new Map<string, Date>();
 
     categoriesSnapshot.forEach((doc) => {
       const data = doc.data();
       if (data.demoSession && !sessionsMap.has(data.demoSession)) {
         sessionsMap.set(
-          data.demoSession,
+          data.demoSession/**
+ * Performs sessions operation
+ *
+ * @param {any} sessionsMap.entries( - The sessionsmap.entries(
+ *
+ * @returns {any} The sessions result
+ *
+ */
+,
           data.createdAt?.toDate() || new Date(),
         );
       }

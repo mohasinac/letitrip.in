@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for review
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -72,8 +73,11 @@ export interface ReviewFE {
   isYourReview: boolean;
 
   // Backwards compatibility aliases
+  /** HelpfulCount */
   helpfulCount?: number; // Alias for helpful
+  /** VerifiedPurchase */
   verifiedPurchase?: boolean; // Alias for isVerifiedPurchase
+  /** Media */
   media?: string[]; // Alias for images
 }
 
@@ -140,10 +144,15 @@ export interface ReviewStatsFE {
   ratingDisplay: string;
   /** Rating Distribution */
   ratingDistribution: {
+    /** 5 */
     5: { count: number; percentage: number };
+    /** 4 */
     4: { count: number; percentage: number };
+    /** 3 */
     3: { count: number; percentage: number };
+    /** 2 */
     2: { count: number; percentage: number };
+    /** 1 */
     1: { count: number; percentage: number };
   };
 }

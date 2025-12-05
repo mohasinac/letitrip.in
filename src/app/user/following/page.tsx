@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -28,7 +29,13 @@ import type { ShopCardFE } from "@/types/frontend/shop.types";
  * @example
  * const result = FollowingPage();
  */
-export default function FollowingPage() {
+export default /**
+ * Performs following page operation
+ *
+ * @returns {any} The followingpage result
+ *
+ */
+function FollowingPage() {
   const router = useRouter();
   const {
     /** Data */
@@ -38,7 +45,15 @@ export default function FollowingPage() {
     execute,
   } = useLoadingState<ShopCardFE[]>({ initialData: [] });
 
-  const loadFollowingShops = useCallback(async () => {
+  /**
+ * Performs load following shops operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadfollowingshops result
+ *
+ */
+const loadFollowingShops = useCallback(async () => {
     const result = await shopsService.getFollowing();
     return result.shops || [];
   }, []);

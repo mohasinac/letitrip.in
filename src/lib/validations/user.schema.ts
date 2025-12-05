@@ -4,7 +4,8 @@
  * @description This file contains functionality related to user.schema
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { z } from "zod";
@@ -53,6 +54,20 @@ export const userProfileSchema = z.object({
 });
 
 // Password change validation
+/**
+ * Performs change password schema operation
+ *
+ * @param {object} {
+    
+    currentPassword - The {
+    
+    currentpassword
+ *
+ * @returns {any} The changepasswordschema result
+ *
+ * @example
+ * changePasswordSchema({});
+ */
 export const changePasswordSchema = z
   .object({
     /** Current Password */
@@ -87,7 +102,21 @@ export const changePasswordSchema = z
     /** Path */
     path: ["confirmPassword"],
   })
-  .refine((data) => data.newPassword !== data.currentPassword, {
+  /**
+ * Performs register schema operation
+ *
+ * @param {object} {
+    
+    fullName - The {
+    
+    fullname
+ *
+ * @returns {any} The registerschema result
+ *
+ * @example
+ * registerSchema({});
+ */
+.refine((data) => data.newPassword !== data.currentPassword, {
     /** Message */
     message: "New password must be different from current password",
     /** Path */

@@ -4,7 +4,8 @@
  * @description This file contains the AdminSidebar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -384,7 +385,15 @@ export function AdminSidebar() {
   };
 
   // Filter navigation items based on search query
-  const filterNavigation = React.useMemo(() => {
+  /**
+ * Performs filter navigation operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The filternavigation result
+ *
+ */
+const filterNavigation = React.useMemo(() => {
     if (!searchQuery.trim()) return navigation;
 
     const query = searchQuery.toLowerCase().trim();
@@ -393,7 +402,15 @@ export function AdminSidebar() {
       .map((item) => {
         // Check if parent matches
         const parentMatches =
-          item.title.toLowerCase().includes(query) ||
+          item.title.toLowerCase().includes/**
+ * Performs matching children operation
+ *
+ * @param {any} (child - The (child
+ *
+ * @returns {any} The matchingchildren result
+ *
+ */
+(query) ||
           (item.href && item.href.toLowerCase().includes(query));
 
         // Check if any children match
@@ -412,7 +429,15 @@ export function AdminSidebar() {
             /** Children */
             children:
               matchingChildren.length > 0 ? matchingChildren : item.children,
-          };
+          }/**
+ * Performs items to expand operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The itemstoexpand result
+ *
+ */
+;
         }
 
         return null;

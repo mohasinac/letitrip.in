@@ -4,7 +4,8 @@
  * @description This file contains the WizardForm component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -148,7 +149,15 @@ export function WizardForm<T = Record<string, unknown>>({
   const [isSaving, setIsSaving] = useState(false);
 
   // Check if all steps are valid
-  const isAllValid = stepStates.every(
+  /**
+ * Checks if all valid
+ *
+ * @param {any} (state - The (state
+ *
+ * @returns {any} The isallvalid result
+ *
+ */
+const isAllValid = stepStates.every(
     (state) => state.isComplete && state.isValid && !state.hasErrors,
   );
 
@@ -157,10 +166,26 @@ export function WizardForm<T = Record<string, unknown>>({
     (stepIndex: number, state: Partial<StepState>) => {
       setStepStates((prev) => {
         const newStates = [...prev];
-        newStates[stepIndex] = { ...newStates[stepIndex], ...state };
+        newStates[stepIndex] = { ...newState/**
+ * Handles step click
+ *
+ * @param {number} (stepIndex - The (stepindex
+ *
+ * @returns {any} The handlestepclick result
+ *
+ */
+s[stepIndex], ...state };
         return newStates;
       });
-    },
+ /**
+ * Performs go to next step operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The gotonextstep result
+ *
+ */
+   },
     [],
   );
 
@@ -168,13 +193,29 @@ export function WizardForm<T = Record<string, unknown>>({
   const handleStepClick = useCallback(
     (stepIndex: number) => {
       setCurrentStep(stepIndex);
-      onStepChange?.(stepIndex);
+    /**
+ * Performs go to previous step operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The gotopreviousstep result
+ *
+ */
+  onStepChange?.(stepIndex);
     },
     [onStepChange],
   );
 
   // Go to next step
-  const goToNextStep = useCallback(() => {
+  const goToNextStep = useCallback(() =>/**
+ * Handles validate
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The handlevalidate result
+ *
+ */
+ {
     if (currentStep < steps.length - 1) {
       const nextStep = currentStep + 1;
       setCurrentStep(nextStep);
@@ -198,19 +239,51 @@ export function WizardForm<T = Record<string, unknown>>({
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i];
       if (step.validate) {
-        const isValid = await step.validate();
+        con/**
+ * Performs first error index operation
+ *
+ * @param {any} (state - The (state
+ *
+ * @returns {any} The firsterrorindex result
+ *
+ */
+st isValid = await step.validate();
         newStates[i] = {
           ...newStates[i],
           isValid,
-          /** Has Errors */
+          /** Has Errors *//**
+ * Handles save draft
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The handlesavedraft result
+ *
+ */
+
           hasErrors: !isValid,
           /** Is Complete */
           isComplete: isValid,
         };
       } else if (onValidate) {
-        const isValid = await onValidate(i);
+        const isValid = aw/**
+ * Handles submit
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The handlesubmit result
+ *
+ */
+ait onValidate(i);
         newStates[i] = {
-          ...newStates[i],
+          ...newStates/**
+ * Performs all valid operation
+ *
+ * @param {any} (state - The (state
+ *
+ * @returns {any} The allvalid result
+ *
+ */
+[i],
           isValid,
           /** Has Errors */
           hasErrors: !isValid,
@@ -232,7 +305,15 @@ export function WizardForm<T = Record<string, unknown>>({
 
   // Handle save draft
   const handleSaveDraft = useCallback(async () => {
-    if (!onSaveDraft) return;
+ /**
+ * Performs wizard steps operation
+ *
+ * @param {any} (step - The (step
+ *
+ * @returns {any} The wizardsteps result
+ *
+ */
+   if (!onSaveDraft) return;
 
     setIsSaving(true);
     try {

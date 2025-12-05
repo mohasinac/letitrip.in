@@ -4,7 +4,8 @@
  * @description This file contains service functions for favorites operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { logServiceError } from "@/lib/error-logger";
@@ -145,7 +146,15 @@ class FavoritesService {
 
   removeFromGuestFavorites(productId: string): void {
     const favorites = this.getGuestFavorites();
-    const filtered = favorites.filter((id) => id !== productId);
+    /**
+ * Performs filtered operation
+ *
+ * @param {any} (id - The (id
+ *
+ * @returns {any} The filtered result
+ *
+ */
+const filtered = favorites.filter((id) => id !== productId);
     this.setGuestFavorites(filtered);
   }
 

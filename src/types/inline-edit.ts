@@ -4,7 +4,8 @@
  * @description This file contains functionality related to inline-edit
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -71,7 +72,9 @@ export interface InlineField {
   max?: number;
   /** Step */
   step?: number;
+  /** Accept */
   accept?: string; // For image type
+  /** Rows */
   rows?: number; // For textarea
 }
 
@@ -115,7 +118,9 @@ export interface InlineEditConfig {
   fields: InlineField[];
   /** Bulk Actions */
   bulkActions?: BulkAction[];
+  /** ResourceName */
   resourceName: string; // 'hero slide', 'category', 'product', etc.
+  /** ResourceNamePlural */
   resourceNamePlural?: string; // 'hero slides', 'categories', 'products'
 }
 
@@ -197,6 +202,7 @@ export interface InlineImageUploadProps {
   onRemove?: () => void;
   /** Accept */
   accept?: string;
+  /** Size */
   size?: number; // Size in pixels (default: 64)
   /** Loading */
   loading?: boolean;

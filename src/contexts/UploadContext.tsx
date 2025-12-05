@@ -4,7 +4,8 @@
  * @description This file contains the UploadContext component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -121,19 +122,61 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
   const [uploads, setUploads] = useState<UploadFile[]>([]);
 
   // Calculate counts
-  const pendingCount = uploads.filter((u) => u.status === "pending").length;
-  const uploadingCount = uploads.filter((u) => u.status === "uploading").length;
-  const failedCount = uploads.filter((u) => u.status === "error").length;
+  /**
+ * Performs pending count operation
+ *
+ * @param {any} (u - The (u
+ *
+ * @returns {any} The pendingcount result
+ *
+ */
+const pendingCount = uploads.filter((u) => u.status === "pending").length;
+  const uploadingCount = uploads.f/**
+ * Performs success count operation
+ *
+ * @param {any} (u - The (u
+ *
+ * @returns {any} The successcount result
+ *
+ */
+ilter((u) => u.status === "uploading").length;
+  const failedCount = uploads.filter((u) =/**
+ * Performs add upload operation
+ *
+ * @param {File} (file - The (file
+ * @param {string} [preview] - The preview
+ *
+ * @returns {string =>} The addupload result
+ *
+ */
+> u.status === "error").length;
   const successCount = uploads.filter((u) => u.status === "success").length;
   const hasPendingUploads = pendingCount > 0 || uploadingCount > 0;
   const hasFailedUploads = failedCount > 0;
 
   // Add a new upload
-  const addUpload = useCallback((file: File, preview?: string): string => {
+  const addUpload = useCallback((file: File, preview?: string): string =>/**
+ * Updates upload
+ *
+ * @param {string} (id - The (id
+ * @param {Partial<UploadFile>} updates - The updates
+ *
+ * @returns {any} The updateupload result
+ *
+ */
+ {
     const id = `upload-${Date.now()}-${Math.random()
       .toString(36)
       .substr(2, 9)}`;
-    const newUpload: UploadFile = {
+    const/**
+ * Performs remove upload operation
+ *
+ * @param {string} (id - The (id
+ *
+ * @returns {any} The removeupload result
+ *
+ */
+ newUpload: UploadFile = {
       id,
       file,
       preview,
@@ -145,7 +188,15 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
       retryCount: 0,
     };
 
-    setUploads((prev) => [...prev, newUpload]);
+    setUploads((/**
+ * Performs retry upload operation
+ *
+ * @param {string} (id - The (id
+ *
+ * @returns {any} The retryupload result
+ *
+ */
+prev) => [...prev, newUpload]);
     return id;
   }, []);
 
@@ -162,7 +213,15 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
   );
 
   // Remove an upload
-  const removeUpload = useCallback((id: string) => {
+  const removeUpload = useCallback((i/**
+ * Performs clear completed operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The clearcompleted result
+ *
+ */
+d: string) => {
     setUploads((prev) => {
       const upload = prev.find((u) => u.id === id);
       // Revoke object URL to free memory
@@ -170,7 +229,15 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
         URL.revokeObjectURL(upload.preview);
       }
       return prev.filter((u) => u.id !== id);
-    });
+    })/**
+ * Performs clear failed operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The clearfailed result
+ *
+ */
+;
   }, []);
 
   // Retry a failed upload
@@ -181,7 +248,15 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
           ? {
               ...upload,
               /** Status */
-              status: "pending",
+              status: "pending"/**
+ * Performs clear all operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The clearall result
+ *
+ */
+,
               /** Error */
               error: undefined,
               /** Progress */

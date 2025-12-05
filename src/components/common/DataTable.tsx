@@ -4,7 +4,8 @@
  * @description This file contains the DataTable component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -131,7 +132,15 @@ export function DataTable<T>({
     }
   };
 
-  const sortedData = useMemo(() => {
+  /**
+ * Performs sorted data operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The sorteddata result
+ *
+ */
+const sortedData = useMemo(() => {
     if (!activeSortKey) return data;
 
     return [...data].sort((a: any, b: any) => {

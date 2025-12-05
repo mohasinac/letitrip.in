@@ -4,7 +4,8 @@
  * @description This file contains the TaxDetailsSelectorWithCreate component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -66,6 +67,18 @@ export interface TaxDetails {
 }
 
 // Validation Schema
+/**
+ * Performs tax details schema operation
+ *
+ * @param {object} {
+  
+  businessName - The {
+  
+  businessname
+ *
+ * @returns {any} The taxdetailsschema result
+ *
+ */
 const TaxDetailsSchema = z.object({
   /** Business Name */
   businessName: z
@@ -195,7 +208,15 @@ export function TaxDetailsSelectorWithCreate({
     /** Form State */
     formState: { errors },
   } = useForm<TaxDetailsFormData>({
-    /** Resolver */
+    /** Res/**
+ * Performs gstin operation
+ *
+ * @param {any} "gstin" - The "gstin"
+ *
+ * @returns {any} The gstin result
+ *
+ */
+olver */
     resolver: zodResolver(TaxDetailsSchema),
     /** Default Values */
     defaultValues: {
@@ -221,7 +242,15 @@ export function TaxDetailsSelectorWithCreate({
         (tax - The tax details list || []).find(
         (tax
        *
-       * @returns {any} The defaulttaxdetails result
+       * @returns {any} The default/**
+ * Performs default tax details operation
+ *
+ * @param {any} taxDetailsList||[] - The taxdetailslist||[]
+ *
+ * @returns {any} The defaulttaxdetails result
+ *
+ */
+taxdetails result
        */
 
       /**

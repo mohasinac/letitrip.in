@@ -4,7 +4,8 @@
  * @description This file contains the GoogleSignInButton component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -30,6 +31,14 @@ const firebaseConfig = {
 // Initialize Firebase app only if not already initialized
 const app =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+/**
+ * Performs auth operation
+ *
+ * @param {any} app - The app
+ *
+ * @returns {any} The auth result
+ *
+ */
 const auth = getAuth(app);
 
 /**
@@ -137,7 +146,15 @@ function GoogleSignInButtonInner({
       // Redirect to specified URL or home
       const redirect = redirectPath || searchParams.get("redirect") || "/";
 
-      if (onSuccess) {
+      if (onSuccess)/**
+ * Performs redirect url operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The redirecturl result
+ *
+ */
+ {
         onSuccess();
       }
 
@@ -238,6 +255,21 @@ function GoogleSignInButtonInner({
  * @returns {any} The googlesigninbuttonfallback result
  */
 
+/**
+ * Performs google sign in button fallback operation
+ *
+ * @param {Pick<GoogleSignInButtonProps} [{
+  className = "",
+  variant = "full",
+}] - The {
+  classname = "",
+  variant = "full",
+}
+ * @param {any} "className"|"variant"> - The "classname"|"variant">
+ *
+ * @returns {any} The googlesigninbuttonfallback result
+ *
+ */
 function GoogleSignInButtonFallback({
   className = "",
   variant = "full",

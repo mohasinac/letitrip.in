@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for auction
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -46,6 +47,7 @@ export interface BidBE {
 export interface AuctionBE {
   /** Id */
   id: string;
+  /** Slug */
   slug: string; // Unique slug for auction URL
   /** Product Id */
   productId: string;
@@ -55,7 +57,9 @@ export interface AuctionBE {
   productSlug: string;
   /** Product Image */
   productImage: string;
+  /** Images */
   images?: string[]; // Multiple images for carousel
+  /** Videos */
   videos?: string[]; // Video URLs for carousel
   /** Product Description */
   productDescription: string;
@@ -109,11 +113,13 @@ export interface AuctionBE {
   startTime: Timestamp;
   /** End Time */
   endTime: Timestamp;
+  /** Duration */
   duration: number; // in seconds
 
   // Extended bidding
   /** Allow Extension */
   allowExtension: boolean;
+  /** ExtensionTime */
   extensionTime: number; // seconds to extend
   /** Times Extended */
   timesExtended: number;
@@ -155,6 +161,7 @@ export interface AuctionBE {
 export interface AuctionListItemBE {
   /** Id */
   id: string;
+  /** Slug */
   slug: string; // Unique slug for auction URL
   /** Product Id */
   productId: string;
@@ -164,7 +171,9 @@ export interface AuctionListItemBE {
   productSlug: string;
   /** Product Image */
   productImage: string;
+  /** Images */
   images?: string[]; // Multiple images for carousel
+  /** Videos */
   videos?: string[]; // Video URLs for carousel
   /** Type */
   type: AuctionType;
@@ -198,7 +207,9 @@ export interface CreateAuctionRequestBE {
   buyNowPrice?: number;
   /** Bid Increment */
   bidIncrement: number;
+  /** StartTime */
   startTime: string; // ISO date
+  /** EndTime */
   endTime: string; // ISO date
   /** Allow Extension */
   allowExtension?: boolean;
@@ -224,6 +235,7 @@ export interface PlaceBidRequestBE {
 export interface UpdateAuctionRequestBE {
   /** Status */
   status?: AuctionStatus;
+  /** EndTime */
   endTime?: string; // ISO date
   /** Buy Now Price */
   buyNowPrice?: number;
@@ -251,10 +263,15 @@ export interface AuctionFiltersBE {
   hasBuyNow?: boolean;
   /** Search */
   search?: string;
+  /** EndingSoon */
   endingSoon?: boolean; // Within 24 hours
+  /** StartAfter */
   startAfter?: string; // ISO date
+  /** StartBefore */
   startBefore?: string; // ISO date
+  /** EndAfter */
   endAfter?: string; // ISO date
+  /** EndBefore */
   endBefore?: string; // ISO date
   /** Page */
   page?: number;
@@ -338,5 +355,6 @@ export interface AuctionStatsResponseBE {
   auctionsToday: number;
   /** Auctions This Week */
   auctionsThisWeek: number;
+  /** EndingSoon */
   endingSoon: number; // Within 24 hours
 }

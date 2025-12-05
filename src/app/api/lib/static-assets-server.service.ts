@@ -4,7 +4,8 @@
  * @description This file contains service functions for static-assets-server operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -15,6 +16,13 @@
 import { getStorage } from "firebase-admin/storage";
 import { getFirestoreAdmin } from "./firebase/admin";
 
+/**
+ * COLLECTION constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for collection
+ */
 const COLLECTION = "static_assets";
 
 /**
@@ -217,6 +225,16 @@ export async function saveAssetMetadata(asset: StaticAsset): Promise<void> {
  * getAssetMetadata("example");
  */
 
+/**
+ * Retrieves asset metadata
+ *
+ * @param {string} id - The id
+ *
+ * @returns {Promise<StaticAsset | null>} The getassetmetadata result
+ *
+ * @example
+ * getAssetMetadata("example");
+ */
 export async function getAssetMetadata(
   /** Id */
   id: string,
@@ -273,7 +291,13 @@ export async function listAssets(filters?: {
 
   query = query.orderBy("uploadedAt", "desc") as any;
 
-  const snapshot = await query.get();
+  /**
+ * Performs snapshot operation
+ *
+ * @returns {any} The snapshot result
+ *
+ */
+const snapshot = await query.get();
   return snapshot.docs.map(
     (doc) => ({ id: doc.id, ...doc.data() }) as StaticAsset,
   );

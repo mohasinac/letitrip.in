@@ -4,7 +4,8 @@
  * @description This file contains the ReviewForm component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -38,7 +39,25 @@ interface ReviewFormProps {
   onCancel?: () => void;
 }
 
-export default function ReviewForm({
+export default /**
+ * Performs review form operation
+ *
+ * @param {ReviewFormProps} {
+  productId,
+  orderId,
+  onSuccess,
+  onCancel,
+} - The {
+  productid,
+  orderid,
+  onsuccess,
+  oncancel,
+}
+ *
+ * @returns {any} The reviewform result
+ *
+ */
+function ReviewForm({
   productId,
   orderId,
   onSuccess,

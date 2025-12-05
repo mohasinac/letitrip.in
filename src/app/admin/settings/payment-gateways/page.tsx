@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -65,7 +66,13 @@ interface GatewaySettings {
   config: Record<string, string>;
 }
 
-export default function PaymentGatewaysSettingsPage() {
+export default /**
+ * Performs payment gateways settings page operation
+ *
+ * @returns {any} The paymentgatewayssettingspage result
+ *
+ */
+function PaymentGatewaysSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -120,7 +127,15 @@ export default function PaymentGatewaysSettingsPage() {
       // const data = await settingsService.getPaymentGateways();
 
       // Initialize with default settings
-      const settings: Record<string, GatewaySettings> = {};
+      /**
+ * Sets tings
+ *
+ * @param {any} (gateway - The (gateway
+ *
+ * @returns {any} The settings result
+ *
+ */
+const settings: Record<string, GatewaySettings> = {};
       PAYMENT_GATEWAYS.forEach((gateway) => {
         settings[gateway.id] = {
           /** Id */

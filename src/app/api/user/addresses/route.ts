@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { COLLECTIONS } from "@/constants/database";
@@ -58,7 +59,15 @@ export async function GET(request: NextRequest) {
       .orderBy("createdAt", "desc")
       .get();
 
-    const addresses = addressesSnapshot.docs.map((doc) => ({
+    /**
+ * Performs addresses operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The addresses result
+ *
+ */
+const addresses = addressesSnapshot.docs.map((doc) => ({
       /** Id */
       id: doc.id,
       ...doc.data(),
@@ -150,7 +159,13 @@ export async function POST(request: NextRequest) {
     // If this is set as default, unset other defaults
     if (isDefault) {
       const defaultAddresses = await db
-        .collection(COLLECTIONS.ADDRESSES)
+        .collection(COLLECTIONS/**
+ * Performs batch operation
+ *
+ * @returns {any} The batch result
+ *
+ */
+.ADDRESSES)
         .where("userId", "==", user.id)
         .where("isDefault", "==", true)
         .get();

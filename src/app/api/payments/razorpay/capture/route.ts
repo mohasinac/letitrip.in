@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -53,18 +54,23 @@ interface RazorpayPaymentResponse {
   currency: string;
   /** Status */
   status: string;
+  /** Order_id */
   order_id: string;
+  /** Invoice_id */
   invoice_id: string | null;
   /** International */
   international: boolean;
   /** Method */
   method: string;
+  /** Amount_refunded */
   amount_refunded: number;
+  /** Refund_status */
   refund_status: string | null;
   /** Captured */
   captured: boolean;
   /** Description */
   description: string;
+  /** Card_id */
   card_id: string | null;
   /** Bank */
   bank: string | null;
@@ -82,11 +88,17 @@ interface RazorpayPaymentResponse {
   fee: number;
   /** Tax */
   tax: number;
+  /** Error_code */
   error_code: string | null;
+  /** Error_description */
   error_description: string | null;
+  /** Error_source */
   error_source: string | null;
+  /** Error_step */
   error_step: string | null;
+  /** Error_reason */
   error_reason: string | null;
+  /** Created_at */
   created_at: number;
 }
 

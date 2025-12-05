@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -46,6 +47,17 @@ import { NextRequest, NextResponse } from "next/server";
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: NextRequest,

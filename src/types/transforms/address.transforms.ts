@@ -4,7 +4,8 @@
  * @description This file contains functionality related to address.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -120,6 +121,16 @@ export function toFEAddress(addressBE: AddressBE): AddressFE {
   formData);
  */
 
+/**
+ * Performs to b e create address request operation
+ *
+ * @param {AddressFormFE} formData - The formdata
+ *
+ * @returns {CreateAddressRequestBE} The tobecreateaddressrequest result
+ *
+ * @example
+ * toBECreateAddressRequest(formData);
+ */
 export function toBECreateAddressRequest(
   /** Form Data */
   formData: AddressFormFE,

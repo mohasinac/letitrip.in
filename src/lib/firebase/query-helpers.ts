@@ -4,7 +4,8 @@
  * @description This file contains functionality related to query-helpers
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -151,6 +152,16 @@ export interface QueryConfig {
   config);
  */
 
+/**
+ * Builds pagination constraints
+ *
+ * @param {PaginationConfig} config - The config
+ *
+ * @returns {QueryConstraint[]} The buildpaginationconstraints result
+ *
+ * @example
+ * buildPaginationConstraints(config);
+ */
 export function buildPaginationConstraints(
   /** Config */
   config: PaginationConfig,
@@ -205,7 +216,17 @@ export function buildPaginationConstraints(
  */
 
 /**
- * Performs build filter constraints operation
+ * Performs build filter constraints oper/**
+ * Builds filter constraints
+ *
+ * @param {QueryFilter[]} filters - The filters
+ *
+ * @returns {QueryConstraint[]} The buildfilterconstraints result
+ *
+ * @example
+ * buildFilterConstraints([]);
+ */
+ation
  *
  * @param {QueryFilter[]} /** Filters */
   filters - The /**  filters */
@@ -376,7 +397,15 @@ export function processPaginatedResults<T>(
   /** Has Prev Cursor */
   hasPrevCursor: boolean = false,
 ): PaginatedResult<T> {
-  const data = docs.map((doc) => ({ id: doc.id, ...doc.data() }) as T);
+  /**
+ * Performs data operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The data result
+ *
+ */
+const data = docs.map((doc) => ({ id: doc.id, ...doc.data() }) as T);
 
   const hasNextPage = docs.length === pageSize;
   const hasPrevPage = hasPrevCursor || docs.length > 0;
@@ -900,7 +929,17 @@ export function sortByPopularity(): QuerySort {
  * @returns Base64 encoded cursor string
  */
 /**
+ * Performs encode cursor oper/**
  * Performs encode cursor operation
+ *
+ * @param {QueryDocumentSnapshot<DocumentData>} cursor - The cursor
+ *
+ * @returns {string} The encodecursor result
+ *
+ * @example
+ * encodeCursor(cursor);
+ */
+ation
  *
  * @param {QueryDocumentSnapshot<DocumentData>} cursor - The cursor
  *

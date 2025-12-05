@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useDebounce
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -41,7 +42,15 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
-    const handler = setTimeout(() => {
+    /**
+ * Handles r
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handler result
+ *
+ */
+const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
 
@@ -82,7 +91,15 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
 export function useDebouncedCallback<T extends (...args: any[]) => any>(
   /** Callback */
   callback: T,
-  /** Delay */
+  /**
+ * Performs debounced callback operation
+ *
+ * @param {Parameters<T>} (...args - The (...args
+ *
+ * @returns {any} The debouncedcallback result
+ *
+ */
+/** Delay */
   delay: number = 500,
 ): T {
   const timeoutRef = useRef<NodeJS.Timeout>();
@@ -131,12 +148,28 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
  * Custom React hook for throttle
  *
  * @param {T} value - The value
- * @param {number} [interval] - The interval
+ * @param {number} [interval] /**
+ * Performs last executed operation
+ *
+ * @param {any} Date.now( - The date.now(
+ *
+ * @returns {any} The lastexecuted result
+ *
+ */
+- The interval
  *
  * @returns {number} The usethrottle result
  *
  * @example
- * useThrottle(value, 123);
+ * us/**
+ * Performs timer id operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The timerid result
+ *
+ */
+eThrottle(value, 123);
  */
 
 export function useThrottle<T>(value: T, interval: number = 500): T {
@@ -203,7 +236,15 @@ interface UseApiOptions {
  */
 
 export function useApi<T>(
-  /** Api Call */
+  //**
+ * Performs execute operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The execute result
+ *
+ */
+** Api Call */
   apiCall: () => Promise<T>,
   /** Dependencies */
   dependencies: any[],
@@ -240,7 +281,16 @@ export function useApi<T>(
     const maxAttempts = retry + 1;
 
     while (attempts < maxAttempts) {
-      try {
+      try /**
+ * Performs debounced execute operation
+ *
+ * @param {any} execute - The execute
+ * @param {any} debounce - The debounce
+ *
+ * @returns {any} The debouncedexecute result
+ *
+ */
+{
         const result = await apiCall();
 
         if (mountedRef.current) {
@@ -253,7 +303,15 @@ export function useApi<T>(
 
         if (attempts >= maxAttempts) {
           if (mountedRef.current) {
-            setError(err instanceof Error ? err : new Error("API call failed"));
+            setError(er/**
+ * Performs refetch operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The refetch result
+ *
+ */
+r instanceof Error ? err : new Error("API call failed"));
             setLoading(false);
           }
           return;

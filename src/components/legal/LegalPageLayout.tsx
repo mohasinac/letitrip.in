@@ -4,7 +4,8 @@
  * @description This file contains the LegalPageLayout component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { ReactNode } from "react";
@@ -29,7 +30,27 @@ interface LegalPageLayoutProps {
   effectiveDate?: string;
 }
 
-export default function LegalPageLayout({
+export default /**
+ * Performs legal page layout operation
+ *
+ * @param {LegalPageLayoutProps} {
+  title,
+  lastUpdated,
+  version,
+  children,
+  effectiveDate,
+} - The {
+  title,
+  lastupdated,
+  version,
+  children,
+  effectivedate,
+}
+ *
+ * @returns {any} The legalpagelayout result
+ *
+ */
+function LegalPageLayout({
   title,
   lastUpdated,
   version,

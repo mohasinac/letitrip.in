@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for category
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -30,6 +31,7 @@ export interface CategoryFE {
   description: string | null;
   /** Image */
   image: string | null;
+  /** Banner */
   banner: string | null; // Banner/cover image for category pages
   /** Icon */
   icon: string | null;
@@ -43,9 +45,13 @@ export interface CategoryFE {
   status: Status;
   /** Product Count */
   productCount: number;
+  /** InStockCount */
   inStockCount: number; // Products with stock > 0
+  /** OutOfStockCount */
   outOfStockCount: number; // Products with stock = 0
+  /** LiveAuctionCount */
   liveAuctionCount: number; // Active auctions
+  /** EndedAuctionCount */
   endedAuctionCount: number; // Ended/completed auctions
   /** Is Leaf */
   isLeaf: boolean;
@@ -76,9 +82,13 @@ export interface CategoryFE {
   urlPath: string;
 
   // Backwards compatibility aliases
+  /** ParentId */
   parentId?: string | null; // First parent or null (for single-parent legacy code)
+  /** Featured */
   featured?: boolean; // Derived from metadata or default false
+  /** IsActive */
   isActive?: boolean; // status === 'published'
+  /** SortOrder */
   sortOrder?: number; // Alias for order
 }
 
@@ -168,10 +178,12 @@ export interface CategoryFormFE {
   metadata?: Record<string, any>;
 
   // Backwards compatibility (optional for legacy forms)
+  /** ParentId */
   parentId?: string | null; // Can be used instead of parentIds
   /** Featured */
   featured?: boolean;
   /** Is Active */
   isActive?: boolean;
+  /** SortOrder */
   sortOrder?: number; // Alias for order
 }

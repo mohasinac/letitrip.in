@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -25,6 +26,13 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 // Step definitions - Simplified 2-step wizard
+/**
+ * STEPS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for steps
+ */
 const STEPS = [
   {
     /** Id */
@@ -71,7 +79,13 @@ const AUCTION_TYPES = [
   },
 ];
 
-export default function CreateAuctionWizardPage() {
+export default /**
+ * Creates auction wizard page
+ *
+ * @returns {any} The createauctionwizardpage result
+ *
+ */
+function CreateAuctionWizardPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -266,7 +280,15 @@ export default function CreateAuctionWizardPage() {
     setFormData((prev: AuctionFormData) => ({ ...prev, [field]: value }));
   };
 
-  const validateStep = useCallback(
+  /**
+ * Validates step
+ *
+ * @param {number} (step - The (step
+ *
+ * @returns {string[] =>} The validatestep result
+ *
+ */
+const validateStep = useCallback(
     (step: number): string[] => {
       const errors: string[] = [];
       switch (step) {
@@ -291,7 +313,15 @@ export default function CreateAuctionWizardPage() {
             errors.push("At least one image is required");
           }
           break;
-        case 1: // Optional Details - no required fields
+        case 1: // Optional De/**
+ * Handles validate
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handlevalidate result
+ *
+ */
+tails - no required fields
           break;
       }
       return errors;
@@ -307,7 +337,15 @@ export default function CreateAuctionWizardPage() {
       const stepErrors = validateStep(index);
       if (stepErrors.length > 0) {
         newErrorSteps.push(index);
-        allErrors[step.name] = stepErrors;
+        allErrors[step.name] = stepErrors;/**
+ * Performs error summary operation
+ *
+ * @param {any} allErrors - The allerrors
+ *
+ * @returns {any} The errorsummary result
+ *
+ */
+
       }
     });
 

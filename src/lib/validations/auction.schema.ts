@@ -4,7 +4,8 @@
  * @description This file contains functionality related to auction.schema
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { z } from "zod";
@@ -14,6 +15,20 @@ import {
 } from "@/constants/validation-messages";
 
 // Auction creation/edit validation schema
+/**
+ * Performs auction schema operation
+ *
+ * @param {object} {
+    
+    title - The {
+    
+    title
+ *
+ * @returns {any} The auctionschema result
+ *
+ * @example
+ * auctionSchema({});
+ */
 export const auctionSchema = z
   .object({
     /** Title */

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -69,7 +70,13 @@ type TransactionFilter =
   | "BID_RELEASE"
   | "REFUND";
 
-export default function UserRipLimitPage() {
+export default /**
+ * Performs user rip limit page operation
+ *
+ * @returns {any} The userriplimitpage result
+ *
+ */
+function UserRipLimitPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
@@ -162,11 +169,39 @@ export default function UserRipLimitPage() {
   }, [user, authLoading, router]);
 
   // Load balance
-  const loadBalance = useCallback(async () => {
+  /**
+ * Performs load balance operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadbalance result
+ *
+ */
+const loadBalance = useCallback(async () => {
     await executeBalance(async () => {
-      const data = await ripLimitService.getBalance();
+      const data = await ripLimitServ/**
+ * Performs load transactions operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadtransactions result
+ *
+ */
+ice.getBalance();
       setBalance(data);
-      return data;
+      r/**
+ * Performs data operation
+ *
+ * @param {object} {
+        
+        type - The {
+        
+        type
+ *
+ * @returns {any} The data result
+ *
+ */
+eturn data;
     });
   }, [executeBalance, setBalance]);
 
@@ -239,7 +274,17 @@ export default function UserRipLimitPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: purchaseData.amount * 100, // Razorpay expects paise
         /** Currency */
-        currency: purchaseData.currency,
+        currency: purchaseDat/**
+ * Performs verify result operation
+ *
+ * @param {object} {
+              razorpay_order_id - The {
+              razorpay_order_id
+ *
+ * @returns {any} The verifyresult result
+ *
+ */
+a.currency,
         /** Name */
         name: "Letitrip",
         /** Description */
@@ -299,7 +344,16 @@ export default function UserRipLimitPage() {
    *
    * @returns {Promise<any>} Promise resolving to async  result
    *
-   * @throws {Error} When operation fails or validation errors occur
+   * @thro/**
+ * Performs result operation
+ *
+ * @param {any} refundAmount - The refundamount
+ * @param {any} refundReason - The refundreason
+ *
+ * @returns {any} The result result
+ *
+ */
+ws {Error} When operation fails or validation errors occur
    */
 
   /**

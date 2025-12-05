@@ -4,7 +4,8 @@
  * @description This file contains the CategoryTree component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -42,6 +43,7 @@ interface TreeNode {
   attributes?: Record<string, string | number>;
   /** Children */
   children?: TreeNode[];
+  /** __rd3t */
   __rd3t?: {
     /** Id */
     id: string;
@@ -100,7 +102,15 @@ export function CategoryTree({
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Convert categories to tree structure
-  const treeData = useMemo<TreeNode>(() => {
+  /**
+ * Performs tree data operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The treedata result
+ *
+ */
+const treeData = useMemo<TreeNode>(() => {
     /**
      * Performs build tree operation
      *
@@ -146,7 +156,15 @@ export function CategoryTree({
     return {
       /** Name */
       name: "Categories",
-      /** Children */
+      /**/**
+ * Performs center tree operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The centertree result
+ *
+ */
+ Children */
       children: buildTree(categories),
     };
   }, [categories]);
@@ -154,7 +172,15 @@ export function CategoryTree({
   // Center tree on mount
   const centerTree = useCallback(() => {
     if (containerRef.current) {
-      const dimensions = containerRef.current.getBoundingClientRect();
+     /**
+ * Handles node click
+ *
+ * @param {any} (nodeData - The (nodedata
+ *
+ * @returns {any} The handlenodeclick result
+ *
+ */
+ const dimensions = containerRef.current.getBoundingClientRect();
       setTranslate({
         /** X */
         x: dimensions.width / 2,
@@ -236,7 +262,15 @@ export function CategoryTree({
    * @returns {any} The handlezoomout result
    */
 
-  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.2, 0.2));
+  const handleZoomOut = () /**
+ * Handles export
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handleexport result
+ *
+ */
+=> setZoom((prev) => Math.max(prev - 0.2, 0.2));
   /**
    * Handles reset zoom event
    *

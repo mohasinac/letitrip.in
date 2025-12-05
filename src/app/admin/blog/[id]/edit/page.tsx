@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -27,7 +28,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function EditBlogPostPage() {
+export default /**
+ * Performs edit blog post page operation
+ *
+ * @returns {any} The editblogpostpage result
+ *
+ */
+function EditBlogPostPage() {
   const router = useRouter();
   const params = useParams();
   const { isAdmin } = useAuth();
@@ -85,7 +92,15 @@ export default function EditBlogPostPage() {
     useMediaUploadWithCleanup();
   const uploadedUrls = getUploadedUrls();
 
-  const categories = [
+  /**
+ * Performs categories operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The categories result
+ *
+ */
+const categories = [
     "News",
     "Guides",
     "Updates",
@@ -243,7 +258,15 @@ export default function EditBlogPostPage() {
    *
    * @returns {Promise<any>} Promise resolving to async  result
    *
-   * @throws {Error} When operation fails or validation errors occur
+   * @throws {Error} When operation fails or /**
+ * Performs file operation
+ *
+ * @param {any} !file - The !file
+ *
+ * @returns {any} The file result
+ *
+ */
+validation errors occur
    */
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

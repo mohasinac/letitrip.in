@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -35,7 +36,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 declare global {
-  interface Window {
+  /**
+ * Window interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Window
+ */
+interface Window {
     /** Razorpay */
     Razorpay: any;
   }
@@ -71,7 +78,13 @@ interface ShopGroup {
   } | null;
 }
 
-export default function CheckoutPage() {
+export default /**
+ * Performs checkout page operation
+ *
+ * @returns {any} The checkoutpage result
+ *
+ */
+function CheckoutPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { cart, loading: cartLoading } = useCart();
@@ -94,7 +107,15 @@ export default function CheckoutPage() {
   >({});
 
   // Group cart items by shop
-  const shopGroups = useMemo(() => {
+  /**
+ * Performs shop groups operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The shopgroups result
+ *
+ */
+const shopGroups = useMemo(() => {
     if (!cart?.items) return [];
 
     const groups: Record<string, ShopGroup> = {};
@@ -115,13 +136,29 @@ export default function CheckoutPage() {
       groups[item.shopId].items.push(item);
     });
 
-    return Object.values(groups);
+  /**
+ * Performs grand total operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The grandtotal result
+ *
+ */
+  return Object.values(groups);
   }, [cart?.items, shopCoupons]);
 
   // Calculate grand total across all shops
   const grandTotal = useMemo(() => {
     return shopGroups.reduce((sum, shop) => {
-      const subtotal = shop.items.reduce(
+ /**
+ * Performs tax operation
+ *
+ * @param {any} subtotal*0.18 - The subtotal*0.18
+ *
+ * @returns {any} The tax result
+ *
+ */
+     const subtotal = shop.items.reduce(
         (s, item) => s + item.price * item.quantity,
         0,
       );
@@ -135,7 +172,15 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (!user) {
       router.push("/login?redirect=/checkout");
-      return;
+      ret/**
+ * Performs current step index operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The currentstepindex result
+ *
+ */
+urn;
     }
 
     if (!cartLoading && (!cart || cart.items.length === 0)) {
@@ -229,13 +274,29 @@ export default function CheckoutPage() {
    * @throws {Error} When operation fails or validation errors occur
    */
 
-  /**
+ /**
+ * Performs shop operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The shop result
+ *
+ */
+ /**
    * Performs async operation
    *
    * @param {string} shopId - shop identifier
    * @param {string} code - The code
    *
-   * @returns {Promise<any>} Promise resolving to async  result
+   * @returns {Promise<any>} /**
+ * Performs discount amount operation
+ *
+ * @param {any} subtotal*0.1 - The subtotal*0.1
+ *
+ * @returns {any} The discountamount result
+ *
+ */
+Promise resolving to async  result
    *
    * @throws {Error} When operation fails or validation errors occur
    */
@@ -307,7 +368,15 @@ export default function CheckoutPage() {
         /** Metadata */
         metadata: { shopId },
       });
-      setError(error.message || "Failed to remove coupon.");
+      setError(error.message || "Failed to remove coupon./**
+ * Performs order data operation
+ *
+ * @param {any} (shop - The (shop
+ *
+ * @returns {any} The orderdata result
+ *
+ */
+");
     }
   };
 
@@ -343,7 +412,15 @@ export default function CheckoutPage() {
       const orderData = {
         shippingAddressId,
         /** Billing Address Id */
-        billingAddressId: useSameAddress ? shippingAddressId : billingAddressId,
+        billingAdd/**
+ * Performs order ids operation
+ *
+ * @param {any} (o - The (o
+ *
+ * @returns {any} The orderids result
+ *
+ */
+ressId: useSameAddress ? shippingAddressId : billingAddressId,
         paymentMethod,
         /** Shop Orders */
         shopOrders: shopGroups.map((shop) => ({
@@ -686,7 +763,16 @@ export default function CheckoutPage() {
                   ) : (
                     <button
                       onClick={handlePlaceOrder}
-                      className="btn-primary flex-1 min-h-[48px] touch-manipulation flex items-center justify-center"
+                      className="btn-prim/**
+ * Performs subtotal operation
+ *
+ * @param {any} (sum - The (sum
+ * @param {any} item - The item
+ *
+ * @returns {any} The subtotal result
+ *
+ */
+ary flex-1 min-h-[48px] touch-manipulation flex items-center justify-center"
                       disabled={processing}
                     >
                       {processing ? (

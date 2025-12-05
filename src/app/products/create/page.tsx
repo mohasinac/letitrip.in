@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -235,7 +236,13 @@ function CreateProductContent() {
   );
 }
 
-export default function CreateProductPage() {
+export default /**
+ * Creates product page
+ *
+ * @returns {any} The createproductpage result
+ *
+ */
+function CreateProductPage() {
   return (
     <ErrorBoundary>
       <CreateProductContent />

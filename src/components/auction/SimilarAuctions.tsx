@@ -4,7 +4,8 @@
  * @description This file contains the SimilarAuctions component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -77,7 +78,15 @@ export function SimilarAuctions({
   className = "",
 }: SimilarAuctionsProps) {
   // Filter out current auction
-  const filteredAuctions = auctions.filter(
+  /**
+ * Performs filtered auctions operation
+ *
+ * @param {any} (auction - The (auction
+ *
+ * @returns {any} The filteredauctions result
+ *
+ */
+const filteredAuctions = auctions.filter(
     (auction) => auction.id !== currentAuctionId,
   );
 

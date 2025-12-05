@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { generateMetadata as genMeta } from "@/lib/seo/metadata";
@@ -36,7 +37,13 @@ export const metadata = genMeta({
  * @example
  * const result = AboutPage();
  */
-export default function AboutPage() {
+export default /**
+ * Performs about page operation
+ *
+ * @returns {any} The aboutpage result
+ *
+ */
+function AboutPage() {
   const localBusinessSchema = generateLocalBusinessSchema();
 
   return (

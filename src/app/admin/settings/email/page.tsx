@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -113,7 +114,13 @@ const defaultSettings: EmailSettings = {
   },
 };
 
-export default function EmailSettingsPage() {
+export default /**
+ * Performs email settings page operation
+ *
+ * @returns {any} The emailsettingspage result
+ *
+ */
+function EmailSettingsPage() {
   const [settings, setSettings] = useState<EmailSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -108,7 +109,15 @@ export async function GET(req: NextRequest) {
     query = query.orderBy("name", "asc");
 
     const snapshot = await query.get();
-    const templates = snapshot.docs.map((doc) => ({
+    /**
+ * Performs templates operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The templates result
+ *
+ */
+const templates = snapshot.docs.map((doc) => ({
       /** Id */
       id: doc.id,
       ...doc.data(),

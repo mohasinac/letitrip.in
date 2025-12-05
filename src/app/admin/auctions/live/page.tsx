@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -190,7 +191,16 @@ function LiveAuctionRow({
     };
 
     updateTime();
-    const interval = setInterval(updateTime, 1000);
+    /**
+ * Performs interval operation
+ *
+ * @param {any} updateTime - The updatetime
+ * @param {any} 1000 - The 1000
+ *
+ * @returns {any} The interval result
+ *
+ */
+const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, [auction.endTime]);
 
@@ -362,7 +372,13 @@ function LiveAuctionRow({
   );
 }
 
-export default function LiveAuctionsPage() {
+export default /**
+ * Performs live auctions page operation
+ *
+ * @returns {any} The liveauctionspage result
+ *
+ */
+function LiveAuctionsPage() {
   const { isAdmin } = useAuth();
   const {
     /** Is Loading */
@@ -409,7 +425,19 @@ export default function LiveAuctionsPage() {
       const response = await auctionsService.list({
         /** Status */
         status: AuctionStatus.ACTIVE,
-        /** Limit */
+      /**
+ * Event handler for e hour
+ *
+ * @param {object} {
+        
+        liveCount - The {
+        
+        livecount
+ *
+ * @returns {any} The onehour result
+ *
+ */
+  /** Limit */
         limit: 50,
       });
 
@@ -427,7 +455,19 @@ export default function LiveAuctionsPage() {
         /** Total Value */
         totalValue: liveAuctions.reduce(
           (sum, a) =>
-            sum + (a.currentBid || a.startingBid || a.currentPrice || 0),
+            sum + (a.currentBid || a.starting/**
+ * Performs scheduled response operation
+ *
+ * @param {object} {
+        
+        status - The {
+        
+        status
+ *
+ * @returns {any} The scheduledresponse result
+ *
+ */
+Bid || a.currentPrice || 0),
           0,
         ),
         /** Ending Soon */
@@ -440,7 +480,15 @@ export default function LiveAuctionsPage() {
 
       // Load scheduled count separately
       const scheduledResponse = await auctionsService.list({
-        /** Status */
+        /** Status *//**
+ * Performs interval operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The interval result
+ *
+ */
+
         status: AuctionStatus.SCHEDULED,
         /** Limit */
         limit: 1,

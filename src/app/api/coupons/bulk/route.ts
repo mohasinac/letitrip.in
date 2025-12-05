@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -206,7 +207,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const successCount = results.filter((r) => r.success).length;
+    /**
+ * Performs success count operation
+ *
+ * @param {any} (r - The (r
+ *
+ * @returns {any} The successcount result
+ *
+ */
+const successCount = results.filter((r) => r.success).length;
     const failureCount = results.filter((r) => !r.success).length;
 
     return NextResponse.json({

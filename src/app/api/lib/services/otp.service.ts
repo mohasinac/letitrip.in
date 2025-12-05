@@ -4,7 +4,8 @@
  * @description This file contains service functions for otp operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { adminDb } from "@/app/api/lib/firebase/config";
@@ -33,6 +34,7 @@ export interface OTPVerification {
   userId: string;
   /** Type */
   type: "email" | "phone";
+  /** Destination */
   destination: string; // email or phone number
   /** Otp */
   otp: string;

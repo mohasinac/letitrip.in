@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -45,7 +46,15 @@ interface OrderPageProps {
   }>;
 }
 
-export default function OrderDetailPage({ params }: OrderPageProps) {
+export default /**
+ * Performs order detail page operation
+ *
+ * @param {OrderPageProps} { params } - The { params }
+ *
+ * @returns {any} The orderdetailpage result
+ *
+ */
+function OrderDetailPage({ params }: OrderPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
@@ -64,7 +73,15 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
     params.then((p) => setOrderId(p.id));
   }, [params]);
 
-  const loadOrder = useCallback(async () => {
+  /**
+ * Performs load order operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadorder result
+ *
+ */
+const loadOrder = useCallback(async () => {
     if (!orderId) return;
     await execute(async () => {
       const data = await ordersService.getById(orderId);
@@ -394,7 +411,15 @@ function OrderTimeline({ status }: { status: string }) {
   const steps = [
     { id: "pending", label: "Order Placed", icon: Package },
     { id: "confirmed", label: "Confirmed", icon: CheckCircle },
-    { id: "processing", label: "Processing", icon: Package },
+    { id: "processing", label: "Processing", icon: Package /**
+ * Performs status index operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The statusindex result
+ *
+ */
+},
     { id: "shipped", label: "Shipped", icon: Truck },
     { id: "delivered", label: "Delivered", icon: CheckCircle },
   ];

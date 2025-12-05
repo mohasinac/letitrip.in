@@ -4,7 +4,8 @@
  * @description This file contains the FeaturedCategoriesSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -67,6 +68,28 @@ interface FeaturedCategoriesSectionProps {
   categoryLimit);
  */
 
+/**
+ * Performs featured categories section operation
+ *
+ * @param {FeaturedCategoriesSectionProps} [{
+  categoryLimit = 6,
+  itemsPerCategory = 10,
+  className = "",
+}] - The {
+  categorylimit = 6,
+  itemspercategory = 10,
+  classname = "",
+}
+ *
+ * @returns {any} The featuredcategoriessection result
+ *
+ * @example
+ * FeaturedCategoriesSection({
+  categoryLimit = 6,
+  itemsPerCategory = 10,
+  className = "",
+});
+ */
 export function FeaturedCategoriesSection({
   categoryLimit = 6,
   itemsPerCategory = 10,

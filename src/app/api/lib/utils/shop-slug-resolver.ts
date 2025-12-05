@@ -4,7 +4,8 @@
  * @description This file contains functionality related to shop-slug-resolver
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -58,6 +59,16 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  * resolveShopSlug("example");
  */
 
+/**
+ * Performs resolve shop slug operation
+ *
+ * @param {string} shopSlug - The shopslug
+ *
+ * @returns {Promise<string | null>} The resolveshopslug result
+ *
+ * @example
+ * resolveShopSlug("example");
+ */
 export async function resolveShopSlug(
   /** Shop Slug */
   shopSlug: string,
@@ -113,6 +124,16 @@ export async function resolveShopSlug(
  * @param {string} /** Shop Slug */
   shopSlug - The /**  shop  slug */
   shop slug
+/**
+ * Performs resolve shop slug to data operation
+ *
+ * @param {string} shopSlug - The shopslug
+ *
+ * @returns {Promise<} The resolveshopslugtodata result
+ *
+ * @example
+ * resolveShopSlugToData("example");
+ */
  *
  * @returns {Promise<any>} Promise resolving to resolveshopslugtodata result
  *
@@ -169,7 +190,17 @@ export async function resolveShopSlugToData(
  *
  * @throws {Error} When operation fails or validation errors occur
  *
+ * @e/**
+ * Performs batch resolve shop slugs operation
+ *
+ * @param {string[]} shopSlugs - The shopslugs
+ *
+ * @returns {Promise<Map<string, string>>} The batchresolveshopslugs result
+ *
  * @example
+ * batchResolveShopSlugs([]);
+ */
+xample
  * batchResolveShopSlugs(shopSlugs);
  */
 
@@ -204,7 +235,13 @@ export async function batchResolveShopSlugs(
     const chunks = chunkArray(shopSlugs, 10);
 
     for (const chunk of chunks) {
-      const snapshot = await Collections.shops()
+      /**
+ * Performs snapshot operation
+ *
+ * @returns {any} The snapshot result
+ *
+ */
+const snapshot = await Collections.shops()
         .where("slug", "in", chunk)
         .get();
 

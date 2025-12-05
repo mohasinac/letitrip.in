@@ -4,7 +4,8 @@
  * @description This file contains the ProductImageManager component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -64,6 +65,7 @@ interface ProductImage {
  * @description Defines the structure and contract for ProductImageManagerProps
  */
 interface ProductImageManagerProps {
+  /** Images */
   images: string[]; // Existing image URLs
   /** Max Images */
   maxImages?: number;
@@ -196,7 +198,29 @@ function SortableImageItem({
   );
 }
 
-export default function ProductImageManager({
+export default /**
+ * Performs product image manager operation
+ *
+ * @param {ProductImageManagerProps} [{
+  images,
+  maxImages = 10,
+  onImagesChange,
+  shopId,
+  productId,
+  disabled = false,
+}] - The {
+  images,
+  maximages = 10,
+  onimageschange,
+  shopid,
+  productid,
+  disabled = false,
+}
+ *
+ * @returns {any} The productimagemanager result
+ *
+ */
+function ProductImageManager({
   images,
   maxImages = 10,
   onImagesChange,
@@ -246,7 +270,15 @@ export default function ProductImageManager({
   };
 
   // Handle drag and drop
-  const handleDrop = useCallback(
+  /**
+ * Handles drop
+ *
+ * @param {React.DragEvent} async(e - The async(e
+ *
+ * @returns {Promise<any>} The handledrop result
+ *
+ */
+const handleDrop = useCallback(
     async (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
@@ -304,7 +336,15 @@ export default function ProductImageManager({
    * @throws {Error} When operation fails or validation errors occur
    */
 
-  const handleFiles = async (files: File[]) => {
+  const handleFiles = async (fi/**
+ * Performs new images operation
+ *
+ * @param {any} (file - The (file
+ *
+ * @returns {any} The newimages result
+ *
+ */
+les: File[]) => {
     if (!canAddMore) return;
 
     const filesToUpload = files.slice(0, maxImages - productImages.length);
@@ -371,11 +411,27 @@ export default function ProductImageManager({
         /** File */
         file: image.file,
         /** Context */
-        context: "product",
+        cont/**
+ * Updates d list
+ *
+ * @param {any} (img - The (img
+ *
+ * @returns {any} The updatedlist result
+ *
+ */
+ext: "product",
         /** Context Id */
         contextId: productId,
         /** Description */
-        description: `product-image-${productId}`,
+        descripti/**
+ * Performs all urls operation
+ *
+ * @param {any} (img - The (img
+ *
+ * @returns {any} The allurls result
+ *
+ */
+on: `product-image-${productId}`,
       });
 
       const uploadedUrl = res.url;
@@ -417,7 +473,15 @@ export default function ProductImageManager({
   /**
    * Performs async operation
    *
-   * @param {string} imageId - image identifier
+   * @param {/**
+ * Performs image operation
+ *
+ * @param {any} (img - The (img
+ *
+ * @returns {any} The image result
+ *
+ */
+string} imageId - image identifier
    *
    * @returns {Promise<any>} Promise resolving to async  result
    *
@@ -441,7 +505,15 @@ export default function ProductImageManager({
     setProductImages((prev) =>
       prev.map((img) =>
         img.id === imageId
-          ? { ...img, uploading: true, error: undefined, progress: 0 }
+          ? { ...img, up/**
+ * Performs all urls operation
+ *
+ * @param {any} (img - The (img
+ *
+ * @returns {any} The allurls result
+ *
+ */
+loading: true, error: undefined, progress: 0 }
           : img,
       ),
     );
@@ -467,13 +539,29 @@ export default function ProductImageManager({
    */
 
   const handleRemove = (imageId: string) => {
-    setProductImages((prev) => prev.filter((img) => img.id !== imageId));
+    setProductImages((prev) => prev.f/**
+ * Performs old index operation
+ *
+ * @param {any} (img - The (img
+ *
+ * @returns {any} The oldindex result
+ *
+ */
+ilter((img) => img.id !== imageId));
 
     // Update parent component
     const allUrls = productImages
       .filter((img) => img.id !== imageId)
       .map((img) => img.url)
-      .filter((url) => url !== "");
+   /**
+ * Performs all urls operation
+ *
+ * @param {ProductImage} (img - The (img
+ *
+ * @returns {any} The allurls result
+ *
+ */
+   .filter((url) => url !== "");
     onImagesChange(allUrls);
   };
 
@@ -501,7 +589,13 @@ export default function ProductImageManager({
       const oldIndex = productImages.findIndex((img) => img.id === active.id);
       const newIndex = productImages.findIndex((img) => img.id === over.id);
 
-      const reordered = arrayMove(productImages, oldIndex, newIndex);
+    /**
+ * Performs new image operation
+ *
+ * @returns {any} The newimage result
+ *
+ */
+  const reordered = arrayMove(productImages, oldIndex, newIndex);
       setProductImages(reordered);
 
       // Update parent component

@@ -4,7 +4,8 @@
  * @description This file contains the MobileSidebar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -60,7 +61,15 @@ const sellerIcons: Record<string, any> = {
   orders: ShoppingBag,
 };
 
-export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
+export default /**
+ * Performs mobile sidebar operation
+ *
+ * @param {MobileSidebarProps} { isOpen, onClose } - The { isopen, onclose }
+ *
+ * @returns {any} The mobilesidebar result
+ *
+ */
+function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const [adminOpen, setAdminOpen] = useState(false);
   const [sellerOpen, setSellerOpen] = useState(false);
   const [adminSectionOpen, setAdminSectionOpen] = useState<
@@ -130,7 +139,15 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
     if (!user) return "U";
     const name = user.displayName || user.fullName || user.email;
     if (!name) return "U";
-    const names = name.split(" ").filter((n) => n.length > 0);
+    /**
+ * Performs names operation
+ *
+ * @param {any} "" - The ""
+ *
+ * @returns {any} The names result
+ *
+ */
+const names = name.split(" ").filter((n) => n.length > 0);
     if (names.length >= 2) {
       return `${names[0][0]}${names[1][0]}`.toUpperCase();
     }

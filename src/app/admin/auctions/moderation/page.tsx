@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -25,7 +26,13 @@ import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { Price } from "@/components/common/values/Price";
 import { useLoadingState } from "@/hooks/useLoadingState";
 
-export default function AuctionModerationPage() {
+export default /**
+ * Performs auction moderation page operation
+ *
+ * @returns {any} The auctionmoderationpage result
+ *
+ */
+function AuctionModerationPage() {
   const router = useRouter();
   const {
     /** Data */
@@ -44,7 +51,15 @@ export default function AuctionModerationPage() {
   const [totalAuctions, setTotalAuctions] = useState(0);
   const [processingId, setProcessingId] = useState<string | null>(null);
 
-  const fetchAuctions = useCallback(async () => {
+  /**
+ * Fetches auctions
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The fetchauctions result
+ *
+ */
+const fetchAuctions = useCallback(async () => {
     const response = await auctionsService.list({
       ...filterValues,
       /** Page */

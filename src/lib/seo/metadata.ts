@@ -4,7 +4,8 @@
  * @description This file contains functionality related to metadata
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -395,6 +396,16 @@ export function generateProductMetadata({
  * generateBreadcrumbList([]);
  */
 
+/**
+ * Performs generate breadcrumb list operation
+ *
+ * @param {Array<{ name} items - The items
+ *
+ * @returns {any} The generatebreadcrumblist result
+ *
+ * @example
+ * generateBreadcrumbList({});
+ */
 export function generateBreadcrumbList(
   /** Items */
   items: Array<{ name: string; url: string }>,

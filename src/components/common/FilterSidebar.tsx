@@ -4,7 +4,8 @@
  * @description This file contains the FilterSidebar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -132,7 +133,13 @@ export function FilterSidebar({
 
   useEffect(() => {
     // Initialize collapsed sections
-    const initialCollapsed = new Set<string>();
+    /**
+ * Performs initial collapsed operation
+ *
+ * @returns {any} The initialcollapsed result
+ *
+ */
+const initialCollapsed = new Set<string>();
     sections.forEach((section) => {
       if (section.defaultCollapsed) {
         initialCollapsed.add(section.title);
@@ -161,7 +168,15 @@ export function FilterSidebar({
     setCollapsedSections((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(title)) {
-        newSet.delete(title);
+        newSet.delete(tit/**
+ * Checks if has active filters
+ *
+ * @param {any} values - The values
+ *
+ * @returns {any} The hasactivefilters result
+ *
+ */
+le);
       } else {
         newSet.add(title);
       }
@@ -190,7 +205,15 @@ export function FilterSidebar({
    * Handles checkbox change event
    *
    * @returns {string} The handlecheckboxchange result
-   */
+   */**
+ * Performs new values operation
+ *
+ * @param {any} (v - The (v
+ *
+ * @returns {any} The newvalues result
+ *
+ */
+/
 
   const handleCheckboxChange = (
     /** Key */

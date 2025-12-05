@@ -4,7 +4,8 @@
  * @description This file contains the not-found component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -245,7 +246,13 @@ function NotFoundContent() {
   );
 }
 
-export default function NotFound() {
+export default /**
+ * Performs not found operation
+ *
+ * @returns {any} The notfound result
+ *
+ */
+function NotFound() {
   return (
     <Suspense
       fallback={

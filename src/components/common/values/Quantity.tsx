@@ -4,7 +4,8 @@
  * @description This file contains the Quantity component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -43,6 +44,7 @@ interface QuantityProps {
   zeroText?: string;
   /** Class Name */
   className?: string;
+  /** ShowSign */
   showSign?: boolean; // Show +/- for changes
 }
 

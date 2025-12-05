@@ -4,7 +4,8 @@
  * @description This file contains the ErrorInitializer component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -23,7 +24,13 @@ import { initErrorHandlers } from "@/lib/firebase-error-logger";
  * @example
  * const result = ErrorInitializer();
  */
-export default function ErrorInitializer() {
+export default /**
+ * Performs error initializer operation
+ *
+ * @returns {any} The errorinitializer result
+ *
+ */
+function ErrorInitializer() {
   useEffect(() => {
     initErrorHandlers();
   }, []);

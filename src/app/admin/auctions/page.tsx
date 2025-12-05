@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -21,9 +22,23 @@ import { getAuctionBulkActions } from "@/constants/bulk-actions";
 import { AUCTION_FIELDS, toInlineFields } from "@/constants/form-fields";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 
-export default function AdminAuctionsPage() {
+export default /**
+ * Performs admin auctions page operation
+ *
+ * @returns {any} The adminauctionspage result
+ *
+ */
+function AdminAuctionsPage() {
   // Define columns
-  const columns = [
+  /**
+ * Performs columns operation
+ *
+ * @param {AuctionCardFE} auction - The auction
+ *
+ * @returns {any} The columns result
+ *
+ */
+const columns = [
     {
       /** Key */
       key: "auction",

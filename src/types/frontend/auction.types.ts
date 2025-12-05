@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for auction
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -40,7 +41,9 @@ export interface BidFE {
   createdAt: Date;
 
   // Formatted
+  /** FormattedAmount */
   formattedAmount: string; // "₹15,000"
+  /** TimeAgo */
   timeAgo: string; // "2 minutes ago"
 
   // UI states
@@ -50,7 +53,9 @@ export interface BidFE {
   isYourBid: boolean;
 
   // Backwards compatibility
+  /** BidTime */
   bidTime?: Date; // Alias for createdAt
+  /** BidAmount */
   bidAmount?: number; // Alias for amount
 }
 
@@ -68,7 +73,9 @@ export interface AuctionFE {
   productSlug: string;
   /** Product Image */
   productImage: string;
+  /** Images */
   images?: string[]; // Multiple images for carousel
+  /** Videos */
   videos?: string[]; // Video URLs for carousel
   /** Product Description */
   productDescription: string;
@@ -141,12 +148,15 @@ export interface AuctionFE {
   duration: number;
 
   // Formatted timing
+  /** StartTimeDisplay */
   startTimeDisplay: string; // "Nov 13, 2025 2:30 PM"
   /** End Time Display */
   endTimeDisplay: string;
+  /** TimeRemaining */
   timeRemaining: string; // "2d 5h 30m"
   /** Time Remaining Seconds */
   timeRemainingSeconds: number;
+  /** DurationDisplay */
   durationDisplay: string; // "7 days"
 
   // Extended bidding
@@ -181,26 +191,35 @@ export interface AuctionFE {
   isUpcoming: boolean;
   /** Is Live */
   isLive: boolean;
+  /** IsEndingSoon */
   isEndingSoon: boolean; // Within 1 hour
   /** Can Bid */
   canBid: boolean;
   /** Can Buy Now */
   canBuyNow: boolean;
+  /** IsYourAuction */
   isYourAuction: boolean; // Current user is seller
+  /** IsYouWinning */
   isYouWinning: boolean; // Current user is highest bidder
+  /** IsYouWinner */
   isYouWinner: boolean; // Current user won
 
   // Reserve
   /** Reserve Met */
   reserveMet: boolean;
+  /** ReserveStatus */
   reserveStatus: string; // "Reserve met" | "Reserve not met" | "No reserve"
 
   // Progress
+  /** PriceProgress */
   priceProgress: number; // 0-100 (startingPrice to buyNowPrice)
+  /** BidProgress */
   bidProgress: number; // 0-100 (based on bid count)
+  /** TimeProgress */
   timeProgress: number; // 0-100 (elapsed time)
 
   // Badges
+  /** Badges */
   badges: string[]; // ["Live", "Ending Soon", "Hot", "Reserve Met", etc.]
 
   // Timestamps
@@ -214,10 +233,15 @@ export interface AuctionFE {
   metadata?: Record<string, any>;
 
   // Backwards compatibility aliases (for legacy code)
+  /** CurrentBid */
   currentBid?: number; // Alias for currentPrice
+  /** Name */
   name?: string; // Alias for productName
+  /** Description */
   description?: string; // Alias for productDescription
+  /** Featured */
   featured?: boolean; // Derived from metadata
+  /** BidCount */
   bidCount?: number; // Alias for totalBids
 }
 
@@ -263,16 +287,27 @@ export interface AuctionCardFE {
   badges: string[];
 
   // Backwards compatibility aliases
+  /** Slug */
   slug?: string; // Alias for productSlug
+  /** Name */
   name?: string; // Alias for productName
+  /** Images */
   images?: string[]; // Multiple images for carousel
+  /** Videos */
   videos?: string[]; // Video URLs for carousel
+  /** CurrentBid */
   currentBid?: number; // Alias for currentPrice
+  /** BidCount */
   bidCount?: number; // Alias for totalBids
+  /** StartingBid */
   startingBid?: number; // For admin tables (not in minimal card)
+  /** ReservePrice */
   reservePrice?: number | null; // For admin tables
+  /** StartTime */
   startTime?: Date; // For admin tables
+  /** ShopId */
   shopId?: string | null; // For admin tables
+  /** Featured */
   featured?: boolean; // For admin tables
 }
 
@@ -343,6 +378,7 @@ export interface AuctionFormFE {
   minBidIncrement: number;
 
   // Admin/moderation fields
+  /** Status */
   status?: AuctionStatus; // For admin status updates
 }
 
@@ -401,6 +437,7 @@ export interface AuctionStatsFE {
   auctionsThisWeek: number;
   /** Ending Soon */
   endingSoon: number;
+  /** GrowthRate */
   growthRate: string; // "+8% from last week"
 }
 

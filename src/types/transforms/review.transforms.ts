@@ -4,7 +4,8 @@
  * @description This file contains functionality related to review.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -170,6 +171,16 @@ export function toFEReview(
   formData);
  */
 
+/**
+ * Performs to b e create review request operation
+ *
+ * @param {ReviewFormFE} formData - The formdata
+ *
+ * @returns {CreateReviewRequestBE} The tobecreatereviewrequest result
+ *
+ * @example
+ * toBECreateReviewRequest(formData);
+ */
 export function toBECreateReviewRequest(
   /** Form Data */
   formData: ReviewFormFE,
@@ -216,7 +227,17 @@ export function toBECreateReviewRequest(
  */
 
 export function toFEReviewStats(statsBE: ReviewStatsResponseBE): ReviewStatsFE {
-  const total = statsBE.totalReviews;
+  /**
+ * Performs total operation
+ *
+ * @param {any} statsBE.averageRating - The statsbe.averagerating
+ *
+ * @returns {ReviewFE[]} The total result
+ *
+ * @example
+ * total(statsBE.averageRating);
+ */
+const total = statsBE.totalReviews;
 
   return {
     /** Total Reviews */

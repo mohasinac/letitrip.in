@@ -4,7 +4,8 @@
  * @description This file contains the ResourceDetailWrapper component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -110,7 +111,43 @@ interface ResourceDetailWrapperProps {
   commentsSection?: ReactNode;
 }
 
-export default function ResourceDetailWrapper({
+export default /**
+ * Performs resource detail wrapper operation
+ *
+ * @param {ResourceDetailWrapperProps} {
+  context,
+  breadcrumbs,
+  title,
+  subtitle,
+  badge,
+  actions,
+  tabs,
+  activeTab,
+  onTabChange,
+  stats,
+  children,
+  relatedItems,
+  commentsSection,
+} - The {
+  context,
+  breadcrumbs,
+  title,
+  subtitle,
+  badge,
+  actions,
+  tabs,
+  activetab,
+  ontabchange,
+  stats,
+  children,
+  relateditems,
+  commentssection,
+}
+ *
+ * @returns {any} The resourcedetailwrapper result
+ *
+ */
+function ResourceDetailWrapper({
   context,
   breadcrumbs,
   title,

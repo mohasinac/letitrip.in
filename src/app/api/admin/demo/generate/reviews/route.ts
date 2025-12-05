@@ -4,13 +4,21 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
+/**
+ * DEMO_PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for demo prefix
+ */
 const DEMO_PREFIX = "DEMO_";
 
 // Review images for product photos uploaded by customers
@@ -21,7 +29,14 @@ const REVIEW_IMAGES = [
   "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=400&h=400&fit=crop",
   "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
   "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=c/**
+ * REVIEW_VIDEOS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for review videos
+ */
+rop",
   "https://images.unsplash.com/photo-1598808503491-fa80d3e5a0d9?w=400&h=400&fit=crop",
 ];
 
@@ -74,7 +89,14 @@ export async function POST(request: NextRequest) {
     }
 
     if (!buyers || !Array.isArray(buyers) || buyers.length === 0) {
-      return NextResponse.json(
+ /**
+ * REVIEW_TITLES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for review titles
+ */
+     return NextResponse.json(
         { success: false, error: "Buyers data required" },
         { status: 400 },
       );
@@ -110,7 +132,15 @@ export async function POST(request: NextRequest) {
     ];
 
     // Pre-fetch product data to get shop_id
-    const productDocs = await Promise.all(
+    /**
+ * Performs product docs operation
+ *
+ * @param {string} products.map((productId - The products.map((productid
+ *
+ * @returns {any} The productdocs result
+ *
+ */
+const productDocs = await Promise.all(
       products.map((productId: string) =>
         db.collection(COLLECTIONS.PRODUCTS).doc(productId).get(),
       ),
@@ -141,7 +171,17 @@ export async function POST(request: NextRequest) {
         ratings.push(rating);
 
         // 40% of reviews have images, 15% have videos
-        const hasImages = Math.random() < 0.4;
+        const ha/**
+ * Performs review images operation
+ *
+ * @param {object} { length - The { length
+ * @param {any} (_ - The (_
+ * @param {any} idx - The idx
+ *
+ * @returns {any} The reviewimages result
+ *
+ */
+sImages = Math.random() < 0.4;
         const hasVideo = Math.random() < 0.15;
         const numImages = hasImages ? 1 + Math.floor(Math.random() * 3) : 0;
         const reviewImages = hasImages
@@ -190,7 +230,16 @@ export async function POST(request: NextRequest) {
           not_helpful_count: Math.floor(Math.random() * 5),
           seller_response:
             Math.random() > 0.7
-              ? {
+       /**
+ * Performs avg rating operation
+ *
+ * @param {any} (a - The (a
+ * @param {any} b - The b
+ *
+ * @returns {any} The avgrating result
+ *
+ */
+       ? {
                   /** Message */
                   message:
                     "Thank you for your review! We appreciate your feedback.",

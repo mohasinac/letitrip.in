@@ -4,7 +4,8 @@
  * @description This file contains the TimeRemaining component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -238,7 +239,15 @@ export function TimeRemaining({
   const [breakdown, setBreakdown] = useState(() => getTimeBreakdown(endTime));
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    /**
+ * Performs interval operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The interval result
+ *
+ */
+const interval = setInterval(() => {
       const newBreakdown = getTimeBreakdown(endTime);
       setBreakdown(newBreakdown);
 

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -25,9 +26,23 @@ import type { CouponFE } from "@/types/frontend/coupon.types";
  */
 type Coupon = CouponFE;
 
-export default function AdminCouponsPage() {
+export default /**
+ * Performs admin coupons page operation
+ *
+ * @returns {any} The admincouponspage result
+ *
+ */
+function AdminCouponsPage() {
   // Define columns
-  const columns = [
+  /**
+ * Performs columns operation
+ *
+ * @param {Coupon} coupon - The coupon
+ *
+ * @returns {any} The columns result
+ *
+ */
+const columns = [
     {
       /** Key */
       key: "coupon",

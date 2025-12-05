@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -54,7 +55,13 @@ import { toast } from "sonner";
  */
 type ProductSpecification = { name: string; value: string };
 
-export default function AdminEditProductPage() {
+export default /**
+ * Performs admin edit product page operation
+ *
+ * @returns {any} The admineditproductpage result
+ *
+ */
+function AdminEditProductPage() {
   const router = useRouter();
   const params = useParams();
   const productId = params.id as string;
@@ -250,7 +257,15 @@ export default function AdminEditProductPage() {
       });
 
       // Convert specifications from Record to array
-      const specsArray = productData.specifications
+      /**
+ * Performs specs array operation
+ *
+ * @param {any} productData.specifications - The productdata.specifications
+ *
+ * @returns {any} The specsarray result
+ *
+ */
+const specsArray = productData.specifications
         ? Object.entries(productData.specifications).map(([name, value]) => ({
             name,
             value,
@@ -416,7 +431,16 @@ export default function AdminEditProductPage() {
    * @throws {Error} When operation fails or validation errors occur
    */
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSu/**
+ * Performs specs record operation
+ *
+ * @param {any} (acc - The (acc
+ * @param {any} spec - The spec
+ *
+ * @returns {any} The specsrecord result
+ *
+ */
+bmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {

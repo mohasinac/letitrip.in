@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -67,7 +68,15 @@ function SalesChart({ data }: { data: SalesDataPointFE[] }) {
     );
   }
 
-  const maxRevenue = Math.max(...data.map((d) => d.revenue));
+  /**
+ * Performs max revenue operation
+ *
+ * @param {any} ...data.map((d - The ...data.map((d
+ *
+ * @returns {any} The maxrevenue result
+ *
+ */
+const maxRevenue = Math.max(...data.map((d) => d.revenue));
 
   return (
     <div className="h-64 flex items-end gap-2">
@@ -174,7 +183,13 @@ function TopProductsTable({ products }: { products: TopProductFE[] }) {
   );
 }
 
-export default function AdminAnalyticsPage() {
+export default /**
+ * Performs admin analytics page operation
+ *
+ * @returns {any} The adminanalyticspage result
+ *
+ */
+function AdminAnalyticsPage() {
   const [period, setPeriod] = useState("month");
   const {
     /** Is Loading */
@@ -192,7 +207,15 @@ export default function AdminAnalyticsPage() {
     },
   });
   const [overview, setOverview] = useState<AnalyticsOverviewFE | null>(null);
-  const [salesData, setSalesData] = useState<SalesDataPointFE[]>([]);
+  c/**
+ * Fetches analytics
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The fetchanalytics result
+ *
+ */
+onst [salesData, setSalesData] = useState<SalesDataPointFE[]>([]);
   const [topProducts, setTopProducts] = useState<TopProductFE[]>([]);
 
   const fetchAnalytics = useCallback(() => {

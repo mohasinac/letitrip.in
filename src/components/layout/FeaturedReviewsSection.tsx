@@ -4,7 +4,8 @@
  * @description This file contains the FeaturedReviewsSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -16,7 +17,13 @@ import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollC
 import { reviewsService } from "@/services/reviews.service";
 import type { ReviewFE } from "@/types/frontend/review.types";
 
-export default function FeaturedReviewsSection() {
+export default /**
+ * Performs featured reviews section operation
+ *
+ * @returns {any} The featuredreviewssection result
+ *
+ */
+function FeaturedReviewsSection() {
   const [reviews, setReviews] = useState<ReviewFE[]>([]);
   const [loading, setLoading] = useState(true);
 

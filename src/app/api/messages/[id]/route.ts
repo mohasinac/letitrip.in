@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -145,7 +146,15 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const offset = (page - 1) * pageSize;
     const snapshot = await messagesQuery.offset(offset).limit(pageSize).get();
 
-    const messages = snapshot.docs.map((doc) => {
+    /**
+ * Performs messages operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The messages result
+ *
+ */
+const messages = snapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         /** Id */
@@ -316,7 +325,13 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       case "markRead":
         // Mark all messages as read
         const unreadMessages = await db
-          .collection(COLLECTIONS.MESSAGES)
+          .col/**
+ * Performs batch operation
+ *
+ * @returns {any} The batch result
+ *
+ */
+lection(COLLECTIONS.MESSAGES)
           .where("conversationId", "==", conversationId)
           .get();
 

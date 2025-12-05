@@ -4,7 +4,8 @@
  * @description This file contains the ProductReviews component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -72,6 +73,25 @@ interface ProductReviewsProps {
 });
  */
 
+/**
+ * Performs product reviews operation
+ *
+ * @param {ProductReviewsProps} {
+  productId,
+  productSlug,
+} - The {
+  productid,
+  productslug,
+}
+ *
+ * @returns {any} The productreviews result
+ *
+ * @example
+ * ProductReviews({
+  productId,
+  productSlug,
+});
+ */
 export function ProductReviews({
   productId,
   productSlug,

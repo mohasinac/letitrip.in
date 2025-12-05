@@ -4,7 +4,8 @@
  * @description This file contains the FeaturedBlogsSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -16,7 +17,13 @@ import type { BlogPost } from "@/services/blog.service";
 import { blogService } from "@/services/blog.service";
 import { useEffect, useState } from "react";
 
-export default function FeaturedBlogsSection() {
+export default /**
+ * Performs featured blogs section operation
+ *
+ * @returns {any} The featuredblogssection result
+ *
+ */
+function FeaturedBlogsSection() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 

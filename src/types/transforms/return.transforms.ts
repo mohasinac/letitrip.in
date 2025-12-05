@@ -4,7 +4,8 @@
  * @description This file contains functionality related to return.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -42,6 +43,14 @@ import { ReturnStatus, ReturnReason } from "../shared/common.types";
  * @returns {any} The timestamptodate result
  */
 
+/**
+ * Performs timestamp to date operation
+ *
+ * @param {Timestamp | null | undefined} timestamp - The timestamp
+ *
+ * @returns {Date | undefined} The timestamptodate result
+ *
+ */
 function timestampToDate(
   /** Timestamp */
   timestamp: Timestamp | null | undefined,
@@ -68,6 +77,14 @@ function timestampToDate(
  * @param {Date | undefined} date - The date
  *
  * @returns {number} The datetotimestamp result
+/**
+ * Performs date to timestamp operation
+ *
+ * @param {Date | undefined} date - The date
+ *
+ * @returns {} The datetotimestamp result
+ *
+ */
  */
 
 /**
@@ -212,7 +229,15 @@ function formatRefundAmount(amount: number | undefined): string | undefined {
 export function returnBEtoFE(be: ReturnBE): ReturnFE {
   const createdAt = timestampToDate(be.createdAt) || new Date();
   const updatedAt = timestampToDate(be.updatedAt) || new Date();
-  const refundedAt = be.refundedAt ? timestampToDate(be.refundedAt) : undefined;
+  /**
+ * Performs refunded at operation
+ *
+ * @param {any} be.refundedAt - The be.refundedat
+ *
+ * @returns {any} The refundedat result
+ *
+ */
+const refundedAt = be.refundedAt ? timestampToDate(be.refundedAt) : undefined;
 
   return {
     /** Id */

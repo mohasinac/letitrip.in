@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useSlugValidation
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { useState, useCallback, useEffect } from "react";
@@ -117,7 +118,15 @@ export function useSlugValidation({
   const [error, setError] = useState<string | null>(null);
 
   // Validation function
-  const validate = useCallback(
+  /**
+ * Validates 
+ *
+ * @param {string} async(slugToValidate - The async(slugtovalidate
+ *
+ * @returns {Promise<any>} The validate result
+ *
+ */
+const validate = useCallback(
     async (slugToValidate: string) => {
       if (!slugToValidate) {
         setIsAvailable(null);
@@ -167,14 +176,30 @@ export function useSlugValidation({
         setIsValidating(false);
       }
     },
-    [endpoint, params, excludeId],
+    [endpoint, params, excludeId],/**
+ * Validates slug
+ *
+ * @param {string} (newSlug - The (newslug
+ *
+ * @returns {any} The validateslug result
+ *
+ */
+
   );
 
   // Debounced validation
   const debouncedValidate = useDebouncedCallback(validate, debounceMs);
 
   // Public validate function
-  const validateSlug = useCallback(
+  const validateSlug = useCall/**
+ * Performs reset operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The reset result
+ *
+ */
+back(
     (newSlug: string) => {
       setSlug(newSlug);
       if (newSlug) {

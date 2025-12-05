@@ -4,7 +4,8 @@
  * @description This file contains the BlogListClient component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -18,7 +19,13 @@ import { Calendar, ChevronLeft, ChevronRight, Filter, Tag } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function BlogListClient() {
+export default /**
+ * Performs blog list client operation
+ *
+ * @returns {any} The bloglistclient result
+ *
+ */
+function BlogListClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -122,7 +129,15 @@ export default function BlogListClient() {
 
         // Store next cursor
         if ("nextCursor" in response.pagination) {
-          const cursorPagination = response.pagination as any;
+          /**
+ * Performs cursor pagination operation
+ *
+ * @param {any} cursorPagination.nextCursor - The cursorpagination.nextcursor
+ *
+ * @returns {any} The cursorpagination result
+ *
+ */
+const cursorPagination = response.pagination as any;
           if (cursorPagination.nextCursor) {
             setCursors((prev) => {
               const newCursors = [...prev];

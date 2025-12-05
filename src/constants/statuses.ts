@@ -4,7 +4,8 @@
  * @description This file contains functionality related to statuses
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -134,6 +135,7 @@ export const ORDER_STATUS = {
   PROCESSING: "processing",
   /** S H I P P E D */
   SHIPPED: "shipped",
+  /** OUT_FOR_DELIVERY */
   OUT_FOR_DELIVERY: "out_for_delivery",
   /** D E L I V E R E D */
   DELIVERED: "delivered",
@@ -194,6 +196,7 @@ export const PAYMENT_STATUS = {
   FAILED: "failed",
   /** R E F U N D E D */
   REFUNDED: "refunded",
+  /** PARTIALLY_REFUNDED */
   PARTIALLY_REFUNDED: "partially_refunded",
 } as const;
 
@@ -287,7 +290,9 @@ export type VerificationStatus =
 export const TICKET_STATUS = {
   /** O P E N */
   OPEN: "open",
+  /** IN_PROGRESS */
   IN_PROGRESS: "in_progress",
+  /** WAITING_ON_CUSTOMER */
   WAITING_ON_CUSTOMER: "waiting_on_customer",
   /** R E S O L V E D */
   RESOLVED: "resolved",
@@ -356,10 +361,13 @@ export const RETURN_STATUS = {
   APPROVED: "approved",
   /** R E J E C T E D */
   REJECTED: "rejected",
+  /** PICKUP_SCHEDULED */
   PICKUP_SCHEDULED: "pickup_scheduled",
+  /** PICKED_UP */
   PICKED_UP: "picked_up",
   /** R E C E I V E D */
   RECEIVED: "received",
+  /** REFUND_INITIATED */
   REFUND_INITIATED: "refund_initiated",
   /** C O M P L E T E D */
   COMPLETED: "completed",

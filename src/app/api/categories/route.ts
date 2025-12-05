@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -271,7 +272,15 @@ export async function GET(request: NextRequest) {
 
         // Execute query
         const snapshot = await query.get();
-        const categories = snapshot.docs.map((doc) =>
+        /**
+ * Performs categories operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The categories result
+ *
+ */
+const categories = snapshot.docs.map((doc) =>
           transformCategory(doc.id, doc.data())
         );
 

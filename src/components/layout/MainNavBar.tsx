@@ -4,7 +4,8 @@
  * @description This file contains the MainNavBar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -65,7 +66,15 @@ export default function MainNavBar({
   const sellerMenuRef = useRef<HTMLDivElement>(null);
 
   // Use cart count from hook (local state) or API as fallback
-  const cartCount = cart?.itemCount ?? apiCartCount;
+  /**
+ * Performs cart count operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The cartcount result
+ *
+ */
+const cartCount = cart?.itemCount ?? apiCartCount;
 
   useEffect(() => {
     /**
@@ -125,7 +134,15 @@ export default function MainNavBar({
   const getUserInitials = () => {
     if (!user) return "U";
 
-    // Try displayName first, then fullName, then email
+    // Try displayName first, then fullName/**
+ * Performs names operation
+ *
+ * @param {any} "" - The ""
+ *
+ * @returns {any} The names result
+ *
+ */
+, then email
     const name = user.displayName || user.fullName || user.email;
     if (!name) return "U";
 

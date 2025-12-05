@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -357,7 +358,13 @@ function SearchContent() {
   );
 }
 
-export default function SearchPage() {
+export default /**
+ * Performs search page operation
+ *
+ * @returns {any} The searchpage result
+ *
+ */
+function SearchPage() {
   return (
     <Suspense
       fallback={

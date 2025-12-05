@@ -4,13 +4,21 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
+/**
+ * DEMO_PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for demo prefix
+ */
 const DEMO_PREFIX = "DEMO_";
 
 // Beyblade product images - realistic spinning top/arena images
@@ -29,7 +37,14 @@ const PRODUCT_IMAGES = [
   "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=800&h=800&fit=crop",
   "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=800&fit=crop",
   "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=800&fit=crop",
-  "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=800&h=800&fit=crop",
+  "https/**
+ * PRODUCT_VIDEOS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for product videos
+ */
+://images.unsplash.com/photo-1560343090-f0409e92791a?w=800&h=800&fit=crop",
 ];
 
 // Sample videos for product demos
@@ -482,7 +497,16 @@ export async function POST(request: NextRequest) {
     > = {};
 
     // Get leaf categories (ones that have Beyblade products)
-    const leafCategories = Object.entries(
+    /**
+ * Performs leaf categories operation
+ *
+ * @param {any} categoryMapasRecord<string - The categorymapasrecord<string
+ * @param {any} string> - The string>
+ *
+ * @returns {any} The leafcategories result
+ *
+ */
+const leafCategories = Object.entries(
       categoryMap as Record<string, string>,
     ).filter(([name]) => {
       return BEYBLADE_PRODUCTS[name] !== undefined;
@@ -541,7 +565,15 @@ export async function POST(request: NextRequest) {
 
       // 15% of products are out of stock
       const isOutOfStock = Math.random() < 0.15;
-      const stockCount = isOutOfStock ? 0 : Math.floor(Math.random() * 50) + 1;
+      const stockCount = isOutOfStock ? 0 : Math.floor(Math.random() * 50)/**
+ * Performs shuffled images operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The shuffledimages result
+ *
+ */
+ + 1;
 
       // Generate 4-6 images per product - use shuffled selection for variety
       const imageCount = 4 + Math.floor(Math.random() * 3);

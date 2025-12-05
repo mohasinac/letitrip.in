@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for coupon
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -28,7 +29,9 @@ export interface TieredDiscountFE {
   minAmount: number;
   /** Discount Percentage */
   discountPercentage: number;
+  /** FormattedMinAmount */
   formattedMinAmount: string; // "$100.00"
+  /** FormattedDiscount */
   formattedDiscount: string; // "20% off"
 }
 
@@ -44,6 +47,7 @@ export interface BogoConfigFE {
   discountPercentage: number;
   /** Applicable Products */
   applicableProducts?: string[];
+  /** Description */
   description: string; // "Buy 2 Get 1 at 50% off"
 }
 
@@ -145,10 +149,15 @@ export interface CouponFE {
   canBeUsed: boolean;
   /** Remaining Uses */
   remainingUses?: number;
+  /** UsagePercentage */
   usagePercentage: number; // 0-100
+  /** FormattedStartDate */
   formattedStartDate: string; // "Jan 15, 2025"
+  /** FormattedEndDate */
   formattedEndDate: string; // "Feb 15, 2025"
+  /** FormattedDiscount */
   formattedDiscount: string; // "20% off" or "$50 off"
+  /** FormattedMinPurchase */
   formattedMinPurchase: string; // "$100.00"
   /** Days Until Expiry */
   daysUntilExpiry: number;

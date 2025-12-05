@@ -4,7 +4,8 @@
  * @description This file contains the UnifiedFilterSidebar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -114,12 +115,29 @@ export function UnifiedFilterSidebar({
     };
   }, [isOpen, mobile]);
 
-  const handlePendingChange = useCallback((key: string, value: any) => {
+  /**
+ * Handles pending change
+ *
+ * @param {string} (key - The (key
+ * @param {any} value - The value
+ *
+ * @returns {any} The handlependingchange result
+ *
+ */
+const handlePendingChange = useCallback((key: string, value: any) => {
     setPendingValues((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const handleApply = useCallback(() => {
-    Object.entries(pendingValues).forEach(([key, value]) => {
+    Object.entri/**
+ * Handles reset
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handlereset result
+ *
+ */
+es(pendingValues).forEach(([key, value]) => {
       onChange(key, value);
     });
     onApply(pendingValues);
@@ -132,11 +150,27 @@ export function UnifiedFilterSidebar({
 
   const hasPendingChanges = useMemo(() => {
     const currentKeys = new Set([
-      ...Object.keys(values),
+      ...Object.keys(values)/**
+ * Checks if has active filters
+ *
+ * @param {any} pendingValues - The pendingvalues
+ *
+ * @returns {any} The hasactivefilters result
+ *
+ */
+,
       ...Object.keys(pendingValues),
     ]);
     for (const key of currentKeys) {
-      if (JSON.stringify(values[key]) !== JSON.stringify(pendingValues[key])) {
+      if (JSON.stringify(values[key]) !== JSON.stringify(pendingValues[ke/**
+ * Performs highlight text operation
+ *
+ * @param {string} (text - The (text
+ *
+ * @returns {any} The highlighttext result
+ *
+ */
+y])) {
         return true;
       }
     }
@@ -151,11 +185,29 @@ export function UnifiedFilterSidebar({
   });
 
   const highlightText = useCallback(
-    (text: string) => {
+    (text: stri/**
+ * Handles checkbox change
+ *
+ * @param {string} (key - The (key
+ * @param {string | number} optionValue - The optionvalue
+ * @param {boolean} checked - The checked
+ *
+ * @returns {any} The handlecheckboxchange result
+ *
+ */
+ng) => {
       if (!searchQuery || !searchable) return text;
       const parts = text.split(new RegExp(`(${searchQuery})`, "gi"));
       return parts.map((part, index) =>
-        part.toLowerCase() === searchQuery.toLowerCase() ? (
+        par/**
+ * Renders field
+ *
+ * @param {FilterField & { _highlighted?} [(field] - The (field
+ *
+ * @returns {any} The renderfield result
+ *
+ */
+t.toLowerCase() === searchQuery.toLowerCase() ? (
           <mark
             key={index}
             className="bg-yellow-200 dark:bg-yellow-600 text-gray-900 dark:text-white font-medium px-0.5"
@@ -371,11 +423,27 @@ export function UnifiedFilterSidebar({
                 <input
                   type="number"
                   value={value?.max || ""}
-                  onChange={(e) =>
+  /**
+ * Performs filtered sections operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The filteredsections result
+ *
+ */
+                onChange={(e) =>
                     handlePendingChange(field.key, {
                       ...value,
                       /** Max */
-                      max: e.target.value,
+    /**
+ * Performs filtered fields operation
+ *
+ * @param {any} (field - The (field
+ *
+ * @returns {any} The filteredfields result
+ *
+ */
+                  max: e.target.value,
                     })
                   }
                   placeholder="Max"

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -22,7 +23,13 @@ import { AlertCircle, Clock, Eye, Heart } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect } from "react";
 
-export default function WatchlistPage() {
+export default /**
+ * Performs watchlist page operation
+ *
+ * @returns {any} The watchlistpage result
+ *
+ */
+function WatchlistPage() {
   const { user } = useAuth();
   const {
     /** Data */
@@ -36,7 +43,15 @@ export default function WatchlistPage() {
     retry,
   } = useLoadingState<AuctionCardFE[]>({ initialData: [] });
 
-  const loadWatchlist = useCallback(async () => {
+  /**
+ * Performs load watchlist operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadwatchlist result
+ *
+ */
+const loadWatchlist = useCallback(async () => {
     const data = await auctionsService.getWatchlist();
     return data || [];
   }, []);
@@ -86,6 +101,14 @@ export default function WatchlistPage() {
        * Updates existing updated auctions
        *
        * @param {any} auctions || []).filter(
+/**
+ * Updates d auctions
+ *
+ * @param {any} auctions||[] - The auctions||[]
+ *
+ * @returns {any} The updatedauctions result
+ *
+ */
         (auction - The auctions || []).filter(
         (auction
        *

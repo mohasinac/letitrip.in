@@ -4,7 +4,8 @@
  * @description This file contains the CouponForm component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -39,6 +40,13 @@ interface CouponFormProps {
   isSubmitting?: boolean;
 }
 
+/**
+ * COUPON_TYPES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for coupon types
+ */
 const COUPON_TYPES: {
   /** Value */
   value: CouponType;
@@ -109,7 +117,27 @@ const APPLICABILITY_OPTIONS = [
   },
 ];
 
-export default function CouponForm({
+export default /**
+ * Performs coupon form operation
+ *
+ * @param {CouponFormProps} [{
+  mode,
+  initialData,
+  shopId,
+  onSubmit,
+  isSubmitting = false,
+}] - The {
+  mode,
+  initialdata,
+  shopid,
+  onsubmit,
+  issubmitting = false,
+}
+ *
+ * @returns {any} The couponform result
+ *
+ */
+function CouponForm({
   mode,
   initialData,
   shopId,
@@ -205,7 +233,16 @@ export default function CouponForm({
     setCodeError("");
 
     try {
-      const data = await couponsService.validateCode(code, formData.shopId);
+      /**
+ * Performs data operation
+ *
+ * @param {any} code - The code
+ * @param {any} formData.shopId - The formdata.shopid
+ *
+ * @returns {any} The data result
+ *
+ */
+const data = await couponsService.validateCode(code, formData.shopId);
 
       if (!data.available) {
         setCodeError("This coupon code is already in use");

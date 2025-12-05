@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -47,7 +48,15 @@ export async function GET(request: NextRequest) {
     async () => {
       try {
         const snapshot = await Collections.categories().limit(1000).get();
-        const nodes = snapshot.docs.map((d) => {
+        /**
+ * Performs nodes operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The nodes result
+ *
+ */
+const nodes = snapshot.docs.map((d) => {
           const catData: any = d.data();
           return {
             /** Id */
@@ -77,7 +86,15 @@ export async function GET(request: NextRequest) {
             /** Commission Rate */
             commissionRate: catData.commission_rate || 0,
             /** Created At */
-            createdAt: catData.created_at,
+            createdAt: catData.created_at/**
+ * Performs by id operation
+ *
+ * @param {any} (n - The (n
+ *
+ * @returns {any} The byid result
+ *
+ */
+,
             /** Updated At */
             updatedAt: catData.updated_at,
           };

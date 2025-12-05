@@ -4,7 +4,8 @@
  * @description This file contains functionality related to auction.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -536,6 +537,16 @@ export function toFEAuctionCard(auctionBE: AuctionListItemBE): AuctionCardFE {
   formData);
  */
 
+/**
+ * Performs to b e create auction request operation
+ *
+ * @param {any} formData - The formdata
+ *
+ * @returns {CreateAuctionRequestBE} The tobecreateauctionrequest result
+ *
+ * @example
+ * toBECreateAuctionRequest(formData);
+ */
 export function toBECreateAuctionRequest(
   /** Form Data */
   formData: any
@@ -579,7 +590,17 @@ export function toBECreateAuctionRequest(
  */
 
 /**
+ * Performs to b e place bid reque/**
  * Performs to b e place bid request operation
+ *
+ * @param {PlaceBidFormFE} formData - The formdata
+ *
+ * @returns {PlaceBidRequestBE} The tobeplacebidrequest result
+ *
+ * @example
+ * toBEPlaceBidRequest(formData);
+ */
+st operation
  *
  * @param {PlaceBidFormFE} /** Form Data */
   formData - The /**  form  data */
@@ -643,7 +664,17 @@ export function toFEAuctions(
  * Function: To F E Auction Cards
  */
 /**
+ * Performs to f e auction cards ope/**
  * Performs to f e auction cards operation
+ *
+ * @param {AuctionListItemBE[]} auctionsBE - The auctionsbe
+ *
+ * @returns {AuctionCardFE[]} The tofeauctioncards result
+ *
+ * @example
+ * toFEAuctionCards([]);
+ */
+ration
  *
  * @param {AuctionListItemBE[]} auctionsBE - The auctions b e
  *

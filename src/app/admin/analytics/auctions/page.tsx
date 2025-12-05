@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -71,7 +72,16 @@ function AuctionStatusChart({
   /** Data */
   data: { status: string; count: number; color: string }[];
 }) {
-  const total = data.reduce((sum, item) => sum + item.count, 0);
+  /**
+ * Performs total operation
+ *
+ * @param {any} (sum - The (sum
+ * @param {any} item - The item
+ *
+ * @returns {any} The total result
+ *
+ */
+const total = data.reduce((sum, item) => sum + item.count, 0);
   const maxCount = Math.max(...data.map((d) => d.count));
 
   return (
@@ -145,7 +155,15 @@ function BiddingActivityChart({ loading }: { loading: boolean }) {
     { hour: "00:00", bids: 45 },
     { hour: "04:00", bids: 23 },
     { hour: "08:00", bids: 156 },
-    { hour: "12:00", bids: 234 },
+    { /**
+ * Performs max bids operation
+ *
+ * @param {any} ...mockData.map((d - The ...mockdata.map((d
+ *
+ * @returns {any} The maxbids result
+ *
+ */
+hour: "12:00", bids: 234 },
     { hour: "16:00", bids: 312 },
     { hour: "20:00", bids: 287 },
     { hour: "24:00", bids: 198 },
@@ -472,7 +490,13 @@ function CategoryPerformance() {
   );
 }
 
-export default function AdminAuctionsAnalyticsPage() {
+export default /**
+ * Performs admin auctions analytics page operation
+ *
+ * @returns {any} The adminauctionsanalyticspage result
+ *
+ */
+function AdminAuctionsAnalyticsPage() {
   const [period, setPeriod] = useState("month");
   const {
     /** Is Loading */
@@ -511,7 +535,15 @@ export default function AdminAuctionsAnalyticsPage() {
     /** Success Growth */
     successGrowth: 2.3,
     /** Bids Growth */
-    bidsGrowth: 15.8,
+    bidsG/**
+ * Performs load data operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The loaddata result
+ *
+ */
+rowth: 15.8,
   };
 
   const statusData = [

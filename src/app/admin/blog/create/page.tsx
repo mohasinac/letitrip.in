@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -36,6 +37,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * STEPS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for steps
+ */
 const STEPS = [
   {
     /** Id */
@@ -52,7 +60,13 @@ const STEPS = [
   { id: 4, name: "Category & Tags", icon: Tag, description: "Organization" },
 ];
 
-export default function CreateBlogPostPage() {
+export default /**
+ * Creates blog post page
+ *
+ * @returns {any} The createblogpostpage result
+ *
+ */
+function CreateBlogPostPage() {
   const router = useRouter();
   const { isAdmin } = useAuth();
   const { execute } = useLoadingState({
@@ -140,7 +154,15 @@ export default function CreateBlogPostPage() {
    */
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    /**
+ * Performs file operation
+ *
+ * @param {any} !file - The !file
+ *
+ * @returns {any} The file result
+ *
+ */
+const file = e.target.files?.[0];
     if (!file) return;
 
     // Validate file

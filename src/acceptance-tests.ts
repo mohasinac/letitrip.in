@@ -4,7 +4,8 @@
  * @description This file contains functionality related to acceptance-tests
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -16,6 +17,15 @@ import { describe, it } from "node:test";
 import assert from "node:assert";
 
 // Mock services for acceptance testing
+/**
+ * Performs mock auth service operation
+ *
+ * @param {string} email - The email
+ * @param {string} password - The password
+ *
+ * @returns {Promise<any>} The mockauthservice result
+ *
+ */
 const mockAuthService = {
   /** Sign Up */
   signUp: async (email: string, password: string) => {
@@ -25,7 +35,15 @@ const mockAuthService = {
     return { uid: "user123", email };
   },
   /** Sign In */
-  signIn: async (email: string, password: string) => {
+  signIn: async (email: string, password: string) => /**
+ * Performs mock product service operation
+ *
+ * @param {any} productData - The productdata
+ *
+ * @returns {Promise<any>} The mockproductservice result
+ *
+ */
+{
     if (!email || !password) {
       throw new Error("Email and password are required");
     }
@@ -55,7 +73,15 @@ const mockProductService = {
       id: "prod1",
       /** Name */
       name: "Test Product",
-      /** Price */
+   /**
+ * Performs mock auction service operation
+ *
+ * @param {any} auctionData - The auctiondata
+ *
+ * @returns {Promise<any>} The mockauctionservice result
+ *
+ */
+   /** Price */
       price: 100,
       /** Status */
       status: "active",
@@ -84,7 +110,17 @@ const mockAuctionService = {
   /** Place Bid */
   placeBid: async (auctionId: string, bidAmount: number, userId: string) => {
     if (bidAmount <= 0) {
-      throw new Error("Bid amount must be positive");
+      throw new Error("Bid am/**
+ * Performs mock cart service operation
+ *
+ * @param {string} productId - The productid
+ * @param {string} userId - The userid
+ * @param {number} quantity - The quantity
+ *
+ * @returns {Promise<any>} The mockcartservice result
+ *
+ */
+ount must be positive");
     }
     return {
       /** Id */
@@ -138,7 +174,16 @@ const mockCartService = {
   }),
 };
 
-describe("Auction Platform - Acceptance Tests", () => {
+describe("Auction Platform - Acceptance Tests", () /**
+ * Performs signed in user operation
+ *
+ * @param {any} userData.email - The userdata.email
+ * @param {any} userData.password - The userdata.password
+ *
+ * @returns {Promise<any>} The signedinuser result
+ *
+ */
+=> {
   describe("User Registration & Authentication", () => {
     it("should allow new user to register and sign in", async () => {
       // Given: A new user wants to register
@@ -184,7 +229,13 @@ describe("Auction Platform - Acceptance Tests", () => {
 
   describe("Product Management", () => {
     it("should allow seller to create and manage products", async () => {
-      // Given: A seller with product data
+      ///**
+ * Performs products operation
+ *
+ * @returns {Promise<any>} The products result
+ *
+ */
+ Given: A seller with product data
       const productData = {
         /** Name */
         name: "Wireless Headphones",
@@ -206,7 +257,15 @@ describe("Auction Platform - Acceptance Tests", () => {
       const createdProduct =
         await mockProductService.createProduct(productData);
 
-      // Then: Product should be created with correct data
+      // Then: Product should be c/**
+ * Performs filtered products operation
+ *
+ * @param {any} filters - The filters
+ *
+ * @returns {any} The filteredproducts result
+ *
+ */
+reated with correct data
       assert(createdProduct.id, "Product should have an ID");
       assert.strictEqual(createdProduct.name, productData.name);
       assert.strictEqual(createdProduct.price, productData.price);
@@ -234,7 +293,17 @@ describe("Auction Platform - Acceptance Tests", () => {
       // When: User searches with filters
       const filteredProducts = await mockProductService.getProducts(filters);
 
-      // Then: Only matching products should be returned
+      // Then/**
+ * Performs bid operation
+ *
+ * @param {any} createdAuction.id - The createdauction.id
+ * @param {any} bidAmount - The bidamount
+ * @param {any} "user123" - The "user123"
+ *
+ * @returns {Promise<any>} The bid result
+ *
+ */
+: Only matching products should be returned
       filteredProducts.forEach((product) => {
         assert.strictEqual(product.category, filters.category);
         assert(product.price >= filters.minPrice);
@@ -269,13 +338,29 @@ describe("Auction Platform - Acceptance Tests", () => {
 
       // And: Users should be able to place bids
       const bidAmount = 150;
-      const bid = await mockAuctionService.placeBid(
+      const bid = await mockAuctionService.pla/**
+ * Performs cart item operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The cartitem result
+ *
+ */
+ceBid(
         createdAuction.id,
         bidAmount,
         "user123",
       );
 
-      assert.strictEqual(bid.auctionId, createdAuction.id);
+      assert.stri/**
+ * Performs order operation
+ *
+ * @param {any} cart.id - The cart.id
+ *
+ * @returns {Promise<any>} The order result
+ *
+ */
+ctEqual(bid.auctionId, createdAuction.id);
       assert.strictEqual(bid.amount, bidAmount);
       assert.strictEqual(bid.userId, "user123");
       assert(bid.timestamp, "Bid should have timestamp");
@@ -283,7 +368,16 @@ describe("Auction Platform - Acceptance Tests", () => {
 
     it("should show active auctions to users", async () => {
       // When: User views active auctions
-      const activeAuctions = await mockAuctionService.getActiveAuctions();
+      const activeAuctions = await mockAuctionService.getActi/**
+ * Performs expected total operation
+ *
+ * @param {any} (total - The (total
+ * @param {any} item - The item
+ *
+ * @returns {any} The expectedtotal result
+ *
+ */
+veAuctions();
 
       // Then: Only active auctions should be shown
       activeAuctions.forEach((auction) => {
@@ -312,7 +406,13 @@ describe("Auction Platform - Acceptance Tests", () => {
 
       // Then: Item should be in cart
       assert(cart.id, "Cart should have an ID");
-      assert(cart.items.length > 0, "Cart should have items");
+      assert(cart.items.length > 0, "Cart should have ite/**
+ * Performs logout result operation
+ *
+ * @returns {Promise<any>} The logoutresult result
+ *
+ */
+ms");
       const cartItem = cart.items.find((item) => item.productId === productId);
       assert(cartItem, "Product should be in cart");
       assert.strictEqual(cartItem.quantity, quantity);
@@ -344,7 +444,13 @@ describe("Auction Platform - Acceptance Tests", () => {
 
   describe("End-to-End User Journey", () => {
     it("should support complete user journey from registration to purchase", async () => {
-      // Step 1: User registers
+ /**
+ * Performs logout result operation
+ *
+ * @returns {any} The logoutresult result
+ *
+ */
+     // Step 1: User registers
       const user = await mockAuthService.signUp(
         "buyer@example.com",
         "Pass123!",

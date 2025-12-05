@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -12,6 +13,13 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextResponse } from "next/server";
 
+/**
+ * PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for prefix
+ */
 const PREFIX = "TEST_";
 
 /**
@@ -120,7 +128,13 @@ export async function POST() {
           break;
         }
 
-        const batch = db.batch();
+        /**
+ * Performs batch operation
+ *
+ * @returns {any} The batch result
+ *
+ */
+const batch = db.batch();
         snapshot.docs.forEach((doc) => {
           batch.delete(doc.ref);
         });
@@ -253,7 +267,15 @@ export async function POST() {
     // Categories - independent
     await deleteCollection(COLLECTIONS.CATEGORIES, "name", "categories");
 
-    // Users - should be deleted last
+    // Users - should be deleted l/**
+ * Performs total deleted operation
+ *
+ * @param {any} stats - The stats
+ *
+ * @returns {any} The totaldeleted result
+ *
+ */
+ast
     await deleteCollection(COLLECTIONS.USERS, "email", "users");
 
     const totalDeleted = Object.values(stats).reduce(

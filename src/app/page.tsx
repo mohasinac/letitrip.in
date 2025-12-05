@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -30,7 +31,13 @@ import { useIsMobile } from "@/hooks/useMobile";
  * @example
  * const result = Home();
  */
-export default function Home() {
+export default /**
+ * Performs home operation
+ *
+ * @returns {any} The home result
+ *
+ */
+function Home() {
   const isMobile = useIsMobile();
 
   return (

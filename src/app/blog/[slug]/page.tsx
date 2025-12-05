@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -61,7 +62,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function BlogPostPage({ params }: Props) {
+export default /**
+ * Performs blog post page operation
+ *
+ * @param {Props} { params } - The { params }
+ *
+ * @returns {Promise<any>} The blogpostpage result
+ *
+ */
+async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   return <BlogPostClient slug={slug} />;
 }

@@ -4,7 +4,8 @@
  * @description This file contains the StatsCard component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -209,6 +210,28 @@ const columnClasses: Record<number, string> = {
   columns);
  */
 
+/**
+ * Performs stats card grid operation
+ *
+ * @param {StatsCardGridProps} [{
+  children,
+  columns = 4,
+  className = "",
+}] - The {
+  children,
+  columns = 4,
+  classname = "",
+}
+ *
+ * @returns {any} The statscardgrid result
+ *
+ * @example
+ * StatsCardGrid({
+  children,
+  columns = 4,
+  className = "",
+});
+ */
 export function StatsCardGrid({
   children,
   columns = 4,

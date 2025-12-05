@@ -4,7 +4,8 @@
  * @description This file contains the ErrorState component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -30,7 +31,25 @@ interface ErrorStateProps {
   className?: string;
 }
 
-export default function ErrorState({
+export default /**
+ * Performs error state operation
+ *
+ * @param {ErrorStateProps} [{
+  message = "Something went wrong",
+  onRetry,
+  type = "error",
+  className = "",
+}] - The {
+  message = "something went wrong",
+  onretry,
+  type = "error",
+  classname = "",
+}
+ *
+ * @returns {any} The errorstate result
+ *
+ */
+function ErrorState({
   message = "Something went wrong",
   onRetry,
   type = "error",

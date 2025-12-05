@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -49,6 +50,17 @@ import { getCurrentUser } from "../../../lib/session";
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: NextRequest,
@@ -89,13 +101,37 @@ export async function GET(
     const productsSnap = await Collections.products()
       .where("shop_id", "==", shop.id)
       .get();
-    const allProducts = productsSnap.docs.map((d) => ({
+    /**
+ * Performs all products operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The allproducts result
+ *
+ */
+const allProducts = productsSnap.docs.map((d) => ({
       /** Id */
-      id: d.id,
+      id:/**
+ * Performs products operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The products result
+ *
+ */
+ d.id,
       ...d.data(),
     }));
     // Filter out deleted products (is_deleted !== true to include undefined)
-    const products = allProducts.filter((p: any) => p.is_deleted !== true);
+    const products = allProducts.filter((p: any)/**
+ * Performs orders operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The orders result
+ *
+ */
+ => p.is_deleted !== true);
     const productCount = products.length;
 
     // Orders and revenue (delivered / confirmed)
@@ -105,13 +141,30 @@ export async function GET(
     const orders = ordersSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
     const orderCount = orders.length;
     const revenue = orders
-      .filter((o: any) =>
+      .filte/**
+ * Performs avg rating operation
+ *
+ * @param {any} (s - The (s
+ * @param {any} d - The d
+ *
+ * @returns {any} The avgrating result
+ *
+ */
+r((o: any) =>
         ["delivered", "confirmed", "processing", "shipped"].includes(o.status),
       )
       .reduce((sum: number, o: any) => sum + (o.amount || 0), 0);
 
     // Reviews
-    const reviewsSnap = await Collections.reviews()
+    const /**
+ * Performs low stock operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The lowstock result
+ *
+ */
+reviewsSnap = await Collections.reviews()
       .where("shop_id", "==", shop.id)
       .get();
     const reviewCount = reviewsSnap.size;
@@ -137,7 +190,15 @@ export async function GET(
     const startDate = new Date(Date.now() - 13 * 86400000);
     const startIso = safeToISOString(startDate) ?? new Date().toISOString();
     const recentOrdersSnap = await Collections.orders()
-      .where("shop_id", "==", shop.id)
+   /**
+ * Performs daily sales operation
+ *
+ * @param {object} { length - The { length
+ *
+ * @returns {any} The dailysales result
+ *
+ */
+   .where("shop_id", "==", shop.id)
       .where("created_at", ">=", startIso)
       .get();
     const dailyMap: Record<string, number> = {};

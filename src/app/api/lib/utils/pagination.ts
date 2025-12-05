@@ -4,7 +4,8 @@
  * @description This file contains functionality related to pagination
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -21,7 +22,9 @@ import { Query, DocumentSnapshot } from "firebase-admin/firestore";
 export interface PaginationConfig {
   /** Limit */
   limit?: number;
+  /** StartAfter */
   startAfter?: string; // Document ID for cursor-based pagination
+  /** Page */
   page?: number; // For offset-based pagination
   /** Default Limit */
   defaultLimit?: number;
@@ -289,7 +292,18 @@ export async function applyOffsetPagination(
   const docs = snapshot.docs;
 
   const hasNextPage = docs.length > limit;
-  const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
+  /**
+ * Performs result docs operation
+ *
+ * @param {any} 0 - The 0
+ * @param {any} limit - The limit
+ *
+ * @returns {CursorPaginationMeta} The resultdocs result
+ *
+ * @example
+ * resultDocs(0, limit);
+ */
+const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
 
   return {
     /** Docs */
@@ -529,7 +543,17 @@ export async function executeCursorPaginatedQuery<T>(
   /** Max Limit */
   maxLimit: number = 100,
 ): Promise<PaginatedResponse<T>> {
-  const config = parsePaginationParams(searchParams, defaultLimit, maxLimit);
+  c/**
+ * Performs data operation
+ *
+ * @param {any} transformDoc - The transformdoc
+ *
+ * @returns {Promise<any>} The data result
+ *
+ * @example
+ * data(transformDoc);
+ */
+onst config = parsePaginationParams(searchParams, defaultLimit, maxLimit);
 
   const { docs, hasNextPage, nextCursor } = await applyCursorPagination(
     query,

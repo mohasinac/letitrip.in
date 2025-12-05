@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -13,6 +14,13 @@ import { createPaginationMeta } from "@/app/api/lib/sieve/firestore";
 import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * COLLECTION constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for collection
+ */
 const COLLECTION = "blog_posts";
 
 // Extended Sieve config with field mappings for blog posts
@@ -198,7 +206,15 @@ export async function GET(req: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const data = snapshot.docs.map((doc) =>
+    /**
+ * Performs data operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The data result
+ *
+ */
+const data = snapshot.docs.map((doc) =>
       transformBlogPost(doc.id, doc.data())
     );
 

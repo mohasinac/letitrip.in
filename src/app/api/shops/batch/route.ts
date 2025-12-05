@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -68,7 +69,15 @@ export async function POST(request: NextRequest) {
 
     for (const chunk of chunks) {
       // Try direct document access first (slug as ID)
-      const docPromises = chunk.map(async (id) => {
+      /**
+ * Performs doc promises operation
+ *
+ * @param {any} async(id - The async(id
+ *
+ * @returns {Promise<any>} The docpromises result
+ *
+ */
+const docPromises = chunk.map(async (id) => {
         const doc = await Collections.shops().doc(id).get();
         if (doc.exists) {
           return { id: doc.id, ...doc.data() };
@@ -77,12 +86,34 @@ export async function POST(request: NextRequest) {
       });
 
       const docs = await Promise.all(docPromises);
+/**
+ * Performs found ids operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The foundids result
+ *
+ */
       const foundShops = docs.filter(Boolean);
-      shops.push(...foundShops);
+      s/**
+ * Performs legacy query operation
+ *
+ * @returns {any} The legacyquery result
+ *
+ */
+hops.push(...foundShops);
 
       // For any not found by ID, try legacy query
       const foundIds = foundShops.map((s: any) => s.id);
-      const missingIds = chunk.filter((id) => !foundIds.includes(id));
+      const missingIds = chunk.filter((id) => !foundIds.includes(/**
+ * Performs ordered shops operation
+ *
+ * @param {any} (id - The (id
+ *
+ * @returns {any} The orderedshops result
+ *
+ */
+id));
 
       if (missingIds.length > 0) {
         const legacyQuery = await Collections.shops()

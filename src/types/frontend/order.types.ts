@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for order
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -55,6 +56,7 @@ export interface OrderItemFE {
   total: number;
 
   // Formatted
+  /** FormattedPrice */
   formattedPrice: string; // "₹1,999"
   /** Formatted Subtotal */
   formattedSubtotal: string;
@@ -62,8 +64,11 @@ export interface OrderItemFE {
   formattedTotal: string;
 
   // Backwards compatibility (admin pages)
+  /** Variant */
   variant?: string | null; // Alias for variantName
+  /** ShopId */
   shopId?: string | null; // For admin pages
+  /** ShopName */
   shopName?: string | null; // For admin pages
 }
 
@@ -93,14 +98,21 @@ export interface ShippingAddressFE {
   isDefault: boolean;
 
   // Formatted
+  /** FormattedAddress */
   formattedAddress: string; // Full address as single string
+  /** ShortAddress */
   shortAddress: string; // City, State
 
   // Backwards compatibility (admin pages)
+  /** Name */
   name?: string; // Alias for fullName
+  /** Phone */
   phone?: string; // Alias for phoneNumber
+  /** Line1 */
   line1?: string; // Alias for addressLine1
+  /** Line2 */
   line2?: string | null; // Alias for addressLine2
+  /** Pincode */
   pincode?: string; // Alias for postalCode
 }
 
@@ -148,6 +160,7 @@ export interface OrderFE {
   total: number;
 
   // Formatted pricing
+  /** FormattedSubtotal */
   formattedSubtotal: string; // "₹4,500"
   /** Formatted Discount */
   formattedDiscount: string;
@@ -251,12 +264,17 @@ export interface OrderFE {
   updatedAt: Date;
 
   // Formatted dates
+  /** OrderDate */
   orderDate: string; // "Nov 13, 2025"
+  /** OrderTime */
   orderTime: string; // "2:30 PM"
+  /** EstimatedDeliveryDisplay */
   estimatedDeliveryDisplay: string; // "Expected by Nov 20"
+  /** DeliveryStatus */
   deliveryStatus: string; // "Delivered on Nov 18" or "In transit"
 
   // Progress
+  /** ProgressPercentage */
   progressPercentage: number; // 0-100
   /** Progress Steps */
   progressSteps: OrderProgressStep[];
@@ -264,6 +282,7 @@ export interface OrderFE {
   currentStep: number;
 
   // Badges
+  /** Badges */
   badges: string[]; // ["Express", "COD", "Cancelled", etc.]
 
   // Metadata
@@ -271,10 +290,15 @@ export interface OrderFE {
   metadata?: Record<string, any>;
 
   // Backwards compatibility (admin pages)
+  /** CustomerId */
   customerId?: string; // Use userId
+  /** BillingAddress */
   billingAddress?: ShippingAddressFE | null; // Admin pages may need this
+  /** ShippingProvider */
   shippingProvider?: string | null; // For shipment display
+  /** InternalNotes */
   internalNotes?: string | null; // Alias for adminNotes
+  /** Shipping */
   shipping?: number; // Alias for shippingCost
 }
 
@@ -329,8 +353,11 @@ export interface OrderCardFE {
     /** Phone */
     phone: string;
   };
+  /** CreatedAt */
   createdAt?: string; // Alias for orderDate
+  /** Items */
   items?: any[]; // For item count display
+  /** PaymentMethod */
   paymentMethod?: string; // For display
 }
 
@@ -451,6 +478,7 @@ export interface OrderStatsFE {
   ordersThisWeek: number;
   /** Orders This Month */
   ordersThisMonth: number;
+  /** GrowthRate */
   growthRate: string; // "+12% from last month"
 }
 

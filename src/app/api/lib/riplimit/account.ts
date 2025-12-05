@@ -4,7 +4,8 @@
  * @description This file contains functionality related to account
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -55,6 +56,16 @@ import { FieldValue } from "firebase-admin/firestore";
  * getOrCreateAccount("example");
  */
 
+/**
+ * Retrieves or create account
+ *
+ * @param {string} userId - The userid
+ *
+ * @returns {Promise<RipLimitAccountBE>} The getorcreateaccount result
+ *
+ * @example
+ * getOrCreateAccount("example");
+ */
 export async function getOrCreateAccount(
   /** User Id */
   userId: string,
@@ -117,7 +128,17 @@ export async function getOrCreateAccount(
  *
  * @param {string} /** User Id */
   userId - /** User Id */
-  user identifier
+  us/**
+ * Retrieves blocked bids
+ *
+ * @param {string} userId - The userid
+ *
+ * @returns {Promise<RipLimitBlockedBidBE[]>} The getblockedbids result
+ *
+ * @example
+ * getBlockedBids("example");
+ */
+er identifier
  *
  * @returns {Promise<any>} Promise resolving to blockedbids result
  *
@@ -137,7 +158,13 @@ export async function getBlockedBids(
     .doc(userId)
     .collection(SUBCOLLECTIONS.RIPLIMIT_BLOCKED_BIDS);
 
-  const snapshot = await blockedBidsRef.get();
+  /**
+ * Performs snapshot operation
+ *
+ * @returns {any} The snapshot result
+ *
+ */
+const snapshot = await blockedBidsRef.get();
   return snapshot.docs.map((doc) => ({
     /** Auction Id */
     auctionId: doc.id,
@@ -205,7 +232,15 @@ export async function getBalanceDetails(userId: string): Promise<{
     bidAmountINR: number;
   }>;
 }> {
-  const account = await getOrCreateAccount(userId);
+  const account = await get/**
+ * Performs total balance operation
+ *
+ * @param {any} account.availableBalance - The account.availablebalance
+ *
+ * @returns {any} The totalbalance result
+ *
+ */
+OrCreateAccount(userId);
   const blockedBids = await getBlockedBids(userId);
 
   const totalBalance = account.availableBalance + account.blockedBalance;
@@ -299,7 +334,17 @@ export async function markAuctionUnpaid(
  *
  * @returns {Promise<any>} Promise resolving to addstrike result
  *
- * @throws {Error} When operation fails or validation errors occur
+ * @throws {E/**
+ * Performs add strike operation
+ *
+ * @param {string} userId - The userid
+ *
+ * @returns {Promise<} The addstrike result
+ *
+ * @example
+ * addStrike("example");
+ */
+rror} When operation fails or validation errors occur
  *
  * @example
  * addStrike("example");
@@ -317,7 +362,15 @@ export async function markAuctionUnpaid(
  * @throws {Error} When operation fails or validation errors occur
  *
  * @example
- * addStrike("example");
+ * addStrike("example");/**
+ * Performs result operation
+ *
+ * @param {any} async(t - The async(t
+ *
+ * @returns {Promise<any>} The result result
+ *
+ */
+
  */
 
 export async function addStrike(

@@ -4,7 +4,8 @@
  * @description This file contains the PasswordReset component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -29,6 +30,7 @@ export interface PasswordResetEmailProps {
   userEmail: string;
   /** Reset Link */
   resetLink: string;
+  /** ExpiresIn */
   expiresIn: number; // minutes
 }
 

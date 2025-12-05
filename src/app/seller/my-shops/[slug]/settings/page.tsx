@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -110,8 +111,11 @@ interface ShippingSettings {
   freeShippingAbove: number | null;
   /** Enabled Regions */
   enabledRegions: string[];
+  /** ProcessingTime */
   processingTime: string; // e.g., "1-2 business days"
+  /** ShippingPartners */
   shippingPartners: string[]; // e.g., ["delhivery", "bluedart"]
+  /** PackageWeight */
   packageWeight: number; // default weight in kg
 }
 
@@ -122,7 +126,9 @@ interface ShippingSettings {
  * @description Defines the structure and contract for PaymentSettings
  */
 interface PaymentSettings {
+  /** EnabledGateways */
   enabledGateways: string[]; // e.g., ["razorpay", "paypal"]
+  /** AcceptedMethods */
   acceptedMethods: string[]; // e.g., ["card", "upi", "netbanking"]
   /** Cod Enabled */
   codEnabled: boolean;
@@ -202,6 +208,13 @@ interface ShopSettings {
 
 // ==================== TAB CONFIG ====================
 
+/**
+ * TABS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for tabs
+ */
 const TABS = [
   { id: "general" as TabId, label: "General", icon: Building },
   { id: "shipping" as TabId, label: "Shipping", icon: Truck },
@@ -211,7 +224,14 @@ const TABS = [
 ];
 
 const BUSINESS_TYPES = [
-  { value: "individual", label: "Individual" },
+  { value: "individual", label: "Individual"/**
+ * STATES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for states
+ */
+ },
   { value: "company", label: "Company" },
   { value: "partnership", label: "Partnership" },
 ];
@@ -248,7 +268,14 @@ const STATES = [
 ];
 
 const SHIPPING_PARTNERS = [
-  { value: "delhivery", label: "Delhivery" },
+  { value: "delhivery", /**
+ * PAYMENT_GATEWAYS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for payment gateways
+ */
+label: "Delhivery" },
   { value: "bluedart", label: "Blue Dart" },
   { value: "dtdc", label: "DTDC" },
   { value: "ecom-express", label: "Ecom Express" },
@@ -258,7 +285,14 @@ const SHIPPING_PARTNERS = [
 const PAYMENT_GATEWAYS = [
   { value: "razorpay", label: "Razorpay" },
   { value: "paypal", label: "PayPal" },
-  { value: "stripe", label: "Stripe" },
+  { value: "stripe", label: "Stripe" },/**
+ * TEAM_ROLES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for team roles
+ */
+
   { value: "payu", label: "PayU" },
   { value: "phonepe", label: "PhonePe" },
   { value: "cashfree", label: "Cashfree" },
@@ -279,7 +313,13 @@ const TEAM_ROLES = [
 
 // ==================== COMPONENT ====================
 
-export default function ShopSettingsPage() {
+export default /**
+ * Performs shop settings page operation
+ *
+ * @returns {any} The shopsettingspage result
+ *
+ */
+function ShopSettingsPage() {
   const router = useRouter();
   const params = useParams();
   const slug = params.slug as string;
@@ -300,7 +340,15 @@ export default function ShopSettingsPage() {
   const { isLoading, error, execute } = useLoadingState<ShopSettings>();
 
   // Load settings
-  const loadSettings = useCallback(async () => {
+  /**
+ * Performs load settings operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadsettings result
+ *
+ */
+const loadSettings = useCallback(async () => {
     try {
       const response = await apiService.get<{ settings: ShopSettings }>(
         `/api/shops/${slug}/settings`
@@ -319,7 +367,15 @@ export default function ShopSettingsPage() {
 
   useEffect(() => {
     execute(loadSettings).then((data) => {
-      if (data) {
+      if (data)/**
+ * Performs save settings operation
+ *
+ * @param {TabId} async(section - The async(section
+ *
+ * @returns {Promise<any>} The savesettings result
+ *
+ */
+ {
         setSettings(data);
       }
     });
@@ -342,7 +398,15 @@ export default function ShopSettingsPage() {
       } catch (err) {
         logError(err as Error, {
           /** Component */
-          component: "ShopSettingsPage.saveSettings",
+    /**
+ * Performs add team member operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The addteammember result
+ *
+ */
+      component: "ShopSettingsPage.saveSettings",
           /** Metadata */
           metadata: { slug, section },
         });
@@ -372,7 +436,15 @@ export default function ShopSettingsPage() {
       toast.success("Team member invited");
       setNewTeamMember({ email: "", role: "staff" });
       // Reload settings
-      const data = await loadSettings();
+      const data = await l/**
+ * Performs remove team member operation
+ *
+ * @param {string} async(memberId - The async(memberid
+ *
+ * @returns {Promise<any>} The removeteammember result
+ *
+ */
+oadSettings();
       if (data) {
         setSettings(data);
       }
@@ -906,7 +978,15 @@ function GeneralSettingsTab({
  * @returns {any} The shippingsettingstab result
  */
 
-function ShippingSettingsTab({
+function ShippingSettingsTab/**
+ * Performs enabled operation
+ *
+ * @param {any} region - The region
+ *
+ * @returns {any} The enabled result
+ *
+ */
+({
   settings,
   onChange,
   onSave,
@@ -934,7 +1014,15 @@ function ShippingSettingsTab({
    *
    * @param {string} region - The region
    *
-   * @returns {string} The toggleregion result
+   * @returns {stri/**
+ * Performs enabled operation
+ *
+ * @param {any} partner - The partner
+ *
+ * @returns {any} The enabled result
+ *
+ */
+ng} The toggleregion result
    */
 
   const toggleRegion = (region: string) => {
@@ -1142,7 +1230,15 @@ function ShippingSettingsTab({
 
 /**
  * Function: Payment Settings Tab
+ *//**
+ * Performs enabled operation
+ *
+ * @param {any} gateway - The gateway
+ *
+ * @returns {any} The enabled result
+ *
  */
+
 /**
  * Performs payment settings tab operation
  *
@@ -1171,7 +1267,15 @@ function PaymentSettingsTab({
   saving: boolean;
 }) {
   /**
-   * Performs toggle gateway operation
+   * Performs toggle /**
+ * Performs enabled operation
+ *
+ * @param {any} method - The method
+ *
+ * @returns {any} The enabled result
+ *
+ */
+gateway operation
    *
    * @param {string} gateway - The gateway
    *

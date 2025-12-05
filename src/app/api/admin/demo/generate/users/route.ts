@@ -4,13 +4,21 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
+/**
+ * DEMO_PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for demo prefix
+ */
 const DEMO_PREFIX = "DEMO_";
 
 const INDIAN_FIRST_NAMES = [
@@ -54,6 +62,13 @@ const INDIAN_FIRST_NAMES = [
   "Sneha",
   "Divya",
   "Tanvi",
+/**
+ * INDIAN_LAST_NAMES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for indian last names
+ */
   "Om",
   "Ved",
   "Yash",
@@ -96,7 +111,14 @@ const INDIAN_CITIES = [
   { city: "Chennai", state: "Tamil Nadu", pincode: "600001" },
   { city: "Kolkata", state: "West Bengal", pincode: "700001" },
   { city: "Pune", state: "Maharashtra", pincode: "411001" },
-  { city: "Ahmedabad", state: "Gujarat", pincode: "380001" },
+  { city: "Ah/**
+ * STREETS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for streets
+ */
+medabad", state: "Gujarat", pincode: "380001" },
   { city: "Hyderabad", state: "Telangana", pincode: "500001" },
   { city: "Jaipur", state: "Rajasthan", pincode: "302001" },
   { city: "Lucknow", state: "Uttar Pradesh", pincode: "226001" },
@@ -118,7 +140,14 @@ const STREETS = [
 // Beyblade-themed display name prefixes for sellers
 const BLADER_PREFIXES = [
   "BladeMaster",
-  "SpinKing",
+  "S/**
+ * AVATAR_IMAGES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for avatar images
+ */
+pinKing",
   "DragonBlader",
   "StormRider",
   "PhoenixBurst",
@@ -193,7 +222,14 @@ const USER_ROLES_BASE = {
  */
 
 /**
- * Performs p o s t operation
+ * Perfor/**
+ * USER_ROLES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for user roles
+ */
+ms p o s t operation
  *
  * @param {Request} request - The request
  *
@@ -353,8 +389,24 @@ export async function POST(request: Request) {
       }
     }
 
-    const sellers = createdUsers.filter((u) => u.role === "seller");
-    const buyers = createdUsers.filter((u) => u.role === "user");
+    /**
+ * Performs sellers operation
+ *
+ * @param {any} (u - The (u
+ *
+ * @returns {any} The sellers result
+ *
+ */
+const sellers = createdUsers.filter((u) => u.role === "seller");
+    const buyers = createdU/**
+ * Performs moderators operation
+ *
+ * @param {any} (u - The (u
+ *
+ * @returns {any} The moderators result
+ *
+ */
+sers.filter((u) => u.role === "user");
     const admins = createdUsers.filter((u) => u.role === "admin");
     const moderators = createdUsers.filter((u) => u.role === "moderator");
     const supportStaff = createdUsers.filter((u) => u.role === "support");

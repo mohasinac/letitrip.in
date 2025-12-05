@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -45,7 +46,13 @@ interface ReturnsData {
   totalReturns: number;
 }
 
-export default function SellerReturnsPage() {
+export default /**
+ * Performs seller returns page operation
+ *
+ * @returns {any} The sellerreturnspage result
+ *
+ */
+function SellerReturnsPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
   const { data, isLoading, execute } = useLoadingState<ReturnsData>({
@@ -91,7 +98,15 @@ export default function SellerReturnsPage() {
   const totalPages = data?.totalPages || 1;
   const totalReturns = data?.totalReturns || 0;
 
-  const loadReturns = useCallback(async () => {
+  /**
+ * Performs load returns operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadreturns result
+ *
+ */
+const loadReturns = useCallback(async () => {
     try {
       const response = await returnsService.list({
         ...filterValues,

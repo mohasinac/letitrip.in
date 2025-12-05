@@ -4,7 +4,8 @@
  * @description This file contains functionality related to admin
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -83,7 +84,15 @@ export async function getAdminStats(): Promise<{
 
   let totalAvailable = 0;
   let totalBlocked = 0;
-  let unpaidUserCount = 0;
+  /**
+ * Performs unpaid user count operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The unpaidusercount result
+ *
+ */
+let unpaidUserCount = 0;
 
   accountsSnapshot.docs.forEach((doc) => {
     const account = doc.data() as RipLimitAccountBE;
@@ -95,13 +104,29 @@ export async function getAdminStats(): Promise<{
   });
 
   // Get purchase totals
-  const purchasesSnapshot = await db
+  const purchasesSnapshot = awai/**
+ * Performs total revenue operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The totalrevenue result
+ *
+ */
+t db
     .collection(COLLECTIONS.RIPLIMIT_PURCHASES)
     .where("status", "==", RipLimitPurchaseStatus.COMPLETED)
     .get();
 
   let totalRevenue = 0;
-  purchasesSnapshot.docs.forEach((doc) => {
+  purchasesSnapshot.docs.forEach((doc) => {/**
+ * Performs total refunded operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The totalrefunded result
+ *
+ */
+
     totalRevenue += (doc.data() as RipLimitPurchaseBE).inrAmount;
   });
 
@@ -200,7 +225,15 @@ export async function adminAdjustBalance(
 /**
  * Performs admin clear unpaid auction operation
  *
- * @returns {Promise<any>} Promise resolving to adminclearunpaidauction result
+ * @returns {Promise<any>} Pro/**
+ * Performs account ref operation
+ *
+ * @param {any} COLLECTIONS.RIPLIMIT_ACCOUNTS - The collections.riplimit_accounts
+ *
+ * @returns {Promise<any>} The accountref result
+ *
+ */
+mise resolving to adminclearunpaidauction result
  *
  * @throws {Error} When operation fails or validation errors occur
  *
@@ -311,6 +344,16 @@ export async function adminClearUnpaidAuction(
  * getAdminUserDetails("example");
  */
 
+/**
+ * Retrieves admin user details
+ *
+ * @param {string} userId - The userid
+ *
+ * @returns {Promise<RipLimitAccountBE | null>} The getadminuserdetails result
+ *
+ * @example
+ * getAdminUserDetails("example");
+ */
 export async function getAdminUserDetails(
   /** User Id */
   userId: string,
@@ -367,7 +410,15 @@ export async function listAllAccounts(
   const db = getFirestoreAdmin();
   let query = db
     .collection(COLLECTIONS.RIPLIMIT_ACCOUNTS)
-    .orderBy("createdAt", "desc");
+    .orderBy("createdAt", "de/**
+ * Performs accounts operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The accounts result
+ *
+ */
+sc");
 
   if (options.filter === "unpaid") {
     query = query.where("hasUnpaidAuctions", "==", true) as typeof query;

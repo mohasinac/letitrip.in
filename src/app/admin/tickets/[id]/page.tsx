@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -47,7 +48,13 @@ const categoryLabels = {
   other: "Other",
 };
 
-export default function AdminTicketDetailsPage() {
+export default /**
+ * Performs admin ticket details page operation
+ *
+ * @returns {any} The adminticketdetailspage result
+ *
+ */
+function AdminTicketDetailsPage() {
   const params = useParams();
   /**
    * Performs ticket id operation
@@ -68,7 +75,15 @@ export default function AdminTicketDetailsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const fetchTicket = useCallback(async () => {
+  /**
+ * Fetches ticket
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The fetchticket result
+ *
+ */
+const fetchTicket = useCallback(async () => {
     await execute(() => supportService.getTicket(ticketId));
   }, [ticketId, execute]);
 

@@ -4,7 +4,8 @@
  * @description This file contains service functions for notification operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -157,7 +158,15 @@ class NotificationService {
     }>(url);
 
     // Transform dates
-    const notifications: NotificationFE[] = response.data.notifications.map(
+    /**
+ * Performs notifications operation
+ *
+ * @param {any} (n - The (n
+ *
+ * @returns {any} The notifications result
+ *
+ */
+const notifications: NotificationFE[] = response.data.notifications.map(
       (n) => ({
         ...n,
         /** Created At */

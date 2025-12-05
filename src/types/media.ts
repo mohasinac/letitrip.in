@@ -4,7 +4,8 @@
  * @description This file contains functionality related to media
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -55,9 +56,11 @@ export interface MediaFile {
   type: MediaType;
   /** Source */
   source: MediaSource;
+  /** Preview */
   preview: string; // Object URL for preview
   /** Upload Status */
   uploadStatus: UploadStatus;
+  /** UploadProgress */
   uploadProgress: number; // 0-100
   /** Error */
   error?: string;
@@ -89,12 +92,17 @@ export interface MediaMetadata {
     /** Height */
     height: number;
   };
+  /** Duration */
   duration?: number; // For videos in seconds
+  /** Size */
   size: number; // File size in bytes
   /** Mime Type */
   mimeType: string;
+  /** Thumbnail */
   thumbnail?: string; // Thumbnail URL for videos
+  /** FocusX */
   focusX?: number; // Focus point X coordinate (0-100, percentage from left)
+  /** FocusY */
   focusY?: number; // Focus point Y coordinate (0-100, percentage from top)
 }
 
@@ -113,6 +121,7 @@ export interface UploadedMedia {
   thumbnailUrl?: string;
   /** Metadata */
   metadata: MediaMetadata;
+  /** StorageRef */
   storageRef: string; // Firebase storage reference path
   /** Created At */
   createdAt: Date;
@@ -136,6 +145,7 @@ export interface EditorState {
     /** Height */
     height: number;
   };
+  /** Rotation */
   rotation: number; // 0, 90, 180, 270
   /** Flip */
   flip: {
@@ -144,15 +154,21 @@ export interface EditorState {
     /** Vertical */
     vertical: boolean;
   };
+  /** Zoom */
   zoom: number; // 1-3
+  /** Brightness */
   brightness: number; // -100 to 100
+  /** Contrast */
   contrast: number; // -100 to 100
+  /** Saturation */
   saturation: number; // -100 to 100
   /** Filter */
   filter?: "none" | "grayscale" | "sepia" | "vintage" | "cold" | "warm";
   /** Focus Point */
   focusPoint?: {
+    /** X */
     x: number; // 0-100 percentage from left
+    /** Y */
     y: number; // 0-100 percentage from top
   };
 }
@@ -181,7 +197,9 @@ export interface CropArea {
  * @description Defines the structure and contract for VideoThumbnail
  */
 export interface VideoThumbnail {
+  /** Timestamp */
   timestamp: number; // Time in seconds
+  /** DataUrl */
   dataUrl: string; // Base64 image data
 }
 
@@ -219,6 +237,7 @@ export interface MediaUploadOptions {
   requireMetadata?: boolean;
   /** Auto Upload */
   autoUpload?: boolean;
+  /** Bucket */
   bucket?: string; // Storage bucket path
 }
 
@@ -241,6 +260,7 @@ export interface MediaGalleryItem {
   metadata: MediaMetadata;
   /** Selected */
   selected?: boolean;
+  /** IsPrimary */
   isPrimary?: boolean; // For product images
   /** Order */
   order?: number;
@@ -275,6 +295,7 @@ export interface CameraOptions {
 export interface VideoRecorderOptions {
   /** Source */
   source: "camera" | "screen";
+  /** MaxDuration */
   maxDuration?: number; // In seconds
   /** Video Bits Per Second */
   videoBitsPerSecond?: number;
@@ -293,6 +314,7 @@ export interface ImageProcessingOptions {
   maxWidth?: number;
   /** Max Height */
   maxHeight?: number;
+  /** Quality */
   quality?: number; // 0-1
   /** Format */
   format?: "jpeg" | "png" | "webp";
@@ -315,5 +337,6 @@ export interface ThumbnailGenerationOptions {
   quality?: number;
   /** Format */
   format?: "jpeg" | "png" | "webp";
+  /** Timestamps */
   timestamps?: number[]; // Generate multiple thumbnails at different times
 }

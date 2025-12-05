@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -25,7 +26,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function CreateHeroSlidePage() {
+export default /**
+ * Creates hero slide page
+ *
+ * @returns {any} The createheroslidepage result
+ *
+ */
+function CreateHeroSlidePage() {
   const router = useRouter();
   const { execute } = useLoadingState({
     /** On Load Error */

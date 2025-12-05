@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -70,7 +71,15 @@ export async function POST(request: NextRequest) {
 
     for (const chunk of chunks) {
       // Try direct document access first (slug as ID)
-      const docPromises = chunk.map(async (id) => {
+      /**
+ * Performs doc promises operation
+ *
+ * @param {any} async(id - The async(id
+ *
+ * @returns {Promise<any>} The docpromises result
+ *
+ */
+const docPromises = chunk.map(async (id) => {
         const doc = await Collections.products().doc(id).get();
         if (doc.exists) {
           return { id: doc.id, ...doc.data() };
@@ -79,15 +88,37 @@ export async function POST(request: NextRequest) {
       });
 
       const docs = await Promise.all(docPromises);
-      const foundProducts = docs.filter(Boolean);
+      con/**
+ * Performs found ids operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The foundids result
+ *
+ */
+st foundProducts = docs.filter(Boolean);
       products.push(...foundProducts);
 
-      // For any not found by ID, try legacy query
+      // For any not fou/**
+ * Performs legacy query operation
+ *
+ * @returns {any} The legacyquery result
+ *
+ */
+nd by ID, try legacy query
       const foundIds = foundProducts.map((p: any) => p.id);
       const missingIds = chunk.filter((id) => !foundIds.includes(id));
 
       if (missingIds.length > 0) {
-        // Try to find by id field or slug field
+        // /**
+ * Performs ordered products operation
+ *
+ * @param {any} (id - The (id
+ *
+ * @returns {any} The orderedproducts result
+ *
+ */
+Try to find by id field or slug field
         const legacyQuery = await Collections.products()
           .where("slug", "in", missingIds)
           .get();

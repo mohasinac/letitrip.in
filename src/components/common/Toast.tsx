@@ -4,7 +4,8 @@
  * @description This file contains the Toast component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -39,7 +40,27 @@ interface ToastProps {
   show: boolean;
 }
 
-export default function Toast({
+export default /**
+ * Performs toast operation
+ *
+ * @param {ToastProps} [{
+  message,
+  type = "info",
+  duration = 3000,
+  onClose,
+  show,
+}] - The {
+  message,
+  type = "info",
+  duration = 3000,
+  onclose,
+  show,
+}
+ *
+ * @returns {any} The toast result
+ *
+ */
+function Toast({
   message,
   type = "info",
   duration = 3000,
@@ -48,7 +69,15 @@ export default function Toast({
 }: ToastProps) {
   useEffect(() => {
     if (show && duration > 0) {
-      const timer = setTimeout(() => {
+      /**
+ * Performs timer operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The timer result
+ *
+ */
+const timer = setTimeout(() => {
         onClose();
       }, duration);
       return () => clearTimeout(timer);

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -14,6 +15,13 @@ import {
   getUserFromRequest,
 } from "@/app/api/middleware/rbac-auth";
 
+/**
+ * HOMEPAGE_SETTINGS_DOC constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for homepage settings doc
+ */
 const HOMEPAGE_SETTINGS_DOC = "homepage_config";
 const SETTINGS_COLLECTION = "site_settings";
 
@@ -110,7 +118,15 @@ interface HomepageSettings {
   };
   /** Section Order */
   sectionOrder: string[];
-  /** Featured Items */
+  /** Featured Items /**
+ * DEFAULT_SETTINGS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for default settings
+ */
+*/
+  /** FeaturedItems */
   featuredItems?: Record<string, FeaturedItem[]>;
   /** Updated At */
   updatedAt: string;

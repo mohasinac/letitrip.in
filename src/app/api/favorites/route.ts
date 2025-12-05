@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -161,14 +162,38 @@ export async function GET(req: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const favorites = snapshot.docs.map((doc) => ({
+    /**
+ * Performs favorites operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The favorites result
+ *
+ */
+const favorites = snapshot.docs.map((doc) => ({
       /** Id */
+/**
+ * Performs product ids operation
+ *
+ * @param {any} (fav - The (fav
+ *
+ * @returns {any} The productids result
+ *
+ */
       id: doc.id,
       ...doc.data(),
     }));
 
     // Get product details for each favorite (batch approach)
-    const productIds = favorites.map((fav: any) => fav.product_id);
+    const productIds = favorites.map((fav: any) => fav.pr/**
+ * Performs favorite operation
+ *
+ * @param {any} (f - The (f
+ *
+ * @returns {any} The favorite result
+ *
+ */
+oduct_id);
     const products = [];
 
     for (const productId of productIds) {

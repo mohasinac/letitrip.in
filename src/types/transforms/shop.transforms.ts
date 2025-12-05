@@ -4,7 +4,8 @@
  * @description This file contains functionality related to shop.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -182,6 +183,16 @@ export function toFEShop(shopBE: ShopBE): ShopFE {
   formData);
  */
 
+/**
+ * Performs to b e create shop request operation
+ *
+ * @param {ShopFormFE} formData - The formdata
+ *
+ * @returns {CreateShopRequestBE} The tobecreateshoprequest result
+ *
+ * @example
+ * toBECreateShopRequest(formData);
+ */
 export function toBECreateShopRequest(
   /** Form Data */
   formData: ShopFormFE,

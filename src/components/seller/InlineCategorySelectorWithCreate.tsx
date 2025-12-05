@@ -4,7 +4,8 @@
  * @description This file contains the InlineCategorySelectorWithCreate component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -31,12 +32,15 @@ interface Category {
   name: string;
   /** Slug */
   slug: string;
+  /** Parent_id */
   parent_id: string | null;
   /** Parent Ids */
   parentIds?: string[];
   /** Level */
   level: number;
+  /** Has_children */
   has_children: boolean;
+  /** Is_active */
   is_active: boolean;
 }
 
@@ -57,7 +61,25 @@ interface InlineCategorySelectorWithCreateProps {
   error?: string;
 }
 
-export default function InlineCategorySelectorWithCreate({
+export default /**
+ * Performs inline category selector with create operation
+ *
+ * @param {InlineCategorySelectorWithCreateProps} [{
+  value,
+  onChange,
+  disabled = false,
+  error,
+}] - The {
+  value,
+  onchange,
+  disabled = false,
+  error,
+}
+ *
+ * @returns {any} The inlinecategoryselectorwithcreate result
+ *
+ */
+function InlineCategorySelectorWithCreate({
   value,
   onChange,
   disabled = false,
@@ -104,7 +126,15 @@ export default function InlineCategorySelectorWithCreate({
       setLoading(true);
       const response = await categoriesService.list({ isActive: true });
       // CategoryFE uses camelCase - filter leaf categories (isLeaf or no children)
-      const leafCategories = response.data
+      /**
+ * Performs leaf categories operation
+ *
+ * @param {any} (cat - The (cat
+ *
+ * @returns {any} The leafcategories result
+ *
+ */
+const leafCategories = response.data
         .filter(
           (cat: any) =>
             cat.isLeaf || (!cat.childrenIds?.length && !cat.hasChildren),
@@ -281,7 +311,15 @@ export default function InlineCategorySelectorWithCreate({
    * @throws {Error} When operation fails or validation errors occur
    */
 
-  const handleCloseCreateDialog = () => {
+  const handleCloseCreateDialog = () => {/**
+ * Performs selected category operation
+ *
+ * @param {any} (cat - The (cat
+ *
+ * @returns {any} The selectedcategory result
+ *
+ */
+
     setShowCreateDialog(false);
     setCreateForm({ name: "", slug: "", description: "" });
     setCreateErrors({});

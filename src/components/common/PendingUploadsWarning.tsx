@@ -4,7 +4,8 @@
  * @description This file contains the PendingUploadsWarning component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -28,10 +29,23 @@ import { useUploadContext } from "@/contexts/UploadContext";
  * @description Defines the structure and contract for PendingUploadsWarningProps
  */
 export interface PendingUploadsWarningProps {
+  /** Enabled */
   enabled?: boolean; // Enable/disable warning
 }
 
-export default function PendingUploadsWarning({
+export default /**
+ * Performs pending uploads warning operation
+ *
+ * @param {PendingUploadsWarningProps} [{
+  enabled = true,
+}] - The {
+  enabled = true,
+}
+ *
+ * @returns {any} The pendinguploadswarning result
+ *
+ */
+function PendingUploadsWarning({
   enabled = true,
 }: PendingUploadsWarningProps) {
   const router = useRouter();

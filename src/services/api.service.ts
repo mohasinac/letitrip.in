@@ -4,7 +4,8 @@
  * @description This file contains service functions for api operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { DEFAULT_CACHE_CONFIG } from "@/config/cache.config";
@@ -35,7 +36,9 @@ interface CacheEntry<T> {
  * @description Defines the structure and contract for CacheConfig
  */
 interface CacheConfig {
+  /** Ttl */
   ttl: number; // Time to live in milliseconds
+  /** StaleWhileRevalidate */
   staleWhileRevalidate?: number; // Additional time to serve stale content
 }
 
@@ -49,6 +52,7 @@ interface CacheConfig {
 interface RetryConfig {
   /** Max Retries */
   maxRetries: number;
+  /** RetryDelay */
   retryDelay: number; // milliseconds
   /** Retryable Statuses */
   retryableStatuses: number[];
@@ -186,7 +190,13 @@ class ApiService {
    * Set data in cache
    */
   private setCachedData<T>(cacheKey: string, data: T, config: CacheConfig) {
-    const now = Date.now();
+    /**
+ * Performs now operation
+ *
+ * @returns {string} The now result
+ *
+ */
+const now = Date.now();
     this.cache.set(cacheKey, {
       data,
       /** Timestamp */
@@ -252,7 +262,15 @@ class ApiService {
   }
 
   /**
-   * Abort all pending requests matching pattern
+   * Abort all pending requests mat/**
+ * Performs count operation
+ *
+ * @param {any} constkeyofthis.abortControllers.keys( - The constkeyofthis.abortcontrollers.keys(
+ *
+ * @returns {Promise<any>} The count result
+ *
+ */
+ching pattern
    */
   abortRequestsMatching(pattern: string): void {
     let count = 0;
@@ -282,7 +300,13 @@ class ApiService {
       const hits = this.cacheHits.get(cacheKey) || 0;
       this.cacheHits.set(cacheKey, hits + 1);
       trackCacheHit(cacheKey, true);
-      return this.pendingRequests.get(cacheKey) as Promise<T>;
+      retur/**
+ * Performs request promise operation
+ *
+ * @returns {any} The requestpromise result
+ *
+ */
+n this.pendingRequests.get(cacheKey) as Promise<T>;
     }
 
     // Track cache miss
@@ -469,7 +493,15 @@ class ApiService {
    */
   getCacheStats(): {
     /** Hits */
-    hits: Record<string, number>;
+ /**
+ * Performs total hits operation
+ *
+ * @param {any} this.cacheHits.values( - The this.cachehits.values(
+ *
+ * @returns {any} The totalhits result
+ *
+ */
+   hits: Record<string, number>;
     /** Misses */
     misses: Record<string, number>;
     /** Hit Rate */
@@ -521,7 +553,15 @@ class ApiService {
     const cacheConfig = this.getCacheConfigForEndpoint(endpoint);
 
     // Check cache first
-    const cached = this.getCachedData<T>(cacheKey, cacheConfig);
+    const cached = this.getCachedData<T>(cacheKey, ca/**
+ * Performs hits operation
+ *
+ * @param {any} cacheKey - The cachekey
+ *
+ * @returns {any} The hits result
+ *
+ */
+cheConfig);
 
     if (cached.status === "fresh") {
       // Return fresh cached data immediately
@@ -550,7 +590,16 @@ class ApiService {
         .then((freshData) => {
           // Update cache with fresh data
           if (cacheConfig) {
-            this.setCachedData(cacheKey, freshData, cacheConfig);
+  /**
+ * Performs data operation
+ *
+ * @param {any} cacheKey - The cachekey
+ * @param {any} ( - The (
+ *
+ * @returns {any} The data result
+ *
+ */
+          this.setCachedData(cacheKey, freshData, cacheConfig);
           }
         })
         .catch((error) => {
@@ -571,7 +620,17 @@ class ApiService {
     this.cacheMisses.set(cacheKey, misses + 1);
     trackCacheHit(cacheKey, false);
 
-    // Deduplicate and fetch
+    // Deduplicate and fet/**
+ * Performs cache key operation
+ *
+ * @param {any} url - The url
+ * @param {any} "POST" - The "post"
+ * @param {any} body - The body
+ *
+ * @returns {any} The cachekey result
+ *
+ */
+ch
     const data = await this.deduplicateRequest(cacheKey, () =>
       this.request<T>(endpoint, {
         ...options,

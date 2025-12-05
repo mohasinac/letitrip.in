@@ -4,7 +4,8 @@
  * @description This file contains functionality related to sieve-middleware
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -25,7 +26,14 @@
  *
  * @example
  * // With custom handler
- * export const GET = withSieve(productsSieveConfig, {
+ * /**
+ * GET constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for get
+ */
+export const GET = withSieve(productsSieveConfig, {
  *   mandatoryFilters: [{ field: 'status', operator: '==', value: 'published' }],
  *   handler: async (request, sieveQuery) => {
  *     // Custom logic before query
@@ -56,23 +64,27 @@ export interface SieveMiddlewareOptions<T = unknown> {
   /**
    * Collection name in Firestore
    */
+  /** Collection */
   collection: string;
 
   /**
    * Mandatory filters always applied to the query
    * These cannot be overridden by client requests
    */
+  /** MandatoryFilters */
   mandatoryFilters?: FilterCondition[];
 
   /**
    * Transform function to apply to each result item
    */
+  /** Transform */
   transform?: (item: any) => T;
 
   /**
    * Custom handler for more complex scenarios
    * If provided, overrides the default query execution
    */
+  /** Handler */
   handler?: (
     /** Request */
     request: NextRequest,
@@ -86,6 +98,7 @@ export interface SieveMiddlewareOptions<T = unknown> {
    * Callback to modify the sieve query before execution
    * Useful for adding dynamic filters based on request context
    */
+  /** BeforeQuery */
   beforeQuery?: (
     /** Request */
     request: NextRequest,
@@ -96,6 +109,7 @@ export interface SieveMiddlewareOptions<T = unknown> {
   /**
    * Callback to modify the response before sending
    */
+  /** AfterQuery */
   afterQuery?: (
     /** Result */
     result: SievePaginatedResponse<any>,
@@ -106,11 +120,13 @@ export interface SieveMiddlewareOptions<T = unknown> {
   /**
    * Whether to require authentication
    */
+  /** RequireAuth */
   requireAuth?: boolean;
 
   /**
    * Required roles for access (only checked if requireAuth is true)
    */
+  /** RequiredRoles */
   requiredRoles?: string[];
 }
 
@@ -146,7 +162,15 @@ export function withSieve<T = unknown>(
   /** Options */
   options: SieveMiddlewareOptions<T>,
 ) {
-  return async function handler(request: NextRequest): Promise<NextResponse> {
+  return /**
+ * Handles r
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<NextResponse>} The handler result
+ *
+ */
+async function handler(request: NextRequest): Promise<NextResponse> {
     try {
       const searchParams = request.nextUrl.searchParams;
 
@@ -367,7 +391,15 @@ export function withProtectedSieve<T = unknown>(
   /** Config */
   config: SieveConfig,
   /** Options */
-  options: SieveMiddlewareOptions<T> & {
+  options: SieveMiddlewareOptions<T/**
+ * Handles r
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<NextResponse>} The handler result
+ *
+ */
+> & {
     /** Get Auth Filter */
     getAuthFilter: (userId: string) => FilterCondition | FilterCondition[];
   },

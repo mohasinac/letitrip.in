@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -30,6 +31,7 @@ import { NextRequest, NextResponse } from "next/server";
 interface RefundPayPalPaymentRequest {
   /** Capture Id */
   captureId: string;
+  /** Amount */
   amount?: number; // Optional for partial refunds
   /** Currency */
   currency?: string;
@@ -50,11 +52,14 @@ interface PayPalRefundResponse {
   status: string;
   /** Amount */
   amount: {
+    /** Currency_code */
     currency_code: string;
     /** Value */
     value: string;
   };
+  /** Create_time */
   create_time: string;
+  /** Update_time */
   update_time: string;
 }
 

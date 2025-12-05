@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -154,7 +155,15 @@ export async function POST(request: NextRequest) {
       .where("user_id", "==", user.id)
       .get();
 
-    const items = await Promise.all(
+    /**
+ * Performs items operation
+ *
+ * @param {any} cartSnapshot.docs.map(async(doc - The cartsnapshot.docs.map(async(doc
+ *
+ * @returns {Promise<any>} The items result
+ *
+ */
+const items = await Promise.all(
       cartSnapshot.docs.map(async (doc: any) => {
         const data = doc.data();
 
@@ -197,7 +206,15 @@ export async function POST(request: NextRequest) {
           shopId: product.shop_id,
           /** Shop Name */
           shopName: shop?.name || "Unknown",
-          /** Is Available */
+          /** Is /**
+ * Performs valid items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The validitems result
+ *
+ */
+Available */
           isAvailable: product.is_active && product.stock_count > 0,
           /** Added At */
           addedAt: data.added_at,
@@ -205,7 +222,19 @@ export async function POST(request: NextRequest) {
       }),
     );
 
-    const validItems = items.filter((item: any) => item !== null);
+    const validItems = it/**
+ * Performs total operation
+ *
+ * @param {object} {
+      
+      success - The {
+      
+      success
+ *
+ * @returns {any} The total result
+ *
+ */
+ems.filter((item: any) => item !== null);
 
     // Calculate totals
     const subtotal = validItems.reduce(

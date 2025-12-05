@@ -4,7 +4,8 @@
  * @description This file contains the SubcategoryGrid component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -105,7 +106,15 @@ export function SubcategoryGrid({
   const [showRightArrow, setShowRightArrow] = useState(false);
 
   // Filter and sort subcategories
-  const filteredSubcategories = subcategories
+  /**
+ * Performs filtered subcategories operation
+ *
+ * @param {any} (cat - The (cat
+ *
+ * @returns {any} The filteredsubcategories result
+ *
+ */
+const filteredSubcategories = subcategories
     .filter((cat) => cat.name.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => {
       if (sortBy === "alphabetical") {
@@ -131,7 +140,15 @@ export function SubcategoryGrid({
   const updateScrollArrows = () => {
     if (!scrollRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setShowLeftArrow(scrollLeft > 0);
+    setShowLeftArrow(sc/**
+ * Performs scroll el operation
+ *
+ * @param {any} scrollEl - The scrollel
+ *
+ * @returns {any} The scrollel result
+ *
+ */
+rollLeft > 0);
     setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
   };
 

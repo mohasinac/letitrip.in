@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -13,6 +14,13 @@ import { logError } from "@/lib/firebase-error-logger";
 import { faker } from "@faker-js/faker";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for prefix
+ */
 const PREFIX = "TEST_";
 
 /**
@@ -51,7 +59,13 @@ export async function POST(req: NextRequest) {
     const users = [];
 
     for (let i = 0; i < count; i++) {
-      const userData = {
+      /**
+ * Custom React hook for r data
+ *
+ * @returns {any} The userdata result
+ *
+ */
+const userData = {
         /** Email */
         email: `${PREFIX}user${i + 1}_${Date.now()}@example.com`,
         /** Name */

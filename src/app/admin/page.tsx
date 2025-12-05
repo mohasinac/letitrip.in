@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -52,7 +53,13 @@ interface DashboardStats {
   pendingOrders: number;
 }
 
-export default function AdminDashboardPage() {
+export default /**
+ * Performs admin dashboard page operation
+ *
+ * @returns {any} The admindashboardpage result
+ *
+ */
+function AdminDashboardPage() {
   const { user, isAdmin } = useAuth();
   const {
     /** Is Loading */

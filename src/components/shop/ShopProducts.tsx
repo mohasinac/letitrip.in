@@ -4,7 +4,8 @@
  * @description This file contains the ShopProducts component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -243,7 +244,15 @@ export function ShopProducts({
         return;
       }
 
-      const product = products.find((p) => p.id === productId);
+      /**
+ * Performs product operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The product result
+ *
+ */
+const product = products.find((p) => p.id === productId);
       if (!product) {
         toast.error("Product not found");
         return;

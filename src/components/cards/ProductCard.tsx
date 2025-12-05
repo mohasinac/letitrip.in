@@ -4,7 +4,8 @@
  * @description This file contains the ProductCard component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -47,7 +48,9 @@ export interface ProductCardProps {
   originalPrice?: number;
   /** Image */
   image: string;
+  /** Images */
   images?: string[]; // Additional images for carousel
+  /** Videos */
   videos?: string[]; // Video URLs
   /** Rating */
   rating?: number;
@@ -186,7 +189,15 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
   const hasVideos = videos && videos.length > 0;
 
   // Get all images (use images array if provided, otherwise use single image)
-  const allImages = React.useMemo(() => {
+  /**
+ * Performs all images operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The allimages result
+ *
+ */
+const allImages = React.useMemo(() => {
     return images.length > 0 ? images : [image];
   }, [image, images]);
 

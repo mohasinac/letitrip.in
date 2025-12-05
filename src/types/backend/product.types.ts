@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for product
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -41,6 +42,7 @@ export interface ProductBE extends BaseEntity {
   // Categorization
   /** Category Id */
   categoryId: string;
+  /** CategoryIds */
   categoryIds?: string[]; // Multi-category support
   /** Brand */
   brand?: string;
@@ -146,7 +148,9 @@ export interface ProductBE extends BaseEntity {
 
   // Note: createdAt and updatedAt inherited from BaseEntity (FirebaseTimestamp)
   // Additional legacy timestamp fields if needed by API
+  /** Created_at */
   created_at?: FirebaseTimestamp;
+  /** Updated_at */
   updated_at?: FirebaseTimestamp;
 }
 
@@ -178,6 +182,7 @@ export interface ProductListItemBE {
   reviewCount: number;
   /** Shop Id */
   shopId: string;
+  /** Brand */
   brand?: string; // Brand name for filtering
   /** Featured */
   featured: boolean;

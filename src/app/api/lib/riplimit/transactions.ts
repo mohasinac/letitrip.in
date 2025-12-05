@@ -4,7 +4,8 @@
  * @description This file contains functionality related to transactions
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -66,7 +67,15 @@ export async function creditBalance(
   const db = getFirestoreAdmin();
   const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
 
-  const transaction = await db.runTransaction(async (t) => {
+  /**
+ * Performs transaction operation
+ *
+ * @param {any} async(t - The async(t
+ *
+ * @returns {Promise<any>} The transaction result
+ *
+ */
+const transaction = await db.runTransaction(async (t) => {
     const accountDoc = await t.get(accountRef);
     let account: RipLimitAccountBE;
 
@@ -198,7 +207,15 @@ export async function getTransactionHistory(
 
   // Apply pagination
   if (options.offset) {
-    query = query.offset(options.offset);
+    query = query.offs/**
+ * Performs transactions operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The transactions result
+ *
+ */
+et(options.offset);
   }
   if (options.limit) {
     query = query.limit(options.limit);

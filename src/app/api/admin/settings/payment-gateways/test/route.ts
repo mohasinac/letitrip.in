@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -210,6 +211,14 @@ export async function POST(request: NextRequest) {
  * @throws {Error} When operation fails or validation errors occur
  */
 
+/**
+ * Performs test razorpay operation
+ *
+ * @param {any} config - The config
+ *
+ * @returns {Promise<} The testrazorpay result
+ *
+ */
 async function testRazorpay(
   /** Config */
   config: any
@@ -299,7 +308,15 @@ async function testRazorpay(
   config - The /**  config */
   config
  *
- * @returns {Promise<any>} Promise resolving to testpaypal result
+ * @r/**
+ * Performs test pay pal operation
+ *
+ * @param {any} config - The config
+ *
+ * @returns {Promise<} The testpaypal result
+ *
+ */
+eturns {Promise<any>} Promise resolving to testpaypal result
  *
  * @throws {Error} When operation fails or validation errors occur
  */
@@ -379,7 +396,15 @@ async function testPayPal(
  *
  * @returns {Promise<any>} Promise resolving to teststripe result
  *
- * @throws {Error} When operation fails or validation errors occur
+ * @throws {Error} When operation fails or validation err/**
+ * Performs test stripe operation
+ *
+ * @param {any} config - The config
+ *
+ * @returns {Promise<} The teststripe result
+ *
+ */
+ors occur
  */
 
 /**

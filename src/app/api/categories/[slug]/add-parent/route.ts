@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -46,6 +47,17 @@ import { getCurrentUser } from "../../../lib/session";
   request, {});
  */
 
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The post result
+ *
+ * @example
+ * POST(request, {});
+ */
 export async function POST(
   /** Request */
   request: NextRequest,

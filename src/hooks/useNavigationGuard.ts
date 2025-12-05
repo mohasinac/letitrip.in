@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useNavigationGuard
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -29,23 +30,27 @@ export interface NavigationGuardOptions {
   /**
    * Whether to enable the navigation guard
    */
+  /** Enabled */
   enabled: boolean;
 
   /**
    * Custom message to show in the confirmation dialog
    * Default: "You have unsaved changes. Do you want to leave this page?"
    */
+  /** Message */
   message?: string;
 
   /**
    * Callback when user confirms navigation (before leaving)
    * Use this to cleanup uploaded media
    */
+  /** OnNavigate */
   onNavigate?: () => Promise<void> | void;
 
   /**
    * Callback when user cancels navigation (stays on page)
    */
+  /** OnCancel */
   onCancel?: () => void;
 }
 
@@ -83,7 +88,15 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
   } = options;
 
   const router = useRouter();
-  const isNavigatingRef = useRef(false);
+  /**
+ * Checks if navigating ref
+ *
+ * @param {any} false - The false
+ *
+ * @returns {any} The isnavigatingref result
+ *
+ */
+const isNavigatingRef = useRef(false);
 
   /**
    * Handle browser beforeunload event (page refresh, close tab)

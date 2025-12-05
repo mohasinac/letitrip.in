@@ -4,7 +4,8 @@
  * @description This file contains the UnifiedFilterSidebar.example component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**

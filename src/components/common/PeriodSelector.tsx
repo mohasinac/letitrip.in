@@ -4,7 +4,8 @@
  * @description This file contains the PeriodSelector component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -34,6 +35,14 @@ interface Period {
   value: string;
 }
 
+/**
+ * Performs d e f a u l t_ p e r i o d s operation
+ *
+ * @param {string} value - The value
+ *
+ * @returns {any} The default_periods result
+ *
+ */
 const DEFAULT_PERIODS: Period[] = [
   { label: "Today", value: "day" },
   { label: "This Week", value: "week" },

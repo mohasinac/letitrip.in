@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -31,7 +32,13 @@ import { useIsMobile } from "@/hooks/useMobile";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { DateDisplay } from "@/components/common/values/DateDisplay";
 
-export default function AdminReturnsPage() {
+export default /**
+ * Performs admin returns page operation
+ *
+ * @returns {any} The adminreturnspage result
+ *
+ */
+function AdminReturnsPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
   const {
@@ -47,7 +54,15 @@ export default function AdminReturnsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalReturns, setTotalReturns] = useState(0);
 
-  const fetchReturns = useCallback(async () => {
+  /**
+ * Fetches returns
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The fetchreturns result
+ *
+ */
+const fetchReturns = useCallback(async () => {
     const response = await returnsService.list({
       ...filterValues,
       /** Page */

@@ -4,7 +4,8 @@
  * @description This file contains the layout component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { ToastContainer } from "@/components/admin/Toast";
@@ -35,7 +36,22 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = defaultMetadata;
 
-export default function RootLayout({
+export default /**
+ * RootLayout component
+ *
+ * @param {{
+  
+  children: React.ReactNode;
+}} {
+  children,
+} - The {
+  children,
+}
+ *
+ * @returns {any} The rootlayout result
+ *
+ */
+function RootLayout({
   children,
 }: {
   /** Children */

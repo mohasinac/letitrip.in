@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -41,7 +42,13 @@ const statusColors = {
  * @example
  * const result = AdminTicketsPage();
  */
-export default function AdminTicketsPage() {
+export default /**
+ * Performs admin tickets page operation
+ *
+ * @returns {any} The adminticketspage result
+ *
+ */
+function AdminTicketsPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
   const {
@@ -67,7 +74,15 @@ export default function AdminTicketsPage() {
   const tickets = ticketsData?.data || [];
   const stats = ticketsData?.stats || {};
 
-  const fetchTickets = useCallback(async () => {
+  /**
+ * Fetches tickets
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The fetchtickets result
+ *
+ */
+const fetchTickets = useCallback(async () => {
     await execute(() =>
       supportService.listTickets({
         /** Status */

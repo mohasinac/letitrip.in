@@ -4,7 +4,8 @@
  * @description This file contains functionality related to payment-gateway-selector
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -69,6 +70,7 @@ export interface GatewaySelectionParams {
   paymentMethod?: PaymentMethod;
   /** Required Capabilities */
   requiredCapabilities?: Array<keyof PaymentGatewayConfig["capabilities"]>;
+  /** CustomerPreference */
   customerPreference?: string; // Gateway ID preferred by customer
 }
 
@@ -131,6 +133,16 @@ export interface GatewayWithScore {
   params);
  */
 
+/**
+ * Performs select best gateway operation
+ *
+ * @param {GatewaySelectionParams} params - The params
+ *
+ * @returns {PaymentGatewayConfig | null} The selectbestgateway result
+ *
+ * @example
+ * selectBestGateway(params);
+ */
 export function selectBestGateway(
   /** Params */
   params: GatewaySelectionParams
@@ -153,7 +165,15 @@ export function selectBestGateway(
 
   // Step 2: Filter by customer preference if specified
   if (customerPreference) {
-    const preferred = candidates.find((g) => g.id === customerPreference);
+    /**
+ * Performs preferred operation
+ *
+ * @param {any} (g - The (g
+ *
+ * @returns {any} The preferred result
+ *
+ */
+const preferred = candidates.find((g) => g.id === customerPreference);
     if (preferred) {
       // Validate preferred gateway supports transaction
       if (
@@ -197,7 +217,17 @@ export function selectBestGateway(
     candidates = candidates.filter((gateway) =>
       requiredCapabilities.every((cap) => gateway.capabilities[cap])
     );
-  }
+  /**
+ * Performs scored operation
+ *
+ * @param {any} candidates - The candidates
+ * @param {any} amount - The amount
+ * @param {any} country - The country
+ *
+ * @returns {PaymentGatewayConfig[]} The scored result
+ *
+ */
+}
 
   if (candidates.length === 0) {
     return null;
@@ -262,7 +292,15 @@ function filterByPaymentMethod(
  * @param {number} amount - The amount
  * @param {CountryCode} country - The country
  *
- * @returns {number} The scoregateways result
+ * @returns {number} The scoregateways re/**
+ * Performs scored operation
+ *
+ * @param {any} (gateway - The (gateway
+ *
+ * @returns {any} The scored result
+ *
+ */
+sult
  */
 
 /**
@@ -389,7 +427,17 @@ export function calculateFee(
  */
 
 /**
+ * Ret/**
  * Retrieves ranked gateways
+ *
+ * @param {GatewaySelectionParams} params - The params
+ *
+ * @returns {GatewayWithScore[]} The getrankedgateways result
+ *
+ * @example
+ * getRankedGateways(params);
+ */
+rieves ranked gateways
  *
  * @param {GatewaySelectionParams} /** Params */
   params - The /**  params */
@@ -456,7 +504,15 @@ export function getRankedGateways(
  */
 
 /**
- * Checks if gateway compatible
+ * Ch/**
+ * Performs gateway operation
+ *
+ * @param {any} (g - The (g
+ *
+ * @returns {any} The gateway result
+ *
+ */
+ecks if gateway compatible
  *
  * @returns {string} The isgatewaycompatible result
  *
@@ -592,12 +648,30 @@ export function getGatewayRecommendations(params: GatewaySelectionParams): {
  * compareGateways();
  */
 
-export function compareGateways(
+export function /**
+ * Performs gateway1 operation
+ *
+ * @param {any} (g - The (g
+ *
+ * @returns {any} The gateway1 result
+ *
+ */
+compareGateways(
   /** Gateway Id1 */
   gatewayId1: string,
   /** Gateway Id2 */
   gatewayId2: string,
-  /** Params */
+  /*/**
+ * Performs scored operation
+ *
+ * @param {object} [gateway1, gateway2] - The [gateway1, gateway2]
+ * @param {any} params.amount - The params.amount
+ * @param {any} params.country - The params.country
+ *
+ * @returns {any} The scored result
+ *
+ */
+* Params */
   params: {
     /** Amount */
     amount: number;

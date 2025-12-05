@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -112,6 +113,17 @@ export async function GET(
   req, {});
  */
 
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The patch result
+ *
+ * @example
+ * PATCH(req, {});
+ */
 export async function PATCH(
   /** Req */
   req: NextRequest,

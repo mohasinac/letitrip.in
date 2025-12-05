@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -12,6 +13,13 @@ import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { nanoid } from "nanoid";
 
+/**
+ * DEMO_PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for demo prefix
+ */
 const DEMO_PREFIX = "DEMO_";
 
 // Beyblade-themed hero slide images
@@ -25,7 +33,14 @@ const HERO_IMAGES = [
   "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1920&h=600&fit=crop",
   "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=1920&h=600&fit=crop",
   "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=1920&h=600&fit=crop",
-  "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=1920&h=600&fit=crop",
+  "ht/**
+ * HERO_MOBILE_IMAGES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for hero mobile images
+ */
+tps://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=1920&h=600&fit=crop",
 ];
 
 // Hero slide mobile images
@@ -37,7 +52,14 @@ const HERO_MOBILE_IMAGES = [
   "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=750&h=1000&fit=crop",
 ];
 
-// Hero slide videos
+// Hero /**
+ * PRODUCT_IMAGES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for product images
+ */
+slide videos
 const HERO_VIDEOS = [
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
@@ -52,7 +74,14 @@ const PRODUCT_IMAGES = [
   "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop",
   "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=400&h=400&fit=crop",
   "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w/**
+ * RETURN_IMAGES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for return images
+ */
+=400&h=400&fit=crop",
 ];
 
 // Ticket attachment images
@@ -831,12 +860,19 @@ export async function POST(request: NextRequest) {
           .collection(COLLECTIONS.RETURNS)
           .doc()
           .set({
+            /** Return_number */
             return_number: `${DEMO_PREFIX}RET-${String(r + 1).padStart(5, "0")}`,
+            /** Order_id */
             order_id: `order_${r}`,
+            /** Order_number */
             order_number: `${DEMO_PREFIX}ORD-${String(r + 1).padStart(6, "0")}`,
+            /** User_id */
             user_id: buyer.id,
+            /** User_name */
             user_name: buyer.name,
+            /** Shop_id */
             shop_id: shop.id,
+            /** Product_id */
             product_id: products[r % products.length],
             /** Reason */
             reason: returnReasons[r % returnReasons.length],
@@ -851,19 +887,25 @@ export async function POST(request: NextRequest) {
                   RETURN_IMAGES[(r + 1) % RETURN_IMAGES.length],
                 ]
               : [],
+            /** Refund_amount */
             refund_amount: Math.round(500 + Math.random() * 5000),
+            /** Refund_method */
             refund_method: ["original_payment", "wallet", "bank_transfer"][
               r % 3
             ],
+            /** Pickup_scheduled */
             pickup_scheduled: r % 3 === 0,
+            /** Pickup_date */
             pickup_date:
               r % 3 === 0
                 ? new Date(timestamp.getTime() + 2 * 24 * 60 * 60 * 1000)
                 : null,
+            /** Created_at */
             created_at: new Date(
               timestamp.getTime() -
                 Math.floor(Math.random() * 14) * 24 * 60 * 60 * 1000,
             ),
+            /** Updated_at */
             updated_at: timestamp,
           });
         counts.returns++;

@@ -4,7 +4,8 @@
  * @description This file contains the FeaturedShopsSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -69,7 +70,21 @@ interface Props {
   productsPerShop?: number;
 }
 
-export default function FeaturedShopsSection({
+export default /**
+ * Performs featured shops section operation
+ *
+ * @param {Props} [{
+  maxShops = 3,
+  productsPerShop = 5,
+}] - The {
+  maxshops = 3,
+  productspershop = 5,
+}
+ *
+ * @returns {any} The featuredshopssection result
+ *
+ */
+function FeaturedShopsSection({
   maxShops = 3,
   productsPerShop = 5,
 }: Props) {
@@ -111,9 +126,25 @@ export default function FeaturedShopsSection({
           response.data?.featuredItems?.shops || [];
 
         // Filter active items and sort by position
-        const activeItems = featuredItems
+        /**
+ * Performs active items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The activeitems result
+ *
+ */
+const activeItems = featuredItems
           .filter((item) => item.active)
-          .sort((a, b) => a.position - b.position)
+        /**
+ * Performs shop ids operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The shopids result
+ *
+ */
+  .sort((a, b) => a.position - b.position)
           .slice(0, maxShops);
 
         if (activeItems.length > 0) {
@@ -129,7 +160,15 @@ export default function FeaturedShopsSection({
       if (curatedShops.length > 0) {
         shops = curatedShops;
       } else {
-        const shopsData = await shopsService.list({
+        const/**
+ * Performs shops data2 operation
+ *
+ * @param {ShopCardFE} shops.map(async(shop - The shops.map(async(shop
+ *
+ * @returns {Promise<any>} The shopsdata2 result
+ *
+ */
+ shopsData = await shopsService.list({
           /** Featured */
           featured: true,
           /** Limit */

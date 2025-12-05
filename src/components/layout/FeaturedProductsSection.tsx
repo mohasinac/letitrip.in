@@ -4,7 +4,8 @@
  * @description This file contains the FeaturedProductsSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -53,7 +54,15 @@ interface Props {
   maxProducts?: number;
 }
 
-export default function FeaturedProductsSection({ maxProducts = 10 }: Props) {
+export default /**
+ * Performs featured products section operation
+ *
+ * @param {Props} [{ maxProducts = 10 }] - The { maxproducts = 10 }
+ *
+ * @returns {any} The featuredproductssection result
+ *
+ */
+function FeaturedProductsSection({ maxProducts = 10 }: Props) {
   const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -90,9 +99,25 @@ export default function FeaturedProductsSection({ maxProducts = 10 }: Props) {
           response.data?.featuredItems?.products || [];
 
         // Filter active items and sort by position
-        const activeItems = featuredItems
+        /**
+ * Performs active items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The activeitems result
+ *
+ */
+const activeItems = featuredItems
           .filter((item) => item.active)
-          .sort((a, b) => a.position - b.position)
+          ./**
+ * Performs product ids operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The productids result
+ *
+ */
+sort((a, b) => a.position - b.position)
           .slice(0, maxProducts);
 
         if (activeItems.length > 0) {

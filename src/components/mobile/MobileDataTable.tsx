@@ -4,7 +4,8 @@
  * @description This file contains the MobileDataTable component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -192,7 +193,15 @@ export function MobileDataTable<T extends Record<string, any>>({
           }
 
           // Default mobile card
-          const visibleColumns = columns.filter((col) => !col.mobileHide);
+          /**
+ * Performs visible columns operation
+ *
+ * @param {any} (col - The (col
+ *
+ * @returns {any} The visiblecolumns result
+ *
+ */
+const visibleColumns = columns.filter((col) => !col.mobileHide);
           const primaryColumn = visibleColumns[0];
           const secondaryColumns = visibleColumns.slice(1, 3);
 

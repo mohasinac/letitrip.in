@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -112,12 +113,28 @@ export async function GET(request: NextRequest) {
     }
 
     // Get shop IDs
-    const shopIds = followingSnapshot.docs.map((doc) => doc.data().shop_id);
+    /**
+ * Performs shop ids operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The shopids result
+ *
+ */
+const shopIds = followingSnapshot.docs.map((doc) => doc.data().shop_id);
 
     // Fetch shop details
     const shops: any[] = [];
 
-    // Firestore 'in' query limited to 10 items, so batch if needed
+    // Firestore 'in' query limited to 10 items, so batch/**
+ * Performs shops snapshot operation
+ *
+ * @param {any} COLLECTIONS.SHOPS - The collections.shops
+ *
+ * @returns {any} The shopssnapshot result
+ *
+ */
+ if needed
     for (let i = 0; i < shopIds.length; i += 10) {
       const batch = shopIds.slice(i, i + 10);
       const shopsSnapshot = await db

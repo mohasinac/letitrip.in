@@ -4,7 +4,8 @@
  * @description This file contains service functions for shops operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiService } from "./api.service";
@@ -92,7 +93,13 @@ class ShopsService {
     /** Filters */
     filters?: Record<string, any>,
   ): Promise<PaginatedResponseFE<ShopCardFE>> {
-    const params = new URLSearchParams();
+    /**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+const params = new URLSearchParams();
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -198,7 +205,13 @@ class ShopsService {
     /** Slug */
     slug: string,
     /** Options */
-    options?: { page?: number; limit?: number; filters?: Record<string, any> },
+    options?: { page?: number; limit?: number; filters?: R/**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+ecord<string, any> },
   ): Promise<PaginatedResponseFE<ProductCardFE>> {
     const params = new URLSearchParams();
     if (options?.page) params.append("page", String(options.page));

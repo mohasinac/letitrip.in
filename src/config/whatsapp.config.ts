@@ -4,7 +4,8 @@
  * @description This file contains functionality related to whatsapp.config
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -140,6 +141,7 @@ export const MESSAGE_CATEGORIES = {
     description: "Promotional messages, offers, campaigns",
     /** Requires Opt In */
     requiresOptIn: true,
+    /** Window */
     window: null, // Can be sent anytime
   },
   /** U T I L I T Y */
@@ -152,6 +154,7 @@ export const MESSAGE_CATEGORIES = {
     description: "Order updates, shipping, account changes",
     /** Requires Opt In */
     requiresOptIn: false,
+    /** Window */
     window: 24, // 24-hour window after user message
   },
   /** A U T H E N T I C A T I O N */
@@ -164,6 +167,7 @@ export const MESSAGE_CATEGORIES = {
     description: "OTP, verification codes",
     /** Requires Opt In */
     requiresOptIn: false,
+    /** Window */
     window: null, // Can be sent anytime
   },
   /** S E R V I C E */
@@ -176,6 +180,7 @@ export const MESSAGE_CATEGORIES = {
     description: "Customer service, support",
     /** Requires Opt In */
     requiresOptIn: false,
+    /** Window */
     window: 24, // 24-hour window after user message
   },
 } as const;
@@ -911,7 +916,15 @@ export function formatTemplate(
   /** Variables */
   variables: Record<string, string>
 ): string {
-  const bodyComponent = template.components.find((c) => c.type === "body");
+  /**
+ * Performs body component operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The bodycomponent result
+ *
+ */
+const bodyComponent = template.components.find((c) => c.type === "body");
   if (!bodyComponent?.text) return "";
 
   let formatted = bodyComponent.text;
@@ -1032,6 +1045,17 @@ export function formatWhatsAppPhone(phone: string): string {
   lastUserMessageAt, 123);
  */
 
+/**
+ * Checks if within messaging window
+ *
+ * @param {Date} [lastUserMessageAt] - The lastusermessageat
+ * @param {any} [windowHours=24] - The windowhours=24
+ *
+ * @returns {boolean} The iswithinmessagingwindow result
+ *
+ * @example
+ * isWithinMessagingWindow(lastUserMessageAt, windowHours=24);
+ */
 export function isWithinMessagingWindow(
   /** Last User Message At */
   lastUserMessageAt?: Date,

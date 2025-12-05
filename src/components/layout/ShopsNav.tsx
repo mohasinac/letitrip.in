@@ -4,7 +4,8 @@
  * @description This file contains the ShopsNav component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -46,7 +47,13 @@ const shopIconMap: Record<string, any> = {
   gem: Gem,
 };
 
-export default function ShopsNav() {
+export default /**
+ * Performs shops nav operation
+ *
+ * @returns {any} The shopsnav result
+ *
+ */
+function ShopsNav() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
@@ -158,7 +165,15 @@ export default function ShopsNav() {
             ref={scrollRef}
             className="flex items-center gap-3 lg:gap-4 overflow-x-auto scrollbar-hide pb-2"
             onScroll={(e) => {
-              const target = e.target as HTMLDivElement;
+              /**
+ * Performs target operation
+ *
+ * @param {any} target.scrollLeft>0 - The target.scrollleft>0
+ *
+ * @returns {any} The target result
+ *
+ */
+const target = e.target as HTMLDivElement;
               setShowLeftArrow(target.scrollLeft > 0);
               setShowRightArrow(
                 target.scrollLeft < target.scrollWidth - target.clientWidth,

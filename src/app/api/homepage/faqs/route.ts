@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
@@ -56,7 +57,15 @@ export async function GET() {
       .orderBy("order", "asc")
       .get();
 
-    const faqs = faqsSnapshot.docs.map((doc) => {
+    /**
+ * Performs faqs operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The faqs result
+ *
+ */
+const faqs = faqsSnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         /** Id */

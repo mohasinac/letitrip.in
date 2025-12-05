@@ -4,7 +4,8 @@
  * @description This file contains the ShopCard component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -62,7 +63,23 @@ interface ShopCardProps {
   variant?: "default" | "compact";
 }
 
-export default function ShopCard({
+export default /**
+ * Performs shop card operation
+ *
+ * @param {ShopCardProps} [{
+  shop,
+  showActions = true,
+  variant = "default",
+}] - The {
+  shop,
+  showactions = true,
+  variant = "default",
+}
+ *
+ * @returns {any} The shopcard result
+ *
+ */
+function ShopCard({
   shop,
   showActions = true,
   variant = "default",

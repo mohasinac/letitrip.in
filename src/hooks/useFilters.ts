@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useFilters
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -66,7 +67,15 @@ export function useFilters<T extends Record<string, any>>(
   } = options;
 
   // Load initial filters from URL or localStorage
-  const loadInitialFilters = useCallback((): T => {
+  /**
+ * Performs load initial filters operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {T =>} The loadinitialfilters result
+ *
+ */
+const loadInitialFilters = useCallback((): T => {
     // First, try to load from URL if sync is enabled
     if (syncWithUrl && searchParams) {
       const urlFilters: Partial<T> = {};
@@ -104,7 +113,15 @@ export function useFilters<T extends Record<string, any>>(
     return initialFilters;
   }, [initialFilters, persist, storageKey, syncWithUrl, searchParams]);
 
-  const [filters, setFilters] = useState<T>(loadInitialFilters);
+  const [filters, setFilters] = useState</**
+ * Performs sync filters to url operation
+ *
+ * @param {T} (newFilters - The (newfilters
+ *
+ * @returns {any} The syncfilterstourl result
+ *
+ */
+T>(loadInitialFilters);
   const [appliedFilters, setAppliedFilters] = useState<T>(loadInitialFilters);
 
   // Sync filters to URL
@@ -116,7 +133,15 @@ export function useFilters<T extends Record<string, any>>(
       Object.entries(newFilters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== "") {
           if (Array.isArray(value) && value.length === 0) return;
-          params.set(key, JSON.stringify(value));
+          params.set(key, JSON.stringif/**
+ * Performs persist filters operation
+ *
+ * @param {T} (newFilters - The (newfilters
+ *
+ * @returns {any} The persistfilters result
+ *
+ */
+y(value));
         }
       });
 
@@ -131,14 +156,30 @@ export function useFilters<T extends Record<string, any>>(
   // Persist filters to localStorage
   const persistFilters = useCallback(
     (newFilters: T) => {
-      if (!persist || typeof window === "undefined") return;
+      if (!persist || t/**
+ * Updates filters
+ *
+ * @param {T} (newFilters - The (newfilters
+ *
+ * @returns {any} The updatefilters result
+ *
+ */
+ypeof window === "undefined") return;
 
       try {
         localStorage.setItem(storageKey, JSON.stringify(filters));
       } catch (error) {
         logError(error as Error, {
           /** Component */
-          component: "useFilters.useEffect",
+          component: "useFilters.use/**
+ * Performs reset filters operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The resetfilters result
+ *
+ */
+Effect",
           /** Metadata */
           metadata: { storageKey },
         });
@@ -148,16 +189,40 @@ export function useFilters<T extends Record<string, any>>(
   );
 
   // Update filters (without applying)
-  const updateFilters = useCallback((newFilters: T) => {
+  const updateFilters = use/**
+ * Performs clear filter operation
+ *
+ * @param {keyof T} (key - The (key
+ *
+ * @returns {any} The clearfilter result
+ *
+ */
+Callback((newFilters: T) => {
     setFilters(newFilters);
   }, []);
 
   // Apply filters
-  const applyFilters = useCallback(() => {
+  const a/**
+ * Checks if has active filters
+ *
+ * @param {any} appliedFilters - The appliedfilters
+ *
+ * @returns {any} The hasactivefilters result
+ *
+ */
+pplyFilters = useCallback(() => {
     setAppliedFilters(filters);
     syncFiltersToUrl(filters);
     persistFilters(filters);
-    onChange?.(filters);
+    onChange?.(filters)/**
+ * Performs active filter count operation
+ *
+ * @param {any} appliedFilters - The appliedfilters
+ *
+ * @returns {any} The activefiltercount result
+ *
+ */
+;
   }, [filters, syncFiltersToUrl, persistFilters, onChange]);
 
   // Reset filters

@@ -4,7 +4,8 @@
  * @description This file contains service functions for payment-gateway operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -67,6 +68,7 @@ export interface CreateOrderRequest {
   phone?: string;
   /** Notes */
   notes?: Record<string, string>;
+  /** GatewayId */
   gatewayId?: string; // Optional: specify gateway, otherwise auto-select
 }
 
@@ -154,6 +156,7 @@ export interface VerifyPaymentResult {
 export interface RefundPaymentRequest {
   /** Payment Id */
   paymentId: string;
+  /** Amount */
   amount?: number; // Optional for partial refunds
   /** Reason */
   reason?: string;

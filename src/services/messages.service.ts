@@ -4,7 +4,8 @@
  * @description This file contains service functions for messages operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -228,7 +229,15 @@ class MessagesService {
   private transformMessage(msg: MessageBEResponse, userId: string): MessageFE {
     const createdAt = new Date(msg.createdAt);
     const isFromMe = msg.senderId === userId;
-    const isRead = !!msg.readBy?.[userId] || isFromMe;
+    /**
+ * Checks if read
+ *
+ * @param {any} (att - The (att
+ *
+ * @returns {any} The isread result
+ *
+ */
+const isRead = !!msg.readBy?.[userId] || isFromMe;
 
     return {
       /** Id */
@@ -290,7 +299,15 @@ class MessagesService {
         /** Conversations */
         conversations: ConversationBEResponse[];
         /** Pagination */
-        pagination: ConversationListResponse["pagination"];
+        pagination: ConversationLi/**
+ * Performs conversations operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The conversations result
+ *
+ */
+stResponse["pagination"];
       };
     }>(url);
 
@@ -331,7 +348,16 @@ class MessagesService {
     const response = await apiService.get<{
       /** Data */
       data: {
-        /** Conversation */
+        /** Conversation/**
+ * Custom React hook for r id
+ *
+ * @param {any} response.data.conversation - The response.data.conversation
+ * @param {any} userId - The userid
+ *
+ * @returns {any} The userid result
+ *
+ */
+ */
         conversation: ConversationBEResponse;
         /** Messages */
         messages: MessageBEResponse[];
@@ -477,6 +503,7 @@ class MessagesService {
    */
   getTypeLabel(type: ConversationType): string {
     const labels: Record<ConversationType, string> = {
+      /** Buyer_seller */
       buyer_seller: "Seller",
       /** Order */
       order: "Order",

@@ -4,7 +4,8 @@
  * @description This file contains the AuctionsSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -63,6 +64,28 @@ interface AuctionsSectionProps {
   hotLimit);
  */
 
+/**
+ * Performs auctions section operation
+ *
+ * @param {AuctionsSectionProps} [{
+  hotLimit = 8,
+  featuredLimit = 8,
+  className = "",
+}] - The {
+  hotlimit = 8,
+  featuredlimit = 8,
+  classname = "",
+}
+ *
+ * @returns {any} The auctionssection result
+ *
+ * @example
+ * AuctionsSection({
+  hotLimit = 8,
+  featuredLimit = 8,
+  className = "",
+});
+ */
 export function AuctionsSection({
   hotLimit = 8,
   featuredLimit = 8,

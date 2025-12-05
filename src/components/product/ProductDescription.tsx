@@ -4,7 +4,8 @@
  * @description This file contains the ProductDescription component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -75,6 +76,28 @@ interface ProductDescriptionProps {
 });
  */
 
+/**
+ * Performs product description operation
+ *
+ * @param {ProductDescriptionProps} {
+  description,
+  specifications,
+  shipping,
+} - The {
+  description,
+  specifications,
+  shipping,
+}
+ *
+ * @returns {any} The productdescription result
+ *
+ * @example
+ * ProductDescription({
+  description,
+  specifications,
+  shipping,
+});
+ */
 export function ProductDescription({
   description,
   specifications,
@@ -84,7 +107,15 @@ export function ProductDescription({
     "description" | "specifications" | "shipping"
   >("description");
 
-  const tabs = [
+  /**
+ * Performs tabs operation
+ *
+ * @param {any} specifications - The specifications
+ *
+ * @returns {any} The tabs result
+ *
+ */
+const tabs = [
     { id: "description" as const, label: "Description", show: true },
     {
       /** Id */

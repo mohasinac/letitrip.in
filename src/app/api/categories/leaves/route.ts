@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
@@ -48,8 +49,24 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 export async function GET() {
   try {
     const snapshot = await Collections.categories().limit(1000).get();
-    const all = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as any);
-    const parentIds = new Set<string>();
+    /**
+ * Performs all operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The all result
+ *
+ */
+const all = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as any);
+    const parentIds = new/**
+ * Performs leaves operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The leaves result
+ *
+ */
+ Set<string>();
     all.forEach((c) => {
       if (c.parent_id) parentIds.add(c.parent_id);
     });

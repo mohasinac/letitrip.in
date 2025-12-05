@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -23,7 +24,13 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function SettingsPage() {
+export default /**
+ * Sets tings page
+ *
+ * @returns {any} The settingspage result
+ *
+ */
+function SettingsPage() {
   const router = useRouter();
   const { user, refreshUser } = useAuth();
   const [showAvatarUpload, setShowAvatarUpload] = useState(false);
@@ -84,7 +91,15 @@ export default function SettingsPage() {
     if (!user) return "U";
     const name = user.displayName || user.fullName || user.email;
     if (!name) return "U";
-    const names = name.split(" ").filter((n: string) => n.length > 0);
+    /**
+ * Performs names operation
+ *
+ * @param {any} "" - The ""
+ *
+ * @returns {any} The names result
+ *
+ */
+const names = name.split(" ").filter((n: string) => n.length > 0);
     if (names.length >= 2) {
       return `${names[0][0]}${names[1][0]}`.toUpperCase();
     }

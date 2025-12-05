@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -19,9 +20,23 @@ import { getShopBulkActions } from "@/constants/bulk-actions";
 import { SHOP_FIELDS, toInlineFields } from "@/constants/form-fields";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 
-export default function AdminShopsPage() {
+export default /**
+ * Performs admin shops page operation
+ *
+ * @returns {any} The adminshopspage result
+ *
+ */
+function AdminShopsPage() {
   // Define columns
-  const columns = [
+  /**
+ * Performs columns operation
+ *
+ * @param {ShopCardFE} shop - The shop
+ *
+ * @returns {any} The columns result
+ *
+ */
+const columns = [
     {
       /** Key */
       key: "shop",

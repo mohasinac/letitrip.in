@@ -4,7 +4,8 @@
  * @description This file contains service functions for returns operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiService } from "./api.service";
@@ -88,7 +89,13 @@ class ReturnsService {
     /** Filters */
     filters?: Partial<ReturnFiltersBE>,
   ): Promise<PaginatedResponseFE<ReturnFE>> {
-    const params = new URLSearchParams();
+    /**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+const params = new URLSearchParams();
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -157,7 +164,13 @@ class ReturnsService {
   }
 
   // Upload media for return
-  async uploadMedia(id: string, files: File[]): Promise<{ urls: string[] }> {
+  a/**
+ * Performs form data operation
+ *
+ * @returns {any} The formdata result
+ *
+ */
+sync uploadMedia(id: string, files: File[]): Promise<{ urls: string[] }> {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
 
@@ -177,7 +190,13 @@ class ReturnsService {
   }
 
   // Get return statistics
-  async getStats(filters?: {
+  async getStats(fi/**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+lters?: {
     /** Shop Id */
     shopId?: string;
     /** Start Date */

@@ -4,7 +4,8 @@
  * @description This file contains the StateSelector component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -43,6 +44,14 @@ export interface StateSelectorProps {
 }
 
 // Transform states to dropdown options
+/**
+ * Performs state options operation
+ *
+ * @param {any} (state - The (state
+ *
+ * @returns {any} The stateoptions result
+ *
+ */
 const stateOptions = ALL_INDIAN_STATES.map((state) => ({
   /** Value */
   value: state,

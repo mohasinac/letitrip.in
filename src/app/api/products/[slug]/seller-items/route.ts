@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -46,6 +47,17 @@ import { NextRequest, NextResponse } from "next/server";
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: NextRequest,
@@ -75,7 +87,15 @@ export async function GET(
       .where("shop_id", "==", prod.shop_id)
       .limit(limit + 1)
       .get();
-    const data = q.docs
+    /**
+ * Performs data operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The data result
+ *
+ */
+const data = q.docs
       .map((d) => ({ id: d.id, ...d.data() }) as any)
       .filter((p) => p.slug !== slug)
       .slice(0, limit);

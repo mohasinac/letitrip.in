@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -38,6 +39,13 @@ interface Country {
 }
 
 // Comprehensive list of countries
+/**
+ * COUNTRIES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for countries
+ */
 const COUNTRIES: Country[] = [
   {
     /** Code */

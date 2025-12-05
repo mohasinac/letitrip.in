@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { authRateLimiter } from "@/app/api/lib/utils/rate-limiter";
@@ -19,6 +20,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { emailService } from "../../lib/email/email.service";
 import { adminDb } from "../../lib/firebase/config";
 
+/**
+ * RESET_TOKEN_EXPIRY constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for reset token expiry
+ */
 const RESET_TOKEN_EXPIRY = 60 * 60 * 1000; // 1 hour in milliseconds
 
 /**
@@ -263,7 +271,13 @@ export async function PUT(req: NextRequest) {
       .where("userId", "==", userData.uid)
       .get();
 
-    const batch = adminDb.batch();
+    /**
+ * Performs batch operation
+ *
+ * @returns {any} The batch result
+ *
+ */
+const batch = adminDb.batch();
     sessionsSnapshot.docs.forEach((doc) => {
       batch.delete(doc.ref);
     });

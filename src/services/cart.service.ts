@@ -4,7 +4,8 @@
  * @description This file contains service functions for cart operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiService } from "./api.service";
@@ -153,7 +154,15 @@ class CartService {
     const cart = this.getGuestCart();
 
     // Check if item already exists
-    const existingIndex = cart.findIndex(
+    /**
+ * Performs existing index operation
+ *
+ * @param {any} (i - The (i
+ *
+ * @returns {any} The existingindex result
+ *
+ */
+const existingIndex = cart.findIndex(
       (i) => i.productId === item.productId && i.variantId === item.variantId,
     );
 
@@ -244,7 +253,15 @@ class CartService {
       /** Shop Name */
       shopName: product.shopName,
       /** Is Available */
-      isAvailable: true,
+      isAvailable: /**
+ * Performs index operation
+ *
+ * @param {any} (i - The (i
+ *
+ * @returns {any} The index result
+ *
+ */
+true,
     });
   }
 
@@ -253,7 +270,15 @@ class CartService {
     const index = cart.findIndex((i) => i.id === itemId);
 
     if (index >= 0) {
-      if (quantity <= 0) {
+      if (quantity /**
+ * Performs filtered operation
+ *
+ * @param {any} (i - The (i
+ *
+ * @returns {any} The filtered result
+ *
+ */
+<= 0) {
         cart.splice(index, 1);
       } else {
         cart[index].quantity = quantity;
@@ -262,7 +287,13 @@ class CartService {
     }
   }
 
-  removeFromGuestCart(itemId: string): void {
+  /**
+ * Performs cart operation
+ *
+ * @returns {any} The cart result
+ *
+ */
+removeFromGuestCart(itemId: string): void {
     const cart = this.getGuestCart();
     const filtered = cart.filter((i) => i.id !== itemId);
     this.setGuestCart(filtered);

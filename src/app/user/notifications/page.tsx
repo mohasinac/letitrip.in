@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -61,6 +62,28 @@ const typeIcons: Record<NotificationType, React.ReactNode> = {
 };
 
 // Color mapping for notification types
+/**
+ * Performs type colors operation
+ *
+ * @param {{
+  
+  /** Notification */
+  notification: NotificationFE;
+  
+  /** OnMarkAsRead */
+  onMarkAsRead: (id: string} {
+  notification,
+  onMarkAsRead,
+  onDelete,
+} - The {
+  notification,
+  onmarkasread,
+  ondelete,
+}
+ *
+ * @returns {any} The typecolors result
+ *
+ */
 const typeColors: Record<NotificationType, string> = {
   /** Order */
   order: "bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
@@ -231,7 +254,15 @@ function NotificationItem({
 
 function NotificationsContent() {
   const [notifications, setNotifications] = useState<NotificationFE[]>([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = u/**
+ * Fetches notifications
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The fetchnotifications result
+ *
+ */
+seState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
@@ -382,7 +413,15 @@ function NotificationsContent() {
    */
 
   const handleDeleteRead = async () => {
-    setActionLoading(true);
+    s/**
+ * Performs unread count operation
+ *
+ * @param {any} (n - The (n
+ *
+ * @returns {any} The unreadcount result
+ *
+ */
+etActionLoading(true);
     try {
       await notificationService.deleteRead();
       setNotifications((prev) => prev.filter((n) => !n.read));
@@ -561,7 +600,13 @@ function NotificationsContent() {
   );
 }
 
-export default function NotificationsPage() {
+export default /**
+ * Performs notifications page operation
+ *
+ * @returns {any} The notificationspage result
+ *
+ */
+function NotificationsPage() {
   return (
     <AuthGuard>
       <NotificationsContent />

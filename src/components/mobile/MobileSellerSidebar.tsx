@@ -4,7 +4,8 @@
  * @description This file contains the MobileSellerSidebar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -49,6 +50,12 @@ interface NavItem {
   children?: NavItem[];
 }
 
+/**
+ * Performs navigation operation
+ *
+ * @returns {any} The navigation result
+ *
+ */
 const navigation: NavItem[] = [
   {
     /** Title */
@@ -198,6 +205,25 @@ interface MobileSellerSidebarProps {
 });
  */
 
+/**
+ * Performs mobile seller sidebar operation
+ *
+ * @param {MobileSellerSidebarProps} {
+  isOpen,
+  onClose,
+} - The {
+  isopen,
+  onclose,
+}
+ *
+ * @returns {any} The mobilesellersidebar result
+ *
+ * @example
+ * MobileSellerSidebar({
+  isOpen,
+  onClose,
+});
+ */
 export function MobileSellerSidebar({
   isOpen,
   onClose,
@@ -213,7 +239,15 @@ export function MobileSellerSidebar({
       document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = "";/**
+ * Performs active section operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The activesection result
+ *
+ */
+
     };
   }, [isOpen]);
 
@@ -339,7 +373,15 @@ export function MobileSellerSidebar({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-3 py-/**
+ * Checks if has active child
+ *
+ * @param {any} (child - The (child
+ *
+ * @returns {any} The hasactivechild result
+ *
+ */
+4 space-y-1">
           {navigation.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);

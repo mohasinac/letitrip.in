@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for riplimit
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -188,8 +189,11 @@ export const TRANSACTION_TYPE_LABELS: Record<string, string> = {
   PURCHASE: "Purchase",
   /** A D J U S T M E N T */
   ADJUSTMENT: "Admin Adjustment",
+  /** BID_BLOCK */
   BID_BLOCK: "Bid Placed",
+  /** BID_RELEASE */
   BID_RELEASE: "Bid Released",
+  /** AUCTION_PAYMENT */
   AUCTION_PAYMENT: "Auction Payment",
   /** R E F U N D */
   REFUND: "Refund",

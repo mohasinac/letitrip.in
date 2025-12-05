@@ -4,7 +4,8 @@
  * @description This file contains functionality related to riplimit.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -230,7 +231,15 @@ export function toFERipLimitBalance(data: {
     bidAmountINR: number;
   }>;
 }): RipLimitBalanceFE {
-  const blockedBids: RipLimitBlockedBidFE[] = data.blockedBids.map((bid) => ({
+  /**
+ * Performs blocked bids operation
+ *
+ * @param {any} (bid - The (bid
+ *
+ * @returns {any} The blockedbids result
+ *
+ */
+const blockedBids: RipLimitBlockedBidFE[] = data.blockedBids.map((bid) => ({
     /** Auction Id */
     auctionId: bid.auctionId,
     /** Bid Id */
@@ -313,6 +322,16 @@ export function toFERipLimitBalance(data: {
   tx);
  */
 
+/**
+ * Performs to f e rip limit transaction operation
+ *
+ * @param {RipLimitTransactionBE} tx - The tx
+ *
+ * @returns {RipLimitTransactionFE} The toferiplimittransaction result
+ *
+ * @example
+ * toFERipLimitTransaction(tx);
+ */
 export function toFERipLimitTransaction(
   /** Tx */
   tx: RipLimitTransactionBE,

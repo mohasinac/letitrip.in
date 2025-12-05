@@ -4,7 +4,8 @@
  * @description This file contains the PollVoting component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -160,7 +161,16 @@ export function PollVoting({
     });
   };
 
-  const sortedOptions = [...options].sort((a, b) => b.voteCount - a.voteCount);
+  /**
+ * Performs sorted options operation
+ *
+ * @param {any} (a - The (a
+ * @param {any} b - The b
+ *
+ * @returns {any} The sortedoptions result
+ *
+ */
+const sortedOptions = [...options].sort((a, b) => b.voteCount - a.voteCount);
 
   return (
     <div className="space-y-4">

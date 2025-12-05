@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -26,7 +27,13 @@ export const metadata: Metadata = {
  * @example
  * const result = AdminMaintenancePage();
  */
-export default function AdminMaintenancePage() {
+export default /**
+ * Performs admin maintenance page operation
+ *
+ * @returns {any} The adminmaintenancepage result
+ *
+ */
+function AdminMaintenancePage() {
   return (
     <NotImplementedPage
       title="Maintenance Mode"

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -45,7 +46,13 @@ const categoryLabels = {
   other: "Other",
 };
 
-export default function TicketDetailsPage() {
+export default /**
+ * Performs ticket details page operation
+ *
+ * @returns {any} The ticketdetailspage result
+ *
+ */
+function TicketDetailsPage() {
   const router = useRouter();
   const params = useParams();
   /**
@@ -65,7 +72,15 @@ export default function TicketDetailsPage() {
   const [replyMessage, setReplyMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchTicket = useCallback(async () => {
+  /**
+ * Fetches ticket
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The fetchticket result
+ *
+ */
+const fetchTicket = useCallback(async () => {
     await execute(() => supportService.getTicket(ticketId));
   }, [ticketId, execute]);
 

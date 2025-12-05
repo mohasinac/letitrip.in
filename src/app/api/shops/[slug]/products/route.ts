@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -46,6 +47,17 @@ import { NextResponse } from "next/server";
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {Request} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: Request,
@@ -129,7 +141,15 @@ export async function GET(
     // Execute query
     const productsSnapshot = await query.get();
 
-    const products = productsSnapshot.docs.map((doc: any) => ({
+    /**
+ * Performs products operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The products result
+ *
+ */
+const products = productsSnapshot.docs.map((doc: any) => ({
       /** Id */
       id: doc.id,
       ...doc.data(),
@@ -138,7 +158,15 @@ export async function GET(
     // Get total count (simplified - in production use Firestore aggregation)
     const totalSnapshot = await Collections.products()
       .where("shopId", "==", shopId)
-      .where("status", "==", "published")
+      .wh/**
+ * Performs total pages operation
+ *
+ * @param {any} total/limit - The total/limit
+ *
+ * @returns {any} The totalpages result
+ *
+ */
+ere("status", "==", "published")
       .count()
       .get();
 

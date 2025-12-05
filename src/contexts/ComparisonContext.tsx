@@ -4,7 +4,8 @@
  * @description This file contains the ComparisonContext component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -128,22 +129,54 @@ export function ComparisonProvider({ children }: ComparisonProviderProps) {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  const productIds = useMemo(() => products.map((p) => p.id), [products]);
+  /**
+ * Performs product ids operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The productids result
+ *
+ */
+const productIds = useMemo(() => products.map((p) => p.id), [products]);
 
   const addToComparison = useCallback((product: ComparisonProduct): boolean => {
     const success = comparisonService.addToComparison(product);
-    if (success) {
+    if (s/**
+ * Performs remove from comparison operation
+ *
+ * @param {string} (productId - The (productid
+ *
+ * @returns {void =>} The removefromcomparison result
+ *
+ */
+uccess) {
       setProducts(comparisonService.getComparisonProducts());
     }
     return success;
   }, []);
 
-  const removeFromComparison = useCallback((productId: string): void => {
+  const removeFromComparison = useCallback((productId: st/**
+ * Checks if in comparison
+ *
+ * @param {string} (productId - The (productid
+ *
+ * @returns {boolean =>} The isincomparison result
+ *
+ */
+ring): void => {
     comparisonService.removeFromComparison(productId);
     setProducts(comparisonService.getComparisonProducts());
   }, []);
 
-  const clearComparison = useCallback((): void => {
+  const clearComparison = useCallback((): void => /**
+ * Performs value operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The value result
+ *
+ */
+{
     comparisonService.clearComparison();
     setProducts([]);
   }, []);

@@ -4,7 +4,8 @@
  * @description This file contains the HeroCarousel component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -17,6 +18,13 @@ import { homepageService, type HeroSlide } from "@/services/homepage.service";
 import { logError } from "@/lib/firebase-error-logger";
 
 // Default slides for demo - would come from API
+/**
+ * DEFAULT_SLIDES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for default slides
+ */
 const DEFAULT_SLIDES: HeroSlide[] = [
   {
     /** Id */
@@ -77,13 +85,27 @@ const DEFAULT_SLIDES: HeroSlide[] = [
   },
 ];
 
-export default function HeroCarousel() {
+export default /**
+ * Performs hero carousel operation
+ *
+ * @returns {any} The herocarousel result
+ *
+ */
+function HeroCarousel() {
   const [slides, setSlides] = useState<HeroSlide[]>(DEFAULT_SLIDES);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const enabledSlides = slides.filter((slide) => slide.enabled);
+  /**
+ * Performs enabled slides operation
+ *
+ * @param {any} (slide - The (slide
+ *
+ * @returns {any} The enabledslides result
+ *
+ */
+const enabledSlides = slides.filter((slide) => slide.enabled);
 
   // Fetch slides from API
   useEffect(() => {
@@ -100,7 +122,13 @@ export default function HeroCarousel() {
      *
      * @returns {Promise<any>} Promise resolving to async  result
      *
-     * @throws {Error} When operation fails or validation errors occur
+     * /**
+ * Performs slides operation
+ *
+ * @returns {any} The slides result
+ *
+ */
+@throws {Error} When operation fails or validation errors occur
      */
 
     const fetchSlides = async () => {
@@ -125,12 +153,28 @@ export default function HeroCarousel() {
   useEffect(() => {
     if (!isAutoPlaying || enabledSlides.length <= 1) return;
 
-    const interval = setInterval(() => {
+    co/**
+ * Performs next slide operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The nextslide result
+ *
+ */
+nst interval = setInterval(() => {
       nextSlide();
     }, 5000); // Change slide every 5 seconds
 
     return () => clearInterval(interval);
-  }, [currentSlide, isAutoPlaying, enabledSlides.length]);
+  }, [currentSl/**
+ * Performs prev slide operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The prevslide result
+ *
+ */
+ide, isAutoPlaying, enabledSlides.length]);
 
   const nextSlide = useCallback(() => {
     if (isTransitioning) return;

@@ -4,7 +4,8 @@
  * @description This file contains the SearchBar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -59,6 +60,13 @@ interface SearchBarProps {
   onClose?: () => void;
 }
 
+/**
+ * MAX_SUGGESTIONS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for max suggestions
+ */
 const MAX_SUGGESTIONS = 10;
 
 const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
@@ -74,7 +82,16 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
     const suggestionsRef = useRef<HTMLDivElement>(null);
 
     // Debounce search query to reduce suggestions updates
-    const debouncedSearchQuery = useDebounce(searchQuery, 300);
+    /**
+ * Performs debounced search query operation
+ *
+ * @param {any} searchQuery - The searchquery
+ * @param {any} 300 - The 300
+ *
+ * @returns {any} The debouncedsearchquery result
+ *
+ */
+const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
     // Update suggestions when debounced query changes (only for "all" content type)
     useEffect(() => {
@@ -117,7 +134,15 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         ) {
           setShowSuggestions(false);
         }
-      };
+  /**
+ * Performs navigate to route operation
+ *
+ * @param {SearchableRoute} (route - The (route
+ *
+ * @returns {any} The navigatetoroute result
+ *
+ */
+    };
 
       document.addEventListener("mousedown", handleClickOutside);
       return () =>

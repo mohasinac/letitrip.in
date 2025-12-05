@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -12,6 +13,13 @@ import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { nanoid } from "nanoid";
 
+/**
+ * DEMO_PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for demo prefix
+ */
 const DEMO_PREFIX = "DEMO_";
 
 const INDIAN_CITIES = [
@@ -21,7 +29,14 @@ const INDIAN_CITIES = [
   { city: "Chennai", state: "Tamil Nadu", pincode: "600001" },
   { city: "Kolkata", state: "West Bengal", pincode: "700001" },
   { city: "Pune", state: "Maharashtra", pincode: "411001" },
-  { city: "Hyderabad", state: "Telangana", pincode: "500001" },
+  { city: "Hyde/**
+ * COURIER_COMPANIES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for courier companies
+ */
+rabad", state: "Telangana", pincode: "500001" },
   { city: "Ahmedabad", state: "Gujarat", pincode: "380001" },
 ];
 
@@ -36,7 +51,14 @@ const COURIER_COMPANIES = [
 
 const RAZORPAY_METHODS = [
   { method: "card", type: "credit", network: "Visa", last4: "4242" },
-  { method: "card", type: "debit", network: "Mastercard", last4: "5556" },
+  { method: "card", type: "debit", network/**
+ * STREETS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for streets
+ */
+: "Mastercard", last4: "5556" },
   { method: "upi", vpa: "user@paytm" },
   { method: "upi", vpa: "user@gpay" },
   { method: "netbanking", bank: "HDFC" },

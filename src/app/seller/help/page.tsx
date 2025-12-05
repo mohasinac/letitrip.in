@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -36,6 +37,13 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 
 // FAQ Categories with questions
+/**
+ * FAQ_CATEGORIES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for faq categories
+ */
 const FAQ_CATEGORIES = [
   {
     /** Id */
@@ -263,6 +271,39 @@ const FAQ_CATEGORIES = [
 ];
 
 // Quick action cards
+/**
+ * Performs q u i c k_ a c t i o n s operation
+ *
+ * @param {{
+  
+  question: string;
+  
+  answer: string;
+  
+  isOpen: boolean;
+  
+  onToggle: (} {
+  question,
+  answer,
+  isOpen,
+  /**
+ * QUICK_ACTIONS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for quick actions
+ */
+onToggle,
+} - The {
+  question,
+  answer,
+  isopen,
+  ontoggle,
+}
+ *
+ * @returns {any} The quick_actions result
+ *
+ */
 const QUICK_ACTIONS = [
   {
     /** Title */
@@ -462,7 +503,19 @@ function FAQCategory({
   );
 }
 
-export default function SellerHelpPage() {
+export default /**
+ * Performs seller/**
+ * Performs filtered categories operation
+ *
+ * @returns {any} The filteredcategories result
+ *
+ */
+ help page operation
+ *
+ * @returns {any} The sellerhelppage result
+ *
+ */
+function SellerHelpPage() {
   const { isSeller } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [openQuestions, setOpenQuestions] = useState<Record<string, number>>(

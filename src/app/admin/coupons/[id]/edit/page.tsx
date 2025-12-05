@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -21,7 +22,13 @@ import { ArrowLeft, Save } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function EditCouponPage() {
+export default /**
+ * Performs edit coupon page operation
+ *
+ * @returns {any} The editcouponpage result
+ *
+ */
+function EditCouponPage() {
   const router = useRouter();
   const params = useParams();
   const couponId = params.id as string;
@@ -209,7 +216,15 @@ export default function EditCouponPage() {
        * @returns {any} The checked result
        */
 
-      const checked = (e.target as HTMLInputElement).checked;
+      /**
+ * Performs checked operation
+ *
+ * @param {any} e.targetasHTMLInputElement - The e.targetashtmlinputelement
+ *
+ * @returns {any} The checked result
+ *
+ */
+const checked = (e.target as HTMLInputElement).checked;
       setFormData((prev) => ({ ...prev, [name]: checked }));
     } else if (type === "number") {
       setFormData((prev) => ({ ...prev, [name]: parseFloat(value) || 0 }));
@@ -321,7 +336,15 @@ export default function EditCouponPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormInput
                 label="Total Usage Limit"
-                type="number"
+     /**
+ * Performs value operation
+ *
+ * @param {any} (prev - The (prev
+ *
+ * @returns {any} The value result
+ *
+ */
+           type="number"
                 name="maxUses"
                 value={formData.maxUses || ""}
                 onChange={(e) => {

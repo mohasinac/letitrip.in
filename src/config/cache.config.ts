@@ -4,7 +4,8 @@
  * @description This file contains functionality related to cache.config
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -22,7 +23,9 @@
  * @interface CacheConfigEntry
  */
 export interface CacheConfigEntry {
+  /** Ttl */
   ttl: number; // Milliseconds
+  /** StaleWhileRevalidate */
   staleWhileRevalidate?: number; // Milliseconds
   /** Description */
   description?: string;
@@ -157,7 +160,15 @@ export function getEnvironmentCacheConfig(): Record<string, CacheConfigEntry> {
   // Example: Override from environment variables
   // CACHE_PRODUCTS_TTL=600000 would set products cache to 10 minutes
   if (typeof window === "undefined" && process.env) {
-    const envKeys = Object.keys(process.env).filter((key) =>
+    /**
+ * Performs env keys operation
+ *
+ * @param {any} process.env - The process.env
+ *
+ * @returns {any} The envkeys result
+ *
+ */
+const envKeys = Object.keys(process.env).filter((key) =>
       key.startsWith("CACHE_"),
     );
 

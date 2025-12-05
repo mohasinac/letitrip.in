@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -45,7 +46,13 @@ const categoryLabels = {
   other: "Other",
 };
 
-export default function UserTicketsPage() {
+export default /**
+ * Performs user tickets page operation
+ *
+ * @returns {any} The userticketspage result
+ *
+ */
+function UserTicketsPage() {
   const router = useRouter();
   const {
     /** Data */
@@ -73,7 +80,15 @@ export default function UserTicketsPage() {
     category: "",
   });
 
-  const fetchTickets = useCallback(async () => {
+  /**
+ * Fetches tickets
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The fetchtickets result
+ *
+ */
+const fetchTickets = useCallback(async () => {
     const startAfter = cursors[currentPage - 1];
     const response = await execute(() =>
       supportService.listTickets({
@@ -90,7 +105,15 @@ export default function UserTicketsPage() {
     if (response) {
       // Check if it's cursor pagination
       if ("hasNextPage" in response.pagination) {
-        setHasNextPage(response.pagination.hasNextPage || false);
+        /**
+ * Performs cursor pagination operation
+ *
+ * @param {any} cursorPagination.nextCursor - The cursorpagination.nextcursor
+ *
+ * @returns {any} The cursorpagination result
+ *
+ */
+setHasNextPage(response.pagination.hasNextPage || false);
 
         if ("nextCursor" in response.pagination) {
           const cursorPagination = response.pagination as any;

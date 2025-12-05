@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -128,7 +129,15 @@ export async function GET(request: NextRequest) {
         .where("shop_id", "==", shopId)
         .get();
 
-      const orderIds = [
+      /**
+ * Performs order ids operation
+ *
+ * @param {any} orderItemsSnapshot.docs.map((doc - The orderitemssnapshot.docs.map((doc
+ *
+ * @returns {any} The orderids result
+ *
+ */
+const orderIds = [
         ...new Set(
           orderItemsSnapshot.docs.map((doc: any) => doc.data().order_id),
         ),
@@ -148,7 +157,15 @@ export async function GET(request: NextRequest) {
             )
             .where(
               "created_at",
-              "<=",
+         /**
+ * Performs orders operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The orders result
+ *
+ */
+     "<=",
               safeToISOString(end) ?? new Date().toISOString(),
             )
             .get();
@@ -170,7 +187,15 @@ export async function GET(request: NextRequest) {
           (o: any) => o.status === "delivered",
         ).length;
         analytics.orders.cancelled = orders.filter(
-          (o: any) => o.status === "cancelled",
+          (o: any) => o.status === "c/**
+ * Performs customer ids operation
+ *
+ * @param {any} orders.map((o - The orders.map((o
+ *
+ * @returns {any} The customerids result
+ *
+ */
+ancelled",
         ).length;
 
         analytics.revenue.average =
@@ -189,7 +214,15 @@ export async function GET(request: NextRequest) {
           const isoDate = safeToISOString(new Date(order.created_at));
           const date = isoDate ? isoDate.split("T")[0] : "";
           if (date) {
-            salesByDay.set(
+            salesByDay.set/**
+ * Performs orders operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The orders result
+ *
+ */
+(
               date,
               (salesByDay.get(date) || 0) + (order.total || 0),
             );
@@ -214,7 +247,15 @@ export async function GET(request: NextRequest) {
       }, 0);
 
       analytics.orders.total = orders.length;
-      analytics.orders.pending = orders.filter(
+      analytics.orders.pending/**
+ * Performs customer ids operation
+ *
+ * @param {any} orders.map((o - The orders.map((o
+ *
+ * @returns {any} The customerids result
+ *
+ */
+ = orders.filter(
         (o: any) => o.status === "pending" || o.status === "confirmed",
       ).length;
       analytics.orders.completed = orders.filter(
@@ -234,7 +275,15 @@ export async function GET(request: NextRequest) {
       analytics.customers.total = customerIds.length;
 
       // Sales over time
-      const salesByDay = new Map<string, number>();
+      const salesByDay = new Map<st/**
+ * Performs products operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The products result
+ *
+ */
+ring, number>();
       orders.forEach((order: any) => {
         const isoDate = safeToISOString(new Date(order.created_at));
         const date = isoDate ? isoDate.split("T")[0] : "";
@@ -282,7 +331,15 @@ export async function GET(request: NextRequest) {
         .limit(1000)
         .get();
 
-      orderItemsSnapshot.docs.forEach((doc: any) => {
+      orde/**
+ * Performs products operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The products result
+ *
+ */
+rItemsSnapshot.docs.forEach((doc: any) => {
         const item: any = doc.data();
         const existing = productSales.get(item.product_id) || {
           /** Name */

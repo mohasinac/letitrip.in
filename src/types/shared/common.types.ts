@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for common
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -18,7 +19,9 @@
  * Firestore Timestamp structure
  */
 export interface FirebaseTimestamp {
+  /** _seconds */
   _seconds: number;
+  /** _nanoseconds */
   _nanoseconds: number;
 }
 

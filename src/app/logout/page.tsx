@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -17,7 +18,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function LogoutPage() {
+export default /**
+ * Performs logout page operation
+ *
+ * @returns {any} The logoutpage result
+ *
+ */
+function LogoutPage() {
   const router = useRouter();
   const { logout, user } = useAuth();
   const [status, setStatus] = useState<"logging-out" | "success" | "error">(

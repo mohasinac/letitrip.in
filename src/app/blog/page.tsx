@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -27,7 +28,13 @@ export const metadata: Metadata = {
  * @example
  * const result = BlogPage();
  */
-export default function BlogPage() {
+export default /**
+ * Performs blog page operation
+ *
+ * @returns {any} The blogpage result
+ *
+ */
+function BlogPage() {
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Suspense

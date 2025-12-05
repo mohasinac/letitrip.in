@@ -4,7 +4,8 @@
  * @description This file contains the VerificationGate component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -31,6 +32,7 @@ interface VerificationGateProps {
   requirePhone?: boolean;
   /** Message */
   message?: string;
+  /** ActionName */
   actionName?: string; // e.g., "checkout", "place bid"
 }
 

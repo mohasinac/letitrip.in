@@ -4,7 +4,8 @@
  * @description This file contains the OptimizedImage component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import Image from "next/image";
@@ -37,7 +38,9 @@ interface OptimizedImageProps {
   sizes?: string;
   /** Object Fit */
   objectFit?: "contain" | "cover" | "fill" | "none" | "scale-down";
+  /** FocusX */
   focusX?: number; // 0-100, percentage from left
+  /** FocusY */
   focusY?: number; // 0-100, percentage from top
   /** On Load */
   onLoad?: () => void;
@@ -66,7 +69,45 @@ interface OptimizedImageProps {
  *   focusY={30}
  * />
  */
-export default function OptimizedImage({
+export default /**
+ * Performs optimized image operation
+ *
+ * @param {OptimizedImageProps} [{
+  src,
+  alt,
+  width,
+  height,
+  className = "",
+  fill = false,
+  priority = false,
+  quality = 85,
+  sizes,
+  objectFit = "cover",
+  focusX = 50,
+  focusY = 50,
+  onLoad,
+  onError,
+}] - The {
+  src,
+  alt,
+  width,
+  height,
+  classname = "",
+  fill = false,
+  priority = false,
+  quality = 85,
+  sizes,
+  objectfit = "cover",
+  focusx = 50,
+  focusy = 50,
+  onload,
+  onerror,
+}
+ *
+ * @returns {any} The optimizedimage result
+ *
+ */
+function OptimizedImage({
   src,
   alt,
   width,

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -55,7 +56,15 @@ export async function GET(
 
     // List with no filters to get all, then find by id
     const assets = await listAssets({});
-    const asset = assets.find((a) => a.id === id);
+    /**
+ * Performs asset operation
+ *
+ * @param {any} (a - The (a
+ *
+ * @returns {any} The asset result
+ *
+ */
+const asset = assets.find((a) => a.id === id);
 
     if (!asset) {
       return NextResponse.json(
@@ -113,6 +122,17 @@ export async function GET(
   req, {});
  */
 
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The patch result
+ *
+ * @example
+ * PATCH(req, {});
+ */
 export async function PATCH(
   /** Req */
   req: NextRequest,

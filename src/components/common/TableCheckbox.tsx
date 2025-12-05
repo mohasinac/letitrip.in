@@ -4,7 +4,8 @@
  * @description This file contains the TableCheckbox component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -40,7 +41,15 @@ export function TableCheckbox({
   disabled,
   label,
 }: TableCheckboxProps) {
-  const checkboxRef = useRef<HTMLInputElement>(null);
+  /**
+ * Performs checkbox ref operation
+ *
+ * @param {any} null - The null
+ *
+ * @returns {any} The checkboxref result
+ *
+ */
+const checkboxRef = useRef<HTMLInputElement>(null);
 
   // Set indeterminate state (can't be done via JSX)
   useEffect(() => {

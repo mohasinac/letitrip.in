@@ -4,7 +4,8 @@
  * @description This file contains the ShopOrderSummary component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -88,7 +89,16 @@ export function ShopOrderSummary({
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
 
-  const subtotal = items.reduce(
+  /**
+ * Performs subtotal operation
+ *
+ * @param {any} (sum - The (sum
+ * @param {any} item - The item
+ *
+ * @returns {any} The subtotal result
+ *
+ */
+const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );

@@ -4,7 +4,8 @@
  * @description This file contains the UserSidebar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -221,7 +222,15 @@ export function UserSidebar() {
   };
 
   // Filter navigation items based on search query
-  const filterNavigation = React.useMemo(() => {
+  /**
+ * Performs filter navigation operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The filternavigation result
+ *
+ */
+const filterNavigation = React.useMemo(() => {
     if (!searchQuery.trim()) return navigation;
 
     const query = searchQuery.toLowerCase().trim();

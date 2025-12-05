@@ -4,7 +4,8 @@
  * @description This file contains functionality related to slug
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -33,12 +34,15 @@ export interface ValidationResult {
 interface UseRemoteValidationOptions {
   /** Value */
   value: string;
+  /** Endpoint */
   endpoint: string; // full endpoint e.g. /api/shops/validate-slug
+  /** ParamName */
   paramName?: string; // default 'slug' or 'code'
   /** Extra Params */
   extraParams?: Record<string, string | undefined>;
   /** Debounce Ms */
   debounceMs?: number;
+  /** Skip */
   skip?: boolean; // skip when creating until length threshold
   /** Min Length */
   minLength?: number;
@@ -79,7 +83,15 @@ export function useRemoteValidation({
   const [error, setError] = useState<string | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const abortRef = useRef<AbortController | null>(null);
-  const extraParamsStr = JSON.stringify(extraParams);
+  /**
+ * Performs extra params str operation
+ *
+ * @param {any} extraParams - The extraparams
+ *
+ * @returns {any} The extraparamsstr result
+ *
+ */
+const extraParamsStr = JSON.stringify(extraParams);
 
   useEffect(() => {
     if (skip) return;
@@ -94,7 +106,13 @@ export function useRemoteValidation({
     // Abort previous fetch
     if (abortRef.current) abortRef.current.abort();
 
-    timerRef.current = setTimeout(async () => {
+    timerRef.current = s/**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+etTimeout(async () => {
       try {
         setChecking(true);
         setError(null);

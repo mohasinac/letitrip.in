@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for user
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -27,6 +28,7 @@ import { PaginationMeta, FilterOperator } from "../shared/pagination.types";
 export interface UserBE {
   /** Id */
   id: string;
+  /** Uid */
   uid: string; // Firebase Auth UID
   /** Email */
   email: string;
@@ -202,9 +204,13 @@ export interface UserFiltersBE {
   phoneVerified?: boolean;
   /** Has Shop */
   hasShop?: boolean;
+  /** Search */
   search?: string; // Search in name, email
+  /** CreatedAfter */
   createdAfter?: string; // ISO date
+  /** CreatedBefore */
   createdBefore?: string; // ISO date
+  /** LastLoginAfter */
   lastLoginAfter?: string; // ISO date
 }
 

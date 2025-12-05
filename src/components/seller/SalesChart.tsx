@@ -4,7 +4,8 @@
  * @description This file contains the SalesChart component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -44,7 +45,15 @@ interface Props {
   data: SalesData[];
 }
 
-export default function SalesChart({ data }: Props) {
+export default /**
+ * Performs sales chart operation
+ *
+ * @param {Props} { data } - The { data }
+ *
+ * @returns {any} The saleschart result
+ *
+ */
+function SalesChart({ data }: Props) {
   /**
    * Formats currency
    *

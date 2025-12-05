@@ -4,7 +4,8 @@
  * @description This file contains the MediaEditorModal component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -29,7 +30,23 @@ interface MediaEditorModalProps {
   onCancel: () => void;
 }
 
-export default function MediaEditorModal({
+export default /**
+ * Performs media editor modal operation
+ *
+ * @param {MediaEditorModalProps} {
+  media,
+  onSave,
+  onCancel,
+} - The {
+  media,
+  onsave,
+  oncancel,
+}
+ *
+ * @returns {any} The mediaeditormodal result
+ *
+ */
+function MediaEditorModal({
   media,
   onSave,
   onCancel,

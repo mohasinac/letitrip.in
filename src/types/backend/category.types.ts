@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for category
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -31,9 +32,11 @@ export interface CategoryBE {
   description: string | null;
   /** Image */
   image: string | null;
+  /** Banner */
   banner: string | null; // Banner/cover image for category pages
   /** Icon */
   icon: string | null;
+  /** ParentIds */
   parentIds: string[]; // Multi-parent support
   /** Level */
   level: number;
@@ -43,9 +46,13 @@ export interface CategoryBE {
   status: Status;
   /** Product Count */
   productCount: number;
+  /** InStockCount */
   inStockCount: number; // Products with stock > 0
+  /** OutOfStockCount */
   outOfStockCount: number; // Products with stock = 0
+  /** LiveAuctionCount */
   liveAuctionCount: number; // Active auctions
+  /** EndedAuctionCount */
   endedAuctionCount: number; // Ended/completed auctions
   /** Is Leaf */
   isLeaf: boolean;

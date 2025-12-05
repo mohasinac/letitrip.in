@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
@@ -49,6 +50,17 @@ import { COLLECTIONS } from "@/constants/database";
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {Request} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: Request,
@@ -104,7 +116,15 @@ export async function GET(
         .where("status", "==", "published")
         .get();
 
-      const batchProducts = productsSnapshot.docs.map((doc) => ({
+      /**
+ * Performs batch products operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The batchproducts result
+ *
+ */
+const batchProducts = productsSnapshot.docs.map((doc) => ({
         /** Id */
         id: doc.id,
         ...doc.data(),

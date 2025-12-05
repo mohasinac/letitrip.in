@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -52,9 +53,23 @@ export const metadata: Metadata = {
  * @example
  * const result = FAQPage();
  */
-export default function FAQPage() {
+export default /**
+ * Performs f a q page operation
+ *
+ * @returns {any} The faqpage result
+ *
+ */
+function FAQPage() {
   // Generate FAQ schema for rich snippets
-  const faqSchema = generateFAQSchema(
+  /**
+ * Performs faq schema operation
+ *
+ * @param {any} FAQ_ITEMS.map((item - The faq_items.map((item
+ *
+ * @returns {any} The faqschema result
+ *
+ */
+const faqSchema = generateFAQSchema(
     FAQ_ITEMS.map((item) => ({
       /** Question */
       question: item.question,

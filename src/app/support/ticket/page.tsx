@@ -4,12 +4,20 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
 
 // Constants for all hardcoded strings
+/**
+ * SUPPORT_TICKET_TITLE constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for support ticket title
+ */
 const SUPPORT_TICKET_TITLE = "Create Support Ticket";
 const SUBJECT_LABEL = "Subject";
 const SUBJECT_PLACEHOLDER = "Brief description of your issue";
@@ -17,12 +25,33 @@ const CATEGORY_LABEL = "Category";
 const CATEGORY_OPTIONS = [
   { value: "order-issue", label: "Order Issue" },
   { value: "return-refund", label: "Return/Refund" },
-  { value: "product-question", label: "Product Question" },
+  { value: "product-question", label: "Product Questi/**
+ * PRIORITY_LABEL constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for priority label
+ */
+on" },
   { value: "account", label: "Account" },
   { value: "payment", label: "Payment" },
-  { value: "other", label: "Other" },
+  {/**
+ * DESCRIPTION_LABEL constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for description label
+ */
+ value: "other", label: "Other" },
 ];
-const PRIORITY_LABEL = "Priority";
+c/**
+ * SUBMITTING_BTN constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for submitting btn
+ */
+onst PRIORITY_LABEL = "Priority";
 const PRIORITY_OPTIONS = [
   { value: "low", label: "Low" },
   { value: "medium", label: "Medium" },
@@ -51,7 +80,13 @@ import { FormSelect } from "@/components/forms/FormSelect";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import { logError } from "@/lib/firebase-error-logger";
 
-export default function SupportTicketPage() {
+export default /**
+ * Performs support ticket page operation
+ *
+ * @returns {any} The supportticketpage result
+ *
+ */
+function SupportTicketPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     /** Subject */

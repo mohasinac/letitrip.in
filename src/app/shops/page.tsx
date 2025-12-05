@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -121,7 +122,15 @@ function ShopsContent() {
 
   const view = (filters.view as "grid" | "list") || "grid";
 
-  const loadShops = useCallback(async () => {
+  /**
+ * Performs load shops operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadshops result
+ *
+ */
+const loadShops = useCallback(async () => {
     await execute(async () => {
       const startAfter = cursors[page - 1];
 
@@ -145,7 +154,15 @@ function ShopsContent() {
       setShops(response.data || []);
       setTotalShops(response.count || 0);
 
-      // Store cursor for next page
+      // Store cursor for ne/**
+ * Performs cursor pagination operation
+ *
+ * @param {any} cursorPagination.nextCursor&&!cursors[page] - The cursorpagination.nextcursor&&!cursors[page]
+ *
+ * @returns {any} The cursorpagination result
+ *
+ */
+xt page
       if (
         "hasNextPage" in response.pagination &&
         "nextCursor" in response.pagination
@@ -153,7 +170,15 @@ function ShopsContent() {
         const cursorPagination = response.pagination as any;
         if (cursorPagination.nextCursor && !cursors[page]) {
           setCursors((prev) => {
-            const newCursors = [...prev];
+            co/**
+ * Handles reset
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handlereset result
+ *
+ */
+nst newCursors = [...prev];
             newCursors[page] = cursorPagination.nextCursor || null;
             return newCursors;
           });
@@ -405,7 +430,13 @@ function ShopsContent() {
  * @example
  * const result = ShopsPage();
  */
-export default function ShopsPage() {
+export default /**
+ * Performs shops page operation
+ *
+ * @returns {any} The shopspage result
+ *
+ */
+function ShopsPage() {
   return (
     <Suspense
       fallback={

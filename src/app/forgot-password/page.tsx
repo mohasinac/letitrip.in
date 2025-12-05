@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -201,7 +202,13 @@ function ForgotPasswordForm() {
   );
 }
 
-export default function ForgotPasswordPage() {
+export default /**
+ * Performs forgot password page operation
+ *
+ * @returns {any} The forgotpasswordpage result
+ *
+ */
+function ForgotPasswordPage() {
   return (
     <Suspense
       fallback={

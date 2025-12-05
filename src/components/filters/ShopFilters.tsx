@@ -4,7 +4,8 @@
  * @description This file contains the ShopFilters component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -82,7 +83,16 @@ export const ShopFilters: React.FC<ShopFiltersProps> = ({
 }) => {
   const hasActiveFilters = Object.keys(filters).length > 0;
 
-  const updateFilter = <K extends keyof ShopFilterValues>(
+  /**
+ * Updates filter
+ *
+ * @param {K} key - The key
+ * @param {ShopFilterValues[K]} value - The value
+ *
+ * @returns {any} The updatefilter result
+ *
+ */
+const updateFilter = <K extends keyof ShopFilterValues>(
     /** Key */
     key: K,
     /** Value */

@@ -4,7 +4,8 @@
  * @description This file contains the ThemeContext component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -46,6 +47,13 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+/**
+ * THEME_STORAGE_KEY constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for theme storage key
+ */
 const THEME_STORAGE_KEY = "jfv-theme";
 
 /**
@@ -199,6 +207,28 @@ interface ThemeProviderProps {
   defaultTheme);
  */
 
+/**
+ * Performs theme provider operation
+ *
+ * @param {ThemeProviderProps} [{
+  children,
+  defaultTheme = "dark",
+  enableStorage = true,
+}] - The {
+  children,
+  defaulttheme = "dark",
+  enablestorage = true,
+}
+ *
+ * @returns {any} The themeprovider result
+ *
+ * @example
+ * ThemeProvider({
+  children,
+  defaultTheme = "dark",
+  enableStorage = true,
+});
+ */
 export function ThemeProvider({
   children,
   defaultTheme = "dark",
@@ -219,17 +249,41 @@ export function ThemeProvider({
   }, [defaultTheme, enableStorage]);
 
   // Set theme function
-  const setTheme = useCallback(
+  /**
+ * Sets theme
+ *
+ * @param {Theme} (newTheme - The (newtheme
+ *
+ * @returns {any} The settheme result
+ *
+ */
+const setTheme = useCallback(
     (newTheme: Theme) => {
       setThemeState(newTheme);
 
       if (enableStorage) {
         storeTheme(newTheme);
-      }
+   /**
+ * Performs toggle theme operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The toggletheme result
+ *
+ */
+   }
 
       applyTheme(newTheme);
     },
-    [enableStorage],
+    [enableStorage],/**
+ * Performs value operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The value result
+ *
+ */
+
   );
 
   // Toggle between light and dark

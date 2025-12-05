@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -19,7 +20,13 @@ import { CheckCircle, Loader2, Mail, MapPin, Phone, Send } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-export default function ContactPage() {
+export default /**
+ * Performs contact page operation
+ *
+ * @returns {any} The contactpage result
+ *
+ */
+function ContactPage() {
   const [formData, setFormData] = useState({
     /** Name */
     name: "",
@@ -114,7 +121,15 @@ export default function ContactPage() {
    * @returns {any} The handlechange result
    */
 
-  const handleChange = (
+  /**
+ * Handles change
+ *
+ * @param {React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>} e - The e
+ *
+ * @returns {any} The handlechange result
+ *
+ */
+const handleChange = (
     /** E */
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {

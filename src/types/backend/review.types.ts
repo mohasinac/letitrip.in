@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for review
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -149,10 +150,15 @@ export interface ReviewStatsResponseBE {
   averageRating: number;
   /** Rating Distribution */
   ratingDistribution: {
+    /** 5 */
     5: number;
+    /** 4 */
     4: number;
+    /** 3 */
     3: number;
+    /** 2 */
     2: number;
+    /** 1 */
     1: number;
   };
 }

@@ -4,7 +4,8 @@
  * @description This file contains the ReviewFilters component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -80,7 +81,16 @@ export const ReviewFilters: React.FC<ReviewFiltersProps> = ({
 }) => {
   const hasActiveFilters = Object.keys(filters).length > 0;
 
-  const updateFilter = <K extends keyof ReviewFilterValues>(
+  /**
+ * Updates filter
+ *
+ * @param {K} key - The key
+ * @param {ReviewFilterValues[K]} value - The value
+ *
+ * @returns {any} The updatefilter result
+ *
+ */
+const updateFilter = <K extends keyof ReviewFilterValues>(
     /** Key */
     key: K,
     /** Value */
@@ -101,7 +111,15 @@ export const ReviewFilters: React.FC<ReviewFiltersProps> = ({
    * Performs toggle array filter operation
    *
    * @param {string} value - The value
-   *
+  /**
+ * Updates d
+ *
+ * @param {any} value - The value
+ *
+ * @returns {any} The updated result
+ *
+ */
+ *
    * @returns {string} The togglearrayfilter result
    */
 

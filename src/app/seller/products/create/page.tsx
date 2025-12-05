@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -23,6 +24,13 @@ import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * STEPS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for steps
+ */
 const STEPS = [
   {
     /** Id */
@@ -42,7 +50,13 @@ const STEPS = [
   },
 ];
 
-export default function CreateProductPage() {
+export default /**
+ * Creates product page
+ *
+ * @returns {any} The createproductpage result
+ *
+ */
+function CreateProductPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
@@ -218,7 +232,15 @@ export default function CreateProductPage() {
   };
 
   // Validate a specific step
-  const validateStep = useCallback(
+  /**
+ * Validates step
+ *
+ * @param {number} (stepIndex - The (stepindex
+ *
+ * @returns {string[] =>} The validatestep result
+ *
+ */
+const validateStep = useCallback(
     (stepIndex: number): string[] => {
       const errors: string[] = [];
 
@@ -233,7 +255,15 @@ export default function CreateProductPage() {
           if (formData.images.length === 0)
             errors.push("At least one image is required");
           break;
-        case 1: // Optional - no required validations
+        case 1: // Optional - no /**
+ * Handles validate
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handlevalidate result
+ *
+ */
+required validations
           break;
       }
 
@@ -251,7 +281,15 @@ export default function CreateProductPage() {
       const stepErrors = validateStep(index);
       if (stepErrors.length > 0) {
         newErrorSteps.push(index);
-        allErrors[step.name] = stepErrors;
+        allErr/**
+ * Performs error summary operation
+ *
+ * @param {any} allErrors - The allerrors
+ *
+ * @returns {any} The errorsummary result
+ *
+ */
+ors[step.name] = stepErrors;
       }
     });
 

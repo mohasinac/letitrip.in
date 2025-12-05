@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -137,7 +138,15 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * pageSize;
     const snapshot = await query.offset(offset).limit(pageSize).get();
 
-    const conversations = snapshot.docs.map((doc) => {
+    /**
+ * Performs conversations operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The conversations result
+ *
+ */
+const conversations = snapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         /** Id */
@@ -311,7 +320,15 @@ export async function POST(request: NextRequest) {
         /** Is Deleted */
         isDeleted: false,
         /** Created At */
-        createdAt: now,
+        createdAt: now/**
+ * Performs other participant id operation
+ *
+ * @param {string} (id - The (id
+ *
+ * @returns {any} The otherparticipantid result
+ *
+ */
+,
       };
 
       await messageRef.set(messageData);
@@ -397,7 +414,15 @@ export async function POST(request: NextRequest) {
     const recipientData = recipientDoc.data();
     const recipientName =
       recipientData?.displayName || recipientData?.email || "User";
-    const recipientType = getUserType(recipientData?.role || "user");
+    const recipientType =/**
+ * Performs existing conversation operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The existingconversation result
+ *
+ */
+ getUserType(recipientData?.role || "user");
 
     // Check for existing conversation between these users
     const existingQuery = await db

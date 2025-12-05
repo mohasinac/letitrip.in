@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -95,7 +96,15 @@ function LoginForm() {
     await execute(async () => {
       await login(formData.email, formData.password);
       // Get redirect URL from query params or default to home
-      const redirect = searchParams.get("redirect") || "/";
+      /**
+ * Performs redirect operation
+ *
+ * @param {any} "redirect" - The "redirect"
+ *
+ * @returns {any} The redirect result
+ *
+ */
+const redirect = searchParams.get("redirect") || "/";
       // Small delay to ensure state is updated before redirect
       setTimeout(() => {
         router.replace(redirect);
@@ -326,7 +335,13 @@ function LoginForm() {
   );
 }
 
-export default function LoginPage() {
+export default /**
+ * Performs login page operation
+ *
+ * @returns {any} The loginpage result
+ *
+ */
+function LoginPage() {
   return (
     <Suspense
       fallback={

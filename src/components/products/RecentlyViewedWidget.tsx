@@ -4,7 +4,8 @@
  * @description This file contains the RecentlyViewedWidget component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -67,7 +68,15 @@ export function RecentlyViewedWidget({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Filter out excluded ID and limit
-  const items = recentlyViewed
+  /**
+ * Performs items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The items result
+ *
+ */
+const items = recentlyViewed
     .filter((item) => item.id !== excludeId)
     .slice(0, limit);
 

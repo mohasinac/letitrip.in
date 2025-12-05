@@ -4,7 +4,8 @@
  * @description This file contains service functions for support operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiService } from "./api.service";
@@ -52,7 +53,13 @@ class SupportService {
     /** Filters */
     filters?: Partial<SupportTicketFiltersBE>,
   ): Promise<PaginatedResponseFE<SupportTicketFE>> {
-    const params = new URLSearchParams();
+    /**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+const params = new URLSearchParams();
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -275,7 +282,13 @@ class SupportService {
     averageResolutionTime: number;
     /** Tickets By Category */
     ticketsByCategory: Record<TicketCategory, number>;
-    /** Tickets By Priority */
+    /** Tickets By/**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+ Priority */
     ticketsByPriority: Record<TicketPriority, number>;
   }> {
     const params = new URLSearchParams();
@@ -304,7 +317,13 @@ class SupportService {
     return this.listTickets(filters);
   }
 
-  // Get ticket count
+  // Get ticket count/**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+
   async getTicketCount(
     /** Filters */
     filters?: Pick<Partial<SupportTicketFiltersBE>, "status" | "category">,

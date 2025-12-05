@@ -4,7 +4,8 @@
  * @description This file contains the MediaUploader component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -53,7 +54,43 @@ interface MediaUploaderProps {
   enableEditing?: boolean;
 }
 
-export default function MediaUploader({
+export default /**
+ * Performs media uploader operation
+ *
+ * @param {MediaUploaderProps} [{
+  accept = "all",
+  maxFiles = 10,
+  resourceType = "product",
+  multiple = true,
+  onFilesAdded,
+  onFileRemoved,
+  onFileEdited,
+  files = [],
+  className = "",
+  disabled = false,
+  enableCamera = true,
+  enableVideoRecording = true,
+  enableEditing = true,
+}] - The {
+  accept = "all",
+  maxfiles = 10,
+  resourcetype = "product",
+  multiple = true,
+  onfilesadded,
+  onfileremoved,
+  onfileedited,
+  files = [],
+  classname = "",
+  disabled = false,
+  enablecamera = true,
+  enablevideorecording = true,
+  enableediting = true,
+}
+ *
+ * @returns {any} The mediauploader result
+ *
+ */
+function MediaUploader({
   accept = "all",
   maxFiles = 10,
   resourceType = "product",

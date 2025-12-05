@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useBulkSelection
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -114,41 +115,121 @@ export function useBulkSelection<T>({
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelected);
 
   // Get all item IDs
-  const allIds = useMemo(() => {
-    return items.map((item) => String(item[keyProperty]));
-  }, [items, keyProperty]);
+  /**
+ * Performs all ids operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The allids result
+ *
+ */
+const allIds = useMemo(() => {
+    return items.ma/**
+ * Checks if selected
+ *
+ * @param {string} (id - The (id
+ *
+ * @returns {any} The isselected result
+ *
+ */
+p((item) => String(item[keyProperty]));
+  }, [items, keyPr/**
+ * Checks if all selected
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The isallselected result
+ *
+ */
+operty]);
 
   // Check if an item is selected
-  const isSelected = useCallback(
+  const isSelected = us/**
+ * Checks if some selected
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The issomeselected result
+ *
+ */
+eCallback(
     (id: string) => {
       return selectedIds.includes(id);
     },
     [selectedIds]
   );
 
-  // Check if all items are selected
+  // Check if all items are s/**
+ * Updates selection
+ *
+ * @param {string[]} (newSelectedIds - The (newselectedids
+ *
+ * @returns {any} The updateselection result
+ *
+ */
+elected
   const isAllSelected = useMemo(() => {
-    return allIds.length > 0 && selectedIds.length === allIds.length;
+    return allIds.length > 0 && selectedIds.length/**
+ * Performs toggle selection operation
+ *
+ * @param {string} (id - The (id
+ *
+ * @returns {any} The toggleselection result
+ *
+ */
+ === allIds.length;
   }, [allIds, selectedIds]);
 
   // Check if some items are selected
   const isSomeSelected = useMemo(() => {
-    return selectedIds.length > 0 && selectedIds.length < allIds.length;
+    return selectedIds.length > 0 && selectedIds.length < allIds.le/**
+ * Performs toggle all operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The toggleall result
+ *
+ */
+ngth;
   }, [allIds, selectedIds]);
 
   // Selected count
-  const selectedCount = selectedIds.length;
+  const selectedCount = selectedIds/**
+ * Performs select all operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The selectall result
+ *
+ */
+.length;
 
   // Update selection with callback
   const updateSelection = useCallback(
     (newSelectedIds: string[]) => {
-      setSelectedIds(newSelectedIds);
+      setSelectedIds(/**
+ * Performs select multiple operation
+ *
+ * @param {string[]} (ids - The (ids
+ *
+ * @returns {any} The selectmultiple result
+ *
+ */
+newSelectedIds);
       onSelectionChange?.(newSelectedIds);
     },
     [onSelectionChange]
   );
 
-  // Toggle selection for a single item
+  // Toggle select/**
+ * Performs deselect multiple operation
+ *
+ * @param {string[]} (ids - The (ids
+ *
+ * @returns {any} The deselectmultiple result
+ *
+ */
+ion for a single item
   const toggleSelection = useCallback(
     (id: string) => {
       const newSelectedIds = isSelected(id)
@@ -160,7 +241,15 @@ export function useBulkSelection<T>({
     [selectedIds, isSelected, updateSelection]
   );
 
-  // Toggle all items
+  // Toggle /**
+ * Performs selected set operation
+ *
+ * @param {any} selectedIds - The selectedids
+ *
+ * @returns {any} The selectedset result
+ *
+ */
+all items
   const toggleAll = useCallback(() => {
     const newSelectedIds = isAllSelected ? [] : allIds;
     updateSelection(newSelectedIds);

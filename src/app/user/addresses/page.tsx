@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -50,7 +51,15 @@ function AddressesContent() {
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const loadAddresses = useCallback(async () => {
+  /**
+ * Performs load addresses operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadaddresses result
+ *
+ */
+const loadAddresses = useCallback(async () => {
     return await addressService.getAll();
   }, []);
 
@@ -317,7 +326,13 @@ function AddressesContent() {
   );
 }
 
-export default function AddressesPage() {
+export default /**
+ * Performs addresses page operation
+ *
+ * @returns {any} The addressespage result
+ *
+ */
+function AddressesPage() {
   return (
     <AuthGuard requireAuth={true}>
       <AddressesContent />

@@ -4,7 +4,8 @@
  * @description This file contains service functions for reviews operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiService } from "./api.service";
@@ -50,7 +51,13 @@ class ReviewsService {
     /** Filters */
     filters?: Record<string, any>,
   ): Promise<PaginatedResponseFE<ReviewFE>> {
-    const params = new URLSearchParams();
+    /**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+const params = new URLSearchParams();
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -121,7 +128,13 @@ class ReviewsService {
     );
   }
 
-  // Upload media for review
+  // Upload media fo/**
+ * Performs form data operation
+ *
+ * @returns {any} The formdata result
+ *
+ */
+r review
   async uploadMedia(files: File[]): Promise<{ urls: string[] }> {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
@@ -154,7 +167,13 @@ class ReviewsService {
     averageRating: number;
     /** Total Reviews */
     totalReviews: number;
-    /** Rating Distribution */
+    /** Rating Distr/**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+ibution */
     ratingDistribution: { rating: number; count: number }[];
     /** Verified Purchase Percentage */
     verifiedPurchasePercentage: number;

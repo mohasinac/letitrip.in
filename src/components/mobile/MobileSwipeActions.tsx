@@ -4,7 +4,8 @@
  * @description This file contains the MobileSwipeActions component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -92,8 +93,24 @@ export function MobileSwipeActions({
   const isDragging = useRef(false);
   const isHorizontal = useRef<boolean | null>(null);
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    startX.current = e.touches[0].clientX;
+  /**
+ * Handles touch start
+ *
+ * @param {React.TouchEvent} (e - The (e
+ *
+ * @returns {any} The handletouchstart result
+ *
+ */
+const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;/**
+ * Handles touch move
+ *
+ * @param {React.TouchEvent} (e - The (e
+ *
+ * @returns {any} The handletouchmove result
+ *
+ */
+
     startY.current = e.touches[0].clientY;
     isDragging.current = true;
     isHorizontal.current = null;
@@ -136,7 +153,15 @@ export function MobileSwipeActions({
 
       // Limit movement based on available actions
       const maxLeft = rightActions.length > 0 ? threshold + 20 : 0;
-      const maxRight = leftActions.length > 0 ? threshold + 20 : 0;
+      const maxRigh/**
+ * Handles touch end
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handletouchend result
+ *
+ */
+t = leftActions.length > 0 ? threshold + 20 : 0;
 
       newTranslateX = Math.max(-maxLeft, Math.min(maxRight, newTranslateX));
       setTranslateX(newTranslateX);

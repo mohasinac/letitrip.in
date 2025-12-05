@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -22,7 +23,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function EventDetailPage() {
+export default /**
+ * Performs event detail page operation
+ *
+ * @returns {any} The eventdetailpage result
+ *
+ */
+function EventDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
@@ -57,7 +58,15 @@ export async function GET(
       .where("demoSession", "==", sessionId)
       .get();
 
-    const orders = ordersSnap.docs.map((doc) => ({
+    /**
+ * Performs orders operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The orders result
+ *
+ */
+const orders = ordersSnap.docs.map((doc) => ({
       /** Id */
       id: doc.id,
       ...doc.data(),
@@ -67,7 +76,15 @@ export async function GET(
     const revenueByDate = orders.reduce((acc: any, order: any) => {
       const date = order.createdAt?.toDate
         ? toDateInputValue(order.createdAt.toDate())
-        : getTodayDateInputValue();
+        : getTodayDat/**
+ * Performs revenue time series operation
+ *
+ * @param {any} revenueByDate - The revenuebydate
+ *
+ * @returns {any} The revenuetimeseries result
+ *
+ */
+eInputValue();
 
       acc[date] = (acc[date] || 0) + (order.total || 0);
       return acc;
@@ -75,20 +92,44 @@ export async function GET(
 
     const revenueTimeSeries = Object.entries(revenueByDate).map(
       ([date, revenue]) => ({
-        date,
+        dat/**
+ * Performs products operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The products result
+ *
+ */
+e,
         /** Revenue */
         revenue: Math.round(revenue as number),
       }),
     );
 
     // Category distribution
-    const productsSnap = await db
+    const productsSnap /**
+ * Performs categories map operation
+ *
+ * @param {any} categoriesSnap.docs.map((doc - The categoriessnap.docs.map((doc
+ *
+ * @returns {any} The categoriesmap result
+ *
+ */
+= await db
       .collection(COLLECTIONS.PRODUCTS)
       .where("demoSession", "==", sessionId)
       .get();
 
     const products = productsSnap.docs.map((doc) => ({
       /** Id */
+/**
+ * Performs category data operation
+ *
+ * @param {any} categoryDistribution - The categorydistribution
+ *
+ * @returns {any} The categorydata result
+ *
+ */
       id: doc.id,
       ...doc.data(),
     }));
@@ -98,12 +139,28 @@ export async function GET(
       .where("demoSession", "==", sessionId)
       .get();
 
-    const categoriesMap = new Map(
+    const categoriesMap = n/**
+ * Performs status data operation
+ *
+ * @param {any} statusDistribution - The statusdistribution
+ *
+ * @returns {any} The statusdata result
+ *
+ */
+ew Map(
       categoriesSnap.docs.map((doc) => [doc.id, doc.data().name]),
     );
 
     const categoryDistribution = products.reduce((acc: any, product: any) => {
-      const categoryName = categoriesMap.get(product.categoryId) || "Unknown";
+      const categoryName = categoriesMap.get(product.categoryId) || "Unknown"/**
+ * Performs payment data operation
+ *
+ * @param {any} paymentDistribution - The paymentdistribution
+ *
+ * @returns {any} The paymentdata result
+ *
+ */
+;
       acc[categoryName] = (acc[categoryName] || 0) + 1;
       return acc;
     }, {});

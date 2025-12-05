@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -327,7 +328,13 @@ function CreateAuctionContent() {
   );
 }
 
-export default function CreateAuctionPage() {
+export default /**
+ * Creates auction page
+ *
+ * @returns {any} The createauctionpage result
+ *
+ */
+function CreateAuctionPage() {
   return (
     <ErrorBoundary>
       <CreateAuctionContent />

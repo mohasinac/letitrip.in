@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -22,7 +23,13 @@ import { SimplePagination } from "@/components/common/Pagination";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
 import { DateDisplay } from "@/components/common/values/DateDisplay";
 
-export default function SupportTicketsPage() {
+export default /**
+ * Performs support tickets page operation
+ *
+ * @returns {any} The supportticketspage result
+ *
+ */
+function SupportTicketsPage() {
   return (
     <AuthGuard requireAuth allowedRoles={["admin"]}>
       <SupportTicketsContent />
@@ -94,7 +101,15 @@ function SupportTicketsContent() {
 
   const [closingTicket, setClosingTicket] = useState<string | null>(null);
 
-  const loadData = useCallback(async () => {
+  /**
+ * Performs load data operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loaddata result
+ *
+ */
+const loadData = useCallback(async () => {
     const [ticketsRes, statsData] = await Promise.all([
       supportService.listTickets({
         ...filterValues,

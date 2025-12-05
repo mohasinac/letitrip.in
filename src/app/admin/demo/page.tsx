@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -42,7 +43,13 @@ import type {
   StepStatus,
 } from "./components/types";
 
-export default function AdminDemoPage() {
+export default /**
+ * Performs admin demo page operation
+ *
+ * @returns {any} The admindemopage result
+ *
+ */
+function AdminDemoPage() {
   const {
     /** Is Loading */
     isLoading: loading,
@@ -94,7 +101,15 @@ export default function AdminDemoPage() {
   >(getInitialStepStatuses());
 
   // Refresh stats function
-  const refreshStats = useCallback(async () => {
+  /**
+ * Performs refresh stats operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The refreshstats result
+ *
+ */
+const refreshStats = useCallback(async () => {
     try {
       setRefreshing(true);
       const data = await demoDataService.getStats();
@@ -106,7 +121,13 @@ export default function AdminDemoPage() {
     } catch {
       // Keep existing summary on error
     } finally {
-      setRefreshing(false);
+   /**
+ * Performs data operation
+ *
+ * @returns {any} The data result
+ *
+ */
+   setRefreshing(false);
     }
   }, []);
 
@@ -123,7 +144,16 @@ export default function AdminDemoPage() {
   }, [execute]);
 
   // Poll stats during generation
-  useEffect(() => {
+  /**
+ * Updates step status
+ *
+ * @param {DemoStep} (step - The (step
+ * @param {StepStatus} status - The status
+ *
+ * @returns {any} The updatestepstatus result
+ *
+ */
+useEffect(() => {
     if (!generating) return;
 
     const interval = setInterval(() => {
@@ -293,7 +323,15 @@ export default function AdminDemoPage() {
             break;
 
           case "extras":
-            result = await demoDataService.generateExtras({
+            result = await demoDataServic/**
+ * Performs total extras operation
+ *
+ * @param {any} result.data - The result.data
+ *
+ * @returns {any} The totalextras result
+ *
+ */
+e.generateExtras({
               /** Shops */
               shops: state.shops,
               /** Buyers */
@@ -361,7 +399,15 @@ export default function AdminDemoPage() {
   /**
    * Performs async operation
    *
-   * @returns {Promise<any>} Promise resolving to async  result
+   * /**
+ * Performs state operation
+ *
+ * @param {any} conststepConfigofGENERATION_STEPS - The conststepconfigofgeneration_steps
+ *
+ * @returns {any} The state result
+ *
+ */
+@returns {Promise<any>} Promise resolving to async  result
    *
    * @throws {Error} When operation fails or validation errors occur
    */
@@ -458,7 +504,16 @@ export default function AdminDemoPage() {
 
       const { success, state } = await runStep(step, generationState);
 
-      if (success) {
+      if (success) /**
+ * Updates cleanup step status
+ *
+ * @param {DemoStep} (step - The (step
+ * @param {StepStatus} status - The status
+ *
+ * @returns {any} The updatecleanupstepstatus result
+ *
+ */
+{
         setGenerationState(state);
         if (state.credentials) {
           setCredentials(state.credentials as CredentialsData);
@@ -525,7 +580,15 @@ export default function AdminDemoPage() {
   /**
    * Performs async operation
    *
-   * @returns {Promise<any>} Promise resolving to async  result
+   * @returns {Promise/**
+ * Performs breakdown operation
+ *
+ * @param {any} conststepofCLEANUP_STEPS - The conststepofcleanup_steps
+ *
+ * @returns {any} The breakdown result
+ *
+ */
+<any>} Promise resolving to async  result
    *
    * @throws {Error} When operation fails or validation errors occur
    */
@@ -652,7 +715,15 @@ export default function AdminDemoPage() {
    */
 
   /**
-   * Handles pause toggle event
+   * H/**
+ * Performs completed steps operation
+ *
+ * @param {any} stepStatuses - The stepstatuses
+ *
+ * @returns {any} The completedsteps result
+ *
+ */
+andles pause toggle event
    *
    * @returns {any} The handlepausetoggle result
    */

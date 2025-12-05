@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -77,8 +78,24 @@ export async function GET(request: NextRequest) {
         .get();
 
       // Filter in-stock products only
-      const inStockProducts = productsSnapshot.docs
+      /**
+ * Performs in stock products operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The instockproducts result
+ *
+ */
+const inStockProducts = productsSnapshot.docs
         .filter((doc) => {
+/**
+ * Performs items operation
+ *
+ * @param {any} (productDoc - The (productdoc
+ *
+ * @returns {any} The items result
+ *
+ */
           const product = doc.data();
           return product.stock > 0;
         })

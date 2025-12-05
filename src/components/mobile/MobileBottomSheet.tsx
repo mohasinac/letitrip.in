@@ -4,7 +4,8 @@
  * @description This file contains the MobileBottomSheet component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -77,7 +78,15 @@ export function MobileBottomSheet({
   const [isDragging, setIsDragging] = useState(false);
   const [currentY, setCurrentY] = useState(0);
   const startY = useRef(0);
-  const startScrollTop = useRef(0);
+  /**
+ * Performs start scroll top operation
+ *
+ * @param {any} 0 - The 0
+ *
+ * @returns {any} The startscrolltop result
+ *
+ */
+const startScrollTop = useRef(0);
 
   // Lock body scroll when open
   useEffect(() => {

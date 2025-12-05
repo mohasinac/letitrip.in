@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useUrlPagination
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -125,18 +126,42 @@ export function useUrlPagination({
   const searchParams = useSearchParams();
 
   // Get current page from URL or use initial
-  const page = useMemo(() => {
+  /**
+ * Performs page operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The page result
+ *
+ */
+const page = useMemo(() => {
     const pageStr = searchParams.get(pageParam);
     if (!pageStr) return initialPage;
     const parsed = parseInt(pageStr, 10);
-    return isNaN(parsed) || parsed < 1 ? initialPage : parsed;
+    return isNaN(parsed) || parsed < 1 ? initialPage : pars/**
+ * Performs limit operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The limit result
+ *
+ */
+ed;
   }, [searchParams, pageParam, initialPage]);
 
   // Get current limit from URL or use initial
   const limit = useMemo(() => {
     const limitStr = searchParams.get(limitParam);
     if (!limitStr) return initialLimit;
-    const parsed = parseInt(limitStr, 10);
+    co/**
+ * Performs offset operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The offset result
+ *
+ */
+nst parsed = parseInt(limitStr, 10);
     return isNaN(parsed) || parsed < 1 ? initialLimit : parsed;
   }, [searchParams, limitParam, initialLimit]);
 
@@ -145,7 +170,16 @@ export function useUrlPagination({
     return (page - 1) * limit;
   }, [page, limit]);
 
-  // Calculate total pages
+  // /**
+ * Updates url
+ *
+ * @param {number} (newPage - The (newpage
+ * @param {number} [newLimit] - The newlimit
+ *
+ * @returns {any} The updateurl result
+ *
+ */
+Calculate total pages
   const totalPages = useMemo(() => {
     if (totalItems === 0) return 1;
     return Math.ceil(totalItems / limit);
@@ -169,14 +203,38 @@ export function useUrlPagination({
 
       // Update limit if provided
       const limitValue = newLimit ?? limit;
-      if (limitValue !== initialLimit) {
+      if (limi/**
+ * Sets page
+ *
+ * @param {number} (newPage - The (newpage
+ *
+ * @returns {any} The setpage result
+ *
+ */
+tValue !== initialLimit) {
         params.set(limitParam, limitValue.toString());
       } else {
-        params.delete(limitParam);
+        params.de/**
+ * Sets limit
+ *
+ * @param {number} (newLimit - The (newlimit
+ *
+ * @returns {any} The setlimit result
+ *
+ */
+lete(limitParam);
       }
 
       const newUrl = params.toString()
-        ? `${pathname}?${params.toString()}`
+   /**
+ * Performs next page operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The nextpage result
+ *
+ */
+     ? `${pathname}?${params.toString()}`
         : pathname;
 
       router.push(newUrl);
@@ -184,13 +242,29 @@ export function useUrlPagination({
     [
       router,
       pathname,
-      searchParams,
+      searchParams/**
+ * Performs go to first page operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The gotofirstpage result
+ *
+ */
+,
       pageParam,
       limitParam,
       initialPage,
       initialLimit,
       limit,
-    ],
+ /**
+ * Performs reset operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The reset result
+ *
+ */
+   ],
   );
 
   // Set page

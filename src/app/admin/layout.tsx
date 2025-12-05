@@ -4,7 +4,8 @@
  * @description This file contains the layout component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -25,7 +26,22 @@ export const metadata: Metadata = {
     "Manage users, shops, products, and platform settings on Letitrip",
 };
 
-export default function AdminLayout({
+export default /**
+ * AdminLayout component
+ *
+ * @param {{
+  
+  children: React.ReactNode;
+}} {
+  children,
+} - The {
+  children,
+}
+ *
+ * @returns {any} The adminlayout result
+ *
+ */
+function AdminLayout({
   children,
 }: {
   /** Children */

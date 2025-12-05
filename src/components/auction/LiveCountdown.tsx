@@ -4,7 +4,8 @@
  * @description This file contains the LiveCountdown component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -38,7 +39,27 @@ interface LiveCountdownProps {
   compact?: boolean;
 }
 
-export default function LiveCountdown({
+export default /**
+ * Performs live countdown operation
+ *
+ * @param {LiveCountdownProps} [{
+  endTime,
+  serverTime,
+  onExpire,
+  className = "",
+  compact = false,
+}] - The {
+  endtime,
+  servertime,
+  onexpire,
+  classname = "",
+  compact = false,
+}
+ *
+ * @returns {any} The livecountdown result
+ *
+ */
+function LiveCountdown({
   endTime,
   serverTime,
   onExpire,
@@ -87,7 +108,15 @@ export default function LiveCountdown({
     setTimeRemaining(calculateRemaining());
 
     // Update every second
-    const interval = setInterval(() => {
+    /**
+ * Performs interval operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The interval result
+ *
+ */
+const interval = setInterval(() => {
       setTimeRemaining(calculateRemaining());
     }, 1000);
 

@@ -4,7 +4,8 @@
  * @description This file contains the CollapsibleFilter component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -181,7 +182,13 @@ export function CollapsibleFilter({
    */
 
   const filterOptions = (section: FilterSection) => {
-    const query = searchQueries[section.id]?.toLowerCase() || "";
+    /**
+ * Performs query operation
+ *
+ * @returns {any} The query result
+ *
+ */
+const query = searchQueries[section.id]?.toLowerCase() || "";
     if (!query) return section.options;
     return section.options.filter((opt) =>
       opt.label.toLowerCase().includes(query),
@@ -307,7 +314,15 @@ export function CollapsibleFilter({
                             if (section.type === "radio") {
                               onChange(section.id, option.value);
                             } else {
-                              const current = activeFilters[section.id] || [];
+                              con/**
+ * Updates d
+ *
+ * @param {string} (v - The (v
+ *
+ * @returns {any} The updated result
+ *
+ */
+st current = activeFilters[section.id] || [];
                               const updated = e.target.checked
                                 ? [...current, option.value]
                                 : current.filter(

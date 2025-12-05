@@ -4,7 +4,8 @@
  * @description This file contains functionality related to shiprocket.config
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -301,6 +302,7 @@ export type ServiceType = keyof typeof SERVICE_TYPES;
  * @constant
  */
 export const DELIVERY_ZONES = {
+  /** WITHIN_CITY */
   WITHIN_CITY: {
     /** Id */
     id: "within-city",
@@ -311,6 +313,7 @@ export const DELIVERY_ZONES = {
     /** Multiplier */
     multiplier: 1.0,
   },
+  /** WITHIN_STATE */
   WITHIN_STATE: {
     /** Id */
     id: "within-state",
@@ -321,6 +324,7 @@ export const DELIVERY_ZONES = {
     /** Multiplier */
     multiplier: 1.2,
   },
+  /** WITHIN_ZONE */
   WITHIN_ZONE: {
     /** Id */
     id: "within-zone",
@@ -331,6 +335,7 @@ export const DELIVERY_ZONES = {
     /** Multiplier */
     multiplier: 1.4,
   },
+  /** METRO_TO_METRO */
   METRO_TO_METRO: {
     /** Id */
     id: "metro-to-metro",
@@ -341,6 +346,7 @@ export const DELIVERY_ZONES = {
     /** Multiplier */
     multiplier: 1.3,
   },
+  /** REST_OF_INDIA */
   REST_OF_INDIA: {
     /** Id */
     id: "rest-of-india",
@@ -351,6 +357,7 @@ export const DELIVERY_ZONES = {
     /** Multiplier */
     multiplier: 1.6,
   },
+  /** SPECIAL_AREAS */
   SPECIAL_AREAS: {
     /** Id */
     id: "special-areas",
@@ -382,9 +389,13 @@ export type DeliveryZone = keyof typeof DELIVERY_ZONES;
  * @description Defines the structure and contract for WeightSlab
  */
 export interface WeightSlab {
+  /** Min */
   min: number; // kg
+  /** Max */
   max: number; // kg
+  /** BaseRate */
   baseRate: number; // INR
+  /** AdditionalPerKg */
   additionalPerKg: number; // INR
 }
 
@@ -413,9 +424,13 @@ export const WEIGHT_SLABS: WeightSlab[] = [
  * @description Defines the structure and contract for PackageDimensions
  */
 export interface PackageDimensions {
+  /** Length */
   length: number; // cm
+  /** Width */
   width: number; // cm
+  /** Height */
   height: number; // cm
+  /** Weight */
   weight: number; // kg
 }
 
@@ -508,6 +523,7 @@ export const SHIPMENT_STATUS = {
     /** Icon */
     icon: "clock",
   },
+  /** PICKUP_SCHEDULED */
   PICKUP_SCHEDULED: {
     /** Id */
     id: "pickup-scheduled",
@@ -520,6 +536,7 @@ export const SHIPMENT_STATUS = {
     /** Icon */
     icon: "calendar",
   },
+  /** PICKED_UP */
   PICKED_UP: {
     /** Id */
     id: "picked-up",
@@ -532,6 +549,7 @@ export const SHIPMENT_STATUS = {
     /** Icon */
     icon: "package",
   },
+  /** IN_TRANSIT */
   IN_TRANSIT: {
     /** Id */
     id: "in-transit",
@@ -544,6 +562,7 @@ export const SHIPMENT_STATUS = {
     /** Icon */
     icon: "truck",
   },
+  /** OUT_FOR_DELIVERY */
   OUT_FOR_DELIVERY: {
     /** Id */
     id: "out-for-delivery",
@@ -697,9 +716,13 @@ export interface RateCalculationParams {
   pickupPincode: string;
   /** Delivery Pincode */
   deliveryPincode: string;
+  /** Weight */
   weight: number; // kg
+  /** Length */
   length?: number; // cm
+  /** Width */
   width?: number; // cm
+  /** Height */
   height?: number; // cm
   /** Cod Amount */
   codAmount?: number;
@@ -971,7 +994,19 @@ export function calculateVolumetricWeight(
  */
 
 export function getEffectiveWeight(dimensions: PackageDimensions): number {
-  const volumetricWeight = calculateVolumetricWeight(
+  /**
+ * Performs volumetric weight operation
+ *
+ * @param {any} dimensions.length - The dimensions.length
+ * @param {any} dimensions.width - The dimensions.width
+ * @param {any} dimensions.height - The dimensions.height
+ *
+ * @returns {WeightSlab | null} The volumetricweight result
+ *
+ * @example
+ * volumetricWeight(dimensions.length, dimensions.width, dimensions.height);
+ */
+const volumetricWeight = calculateVolumetricWeight(
     dimensions.length,
     dimensions.width,
     dimensions.height

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -15,7 +16,13 @@
  * @example
  * const result = PaymentsPage();
  */
-export default function PaymentsPage() {
+export default /**
+ * Performs payments page operation
+ *
+ * @returns {any} The paymentspage result
+ *
+ */
+function PaymentsPage() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Payments</h1>

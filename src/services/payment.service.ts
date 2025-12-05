@@ -4,7 +4,8 @@
  * @description This file contains service functions for payment operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -160,6 +161,7 @@ export interface CapturePaymentResponse {
 export interface RefundPaymentParams {
   /** Payment Id */
   paymentId: string;
+  /** Amount */
   amount?: number; // Optional for partial refunds
   /** Notes */
   notes?: Record<string, string>;

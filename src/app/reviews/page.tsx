@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -27,7 +28,13 @@ export const metadata: Metadata = {
  * @example
  * const result = ReviewsPage();
  */
-export default function ReviewsPage() {
+export default /**
+ * Performs reviews page operation
+ *
+ * @returns {any} The reviewspage result
+ *
+ */
+function ReviewsPage() {
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Suspense

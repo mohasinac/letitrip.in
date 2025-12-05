@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { COLLECTIONS } from "@/constants/database";
@@ -47,6 +48,17 @@ import { getCurrentUser } from "../../../lib/session";
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: NextRequest,
@@ -115,7 +127,18 @@ export async function GET(
  * @param {NextRequest} /** Request */
   request - The /**  request */
   request
- * @param {{ params} { params } - The { params }
+ * @param {{ pa/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The patch result
+ *
+ * @example
+ * PATCH(request, {});
+ */
+rams} { params } - The { params }
  *
  * @returns {Promise<any>} Promise resolving to patch result
  *
@@ -166,7 +189,13 @@ export async function PATCH(
         .where("isDefault", "==", true)
         .get();
 
-      const batch = db.batch();
+      /**
+ * Performs batch operation
+ *
+ * @returns {any} The batch result
+ *
+ */
+const batch = db.batch();
       defaultAddresses.docs.forEach((doc) => {
         if (doc.id !== id) {
           batch.update(doc.ref, { isDefault: false });
@@ -213,6 +242,17 @@ export async function PATCH(
  *
  * @returns {Promise<any>} Promise resolving to delete result
  *
+/**
+ * Deletes 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ * @example
+ * DELETE(request, {});
+ */
  * @throws {Error} When operation fails or validation errors occur
  *
  * @example

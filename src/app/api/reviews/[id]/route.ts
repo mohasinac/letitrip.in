@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -58,6 +59,17 @@ import { NextRequest, NextResponse } from "next/server";
   req, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(req, {});
+ */
 export async function GET(
   /** Req */
   req: NextRequest,
@@ -143,7 +155,18 @@ export async function GET(
  * @param {NextRequest} /** Req */
   req - The /**  req */
   req
- * @param {{ params} { params } - The { params }
+ * @param {{ params/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The patch result
+ *
+ * @example
+ * PATCH(req, {});
+ */
+} { params } - The { params }
  *
  * @returns {Promise<any>} Promise resolving to patch result
  *
@@ -195,7 +218,13 @@ export async function PATCH(
       ? ["rating", "title", "comment", "images", "status", "is_flagged"]
       : ["rating", "title", "comment", "images"];
 
-    const updates: any = {
+    /**
+ * Updates s
+ *
+ * @returns {any} The updates result
+ *
+ */
+const updates: any = {
       updated_at: new Date().toISOString(),
     };
 
@@ -253,7 +282,18 @@ export async function PATCH(
  * @param {NextRequest} req - The req
  * @param {{ params} { params } - The { params }
  *
- * @returns {Promise<any>} Promise resolving to delete result
+ * @returns {Promise<any>} Promise resolving to delete result/**
+ * Deletes 
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ * @example
+ * DELETE(req, {});
+ */
+
  *
  * @throws {Error} When operation fails or validation errors occur
  *

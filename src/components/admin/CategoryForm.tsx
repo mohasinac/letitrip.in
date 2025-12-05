@@ -4,7 +4,8 @@
  * @description This file contains the CategoryForm component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -47,21 +48,36 @@ interface CategoryFormProps {
     slug: string;
     /** Description */
     description?: string;
+    /** Parent_id */
     parent_id?: string | null;
     /** Image */
     image?: string;
+    /** Is_featured */
     is_featured?: boolean;
+    /** Show_on_homepage */
     show_on_homepage?: boolean;
+    /** Is_active */
     is_active?: boolean;
+    /** Sort_order */
     sort_order?: number;
+    /** Meta_title */
     meta_title?: string;
+    /** Meta_description */
     meta_description?: string;
   };
   /** Mode */
   mode: "create" | "edit";
 }
 
-export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
+export default /**
+ * Performs category form operation
+ *
+ * @param {CategoryFormProps} { initialData, mode } - The { initialdata, mode }
+ *
+ * @returns {any} The categoryform result
+ *
+ */
+function CategoryForm({ initialData, mode }: CategoryFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<CategoryType[]>([]);
@@ -133,7 +149,15 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     const loadCategories = async () => {
       try {
         const response = await categoriesService.list();
-        const transformed = response.data.map((cat: any) => ({
+        /**
+ * Transforms ed
+ *
+ * @param {any} (cat - The (cat
+ *
+ * @returns {any} The transformed result
+ *
+ */
+const transformed = response.data.map((cat: any) => ({
           /** Id */
           id: cat.id,
           /** Name */

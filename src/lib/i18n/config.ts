@@ -4,7 +4,8 @@
  * @description This file contains functionality related to config
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -77,6 +78,7 @@ i18n
 
     /** Interpolation */
     interpolation: {
+      /** EscapeValue */
       escapeValue: false, // React already escapes values
     },
 

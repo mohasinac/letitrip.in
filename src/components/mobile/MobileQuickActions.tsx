@@ -4,7 +4,8 @@
  * @description This file contains the MobileQuickActions component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -90,6 +91,28 @@ interface MobileQuickActionsProps {
   position);
  */
 
+/**
+ * Performs mobile quick actions operation
+ *
+ * @param {MobileQuickActionsProps} [{
+  actions,
+  mainIcon,
+  position = "bottom-right",
+}] - The {
+  actions,
+  mainicon,
+  position = "bottom-right",
+}
+ *
+ * @returns {any} The mobilequickactions result
+ *
+ * @example
+ * MobileQuickActions({
+  actions,
+  mainIcon,
+  position = "bottom-right",
+});
+ */
 export function MobileQuickActions({
   actions,
   mainIcon,

@@ -4,7 +4,8 @@
  * @description This file contains the AuctionFilters component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -88,7 +89,16 @@ export const AuctionFilters: React.FC<AuctionFiltersProps> = ({
 }) => {
   const hasActiveFilters = Object.keys(filters).length > 0;
 
-  const updateFilter = <K extends keyof AuctionFilterValues>(
+  /**
+ * Updates filter
+ *
+ * @param {K} key - The key
+ * @param {AuctionFilterValues[K]} value - The value
+ *
+ * @returns {any} The updatefilter result
+ *
+ */
+const updateFilter = <K extends keyof AuctionFilterValues>(
     /** Key */
     key: K,
     /** Value */
@@ -109,7 +119,15 @@ export const AuctionFilters: React.FC<AuctionFiltersProps> = ({
    * Performs toggle array filter operation
    *
    * @param {string} value - The value
-   *
+   /**
+ * Updates d
+ *
+ * @param {any} value - The value
+ *
+ * @returns {any} The updated result
+ *
+ */
+*
    * @returns {string} The togglearrayfilter result
    */
 

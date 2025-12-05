@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -60,7 +61,15 @@ export async function GET(request: NextRequest) {
 
     // naive contains search on name/description
     const snap = await Collections.categories().limit(500).get();
-    const results = snap.docs
+    /**
+ * Performs results operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The results result
+ *
+ */
+const results = snap.docs
       .map((d) => ({ id: d.id, ...d.data() }) as any)
       .filter(
         (c) =>

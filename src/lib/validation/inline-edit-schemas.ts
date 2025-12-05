@@ -4,7 +4,8 @@
  * @description This file contains functionality related to inline-edit-schemas
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -15,6 +16,13 @@
 import { InlineField } from "@/types/inline-edit";
 
 // Common validation patterns
+/**
+ * PATTERNS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for patterns
+ */
 const PATTERNS = {
   /** Email */
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -32,6 +40,17 @@ const PATTERNS = {
 };
 
 // Validation helper functions
+/**
+ * Performs validators operation
+ *
+ * @param {any} value - The value
+ * @param {string} fieldName - The fieldname
+ *
+ * @returns {string | null =>} The validators result
+ *
+ * @example
+ * validators(value, "example");
+ */
 export const validators = {
   /** Required */
   required: (value: any, fieldName: string): string | null => {
@@ -110,7 +129,17 @@ export const validators = {
     /** Value */
     value: any,
     /** Validator */
-    validator: (_val: any) => boolean,
+ /**
+ * Performs hero slide fields operation
+ *
+ * @param {any} value - The value
+ *
+ * @returns {any} The heroslidefields result
+ *
+ * @example
+ * heroSlideFields(value);
+ */
+   validator: (_val: any) => boolean,
     /** Message */
     message: string,
   ): string | null => {
@@ -148,7 +177,16 @@ export const heroSlideFields: InlineField[] = [
     type: "text",
     /** Label */
     label: "Subtitle",
-    /** Placeholder */
+    /** Pla/**
+ * Performs required operation
+ *
+ * @param {any} value - The value
+ * @param {any} "Image" - The "image"
+ *
+ * @returns {any} The required result
+ *
+ */
+ceholder */
     placeholder: "Enter subtitle (optional)",
     /** Validate */
     validate: (value) => validators.maxLength(value, 200),
@@ -169,7 +207,17 @@ export const heroSlideFields: InlineField[] = [
       const required = validators.required(value, "Image");
       if (required) return required;
       return validators.url(value);
-    },
+   /**
+ * Performs category fields operation
+ *
+ * @param {any} value - The value
+ *
+ * @returns {any} The categoryfields result
+ *
+ * @example
+ * categoryFields(value);
+ */
+ },
   },
   {
     /** Key */
@@ -201,7 +249,16 @@ export const heroSlideFields: InlineField[] = [
   },
 ];
 
-// Category validation schema
+// Cat/**
+ * Performs required operation
+ *
+ * @param {any} value - The value
+ * @param {any} "Slug" - The "slug"
+ *
+ * @returns {any} The required result
+ *
+ */
+egory validation schema
 export const categoryFields: InlineField[] = [
   {
     /** Key */
@@ -224,7 +281,17 @@ export const categoryFields: InlineField[] = [
   {
     /** Key */
     key: "slug",
-    /** Type */
+    /**/**
+ * Performs product fields operation
+ *
+ * @param {any} value - The value
+ *
+ * @returns {any} The productfields result
+ *
+ * @example
+ * productFields(value);
+ */
+ Type */
     type: "text",
     /** Label */
     label: "Slug",
@@ -249,7 +316,16 @@ export const categoryFields: InlineField[] = [
     /** Placeholder */
     placeholder: "category",
     /** Validate */
-    validate: (value) => (value ? validators.url(value) : null),
+    validate: (value) => (value ? /**
+ * Performs required operation
+ *
+ * @param {any} value - The value
+ * @param {any} "Price" - The "price"
+ *
+ * @returns {any} The required result
+ *
+ */
+validators.url(value) : null),
   },
   {
     /** Key */
@@ -306,7 +382,17 @@ export const productFields: InlineField[] = [
     validate: (value) => {
       const required = validators.required(value, "Price");
       if (required) return required;
-      return validators.min(parseFloat(value), 0);
+    /**
+ * Performs auction fields operation
+ *
+ * @param {any} value - The value
+ *
+ * @returns {any} The auctionfields result
+ *
+ * @example
+ * auctionFields(value);
+ */
+  return validators.min(parseFloat(value), 0);
     },
   },
   {
@@ -334,7 +420,16 @@ export const productFields: InlineField[] = [
     type: "image",
     /** Label */
     label: "Image",
-    /** Required */
+    /** Required */**
+ * Performs required operation
+ *
+ * @param {any} value - The value
+ * @param {any} "Startingbid" - The "startingbid"
+ *
+ * @returns {any} The required result
+ *
+ */
+/
     required: true,
     /** Placeholder */
     placeholder: "product",
@@ -417,7 +512,17 @@ export const auctionFields: InlineField[] = [
       const required = validators.required(value, "Start time");
       if (required) return required;
 
-      const startDate = new Date(value);
+      const startDate/**
+ * Custom React hook for r fields
+ *
+ * @param {any} value - The value
+ *
+ * @returns {any} The userfields result
+ *
+ * @example
+ * userFields(value);
+ */
+ = new Date(value);
       const now = new Date();
 
       if (startDate < now) {
@@ -533,7 +638,15 @@ export const userFields: InlineField[] = [
     /** Options */
     options: [
       { value: "user", label: "User" },
-      { value: "seller", label: "Seller" },
+      { value: "seller", labe/**
+ * Performs errors operation
+ *
+ * @param {any} (field - The (field
+ *
+ * @returns {any} The errors result
+ *
+ */
+l: "Seller" },
       { value: "admin", label: "Admin" },
     ],
   },

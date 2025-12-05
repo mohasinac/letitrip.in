@@ -4,7 +4,8 @@
  * @description This file contains the CategoryFilters component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -80,7 +81,16 @@ export const CategoryFilters: React.FC<CategoryFiltersProps> = ({
 }) => {
   const hasActiveFilters = Object.keys(filters).length > 0;
 
-  const updateFilter = <K extends keyof CategoryFilterValues>(
+  /**
+ * Updates filter
+ *
+ * @param {K} key - The key
+ * @param {CategoryFilterValues[K]} value - The value
+ *
+ * @returns {any} The updatefilter result
+ *
+ */
+const updateFilter = <K extends keyof CategoryFilterValues>(
     /** Key */
     key: K,
     /** Value */

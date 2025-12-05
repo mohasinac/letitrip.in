@@ -4,7 +4,8 @@
  * @description This file contains the ShopSelector component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -37,6 +38,7 @@ interface Option {
  * @description Defines the structure and contract for ShopSelectorProps
  */
 interface ShopSelectorProps {
+  /** Value */
   value?: string; // shopId
   /** On Change */
   onChange: (shopId: string | undefined, slug?: string) => void;
@@ -48,7 +50,27 @@ interface ShopSelectorProps {
   className?: string;
 }
 
-export default function ShopSelector({
+export default /**
+ * Performs shop selector operation
+ *
+ * @param {ShopSelectorProps} [{
+  value,
+  onChange,
+  includeAllOption = false,
+  disabled,
+  className = "",
+}] - The {
+  value,
+  onchange,
+  includealloption = false,
+  disabled,
+  classname = "",
+}
+ *
+ * @returns {any} The shopselector result
+ *
+ */
+function ShopSelector({
   value,
   onChange,
   includeAllOption = false,
@@ -72,7 +94,15 @@ export default function ShopSelector({
 
   useEffect(() => {
     execute(async () => {
-      const res = await shopsService.list({ limit: 100 });
+      /**
+ * Performs res operation
+ *
+ * @param {object} { limit - The { limit
+ *
+ * @returns {any} The res result
+ *
+ */
+const res = await shopsService.list({ limit: 100 });
       return (res.data || []).map((s) => ({
         /** Label */
         label: s.name,

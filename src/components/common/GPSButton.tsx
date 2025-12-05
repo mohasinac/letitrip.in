@@ -4,7 +4,8 @@
  * @description This file contains the GPSButton component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -95,7 +96,15 @@ export function GPSButton({
     "granted" | "denied" | "prompt" | null
   >(null);
 
-  const checkPermission = useCallback(async () => {
+  /**
+ * Performs check permission operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The checkpermission result
+ *
+ */
+const checkPermission = useCallback(async () => {
     const result = await locationService.checkGeolocationPermission();
     setPermission(result);
     return result;
@@ -141,7 +150,15 @@ export function GPSButton({
       }
 
       // Get current position
-      const coords = await locationService.getCurrentPosition();
+      const coords = await locationService.getCurrentPos/**
+ * Performs address operation
+ *
+ * @param {any} coords - The coords
+ *
+ * @returns {any} The address result
+ *
+ */
+ition();
       onLocationDetected?.(coords);
 
       // Reverse geocode if requested

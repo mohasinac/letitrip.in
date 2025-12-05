@@ -4,7 +4,8 @@
  * @description This file contains the InlineEditRow component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -76,7 +77,15 @@ export function InlineEditRow({
     setTouched((prev) => ({ ...prev, [key]: true }));
 
     // Validate field on change for immediate feedback
-    const field = fields.find((f) => f.key === key);
+    /**
+ * Performs field operation
+ *
+ * @param {any} (f - The (f
+ *
+ * @returns {any} The field result
+ *
+ */
+const field = fields.find((f) => f.key === key);
     if (field) {
       const error = validateField(field);
       if (error) {
@@ -149,7 +158,15 @@ export function InlineEditRow({
    *
    * @returns {boolean} True if condition is met, false otherwise
    *
-   * @throws {Error} When operation fails or validation errors occur
+   * @throws/**
+ * Performs new errors operation
+ *
+ * @param {any} (field - The (field
+ *
+ * @returns {any} The newerrors result
+ *
+ */
+ {Error} When operation fails or validation errors occur
    */
 
   const validateAll = (): boolean => {

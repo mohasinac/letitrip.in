@@ -4,7 +4,8 @@
  * @description This file contains the OrderFilters component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -84,7 +85,16 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
 }) => {
   const hasActiveFilters = Object.keys(filters).length > 0;
 
-  const updateFilter = <K extends keyof OrderFilterValues>(
+  /**
+ * Updates filter
+ *
+ * @param {K} key - The key
+ * @param {OrderFilterValues[K]} value - The value
+ *
+ * @returns {any} The updatefilter result
+ *
+ */
+const updateFilter = <K extends keyof OrderFilterValues>(
     /** Key */
     key: K,
     /** Value */
@@ -106,6 +116,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
    *
    * @param {string} value - The value
    *
+/**
+ * Updates d
+ *
+ * @param {any} value - The value
+ *
+ * @returns {any} The updated result
+ *
+ */
    * @returns {string} The togglearrayfilter result
    */
 

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
@@ -51,7 +52,15 @@ export async function GET() {
       .where("is_featured", "==", true)
       .limit(100)
       .get();
-    const data = snap.docs.map((d) => {
+    /**
+ * Performs data operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The data result
+ *
+ */
+const data = snap.docs.map((d) => {
       const catData: any = d.data();
       return {
         /** Id */

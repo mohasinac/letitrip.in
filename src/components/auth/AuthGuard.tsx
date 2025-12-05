@@ -4,7 +4,8 @@
  * @description This file contains the AuthGuard component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -31,7 +32,25 @@ interface AuthGuardProps {
   allowedRoles?: string[];
 }
 
-export default function AuthGuard({
+export default /**
+ * Performs auth guard operation
+ *
+ * @param {AuthGuardProps} [{
+  children,
+  requireAuth = true,
+  redirectTo = "/login",
+  allowedRoles,
+}] - The {
+  children,
+  requireauth = true,
+  redirectto = "/login",
+  allowedroles,
+}
+ *
+ * @returns {any} The authguard result
+ *
+ */
+function AuthGuard({
   children,
   requireAuth = true,
   redirectTo = "/login",

@@ -4,7 +4,8 @@
  * @description This file contains the BankAccountSelectorWithCreate component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -66,6 +67,18 @@ export interface BankAccount {
 }
 
 // Validation Schema
+/**
+ * Performs bank account schema operation
+ *
+ * @param {object} {
+    
+    accountHolderName - The {
+    
+    accountholdername
+ *
+ * @returns {any} The bankaccountschema result
+ *
+ */
 const BankAccountSchema = z
   .object({
     /** Account Holder Name */
@@ -199,11 +212,27 @@ export function BankAccountSelectorWithCreate({
     formState: { errors },
   } = useForm<BankAccountFormData>({
     /** Resolver */
-    resolver: zodResolver(BankAccountSchema),
+    resolver: zodResolver(Ban/**
+ * Performs ifsc code operation
+ *
+ * @param {any} "ifscCode" - The "ifsccode"
+ *
+ * @returns {any} The ifsccode result
+ *
+ */
+kAccountSchema),
     /** Default Values */
     defaultValues: {
       /** Account Type */
-      accountType: "savings",
+      accountTyp/**
+ * Performs default account operation
+ *
+ * @param {any} (acc - The (acc
+ *
+ * @returns {any} The defaultaccount result
+ *
+ */
+e: "savings",
       /** Is Default */
       isDefault: false,
     },

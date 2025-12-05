@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -13,6 +14,13 @@ import { logError } from "@/lib/firebase-error-logger";
 import { faker } from "@faker-js/faker";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for prefix
+ */
 const PREFIX = "TEST_";
 
 // Unsplash image categories
@@ -360,7 +368,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Update category product counts
-    const categoryProductCounts: { [key: string]: number } = {};
+    /**
+ * Performs category product counts operation
+ *
+ * @param {any} (product - The (product
+ *
+ * @returns {any} The categoryproductcounts result
+ *
+ */
+const categoryProductCounts: { [key: string]: number } = {};
     products.forEach((product) => {
       if (product.category_id) {
         categoryProductCounts[product.category_id] =
@@ -735,7 +751,15 @@ export async function POST(req: NextRequest) {
         updated_at: new Date().toISOString(),
       };
 
-      await db.collection(COLLECTIONS.HERO_SLIDES).add(heroSlideData);
+      await db.collection(COLLECTIONS.HERO_SLIDES).add(heroSlideDat/**
+ * Performs context operation
+ *
+ * @param {any} (u - The (u
+ *
+ * @returns {any} The context result
+ *
+ */
+a);
       heroSlides.push(heroSlideData);
       stats.heroSlides++;
     }

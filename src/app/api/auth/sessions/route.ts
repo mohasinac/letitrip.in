@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiRateLimiter } from "@/app/api/lib/utils/rate-limiter";
@@ -46,7 +47,15 @@ async function getSessionsHandler(req: AuthenticatedRequest) {
     }
 
     // Get all active sessions for the user
-    const sessions = await getUserSessions(req.session.userId);
+    /**
+ * Performs sessions operation
+ *
+ * @param {any} req.session.userId - The req.session.userid
+ *
+ * @returns {any} The sessions result
+ *
+ */
+const sessions = await getUserSessions(req.session.userId);
 
     return NextResponse.json(
       {
@@ -133,7 +142,15 @@ async function deleteSessionHandler(req: AuthenticatedRequest) {
     if (!sessionId) {
       return NextResponse.json(
         { error: "Session ID is required" },
-        { status: 400 },
+        { statu/**
+ * Performs session to delete operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The sessiontodelete result
+ *
+ */
+s: 400 },
       );
     }
 

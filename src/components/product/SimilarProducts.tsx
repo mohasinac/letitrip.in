@@ -4,7 +4,8 @@
  * @description This file contains the SimilarProducts component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -27,6 +28,7 @@ import type { ProductCardFE } from "@/types/frontend/product.types";
 interface SimilarProductsProps {
   /** Product Id */
   productId: string;
+  /** ParentCategoryIds */
   parentCategoryIds: string[]; // Parent category IDs to fetch from
   /** Current Shop Id */
   currentShopId: string;
@@ -116,7 +118,15 @@ export function SimilarProducts({
       }
 
       // Filter out current product and remove duplicates
-      const uniqueProducts = Array.from(
+      /**
+ * Performs unique products operation
+ *
+ * @param {ProductCardFE} newMap(allProducts.filter((p - The newmap(allproducts.filter((p
+ *
+ * @returns {any} The uniqueproducts result
+ *
+ */
+const uniqueProducts = Array.from(
         new Map(
           allProducts
             .filter((p: ProductCardFE) => p.id !== productId)
@@ -154,7 +164,15 @@ export function SimilarProducts({
    * @returns {string} The diversifybyshop result
    */
 
-  const diversifyByShop = (
+  cons/**
+ * Performs same shop operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The sameshop result
+ *
+ */
+t diversifyByShop = (
     /** Products */
     products: ProductCardFE[],
     /** Current Shop Id */
@@ -205,7 +223,15 @@ export function SimilarProducts({
     container.scrollTo({
       /** Left */
       left: newPosition,
-      /** Behavior */
+      /** Behavio/**
+ * Performs container operation
+ *
+ * @param {any} "similar-products-scroll" - The "similar-products-scroll"
+ *
+ * @returns {any} The container result
+ *
+ */
+r */
       behavior: "smooth",
     });
   };

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -25,7 +26,13 @@ import { useState } from "react";
  * @example
  * const result = HistoryPage();
  */
-export default function HistoryPage() {
+export default /**
+ * Performs history page operation
+ *
+ * @returns {any} The historypage result
+ *
+ */
+function HistoryPage() {
   const { history, removeFromHistory, clearHistory } = useViewingHistory();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 

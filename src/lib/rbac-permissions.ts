@@ -4,7 +4,8 @@
  * @description This file contains functionality related to rbac-permissions
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -31,6 +32,7 @@ export interface AuthUser {
   email: string;
   /** Role */
   role: UserRole;
+  /** ShopId */
   shopId?: string; // For sellers
 }
 

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to address-api.config
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -51,9 +52,11 @@ export interface AddressAPIConfig {
     /** Requests Per Day */
     requestsPerDay: number;
   };
+  /** Timeout */
   timeout: number; // milliseconds
   /** Retry Attempts */
   retryAttempts: number;
+  /** CacheTime */
   cacheTime: number; // milliseconds
   /** Docs */
   docs: string;

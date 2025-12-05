@@ -4,7 +4,8 @@
  * @description This file contains the MediaMetadataForm component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -31,7 +32,25 @@ interface MediaMetadataFormProps {
   className?: string;
 }
 
-export default function MediaMetadataForm({
+export default /**
+ * Performs media metadata form operation
+ *
+ * @param {MediaMetadataFormProps} [{
+  metadata,
+  onChange,
+  autoSlug = true,
+  className = "",
+}] - The {
+  metadata,
+  onchange,
+  autoslug = true,
+  classname = "",
+}
+ *
+ * @returns {any} The mediametadataform result
+ *
+ */
+function MediaMetadataForm({
   metadata,
   onChange,
   autoSlug = true,
@@ -179,7 +198,16 @@ export default function MediaMetadataForm({
    */
 
   const handleTagsChange = (tagsString: string) => {
-    const tags = tagsString
+    /**
+ * Performs tags operation
+ *
+ * @param {any} " - The "
+ * @param {any} " - The "
+ *
+ * @returns {any} The tags result
+ *
+ */
+const tags = tagsString
       .split(",")
       .map((tag) => tag.trim())
       .filter(Boolean);

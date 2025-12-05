@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -64,7 +65,15 @@ export async function GET(request: NextRequest) {
     }
 
     // Extract auction IDs from favorites
-    const auctionIds = favSnap.docs
+    /**
+ * Performs auction ids operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The auctionids result
+ *
+ */
+const auctionIds = favSnap.docs
       .map((d) => d.data().item_id)
       .filter((id): id is string => !!id);
 
@@ -75,13 +84,28 @@ export async function GET(request: NextRequest) {
     // Fetch actual auction data (Firestore 'in' query supports max 30 items)
     const chunks: string[][] = [];
     for (let i = 0; i < auctionIds.length; i += 30) {
-      chunks.push(auctionIds.slice(i, i + 30));
+      chunks./**
+ * Performs auction snap operation
+ *
+ * @returns {any} The auctionsnap result
+ *
+ */
+push(auctionIds.slice(i, i + 30));
     }
 
     const auctions: any[] = [];
     for (const chunk of chunks) {
       const auctionSnap = await Collections.auctions()
-        .where("__name__", "in", chunk)
+        .w/**
+ * Performs order map operation
+ *
+ * @param {any} auctionIds.map((id - The auctionids.map((id
+ * @param {any} idx - The idx
+ *
+ * @returns {any} The ordermap result
+ *
+ */
+here("__name__", "in", chunk)
         .get();
       auctionSnap.docs.forEach((d) => {
         auctions.push({ id: d.id, ...d.data() });

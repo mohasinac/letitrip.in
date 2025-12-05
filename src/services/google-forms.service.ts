@@ -4,7 +4,8 @@
  * @description This file contains service functions for google-forms operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -315,7 +316,13 @@ class GoogleFormsService {
         throw new Error("Failed to fetch existing registrations");
       }
 
-      const data = await response.json();
+      /**
+ * Performs data operation
+ *
+ * @returns {any} The data result
+ *
+ */
+const data = await response.json();
       return new Set(data.registrations?.map((r: any) => r.responseId) || []);
     } catch (error) {
       logError(error as Error, {
@@ -393,7 +400,13 @@ class GoogleFormsService {
       if (!response.ok) {
         const error = await response.json();
         throw new Error(
-          error.error?.message || "Failed to fetch form metadata",
+          error.error?/**
+ * Performs data operation
+ *
+ * @returns {any} The data result
+ *
+ */
+.message || "Failed to fetch form metadata",
         );
       }
 

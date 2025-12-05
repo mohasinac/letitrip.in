@@ -4,7 +4,8 @@
  * @description This file contains the CouponSelector component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -156,14 +157,31 @@ export function CouponSelector({
        * @returns {any} The coupons result
        */
 
-      const coupons = (response.data || []).filter(
+      /**
+ * Performs coupons operation
+ *
+ * @param {any} response.data||[] - The response.data||[]
+ *
+ * @returns {any} The coupons result
+ *
+ */
+const coupons = (response.data || []).filter(
         (c) => c.status === "active",
       );
 
       // Find best coupon
       if (coupons.length > 0) {
         const validCoupons = coupons.filter((c) => {
-          if (c.minPurchaseAmount && cartTotal < c.minPurchaseAmount) {
+          if (c.minPurchaseAmount && cartTotal < c.minPurcha/**
+ * Performs best operation
+ *
+ * @param {any} (prev - The (prev
+ * @param {any} current - The current
+ *
+ * @returns {any} The best result
+ *
+ */
+seAmount) {
             return false;
           }
           return true;
@@ -299,7 +317,15 @@ export function CouponSelector({
           (c - The available coupons || []).find(
           (c
          *
-         * @returns {any} The coupon result
+         * @returns /**
+ * Performs coupon operation
+ *
+ * @param {any} availableCoupons||[] - The availablecoupons||[]
+ *
+ * @returns {any} The coupon result
+ *
+ */
+{any} The coupon result
          */
 
         /**

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to transactions
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -283,7 +284,13 @@ export async function createOrderWithItems(
   /** Order Items */
   orderItems: any[],
 ): Promise<string> {
-  const db = getFirestoreAdmin();
+  /**
+ * Performs db operation
+ *
+ * @returns {Promise<any>} The db result
+ *
+ */
+const db = getFirestoreAdmin();
 
   return db.runTransaction(async (transaction) => {
     // Create order document
@@ -341,7 +348,15 @@ export async function updateProductStock(
   /** Product Id */
   productId: string,
   /** Quantity Change */
-  quantityChange: number,
+  qu/**
+ * Performs product ref operation
+ *
+ * @param {any} COLLECTIONS.PRODUCTS - The collections.products
+ *
+ * @returns {Promise<any>} The productref result
+ *
+ */
+antityChange: number,
 ): Promise<void> {
   const db = getFirestoreAdmin();
   const productRef = db.collection(COLLECTIONS.PRODUCTS).doc(productId);
@@ -393,6 +408,14 @@ export async function updateProductStock(
  *
  * @throws {Error} When operation fails or validation errors occur
  *
+/**
+ * Performs auction ref operation
+ *
+ * @param {any} COLLECTIONS.AUCTIONS - The collections.auctions
+ *
+ * @returns {Promise<any>} The auctionref result
+ *
+ */
  * @example
  * placeBid();
  */
@@ -417,7 +440,15 @@ export async function placeBid(
 
     const auctionData = auctionDoc.data();
     const currentBid =
-      auctionData?.current_bid || auctionData?.starting_bid || 0;
+      auctionData?.curr/**
+ * Performs previous bids operation
+ *
+ * @param {any} previousBidsQuery - The previousbidsquery
+ *
+ * @returns {any} The previousbids result
+ *
+ */
+ent_bid || auctionData?.starting_bid || 0;
 
     // Validate bid amount
     if (bidAmount <= currentBid) {
@@ -469,7 +500,15 @@ export async function placeBid(
  *
  * @returns {Promise<any>} Promise resolving to processrefund result
  *
- * @throws {Error} When operation fails or validation errors occur
+ * @throws {Error} Wh/**
+ * Performs return ref operation
+ *
+ * @param {any} COLLECTIONS.RETURNS - The collections.returns
+ *
+ * @returns {Promise<any>} The returnref result
+ *
+ */
+en operation fails or validation errors occur
  *
  * @example
  * processRefund("example", 123, refundData);
@@ -534,7 +573,13 @@ export async function processRefund(
  * Helper to transfer cart items to order items
  */
 /**
- * Performs transfer cart to order operation
+ * Performs tr/**
+ * Performs db operation
+ *
+ * @returns {Promise<any>} The db result
+ *
+ */
+ansfer cart to order operation
  *
  * @param {string} userId - user identifier
  * @param {string} orderId - order identifier

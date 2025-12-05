@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -312,7 +313,15 @@ function EditProductContent({ params }: EditProductPageProps) {
   );
 }
 
-export default function EditProductPage({ params }: EditProductPageProps) {
+export default /**
+ * Performs edit product page operation
+ *
+ * @param {EditProductPageProps} { params } - The { params }
+ *
+ * @returns {any} The editproductpage result
+ *
+ */
+function EditProductPage({ params }: EditProductPageProps) {
   return (
     <ErrorBoundary>
       <EditProductContent params={params} />

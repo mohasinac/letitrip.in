@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -90,7 +91,13 @@ interface APIStatus {
 // COMPONENT
 // ============================================================================
 
-export default function AddressAPISettingsPage() {
+export default /**
+ * Performs address a p i settings page operation
+ *
+ * @returns {any} The addressapisettingspage result
+ *
+ */
+function AddressAPISettingsPage() {
   const [settings, setSettings] = useState<AddressAPISettings>({
     /** Postal Pincode Enabled */
     postalPincodeEnabled: true,
@@ -182,7 +189,13 @@ export default function AddressAPISettingsPage() {
       const response = await apiService.get<{ status: string }>(
         "/address/api-status/postal-pincode"
       );
-      const responseTime = Date.now() - start;
+      /**
+ * Performs response time operation
+ *
+ * @returns {any} The responsetime result
+ *
+ */
+const responseTime = Date.now() - start;
 
       setApiStatuses((prev) =>
         prev.map((api) =>
@@ -211,7 +224,13 @@ export default function AddressAPISettingsPage() {
     // Check Zippopotam API
     try {
       const start = Date.now();
-      const response = await apiService.get<{ status: string }>(
+      const response = await api/**
+ * Performs response time operation
+ *
+ * @returns {any} The responsetime result
+ *
+ */
+Service.get<{ status: string }>(
         "/address/api-status/zippopotam"
       );
       const responseTime = Date.now() - start;
@@ -293,7 +312,13 @@ export default function AddressAPISettingsPage() {
     );
 
     await testAPI(async () => {
-      if (apiName === "Postal Pincode API") {
+      if (apiName ===/**
+ * Performs response time operation
+ *
+ * @returns {any} The responsetime result
+ *
+ */
+ "Postal Pincode API") {
         // Test with a sample PIN code
         const start = Date.now();
         const response = await apiService.get("/address/pincode/110001");
@@ -309,7 +334,13 @@ export default function AddressAPISettingsPage() {
                   responseTime,
                   /** Last Checked */
                   lastChecked: new Date(),
-                }
+      /**
+ * Performs response time operation
+ *
+ * @returns {any} The responsetime result
+ *
+ */
+          }
               : api
           )
         );

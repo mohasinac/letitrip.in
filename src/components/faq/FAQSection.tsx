@@ -4,7 +4,8 @@
  * @description This file contains the FAQSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -37,7 +38,27 @@ interface FAQSectionProps {
   defaultCategory?: string;
 }
 
-export default function FAQSection({
+export default /**
+ * Performs f a q section operation
+ *
+ * @param {FAQSectionProps} [{
+  title = "Frequently Asked Questions",
+  description,
+  showSearch = false,
+  maxItemsToShow,
+  defaultCategory,
+}] - The {
+  title = "frequently asked questions",
+  description,
+  showsearch = false,
+  maxitemstoshow,
+  defaultcategory,
+}
+ *
+ * @returns {any} The faqsection result
+ *
+ */
+function FAQSection({
   title = "Frequently Asked Questions",
   description,
   showSearch = false,
@@ -50,7 +71,15 @@ export default function FAQSection({
   const [searchQuery, setSearchQuery] = useState("");
 
   // Get FAQs for selected category or all
-  let faqs = selectedCategory
+  /**
+ * Performs faqs operation
+ *
+ * @param {any} selectedCategory - The selectedcategory
+ *
+ * @returns {any} The faqs result
+ *
+ */
+let faqs = selectedCategory
     ? getFAQsByCategory(selectedCategory)
     : FAQ_CATEGORIES.flatMap((cat) => getFAQsByCategory(cat.id));
 

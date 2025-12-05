@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -30,7 +31,13 @@ import {
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-export default function SellerSupportTicketsPage() {
+export default /**
+ * Performs seller support tickets page operation
+ *
+ * @returns {any} The sellersupportticketspage result
+ *
+ */
+function SellerSupportTicketsPage() {
   return (
     <AuthGuard requireAuth allowedRoles={["seller", "admin"]}>
       <SellerSupportTicketsContent />
@@ -108,7 +115,15 @@ function SellerSupportTicketsContent() {
     resolved: 0,
   };
 
-  const loadData = useCallback(async () => {
+  /**
+ * Performs load data operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loaddata result
+ *
+ */
+const loadData = useCallback(async () => {
     try {
       const [ticketsRes, totalRes, openRes, inProgressRes, resolvedRes] =
         await Promise.all([

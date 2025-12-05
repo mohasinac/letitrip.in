@@ -4,7 +4,8 @@
  * @description This file contains service functions for auth operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { logServiceError } from "@/lib/error-logger";
@@ -58,7 +59,15 @@ interface AuthUserBE {
 
 function toFEAuthUser(authUser: AuthUserBE): UserFE {
   const firstName = authUser.name.split(" ")[0] || null;
-  const lastName = authUser.name.split(" ").slice(1).join(" ") || null;
+  /**
+ * Performs last name operation
+ *
+ * @param {any} "" - The ""
+ *
+ * @returns {any} The lastname result
+ *
+ */
+const lastName = authUser.name.split(" ").slice(1).join(" ") || null;
 
   return {
     /** Id */

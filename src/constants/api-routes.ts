@@ -4,7 +4,8 @@
  * @description This file contains functionality related to api-routes
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -645,7 +646,13 @@ export const SYSTEM_ROUTES = {
  */
 
 export function buildQueryString(params: Record<string, any>): string {
-  const searchParams = new URLSearchParams();
+  /**
+ * Performs search params operation
+ *
+ * @returns {any} The searchparams result
+ *
+ */
+const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== "") {

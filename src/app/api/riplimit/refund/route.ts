@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -191,7 +192,15 @@ export async function POST(request: NextRequest) {
 
     // Deduct from available balance immediately
     const userId = auth.user.uid;
-    const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
+    /**
+ * Performs account ref operation
+ *
+ * @param {any} COLLECTIONS.RIPLIMIT_ACCOUNTS - The collections.riplimit_accounts
+ *
+ * @returns {Promise<any>} The accountref result
+ *
+ */
+const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
     await db.runTransaction(async (t) => {
       const accountDoc = await t.get(accountRef);
       if (!accountDoc.exists) {
@@ -303,7 +312,15 @@ export async function GET(request: NextRequest) {
     }
 
     const db = getFirestoreAdmin();
-    const refundsSnapshot = await db
+    const refundsSnapshot /**
+ * Performs refunds operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The refunds result
+ *
+ */
+= await db
       .collection(COLLECTIONS.RIPLIMIT_REFUNDS)
       .where("userId", "==", auth.user.uid)
       .orderBy("createdAt", "desc")

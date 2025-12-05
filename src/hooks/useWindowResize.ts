@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useWindowResize
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -132,6 +133,16 @@ export interface UseWindowResizeReturn extends WindowSize {
   options);
  */
 
+/**
+ * Custom React hook for window resize
+ *
+ * @param {UseWindowResizeOptions} [options] - The options
+ *
+ * @returns {UseWindowResizeReturn} The usewindowresize result
+ *
+ * @example
+ * useWindowResize(options);
+ */
 export function useWindowResize(
   /** Options */
   options: UseWindowResizeOptions = {}
@@ -145,7 +156,15 @@ export function useWindowResize(
   } = options;
 
   // Initialize with current window size (or 0 for SSR)
-  const getWindowSize = useCallback((): WindowSize => {
+  /**
+ * Retrieves window size
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {WindowSize =>} The getwindowsize result
+ *
+ */
+const getWindowSize = useCallback((): WindowSize => {
     if (typeof window === "undefined") {
       return { width: 0, height: 0 };
     }
@@ -183,7 +202,13 @@ export function useWindowResize(
     const handleResize = () => {
       // Clear previous timeout
       if (timeoutId) {
-        clearTimeout(timeoutId);
+        clearTime/**
+ * Performs new size operation
+ *
+ * @returns {any} The newsize result
+ *
+ */
+out(timeoutId);
       }
 
       // Set new timeout for debounced update

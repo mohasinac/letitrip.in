@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -87,6 +88,17 @@ async function getCurrentUser(req: NextRequest) {
   request, {});
  */
 
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The post result
+ *
+ * @example
+ * POST(request, {});
+ */
 export async function POST(
   /** Request */
   request: NextRequest,
@@ -123,7 +135,15 @@ export async function POST(
     const shopId = shopDoc.id;
 
     // Check if already following
-    const followDoc = await db
+    /**
+ * Performs follow doc operation
+ *
+ * @param {any} COLLECTIONS.USERS - The collections.users
+ *
+ * @returns {any} The followdoc result
+ *
+ */
+const followDoc = await db
       .collection(COLLECTIONS.USERS)
       .doc(user.id)
       .collection(SUBCOLLECTIONS.SHOP_FOLLOWING)
@@ -200,7 +220,18 @@ export async function POST(
  *
  * @param {NextRequest} /** Request */
   request - The /**  request */
-  request
+  reque/**
+ * Deletes 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ * @example
+ * DELETE(request, {});
+ */
+st
  * @param {{ params} { params } - The { params }
  *
  * @returns {Promise<any>} Promise resolving to delete result
@@ -265,7 +296,13 @@ export async function DELETE(
     // Remove from user's following
     await db
       .collection(COLLECTIONS.USERS)
-      .doc(user.id)
+      .d/**
+ * Performs current count operation
+ *
+ * @returns {any} The currentcount result
+ *
+ */
+oc(user.id)
       .collection(SUBCOLLECTIONS.SHOP_FOLLOWING)
       .doc(shopId)
       .delete();
@@ -309,7 +346,18 @@ export async function DELETE(
  * @param {NextRequest} request - The request
  * @param {{ params} { params } - The { params }
  *
- * @returns {Promise<any>} Promise resolving to get result
+ * @returns {Promise<any>} Promise resolvin/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
+g to get result
  *
  * @throws {Error} When operation fails or validation errors occur
  *
@@ -356,7 +404,15 @@ export async function GET(
       .limit(1)
       .get();
 
-    if (shopsSnapshot.empty) {
+    /**
+ * Performs follow doc operation
+ *
+ * @param {any} COLLECTIONS.USERS - The collections.users
+ *
+ * @returns {any} The followdoc result
+ *
+ */
+if (shopsSnapshot.empty) {
       return NextResponse.json(
         { success: false, error: "Shop not found" },
         { status: 404 },

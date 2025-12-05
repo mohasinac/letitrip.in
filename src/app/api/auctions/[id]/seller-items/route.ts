@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
@@ -60,7 +61,15 @@ export async function GET(
       .where("shop_id", "==", auction.shop_id)
       .limit(11)
       .get();
-    const data = snap.docs
+    /**
+ * Performs data operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The data result
+ *
+ */
+const data = snap.docs
       .map((d) => ({ id: d.id, ...d.data() }) as any)
       .filter((a) => a.id !== id)
       .slice(0, 10);

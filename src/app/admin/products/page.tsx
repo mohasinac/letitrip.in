@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -20,9 +21,23 @@ import { getProductBulkActions } from "@/constants/bulk-actions";
 import { PRODUCT_FIELDS, toInlineFields } from "@/constants/form-fields";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
-export default function AdminProductsPage() {
+export default /**
+ * Performs admin products page operation
+ *
+ * @returns {any} The adminproductspage result
+ *
+ */
+function AdminProductsPage() {
   // Define columns
-  const columns = [
+  /**
+ * Performs columns operation
+ *
+ * @param {ProductCardFE} product - The product
+ *
+ * @returns {any} The columns result
+ *
+ */
+const columns = [
     {
       /** Key */
       key: "product",

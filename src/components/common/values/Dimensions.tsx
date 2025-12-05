@@ -4,7 +4,8 @@
  * @description This file contains the Dimensions component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -79,7 +80,15 @@ export function Dimensions({
     parts.push(height);
   }
 
-  const dimensionText = parts
+  /**
+ * Performs dimension text operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The dimensiontext result
+ *
+ */
+const dimensionText = parts
     .map((d) => (d % 1 === 0 ? d.toString() : d.toFixed(1)))
     .join(separator);
 

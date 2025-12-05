@@ -4,7 +4,8 @@
  * @description This file contains the AuctionForm component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -45,6 +46,13 @@ interface AuctionFormProps {
   isSubmitting?: boolean;
 }
 
+/**
+ * STATUS_OPTIONS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for status options
+ */
 const STATUS_OPTIONS = [
   { value: AuctionStatus.DRAFT, label: "Draft" },
   { value: AuctionStatus.SCHEDULED, label: "Scheduled" },
@@ -53,7 +61,27 @@ const STATUS_OPTIONS = [
   { value: AuctionStatus.CANCELLED, label: "Cancelled" },
 ];
 
-export default function AuctionForm({
+export default /**
+ * Performs auction form operation
+ *
+ * @param {AuctionFormProps} [{
+  mode,
+  initialData,
+  shopId,
+  onSubmit,
+  isSubmitting = false,
+}] - The {
+  mode,
+  initialdata,
+  shopid,
+  onsubmit,
+  issubmitting = false,
+}
+ *
+ * @returns {any} The auctionform result
+ *
+ */
+function AuctionForm({
   mode,
   initialData,
   shopId,
@@ -220,7 +248,15 @@ export default function AuctionForm({
      * @returns {any} The cleanedimages result
      */
 
-    const cleanedImages = (formData.images || [])
+    /**
+ * Performs cleaned images operation
+ *
+ * @param {any} formData.images||[] - The formdata.images||[]
+ *
+ * @returns {any} The cleanedimages result
+ *
+ */
+const cleanedImages = (formData.images || [])
       .map((s) => s.trim())
       .filter(Boolean);
     // Always prefer shopId prop over initialData.shopId

@@ -4,7 +4,8 @@
  * @description This file contains the AdminResourcePage component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -260,7 +261,27 @@ export function AdminResourcePage<T extends { id: string }>({
   const loadingRef = useRef(false);
 
   // Load items
-  const loadItems = useCallback(async () => {
+  /**
+ * Performs load items operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loaditems result
+ *
+ */
+const loadItems = useCallback(async () => {
+/**
+ * Performs result operation
+ *
+ * @param {object} {
+        
+        cursor - The {
+        
+        cursor
+ *
+ * @returns {any} The result result
+ *
+ */
     if (loadingRef.current) return;
 
     loadingRef.current = true;

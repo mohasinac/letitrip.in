@@ -4,7 +4,8 @@
  * @description This file contains the FormModal component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -74,7 +75,15 @@ export function FormModal({
   size = "md",
   showCloseButton = true,
 }: FormModalProps) {
-  const modalRef = useRef<HTMLDivElement>(null);
+  /**
+ * Performs modal ref operation
+ *
+ * @param {any} null - The null
+ *
+ * @returns {any} The modalref result
+ *
+ */
+const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     /**

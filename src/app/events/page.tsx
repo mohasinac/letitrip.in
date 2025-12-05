@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -16,7 +17,13 @@ import { eventsService, type Event } from "@/services/events.service";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function EventsPage() {
+export default /**
+ * Performs events page operation
+ *
+ * @returns {any} The eventspage result
+ *
+ */
+function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [filter, setFilter] = useState<string>("all");
 

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -67,7 +68,15 @@ function RevenueTrendChart({ data }: { data: SalesDataPointFE[] }) {
     );
   }
 
-  const maxRevenue = Math.max(...data.map((d) => d.revenue));
+  /**
+ * Performs max revenue operation
+ *
+ * @param {any} ...data.map((d - The ...data.map((d
+ *
+ * @returns {any} The maxrevenue result
+ *
+ */
+const maxRevenue = Math.max(...data.map((d) => d.revenue));
   const totalRevenue = data.reduce((sum, d) => sum + d.revenue, 0);
 
   return (
@@ -144,7 +153,16 @@ function RevenueTrendChart({ data }: { data: SalesDataPointFE[] }) {
 function CategoryBreakdown({ data }: { data: CategoryPerformanceFE[] }) {
   if (data.length === 0) {
     return (
-      <div className="h-64 flex items-center justify-center text-gray-500">
+ /**
+ * Performs total revenue operation
+ *
+ * @param {any} (sum - The (sum
+ * @param {any} cat - The cat
+ *
+ * @returns {any} The totalrevenue result
+ *
+ */
+     <div className="h-64 flex items-center justify-center text-gray-500">
         No category data available
       </div>
     );
@@ -298,7 +316,13 @@ function DetailedProductsTable({ products }: { products: TopProductFE[] }) {
   );
 }
 
-export default function AdminAnalyticsSalesPage() {
+export default /**
+ * Performs admin analytics sales page operation
+ *
+ * @returns {any} The adminanalyticssalespage result
+ *
+ */
+function AdminAnalyticsSalesPage() {
   const [period, setPeriod] = useState("month");
   const {
     /** Is Loading */
@@ -310,7 +334,15 @@ export default function AdminAnalyticsSalesPage() {
     onLoadError: (error) => {
       logError(error, {
         /** Component */
-        component: "AdminAnalyticsSalesPage.fetchData",
+        component: "Admi/**
+ * Fetches data
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The fetchdata result
+ *
+ */
+nAnalyticsSalesPage.fetchData",
         period,
       });
     },
@@ -323,7 +355,16 @@ export default function AdminAnalyticsSalesPage() {
     execute(async () => {
       const filters = { period: period as "day" | "week" | "month" | "year" };
       const [sales, cats, products] = await Promise.all([
-        analyticsService.getSalesData(filters),
+  /**
+ * Performs total revenue operation
+ *
+ * @param {any} (sum - The (sum
+ * @param {any} d - The d
+ *
+ * @returns {any} The totalrevenue result
+ *
+ */
+      analyticsService.getSalesData(filters),
         analyticsService.getCategoryPerformance(filters),
         analyticsService.getTopProducts({ ...filters, limit: 20 }),
       ]);

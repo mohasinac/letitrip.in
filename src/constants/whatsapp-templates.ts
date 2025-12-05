@@ -4,7 +4,8 @@
  * @description This file contains functionality related to whatsapp-templates
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -57,6 +58,7 @@ export interface WhatsAppButton {
   type: "CALL" | "URL" | "QUICK_REPLY";
   /** Text */
   text: string;
+  /** Data */
   data?: string; // Phone number for CALL, URL for URL
 }
 
@@ -657,6 +659,16 @@ export function getWhatsAppTemplate(id: string): WhatsAppTemplate | undefined {
   category);
  */
 
+/**
+ * Retrieves templates by category
+ *
+ * @param {WhatsAppTemplate["category"]} category - The category
+ *
+ * @returns {WhatsAppTemplate[]} The gettemplatesbycategory result
+ *
+ * @example
+ * getTemplatesByCategory(category);
+ */
 export function getTemplatesByCategory(
   /** Category */
   category: WhatsAppTemplate["category"]
@@ -696,7 +708,17 @@ export function formatTemplate(
   /** Variables */
   variables: Record<string, string>
 ): string {
-  let message = template.body;
+  /**
+ * Performs message operation
+ *
+ * @param {object} {{1}} - The {{1}}
+ * @param {object} {{2}} - The {{2}}
+ * @param {any} etc. - The etc.
+ *
+ * @returns {any} The message result
+ *
+ */
+let message = template.body;
 
   // Replace variables ({{1}}, {{2}}, etc.)
   template.variables.forEach((varName, index) => {

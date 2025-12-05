@@ -4,7 +4,8 @@
  * @description This file contains the TagSelectorWithCreate component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -39,6 +40,16 @@ export interface Tag {
 }
 
 // Color Palette
+/**
+ * Performs t a g_ c o l o r s operation
+ *
+ * @param {string[]} tagIds - The tagids
+ *
+ * @returns {any} The tag_colors result
+ *
+ * @example
+ * TAG_COLORS([]);
+ */
 const TAG_COLORS = [
   {
     /** Name */
@@ -219,7 +230,15 @@ export function TagSelectorWithCreate({
   const [creating, setCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
+  useEffect(() =>/**
+ * Performs selected operation
+ *
+ * @param {any} (tag - The (tag
+ *
+ * @returns {any} The selected result
+ *
+ */
+ {
     loadTags();
   }, [entityType]);
 
@@ -364,6 +383,14 @@ export function TagSelectorWithCreate({
    * @returns {any} The handleaddtag result
    */
 
+/**
+ * Performs new selected operation
+ *
+ * @param {any} newSelected - The newselected
+ *
+ * @returns {any} The newselected result
+ *
+ */
   const handleAddTag = (tag: Tag) => {
     if (selectedTags.length >= maxTags) {
       toast.error(`Maximum ${maxTags} tags allowed`);
@@ -376,7 +403,15 @@ export function TagSelectorWithCreate({
     }
 
     const newSelected = [...selectedTags, tag];
-    setSelectedTags(newSelected);
+    set/**
+ * Performs new selected operation
+ *
+ * @param {any} (t - The (t
+ *
+ * @returns {any} The newselected result
+ *
+ */
+SelectedTags(newSelected);
     onChange(newSelected.map((t) => t.id));
   };
 
@@ -489,7 +524,15 @@ export function TagSelectorWithCreate({
     const newIndex = direction === "up" ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= selectedTags.length) return;
 
-    const newSelected = [...selectedTags];
+    const newSelected = [...selectedT/**
+ * Performs color obj operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The colorobj result
+ *
+ */
+ags];
     [newSelected[index], newSelected[newIndex]] = [
       newSelected[newIndex],
       newSelected[index],
@@ -514,7 +557,15 @@ export function TagSelectorWithCreate({
    * @returns {string} The tagcolorclass result
    */
 
-  const getTagColorClass = (color: string) => {
+  c/**
+ * Performs available tags operation
+ *
+ * @param {any} (tag - The (tag
+ *
+ * @returns {any} The availabletags result
+ *
+ */
+onst getTagColorClass = (color: string) => {
     const colorObj = TAG_COLORS.find((c) => c.value === color);
     return colorObj?.lightBg || "bg-gray-50 dark:bg-gray-900/20";
   };

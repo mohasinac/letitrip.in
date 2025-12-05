@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -25,7 +26,13 @@ export const metadata: Metadata = {
  * @example
  * const result = OptionalServicesPage();
  */
-export default function OptionalServicesPage() {
+export default /**
+ * Performs optional services page operation
+ *
+ * @returns {any} The optionalservicespage result
+ *
+ */
+function OptionalServicesPage() {
   const services = [
     {
       /** Icon */

@@ -4,7 +4,8 @@
  * @description This file contains the ContentTypeFilter component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -195,7 +196,15 @@ export const CONTENT_TYPE_OPTIONS: ContentTypeOption[] = [
  */
 
 export function getContentTypePlaceholder(type: ContentType): string {
-  const option = CONTENT_TYPE_OPTIONS.find((o) => o.value === type);
+  /**
+ * Performs option operation
+ *
+ * @param {any} (o - The (o
+ *
+ * @returns {any} The option result
+ *
+ */
+const option = CONTENT_TYPE_OPTIONS.find((o) => o.value === type);
   return option?.placeholder || "Search...";
 }
 
@@ -352,7 +361,15 @@ function DropdownVariant({
   disabled,
   className,
 }: ContentTypeFilterProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
+  co/**
+ * Performs selected option operation
+ *
+ * @param {any} (o - The (o
+ *
+ * @returns {any} The selectedoption result
+ *
+ */
+nst [isOpen, setIsOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   const selectedOption =

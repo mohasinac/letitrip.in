@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for cart
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -56,6 +57,7 @@ export interface CartItemFE {
   addedAt: Date;
 
   // Formatted
+  /** FormattedPrice */
   formattedPrice: string; // "₹1,999"
   /** Formatted Subtotal */
   formattedSubtotal: string;
@@ -75,6 +77,7 @@ export interface CartItemFE {
   hasDiscount: boolean;
 
   // Time
+  /** AddedTimeAgo */
   addedTimeAgo: string; // "Added 2 hours ago"
 }
 
@@ -140,6 +143,7 @@ export interface CartFE {
   validationWarnings: string[];
 
   // Time
+  /** ExpiresIn */
   expiresIn: string | null; // "Expires in 30 minutes"
 }
 

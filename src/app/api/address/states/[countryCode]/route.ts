@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -32,6 +33,13 @@ interface State {
 }
 
 // Indian States and Union Territories
+/**
+ * INDIAN_STATES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for indian states
+ */
 const INDIAN_STATES: State[] = [
   { code: "AP", name: "Andhra Pradesh" },
   { code: "AR", name: "Arunachal Pradesh" },
@@ -121,7 +129,14 @@ const US_STATES: State[] = [
   { code: "VA", name: "Virginia" },
   { code: "WA", name: "Washington" },
   { code: "WV", name: "West Virginia" },
-  { code: "WI", name: "Wisconsin" },
+  { code: "WI", name: "Wiscon/**
+ * CANADIAN_PROVINCES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for canadian provinces
+ */
+sin" },
   { code: "WY", name: "Wyoming" },
   { code: "DC", name: "District of Columbia" },
 ];
@@ -147,7 +162,14 @@ const CANADIAN_PROVINCES: State[] = [
 const AUSTRALIAN_STATES: State[] = [
   { code: "ACT", name: "Australian Capital Territory" },
   { code: "NSW", name: "New South Wales" },
-  { code: "NT", name: "Northern Territory" },
+  { code: "NT", name: "North/**
+ * UK_REGIONS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for uk regions
+ */
+ern Territory" },
   { code: "QLD", name: "Queensland" },
   { code: "SA", name: "South Australia" },
   { code: "TAS", name: "Tasmania" },
@@ -210,6 +232,17 @@ const STATE_MAP: Record<string, State[]> = {
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: { countryCode: string } }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: NextRequest,

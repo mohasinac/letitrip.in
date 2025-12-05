@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getStorageAdmin } from "@/app/api/lib/firebase/admin";
@@ -16,7 +17,24 @@ import { logError } from "@/lib/firebase-error-logger";
 import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * MAX_FILES_PER_CONFIRM constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for max files per confirm
+ */
 const MAX_FILES_PER_CONFIRM = 8;
+/**
+ * Performs a l l o w e d_ e x t e n s i o n s operation
+ *
+ * @param {any} batch - The batch
+ *
+ * @returns {Promise<any>} The allowed_extensions result
+ *
+ * @example
+ * ALLOWED_EXTENSIONS(batch);
+ */
 const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "mp4", "webm"];
 
 // GET: Generate signed URLs for client-side direct upload (batch)
@@ -54,6 +72,17 @@ const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "mp4", "webm"];
   req, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(req, {});
+ */
 export async function GET(
   /** Req */
   req: NextRequest,
@@ -163,7 +192,18 @@ export async function GET(
  * @param {NextRequest} /** Req */
   req - The /**  req */
   req
- * @param {{ params} { params } - The { params }
+ * @param {{ para/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The post result
+ *
+ * @example
+ * POST(req, {});
+ */
+ms} { params } - The { params }
  *
  * @returns {Promise<any>} Promise resolving to post result
  *
@@ -243,7 +283,15 @@ export async function POST(
         if (!valid.length)
           return NextResponse.json(
             { success: false, error: "No valid file paths" },
-            { status: 400 },
+            { s/**
+ * Performs urls operation
+ *
+ * @param {any} (v - The (v
+ *
+ * @returns {any} The urls result
+ *
+ */
+tatus: 400 },
           );
 
         // Convert to public URLs (assuming GCS bucket public or served via CDN)

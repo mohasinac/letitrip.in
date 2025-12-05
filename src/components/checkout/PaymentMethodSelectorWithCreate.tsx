@@ -4,7 +4,8 @@
  * @description This file contains the PaymentMethodSelectorWithCreate component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -190,7 +191,15 @@ export function PaymentMethodSelectorWithCreate({
     },
   });
 
-  const paymentType = watch("type");
+  /**
+ * Performs payment type operation
+ *
+ * @param {any} "type" - The "type"
+ *
+ * @returns {any} The paymenttype result
+ *
+ */
+const paymentType = watch("type");
 
   useEffect(() => {
     loadPaymentMethods();

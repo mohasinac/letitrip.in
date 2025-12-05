@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -28,6 +29,13 @@ import { Copy, Edit, Filter, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
+/**
+ * COUPON_FILTERS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for coupon filters
+ */
 const COUPON_FILTERS: FilterSection[] = [
   {
     /** Title */
@@ -72,7 +80,13 @@ const COUPON_FILTERS: FilterSection[] = [
   },
 ];
 
-export default function CouponsPage() {
+export default /**
+ * Performs coupons page operation
+ *
+ * @returns {any} The couponspage result
+ *
+ */
+function CouponsPage() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const [view, setView] = useState<"grid" | "table">("table");
@@ -88,7 +102,15 @@ export default function CouponsPage() {
     loadCoupons();
   }, [user]);
 
-  const loadCoupons = useCallback(async () => {
+  /**
+ * Performs load coupons operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadcoupons result
+ *
+ */
+const loadCoupons = useCallback(async () => {
     if (!user) return;
 
     await execute(async () => {
@@ -151,7 +173,15 @@ export default function CouponsPage() {
         /** Component */
         component: "SellerCoupons.handleDeleteCoupon",
         /** Metadata */
-        metadata: { code },
+        m/**
+ * Performs filtered coupons operation
+ *
+ * @param {any} (coupon - The (coupon
+ *
+ * @returns {any} The filteredcoupons result
+ *
+ */
+etadata: { code },
       });
       toast.error("Failed to delete coupon");
     }

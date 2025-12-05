@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for support-ticket
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -30,7 +31,9 @@ export interface SupportTicketBE {
   id: string;
   /** User Id */
   userId: string;
+  /** ShopId */
   shopId?: string; // If related to specific shop
+  /** OrderId */
   orderId?: string; // If related to specific order
 
   /** Category */
@@ -48,6 +51,7 @@ export interface SupportTicketBE {
   /** Status */
   status: TicketStatus;
 
+  /** AssignedTo */
   assignedTo?: string; // Support staff/admin ID
 
   /** Created At */
@@ -76,6 +80,7 @@ export interface SupportTicketMessageBE {
   /** Attachments */
   attachments?: string[];
 
+  /** IsInternal */
   isInternal: boolean; // Internal note visible only to staff
 
   /** Created At */

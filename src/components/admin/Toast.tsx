@@ -4,7 +4,8 @@
  * @description This file contains the Toast component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -38,6 +39,14 @@ interface Toast {
 }
 
 let toastId = 0;
+/**
+ * Performs listeners operation
+ *
+ * @param {Toast[]} toasts - The toasts
+ *
+ * @returns {any} The listeners result
+ *
+ */
 const listeners = new Set<(toasts: Toast[]) => void>();
 let toasts: Toast[] = [];
 
@@ -97,7 +106,18 @@ function notify(type: ToastType, message: string, duration = 5000) {
  * @returns {string} The removetoast result
  */
 
-function removeToast(id: string) {
+function /**
+ * Performs toast operation
+ *
+ * @param {string} message - The message
+ * @param {number} [duration] - The duration
+ *
+ * @returns {any} The toast result
+ *
+ * @example
+ * toast("example", 123);
+ */
+removeToast(id: string) {
   toasts = toasts.filter((t) => t.id !== id);
   listeners.forEach((listener) => listener(toasts));
 }

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -31,7 +32,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function CreateShopWizardPage() {
+export default /**
+ * Creates shop wizard page
+ *
+ * @returns {any} The createshopwizardpage result
+ *
+ */
+function CreateShopWizardPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,7 +46,14 @@ export default function CreateShopWizardPage() {
   const [slugError, setSlugError] = useState("");
   const [error, setError] = useState("");
 
-  const STEPS = [
+  /**
+ * STEPS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for steps
+ */
+const STEPS = [
     { id: 1, name: "Basic Info", icon: Store },
     { id: 2, name: "Branding", icon: Palette },
     { id: 3, name: "Contact & Legal", icon: Phone },

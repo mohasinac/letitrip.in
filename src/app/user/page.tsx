@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -51,7 +52,13 @@ interface DashboardData {
   };
 }
 
-export default function UserDashboardPage() {
+export default /**
+ * Performs user dashboard page operation
+ *
+ * @returns {any} The userdashboardpage result
+ *
+ */
+function UserDashboardPage() {
   const router = useRouter();
   const { user } = useAuth();
 
@@ -79,12 +86,36 @@ export default function UserDashboardPage() {
     },
   });
 
-  const loadDashboardData = useCallback(async () => {
+  /**
+ * Performs load dashboard data operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loaddashboarddata result
+ *
+ */
+const loadDashboardData = useCallback(async () => {
     // Load recent orders
-    const ordersData = await ordersService.list({} as any);
+    const ordersData = /**
+ * Performs pending orders operation
+ *
+ * @param {any} (o - The (o
+ *
+ * @returns {any} The pendingorders result
+ *
+ */
+await ordersService.list({} as any);
     const orders = ordersData.data || [];
 
-    // Calculate stats
+    // Calcula/**
+ * Performs cancelled orders operation
+ *
+ * @param {any} (o - The (o
+ *
+ * @returns {any} The cancelledorders result
+ *
+ */
+te stats
     const totalOrders = orders.length;
     const pendingOrders = orders.filter(
       (o) => o.status === "pending" || o.status === "confirmed",

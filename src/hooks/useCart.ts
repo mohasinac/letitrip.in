@@ -5,7 +5,8 @@
  * Handles both authenticated and guest user carts with automatic synchronization.
  *
  * @created 2025-12-06
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -50,7 +51,13 @@ import { useCallback, useEffect, useState } from "react";
  *
  * @example
  * // Basic usage in a component
- * function CheckoutPage() {
+ * /**
+ * Performs checkout page operation
+ *
+ * @returns {any} The checkoutpage result
+ *
+ */
+function CheckoutPage() {
  *   const { cart, loading, addItem, removeItem, error } = useCart();
  *
  *   if (loading) return <Loading />;
@@ -119,7 +126,15 @@ export function useCart() {
   const [mergeSuccess, setMergeSuccess] = useState(false);
 
   // Transform guest cart items to full CartItemFE objects
-  const transformGuestItems = useCallback(
+  /**
+ * Transforms guest items
+ *
+ * @param {CartItemFE[]} (items - The (items
+ *
+ * @returns {CartItemFE[] =>} The transformguestitems result
+ *
+ */
+const transformGuestItems = useCallback(
     (items: CartItemFE[]): CartItemFE[] => {
       const now = new Date();
       return items.map((item) => {
@@ -168,7 +183,15 @@ export function useCart() {
           canDecrement: item.quantity > 1,
           /** Has Discount */
           hasDiscount: discount > 0,
-          /** Added Time Ago */
+          /** Add/**
+ * Performs load cart operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadcart result
+ *
+ */
+ed Time Ago */
           addedTimeAgo: item.addedTimeAgo || "Recently added",
         };
       });
@@ -185,7 +208,16 @@ export function useCart() {
       if (user) {
         // Authenticated user - fetch from API
         const data = await cartService.get();
-        setCart(data);
+       /**
+ * Performs subtotal operation
+ *
+ * @param {any} (sum - The (sum
+ * @param {any} item - The item
+ *
+ * @returns {any} The subtotal result
+ *
+ */
+ setCart(data);
       } else {
         // Guest user - load from localStorage
         const guestItems = cartService.getGuestCart();
@@ -307,7 +339,16 @@ export function useCart() {
             productId,
             quantity,
             /** Variant Id */
-            variantId: variant,
+  /**
+ * Updates item
+ *
+ * @param {string} async(itemId - The async(itemid
+ * @param {number} quantity - The quantity
+ *
+ * @returns {Promise<any>} The updateitem result
+ *
+ */
+          variantId: variant,
             ...productDetails,
           });
 
@@ -328,7 +369,15 @@ export function useCart() {
 
   // Update item quantity
   const updateItem = useCallback(
-    async (itemId: string, quantity: number) => {
+    async (itemId: string, quantity: /**
+ * Performs remove item operation
+ *
+ * @param {string} async(itemId - The async(itemid
+ *
+ * @returns {Promise<any>} The removeitem result
+ *
+ */
+number) => {
       try {
         if (user) {
           // Authenticated user
@@ -344,7 +393,15 @@ export function useCart() {
           /** Component */
           component: "useCart.updateItem",
           /** Metadata */
-          metadata: { itemId, quantity },
+          met/**
+ * Performs clear cart operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The clearcart result
+ *
+ */
+adata: { itemId, quantity },
         });
         throw err;
       }
@@ -358,7 +415,15 @@ export function useCart() {
       try {
         if (user) {
           // Authenticated user
-          await cartService.removeItem(itemId);
+          await cartService.removeItem(item/**
+ * Performs apply coupon operation
+ *
+ * @param {string} async(code - The async(code
+ *
+ * @returns {Promise<any>} The applycoupon result
+ *
+ */
+Id);
           await loadCart();
         } else {
           // Guest user
@@ -391,7 +456,15 @@ export function useCart() {
         await loadCart();
       }
     } catch (err: any) {
-      logError(err, { component: "useCart.clearCart" });
+      logError/**
+ * Performs remove coupon operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The removecoupon result
+ *
+ */
+(err, { component: "useCart.clearCart" });
       throw err;
     }
   }, [user, loadCart]);
@@ -412,7 +485,15 @@ export function useCart() {
             ...cart,
             /** Discount */
             discount: result.discount,
-            /** Tax */
+            /** Ta/**
+ * Performs merge guest cart operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The mergeguestcart result
+ *
+ */
+x */
             tax: result.tax,
             /** Total */
             total: result.total,

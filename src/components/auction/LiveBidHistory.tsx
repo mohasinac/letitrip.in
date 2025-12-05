@@ -4,7 +4,8 @@
  * @description This file contains the LiveBidHistory component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -30,10 +31,13 @@ import { useEffect, useState } from "react";
 interface Bid {
   /** Id */
   id: string;
+  /** User_id */
   user_id: string;
   /** Amount */
   amount: number;
+  /** Created_at */
   created_at: string;
+  /** Is_winning */
   is_winning: boolean;
 }
 
@@ -54,7 +58,25 @@ interface LiveBidHistoryProps {
   className?: string;
 }
 
-export default function LiveBidHistory({
+export default /**
+ * Performs live bid history operation
+ *
+ * @param {LiveBidHistoryProps} [{
+  auctionId,
+  bids,
+  currentBid,
+  className = "",
+}] - The {
+  auctionid,
+  bids,
+  currentbid,
+  classname = "",
+}
+ *
+ * @returns {any} The livebidhistory result
+ *
+ */
+function LiveBidHistory({
   auctionId,
   bids,
   currentBid,
@@ -65,7 +87,15 @@ export default function LiveBidHistory({
   // Animate new bids
   useEffect(() => {
     if (bids.length > 0) {
-      const latestBid = bids[0];
+      /**
+ * Performs latest bid operation
+ *
+ * @param {any} !animatedBids.includes(latestBid.id - The !animatedbids.includes(latestbid.id
+ *
+ * @returns {any} The latestbid result
+ *
+ */
+const latestBid = bids[0];
       if (!animatedBids.includes(latestBid.id)) {
         setAnimatedBids((prev) => [latestBid.id, ...prev.slice(0, 9)]);
       }

@@ -4,7 +4,8 @@
  * @description This file contains the SmartAddressForm component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -44,6 +45,18 @@ import { PincodeInput } from "./PincodeInput";
 import { StateSelector } from "./StateSelector";
 
 // Validation schema
+/**
+ * Performs smart address schema operation
+ *
+ * @param {object} {
+  
+  fullName - The {
+  
+  fullname
+ *
+ * @returns {any} The smartaddressschema result
+ *
+ */
 const SmartAddressSchema = z.object({
   /** Full Name */
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -198,7 +211,15 @@ export function SmartAddressForm({
     },
   });
 
-  const addressType = watch("type");
+  const/**
+ * Performs load address operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadaddress result
+ *
+ */
+ addressType = watch("type");
   // pincode is watched for future autofill features
   const _pincode = watch("pincode");
 
@@ -227,7 +248,15 @@ export function SmartAddressForm({
     } catch (error) {
       logError(error as Error, {
         /** Component */
-        component: "SmartAddressForm.fetchAddress",
+        component: "SmartAddressForm.fetchAddress",/**
+ * Handles pincode lookup
+ *
+ * @param {PincodeLookupResult} (result - The (result
+ *
+ * @returns {any} The handlepincodelookup result
+ *
+ */
+
         /** Metadata */
         metadata: { addressId },
       });
@@ -243,7 +272,15 @@ export function SmartAddressForm({
   }, [addressId, loadAddress]);
 
   // Handle pincode lookup completion
-  const handlePincodeLookup = useCallback(
+  const handlePin/**
+ * Handles area select
+ *
+ * @param {string} (area - The (area
+ *
+ * @returns {any} The handleareaselect result
+ *
+ */
+codeLookup = useCallback(
     (result: PincodeLookupResult) => {
       if (result.isValid) {
         setValue("city", result.city);
@@ -252,7 +289,15 @@ export function SmartAddressForm({
 
         // Auto-fill area if only one
         if (result.areas.length === 1) {
-          setValue("area", result.areas[0]);
+    /**
+ * Handles g p s address
+ *
+ * @param {ReverseGeocodeResult} (address - The (address
+ *
+ * @returns {any} The handlegpsaddress result
+ *
+ */
+      setValue("area", result.areas[0]);
         }
       }
     },

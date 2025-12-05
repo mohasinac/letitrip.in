@@ -4,7 +4,8 @@
  * @description This file contains the ReviewList component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -26,6 +27,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 interface Review {
   /** Id */
   id: string;
+  /** User_id */
   user_id: string;
   /** Rating */
   rating: number;
@@ -35,8 +37,11 @@ interface Review {
   comment: string;
   /** Images */
   images: string[];
+  /** Verified_purchase */
   verified_purchase: boolean;
+  /** Helpful_count */
   helpful_count: number;
+  /** Created_at */
   created_at: string;
 }
 
@@ -53,10 +58,15 @@ interface ReviewStats {
   averageRating: number;
   /** Rating Distribution */
   ratingDistribution: {
+    /** 5 */
     5: number;
+    /** 4 */
     4: number;
+    /** 3 */
     3: number;
+    /** 2 */
     2: number;
+    /** 1 */
     1: number;
   };
 }
@@ -72,7 +82,15 @@ interface ReviewListProps {
   productId: string;
 }
 
-export default function ReviewList({ productId }: ReviewListProps) {
+export default /**
+ * Performs review list operation
+ *
+ * @param {ReviewListProps} { productId } - The { productid }
+ *
+ * @returns {any} The reviewlist result
+ *
+ */
+function ReviewList({ productId }: ReviewListProps) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -125,7 +143,15 @@ export default function ReviewList({ productId }: ReviewListProps) {
 
       // Load stats (only if productId is provided)
       if (productId) {
-        const statsData = await reviewsService.getSummary({ productId });
+        /**
+ * Performs stats data operation
+ *
+ * @param {object} { productId } - The { productid }
+ *
+ * @returns {any} The statsdata result
+ *
+ */
+const statsData = await reviewsService.getSummary({ productId });
         setStats({
           /** Total Reviews */
           totalReviews: statsData.totalReviews,
@@ -172,7 +198,15 @@ export default function ReviewList({ productId }: ReviewListProps) {
    *
    * @returns {Promise<any>} Promise resolving to async  result
    *
-   * @throws {Error} When operation fails or validation errors occur
+   * @thro/**
+ * Performs result operation
+ *
+ * @param {any} reviewId - The reviewid
+ *
+ * @returns {any} The result result
+ *
+ */
+ws {Error} When operation fails or validation errors occur
    */
 
   const handleMarkHelpful = async (reviewId: string) => {

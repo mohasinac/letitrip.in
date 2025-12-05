@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -35,7 +36,13 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-export default function SellerOrderDetailPage() {
+export default /**
+ * Performs seller order detail page operation
+ *
+ * @returns {any} The sellerorderdetailpage result
+ *
+ */
+function SellerOrderDetailPage() {
   const params = useParams();
   const router = useRouter();
   const orderId = params.id as string;
@@ -60,7 +67,15 @@ export default function SellerOrderDetailPage() {
     estimatedDelivery: "",
   });
 
-  const loadOrder = useCallback(async () => {
+  /**
+ * Performs load order operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadorder result
+ *
+ */
+const loadOrder = useCallback(async () => {
     try {
       const data: any = await ordersService.getById(orderId);
       return data;

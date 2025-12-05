@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -87,7 +88,15 @@ export async function GET(req: NextRequest) {
     const snapshot = await query.get();
 
     // Calculate statistics
-    const stats = {
+    /**
+ * Performs stats operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The stats result
+ *
+ */
+const stats = {
       /** Sent */
       sent: 0,
       /** Delivered */

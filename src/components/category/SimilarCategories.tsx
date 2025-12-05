@@ -4,7 +4,8 @@
  * @description This file contains the SimilarCategories component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -69,6 +70,28 @@ interface SimilarCategoriesProps {
   categoryName);
  */
 
+/**
+ * Performs similar categories operation
+ *
+ * @param {SimilarCategoriesProps} [{
+  categorySlug,
+  categoryName = "this category",
+  limit = 10,
+}] - The {
+  categoryslug,
+  categoryname = "this category",
+  limit = 10,
+}
+ *
+ * @returns {any} The similarcategories result
+ *
+ * @example
+ * SimilarCategories({
+  categorySlug,
+  categoryName = "this category",
+  limit = 10,
+});
+ */
 export function SimilarCategories({
   categorySlug,
   categoryName = "this category",
@@ -166,7 +189,15 @@ export function SimilarCategories({
    */
 
   const updateScrollButtons = () => {
-    const container = document.getElementById("similar-categories-scroll");
+    /**
+ * Performs container operation
+ *
+ * @param {any} "similar-categories-scroll" - The "similar-categories-scroll"
+ *
+ * @returns {any} The container result
+ *
+ */
+const container = document.getElementById("similar-categories-scroll");
     if (!container) return;
 
     setCanScrollLeft(container.scrollLeft > 0);

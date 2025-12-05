@@ -4,7 +4,8 @@
  * @description This file contains the AuctionCardSkeleton component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -23,7 +24,13 @@ import React from "react";
  * @example
  * const result = AuctionCardSkeleton();
  */
-export default function AuctionCardSkeleton() {
+export default /**
+ * Performs auction card skeleton operation
+ *
+ * @returns {any} The auctioncardskeleton result
+ *
+ */
+function AuctionCardSkeleton() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse">
       {/* Image Skeleton */}

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to rbac-auth
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -57,6 +58,16 @@ import { COLLECTIONS } from "@/constants/database";
   request);
  */
 
+/**
+ * Retrieves user from request
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<AuthUser | null>} The getuserfromrequest result
+ *
+ * @example
+ * getUserFromRequest(request);
+ */
 export async function getUserFromRequest(
   /** Request */
   request: NextRequest,
@@ -143,7 +154,17 @@ export async function getUserFromRequest(
  *
  * @param {NextRequest} /** Request */
   request - The /**  request */
-  request
+  req/**
+ * Performs require auth operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<} The requireauth result
+ *
+ * @example
+ * requireAuth(request);
+ */
+uest
  *
  * @returns {Promise<any>} Promise resolving to requireauth result
  *
@@ -248,7 +269,17 @@ export async function requireRole(
  *
  * @returns {Promise<any>} Promise resolving to requireadmin result
  *
- * @throws {Error} When operation fails or validation errors occur
+ * @throws {Error} When operation fails or validation/**
+ * Performs require admin operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<} The requireadmin result
+ *
+ * @example
+ * requireAdmin(request);
+ */
+ errors occur
  *
  * @example
  * requireAdmin(request);
@@ -283,7 +314,17 @@ export async function requireAdmin(
  * Require seller role (or admin)
  */
 /**
+ * Performs require seller operati/**
  * Performs require seller operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<} The requireseller result
+ *
+ * @example
+ * requireSeller(request);
+ */
+on
  *
  * @param {NextRequest} request - The request
  *
@@ -450,7 +491,17 @@ export async function requireShopOwnership(
     error: NextResponse.json(
       errorToJson(
         new ForbiddenError(
-          "You don't have permission to access this shop's resources",
+          "You don't have permission to acce/**
+ * Performs optional auth operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<AuthUser | null>} The optionalauth result
+ *
+ * @example
+ * optionalAuth(request);
+ */
+ss this shop's resources",
         ),
       ),
       { status: 403 },
@@ -622,7 +673,17 @@ export function withAuth(
   handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>,
 ) {
   return async (request: NextRequest) => {
-    const authResult = await requireAuth(request);
+    /**
+ * Performs auth result operation
+ *
+ * @param {any} request - The request
+ *
+ * @returns {any} The authresult result
+ *
+ * @example
+ * authResult(request);
+ */
+const authResult = await requireAuth(request);
 
     if (authResult.error) {
       return authResult.error;

@@ -4,7 +4,8 @@
  * @description This file contains service functions for hero-slides operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiService } from "./api.service";
@@ -121,6 +122,14 @@ export interface HeroSlideFormData {
  * @returns {any} The toapiformat result
  */
 
+/**
+ * Performs to api format operation
+ *
+ * @param {Partial<HeroSlideFormData>} data - The data
+ *
+ * @returns {Record<string, unknown>} The toapiformat result
+ *
+ */
 function toApiFormat(
   /** Data */
   data: Partial<HeroSlideFormData>,
@@ -284,7 +293,15 @@ class HeroSlidesService {
     /** Data */
     data: Partial<HeroSlideFormData>,
   ): Promise<HeroSlide> {
-    const response = await apiService.patch<{ slide: Record<string, unknown> }>(
+    /**
+ * Performs response operation
+ *
+ * @param {any} HERO_SLIDE_ROUTES.BY_ID(id - The hero_slide_routes.by_id(id
+ *
+ * @returns {Promise<void>} The response result
+ *
+ */
+const response = await apiService.patch<{ slide: Record<string, unknown> }>(
       HERO_SLIDE_ROUTES.BY_ID(id),
       toApiFormat(data),
     );

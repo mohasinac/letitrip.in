@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for cart
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -39,6 +40,7 @@ export interface CartItemBE {
   price: number;
   /** Quantity */
   quantity: number;
+  /** MaxQuantity */
   maxQuantity: number; // Stock limit
   /** Subtotal */
   subtotal: number;

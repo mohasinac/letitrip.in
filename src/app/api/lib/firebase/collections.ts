@@ -4,7 +4,8 @@
  * @description This file contains functionality related to collections
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -47,6 +48,16 @@ import { getFirestoreAdmin } from "./admin";
  * getCollection("example");
  */
 
+/**
+ * Retrieves collection
+ *
+ * @param {string} collectionName - The collectionname
+ *
+ * @returns {CollectionReference<T>} The getcollection result
+ *
+ * @example
+ * getCollection("example");
+ */
 export function getCollection<T = any>(
   /** Collection Name */
   collectionName: string,

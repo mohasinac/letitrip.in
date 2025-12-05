@@ -4,7 +4,8 @@
  * @description This file contains the HeroSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -12,6 +13,14 @@
 import dynamic from "next/dynamic";
 import { COMPANY_NAME } from "@/constants/navigation";
 
+/**
+ * Performs hero carousel operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The herocarousel result
+ *
+ */
 const HeroCarousel = dynamic(() => import("@/components/layout/HeroCarousel"), {
   /** Ssr */
   ssr: true,

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -78,7 +79,15 @@ export async function GET(request: NextRequest) {
     const hasNextPage = docs.length > limit;
     const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
 
-    const items = await Promise.all(
+    /**
+ * Performs items operation
+ *
+ * @param {any} resultDocs.map(async(doc - The resultdocs.map(async(doc
+ *
+ * @returns {Promise<any>} The items result
+ *
+ */
+const items = await Promise.all(
       resultDocs.map(async (doc: any) => {
         const data = doc.data();
 
@@ -119,7 +128,15 @@ export async function GET(request: NextRequest) {
           shopId: product.shop_id,
           /** Shop Name */
           shopName: shop?.name || "Unknown",
-          /** Stock Count */
+         /**
+ * Performs valid items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The validitems result
+ *
+ */
+ /** Stock Count */
           stockCount: product.stock_count || 0,
           /** Added At */
           addedAt: data.added_at,
@@ -135,7 +152,16 @@ export async function GET(request: NextRequest) {
       0,
     );
     const shipping = subtotal > 5000 ? 0 : 100; // Free shipping above ₹5000
-    const tax = subtotal * 0.18; // 18% GST
+    const tax = subtotal * 0.18; // /**
+ * Performs summary operation
+ *
+ * @param {number} (sum - The (sum
+ * @param {any} item - The item
+ *
+ * @returns {any} The summary result
+ *
+ */
+18% GST
     const discount = 0; // Will be calculated if coupon applied
     const total = subtotal + shipping + tax - discount;
 
@@ -351,7 +377,13 @@ export async function POST(request: NextRequest) {
  *
  * @returns {Promise<any>} Promise resolving to delete result
  *
- * @throws {Error} When operation fails or validation errors occur
+ * @throws {Error} When o/**
+ * Performs batch operation
+ *
+ * @returns {any} The batch result
+ *
+ */
+peration fails or validation errors occur
  *
  * @example
  * DELETE(request);

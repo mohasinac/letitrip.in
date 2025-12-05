@@ -4,7 +4,8 @@
  * @description This file contains functionality related to order.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -890,6 +891,16 @@ export function toFEOrderCard(orderBE: OrderListItemBE): OrderCardFE {
   formData);
  */
 
+/**
+ * Performs to b e create order request operation
+ *
+ * @param {CreateOrderFormFE} formData - The formdata
+ *
+ * @returns {CreateOrderRequestBE} The tobecreateorderrequest result
+ *
+ * @example
+ * toBECreateOrderRequest(formData);
+ */
 export function toBECreateOrderRequest(
   /** Form Data */
   formData: CreateOrderFormFE,

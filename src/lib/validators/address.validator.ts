@@ -4,7 +4,8 @@
  * @description This file contains functionality related to address.validator
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -252,6 +253,16 @@ export function isPayPalEligibleCountry(countryCode: string): boolean {
   address);
  */
 
+/**
+ * Validates international address
+ *
+ * @param {Address} address - The address
+ *
+ * @returns {AddressValidationResult} The validateinternationaladdress result
+ *
+ * @example
+ * validateInternationalAddress(address);
+ */
 export function validateInternationalAddress(
   /** Address */
   address: Address
@@ -793,7 +804,15 @@ export function isValidPayPalAddress(address: Address): {
   }
 
   // Validate address structure
-  const validation = validateInternationalAddress(address);
+  /**
+ * Performs validation operation
+ *
+ * @param {any} address - The address
+ *
+ * @returns {any} The validation result
+ *
+ */
+const validation = validateInternationalAddress(address);
 
   if (!validation.isValid) {
     return {

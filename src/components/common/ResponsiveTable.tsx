@@ -4,7 +4,8 @@
  * @description This file contains the ResponsiveTable component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -62,6 +63,25 @@ interface ResponsiveTableProps {
   stickyFirstColumn);
  */
 
+/**
+ * Performs responsive table operation
+ *
+ * @param {ResponsiveTableProps} [{
+  children,
+  stickyFirstColumn = true,
+}] - The {
+  children,
+  stickyfirstcolumn = true,
+}
+ *
+ * @returns {any} The responsivetable result
+ *
+ * @example
+ * ResponsiveTable({
+  children,
+  stickyFirstColumn = true,
+});
+ */
 export function ResponsiveTable({
   children,
   stickyFirstColumn = true,

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -115,7 +116,13 @@ interface ReviewStats {
   respondedPercentage: number;
 }
 
-export default function SellerReviewsPage() {
+export default /**
+ * Performs seller reviews page operation
+ *
+ * @returns {any} The sellerreviewspage result
+ *
+ */
+function SellerReviewsPage() {
   const { user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stats, setStats] = useState<ReviewStats>({
@@ -183,7 +190,15 @@ export default function SellerReviewsPage() {
   const loadProducts = async () => {
     try {
       // Get products for this seller's shop(s)
-      const response = await productsService.list({});
+      /**
+ * Performs response operation
+ *
+ * @param {object} {} - The {}
+ *
+ * @returns {any} The response result
+ *
+ */
+const response = await productsService.list({});
       setProducts(
         (response.data || []).map((p: { id: string; name: string }) => ({
           /** Id */
@@ -193,7 +208,15 @@ export default function SellerReviewsPage() {
         })),
       );
     } catch (error) {
-      logError(error as Error, {
+      logError(error/**
+ * Performs load reviews operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadreviews result
+ *
+ */
+ as Error, {
         /** Component */
         component: "SellerReviews.loadProducts",
       });
@@ -290,12 +313,29 @@ export default function SellerReviewsPage() {
           r.status === "approved"
             ? "published"
             : r.status === "rejected"
-              ? "flagged"
+           /**
+ * Performs avg rating operation
+ *
+ * @param {number} (sum - The (sum
+ * @param {Review} r - The r
+ *
+ * @returns {any} The avgrating result
+ *
+ */
+   ? "flagged"
               : "pending",
       }));
 
       setReviews(reviewData);
-      setTotalPages(Math.ceil((response.count || 0) / pageSize));
+      setTotalPages(Math.ceil((response.count || /**
+ * Performs responded operation
+ *
+ * @param {Review} (r - The (r
+ *
+ * @returns {any} The responded result
+ *
+ */
+0) / pageSize));
 
       // Calculate stats
       const totalReviews = response.count || reviewData.length;
@@ -378,7 +418,15 @@ export default function SellerReviewsPage() {
                 /** Seller Response */
                 sellerResponse: {
                   /** Content */
-                  content: responseText.trim(),
+                  content: responseText./**
+ * Performs filtered reviews operation
+ *
+ * @param {any} (review - The (review
+ *
+ * @returns {any} The filteredreviews result
+ *
+ */
+trim(),
                   /** Responded At */
                   respondedAt: new Date().toISOString(),
                 },

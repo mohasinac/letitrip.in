@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -41,7 +42,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function HeroSlidesPage() {
+export default /**
+ * Performs hero slides page operation
+ *
+ * @returns {any} The heroslidespage result
+ *
+ */
+function HeroSlidesPage() {
   const router = useRouter();
   const {
     /** Is Loading */
@@ -72,7 +79,15 @@ export default function HeroSlidesPage() {
   );
 
   // Bulk actions configuration
-  const bulkActions = getHeroSlideBulkActions(selectedIds.length);
+  /**
+ * Performs bulk actions operation
+ *
+ * @param {any} selectedIds.length - The selectedids.length
+ *
+ * @returns {any} The bulkactions result
+ *
+ */
+const bulkActions = getHeroSlideBulkActions(selectedIds.length);
 
   useEffect(() => {
     loadSlides();
@@ -205,12 +220,29 @@ export default function HeroSlidesPage() {
    * @throws {Error} When operation fails or validation errors occur
    */
 
-  const handleDrop = async (e: React.DragEvent, targetSlideId: string) => {
+  const handleDrop = async (e: R/**
+ * Performs dragged index operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The draggedindex result
+ *
+ */
+eact.DragEvent, targetSlideId: string) => {
     e.preventDefault();
     if (!draggedSlide || draggedSlide === targetSlideId || !slides) return;
 
     const draggedIndex = slides.findIndex((s) => s.id === draggedSlide);
-    const targetIndex = slides.findIndex((s) => s.id === targetSlideId);
+    const targetIndex = slides.findIndex((s) => s.id =/**
+ * Performs reordered slides operation
+ *
+ * @param {any} (slide - The (slide
+ * @param {any} index - The index
+ *
+ * @returns {any} The reorderedslides result
+ *
+ */
+== targetSlideId);
 
     if (draggedIndex === -1 || targetIndex === -1) return;
 
@@ -227,7 +259,15 @@ export default function HeroSlidesPage() {
     }));
 
     setSlides(reorderedSlides);
-    setDraggedSlide(null);
+    setDra/**
+ * Performs carousel count operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The carouselcount result
+ *
+ */
+ggedSlide(null);
 
     // Save to backend
     try {
@@ -248,7 +288,14 @@ export default function HeroSlidesPage() {
   };
 
   const carouselCount = slides?.filter((s) => s.isActive).length ?? 0; // Note: Using isActive as proxy - update if show_in_carousel exists
-  const MAX_SLIDES = 10;
+  /**
+ * MAX_SLIDES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for max slides
+ */
+const MAX_SLIDES = 10;
   const MAX_CAROUSEL = 5;
 
   if (loading) {

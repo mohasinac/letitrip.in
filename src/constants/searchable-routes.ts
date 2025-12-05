@@ -4,7 +4,8 @@
  * @description This file contains functionality related to searchable-routes
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -26,6 +27,7 @@ export interface SearchableRoute {
   path: string;
   /** Description */
   description: string;
+  /** Keywords */
   keywords: string[]; // Keywords for matching search queries
   /** Icon */
   icon: string;
@@ -1008,7 +1010,15 @@ export function searchNavigationRoutes(
   }
 
   // Score and filter routes
-  const scoredRoutes = routes.map((route) => {
+  /**
+ * Performs scored routes operation
+ *
+ * @param {any} (route - The (route
+ *
+ * @returns {any} The scoredroutes result
+ *
+ */
+const scoredRoutes = routes.map((route) => {
     let score = 0;
 
     // Exact name match (highest priority)
@@ -1024,7 +1034,15 @@ export function searchNavigationRoutes(
       score += 30;
     }
 
-    // Path match
+    // P/**
+ * Performs keyword matches operation
+ *
+ * @param {any} (kw - The (kw
+ *
+ * @returns {any} The keywordmatches result
+ *
+ */
+ath match
     if (route.path.toLowerCase().includes(normalizedQuery)) {
       score += 20;
     }

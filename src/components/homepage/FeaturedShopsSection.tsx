@@ -4,7 +4,8 @@
  * @description This file contains the FeaturedShopsSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -68,6 +69,28 @@ interface FeaturedShopsSectionProps {
   shopLimit);
  */
 
+/**
+ * Performs featured shops section operation
+ *
+ * @param {FeaturedShopsSectionProps} [{
+  shopLimit = 4,
+  itemsPerShop = 10,
+  className = "",
+}] - The {
+  shoplimit = 4,
+  itemspershop = 10,
+  classname = "",
+}
+ *
+ * @returns {any} The featuredshopssection result
+ *
+ * @example
+ * FeaturedShopsSection({
+  shopLimit = 4,
+  itemsPerShop = 10,
+  className = "",
+});
+ */
 export function FeaturedShopsSection({
   shopLimit = 4,
   itemsPerShop = 10,

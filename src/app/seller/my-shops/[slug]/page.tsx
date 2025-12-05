@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -42,7 +43,13 @@ interface ShopWithStats {
   stats: any;
 }
 
-export default function ShopDashboardPage() {
+export default /**
+ * Performs shop dashboard page operation
+ *
+ * @returns {any} The shopdashboardpage result
+ *
+ */
+function ShopDashboardPage() {
   const router = useRouter();
   const params = useParams();
   const slug = params.slug as string;
@@ -52,7 +59,15 @@ export default function ShopDashboardPage() {
     initialData: null,
   });
 
-  const loadShopData = useCallback(async () => {
+  /**
+ * Performs load shop data operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadshopdata result
+ *
+ */
+const loadShopData = useCallback(async () => {
     try {
       // Load shop details
       const shopData = await shopsService.getBySlug(slug);

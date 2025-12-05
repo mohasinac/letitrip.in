@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -70,6 +71,17 @@ type CleanupStep =
   request, {});
  */
 
+/**
+ * Deletes 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ step: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ * @example
+ * DELETE(request, {});
+ */
 export async function DELETE(
   /** Request */
   request: NextRequest,
@@ -117,7 +129,16 @@ export async function DELETE(
           const batchSize = 500;
           for (let i = 0; i < snapshot.docs.length; i += batchSize) {
             const batch = db.batch();
-            const batchDocs = snapshot.docs.slice(i, i + batchSize);
+            /**
+ * Performs batch docs operation
+ *
+ * @param {any} i - The i
+ * @param {any} i+batchSize - The i+batchsize
+ *
+ * @returns {any} The batchdocs result
+ *
+ */
+const batchDocs = snapshot.docs.slice(i, i + batchSize);
             batchDocs.forEach((doc) => batch.delete(doc.ref));
             await batch.commit();
           }
@@ -164,7 +185,13 @@ export async function DELETE(
       for (let i = 0; i < relatedIds.length; i += 30) {
         const batch = relatedIds.slice(i, i + 30);
         if (batch.length > 0) {
-          const snapshot = await db
+          const snapsh/**
+ * Performs write batch operation
+ *
+ * @returns {any} The writebatch result
+ *
+ */
+ot = await db
             .collection(collection)
             .where(field, "in", batch)
             .get();
@@ -359,7 +386,15 @@ export async function DELETE(
           );
         }
 
-        // Delete conversations (try prefix on subject or participants)
+        // Delete conversations (try prefix on subject/**
+ * Performs participants operation
+ *
+ * @param {string} participants.some((p - The participants.some((p
+ *
+ * @returns {any} The participants result
+ *
+ */
+ or participants)
         const convSnapshot = await db
           .collection(COLLECTIONS.CONVERSATIONS)
           .get();

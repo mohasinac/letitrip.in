@@ -4,7 +4,8 @@
  * @description This file contains service functions for static-assets-client operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -263,7 +264,15 @@ class StaticAssetsService {
   async getPaymentLogoUrl(paymentId: string): Promise<string | null> {
     try {
       const logos = await this.getAssetsByType("payment-logo");
-      const logo = logos.find((l) => l.metadata?.paymentId === paymentId);
+      /**
+ * Performs logo operation
+ *
+ * @param {any} (l - The (l
+ *
+ * @returns {any} The logo result
+ *
+ */
+const logo = logos.find((l) => l.metadata?.paymentId === paymentId);
       return logo ? logo.url : null;
     } catch (error) {
       logServiceError(

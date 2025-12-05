@@ -4,7 +4,8 @@
  * @description This file contains the ShippingMethodSelector component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -252,7 +253,15 @@ export function ShippingMethodSelector({
     }).then((loadedMethods) => {
       // Auto-select cheapest available method if none selected
       if (!selectedId && loadedMethods) {
-        const available = loadedMethods.filter((m) => m.available);
+        /**
+ * Performs available operation
+ *
+ * @param {any} (m - The (m
+ *
+ * @returns {any} The available result
+ *
+ */
+const available = loadedMethods.filter((m) => m.available);
         if (available.length > 0) {
           const cheapest = available.reduce((prev, current) =>
             current.cost < prev.cost ? current : prev,

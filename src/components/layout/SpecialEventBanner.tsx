@@ -4,7 +4,8 @@
  * @description This file contains the SpecialEventBanner component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -16,7 +17,13 @@ import { homepageService } from "@/services/homepage.service";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { logError } from "@/lib/firebase-error-logger";
 
-export default function SpecialEventBanner() {
+export default /**
+ * Performs special event banner operation
+ *
+ * @returns {any} The specialeventbanner result
+ *
+ */
+function SpecialEventBanner() {
   const [isVisible, setIsVisible] = useState(true);
   const [bannerSettings, setBannerSettings] = useState<{
     /** Enabled */

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -73,6 +74,13 @@ interface SendTemplateEmailRequest {
 }
 
 // Template subjects
+/**
+ * TEMPLATE_SUBJECTS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for template subjects
+ */
 const TEMPLATE_SUBJECTS: Record<EmailTemplateType, string> = {
   /** Verification */
   verification: "Verify your email address - Letitrip",

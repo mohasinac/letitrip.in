@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -16,6 +17,13 @@ import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // Actions that affect category counts
+/**
+ * STATUS_CHANGING_ACTIONS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for status changing actions
+ */
 const STATUS_CHANGING_ACTIONS = new Set([
   "publish",
   "unpublish",

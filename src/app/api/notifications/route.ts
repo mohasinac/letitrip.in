@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -260,7 +261,15 @@ export async function GET(request: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const notifications = snapshot.docs.map((doc) =>
+    /**
+ * Performs notifications operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The notifications result
+ *
+ */
+const notifications = snapshot.docs.map((doc) =>
       transformNotification(doc.id, doc.data())
     );
 

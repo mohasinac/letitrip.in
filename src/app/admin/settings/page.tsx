@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -32,7 +33,13 @@ export const metadata: Metadata = {
   description: "Manage system configuration and settings",
 };
 
-export default function AdminSettingsPage() {
+export default /**
+ * Performs admin settings page operation
+ *
+ * @returns {any} The adminsettingspage result
+ *
+ */
+function AdminSettingsPage() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <SettingsCard

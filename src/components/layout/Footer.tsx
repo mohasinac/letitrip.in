@@ -4,7 +4,8 @@
  * @description This file contains the Footer component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -23,7 +24,13 @@ import {
 } from "@/constants/footer";
 import { COMPANY_NAME } from "@/constants/navigation";
 
-export default function Footer() {
+export default /**
+ * Performs footer operation
+ *
+ * @returns {any} The footer result
+ *
+ */
+function Footer() {
   /**
    * Performs scroll to top operation
    *

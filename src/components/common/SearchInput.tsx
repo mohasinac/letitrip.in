@@ -4,7 +4,8 @@
  * @description This file contains the SearchInput component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -131,22 +132,54 @@ export function SearchInput({
   disabled = false,
 }: SearchInputProps) {
   const [localValue, setLocalValue] = useState(value);
-  const classes = sizeClasses[size];
+  /**
+ * Performs classes operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The classes result
+ *
+ */
+const classes = sizeClasses[size];
 
   // Sync local value with external value
   useEffect(() => {
-    setLocalValue(value);
+    setLocalVa/**
+ * Performs timer operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The timer result
+ *
+ */
+lue(value);
   }, [value]);
 
   // Debounced onChange
   useEffect(() => {
     if (debounceMs > 0) {
-      const timer = setTimeout(() => {
+      const timer = setTimeout/**
+ * Handles change
+ *
+ * @param {React.ChangeEvent<HTMLInputElement>} (e - The (e
+ *
+ * @returns {any} The handlechange result
+ *
+ */
+(() => {
         if (localValue !== value) {
           onChange(localValue);
         }
       }, debounceMs);
-      return () => clearTimeout(timer);
+      return () => clea/**
+ * Handles clear
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handleclear result
+ *
+ */
+rTimeout(timer);
     }
   }, [localValue, debounceMs, onChange, value]);
 

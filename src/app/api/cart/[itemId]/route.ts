@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -46,6 +47,17 @@ import { getCurrentUser } from "../../lib/session";
   request, {});
  */
 
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ itemId: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The patch result
+ *
+ * @example
+ * PATCH(request, {});
+ */
 export async function PATCH(
   /** Request */
   request: NextRequest,
@@ -164,7 +176,18 @@ export async function PATCH(
  *
  * @param {NextRequest} /** Request */
   request - The /**  request */
-  request
+ /**
+ * Deletes 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ itemId: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ * @example
+ * DELETE(request, {});
+ */
+ request
  * @param {{ params} { params } - The { params }
  *
  * @returns {Promise<any>} Promise resolving to delete result

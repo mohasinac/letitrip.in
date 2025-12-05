@@ -4,7 +4,8 @@
  * @description This file contains functionality related to auth
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -72,6 +73,16 @@ export interface AuthResult {
   request);
  */
 
+/**
+ * Retrieves auth from request
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<AuthResult>} The getauthfromrequest result
+ *
+ * @example
+ * getAuthFromRequest(request);
+ */
 export async function getAuthFromRequest(
   /** Request */
   request: NextRequest,

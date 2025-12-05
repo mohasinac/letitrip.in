@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -26,6 +27,13 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 // Icons will be inline SVGs
 
+/**
+ * ASSET_TYPES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for asset types
+ */
 const ASSET_TYPES = [
   { value: "payment-logo", label: "Payment Logos" },
   { value: "icon", label: "Icons" },
@@ -34,7 +42,13 @@ const ASSET_TYPES = [
   { value: "document", label: "Documents" },
 ] as const;
 
-export default function StaticAssetsPage() {
+export default /**
+ * Performs static assets page operation
+ *
+ * @returns {any} The staticassetspage result
+ *
+ */
+function StaticAssetsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [selectedType, setSelectedType] =

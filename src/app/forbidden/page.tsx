@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -256,7 +257,13 @@ function ForbiddenContent() {
   );
 }
 
-export default function ForbiddenPage() {
+export default /**
+ * Performs forbidden page operation
+ *
+ * @returns {any} The forbiddenpage result
+ *
+ */
+function ForbiddenPage() {
   return (
     <Suspense
       fallback={

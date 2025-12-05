@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -81,6 +82,17 @@ const updateEventSchema = z.object({
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: NextRequest,
@@ -145,7 +157,18 @@ export async function GET(
  * @param {NextRequest} /** Request */
   request - The /**  request */
   request
- * @param {{ params} { params } - The { params }
+ * @param {/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The put result
+ *
+ * @example
+ * PUT(request, {});
+ */
+{ params} { params } - The { params }
  *
  * @returns {Promise<any>} Promise resolving to put result
  *
@@ -252,7 +275,18 @@ export async function PUT(
  *
  * @returns {Promise<any>} Promise resolving to delete result
  *
- * @throws {Error} When operation fails or validation errors occur
+ * @thro/**
+ * Deletes 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ * @example
+ * DELETE(request, {});
+ */
+ws {Error} When operation fails or validation errors occur
  *
  * @example
  * DELETE(request, {});

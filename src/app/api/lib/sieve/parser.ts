@@ -4,7 +4,8 @@
  * @description This file contains functionality related to parser
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -32,6 +33,13 @@ import {
 
 // ==================== CONSTANTS ====================
 
+/**
+ * DEFAULT_PAGE constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for default page
+ */
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
@@ -241,7 +249,16 @@ function parseSorts(
     return { sorts, sortErrors: errors, sortWarnings: warnings };
   }
 
-  const sortFields = sortsParam
+  /**
+ * Performs sort fields operation
+ *
+ * @param {any} " - The "
+ * @param {any} " - The "
+ *
+ * @returns {any} The sortfields result
+ *
+ */
+const sortFields = sortsParam
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
@@ -406,7 +423,15 @@ function parseFilterCondition(
     const index = filterStr.indexOf(pattern);
     if (index > 0) {
       const field = filterStr.slice(0, index).trim();
-      const valueStr = filterStr.slice(index + pattern.length).trim();
+      const valueS/**
+ * Performs field config operation
+ *
+ * @param {any} (f - The (f
+ *
+ * @returns {any} The fieldconfig result
+ *
+ */
+tr = filterStr.slice(index + pattern.length).trim();
 
       // Validate field against config
       if (config?.filterableFields) {
@@ -493,7 +518,15 @@ function parseFilterCondition(
 function parseFilterValue(
   /** Value Str */
   valueStr: string,
-  /** Operator */
+  /** Op/**
+ * Performs field config operation
+ *
+ * @param {any} (f - The (f
+ *
+ * @returns {any} The fieldconfig result
+ *
+ */
+erator */
   operator: FilterOperator,
   /** Config */
   config?: SieveConfig,
@@ -557,11 +590,27 @@ function parseFilterValue(
  * buildSieveQueryString(query);
  */
 
-export function buildSieveQueryString(query: Partial<SieveQuery>): string {
+export function buildSieveQueryString(query: Part/**
+ * Performs sort str operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The sortstr result
+ *
+ */
+ial<SieveQuery>): string {
   const params = new URLSearchParams();
 
   // Pagination
-  if (query.page && query.page !== DEFAULT_PAGE) {
+  if (query.page && query.page/**
+ * Performs filter str operation
+ *
+ * @param {any} (f - The (f
+ *
+ * @returns {any} The filterstr result
+ *
+ */
+ !== DEFAULT_PAGE) {
     params.set("page", query.page.toString());
   }
   if (query.pageSize && query.pageSize !== DEFAULT_PAGE_SIZE) {
@@ -719,7 +768,15 @@ export function parseSieveFromURL(
  */
 
 /**
- * Updates existing u r l with sieve
+ * Updates/**
+ * Performs new params operation
+ *
+ * @param {any} queryString - The querystring
+ *
+ * @returns {any} The newparams result
+ *
+ */
+ existing u r l with sieve
  *
  * @returns {string} The updateurlwithsieve result
  *

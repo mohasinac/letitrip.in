@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -25,7 +26,13 @@ import { Eye, CheckCircle, XCircle } from "lucide-react";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { DateDisplay } from "@/components/common/values/DateDisplay";
 
-export default function AdminPayoutsPage() {
+export default /**
+ * Performs admin payouts page operation
+ *
+ * @returns {any} The adminpayoutspage result
+ *
+ */
+function AdminPayoutsPage() {
   const router = useRouter();
   const {
     /** Data */
@@ -56,7 +63,14 @@ export default function AdminPayoutsPage() {
     totalAmount: 0,
   });
 
-  const PAYOUT_FILTERS = [
+  /**
+ * PAYOUT_FILTERS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for payout filters
+ */
+const PAYOUT_FILTERS = [
     {
       /** Id */
       id: "status",
@@ -82,7 +96,15 @@ export default function AdminPayoutsPage() {
     },
   ];
 
-  const fetchPayouts = useCallback(async () => {
+  /**
+ * Fetches payouts
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The fetchpayouts result
+ *
+ */
+const fetchPayouts = useCallback(async () => {
     const response = await payoutsService.getPayouts({
       ...filterValues,
       /** Search */
@@ -92,7 +114,13 @@ export default function AdminPayoutsPage() {
       /** Limit */
       limit: 20,
     });
-    setTotalPages(Math.ceil(response.total / response.limit));
+    /**
+ * Performs stats data operation
+ *
+ * @returns {any} The statsdata result
+ *
+ */
+setTotalPages(Math.ceil(response.total / response.limit));
     setTotalPayouts(response.total);
 
     // Load stats

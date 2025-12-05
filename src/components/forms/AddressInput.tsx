@@ -4,7 +4,8 @@
  * @description This file contains the AddressInput component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -129,7 +130,16 @@ export function AddressInput({
   const debouncedPostalCode = useDebounce(value.postalCode, 500);
 
   // Debounce city input for autocomplete
-  const debouncedCity = useDebounce(value.city, 300);
+  /**
+ * Performs debounced city operation
+ *
+ * @param {any} value.city - The value.city
+ * @param {any} 300 - The 300
+ *
+ * @returns {any} The debouncedcity result
+ *
+ */
+const debouncedCity = useDebounce(value.city, 300);
 
   /**
    * Lookup PIN code details (India only for now)
@@ -173,7 +183,15 @@ export function AddressInput({
    *
    * @returns {Promise<any>} Promise resolving to async  result
    *
-   * @throws {Error} When operation fails or validation errors occur
+   * @throws {Error} When operation fails or val/**
+ * Performs details operation
+ *
+ * @param {any} pincode - The pincode
+ *
+ * @returns {any} The details result
+ *
+ */
+idation errors occur
    */
 
   const lookupPincode = async (pincode: string) => {
@@ -224,7 +242,21 @@ export function AddressInput({
   /**
    * Performs async operation
    *
-   * @param {string} query - The query
+   */**
+ * Performs results operation
+ *
+ * @param {object} {
+        query,
+        
+        state - The {
+        query,
+        
+        state
+ *
+ * @returns {any} The results result
+ *
+ */
+ @param {string} query - The query
    *
    * @returns {Promise<any>} Promise resolving to async  result
    *

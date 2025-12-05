@@ -4,7 +4,8 @@
  * @description This file contains the RichTextEditor component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -141,6 +142,13 @@ interface RichTextEditorProps {
   onImageUpload?: (url: string) => void;
 }
 
+/**
+ * DEFAULT_TOOLS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for default tools
+ */
 const DEFAULT_TOOLS: EditorTool[] = [
   "bold",
   "italic",
@@ -167,7 +175,14 @@ const DEFAULT_TOOLS: EditorTool[] = [
   "clear",
 ];
 
-const BASIC_TOOLS: EditorTool[] = [
+const BASIC/**
+ * TEXT_COLORS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for text colors
+ */
+_TOOLS: EditorTool[] = [
   "bold",
   "italic",
   "underline",
@@ -192,7 +207,14 @@ const TEXT_COLORS = [
 
 const HIGHLIGHT_COLORS = [
   { name: "None", value: "" },
-  { name: "Yellow", value: "#fef08a" },
+  { n/**
+ * EDITOR_BUTTONS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for editor buttons
+ */
+ame: "Yellow", value: "#fef08a" },
   { name: "Green", value: "#bbf7d0" },
   { name: "Blue", value: "#bfdbfe" },
   { name: "Pink", value: "#fbcfe8" },
@@ -531,7 +553,45 @@ const EDITOR_BUTTONS: EditorButton[] = [
   },
 ];
 
-export default function RichTextEditor({
+export default /**
+ * Performs rich text editor operation
+ *
+ * @param {RichTextEditorProps} [{
+  value,
+  onChange,
+  placeholder = "Enter text...",
+  minHeight = 200,
+  maxHeight = 600,
+  disabled = false,
+  error,
+  showCharCount = false,
+  maxChars,
+  tools = DEFAULT_TOOLS,
+  className = "",
+  imageUploadContext = "blog",
+  imageUploadContextId,
+  onImageUpload,
+}] - The {
+  value,
+  onchange,
+  placeholder = "enter text...",
+  minheight = 200,
+  maxheight = 600,
+  disabled = false,
+  error,
+  showcharcount = false,
+  maxchars,
+  tools = default_tools,
+  classname = "",
+  imageuploadcontext = "blog",
+  imageuploadcontextid,
+  onimageupload,
+}
+ *
+ * @returns {any} The richtexteditor result
+ *
+ */
+function RichTextEditor({
   value,
   onChange,
   placeholder = "Enter text...",
@@ -564,8 +624,24 @@ export default function RichTextEditor({
   const savedSelection = useRef<Range | null>(null);
 
   // Filter buttons based on enabled tools
-  const visibleButtons = useMemo(
-    () => EDITOR_BUTTONS.filter((btn) => tools.includes(btn.tool)),
+  /**
+ * Performs visible buttons operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The visiblebuttons result
+ *
+ */
+const visibleButtons = useMemo(
+    () => EDITOR_BUTTONS.filter((btn) => tools.include/**
+ * Performs groups operation
+ *
+ * @param {any} (btn - The (btn
+ *
+ * @returns {any} The groups result
+ *
+ */
+s(btn.tool)),
     [tools],
   );
 
@@ -580,17 +656,42 @@ export default function RichTextEditor({
     return Object.entries(groups);
   }, [visibleButtons]);
 
-  // Initialize editor content only once
+  // Initialize editor content only once/**
+ * Performs save selection operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The saveselection result
+ *
+ */
+
   React.useEffect(() => {
     if (editorRef.current && !isInitialized.current) {
       editorRef.current.innerHTML = value;
-      isInitialized.current = true;
+      isI/**
+ * Performs restore selection operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The restoreselection result
+ *
+ */
+nitialized.current = true;
     }
   }, []);
 
   // Save current selection for later restoration
   const saveSelection = useCallback(() => {
-    const selection = window.getSelection();
+    const selection = window.ge/**
+ * Performs execute command operation
+ *
+ * @param {string} (command - The (command
+ * @param {string} [value] - The value
+ *
+ * @returns {any} The executecommand result
+ *
+ */
+tSelection();
     if (selection && selection.rangeCount > 0) {
       savedSelection.current = selection.getRangeAt(0).cloneRange();
     }
@@ -608,7 +709,15 @@ export default function RichTextEditor({
   }, []);
 
   // Execute editor command
-  const executeCommand = useCallback(
+  const executeCommand = u/**
+ * Handles insert link
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handleinsertlink result
+ *
+ */
+seCallback(
     (command: string, value?: string) => {
       if (disabled) return;
 
@@ -648,7 +757,15 @@ export default function RichTextEditor({
       anchor.target = "_blank";
       anchor.rel = "noopener noreferrer";
 
-      const selection = window.getSelection();
+      const /**
+ * Handles text color
+ *
+ * @param {string} (color - The (color
+ *
+ * @returns {any} The handletextcolor result
+ *
+ */
+selection = window.getSelection();
       if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         range.deleteContents();
@@ -656,7 +773,15 @@ export default function RichTextEditor({
         range.setStartAfter(anchor);
         range.collapse(true);
         selection.removeAllRanges();
-        selection.addRange(range);
+  /**
+ * Handles highlight
+ *
+ * @param {string} (color - The (color
+ *
+ * @returns {any} The handlehighlight result
+ *
+ */
+      selection.addRange(range);
       }
     } else {
       // Use selected text as link
@@ -669,7 +794,15 @@ export default function RichTextEditor({
     }
 
     setShowLinkModal(false);
-    setLinkUrl("");
+    setLinkUrl("")/**
+ * Handles image upload
+ *
+ * @param {File} async(file - The async(file
+ *
+ * @returns {Promise<any>} The handleimageupload result
+ *
+ */
+;
     setLinkText("");
     editorRef.current?.focus();
   }, [linkUrl, linkText, onChange, restoreSelection]);
@@ -723,7 +856,15 @@ export default function RichTextEditor({
         formData.append("context", imageUploadContext);
         if (imageUploadContextId) {
           formData.append("contextId", imageUploadContextId);
-        }
+      /**
+ * Performs insert image operation
+ *
+ * @param {string} (url - The (url
+ *
+ * @returns {any} The insertimage result
+ *
+ */
+  }
 
         const response = await fetch("/api/media/upload", {
           /** Method */
@@ -749,7 +890,16 @@ export default function RichTextEditor({
           component: "RichTextEditor.handleImageUpload",
           /** Metadata */
           metadata: {
-            /** Context */
+            /** Contex/**
+ * Performs insert table operation
+ *
+ * @param {number} (rows - The (rows
+ * @param {number} cols - The cols
+ *
+ * @returns {any} The inserttable result
+ *
+ */
+t */
             context: imageUploadContext,
             /** Context Id */
             contextId: imageUploadContextId,
@@ -773,7 +923,15 @@ export default function RichTextEditor({
       img.src = url;
       img.alt = "Uploaded image";
       img.className = "max-w-full h-auto rounded-lg my-2";
-      img.style.maxWidth = "100%";
+      /**
+ * Performs insert code block operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The insertcodeblock result
+ *
+ */
+img.style.maxWidth = "100%";
 
       editorRef.current?.focus();
 
@@ -782,7 +940,15 @@ export default function RichTextEditor({
         const range = selection.getRangeAt(0);
         range.deleteContents();
         range.insertNode(img);
-        range.setStartAfter(img);
+        /**
+ * Performs insert inline code operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The insertinlinecode result
+ *
+ */
+range.setStartAfter(img);
         range.collapse(true);
       } else {
         editorRef.current?.appendChild(img);
@@ -804,7 +970,15 @@ export default function RichTextEditor({
       let tableHtml =
         '<table class="border-collapse border border-gray-300 dark:border-gray-600 my-2 w-full">';
       for (let i = 0; i < rows; i++) {
-        tableHtml += "<tr>";
+        tableH/**
+ * Handles button click
+ *
+ * @param {EditorButton} (btn - The (btn
+ *
+ * @returns {any} The handlebuttonclick result
+ *
+ */
+tml += "<tr>";
         for (let j = 0; j < cols; j++) {
           const cellTag = i === 0 ? "th" : "td";
           tableHtml += `<${cellTag} class="border border-gray-300 dark:border-gray-600 p-2">&nbsp;</${cellTag}>`;
@@ -842,7 +1016,15 @@ export default function RichTextEditor({
   const insertInlineCode = useCallback(() => {
     const selection = window.getSelection();
     if (selection && selection.toString()) {
-      const codeHtml = `<code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono">${selection.toString()}</code>`;
+      const codeHtml = `<code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono">${selection.toString/**
+ * Handles input
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handleinput result
+ *
+ */
+()}</code>`;
       document.execCommand("insertHTML", false, codeHtml);
     } else {
       document.execCommand(
@@ -853,7 +1035,15 @@ export default function RichTextEditor({
     }
 
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      onChange(editorRef.current.innerHTM/**
+ * Handles paste
+ *
+ * @param {React.ClipboardEvent} (e - The (e
+ *
+ * @returns {any} The handlepaste result
+ *
+ */
+L);
     }
 
     editorRef.current?.focus();
@@ -871,7 +1061,15 @@ export default function RichTextEditor({
           setShowTablePicker(false);
         } else if (btn.tool === "highlight") {
           setShowColorPicker(
-            showColorPicker === "highlight" ? null : "highlight",
+            showColorPicker === "highlight" ? null /**
+ * Handles key down
+ *
+ * @param {React.KeyboardEvent} (e - The (e
+ *
+ * @returns {any} The handlekeydown result
+ *
+ */
+: "highlight",
           );
           setShowImagePicker(false);
           setShowTablePicker(false);
@@ -895,12 +1093,28 @@ export default function RichTextEditor({
     },
     [
       showColorPicker,
-      showImagePicker,
+      showIma/**
+ * Performs char count operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The charcount result
+ *
+ */
+gePicker,
       showTablePicker,
       executeCommand,
       insertInlineCode,
       insertCodeBlock,
-      saveSelection,
+      saveSelection/**
+ * Checks if over limit
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The isoverlimit result
+ *
+ */
+,
     ],
   );
 
@@ -917,7 +1131,15 @@ export default function RichTextEditor({
         }
       }
 
-      onChange(html);
+      onC/**
+ * Performs target operation
+ *
+ * @param {any} !target.closest(".rich-text-toolbar-dropdown" - The !target.closest(".rich-text-toolbar-dropdown"
+ *
+ * @returns {any} The target result
+ *
+ */
+hange(html);
     }
   }, [maxChars, onChange]);
 

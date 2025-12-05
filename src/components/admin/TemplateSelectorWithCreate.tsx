@@ -4,7 +4,8 @@
  * @description This file contains the TemplateSelectorWithCreate component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -62,6 +63,13 @@ export interface Template {
   updatedAt: Date;
 }
 
+/**
+ * TEMPLATE_CATEGORIES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for template categories
+ */
 const TEMPLATE_CATEGORIES = [
   { value: "email", label: "Email Template" },
   { value: "sms", label: "SMS Template" },
@@ -199,7 +207,15 @@ export function TemplateSelectorWithCreate({
   });
 
   const templateCategory = watch("category");
-  const templateBody = watch("body");
+  /**
+ * Performs template body operation
+ *
+ * @param {any} "body" - The "body"
+ *
+ * @returns {any} The templatebody result
+ *
+ */
+const templateBody = watch("body");
 
   useEffect(() => {
     loadTemplates();

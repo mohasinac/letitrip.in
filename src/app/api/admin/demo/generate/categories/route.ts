@@ -4,13 +4,21 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
+/**
+ * DEMO_PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for demo prefix
+ */
 const DEMO_PREFIX = "DEMO_";
 
 // Beyblade and collectibles focused images
@@ -135,7 +143,14 @@ const CATEGORY_IMAGES: Record<
     /** Banner */
     banner:
       "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=1200&h=400&fit=crop",
-    icon: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=100&h=100&fit=crop",
+    icon: "https://images./**
+ * DEFAULT_CATEGORY_IMAGES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for default category images
+ */
+unsplash.com/photo-1585386959984-a4155224a1ad?w=100&h=100&fit=crop",
   },
 };
 

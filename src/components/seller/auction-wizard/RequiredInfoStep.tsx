@@ -4,7 +4,8 @@
  * @description This file contains the RequiredInfoStep component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -106,12 +107,29 @@ export function RequiredInfoStep({
     setUploadingImages(true);
 
     try {
-      const uploadPromises = files.map(async (file, index) => {
+      /**
+ * Performs upload promises operation
+ *
+ * @param {any} async(file - The async(file
+ * @param {any} index - The index
+ *
+ * @returns {Promise<any>} The uploadpromises result
+ *
+ */
+const uploadPromises = files.map(async (file, index) => {
         const key = `image-${index}`;
         setUploadProgress((prev) => ({ ...prev, [key]: 0 }));
 
         const result = await mediaService.upload({
-          file,
+          file/**
+ * Performs uploaded urls operation
+ *
+ * @param {any} uploadPromises - The uploadpromises
+ *
+ * @returns {any} The uploadedurls result
+ *
+ */
+,
           /** Context */
           context: "auction",
         });

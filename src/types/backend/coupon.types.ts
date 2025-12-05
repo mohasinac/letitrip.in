@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for coupon
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -191,7 +192,9 @@ export interface CreateCouponRequestBE {
   usageLimit?: number;
   /** Usage Limit Per User */
   usageLimitPerUser: number;
+  /** StartDate */
   startDate: string; // ISO date string
+  /** EndDate */
   endDate: string; // ISO date string
   /** First Order Only */
   firstOrderOnly: boolean;

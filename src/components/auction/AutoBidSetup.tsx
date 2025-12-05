@@ -4,7 +4,8 @@
  * @description This file contains the AutoBidSetup component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -45,7 +46,33 @@ interface AutoBidSetupProps {
   className?: string;
 }
 
-export default function AutoBidSetup({
+export default /**
+ * Performs auto bid setup operation
+ *
+ * @param {AutoBidSetupProps} [{
+  auctionId,
+  currentBid,
+  reservePrice,
+  minIncrement = 100,
+  onSetup,
+  onCancel,
+  isActive,
+  className = "",
+}] - The {
+  auctionid,
+  currentbid,
+  reserveprice,
+  minincrement = 100,
+  onsetup,
+  oncancel,
+  isactive,
+  classname = "",
+}
+ *
+ * @returns {any} The autobidsetup result
+ *
+ */
+function AutoBidSetup({
   auctionId,
   currentBid,
   reservePrice,

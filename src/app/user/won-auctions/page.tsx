@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -38,7 +39,13 @@ import { useCallback, useEffect } from "react";
  * @example
  * const result = WonAuctionsPage();
  */
-export default function WonAuctionsPage() {
+export default /**
+ * Performs won auctions page operation
+ *
+ * @returns {any} The wonauctionspage result
+ *
+ */
+function WonAuctionsPage() {
   const { user } = useAuth();
   const {
     /** Data */
@@ -50,7 +57,15 @@ export default function WonAuctionsPage() {
     retry,
   } = useLoadingState<AuctionCardFE[]>({ initialData: [] });
 
-  const loadWonAuctions = useCallback(async () => {
+  /**
+ * Performs load won auctions operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadwonauctions result
+ *
+ */
+const loadWonAuctions = useCallback(async () => {
     const data = await auctionsService.getWonAuctions();
     return data || [];
   }, []);
@@ -78,11 +93,28 @@ export default function WonAuctionsPage() {
   }
 
   if (loading) {
-    return <PageState.Loading message="Loading won auctions..." />;
+    return <PageState.Loadi/**
+ * Performs total winnings operation
+ *
+ * @param {any} (sum - The (sum
+ * @param {any} auction - The auction
+ *
+ * @returns {any} The totalwinnings result
+ *
+ */
+ng message="Loading won auctions..." />;
   }
 
   if (error) {
-    return <PageState.Error message={error.message} onRetry={retry} />;
+    return/**
+ * Performs completed orders operation
+ *
+ * @param {any} (a - The (a
+ *
+ * @returns {any} The completedorders result
+ *
+ */
+ <PageState.Error message={error.message} onRetry={retry} />;
   }
 
   const totalWinnings = auctionsList.reduce(

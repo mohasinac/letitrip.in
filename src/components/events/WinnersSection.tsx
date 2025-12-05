@@ -4,7 +4,8 @@
  * @description This file contains the WinnersSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -104,6 +105,28 @@ export interface WinnersSectionProps {
   title);
  */
 
+/**
+ * Performs winners section operation
+ *
+ * @param {WinnersSectionProps} [{
+  winners,
+  title = "Winners",
+  showScores = false,
+}] - The {
+  winners,
+  title = "winners",
+  showscores = false,
+}
+ *
+ * @returns {any} The winnerssection result
+ *
+ * @example
+ * WinnersSection({
+  winners,
+  title = "Winners",
+  showScores = false,
+});
+ */
 export function WinnersSection({
   winners,
   title = "Winners",
@@ -169,7 +192,15 @@ export function WinnersSection({
     }
   };
 
-  const topThree = winners.filter((w) => w.rank <= 3);
+  /**
+ * Performs top three operation
+ *
+ * @param {any} (w - The (w
+ *
+ * @returns {any} The topthree result
+ *
+ */
+const topThree = winners.filter((w) => w.rank <= 3);
   const others = winners.filter((w) => w.rank > 3);
 
   return (

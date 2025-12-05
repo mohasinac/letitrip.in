@@ -4,7 +4,8 @@
  * @description This file contains the ImageEditor component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -46,6 +47,13 @@ interface ImageEditorProps {
 }
 
 // Aspect ratio presets
+/**
+ * ASPECT_RATIOS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for aspect ratios
+ */
 const ASPECT_RATIOS = [
   { label: "Free", value: undefined },
   { label: "1:1", value: 1 },
@@ -55,7 +63,27 @@ const ASPECT_RATIOS = [
   { label: "9:16", value: 9 / 16 },
 ] as const;
 
-export default function ImageEditor({
+export default /**
+ * Performs image editor operation
+ *
+ * @param {ImageEditorProps} [{
+  media,
+  onSave,
+  onCancel,
+  showFocusPoint = true,
+  
+  aspectRatio] - The {
+  media,
+  onsave,
+  oncancel,
+  showfocuspoint = true,
+  
+  aspectratio
+ *
+ * @returns {any} The imageeditor result
+ *
+ */
+function ImageEditor({
   media,
   onSave,
   onCancel,
@@ -104,7 +132,15 @@ export default function ImageEditor({
   const [isProcessing, setIsProcessing] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
+  /**
+ * Performs image container ref operation
+ *
+ * @param {any} null - The null
+ *
+ * @returns {any} The imagecontainerref result
+ *
+ */
+const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // Update preview when editor state changes
   useEffect(() => {
@@ -132,7 +168,16 @@ export default function ImageEditor({
       const editedBlob = await applyImageEdits(media.file, editorState);
       const url = URL.createObjectURL(editedBlob);
       setPreviewUrl(url);
-    } catch (error) {
+    } /**
+ * Event handler for crop complete
+ *
+ * @param {Area} (_croppedArea - The (_croppedarea
+ * @param {Area} croppedAreaPixels - The croppedareapixels
+ *
+ * @returns {any} The oncropcomplete result
+ *
+ */
+catch (error) {
       logError(error as Error, { component: "ImageEditor.updatePreview" });
     }
   };
@@ -427,14 +472,30 @@ export default function ImageEditor({
       /** Contrast */
       contrast: 0,
       /** Saturation */
-      saturation: 0,
+      satur/**
+ * Handles focus click
+ *
+ * @param {React.MouseEvent<HTMLDivElement>} (e - The (e
+ *
+ * @returns {any} The handlefocusclick result
+ *
+ */
+ation: 0,
       /** Filter */
       filter: "none",
       /** Focus Point */
       focusPoint: { x: 50, y: 50 },
     });
     setCrop({ x: 0, y: 0 });
-    setCropZoom(1);
+    /**
+ * Performs y operation
+ *
+ * @param {any} ((e.clientY-rect.top - The ((e.clienty-rect.top
+ *
+ * @returns {any} The y result
+ *
+ */
+setCropZoom(1);
     setCroppedAreaPixels(null);
     setAspectRatio(initialAspectRatio);
     setFocusMode(false);

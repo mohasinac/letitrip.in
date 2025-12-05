@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -101,7 +102,15 @@ export async function GET(request: NextRequest) {
     const snapshot = await query.get();
 
     // If editing, exclude current coupon
-    const exists = snapshot.docs.some((doc) => doc.id !== excludeId);
+    /**
+ * Performs exists operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The exists result
+ *
+ */
+const exists = snapshot.docs.some((doc) => doc.id !== excludeId);
 
     return NextResponse.json({
       /** Success */

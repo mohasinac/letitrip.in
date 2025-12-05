@@ -4,7 +4,8 @@
  * @description This file contains the FilterBar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -126,7 +127,15 @@ export function FilterBar({
     checked: boolean,
   ) => {
     const currentValues = values[key] || [];
-    const newValues = checked
+    /**
+ * Performs new values operation
+ *
+ * @param {any} (v - The (v
+ *
+ * @returns {any} The newvalues result
+ *
+ */
+const newValues = checked
       ? [...currentValues, optionValue]
       : currentValues.filter((v: any) => v !== optionValue);
     onChange(key, newValues);
@@ -275,7 +284,15 @@ export function FilterBar({
           <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <span className="text-sm text-gray-500 dark:text-gray-400">
               /** Active */
-              Active:
+  /**
+ * Performs filter operation
+ *
+ * @param {any} (f - The (f
+ *
+ * @returns {any} The filter result
+ *
+ */
+            Active:
             </span>
             {Object.entries(values).map(([key, value]) => {
               const filter = filters.find((f) => f.key === key);
@@ -296,7 +313,15 @@ export function FilterBar({
                */
 
               /**
-               * Retrieves label
+               */**
+ * Performs option operation
+ *
+ * @param {any} (o - The (o
+ *
+ * @returns {any} The option result
+ *
+ */
+ Retrieves label
                *
                * @param {any} val - The val
                *
@@ -311,7 +336,15 @@ export function FilterBar({
               if (Array.isArray(value)) {
                 return value.map((val) => (
                   <span
-                    key={`${key}-${val}`}
+                    key={`${key}-/**
+ * Performs new values operation
+ *
+ * @param {any} (v - The (v
+ *
+ * @returns {any} The newvalues result
+ *
+ */
+${val}`}
                     className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full"
                   >
                     {filter.label}: {getLabel(val)}

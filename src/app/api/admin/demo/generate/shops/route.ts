@@ -4,13 +4,21 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
+/**
+ * DEMO_PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for demo prefix
+ */
 const DEMO_PREFIX = "DEMO_";
 
 const INDIAN_CITIES = [
@@ -22,7 +30,14 @@ const INDIAN_CITIES = [
   { city: "Pune", state: "Maharashtra", pincode: "411001" },
   { city: "Ahmedabad", state: "Gujarat", pincode: "380001" },
   { city: "Hyderabad", state: "Telangana", pincode: "500001" },
-  { city: "Jaipur", state: "Rajasthan", pincode: "302001" },
+  { city: "Jaipu/**
+ * STREETS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for streets
+ */
+r", state: "Rajasthan", pincode: "302001" },
   { city: "Lucknow", state: "Uttar Pradesh", pincode: "226001" },
 ];
 
@@ -40,7 +55,14 @@ const STREETS = [
 ];
 
 // Beyblade-themed shop names
-const SHOP_PREFIXES = [
+con/**
+ * SHOP_SUFFIXES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for shop suffixes
+ */
+st SHOP_PREFIXES = [
   "Blader's",
   "Spin",
   "Burst",
@@ -84,7 +106,14 @@ const SHOP_LOGOS = [
   "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=200&h=200&fit=crop",
   "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=200&h=200&fit=crop",
   "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=200&h=200&fit=crop",
-  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop",/**
+ * SHOP_BANNERS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for shop banners
+ */
+
   "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop",
   "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=200&fit=crop",
   "https://images.unsplash.com/photo-1598808503491-fa80d3e5a0d9?w=200&h=200&fit=crop",

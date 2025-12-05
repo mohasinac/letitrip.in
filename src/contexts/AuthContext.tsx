@@ -4,7 +4,8 @@
  * @description This file contains the AuthContext component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -121,12 +122,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   // Initialize auth state
-  const initializeAuth = useCallback(async () => {
+  /**
+ * Performs initialize auth operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The initializeauth result
+ *
+ */
+const initializeAuth = useCallback(async () => {
     try {
       // First, try to get cached user for immediate UI update
       const cachedUser = authService.getCachedUser();
       if (cachedUser) {
-        setUser(cachedUser);
+        setUser(ca/**
+ * Performs current user operation
+ *
+ * @returns {any} The currentuser result
+ *
+ */
+chedUser);
         setLoading(false); // Show UI immediately with cached user
       }
 
@@ -153,7 +168,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     try {
       const response = await authService.login({ email, password });
-      // Immediately set user state with the response
+      // Immediately set user state with th/**
+ * Performs login with google operation
+ *
+ * @param {string} async(idToken - The async(idtoken
+ * @param {{
+        
+        displayName?} [userData] - The userdata
+ *
+ * @returns {Promise<any>} The loginwithgoogle result
+ *
+ */
+e response
       setUser(response.user);
       setLoading(false);
       return response;
@@ -176,7 +202,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         /** Email */
         email?: string;
         /** Photo U R L */
-        photoURL?: string;
+        photo/**
+ * Performs register operation
+ *
+ * @param {{
+      
+      email} [async(data] - The async(data
+ *
+ * @returns {Promise<any>} The register result
+ *
+ */
+URL?: string;
       },
     ) => {
       try {
@@ -197,13 +233,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  // Register function
+  //**
+ * Performs logout operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The logout result
+ *
+ */
+/ Register function
   const register = useCallback(
     async (data: {
       /** Email */
       email: string;
       /** Password */
-      password: string;
+      password/**
+ * Performs refresh user operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The refreshuser result
+ *
+ */
+: string;
       /** Name */
       name: string;
       /** Role */

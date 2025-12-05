@@ -4,7 +4,8 @@
  * @description This file contains functionality related to logger
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -224,6 +225,14 @@ class ApiLogger {
   }
 }
 
+/**
+ * Performs api logger operation
+ *
+ * @returns {Promise<any>} The apilogger result
+ *
+ * @example
+ * apiLogger();
+ */
 export const apiLogger = new ApiLogger();
 
 // Middleware wrapper for API routes

@@ -4,13 +4,21 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
+/**
+ * DEMO_PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for demo prefix
+ */
 const DEMO_PREFIX = "DEMO_";
 
 // Beyblade product images
@@ -26,7 +34,14 @@ const PRODUCT_IMAGES = [
   "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=800&fit=crop",
   "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=800&h=800&fit=crop",
   "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=800&h=800&fit=crop",
-  "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=800&h=800&fit=crop",
+  "https:///**
+ * AUCTION_VIDEOS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for auction videos
+ */
+images.unsplash.com/photo-1585386959984-a4155224a1ad?w=800&h=800&fit=crop",
 ];
 
 // Sample videos for auction demos
@@ -385,7 +400,15 @@ export async function POST(request: NextRequest) {
       // Generate 4-6 images per auction - use shuffled selection for variety
       const imageCount = 4 + Math.floor(Math.random() * 3);
       // Shuffle and pick unique images for this auction
-      const shuffledImages = [...PRODUCT_IMAGES].sort(
+      /**
+ * Performs shuffled images operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The shuffledimages result
+ *
+ */
+const shuffledImages = [...PRODUCT_IMAGES].sort(
         () => Math.random() - 0.5,
       );
       const auctionImages = shuffledImages.slice(0, imageCount);

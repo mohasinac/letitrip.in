@@ -4,7 +4,8 @@
  * @description This file contains the WelcomeHero component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { COMPANY_NAME, COMPANY_ALT_TEXT } from "@/constants/navigation";

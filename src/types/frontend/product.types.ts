@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for product
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -42,6 +43,7 @@ export interface ProductFE {
   // Categorization
   /** Category Id */
   categoryId: string;
+  /** Category */
   category?: CategoryReference; // Populated for display
   /** Category Ids */
   categoryIds?: string[];
@@ -55,9 +57,13 @@ export interface ProductFE {
   price: number;
   /** Compare At Price */
   compareAtPrice: number | null;
+  /** Discount */
   discount: number | null; // Calculated: compareAtPrice - price
+  /** DiscountPercentage */
   discountPercentage: number | null; // Calculated: (discount / compareAtPrice) * 100
+  /** FormattedPrice */
   formattedPrice: string; // "₹1,999"
+  /** FormattedCompareAtPrice */
   formattedCompareAtPrice: string | null; // "₹2,999"
 
   // Inventory
@@ -65,7 +71,9 @@ export interface ProductFE {
   stockCount: number;
   /** Low Stock Threshold */
   lowStockThreshold: number;
+  /** IsInStock */
   isInStock: boolean; // stockCount > 0
+  /** IsLowStock */
   isLowStock: boolean; // stockCount <= lowStockThreshold
   /** Stock Status */
   stockStatus: "in-stock" | "low-stock" | "out-of-stock";
@@ -88,6 +96,7 @@ export interface ProductFE {
   // Media
   /** Images */
   images: string[];
+  /** PrimaryImage */
   primaryImage: string; // images[0] or fallback
   /** Videos */
   videos: string[];
@@ -101,11 +110,13 @@ export interface ProductFE {
   featured: boolean;
   /** Is Returnable */
   isReturnable: boolean;
+  /** IsPublished */
   isPublished: boolean; // status === 'published'
 
   // Shop
   /** Shop Id */
   shopId: string;
+  /** Shop */
   shop?: ShopReference; // Populated for display
   /** Seller Id */
   sellerId: string;
@@ -143,7 +154,9 @@ export interface ProductFE {
   reviewCount: number;
   /** Average Rating */
   averageRating: number;
+  /** RatingStars */
   ratingStars: number; // Rounded to nearest 0.5
+  /** HasReviews */
   hasReviews: boolean; // reviewCount > 0
 
   // Origin
@@ -159,10 +172,15 @@ export interface ProductFE {
   updatedAt: Date;
 
   // UI-specific fields
+  /** IsNew */
   isNew?: boolean; // Created within last 30 days
+  /** IsTrending */
   isTrending?: boolean; // High sales velocity
+  /** IsFavorited */
   isFavorited?: boolean; // User has in cart
+  /** IsInCart */
   isInCart?: boolean; // User has in cart
+  /** CartQuantity */
   cartQuantity?: number; // Quantity in cart
 
   // Badges (for UI display)
@@ -170,10 +188,15 @@ export interface ProductFE {
   badges: ProductBadge[];
 
   // Backwards compatibility aliases (for legacy code migration)
+  /** CostPrice */
   costPrice?: number; // Alias for compareAtPrice
+  /** OriginalPrice */
   originalPrice?: number | null; // Alias for compareAtPrice
+  /** Rating */
   rating?: number; // Alias for averageRating
+  /** ShortDescription */
   shortDescription?: string; // For admin pages (use description)
+  /** Warranty */
   warranty?: string | null; // For admin pages
 }
 
@@ -225,6 +248,7 @@ export interface ProductCardFE {
   shopId: string;
   /** Shop */
   shop?: ShopReference;
+  /** Brand */
   brand?: string; // Brand name for filtering
   /** Featured */
   featured: boolean;
@@ -234,16 +258,27 @@ export interface ProductCardFE {
   badges: ProductBadge[];
 
   // Backwards compatibility aliases (for legacy code migration)
+  /** Images */
   images: string[]; // Array with primaryImage as first element
+  /** Videos */
   videos?: string[]; // Video URLs for hover carousel
+  /** OriginalPrice */
   originalPrice: number | null; // Alias for compareAtPrice
+  /** Rating */
   rating: number; // Alias for averageRating
+  /** StockCount */
   stockCount: number; // Actual stock number (0 if out-of-stock)
+  /** InStock */
   inStock?: boolean; // Derived: stockCount > 0 (for backwards compatibility)
+  /** Condition */
   condition: ProductCondition; // Product condition
+  /** Sku */
   sku?: string | null; // SKU for admin display
+  /** CategoryId */
   categoryId?: string | null; // Category ID for admin display
+  /** SalesCount */
   salesCount?: number; // Sales count for admin display
+  /** LowStockThreshold */
   lowStockThreshold?: number; // Low stock threshold for admin display
 
   // Legacy shop properties (use shop.name and shop.slug instead)
@@ -353,6 +388,7 @@ export interface ProductFiltersFE {
   inStock?: boolean;
   /** Featured */
   featured?: boolean;
+  /** Rating */
   rating?: number; // Minimum rating
   /** Sort By */
   sortBy?:
@@ -374,6 +410,7 @@ export interface ProductFiltersFE {
 export interface ProductSearchResultFE extends ProductCardFE {
   /** Relevance Score */
   relevanceScore?: number;
+  /** HighlightedFields */
   highlightedFields?: Record<string, string>; // For search term highlighting
 }
 
@@ -429,7 +466,9 @@ export interface ProductStatsFE {
   sales: number;
   /** Revenue */
   revenue: number;
+  /** ConversionRate */
   conversionRate: number; // (sales / views) * 100
+  /** AverageOrderValue */
   averageOrderValue: number; // revenue / sales
   /** Favorite Count */
   favoriteCount: number;
@@ -449,6 +488,7 @@ export interface BulkProductSelectionFE {
   selectedIds: string[];
   /** Select All */
   selectAll: boolean;
+  /** ExcludedIds */
   excludedIds: string[]; // When selectAll is true
   /** Total Count */
   totalCount: number;

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -246,7 +247,15 @@ export async function GET(req: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const slides = snapshot.docs.map((doc) =>
+    /**
+ * Performs slides operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The slides result
+ *
+ */
+const slides = snapshot.docs.map((doc) =>
       isAdmin
         ? transformSlideForAdmin(doc.id, doc.data())
         : transformSlideForPublic(doc.id, doc.data())

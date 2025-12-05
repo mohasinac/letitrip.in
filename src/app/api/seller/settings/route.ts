@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -25,6 +26,13 @@ import { logError } from "@/lib/firebase-error-logger";
 import { FieldValue } from "firebase-admin/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * DEFAULT_SETTINGS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for default settings
+ */
 const DEFAULT_SETTINGS = {
   /** Profile */
   profile: {

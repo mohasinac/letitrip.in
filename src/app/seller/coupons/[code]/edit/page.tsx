@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -24,7 +25,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function EditCouponPage() {
+export default /**
+ * Performs edit coupon page operation
+ *
+ * @returns {any} The editcouponpage result
+ *
+ */
+function EditCouponPage() {
   const router = useRouter();
   const params = useParams();
   const { user } = useAuth();
@@ -43,7 +50,15 @@ export default function EditCouponPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const loadCoupon = useCallback(async () => {
+  /**
+ * Performs load coupon operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadcoupon result
+ *
+ */
+const loadCoupon = useCallback(async () => {
     try {
       const couponData = await couponsService.getByCode(code);
       return couponData;

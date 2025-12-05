@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -23,7 +24,13 @@ import {
   UserCog,
 } from "lucide-react";
 
-export default function DemoCredentialsPage() {
+export default /**
+ * Performs demo credentials page operation
+ *
+ * @returns {any} The democredentialspage result
+ *
+ */
+function DemoCredentialsPage() {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showPasswords, setShowPasswords] = useState(false);
 

@@ -4,7 +4,8 @@
  * @description This file contains the Skeleton component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import React from "react";
@@ -74,6 +75,28 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   animate);
  */
 
+/**
+ * Performs skeleton operation
+ *
+ * @param {SkeletonProps} [{
+  className,
+  animate = true,
+  ...props
+}] - The {
+  classname,
+  animate = true,
+  ...props
+}
+ *
+ * @returns {any} The skeleton result
+ *
+ * @example
+ * Skeleton({
+  className,
+  animate = true,
+  ...props
+});
+ */
 export function Skeleton({
   className,
   animate = true,

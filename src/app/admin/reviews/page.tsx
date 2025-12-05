@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -26,7 +27,13 @@ import { toast } from "@/components/admin/Toast";
 import { Star, Eye, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { useLoadingState } from "@/hooks/useLoadingState";
 
-export default function AdminReviewsPage() {
+export default /**
+ * Performs admin reviews page operation
+ *
+ * @returns {any} The adminreviewspage result
+ *
+ */
+function AdminReviewsPage() {
   const router = useRouter();
   const {
     /** Data */
@@ -45,7 +52,15 @@ export default function AdminReviewsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalReviews, setTotalReviews] = useState(0);
 
-  const fetchReviews = useCallback(async () => {
+  /**
+ * Fetches reviews
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The fetchreviews result
+ *
+ */
+const fetchReviews = useCallback(async () => {
     const response = await reviewsService.list({
       ...filterValues,
       /** Search */
@@ -85,7 +100,15 @@ export default function AdminReviewsPage() {
    */
 
   const handleBulkAction = async (actionId: string) => {
-    if (selectedReviews.size === 0) {
+    if (/**
+ * Performs review ids operation
+ *
+ * @param {any} selectedReviews - The selectedreviews
+ *
+ * @returns {any} The reviewids result
+ *
+ */
+selectedReviews.size === 0) {
       toast.error("Please select reviews first");
       return;
     }

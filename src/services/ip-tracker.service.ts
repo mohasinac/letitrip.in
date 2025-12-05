@@ -4,7 +4,8 @@
  * @description This file contains service functions for ip-tracker operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -266,7 +267,13 @@ class IPTrackerService {
         .where("userId", "!=", null)
         .get();
 
-      const userIds = new Set<string>();
+      /**
+ * Custom React hook for r ids
+ *
+ * @returns {any} The userids result
+ *
+ */
+const userIds = new Set<string>();
       snapshot.docs.forEach((doc: any) => {
         const userId = doc.data().userId;
         if (userId) userIds.add(userId);

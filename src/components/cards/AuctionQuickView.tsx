@@ -4,7 +4,8 @@
  * @description This file contains the AuctionQuickView component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -106,7 +107,29 @@ export interface AuctionQuickViewProps {
   isWatched?: boolean;
 }
 
-export default function AuctionQuickView({
+export default /**
+ * Performs auction quick view operation
+ *
+ * @param {AuctionQuickViewProps} [{
+  auction,
+  isOpen,
+  onClose,
+  onPlaceBid,
+  onWatch,
+  isWatched = false,
+}] - The {
+  auction,
+  isopen,
+  onclose,
+  onplacebid,
+  onwatch,
+  iswatched = false,
+}
+ *
+ * @returns {any} The auctionquickview result
+ *
+ */
+function AuctionQuickView({
   auction,
   isOpen,
   onClose,

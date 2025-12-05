@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -51,7 +52,13 @@ interface FormState {
   order: number;
 }
 
-export default function EditHeroSlidePage() {
+export default /**
+ * Performs edit hero slide page operation
+ *
+ * @returns {any} The editheroslidepage result
+ *
+ */
+function EditHeroSlidePage() {
   const router = useRouter();
   const params = useParams();
   const {

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -27,6 +28,13 @@ import type { OrderFE } from "@/types/frontend/order.types";
 type Order = OrderFE;
 
 // Order fields configuration
+/**
+ * ORDER_FIELDS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for order fields
+ */
 const ORDER_FIELDS = [
   {
     /** Key */
@@ -65,9 +73,23 @@ const ORDER_FIELDS = [
   },
 ];
 
-export default function AdminOrdersPage() {
+export default /**
+ * Performs admin orders page operation
+ *
+ * @returns {any} The adminorderspage result
+ *
+ */
+function AdminOrdersPage() {
   // Define columns
-  const columns = [
+  /**
+ * Performs columns operation
+ *
+ * @param {Order} order - The order
+ *
+ * @returns {any} The columns result
+ *
+ */
+const columns = [
     {
       /** Key */
       key: "order",

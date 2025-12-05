@@ -4,7 +4,8 @@
  * @description This file contains functionality related to form-fields
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -125,10 +126,15 @@ export interface FormField {
   options?: FieldOption[];
   /** Validators */
   validators?: FieldValidator[];
+  /** Group */
   group?: string; // For grouping fields in wizards
+  /** ShowInTable */
   showInTable?: boolean; // Show in inline edit tables
+  /** ShowInQuickCreate */
   showInQuickCreate?: boolean; // Show in quick create forms
+  /** ShowInWizard */
   showInWizard?: boolean; // Show in form wizards
+  /** WizardStep */
   wizardStep?: number; // Which step in wizard
 }
 
@@ -1656,7 +1662,15 @@ export function getFieldsForContext(
   /** Context */
   context: "table" | "quickCreate" | "wizard",
 ): FormField[] {
-  const key = `showIn${
+  /**
+ * Performs key operation
+ *
+ * @param {any} 0 - The 0
+ *
+ * @returns {any} The key result
+ *
+ */
+const key = `showIn${
     context.charAt(0).toUpperCase() + context.slice(1)
   }` as keyof FormField;
   return fields.filter((field) => field[key] === true);
@@ -1725,6 +1739,16 @@ export function getFieldsForWizardStep(
   fields);
  */
 
+/**
+ * Retrieves fields by group
+ *
+ * @param {FormField[]} fields - The fields
+ *
+ * @returns {Record<string, FormField[]>} The getfieldsbygroup result
+ *
+ * @example
+ * getFieldsByGroup([]);
+ */
 export function getFieldsByGroup(
   /** Fields */
   fields: FormField[],

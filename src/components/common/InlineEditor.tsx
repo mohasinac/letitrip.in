@@ -4,7 +4,8 @@
  * @description This file contains the InlineEditor component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -83,7 +84,15 @@ export function InlineEditor({
   const [editValue, setEditValue] = useState(value);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const inputRef = useRef<
+  /**
+ * Performs input ref operation
+ *
+ * @param {any} null - The null
+ *
+ * @returns {any} The inputref result
+ *
+ */
+const inputRef = useRef<
     HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
   >(null);
 

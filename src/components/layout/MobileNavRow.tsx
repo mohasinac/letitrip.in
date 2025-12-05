@@ -4,7 +4,8 @@
  * @description This file contains the MobileNavRow component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -111,6 +112,28 @@ interface MobileNavRowProps {
   variant);
  */
 
+/**
+ * Performs mobile nav row operation
+ *
+ * @param {MobileNavRowProps} [{
+  items,
+  className,
+  variant = "user",
+}] - The {
+  items,
+  classname,
+  variant = "user",
+}
+ *
+ * @returns {any} The mobilenavrow result
+ *
+ * @example
+ * MobileNavRow({
+  items,
+  className,
+  variant = "user",
+});
+ */
 export function MobileNavRow({
   items,
   className,
@@ -121,11 +144,27 @@ export function MobileNavRow({
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
 
-  const checkScroll = useCallback(() => {
+  /**
+ * Performs check scroll operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The checkscroll result
+ *
+ */
+const checkScroll = useCallback(() => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
       setShowLeftArrow(scrollLeft > 5);
-      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5);
+      setShowRig/**
+ * Performs scroll element operation
+ *
+ * @param {any} scrollElement - The scrollelement
+ *
+ * @returns {any} The scrollelement result
+ *
+ */
+htArrow(scrollLeft < scrollWidth - clientWidth - 5);
     }
   }, []);
 

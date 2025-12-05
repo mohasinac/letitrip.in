@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -46,10 +47,17 @@ interface FavoriteItem {
   images?: string[];
   /** Price */
   price?: number;
+  /** Favorited_at */
   favorited_at: string;
 }
 
-export default function FavoritesPage() {
+export default /**
+ * Performs favorites page operation
+ *
+ * @returns {any} The favoritespage result
+ *
+ */
+function FavoritesPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<FavoriteType>("product");
   const {
@@ -63,7 +71,15 @@ export default function FavoritesPage() {
     setData: setItems,
   } = useLoadingState<FavoriteItem[]>({ initialData: [] });
 
-  const fetchFavorites = useCallback(async () => {
+  /**
+ * Fetches favorites
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The fetchfavorites result
+ *
+ */
+const fetchFavorites = useCallback(async () => {
     const data = await favoritesService.listByType(activeTab);
     return data.data || [];
   }, [activeTab]);
@@ -91,7 +107,16 @@ export default function FavoritesPage() {
    *
    * @returns {Promise<any>} Promise resolving to async  result
    *
-   * @throws {Error} When operation fails or validation errors occur
+   * @throws {Erro/**
+ * Performs result operation
+ *
+ * @param {any} activeTab - The activetab
+ * @param {any} itemId - The itemid
+ *
+ * @returns {any} The result result
+ *
+ */
+r} When operation fails or validation errors occur
    */
 
   const handleRemove = async (itemId: string) => {

@@ -4,7 +4,8 @@
  * @description This file contains the CategorySelectorWithCreate component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -48,10 +49,37 @@ interface CategorySelectorWithCreateProps {
   className?: string;
   /** Required */
   required?: boolean;
+  /** OnCategoryCreated */
   onCategoryCreated?: (category: CategoryType) => void; // Callback when new category is created
 }
 
-export default function CategorySelectorWithCreate({
+export default /**
+ * Performs category selector with create operation
+ *
+ * @param {CategorySelectorWithCreateProps} [{
+  value,
+  onChange,
+  error,
+  disabled = false,
+  placeholder = "Select a category",
+  className = "",
+  required = false,
+  onCategoryCreated,
+}] - The {
+  value,
+  onchange,
+  error,
+  disabled = false,
+  placeholder = "select a category",
+  classname = "",
+  required = false,
+  oncategorycreated,
+}
+ *
+ * @returns {any} The categoryselectorwithcreate result
+ *
+ */
+function CategorySelectorWithCreate({
   value,
   onChange,
   error,
@@ -120,7 +148,19 @@ export default function CategorySelectorWithCreate({
 
   const loadCategories = () =>
     execute(async () => {
-      const response = await categoriesService.list({
+      /**
+ * Performs response operation
+ *
+ * @param {object} {
+        
+        isActive - The {
+        
+        isactive
+ *
+ * @returns {any} The response result
+ *
+ */
+const response = await categoriesService.list({
         /** Is Active */
         isActive: true,
         _t: Date.now(),
@@ -218,7 +258,15 @@ export default function CategorySelectorWithCreate({
         /** Parent Ids */
         parentIds: [],
         /** Order */
-        order: 0,
+        order: 0/**
+ * Transforms ed category
+ *
+ * @param {any} (prev - The (prev
+ *
+ * @returns {any} The transformedcategory result
+ *
+ */
+,
         /** Featured */
         featured: false,
         /** Is Active */

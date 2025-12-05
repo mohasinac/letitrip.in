@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -46,6 +47,13 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+/**
+ * DEFAULT_SETTINGS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for default settings
+ */
 const DEFAULT_SETTINGS: ShippingSettings = {
   /** Free Shipping Threshold */
   freeShippingThreshold: 999,
@@ -66,7 +74,13 @@ const DEFAULT_SETTINGS: ShippingSettings = {
   restrictedPincodes: [],
 };
 
-export default function AdminShippingSettingsPage() {
+export default /**
+ * Performs admin shipping settings page operation
+ *
+ * @returns {any} The adminshippingsettingspage result
+ *
+ */
+function AdminShippingSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);

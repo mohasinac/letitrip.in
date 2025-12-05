@@ -4,7 +4,8 @@
  * @description This file contains functionality related to batch-fetch
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -70,7 +71,15 @@ export async function batchFetchDocuments<T = any>(
   for (let i = 0; i < uniqueIds.length; i += batchSize) {
     const batch = uniqueIds.slice(i, i + batchSize);
 
-    const snapshot = await db
+    /**
+ * Performs snapshot operation
+ *
+ * @param {any} collectionName - The collectionname
+ *
+ * @returns {any} The snapshot result
+ *
+ */
+const snapshot = await db
       .collection(collectionName)
       .where("__name__", "in", batch)
       .get();
@@ -126,6 +135,16 @@ export async function batchFetchDocuments<T = any>(
   productIds);
  */
 
+/**
+ * Performs batch get products operation
+ *
+ * @param {string[]} productIds - The productids
+ *
+ * @returns {Promise<Map<string, any>>} The batchgetproducts result
+ *
+ * @example
+ * batchGetProducts([]);
+ */
 export async function batchGetProducts(
   /** Product Ids */
   productIds: string[],
@@ -160,7 +179,17 @@ export async function batchGetProducts(
  *
  * @param {string[]} /** Shop Ids */
   shopIds - The /**  shop  ids */
-  shop ids
+  shop/**
+ * Performs batch get shops operation
+ *
+ * @param {string[]} shopIds - The shopids
+ *
+ * @returns {Promise<Map<string, any>>} The batchgetshops result
+ *
+ * @example
+ * batchGetShops([]);
+ */
+ ids
  *
  * @returns {Promise<any>} Promise resolving to batchgetshops result
  *
@@ -197,7 +226,17 @@ export async function batchGetShops(
  * @throws {Error} When operation fails or validation errors occur
  *
  * @example
- * batchGetCategories(categoryIds);
+ * ba/**
+ * Performs batch get categories operation
+ *
+ * @param {string[]} categoryIds - The categoryids
+ *
+ * @returns {Promise<Map<string, any>>} The batchgetcategories result
+ *
+ * @example
+ * batchGetCategories([]);
+ */
+tchGetCategories(categoryIds);
  */
 
 /**
@@ -229,7 +268,17 @@ export async function batchGetCategories(
  * @example
  * ```ts
  * const userIds = ['user1', 'user2'];
- * const usersMap = await batchGetUsers(userIds);
+ * const usersMap = await batchGetUsers(userIds/**
+ * Performs batch get users operation
+ *
+ * @param {string[]} userIds - The userids
+ *
+ * @returns {Promise<Map<string, any>>} The batchgetusers result
+ *
+ * @example
+ * batchGetUsers([]);
+ */
+);
  * ```
  */
 /**
@@ -265,7 +314,17 @@ export async function batchGetUsers(
   /** User Ids */
   userIds: string[],
 ): Promise<Map<string, any>> {
-  return batchFetchDocuments(COLLECTIONS.USERS, userIds);
+  return batchFetchDocuments(COLLECTI/**
+ * Performs batch get orders operation
+ *
+ * @param {string[]} orderIds - The orderids
+ *
+ * @returns {Promise<Map<string, any>>} The batchgetorders result
+ *
+ * @example
+ * batchGetOrders([]);
+ */
+ONS.USERS, userIds);
 }
 
 /**
@@ -303,7 +362,17 @@ export async function batchGetUsers(
  *
  * @example
  * batchGetOrders(/** Order Ids */
-  orderIds);
+  orderIds);/**
+ * Performs batch get auctions operation
+ *
+ * @param {string[]} auctionIds - The auctionids
+ *
+ * @returns {Promise<Map<string, any>>} The batchgetauctions result
+ *
+ * @example
+ * batchGetAuctions([]);
+ */
+
  */
 
 export async function batchGetOrders(
@@ -340,7 +409,17 @@ export async function batchGetOrders(
  *
  * @param {string[]} /** Auction Ids */
   auctionIds - The /**  auction  ids */
-  auction ids
+  a/**
+ * Performs batch get coupons operation
+ *
+ * @param {string[]} couponIds - The couponids
+ *
+ * @returns {Promise<Map<string, any>>} The batchgetcoupons result
+ *
+ * @example
+ * batchGetCoupons([]);
+ */
+uction ids
  *
  * @returns {Promise<any>} Promise resolving to batchgetauctions result
  *

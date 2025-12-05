@@ -4,7 +4,8 @@
  * @description This file contains functionality related to session
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import jwt from "jsonwebtoken";
@@ -13,6 +14,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "./firebase/config";
 import { COLLECTIONS } from "@/constants/database";
 
+/**
+ * SESSION_SECRET constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for session secret
+ */
 const SESSION_SECRET =
   process.env.SESSION_SECRET || "your-secret-key-change-in-production";
 const SESSION_COOKIE_NAME = "session";
@@ -196,6 +204,16 @@ export async function createSession(
  * verifySession("example");
  */
 
+/**
+ * Performs verify session operation
+ *
+ * @param {string} token - The token
+ *
+ * @returns {Promise<SessionData | null>} The verifysession result
+ *
+ * @example
+ * verifySession("example");
+ */
 export async function verifySession(
   /** Token */
   token: string,
@@ -311,7 +329,13 @@ export async function deleteAllUserSessions(userId: string): Promise<void> {
     .where("userId", "==", userId)
     .get();
 
-  const batch = adminDb.batch();
+  /**
+ * Performs batch operation
+ *
+ * @returns {any} The batch result
+ *
+ */
+const batch = adminDb.batch();
   sessionsSnapshot.docs.forEach((doc) => {
     batch.delete(doc.ref);
   });
@@ -340,7 +364,17 @@ export async function deleteAllUserSessions(userId: string): Promise<void> {
  *
  * @param {string} /** User Id */
   userId - /** User Id */
-  user identifier
+  user iden/**
+ * Retrieves user sessions
+ *
+ * @param {string} userId - The userid
+ *
+ * @returns {Promise<SessionDocument[]>} The getusersessions result
+ *
+ * @example
+ * getUserSessions("example");
+ */
+tifier
  *
  * @returns {Promise<any>} Promise resolving to usersessions result
  *
@@ -567,7 +601,13 @@ export async function cleanupExpiredSessions(): Promise<number> {
   const expiredSessionsSnapshot = await adminDb
     .collection(COLLECTIONS.SESSIONS)
     .where("expiresAt", "<", now)
-    .get();
+  /**
+ * Performs batch operation
+ *
+ * @returns {any} The batch result
+ *
+ */
+  .get();
 
   if (expiredSessionsSnapshot.empty) {
     return 0;
@@ -593,7 +633,17 @@ export async function cleanupExpiredSessions(): Promise<number> {
  *
  * @returns {Promise<any>} Promise resolving to currentuser result
  *
- * @throws {Error} When operation fails or validation errors occur
+ * @throws {Error} When operation fails o/**
+ * Retrieves current user
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<UserData | null>} The getcurrentuser result
+ *
+ * @example
+ * getCurrentUser(request);
+ */
+r validation errors occur
  *
  * @example
  * getCurrentUser(request);

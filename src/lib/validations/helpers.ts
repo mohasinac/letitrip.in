@@ -4,7 +4,8 @@
  * @description This file contains functionality related to helpers
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -61,7 +62,15 @@ export function validateField<T extends z.ZodType>(
     const result = schema.safeParse({ [fieldName]: value });
 
     if (!result.success) {
-      const error = result.error.issues.find(
+      /**
+ * Performs error operation
+ *
+ * @param {z.ZodIssue} (err - The (err
+ *
+ * @returns {any} The error result
+ *
+ */
+const error = result.error.issues.find(
         (err: z.ZodIssue) => err.path[0] === fieldName,
       );
       return error?.message || null;
@@ -107,7 +116,15 @@ export function validateStep<T extends z.ZodType>(
   /** Schema */
   schema: T,
   /** Data */
-  data: any,
+  data: any,/**
+ * Performs errors operation
+ *
+ * @param {z.ZodIssue} (err - The (err
+ *
+ * @returns {any} The errors result
+ *
+ */
+
 ): Record<string, string> {
   try {
     const result = schema.safeParse(data);
@@ -234,7 +251,15 @@ export function getFieldError(
 export async function validateForm<T extends z.ZodType>(
   /** Schema */
   schema: T,
-  /** Data */
+  /** Data /**
+ * Performs errors operation
+ *
+ * @param {z.ZodIssue} (err - The (err
+ *
+ * @returns {any} The errors result
+ *
+ */
+*/
   data: any,
 ): Promise<{ success: boolean; errors: Record<string, string> }> {
   try {
@@ -269,7 +294,15 @@ export async function validateForm<T extends z.ZodType>(
  * @throws {Error} When operation fails or validation errors occur
  *
  * @example
- * getInputClassName("example", true);
+ * getInputClassName("example", /**
+ * Performs error class operation
+ *
+ * @returns {Promise<any>} The errorclass result
+ *
+ * @example
+ * errorClass();
+ */
+true);
  */
 
 /**
@@ -338,7 +371,13 @@ export function debounce<T extends (...args: any[]) => any>(
  * Example usage for adding validation to existing forms:
  *
  * ```tsx
- * import { productStep1Schema } from "@/lib/validations/product.schema";
+ * import { productStep1Schema } from "@/lib/validations/product.schema";/**
+ * Handles next
+ *
+ * @returns {any} The handlenext result
+ *
+ */
+
  * import { validateStep, getFieldError, getInputClassName } from "@/lib/validations/helpers";
  * import { FieldError } from "@/components/common/FieldError";
  *

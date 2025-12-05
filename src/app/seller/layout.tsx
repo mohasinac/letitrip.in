@@ -4,7 +4,8 @@
  * @description This file contains the layout component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -24,7 +25,22 @@ export const metadata: Metadata = {
   description: "Manage your shop, products, orders, and more on Letitrip",
 };
 
-export default function SellerLayout({
+export default /**
+ * SellerLayout component
+ *
+ * @param {{
+  
+  children: React.ReactNode;
+}} {
+  children,
+} - The {
+  children,
+}
+ *
+ * @returns {any} The sellerlayout result
+ *
+ */
+function SellerLayout({
   children,
 }: {
   /** Children */

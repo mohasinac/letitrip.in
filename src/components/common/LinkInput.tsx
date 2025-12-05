@@ -4,7 +4,8 @@
  * @description This file contains the LinkInput component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -197,7 +198,15 @@ export function LinkInput({
   const [isTouched, setIsTouched] = useState(false);
 
   // Build validation options
-  const finalValidationOptions: LinkValidationOptions = useMemo(
+  /**
+ * Performs final validation options operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The finalvalidationoptions result
+ *
+ */
+const finalValidationOptions: LinkValidationOptions = useMemo(
     () => ({
       allowRelative,
       /** Allow External */
@@ -208,7 +217,15 @@ export function LinkInput({
       allowPhone: !onlyInternal,
       /** Allow Anchor */
       allowAnchor: true,
-      ...validationOptions,
+      .../**
+ * Performs validation operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The validation result
+ *
+ */
+validationOptions,
     }),
     [allowRelative, allowExternal, onlyInternal, validationOptions],
   );
@@ -255,9 +272,25 @@ export function LinkInput({
     (isTouched && !validation.isValid ? validation.error : undefined);
 
   // Get link type info
-  const linkType = value ? getLinkType(value) : null;
+  const /**
+ * Handles change
+ *
+ * @param {React.ChangeEvent<HTMLInputElement>} (e - The (e
+ *
+ * @returns {any} The handlechange result
+ *
+ */
+linkType = value ? getLinkType(value) : null;
   const isInternal = linkType === "internal" || linkType === "anchor";
-  const isExternal = linkType === "external";
+  const isExternal = linkType === "extern/**
+ * Handles focus
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handlefocus result
+ *
+ */
+al";
   const resolvedUrl = value ? resolveUrl(value) : undefined;
 
   // Handle input change

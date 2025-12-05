@@ -4,7 +4,8 @@
  * @description This file contains the Breadcrumb component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -31,6 +32,13 @@ interface BreadcrumbItem {
 }
 
 // Custom labels for specific routes
+/**
+ * ROUTE_LABELS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for route labels
+ */
 const ROUTE_LABELS: Record<string, string> = {
   // User routes
   "/user/favorites": "Favorites",
@@ -73,10 +81,24 @@ const ROUTE_LABELS: Record<string, string> = {
   "/unauthorized": "Unauthorized Access",
 };
 
-export default function Breadcrumb() {
+export default /**
+ * Performs breadcrumb operation
+ *
+ * @returns {any} The breadcrumb result
+ *
+ */
+function Breadcrumb() {
   const pathname = usePathname();
 
-  const breadcrumbs = useMemo(() => {
+  /**
+ * Performs breadcrumbs operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The breadcrumbs result
+ *
+ */
+const breadcrumbs = useMemo(() => {
     // Don't show breadcrumb on home page
     if (pathname === "/") {
       return [];
@@ -90,7 +112,16 @@ export default function Breadcrumb() {
       /** Label */
       label: "Home",
       /** Href */
-      href: "/",
+    /**
+ * Performs current path operation
+ *
+ * @param {any} (segment - The (segment
+ * @param {any} index - The index
+ *
+ * @returns {any} The currentpath result
+ *
+ */
+  href: "/",
       /** Is Current Page */
       isCurrentPage: false,
     });
@@ -109,7 +140,15 @@ export default function Breadcrumb() {
         label = segment
           .split("-")
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ");
+ /**
+ * Performs breadcrumb schema operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The breadcrumbschema result
+ *
+ */
+         .join(" ");
       }
 
       items.push({

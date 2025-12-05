@@ -4,7 +4,8 @@
  * @description This file contains the ReturnFilters component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -82,7 +83,16 @@ export const ReturnFilters: React.FC<ReturnFiltersProps> = ({
 }) => {
   const hasActiveFilters = Object.keys(filters).length > 0;
 
-  const updateFilter = <K extends keyof ReturnFilterValues>(
+  /**
+ * Updates filter
+ *
+ * @param {K} key - The key
+ * @param {ReturnFilterValues[K]} value - The value
+ *
+ * @returns {any} The updatefilter result
+ *
+ */
+const updateFilter = <K extends keyof ReturnFilterValues>(
     /** Key */
     key: K,
     /** Value */
@@ -124,7 +134,15 @@ export const ReturnFilters: React.FC<ReturnFiltersProps> = ({
      * Performs current operation
      *
      * @param {any} [filters[key] as string[]) || [];
-    const updated] - The filters[key] as string[]) || [];
+    const updated] - The filters[key/**
+ * Updates d
+ *
+ * @param {any} value - The value
+ *
+ * @returns {any} The updated result
+ *
+ */
+] as string[]) || [];
     const updated
      *
      * @returns {any} The current result

@@ -4,7 +4,8 @@
  * @description This file contains the CategorySelector component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -29,13 +30,19 @@ export interface Category {
   name: string;
   /** Slug */
   slug: string;
+  /** Parent_id */
   parent_id: string | null;
+  /** ParentIds */
   parentIds?: string[]; // Multi-parent support
+  /** ChildrenIds */
   childrenIds?: string[]; // Multi-children support
   /** Level */
   level: number;
+  /** Has_children */
   has_children: boolean;
+  /** Is_active */
   is_active: boolean;
+  /** Product_count */
   product_count?: number;
 }
 
@@ -60,6 +67,7 @@ interface CategorySelectorProps {
   error?: string;
   /** Show Product Count */
   showProductCount?: boolean;
+  /** AllowParentSelection */
   allowParentSelection?: boolean; // For admin - can select parent categories
   /** Class Name */
   className?: string;
@@ -84,8 +92,24 @@ export default function CategorySelector({
   );
 
   // Get selected category
-  const selectedCategory = useMemo(
-    () => categories.find((cat) => cat.id === value) || null,
+  /**
+ * Performs selected category operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The selectedcategory result
+ *
+ */
+const selectedCategory = useMemo(
+    () => categories.find((cat) => c/**
+ * Performs breadcrumb operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The breadcrumb result
+ *
+ */
+at.id === value) || null,
     [categories, value],
   );
   // Build category breadcrumb (use first parent path for display)
@@ -97,7 +121,15 @@ export default function CategorySelector({
       path.unshift(current);
       // Use first parent for breadcrumb display
       const currentParentIds: string[] =
-        current.parentIds || (current.parent_id ? [current.parent_id] : []);
+        current.parentIds || (current.parent_id ? [current.parent_id] : [/**
+ * Performs category tree operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The categorytree result
+ *
+ */
+]);
       current =
         currentParentIds.length > 0
           ? categories.find((cat) => cat.id === currentParentIds[0])
@@ -116,7 +148,15 @@ export default function CategorySelector({
         if (!tree.has(null)) {
           tree.set(null, []);
         }
-        tree.get(null)!.push(cat);
+       /**
+ * Performs filtered categories operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The filteredcategories result
+ *
+ */
+ tree.get(null)!.push(cat);
       } else {
         // Add under each parent
         parentIds.forEach((parentId) => {
@@ -127,7 +167,15 @@ export default function CategorySelector({
         });
       }
     });
-    return tree;
+    return/**
+ * Retrieves category path
+ *
+ * @param {Category} (category - The (category
+ *
+ * @returns {string =>} The getcategorypath result
+ *
+ */
+ tree;
   }, [categories]);
 
   // Filter categories based on search
@@ -141,12 +189,28 @@ export default function CategorySelector({
         cat.slug.toLowerCase().includes(query),
     );
   }, [categories, debouncedSearchQuery]);
-  // Get category path for search results (use first parent path)
+  // Get category path for search results (u/**
+ * Performs toggle expand operation
+ *
+ * @param {string} (categoryId - The (categoryid
+ *
+ * @returns {any} The toggleexpand result
+ *
+ */
+se first parent path)
   const getCategoryPath = useCallback(
     (category: Category): string => {
       const path: string[] = [];
       let current: Category | undefined = category;
-      while (current) {
+  /**
+ * Handles select
+ *
+ * @param {Category} (category - The (category
+ *
+ * @returns {any} The handleselect result
+ *
+ */
+    while (current) {
         path.unshift(current.name);
         const currentParentIds: string[] =
           current.parentIds || (current.parent_id ? [current.parent_id] : []);
@@ -154,7 +218,15 @@ export default function CategorySelector({
           currentParentIds.length > 0
             ? categories.find((cat) => cat.id === currentParentIds[0])
             : undefined;
-      }
+      }/**
+ * Handles clear
+ *
+ * @param {React.MouseEvent} (e - The (e
+ *
+ * @returns {any} The handleclear result
+ *
+ */
+
       return path.join(" > ");
     },
     [categories],

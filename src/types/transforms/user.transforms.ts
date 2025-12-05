@@ -4,7 +4,8 @@
  * @description This file contains functionality related to user.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -588,6 +589,16 @@ export function toFEUserCard(userBE: UserListItemBE): UserCardFE {
   formData);
  */
 
+/**
+ * Performs to b e user profile update operation
+ *
+ * @param {UserProfileFormFE} formData - The formdata
+ *
+ * @returns {UpdateUserProfileBE} The tobeuserprofileupdate result
+ *
+ * @example
+ * toBEUserProfileUpdate(formData);
+ */
 export function toBEUserProfileUpdate(
   /** Form Data */
   formData: UserProfileFormFE,
@@ -627,7 +638,17 @@ export function toBEUserProfileUpdate(
 /**
  * Performs to b e user preferences update operation
  *
- * @param {UserPreferencesFormFE} /** Form Data */
+ /**
+ * Performs to b e user preferences update operation
+ *
+ * @param {UserPreferencesFormFE} formData - The formdata
+ *
+ * @returns {UpdateUserPreferencesBE} The tobeuserpreferencesupdate result
+ *
+ * @example
+ * toBEUserPreferencesUpdate(formData);
+ */
+* @param {UserPreferencesFormFE} /** Form Data */
   formData - The /**  form  data */
   form data
  *

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -24,6 +25,13 @@ import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { FieldValue } from "firebase-admin/firestore";
 
+/**
+ * SETTINGS_COLLECTION constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for settings collection
+ */
 const SETTINGS_COLLECTION = "system_settings";
 const SETTINGS_DOC_ID = "config";
 
@@ -175,7 +183,14 @@ interface AllSettings {
   /** General */
   general: GeneralSettings;
   /** Payment */
-  payment: PaymentSettings;
+  payment: PaymentSettings;/**
+ * DEFAULT_SETTINGS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for default settings
+ */
+
   /** Shipping */
   shipping: ShippingSettings;
   /** Features */

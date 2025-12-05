@@ -4,7 +4,8 @@
  * @description This file contains the DemoScaleControl component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -73,6 +74,28 @@ interface DemoScaleControlProps {
 });
  */
 
+/**
+ * Performs demo scale control operation
+ *
+ * @param {DemoScaleControlProps} {
+  scale,
+  onScaleChange,
+  disabled,
+} - The {
+  scale,
+  onscalechange,
+  disabled,
+}
+ *
+ * @returns {any} The demoscalecontrol result
+ *
+ * @example
+ * DemoScaleControl({
+  scale,
+  onScaleChange,
+  disabled,
+});
+ */
 export function DemoScaleControl({
   scale,
   onScaleChange,

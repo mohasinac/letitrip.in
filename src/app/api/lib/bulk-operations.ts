@@ -4,7 +4,8 @@
  * @description This file contains functionality related to bulk-operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -104,6 +105,16 @@ export interface BulkOperationConfig {
   config);
  */
 
+/**
+ * Performs execute bulk operation operation
+ *
+ * @param {BulkOperationConfig} config - The config
+ *
+ * @returns {Promise<BulkOperationResult>} The executebulkoperation result
+ *
+ * @example
+ * executeBulkOperation(config);
+ */
 export async function executeBulkOperation(
   /** Config */
   config: BulkOperationConfig,
@@ -447,7 +458,17 @@ export function createBulkErrorResponse(error: any) {
   config - The /**  config */
   config
  *
- * @returns {Promise<any>} Promise resolving to executebulkoperationwithtransaction result
+ * @returns/**
+ * Performs execute bulk operation with transaction operation
+ *
+ * @param {BulkOperationConfig} config - The config
+ *
+ * @returns {Promise<BulkOperationResult>} The executebulkoperationwithtransaction result
+ *
+ * @example
+ * executeBulkOperationWithTransaction(config);
+ */
+ {Promise<any>} Promise resolving to executebulkoperationwithtransaction result
  *
  * @throws {Error} When operation fails or validation errors occur
  *
@@ -476,7 +497,15 @@ export async function executeBulkOperationWithTransaction(
   }
 
   const db = getFirestoreAdmin();
-  const errors: Array<{ id: string; error: string }> = [];
+  /**
+ * Performs errors operation
+ *
+ * @param {any} async(transaction - The async(transaction
+ *
+ * @returns {Promise<any>} The errors result
+ *
+ */
+const errors: Array<{ id: string; error: string }> = [];
 
   try {
     await db.runTransaction(async (transaction) => {

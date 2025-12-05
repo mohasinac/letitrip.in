@@ -4,7 +4,8 @@
  * @description This file contains the ResourceListWrapper component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -101,7 +102,59 @@ interface ResourceListWrapperProps {
   onMobileFilterToggle?: () => void;
 }
 
-export default function ResourceListWrapper({
+export default /**
+ * Performs resource list wrapper operation
+ *
+ * @param {ResourceListWrapperProps} [{
+  context,
+  title,
+  description,
+  createButton,
+  stats,
+  filterSidebar,
+  showFilterSidebar = false,
+  searchPlaceholder = "Search...",
+  searchValue,
+  onSearchChange,
+  viewMode = "table",
+  onViewModeChange,
+  showViewToggle = true,
+  bulkActionsBar,
+  onExport,
+  showExport = false,
+  children,
+  pagination,
+  mobileFilterSidebar,
+  mobileFilterOpen = false,
+  onMobileFilterToggle,
+}] - The {
+  context,
+  title,
+  description,
+  createbutton,
+  stats,
+  filtersidebar,
+  showfiltersidebar = false,
+  searchplaceholder = "search...",
+  searchvalue,
+  onsearchchange,
+  viewmode = "table",
+  onviewmodechange,
+  showviewtoggle = true,
+  bulkactionsbar,
+  onexport,
+  showexport = false,
+  children,
+  pagination,
+  mobilefiltersidebar,
+  mobilefilteropen = false,
+  onmobilefiltertoggle,
+}
+ *
+ * @returns {any} The resourcelistwrapper result
+ *
+ */
+function ResourceListWrapper({
   context,
   title,
   description,

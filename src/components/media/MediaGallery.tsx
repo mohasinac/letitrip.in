@@ -4,7 +4,8 @@
  * @description This file contains the MediaGallery component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -42,7 +43,35 @@ interface MediaGalleryProps {
   className?: string;
 }
 
-export default function MediaGallery({
+export default /**
+ * Performs media gallery operation
+ *
+ * @param {MediaGalleryProps} [{
+  files,
+  onReorder,
+  onRemove,
+  onEdit,
+  onSelect,
+  selectedIds = [],
+  allowReorder = true,
+  allowBulkActions = true,
+  className = "",
+}] - The {
+  files,
+  onreorder,
+  onremove,
+  onedit,
+  onselect,
+  selectedids = [],
+  allowreorder = true,
+  allowbulkactions = true,
+  classname = "",
+}
+ *
+ * @returns {any} The mediagallery result
+ *
+ */
+function MediaGallery({
   files,
   onReorder,
   onRemove,
@@ -144,7 +173,15 @@ export default function MediaGallery({
   const toggleSelect = (id: string) => {
     if (!allowBulkActions || !onSelect) return;
 
-    const newSelection = selectedIds.includes(id)
+    /**
+ * Performs new selection operation
+ *
+ * @param {any} id - The id
+ *
+ * @returns {any} The newselection result
+ *
+ */
+const newSelection = selectedIds.includes(id)
       ? selectedIds.filter((selectedId) => selectedId !== id)
       : [...selectedIds, id];
 

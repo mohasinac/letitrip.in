@@ -4,7 +4,8 @@
  * @description This file contains the BlogCard component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -54,6 +55,7 @@ export interface BlogCardProps {
   likes?: number;
   /** Featured */
   featured?: boolean;
+  /** ReadTime */
   readTime?: number; // in minutes
   /** Compact */
   compact?: boolean;

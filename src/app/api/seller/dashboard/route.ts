@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -40,10 +41,27 @@ function calculateAverageResponseTime(orders: any[]): string {
   if (orders.length === 0) return "N/A";
 
   // Filter orders that have been updated after creation
-  const processedOrders = orders.filter((order: any) => {
+  /**
+ * Performs processed orders operation
+ *
+ * @param {any} (order - The (order
+ *
+ * @returns {any} The processedorders result
+ *
+ */
+const processedOrders = orders.filter((order: any) => {
     const created = new Date(order.created_at).getTime();
     const updated = new Date(order.updated_at).getTime();
-    return updated > created && order.status !== "pending";
+    return updated > created &&/**
+ * Performs total hours operation
+ *
+ * @param {number} (sum - The (sum
+ * @param {any} order - The order
+ *
+ * @returns {any} The totalhours result
+ *
+ */
+ order.status !== "pending";
   });
 
   if (processedOrders.length === 0) return "N/A";
@@ -187,6 +205,14 @@ export async function GET(req: NextRequest) {
     const shopData: any = shopDoc.exists
       ? { id: shopDoc.id, ...shopDoc.data() }
       : null;
+/**
+ * Performs all products operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The allproducts result
+ *
+ */
 
     if (!shopData) {
       return NextResponse.json({ error: "Shop not found" }, { status: 404 });
@@ -197,7 +223,15 @@ export async function GET(req: NextRequest) {
       .collection(COLLECTIONS.PRODUCTS)
       .where("shop_id", "==", shopId);
     const productsSnapshot = await productsQuery.get();
-    const allProducts = productsSnapshot.docs.map((doc) => ({
+    const/**
+ * Performs all orders operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The allorders result
+ *
+ */
+ allProducts = productsSnapshot.docs.map((doc) => ({
       /** Id */
       id: doc.id,
       ...doc.data(),
@@ -206,20 +240,53 @@ export async function GET(req: NextRequest) {
       (p: any) => p.status === "active",
     ).length;
 
-    // Count orders and calculate revenue
+    //**
+ * Performs last month orders operation
+ *
+ * @param {any} (order - The (order
+ *
+ * @returns {any} The lastmonthorders result
+ *
+ */
+/ Count orders and calculate revenue
     const ordersQuery = db
-      .collection(COLLECTIONS.ORDERS)
+      .collection(COLLECTI/**
+ * Performs current month revenue operation
+ *
+ * @param {number} (sum - The (sum
+ * @param {any} order - The order
+ *
+ * @returns {any} The currentmonthrevenue result
+ *
+ */
+ONS.ORDERS)
       .where("shop_id", "==", shopId);
     const ordersSnapshot = await ordersQuery.get();
     const allOrders = ordersSnapshot.docs.map((doc) => ({
       /** Id */
-      id: doc.id,
+      id/**
+ * Performs pending orders operation
+ *
+ * @param {any} (o - The (o
+ *
+ * @returns {any} The pendingorders result
+ *
+ */
+: doc.id,
       ...doc.data(),
     }));
 
     // Current month orders
     const currentMonthOrders = allOrders.filter((order: any) => {
-      const orderDate = new Date(order.created_at);
+      const orderDate = new Date(order.created/**
+ * Performs date b operation
+ *
+ * @param {any} b.created_at - The b.created_at
+ *
+ * @returns {any} The dateb result
+ *
+ */
+_at);
       return orderDate >= firstDayOfMonth;
     });
 
@@ -245,7 +312,15 @@ export async function GET(req: NextRequest) {
     );
 
     // Order counts by status
-    const pendingOrders = allOrders.filter(
+    const pendingOrders = allOr/**
+ * Performs order items operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The orderitems result
+ *
+ */
+ders.filter(
       (o: any) => o.status === "pending",
     ).length;
     const totalOrders = allOrders.length;
@@ -277,7 +352,15 @@ export async function GET(req: NextRequest) {
     const orderItemsQuery = db
       .collection(COLLECTIONS.ORDER_ITEMS)
       .where("shop_id", "==", shopId);
-    const orderItemsSnapshot = await orderItemsQuery.get();
+    const orderItemsSnapshot = await orderItemsQuery.get(/**
+ * Performs top products operation
+ *
+ * @param {any} productStats.entries( - The productstats.entries(
+ *
+ * @returns {any} The topproducts result
+ *
+ */
+);
     const orderItems = orderItemsSnapshot.docs.map((doc) => ({
       /** Id */
       id: doc.id,

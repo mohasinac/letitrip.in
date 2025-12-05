@@ -4,7 +4,8 @@
  * @description This file contains functionality related to admin
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -259,7 +260,15 @@ export function verifyFirebaseAdmin(): boolean {
       "FIREBASE_STORAGE_BUCKET",
     ];
 
-    const missing = requiredEnvVars.filter((key) => !process.env[key]);
+    /**
+ * Performs missing operation
+ *
+ * @param {any} (key - The (key
+ *
+ * @returns {any} The missing result
+ *
+ */
+const missing = requiredEnvVars.filter((key) => !process.env[key]);
 
     if (missing.length > 0) {
       console.error(

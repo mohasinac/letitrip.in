@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -51,6 +52,17 @@ import {
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: NextRequest,
@@ -165,7 +177,18 @@ export async function GET(
  * @param {NextRequest} /** Request */
   request - The /**  request */
   request
- * @param {{ params} { params } - The { params }
+ * @param {{ /**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The patch result
+ *
+ * @example
+ * PATCH(request, {});
+ */
+params} { params } - The { params }
  *
  * @returns {Promise<any>} Promise resolving to patch result
  *
@@ -234,7 +257,15 @@ export async function PATCH(
         oldData.parent_ids || (oldData.parent_id ? [oldData.parent_id] : []);
 
       // Remove from old parents
-      const removedParents = oldParentIds.filter(
+      /**
+ * Performs removed parents operation
+ *
+ * @param {string} (id - The (id
+ *
+ * @returns {any} The removedparents result
+ *
+ */
+const removedParents = oldParentIds.filter(
         (id: string) => !newParentIds.includes(id),
       );
       for (const parentId of removedParents) {
@@ -256,14 +287,30 @@ export async function PATCH(
            * Performs children ids operation
            *
            * @param {string} parentData.children_ids || []).filter(
-            (id - The parent data.children_ids || []).filter(
+            (id - The parent data.child/**
+ * Performs children ids operation
+ *
+ * @param {any} parentData.children_ids||[] - The parentdata.children_ids||[]
+ *
+ * @returns {any} The childrenids result
+ *
+ */
+ren_ids || []).filter(
             (id
            *
            * @returns {string} The childrenids result
            */
 
           const childrenIds = (parentData.children_ids || []).filter(
-            (id: string) => id !== doc.id,
+            (id: string) => id/**
+ * Performs added parents operation
+ *
+ * @param {string} (id - The (id
+ *
+ * @returns {any} The addedparents result
+ *
+ */
+ !== doc.id,
           );
           await parentRef.update({
             children_ids: childrenIds,
@@ -364,7 +411,18 @@ export async function PATCH(
  * @param {NextRequest} request - The request
  * @param {{ params} { params } - The { params }
  *
- * @returns {Promise<any>} Promise resolving to delete result
+ * @returns {Promise<any>} Promise resolving to delete result/**
+ * Deletes 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
  *
  * @throws {Error} When operation fails or validation errors occur
  *
@@ -442,7 +500,15 @@ export async function DELETE(
          * Updates existing updated children ids
          *
          * @param {string} parentData.children_ids || []).filter(
-          (id - The parent data.children_ids || []).filter(
+          (id - The parent data./**
+ * Updates d children ids
+ *
+ * @param {any} parentData.children_ids||[] - The parentdata.children_ids||[]
+ *
+ * @returns {any} The updatedchildrenids result
+ *
+ */
+children_ids || []).filter(
           (id
          *
          * @returns {string} The updatedchildrenids result

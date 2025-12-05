@@ -4,7 +4,8 @@
  * @description This file contains the BlogPostClient component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -42,7 +43,15 @@ interface BlogPostClientProps {
   slug: string;
 }
 
-export default function BlogPostClient({ slug }: BlogPostClientProps) {
+export default /**
+ * Performs blog post client operation
+ *
+ * @param {BlogPostClientProps} { slug } - The { slug }
+ *
+ * @returns {any} The blogpostclient result
+ *
+ */
+function BlogPostClient({ slug }: BlogPostClientProps) {
   const router = useRouter();
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
   const [liked, setLiked] = useState(false);

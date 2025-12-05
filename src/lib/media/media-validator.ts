@@ -4,7 +4,8 @@
  * @description This file contains functionality related to media-validator
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import {
@@ -144,7 +145,15 @@ export function validateFileType(
     if (type === "video") return "VIDEOS";
     return "DOCUMENTS";
   };
-  const isValid = allowedTypes.some((type) => {
+  /**
+ * Checks if valid
+ *
+ * @param {any} (type - The (type
+ *
+ * @returns {any} The isvalid result
+ *
+ */
+const isValid = allowedTypes.some((type) => {
     const formatKey = getFormatKey(type);
     const formats = SUPPORTED_FORMATS[formatKey];
     return (formats.mimeTypes as readonly string[]).includes(fileType);

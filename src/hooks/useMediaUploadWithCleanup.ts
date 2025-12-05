@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useMediaUploadWithCleanup
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -56,10 +57,12 @@ export interface MediaUploadWithCleanupOptions {
    * Enable navigation guard to prevent leaving page with unsaved media
    * Default: true
    */
+  /** EnableNavigationGuard */
   enableNavigationGuard?: boolean;
   /**
    * Custom message for navigation guard
    */
+  /** NavigationGuardMessage */
   navigationGuardMessage?: string;
 }
 
@@ -91,6 +94,16 @@ export interface MediaUploadWithCleanupOptions {
   options);
  */
 
+/**
+ * Custom React hook for media upload with cleanup
+ *
+ * @param {MediaUploadWithCleanupOptions} [options] - The options
+ *
+ * @returns {any} The usemediauploadwithcleanup result
+ *
+ * @example
+ * useMediaUploadWithCleanup(options);
+ */
 export function useMediaUploadWithCleanup(
   /** Options */
   options: MediaUploadWithCleanupOptions = {},
@@ -139,7 +152,13 @@ export function useMediaUploadWithCleanup(
           contextId,
         });
 
-        const mediaItem: UploadedMedia = {
+        /**
+ * Performs media item operation
+ *
+ * @returns {any} The mediaitem result
+ *
+ */
+const mediaItem: UploadedMedia = {
           /** Url */
           url: result.url,
           /** Id */
@@ -182,9 +201,26 @@ export function useMediaUploadWithCleanup(
         | "avatar"
         | "category",
       /** Context Id */
-      contextId?: string,
+      contextId?: string/**
+ * Performs upload promises operation
+ *
+ * @param {any} (file - The (file
+ *
+ * @returns {any} The uploadpromises result
+ *
+ */
+,
     ): Promise<string[]> => {
-      setIsUploading(true);
+      setIsUploading(tr/**
+ * Performs media items operation
+ *
+ * @param {any} (result - The (result
+ * @param {any} index - The index
+ *
+ * @returns {any} The mediaitems result
+ *
+ */
+ue);
 
       try {
         const uploadPromises = files.map((file) =>
@@ -223,7 +259,15 @@ export function useMediaUploadWithCleanup(
     [onUploadSuccess, onUploadError],
   );
 
-  /**
+ /**
+ * Deletes promises
+ *
+ * @param {any} (media - The (media
+ *
+ * @returns {any} The deletepromises result
+ *
+ */
+ /**
    * Clean up all uploaded media (call this if resource creation fails)
    */
   const cleanupUploadedMedia = useCallback(async (): Promise<void> => {

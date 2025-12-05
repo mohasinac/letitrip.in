@@ -4,12 +4,20 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
+/**
+ * COLLECTION constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for collection
+ */
 const COLLECTION = "blog_posts";
 
 // GET /api/blog/[slug] - Get single blog post by slug
@@ -128,6 +136,17 @@ export async function GET(
   req, {});
  */
 
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The patch result
+ *
+ * @example
+ * PATCH(req, {});
+ */
 export async function PATCH(
   /** Req */
   req: NextRequest,
@@ -163,7 +182,15 @@ export async function PATCH(
     };
 
     // Allow updating specific fields
-    const allowedFields = [
+    /**
+ * Performs allowed fields operation
+ *
+ * @param {any} (field - The (field
+ *
+ * @returns {any} The allowedfields result
+ *
+ */
+const allowedFields = [
       "title",
       "excerpt",
       "content",

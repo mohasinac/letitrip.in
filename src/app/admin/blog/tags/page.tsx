@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -288,7 +289,15 @@ function BulkAddModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const tags = tagsText
+    /**
+ * Performs tags operation
+ *
+ * @param {any} /[\n,]/ - The /[\n,]/
+ *
+ * @returns {any} The tags result
+ *
+ */
+const tags = tagsText
       .split(/[\n,]/)
       .map((t) => t.trim())
       .filter((t) => t.length > 0);
@@ -349,7 +358,13 @@ function BulkAddModal({
   );
 }
 
-export default function BlogTagsPage() {
+export default /**
+ * Performs blog tags page operation
+ *
+ * @returns {any} The blogtagspage result
+ *
+ */
+function BlogTagsPage() {
   const { isAdmin } = useAuth();
   const {
     /** Is Loading */
@@ -594,7 +609,15 @@ export default function BlogTagsPage() {
       };
 
       // Create tags one by one (or use bulk API if available)
-      const newTags: BlogTag[] = [];
+      cons/**
+ * Performs existing tag operation
+ *
+ * @param {any} (t - The (t
+ *
+ * @returns {any} The existingtag result
+ *
+ */
+t newTags: BlogTag[] = [];
       for (const name of tagNames) {
         const slug = generateSlug(name);
         const existingTag = tags?.find((t) => t.slug === slug);
@@ -706,11 +729,26 @@ export default function BlogTagsPage() {
       if (tags) {
         setTags(tags.filter((t) => !selectedIds.includes(t.id)));
       }
-      setSelectedIds([]);
+      se/**
+ * Performs filtered tags operation
+ *
+ * @returns {any} The filteredtags result
+ *
+ */
+tSelectedIds([]);
       toast.success(`Deleted ${selectedIds.length} tags`);
     } catch (error) {
       console.error("Failed to delete tags:", error);
-      toast.error("Failed to delete tags");
+      toast.error("Failed to delete tags");/**
+ * Performs sorted tags operation
+ *
+ * @param {any} (a - The (a
+ * @param {any} b - The b
+ *
+ * @returns {any} The sortedtags result
+ *
+ */
+
     }
   };
 

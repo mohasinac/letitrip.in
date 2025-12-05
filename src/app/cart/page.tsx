@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -22,7 +23,13 @@ import Toast from "@/components/common/Toast";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/contexts/AuthContext";
 
-export default function CartPage() {
+export default /**
+ * Performs cart page operation
+ *
+ * @returns {any} The cartpage result
+ *
+ */
+function CartPage() {
   const router = useRouter();
   const { user } = useAuth();
   const {

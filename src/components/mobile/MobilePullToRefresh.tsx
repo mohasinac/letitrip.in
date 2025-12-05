@@ -4,7 +4,8 @@
  * @description This file contains the MobilePullToRefresh component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -69,13 +70,29 @@ export function MobilePullToRefresh({
   const startY = useRef(0);
   const isPulling = useRef(false);
 
-  const handleTouchStart = useCallback(
+  /**
+ * Handles touch start
+ *
+ * @param {React.TouchEvent} (e - The (e
+ *
+ * @returns {any} The handletouchstart result
+ *
+ */
+const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
       if (disabled || isRefreshing) return;
 
       const container = containerRef.current;
       if (container && container.scrollTop <= 0) {
-        startY.current = e.touches[0].clientY;
+       /**
+ * Handles touch move
+ *
+ * @param {React.TouchEvent} (e - The (e
+ *
+ * @returns {any} The handletouchmove result
+ *
+ */
+ startY.current = e.touches[0].clientY;
         isPulling.current = true;
       }
     },
@@ -96,7 +113,15 @@ export function MobilePullToRefresh({
       const currentY = e.touches[0].clientY;
       const diff = currentY - startY.current;
 
-      if (diff > 0) {
+      if (/**
+ * Handles touch end
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The handletouchend result
+ *
+ */
+diff > 0) {
         e.preventDefault();
         // Apply resistance - pull more, less movement
         const resistance = Math.min(diff * 0.5, maxPull);

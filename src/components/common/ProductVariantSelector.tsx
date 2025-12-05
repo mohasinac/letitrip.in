@@ -4,7 +4,8 @@
  * @description This file contains the ProductVariantSelector component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -143,7 +144,15 @@ export function ProductVariantSelector({
        * @returns {any} The filtered result
        */
 
-      const filtered = (response.data || [])
+      /**
+ * Performs filtered operation
+ *
+ * @param {any} response.data||[] - The response.data||[]
+ *
+ * @returns {any} The filtered result
+ *
+ */
+const filtered = (response.data || [])
         .filter((p) => p.id !== currentProductId)
         .slice(0, limit);
 

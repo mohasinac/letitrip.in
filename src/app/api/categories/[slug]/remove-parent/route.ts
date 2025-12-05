@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -46,6 +47,17 @@ import { getCurrentUser } from "../../../lib/session";
   request, {});
  */
 
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The post result
+ *
+ * @example
+ * POST(request, {});
+ */
 export async function POST(
   /** Request */
   request: NextRequest,
@@ -101,7 +113,15 @@ export async function POST(
     const now = new Date().toISOString();
 
     // Remove parent from category
-    const newParentIds = currentParentIds.filter(
+    /**
+ * Performs new parent ids operation
+ *
+ * @param {string} (id - The (id
+ *
+ * @returns {any} The newparentids result
+ *
+ */
+const newParentIds = currentParentIds.filter(
       (id: string) => id !== parentId,
     );
     await Collections.categories()
@@ -130,7 +150,15 @@ export async function POST(
        * Performs parent children ids operation
        *
        * @param {string} parentData.children_ids || []).filter(
-        (id - The parent data.children_ids || []).filter(
+        (id - The paren/**
+ * Performs parent children ids operation
+ *
+ * @param {any} parentData.children_ids||[] - The parentdata.children_ids||[]
+ *
+ * @returns {any} The parentchildrenids result
+ *
+ */
+t data.children_ids || []).filter(
         (id
        *
        * @returns {string} The parentchildrenids result

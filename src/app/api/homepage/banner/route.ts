@@ -4,12 +4,20 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
+/**
+ * HOMEPAGE_SETTINGS_DOC constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for homepage settings doc
+ */
 const HOMEPAGE_SETTINGS_DOC = "homepage_config";
 const SETTINGS_COLLECTION = "site_settings";
 

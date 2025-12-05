@@ -4,7 +4,8 @@
  * @description This file contains functionality related to cart.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -220,7 +221,13 @@ function toFECartItem(itemBE: CartItemBE): CartItemFE {
  */
 
 function groupItemsByShop(items: CartItemFE[]): Map<string, CartItemFE[]> {
-  const grouped = new Map<string, CartItemFE[]>();
+  /**
+ * Performs grouped operation
+ *
+ * @returns {any} The grouped result
+ *
+ */
+const grouped = new Map<string, CartItemFE[]>();
 
   items.forEach((item) => {
     const shopKey = item.shopId || "default";
@@ -256,10 +263,26 @@ function groupItemsByShop(items: CartItemFE[]): Map<string, CartItemFE[]> {
  * @throws {Error} When operation fails or validation errors occur
  */
 
-function getValidationErrors(items: CartItemFE[]): string[] {
+function getValida/**
+ * Performs unavailable items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The unavailableitems result
+ *
+ */
+tionErrors(items: CartItemFE[]): string[] {
   const errors: string[] = [];
 
-  const unavailableItems = items.filter((item) => !item.isAvailable);
+  const unavailableItems = items.filte/**
+ * Performs over quantity items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The overquantityitems result
+ *
+ */
+r((item) => !item.isAvailable);
   if (unavailableItems.length > 0) {
     errors.push(
       `${unavailableItems.length} item${
@@ -286,7 +309,15 @@ function getValidationErrors(items: CartItemFE[]): string[] {
  * Get validation warnings
  */
 /**
- * Retrieves validation warnings
+ * Retrieves validation w/**
+ * Performs low stock items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The lowstockitems result
+ *
+ */
+arnings
  *
  * @param {CartItemFE[]} items - The items
  *
@@ -500,6 +531,16 @@ export function toFECartSummary(cartFE: CartFE): CartSummaryFE {
   formData);
  */
 
+/**
+ * Performs to b e add to cart request operation
+ *
+ * @param {AddToCartFormFE} formData - The formdata
+ *
+ * @returns {AddToCartRequestBE} The tobeaddtocartrequest result
+ *
+ * @example
+ * toBEAddToCartRequest(formData);
+ */
 export function toBEAddToCartRequest(
   /** Form Data */
   formData: AddToCartFormFE

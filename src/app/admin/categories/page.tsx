@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -34,7 +35,13 @@ import { useCallback, useEffect, useState } from "react";
  */
 type ViewMode = "list" | "tree";
 
-export default function AdminCategoriesPage() {
+export default /**
+ * Performs admin categories page operation
+ *
+ * @returns {any} The admincategoriespage result
+ *
+ */
+function AdminCategoriesPage() {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<ViewMode>("list");
 
@@ -51,13 +58,29 @@ export default function AdminCategoriesPage() {
     initialData: [],
   });
 
-  const loadTreeData = useCallback(async () => {
+  /**
+ * Performs load tree data operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadtreedata result
+ *
+ */
+const loadTreeData = useCallback(async () => {
     const response = await categoriesService.getTree();
     return response || [];
   }, []);
 
   useEffect(() => {
-    if (viewMode === "tree" && (!treeData || treeData.length === 0)) {
+    if (viewMode === "tree" && (!treeData || treeData/**
+ * Performs columns operation
+ *
+ * @param {CategoryFE} category - The category
+ *
+ * @returns {any} The columns result
+ *
+ */
+.length === 0)) {
       loadTree(loadTreeData);
     }
   }, [viewMode, treeData?.length, loadTree, loadTreeData]);

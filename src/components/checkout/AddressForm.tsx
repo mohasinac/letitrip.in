@@ -4,7 +4,8 @@
  * @description This file contains the AddressForm component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -77,6 +78,28 @@ interface AddressFormProps {
 });
  */
 
+/**
+ * Performs address form operation
+ *
+ * @param {AddressFormProps} {
+  addressId,
+  onClose,
+  onSuccess,
+} - The {
+  addressid,
+  onclose,
+  onsuccess,
+}
+ *
+ * @returns {any} The addressform result
+ *
+ * @example
+ * AddressForm({
+  addressId,
+  onClose,
+  onSuccess,
+});
+ */
 export function AddressForm({
   addressId,
   onClose,

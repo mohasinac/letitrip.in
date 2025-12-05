@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -83,6 +84,13 @@ interface SectionConfig {
 }
 
 // Section configurations
+/**
+ * SECTIONS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for sections
+ */
 const SECTIONS: SectionConfig[] = [
   {
     /** Key */
@@ -501,13 +509,30 @@ function AddItemModal({
        * @returns {any} The filtered result
        */
 
-      const filtered = (response.data || []).filter(
+      /**
+ * Performs filtered operation
+ *
+ * @param {any} response.data||[] - The response.data||[]
+ *
+ * @returns {any} The filtered result
+ *
+ */
+const filtered = (response.data || []).filter(
         (item: any) => !existingIds.includes(item.id || item.slug),
       );
       setResults(filtered);
     } catch (error) {
       console.error("Search failed:", error);
-      toast.error("Failed to search items");
+      toast.error("Failed to/**
+ * Performs debounce operation
+ *
+ * @param {any} searchItems - The searchitems
+ * @param {any} 300 - The 300
+ *
+ * @returns {any} The debounce result
+ *
+ */
+ search items");
     } finally {
       setLoading(false);
     }
@@ -667,7 +692,13 @@ function AddItemModal({
   );
 }
 
-export default function FeaturedSectionsPage() {
+export default /**
+ * Performs featured sections page operation
+ *
+ * @returns {any} The featuredsectionspage result
+ *
+ */
+function FeaturedSectionsPage() {
   const { isAdmin } = useAuth();
   const [activeSection, setActiveSection] = useState<string>("products");
   const [items, setItems] = useState<Record<string, FeaturedItem[]>>({});
@@ -679,7 +710,15 @@ export default function FeaturedSectionsPage() {
   } = useLoadingState({
     /** On Load Error */
     onLoadError: (error) => {
-      logError(error, { component: "FeaturedSectionsPage.loadFeaturedItems" });
+      logError(error, { /**
+ * Performs sensors operation
+ *
+ * @param {any} useSensor(PointerSensor - The usesensor(pointersensor
+ *
+ * @returns {any} The sensors result
+ *
+ */
+component: "FeaturedSectionsPage.loadFeaturedItems" });
     },
   });
   const [saving, setSaving] = useState(false);
@@ -708,11 +747,27 @@ export default function FeaturedSectionsPage() {
    */
 
   /**
-   * Fetches featured items from server
+   /**
+ * Performs initialized operation
+ *
+ * @param {any} (section - The (section
+ *
+ * @returns {any} The initialized result
+ *
+ */
+* Fetches featured items from server
    *
    * @returns {Promise<any>} Promise resolving to featureditems result
    *
-   * @throws {Error} When operation fails or validation errors occur
+   * @throws {Error} When operation/**
+ * Performs initialized operation
+ *
+ * @param {any} (section - The (section
+ *
+ * @returns {any} The initialized result
+ *
+ */
+ fails or validation errors occur
    */
 
   const loadFeaturedItems = () =>
@@ -758,7 +813,15 @@ export default function FeaturedSectionsPage() {
       // Use service to update featured items (handles cache invalidation)
       await homepageSettingsService.updateFeaturedItems(items);
       setHasChanges(false);
-      toast.success("Featured sections saved successfully!");
+      toast.success("Feature/**
+ * Performs old index operation
+ *
+ * @param {any} (i - The (i
+ *
+ * @returns {any} The oldindex result
+ *
+ */
+d sections saved successfully!");
     } catch (error) {
       console.error("Failed to save:", error);
       toast.error("Failed to save changes");
@@ -790,10 +853,24 @@ export default function FeaturedSectionsPage() {
       setItems((prev) => {
         const sectionItems = [...(prev[activeSection] || [])];
         const oldIndex = sectionItems.findIndex((i) => i.id === active.id);
-        const newIndex = sectionItems.findIndex((i) => i.id === over.id);
+        const newIndex = sectionItem/**
+ * Performs section operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The section result
+ *
+ */
+s.findIndex((i) => i.id === over.id);
 
         const reordered = arrayMove(sectionItems, oldIndex, newIndex).map(
-          (item, index) => ({
+         /**
+ * Performs new item operation
+ *
+ * @returns {any} The newitem result
+ *
+ */
+ (item, index) => ({
             ...item,
             /** Position */
             position: index,
@@ -891,7 +968,15 @@ export default function FeaturedSectionsPage() {
       [activeSection]: (prev[activeSection] || []).map((item) =>
         item.id === id ? { ...item, active: !item.active } : item,
       ),
-    }));
+   /**
+ * Performs index operation
+ *
+ * @param {any} (i - The (i
+ *
+ * @returns {any} The index result
+ *
+ */
+ }));
     setHasChanges(true);
   };
 
@@ -926,7 +1011,15 @@ export default function FeaturedSectionsPage() {
   /**
    * Handles move up event
    *
-   * @param {string} id - Unique identifier
+   * @par/**
+ * Performs index operation
+ *
+ * @param {any} (i - The (i
+ *
+ * @returns {any} The index result
+ *
+ */
+am {string} id - Unique identifier
    *
    * @returns {string} The handlemoveup result
    */
@@ -968,7 +1061,15 @@ export default function FeaturedSectionsPage() {
 
   /**
    * Handles move down event
-   *
+   /**
+ * Performs current section operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The currentsection result
+ *
+ */
+*
    * @param {string} id - Unique identifier
    *
    * @returns {string} The handlemovedown result
@@ -1054,7 +1155,15 @@ export default function FeaturedSectionsPage() {
               </button>
               <button
                 onClick={saveChanges}
-                disabled={!hasChanges || saving}
+                disabled={!hasC/**
+ * Performs count operation
+ *
+ * @param {any} items[section.key]||[] - The items[section.key]||[]
+ *
+ * @returns {any} The count result
+ *
+ */
+hanges || saving}
                 className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-4 h-4" />

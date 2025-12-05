@@ -4,7 +4,8 @@
  * @description This file contains service functions for viewing-history operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -43,7 +44,15 @@ class ViewingHistoryService {
       // Filter out expired items
       const now = Date.now();
       const expiryMs = VIEWING_HISTORY_CONFIG.EXPIRY_DAYS * 24 * 60 * 60 * 1000;
-      const validItems = items.filter(
+      /**
+ * Performs valid items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The validitems result
+ *
+ */
+const validItems = items.filter(
         (item) => now - item.viewed_at < expiryMs,
       );
 
@@ -100,7 +109,15 @@ class ViewingHistoryService {
   /**
    * Remove an item from history
    */
-  removeFromHistory(itemId: string): void {
+  removeFromHistory(itemId: s/**
+ * Performs filtered operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The filtered result
+ *
+ */
+tring): void {
     if (typeof window === "undefined") return;
 
     try {

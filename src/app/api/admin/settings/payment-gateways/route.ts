@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -211,7 +212,15 @@ export async function PUT(request: NextRequest) {
       "phonepe",
       "cashfree",
     ];
-    const hasValidGateway = validGateways.some((gateway) => body[gateway]);
+    /**
+ * Checks if has valid gateway
+ *
+ * @param {any} (gateway - The (gateway
+ *
+ * @returns {any} The hasvalidgateway result
+ *
+ */
+const hasValidGateway = validGateways.some((gateway) => body[gateway]);
 
     if (!hasValidGateway) {
       return NextResponse.json(

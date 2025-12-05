@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -53,6 +54,17 @@ const voteSchema = z.object({
   request, {});
  */
 
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The post result
+ *
+ * @example
+ * POST(request, {});
+ */
 export async function POST(
   /** Request */
   request: NextRequest,
@@ -239,7 +251,18 @@ export async function POST(
  *
  * @param {NextRequest} /** Request */
   request - The /**  request */
-  request
+  r/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
+equest
  * @param {{ params} { params } - The { params }
  *
  * @returns {Promise<any>} Promise resolving to get result
@@ -282,7 +305,15 @@ export async function GET(
       .orderBy("order", "asc")
       .get();
 
-    const options = optionsSnapshot.docs.map((doc) => ({
+    /**
+ * Performs options operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The options result
+ *
+ */
+const options = optionsSnapshot.docs.map((doc) => ({
       /** Id */
       id: doc.id,
       ...doc.data(),

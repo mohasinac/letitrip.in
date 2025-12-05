@@ -4,7 +4,8 @@
  * @description This file contains the TagInput component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -46,7 +47,43 @@ interface TagInputProps {
   className?: string;
 }
 
-export default function TagInput({
+export default /**
+ * Performs tag input operation
+ *
+ * @param {TagInputProps} [{
+  value = [],
+  onChange,
+  placeholder = "Type and press Enter...",
+  disabled = false,
+  error,
+  maxTags,
+  maxTagLength = 50,
+  minTagLength = 2,
+  allowDuplicates = false,
+  suggestions = [],
+  caseSensitive = false,
+  delimiter = ",",
+  className = "",
+}] - The {
+  value = [],
+  onchange,
+  placeholder = "type and press enter...",
+  disabled = false,
+  error,
+  maxtags,
+  maxtaglength = 50,
+  mintaglength = 2,
+  allowduplicates = false,
+  suggestions = [],
+  casesensitive = false,
+  delimiter = ",",
+  classname = "",
+}
+ *
+ * @returns {any} The taginput result
+ *
+ */
+function TagInput({
   value = [],
   onChange,
   placeholder = "Type and press Enter...",
@@ -67,9 +104,25 @@ export default function TagInput({
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Filter suggestions based on input
-  const filteredSuggestions = suggestions.filter((suggestion) => {
+  /**
+ * Performs filtered suggestions operation
+ *
+ * @param {any} (suggestion - The (suggestion
+ *
+ * @returns {any} The filteredsuggestions result
+ *
+ */
+const filteredSuggestions = suggestions.filter((suggestion) => {
     const input = caseSensitive ? inputValue : inputValue.toLowerCase();
-    const sug = caseSensitive ? suggestion : suggestion.toLowerCase();
+    const sug = c/**
+ * Performs add tag operation
+ *
+ * @param {string} (tag - The (tag
+ *
+ * @returns {any} The addtag result
+ *
+ */
+aseSensitive ? suggestion : suggestion.toLowerCase();
     return input && sug.includes(input) && !value.includes(suggestion);
   });
 
@@ -81,7 +134,15 @@ export default function TagInput({
       // Trim and validate
       const trimmedTag = tag.trim();
       if (!trimmedTag) return;
-      if (trimmedTag.length < minTagLength) return;
+      if (trimmedTag.leng/**
+ * Performs normalized tags operation
+ *
+ * @param {any} (t - The (t
+ *
+ * @returns {any} The normalizedtags result
+ *
+ */
+th < minTagLength) return;
       if (trimmedTag.length > maxTagLength) return;
       if (maxTags && value.length >= maxTags) return;
 
@@ -92,15 +153,39 @@ export default function TagInput({
       const normalizedTags = caseSensitive
         ? value
         : value.map((t) => t.toLowerCase());
-      if (!allowDuplicates && normalizedTags.includes(normalizedTag)) {
+      if (!allowDuplicates && normalizedTags.includes(normalizedTag)) {/**
+ * Performs remove tag operation
+ *
+ * @param {number} (index - The (index
+ *
+ * @returns {any} The removetag result
+ *
+ */
+
         setInputValue("");
         return;
       }
 
-      onChange([...value, trimmedTag]);
+      onChange([...value, trimmedT/**
+ * Handles input change
+ *
+ * @param {React.ChangeEvent<HTMLInputElement>} (e - The (e
+ *
+ * @returns {any} The handleinputchange result
+ *
+ */
+ag]);
       setInputValue("");
       setShowSuggestions(false);
-      setSelectedSuggestionIndex(0);
+      setSelectedSuggestionIndex/**
+ * Performs tags operation
+ *
+ * @param {any} delimiter - The delimiter
+ *
+ * @returns {any} The tags result
+ *
+ */
+(0);
     },
     [
       disabled,
@@ -109,7 +194,15 @@ export default function TagInput({
       maxTags,
       value,
       caseSensitive,
-      allowDuplicates,
+      all/**
+ * Performs tags operation
+ *
+ * @param {any} delimiter - The delimiter
+ *
+ * @returns {any} The tags result
+ *
+ */
+owDuplicates,
       onChange,
     ],
   );
@@ -124,7 +217,15 @@ export default function TagInput({
   );
 
   // Handle input change
-  const handleInputChange = useCallback(
+  const handleInputChange =/**
+ * Handles key down
+ *
+ * @param {KeyboardEvent<HTMLInputElement>} (e - The (e
+ *
+ * @returns {any} The handlekeydown result
+ *
+ */
+ useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
 
@@ -157,7 +258,15 @@ export default function TagInput({
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (disabled) return;
 
-      if (e.key === "Enter") {
+      if (e/**
+ * Handles suggestion click
+ *
+ * @param {string} (suggestion - The (suggestion
+ *
+ * @returns {any} The handlesuggestionclick result
+ *
+ */
+.key === "Enter") {
         e.preventDefault();
         if (showSuggestions && filteredSuggestions.length > 0) {
           addTag(filteredSuggestions[selectedSuggestionIndex]);

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -66,6 +67,14 @@ function toNumber(value: string | null, fallback: number): number {
  * @throws {Error} When operation fails or validation errors occur
  */
 
+/**
+ * Performs resolve category slug operation
+ *
+ * @param {string | null} [categorySlug] - The categoryslug
+ *
+ * @returns {Promise<string | null>} The resolvecategoryslug result
+ *
+ */
 async function resolveCategorySlug(
   /** Category Slug */
   categorySlug?: string | null,
@@ -250,7 +259,15 @@ export async function GET(req: NextRequest) {
     query = query.limit(fetchLimit);
 
     const snap = await query.get();
-    let items = snap.docs.map((d: any) => ({
+    /**
+ * Performs items operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The items result
+ *
+ */
+let items = snap.docs.map((d: any) => ({
       /** Id */
       id: d.id,
       ...(d.data() as any),
@@ -324,7 +341,15 @@ export async function GET(req: NextRequest) {
         .filter((it: any) => it.__score > 0)
         .sort((a: any, b: any) => {
           if (b.__score !== a.__score) return b.__score - a.__score;
-          // tiebreaker
+  /**
+ * Performs b time operation
+ *
+ * @param {any} b.created_at - The b.created_at
+ *
+ * @returns {any} The btime result
+ *
+ */
+        // tiebreaker
           const aTime = itDate(a.created_at) || itDate(a.createdAt) || 0;
           const bTime = itDate(b.created_at) || itDate(b.createdAt) || 0;
           return bTime - aTime;

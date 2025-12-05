@@ -4,7 +4,8 @@
  * @description This file contains the CameraCapture component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -30,7 +31,23 @@ interface CameraCaptureProps {
   facingMode?: "user" | "environment";
 }
 
-export default function CameraCapture({
+export default /**
+ * Performs camera capture operation
+ *
+ * @param {CameraCaptureProps} [{
+  onCapture,
+  onClose,
+  
+  facingMode] - The {
+  oncapture,
+  onclose,
+  
+  facingmode
+ *
+ * @returns {any} The cameracapture result
+ *
+ */
+function CameraCapture({
   onCapture,
   onClose,
   /** Facing Mode */

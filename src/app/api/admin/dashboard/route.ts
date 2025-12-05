@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -66,19 +67,59 @@ export async function GET(req: NextRequest) {
 
     // Get all users
     const usersSnapshot = await db.collection(COLLECTIONS.USERS).get();
-    const allUsers = usersSnapshot.docs.map((doc) => ({
+    /**
+ * Performs all users operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The allusers result
+ *
+ */
+const allUsers = usersSnapshot.docs.map((doc) => ({
       /** Id */
       id: doc.id,
       ...doc.data(),
     }));
 
-    const totalUsers = allUsers.length;
-    const totalSellers = allUsers.filter(
+    const totalUsers/**
+ * Performs total admins operation
+ *
+ * @param {any} (u - The (u
+ *
+ * @returns {any} The totaladmins result
+ *
+ */
+ = allUsers.length;
+    const totalSellers = allUsers.f/**
+ * Performs banned users operation
+ *
+ * @param {any} (u - The (u
+ *
+ * @returns {any} The bannedusers result
+ *
+ */
+ilter(
       (u: any) => u.role === "seller",
     ).length;
-    const totalAdmins = allUsers.filter((u: any) => u.role === "admin").length;
+    const/**
+ * Performs all shops operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The allshops result
+ *
+ */
+ totalAdmins = allUsers.filter((u: any) => u.role === "admin").length;
     const activeUsers = allUsers.filter(
-      (u: any) => u.status === "active",
+      (u: any) => u.statu/**
+ * Performs verified shops operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The verifiedshops result
+ *
+ */
+s === "active",
     ).length;
     const bannedUsers = allUsers.filter(
       (u: any) => u.status === "banned",
@@ -86,48 +127,137 @@ export async function GET(req: NextRequest) {
 
     // Get all shops
     const shopsSnapshot = await db.collection(COLLECTIONS.SHOPS).get();
-    const allShops = shopsSnapshot.docs.map((doc) => ({
+    const a/**
+ * Performs all products operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The allproducts result
+ *
+ */
+llShops = shopsSnapshot.docs.map((doc) => ({
       /** Id */
       id: doc.id,
       ...doc.data(),
     }));
     const totalShops = allShops.length;
+/**
+ * Performs out of stock products operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The outofstockproducts result
+ *
+ */
     const activeShops = allShops.filter(
       (s: any) => s.status === "active",
     ).length;
-    const verifiedShops = allShops.filter((s: any) => s.is_verified).length;
+    c/**
+ * Performs all orders operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The allorders result
+ *
+ */
+onst verifiedShops = allShops.filter((s: any) => s.is_verified).length;
 
     // Get all categories
     const categoriesSnapshot = await db
-      .collection(COLLECTIONS.CATEGORIES)
+    /**
+ * Performs completed orders operation
+ *
+ * @param {any} (o - The (o
+ *
+ * @returns {any} The completedorders result
+ *
+ */
+  .collection(COLLECTIONS.CATEGORIES)
       .get();
     const totalCategories = categoriesSnapshot.size;
 
-    // Get all products
+    //**
+ * Performs total revenue operation
+ *
+ * @param {number} (sum - The (sum
+ * @param {any} order - The order
+ *
+ * @returns {any} The totalrevenue result
+ *
+ */
+/ Get all products
     const productsSnapshot = await db.collection(COLLECTIONS.PRODUCTS).get();
     const allProducts = productsSnapshot.docs.map((doc) => ({
       /** Id */
       id: doc.id,
       ...doc.data(),
-    }));
+  /**
+ * Performs last30 days users operation
+ *
+ * @param {any} (u - The (u
+ *
+ * @returns {any} The last30daysusers result
+ *
+ */
+  }));
     const totalProducts = allProducts.length;
     const activeProducts = allProducts.filter(
       (p: any) => p.status === "active",
     ).length;
-    const outOfStockProducts = allProducts.filter(
+    const outOfStockProducts = allProduct/**
+ * Performs last30 days products operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The last30daysproducts result
+ *
+ */
+s.filter(
       (p: any) => p.stock_quantity !== undefined && p.stock_quantity === 0,
     ).length;
 
     // Get all orders
     const ordersSnapshot = await db.collection(COLLECTIONS.ORDERS).get();
-    const allOrders = ordersSnapshot.docs.map((doc) => ({
+    const allOrders = ordersSnapshot.docs.map((doc) => ({/**
+ * Performs prev30 days users operation
+ *
+ * @param {any} (u - The (u
+ *
+ * @returns {any} The prev30daysusers result
+ *
+ */
+
       /** Id */
       id: doc.id,
       ...doc.data(),
-    }));
+    }/**
+ * Performs prev30 days shops operation
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The prev30daysshops result
+ *
+ */
+));
     const totalOrders = allOrders.length;
-    const pendingOrders = allOrders.filter(
-      (o: any) => o.status === "pending",
+    const pendi/**
+ * Performs prev30 days products operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The prev30daysproducts result
+ *
+ */
+ngOrders = allOrders.filter(
+      (o: any) => o.status === "/**
+ * Performs prev30 days orders operation
+ *
+ * @param {any} (o - The (o
+ *
+ * @returns {any} The prev30daysorders result
+ *
+ */
+pending",
     ).length;
     const completedOrders = allOrders.filter(
       (o: any) => o.status === "delivered",

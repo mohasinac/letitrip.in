@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -67,7 +68,15 @@ export async function POST(request: NextRequest) {
 
     for (const chunk of chunks) {
       // Try direct document access first (slug as ID)
-      const docPromises = chunk.map(async (id) => {
+      /**
+ * Performs doc promises operation
+ *
+ * @param {any} async(id - The async(id
+ *
+ * @returns {Promise<any>} The docpromises result
+ *
+ */
+const docPromises = chunk.map(async (id) => {
         const doc = await Collections.auctions().doc(id).get();
         if (doc.exists) {
           return { id: doc.id, ...doc.data() };
@@ -76,12 +85,34 @@ export async function POST(request: NextRequest) {
       });
 
       const docs = await Promise.all(docPromises);
-      const foundAuctions = docs.filter(Boolean);
-      auctions.push(...foundAuctions);
+      con/**
+ * Performs found ids operation
+ *
+ * @param {any} (a - The (a
+ *
+ * @returns {any} The foundids result
+ *
+ */
+st foundAuctions = docs.filter(Boolean);
+      auctions.p/**
+ * Performs legacy query operation
+ *
+ * @returns {any} The legacyquery result
+ *
+ */
+ush(...foundAuctions);
 
       // For any not found by ID, try legacy query
       const foundIds = foundAuctions.map((a: any) => a.id);
-      const missingIds = chunk.filter((id) => !foundIds.includes(id));
+      const missingIds = chunk.filter((id) => !foundIds.includes(id));/**
+ * Performs ordered auctions operation
+ *
+ * @param {any} (id - The (id
+ *
+ * @returns {any} The orderedauctions result
+ *
+ */
+
 
       if (missingIds.length > 0) {
         const legacyQuery = await Collections.auctions()

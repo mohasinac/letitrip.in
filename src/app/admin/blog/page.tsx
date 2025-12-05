@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -27,6 +28,13 @@ import { toInlineFields } from "@/constants/form-fields";
 type BlogPost = any;
 
 // Blog fields configuration
+/**
+ * BLOG_FIELDS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for blog fields
+ */
 const BLOG_FIELDS = [
   { key: "title", name: "title", label: "Title", type: "text", required: true },
   {
@@ -61,9 +69,23 @@ const BLOG_FIELDS = [
   },
 ];
 
-export default function AdminBlogPage() {
+export default /**
+ * Performs admin blog page operation
+ *
+ * @returns {any} The adminblogpage result
+ *
+ */
+function AdminBlogPage() {
   // Define columns
-  const columns = [
+  /**
+ * Performs columns operation
+ *
+ * @param {BlogPost} post - The post
+ *
+ * @returns {any} The columns result
+ *
+ */
+const columns = [
     {
       /** Key */
       key: "post",

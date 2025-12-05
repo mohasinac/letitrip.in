@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -29,6 +30,13 @@ import { RefreshCw, Save } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 // Default section order - matches HomepageSettings.sections keys
+/**
+ * DEFAULT_SECTION_ORDER constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for default section order
+ */
 const DEFAULT_SECTION_ORDER = [
   "latestProducts",
   "featuredProducts",
@@ -107,7 +115,13 @@ const SECTION_NAMES: Record<string, { title: string; description: string }> = {
   },
 };
 
-export default function HomepageSettingsPage() {
+export default /**
+ * Performs homepage settings page operation
+ *
+ * @returns {any} The homepagesettingspage result
+ *
+ */
+function HomepageSettingsPage() {
   const {
     /** Is Loading */
     isLoading: loading,
@@ -192,13 +206,29 @@ export default function HomepageSettingsPage() {
     });
 
   // Move section up in order
-  const moveSectionUp = useCallback((sectionKey: string) => {
+  /**
+ * Performs move section up operation
+ *
+ * @param {string} (sectionKey - The (sectionkey
+ *
+ * @returns {any} The movesectionup result
+ *
+ */
+const moveSectionUp = useCallback((sectionKey: string) => {
     setSectionOrder((prevOrder) => {
       const index = prevOrder.indexOf(sectionKey);
       if (index <= 0) return prevOrder;
       const newOrder = [...prevOrder];
       [newOrder[index - 1], newOrder[index]] = [
         newOrder[index],
+/**
+ * Performs move section down operation
+ *
+ * @param {string} (sectionKey - The (sectionkey
+ *
+ * @returns {any} The movesectiondown result
+ *
+ */
         newOrder[index - 1],
       ];
       return newOrder;

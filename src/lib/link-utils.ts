@@ -4,7 +4,8 @@
  * @description This file contains utility functions for link
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -670,6 +671,17 @@ export function getLinkRel(href: string): string | undefined {
  * getLinkTarget("example", true);
  */
 
+/**
+ * Retrieves link target
+ *
+ * @param {string} href - The href
+ * @param {any} [forceNewTab=false] - The forcenewtab=false
+ *
+ * @returns {string | undefined} The getlinktarget result
+ *
+ * @example
+ * getLinkTarget("example", forceNewTab=false);
+ */
 export function getLinkTarget(
   /** Href */
   href: string,
@@ -821,6 +833,12 @@ export function isDownloadableLink(href: string): boolean {
     ".webp",
   ];
 
-  const lowercaseHref = href.toLowerCase();
+  /**
+ * Performs lowercase href operation
+ *
+ * @returns {any} The lowercasehref result
+ *
+ */
+const lowercaseHref = href.toLowerCase();
   return downloadExtensions.some((ext) => lowercaseHref.endsWith(ext));
 }

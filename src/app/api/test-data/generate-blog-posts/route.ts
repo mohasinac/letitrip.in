@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -13,6 +14,13 @@ import { logError } from "@/lib/firebase-error-logger";
 import { faker } from "@faker-js/faker";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * PREFIX constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for prefix
+ */
 const PREFIX = "TEST_";
 
 /**
@@ -91,12 +99,29 @@ export async function POST(req: NextRequest) {
         .replace(/^-|-$/g, "")}-${timestamp}-${i + 1}`;
 
       // Generate rich content with multiple sections
-      const sections = faker.helpers.multiple(
+      /**
+ * Performs sections operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The sections result
+ *
+ */
+const sections = faker.helpers.multiple(
         () => ({
           /** Heading */
           heading: faker.lorem.sentence({ min: 2, max: 5 }).replace(/\.$/, ""),
           /** Content */
-          content: faker.lorem.paragraphs(2, "\n\n"),
+          con/**
+ * Performs content operation
+ *
+ * @param {any} 2 - The 2
+ * @param {any} "\n\n" - The "\n\n"
+ *
+ * @returns {any} The content result
+ *
+ */
+tent: faker.lorem.paragraphs(2, "\n\n"),
         }),
         { count: { min: 3, max: 5 } }
       );

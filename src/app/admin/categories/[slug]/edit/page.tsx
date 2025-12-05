@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -35,18 +36,31 @@ interface Category {
   slug: string;
   /** Description */
   description?: string;
+  /** Parent_id */
   parent_id?: string | null;
   /** Image */
   image?: string;
+  /** Is_featured */
   is_featured?: boolean;
+  /** Show_on_homepage */
   show_on_homepage?: boolean;
+  /** Is_active */
   is_active?: boolean;
+  /** Sort_order */
   sort_order?: number;
+  /** Meta_title */
   meta_title?: string;
+  /** Meta_description */
   meta_description?: string;
 }
 
-export default function EditCategoryPage() {
+export default /**
+ * Performs edit category page operation
+ *
+ * @returns {any} The editcategorypage result
+ *
+ */
+function EditCategoryPage() {
   const params = useParams();
   const router = useRouter();
   const { user, isAdmin, loading: authLoading } = useAuth();
@@ -65,7 +79,15 @@ export default function EditCategoryPage() {
     },
   });
 
-  const slug = params?.slug as string;
+  /**
+ * Performs slug operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The slug result
+ *
+ */
+const slug = params?.slug as string;
 
   // Load category data
   useEffect(() => {

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -240,7 +241,15 @@ export async function POST(request: NextRequest) {
     const paypalOrder: PayPalOrderResponse = await orderResponse.json();
 
     // Get approval URL
-    const approvalUrl = paypalOrder.links.find(
+    /**
+ * Performs approval url operation
+ *
+ * @param {any} (link - The (link
+ *
+ * @returns {any} The approvalurl result
+ *
+ */
+const approvalUrl = paypalOrder.links.find(
       (link) => link.rel === "approve"
     )?.href;
 

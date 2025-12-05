@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -134,7 +135,13 @@ interface Pagination {
  */
 type UserFilter = "all" | "unpaid" | "blocked";
 
-export default function AdminRipLimitPage() {
+export default /**
+ * Performs admin rip limit page operation
+ *
+ * @returns {any} The adminriplimitpage result
+ *
+ */
+function AdminRipLimitPage() {
   const router = useRouter();
   const { user, isAdmin, loading: authLoading } = useAuth();
 
@@ -247,7 +254,15 @@ export default function AdminRipLimitPage() {
   }, [user, isAdmin, authLoading, router]);
 
   // Load stats
-  const loadStats = useCallback(
+  /**
+ * Performs load stats operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The loadstats result
+ *
+ */
+const loadStats = useCallback(
     () =>
       executeLoadStats(async () => {
         const response = await apiService.get<{
@@ -258,7 +273,15 @@ export default function AdminRipLimitPage() {
         }>("/admin/riplimit/stats");
 
         if (response.success) {
-          setStats(response.data);
+    /**
+ * Performs load users operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The loadusers result
+ *
+ */
+      setStats(response.data);
         }
       }),
     [executeLoadStats, setStats]
@@ -270,7 +293,15 @@ export default function AdminRipLimitPage() {
       executeLoadUsers(async () => {
         const params = new URLSearchParams();
         params.set("page", currentPage.toString());
-        params.set("pageSize", "20");
+        /**
+ * Performs response operation
+ *
+ * @param {any} [`/admin/riplimit/users${params.toString(] - The `/admin/riplimit/users${params.tostring(
+ *
+ * @returns {any} The response result
+ *
+ */
+params.set("pageSize", "20");
 
         if (userFilter === "unpaid") {
           params.set("hasUnpaid", "true");
@@ -400,7 +431,16 @@ export default function AdminRipLimitPage() {
           <div className="flex gap-3 mt-4 md:mt-0">
             <Button
               variant="outline"
-              leftIcon={<RefreshCw className="w-4 h-4" />}
+       /**
+ * Performs csv operation
+ *
+ * @param {any} " - The "
+ * @param {any} " - The "
+ *
+ * @returns {any} The csv result
+ *
+ */
+       leftIcon={<RefreshCw className="w-4 h-4" />}
               onClick={() => {
                 loadStats();
                 loadUsers();

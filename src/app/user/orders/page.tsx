@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -27,7 +28,13 @@ import { useCallback, useEffect, useState } from "react";
 
 export const dynamic = "force-dynamic";
 
-export default function OrdersPage() {
+export default /**
+ * Performs orders page operation
+ *
+ * @returns {any} The orderspage result
+ *
+ */
+function OrdersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
@@ -67,7 +74,15 @@ export default function OrdersPage() {
     { syncWithUrl: true },
   );
 
-  const loadOrders = useCallback(async () => {
+  /**
+ * Performs load orders operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadorders result
+ *
+ */
+const loadOrders = useCallback(async () => {
     await execute(async () => {
       const startAfter = cursors[currentPage - 1];
       const response = await ordersService.list({
@@ -82,7 +97,15 @@ export default function OrdersPage() {
 
       // Check if it's cursor pagination
       if ("hasNextPage" in response.pagination) {
-        setHasNextPage(response.pagination.hasNextPage || false);
+        setHasNextPage(re/**
+ * Performs cursor pagination operation
+ *
+ * @param {any} cursorPagination.nextCursor - The cursorpagination.nextcursor
+ *
+ * @returns {any} The cursorpagination result
+ *
+ */
+sponse.pagination.hasNextPage || false);
 
         // Store next cursor
         if ("nextCursor" in response.pagination) {
@@ -137,7 +160,15 @@ export default function OrdersPage() {
   /**
    * Handles next page event
    *
-   * @returns {any} The handlenextpage result
+   * @ret/**
+ * Performs columns operation
+ *
+ * @param {any} order - The order
+ *
+ * @returns {any} The columns result
+ *
+ */
+urns {any} The handlenextpage result
    */
 
   /**

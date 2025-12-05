@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -130,7 +131,17 @@ export async function GET(request: NextRequest) {
     }
 
     // Execute paginated query
-    const response = await executeOffsetPaginatedQuery(
+    /**
+ * Performs response operation
+ *
+ * @param {any} query - The query
+ * @param {any} searchParams - The searchparams
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The response result
+ *
+ */
+const response = await executeOffsetPaginatedQuery(
       query,
       searchParams,
       (doc) => ({

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -103,7 +104,13 @@ const statusOptions = [
   { value: "failed", label: "Failed" },
 ];
 
-export default function AdminEmailsPage() {
+export default /**
+ * Performs admin emails page operation
+ *
+ * @returns {any} The adminemailspage result
+ *
+ */
+function AdminEmailsPage() {
   const [logs, setLogs] = useState<EmailLog[]>([]);
   const [stats, setStats] = useState<EmailStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -263,7 +270,15 @@ export default function AdminEmailsPage() {
     );
   };
 
-  const filteredLogs = logs.filter((log) => {
+  /**
+ * Performs filtered logs operation
+ *
+ * @param {any} (log - The (log
+ *
+ * @returns {any} The filteredlogs result
+ *
+ */
+const filteredLogs = logs.filter((log) => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       return (

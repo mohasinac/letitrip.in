@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -143,7 +144,13 @@ interface PayoutSettings {
  */
 type TabId = "profile" | "notifications" | "payout" | "business";
 
-export default function SellerSettingsPage() {
+export default /**
+ * Performs seller settings page operation
+ *
+ * @returns {any} The sellersettingspage result
+ *
+ */
+function SellerSettingsPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabId>("profile");
@@ -221,7 +228,15 @@ export default function SellerSettingsPage() {
     loadSettings();
   }, [user]);
 
-  const loadSettings = useCallback(async () => {
+  /**
+ * Performs load settings operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadsettings result
+ *
+ */
+const loadSettings = useCallback(async () => {
     if (!user) return;
 
     await execute(async () => {

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
@@ -56,14 +57,40 @@ export async function GET(
       .where("demoSession", "==", sessionId)
       .get();
 
-    const orders = ordersSnap.docs.map((doc) => ({
+    /**
+ * Performs orders operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The orders result
+ *
+ */
+const orders = ordersSnap.docs.map((doc) => ({
       /** Id */
-      id: doc.id,
+      id: d/**
+ * Performs total revenue operation
+ *
+ * @param {number} (sum - The (sum
+ * @param {any} order - The order
+ *
+ * @returns {any} The totalrevenue result
+ *
+ */
+oc.id,
       ...doc.data(),
     }));
 
     // Calculate analytics
-    const totalOrders = orders.length;
+   /**
+ * Performs payment method breakdown operation
+ *
+ * @param {any} (acc - The (acc
+ * @param {any} order - The order
+ *
+ * @returns {any} The paymentmethodbreakdown result
+ *
+ */
+ const totalOrders = orders.length;
     const totalRevenue = orders.reduce(
       (sum: number, order: any) => sum + (order.total || 0),
       0,
@@ -73,9 +100,25 @@ export async function GET(
     // Payment method breakdown
     const paymentMethodBreakdown = orders.reduce((acc: any, order: any) => {
       const method = order.paymentMethod || "unknown";
-      acc[method] = (acc[method] || 0) + 1;
+      acc[method] = (acc[/**
+ * Performs auctions operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The auctions result
+ *
+ */
+method] || 0) + 1;
       return acc;
-    }, {});
+    }, {});/**
+ * Performs active auctions operation
+ *
+ * @param {any} (a - The (a
+ *
+ * @returns {any} The activeauctions result
+ *
+ */
+
 
     // Order status breakdown
     const orderStatusBreakdown = orders.reduce((acc: any, order: any) => {
@@ -86,8 +129,24 @@ export async function GET(
 
     // Fetch auctions data
     const auctionsSnap = await db
-      .collection(COLLECTIONS.AUCTIONS)
-      .where("demoSession", "==", sessionId)
+      .collection(/**
+ * Performs buyers operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The buyers result
+ *
+ */
+COLLECTIONS.AUCTIONS)
+      .where("demoSession", "==", session/**
+ * Performs buyer orders operation
+ *
+ * @param {any} (o - The (o
+ *
+ * @returns {any} The buyerorders result
+ *
+ */
+Id)
       .get();
 
     const auctions = auctionsSnap.docs.map((doc) => ({
@@ -101,7 +160,13 @@ export async function GET(
       (a: any) => a.status === "active",
     ).length;
     const totalBidsAcrossAuctions = auctions.reduce(
-      (sum: number, auction: any) => sum + (auction.totalBids || 0),
+      (sum: number, auction: any) => sum + (auc/**
+ * Performs product order count operation
+ *
+ * @returns {any} The productordercount result
+ *
+ */
+tion.totalBids || 0),
       0,
     );
 
@@ -109,7 +174,15 @@ export async function GET(
     const usersSnap = await db
       .collection(COLLECTIONS.USERS)
       .where("demoSession", "==", sessionId)
-      .where("role", "==", "user")
+      .w/**
+ * Performs top products operation
+ *
+ * @param {any} productOrderCount.entries( - The productordercount.entries(
+ *
+ * @returns {any} The topproducts result
+ *
+ */
+here("role", "==", "user")
       .get();
 
     const buyers = usersSnap.docs.map((doc) => ({

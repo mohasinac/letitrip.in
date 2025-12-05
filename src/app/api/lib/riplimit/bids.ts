@@ -4,7 +4,8 @@
  * @description This file contains functionality related to bids
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -73,7 +74,15 @@ export async function blockForBid(
   const db = getFirestoreAdmin();
   const ripLimitAmount = inrToRipLimit(bidAmountINR);
 
-  const result = await db.runTransaction(async (t) => {
+  /**
+ * Performs result operation
+ *
+ * @param {any} async(t - The async(t
+ *
+ * @returns {Promise<any>} The result result
+ *
+ */
+const result = await db.runTransaction(async (t) => {
     const accountRef = db.collection(COLLECTIONS.RIPLIMIT_ACCOUNTS).doc(userId);
     const accountDoc = await t.get(accountRef);
 
@@ -224,7 +233,15 @@ export async function releaseBlockedBid(
   /** Success */
   success: boolean;
   /** Released Amount */
-  releasedAmount?: number;
+  rel/**
+ * Performs result operation
+ *
+ * @param {any} async(t - The async(t
+ *
+ * @returns {Promise<any>} The result result
+ *
+ */
+easedAmount?: number;
   /** Transaction */
   transaction?: RipLimitTransactionBE;
 }> {
@@ -343,7 +360,15 @@ export async function useForAuctionPayment(
   /** Auction Id */
   auctionId: string,
   /** Order Id */
-  orderId: string,
+  orderId: string,/**
+ * Performs result operation
+ *
+ * @param {any} async(t - The async(t
+ *
+ * @returns {Promise<any>} The result result
+ *
+ */
+
 ): Promise<{
   /** Success */
   success: boolean;
@@ -371,7 +396,15 @@ export async function useForAuctionPayment(
       return { success: false };
     }
 
-    const account = accountDoc.data() as RipLimitAccountBE;
+    const account = accountDoc.data() as RipL/**
+ * Performs new unpaid auction ids operation
+ *
+ * @param {any} (id - The (id
+ *
+ * @returns {any} The newunpaidauctionids result
+ *
+ */
+imitAccountBE;
     const blockedBid = blockedBidDoc.data() as RipLimitBlockedBidBE;
     const usedAmount = blockedBid.amount;
 

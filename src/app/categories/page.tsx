@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -133,7 +134,15 @@ function CategoriesContent() {
       const categoriesData = await categoriesService.list({ limit: 100 });
 
       // Update parent category options dynamically
-      const updatedFilters = CATEGORY_FILTERS.map((section) => {
+      /**
+ * Updates d filters
+ *
+ * @param {any} (section - The (section
+ *
+ * @returns {any} The updatedfilters result
+ *
+ */
+const updatedFilters = CATEGORY_FILTERS.map((section) => {
         if (section.title === "Category Level") {
           return {
             ...section,
@@ -205,7 +214,15 @@ function CategoriesContent() {
         parentId: filterValues.parent_id || undefined,
       });
 
-      setTotalCount(response.count || response.data?.length || 0);
+      setTotalCount(response.count || response.data?.length /**
+ * Updates url and load
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The updateurlandload result
+ *
+ */
+|| 0);
       setHasNextPage(response.pagination?.hasNextPage || false);
       return response.data || [];
     });
@@ -219,7 +236,15 @@ function CategoriesContent() {
     if (filterValues.parent_id) params.set("parent_id", filterValues.parent_id);
     if (sortBy !== "sort_order") params.set("sortBy", sortBy);
     if (sortOrder !== "asc") params.set("sortOrder", sortOrder);
-    if (currentPage > 1) params.set("page", String(currentPage));
+    if (currentPage > 1) params.set("pag/**
+ * Handles reset filters
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handleresetfilters result
+ *
+ */
+e", String(currentPage));
 
     router.push(
       `/categories${params.toString() ? `?${params.toString()}` : ""}`,
@@ -258,7 +283,15 @@ function CategoriesContent() {
   /**
    * Handles next page event
    *
-   * @returns {any} The handlenextpage result
+   * @returns {any}/**
+ * Performs categories by level operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The categoriesbylevel result
+ *
+ */
+ The handlenextpage result
    */
 
   /**
@@ -561,7 +594,13 @@ function CategoriesContent() {
   );
 }
 
-export default function CategoriesPage() {
+export default /**
+ * Performs categories page operation
+ *
+ * @returns {any} The categoriespage result
+ *
+ */
+function CategoriesPage() {
   return (
     <Suspense
       fallback={

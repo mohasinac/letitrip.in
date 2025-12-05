@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for shop
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -212,6 +213,7 @@ export interface ShopStatsResponseBE {
  * Shop filters for list queries
  */
 export interface ShopFiltersBE {
+  /** Search */
   search?: string; // Search in name, description
   /** Status */
   status?: Status | Status[];

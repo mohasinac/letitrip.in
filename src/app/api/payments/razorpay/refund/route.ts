@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -30,6 +31,7 @@ import { NextRequest, NextResponse } from "next/server";
 interface RefundPaymentRequest {
   /** Payment Id */
   paymentId: string;
+  /** Amount */
   amount?: number; // Optional for partial refunds
   /** Notes */
   notes?: Record<string, string>;
@@ -52,20 +54,26 @@ interface RazorpayRefundResponse {
   amount: number;
   /** Currency */
   currency: string;
+  /** Payment_id */
   payment_id: string;
   /** Notes */
   notes: Record<string, string>;
   /** Receipt */
   receipt: string | null;
+  /** Acquirer_data */
   acquirer_data: {
     /** Arn */
     arn: string | null;
   };
+  /** Created_at */
   created_at: number;
+  /** Batch_id */
   batch_id: string | null;
   /** Status */
   status: string;
+  /** Speed_processed */
   speed_processed: string;
+  /** Speed_requested */
   speed_requested: string;
 }
 

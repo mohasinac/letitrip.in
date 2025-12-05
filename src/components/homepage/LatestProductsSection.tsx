@@ -4,7 +4,8 @@
  * @description This file contains the LatestProductsSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -62,6 +63,25 @@ interface LatestProductsSectionProps {
   limit);
  */
 
+/**
+ * Performs latest products section operation
+ *
+ * @param {LatestProductsSectionProps} [{
+  limit = 10,
+  className = "",
+}] - The {
+  limit = 10,
+  classname = "",
+}
+ *
+ * @returns {any} The latestproductssection result
+ *
+ * @example
+ * LatestProductsSection({
+  limit = 10,
+  className = "",
+});
+ */
 export function LatestProductsSection({
   limit = 10,
   className = "",

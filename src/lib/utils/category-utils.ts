@@ -4,7 +4,8 @@
  * @description This file contains utility functions for category
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -204,7 +205,15 @@ export function getAncestorIds(
     if (visited.has(cat.id)) return;
     visited.add(cat.id);
 
-    const parentIds = getParentIds(cat);
+    /**
+ * Performs parent ids operation
+ *
+ * @param {any} cat - The cat
+ *
+ * @returns {any} The parentids result
+ *
+ */
+const parentIds = getParentIds(cat);
     parentIds.forEach((parentId) => {
       if (!ancestors.has(parentId)) {
         ancestors.add(parentId);
@@ -267,7 +276,15 @@ export function getDescendantIds(
    * @param {Category} cat - The cat
    *
    * @returns {any} The collectdescendants result
-   */
+  /**
+ * Performs children ids operation
+ *
+ * @param {any} cat - The cat
+ *
+ * @returns {any} The childrenids result
+ *
+ */
+ */
 
   function collectDescendants(cat: Category) {
     if (visited.has(cat.id)) return;
@@ -392,7 +409,15 @@ export function getAllBreadcrumbPaths(
   function buildPaths(cat: Category, currentPath: Category[]) {
     if (visited.has(cat.id)) return;
 
-    const newPath = [cat, ...currentPath];
+    const newPath = [cat, ...c/**
+ * Performs parent operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The parent result
+ *
+ */
+urrentPath];
     const parentIds = getParentIds(cat);
 
     if (parentIds.length === 0) {
@@ -495,7 +520,15 @@ export interface CategoryTree extends Category {
  * @returns {any} The buildcategorytree result
  *
  * @example
- * buildCategoryTree(categories);
+ * buildCategoryTree(cat/**
+ * Performs root categories operation
+ *
+ * @param {any} (cat - The (cat
+ *
+ * @returns {any} The rootcategories result
+ *
+ */
+egories);
  */
 
 /**
@@ -617,7 +650,15 @@ export function flattenCategoryTree(trees: CategoryTree[]): Category[] {
  * @returns {boolean} True if condition is met, false otherwise
  *
  * @example
- * wouldCreateCircularReference("example", "example", allCategories);
+ * wouldCreateCircularRe/**
+ * Performs category operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The category result
+ *
+ */
+ference("example", "example", allCategories);
  */
 
 /**
@@ -679,7 +720,15 @@ export function getCategoryDepth(
   const visited = new Set<string>();
 
   /**
-   * Retrieves depth
+   /**
+ * Performs min operation
+ *
+ * @param {any} (parentId - The (parentid
+ *
+ * @returns {any} The min result
+ *
+ */
+* Retrieves depth
    *
    * @param {Category} cat - The cat
    * @param {number} currentDepth - The current depth
@@ -718,7 +767,16 @@ export function getCategoryDepth(
   }
 
   minDepth = getDepth(category, 0);
-  return minDepth;
+  return minDep/**
+ * Performs path operation
+ *
+ * @param {any} category - The category
+ * @param {any} allCategories - The allcategories
+ *
+ * @returns {any} The path result
+ *
+ */
+th;
 }
 
 /**
@@ -743,7 +801,13 @@ export function getCategoryDepth(
  * @returns {any} The categorypathstring result
  *
  * @example
- * getCategoryPathString();
+ * getCategoryPathStrin/**
+ * Performs lower query operation
+ *
+ * @returns {any} The lowerquery result
+ *
+ */
+g();
  */
 
 export function getCategoryPathString(
@@ -831,7 +895,21 @@ export function getCategoriesByParent(
 }
 
 /**
- * Validate category structure
+ * Validate category structu/**
+ * Performs parent ids operation
+ *
+ * @param {any} category - The category
+ *
+ * @returns {any} The parentids result
+ *
+ */
+re
+ */
+/**
+ * CategoryValidationResult interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryValidationResult
  */
 export interface CategoryValidationResult {
   /** Is Valid */
@@ -841,7 +919,15 @@ export interface CategoryValidationResult {
 }
 
 /**
- * Function: Validate Category
+ * Func/**
+ * Performs children ids operation
+ *
+ * @param {any} category - The category
+ *
+ * @returns {any} The childrenids result
+ *
+ */
+tion: Validate Category
  */
 /**
  * Validates category

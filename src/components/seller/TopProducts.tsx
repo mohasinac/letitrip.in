@@ -4,7 +4,8 @@
  * @description This file contains the TopProducts component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -47,7 +48,15 @@ interface Props {
   data: ProductData[];
 }
 
-export default function TopProducts({ data }: Props) {
+export default /**
+ * Performs top products operation
+ *
+ * @param {Props} { data } - The { data }
+ *
+ * @returns {any} The topproducts result
+ *
+ */
+function TopProducts({ data }: Props) {
   /**
    * Formats currency
    *

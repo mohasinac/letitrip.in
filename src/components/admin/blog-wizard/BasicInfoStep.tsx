@@ -4,7 +4,8 @@
  * @description This file contains the BasicInfoStep component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { FormInput } from "@/components/forms/FormInput";
@@ -69,6 +70,28 @@ interface BasicInfoStepProps {
   errors);
  */
 
+/**
+ * Performs basic info step operation
+ *
+ * @param {BasicInfoStepProps} [{
+  formData,
+  onChange,
+  errors = {},
+}] - The {
+  formdata,
+  onchange,
+  errors = {},
+}
+ *
+ * @returns {any} The basicinfostep result
+ *
+ * @example
+ * BasicInfoStep({
+  formData,
+  onChange,
+  errors = {},
+});
+ */
 export function BasicInfoStep({
   formData,
   onChange,
@@ -92,7 +115,15 @@ export function BasicInfoStep({
    * @returns {any} The handleinputchange result
    */
 
-  const handleInputChange = (
+  /**
+ * Handles input change
+ *
+ * @param {React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>} e - The e
+ *
+ * @returns {any} The handleinputchange result
+ *
+ */
+const handleInputChange = (
     /** E */
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {

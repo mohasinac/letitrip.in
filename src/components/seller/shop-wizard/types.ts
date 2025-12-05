@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for types
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -41,7 +42,9 @@ export interface ShopFormData {
   about?: string;
 
   // ContactLegalStep
+  /** BusinessAddressId */
   businessAddressId?: string; // ID of saved address
+  /** Address */
   address?: string; // Fallback formatted address
   /** Gstin */
   gstin?: string;

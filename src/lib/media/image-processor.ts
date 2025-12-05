@@ -4,7 +4,8 @@
  * @description This file contains functionality related to image-processor
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -89,7 +90,15 @@ export async function resizeImage(
       canvas.width = width;
       canvas.height = height;
 
-      const ctx = canvas.getContext("2d");
+      /**
+ * Performs ctx operation
+ *
+ * @param {any} "2d" - The "2d"
+ *
+ * @returns {any} The ctx result
+ *
+ */
+const ctx = canvas.getContext("2d");
       if (!ctx) {
         reject(new Error("Failed to get canvas context"));
         return;
@@ -162,7 +171,15 @@ export async function cropImage(
     img.onload = () => {
       URL.revokeObjectURL(objectUrl);
 
-      const canvas = document.createElement("canvas");
+      const canvas = document./**
+ * Performs ctx operation
+ *
+ * @param {any} "2d" - The "2d"
+ *
+ * @returns {any} The ctx result
+ *
+ */
+createElement("canvas");
       canvas.width = cropArea.width;
       canvas.height = cropArea.height;
 
@@ -329,7 +346,15 @@ export async function flipImage(
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
+    const objectUrl = URL./**
+ * Performs ctx operation
+ *
+ * @param {any} "2d" - The "2d"
+ *
+ * @returns {any} The ctx result
+ *
+ */
+createObjectURL(file);
 
     img.onload = () => {
       URL.revokeObjectURL(objectUrl);

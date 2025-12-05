@@ -4,7 +4,8 @@
  * @description This file contains the FeaturedAuctionsSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -52,7 +53,15 @@ interface Props {
   maxAuctions?: number;
 }
 
-export default function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
+export default /**
+ * Performs featured auctions section operation
+ *
+ * @param {Props} [{ maxAuctions = 10 }] - The { maxauctions = 10 }
+ *
+ * @returns {any} The featuredauctionssection result
+ *
+ */
+function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
   const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -89,9 +98,25 @@ export default function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
           response.data?.featuredItems?.auctions || [];
 
         // Filter active items and sort by position
-        const activeItems = featuredItems
+        /**
+ * Performs active items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The activeitems result
+ *
+ */
+const activeItems = featuredItems
           .filter((item) => item.active)
-          .sort((a, b) => a.position - b.position)
+          ./**
+ * Performs auction ids operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The auctionids result
+ *
+ */
+sort((a, b) => a.position - b.position)
           .slice(0, maxAuctions);
 
         if (activeItems.length > 0) {

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -165,7 +166,15 @@ export async function POST(request: NextRequest) {
 
         // Handle delete action (needs to delete messages first)
         if (action === "delete") {
-          const messagesSnapshot = await ticketRef
+          /**
+ * Performs messages snapshot operation
+ *
+ * @param {any} SUBCOLLECTIONS.TICKET_MESSAGES - The subcollections.ticket_messages
+ *
+ * @returns {any} The messagessnapshot result
+ *
+ */
+const messagesSnapshot = await ticketRef
             .collection(SUBCOLLECTIONS.TICKET_MESSAGES)
             .get();
           messagesSnapshot.docs.forEach((doc) => batch.delete(doc.ref));

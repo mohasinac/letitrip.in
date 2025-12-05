@@ -4,13 +4,21 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
 
+/**
+ * VALID_TYPES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for valid types
+ */
 const VALID_TYPES = ["product", "shop", "category", "auction"];
 
 // GET /api/favorites/list/[type] - Get user's favorites by type
@@ -48,6 +56,17 @@ const VALID_TYPES = ["product", "shop", "category", "auction"];
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ type: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: NextRequest,
@@ -88,7 +107,15 @@ export async function GET(
     const hasNextPage = docs.length > limit;
     const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
 
-    const favorites = resultDocs.map((doc) => ({
+    /**
+ * Performs favorites operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The favorites result
+ *
+ */
+const favorites = resultDocs.map((doc) => ({
       /** Id */
       id: doc.id,
       ...doc.data(),

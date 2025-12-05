@@ -4,7 +4,8 @@
  * @description This file contains the BrandingStep component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -30,7 +31,23 @@ interface BrandingStepProps {
   errors: Record<string, string>;
 }
 
-export default function BrandingStep({
+export default /**
+ * Performs branding step operation
+ *
+ * @param {BrandingStepProps} {
+  formData,
+  onChange,
+  errors,
+} - The {
+  formdata,
+  onchange,
+  errors,
+}
+ *
+ * @returns {any} The brandingstep result
+ *
+ */
+function BrandingStep({
   formData,
   onChange,
   errors,

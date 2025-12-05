@@ -4,7 +4,8 @@
  * @description This file contains functionality related to ratelimiter
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -77,7 +78,17 @@ export function rateLimit(config: RateLimitConfig = {}) {
           ? strictRateLimiter
           : apiRateLimiter;
 
-    const allowed = limiter.check(ip);
+    /**
+ * Performs allowed operation
+ *
+ * @param {any} ip - The ip
+ *
+ * @returns {Promise<any>} The allowed result
+ *
+ * @example
+ * allowed(ip);
+ */
+const allowed = limiter.check(ip);
 
     if (!allowed) {
       return NextResponse.json(

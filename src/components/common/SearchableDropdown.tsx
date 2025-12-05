@@ -4,7 +4,8 @@
  * @description This file contains the SearchableDropdown component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -437,9 +438,33 @@ function SearchableDropdownInner<T = string>(
 
   // Determine if value is an array (multi mode)
   const isMulti = mode === "multi";
-  const selectedValues = useMemo(() => {
-    if (value === null || value === undefined) return [];
-    return Array.isArray(value) ? value : [value];
+  /**
+ * Performs selected values operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The selectedvalues result
+ *
+ */
+const selectedValues = useMemo(() => {
+    if (value === null || value === undefined) return [];/**
+ * Performs display options operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The displayoptions result
+ *
+ */
+
+    return Array.isArray(value) ? value : [value]/**
+ * Performs filtered options operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The filteredoptions result
+ *
+ */
+;
   }, [value]);
 
   // Get the options to display (async or static)
@@ -449,7 +474,15 @@ function SearchableDropdownInner<T = string>(
 
   // Filter options based on search query
   const filteredOptions = useMemo(() => {
-    if (!searchQuery || searchQuery.length < minSearchLength) {
+    if (!searchQuery || searchQuery.length < minSearchLen/**
+ * Performs grouped options operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The groupedoptions result
+ *
+ */
+gth) {
       return displayOptions;
     }
 
@@ -462,11 +495,35 @@ function SearchableDropdownInner<T = string>(
   }, [displayOptions, searchQuery, minSearchLength]);
 
   // Group options if they have group property
-  const groupedOptions = useMemo(() => {
-    const groups = new Map<string, DropdownOption<T>[]>();
+  const groupedOp/**
+ * Checks if selected
+ *
+ * @param {T} (optionValue - The (optionvalue
+ *
+ * @returns {any} The isselected result
+ *
+ */
+tions = useMemo(() => {
+    const groups = new Map<string, Dropd/**
+ * Retrieves label for value
+ *
+ * @param {T} (val - The (val
+ *
+ * @returns {string =>} The getlabelforvalue result
+ *
+ */
+ownOption<T>[]>();
     const ungrouped: DropdownOption<T>[] = [];
 
-    filteredOptions.forEach((option) => {
+    filteredOptions.forEach((option)/**
+ * Handles select
+ *
+ * @param {T} (optionValue - The (optionvalue
+ *
+ * @returns {any} The handleselect result
+ *
+ */
+ => {
       if (option.group) {
         const group = groups.get(option.group) || [];
         group.push(option);
@@ -482,6 +539,14 @@ function SearchableDropdownInner<T = string>(
   // Check if an option is selected
   const isSelected = useCallback(
     (optionValue: T) => {
+/**
+ * Handles remove
+ *
+ * @param {T} (val - The (val
+ *
+ * @returns {any} The handleremove result
+ *
+ */
       return selectedValues.some((v) => v === optionValue);
     },
     [selectedValues],
@@ -490,7 +555,15 @@ function SearchableDropdownInner<T = string>(
   // Get label for a value
   const getLabelForValue = useCallback(
     (val: T): string => {
-      const option = options.find((o) => o.value === val);
+      const option = options.find(/**
+ * Handles clear all
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handleclearall result
+ *
+ */
+(o) => o.value === val);
       return option?.label || String(val);
     },
     [options],
@@ -537,7 +610,15 @@ function SearchableDropdownInner<T = string>(
     if (!onSearch || !isOpen) return;
 
     if (debouncedSearchQuery.length < minSearchLength) {
-      setAsyncOptions([]);
+     /**
+ * Handles key down
+ *
+ * @param {React.KeyboardEvent} (e - The (e
+ *
+ * @returns {any} The handlekeydown result
+ *
+ */
+ setAsyncOptions([]);
       return;
     }
 
@@ -644,6 +725,14 @@ function SearchableDropdownInner<T = string>(
       isOpen,
       filteredOptions,
       highlightedIndex,
+/**
+ * Performs highlighted element operation
+ *
+ * @param {any} highlightedElement - The highlightedelement
+ *
+ * @returns {any} The highlightedelement result
+ *
+ */
       handleSelect,
       isMulti,
       searchQuery,

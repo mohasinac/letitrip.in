@@ -4,7 +4,8 @@
  * @description This file contains the StatCard component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import Link from "next/link";

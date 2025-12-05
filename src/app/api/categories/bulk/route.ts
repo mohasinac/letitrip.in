@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -133,7 +134,15 @@ async function deleteCategory(
        * @returns {string} The updatedchildrenids result
        */
 
-      const updatedChildrenIds = (parentData.children_ids || []).filter(
+      /**
+ * Updates d children ids
+ *
+ * @param {any} parentData.children_ids||[] - The parentdata.children_ids||[]
+ *
+ * @returns {any} The updatedchildrenids result
+ *
+ */
+const updatedChildrenIds = (parentData.children_ids || []).filter(
         (id: string) => id !== categoryId,
       );
       await parentRef.update({

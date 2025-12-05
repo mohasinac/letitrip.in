@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -43,6 +44,7 @@ interface PayPalCaptureResponse {
   id: string;
   /** Status */
   status: string;
+  /** Purchase_units */
   purchase_units: Array<{
     /** Payments */
     payments: {
@@ -54,20 +56,25 @@ interface PayPalCaptureResponse {
         status: string;
         /** Amount */
         amount: {
+          /** Currency_code */
           currency_code: string;
           /** Value */
           value: string;
         };
+        /** Create_time */
         create_time: string;
       }>;
     };
   }>;
   /** Payer */
   payer: {
+    /** Email_address */
     email_address: string;
+    /** Payer_id */
     payer_id: string;
     /** Name */
     name: {
+      /** Given_name */
       given_name: string;
       /** Surname */
       surname: string;

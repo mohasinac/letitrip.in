@@ -4,7 +4,8 @@
  * @description This file contains functionality related to coupon.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -545,6 +546,16 @@ export const toFECouponCards = (couponsBE: CouponBE[]): CouponCardFE[] => {
   formData);
  */
 
+/**
+ * Performs to b e create coupon request operation
+ *
+ * @param {CouponFormFE} formData - The formdata
+ *
+ * @returns {CreateCouponRequestBE =>} The tobecreatecouponrequest result
+ *
+ * @example
+ * toBECreateCouponRequest(formData);
+ */
 export const toBECreateCouponRequest = (
   /** Form Data */
   formData: CouponFormFE,
@@ -626,7 +637,17 @@ export const toBECreateCouponRequest = (
  */
 
 /**
+ * Performs to b e update coupon request oper/**
  * Performs to b e update coupon request operation
+ *
+ * @param {Partial<CouponFormFE>} formData - The formdata
+ *
+ * @returns {UpdateCouponRequestBE =>} The tobeupdatecouponrequest result
+ *
+ * @example
+ * toBEUpdateCouponRequest(formData);
+ */
+ation
  *
  * @param {Partial<CouponFormFE>} /** Form Data */
   formData - The /**  form  data */

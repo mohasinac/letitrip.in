@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -55,7 +56,15 @@ interface ShopPageProps {
  */
 type TabType = "products" | "auctions" | "reviews" | "about";
 
-export default function ShopPage({ params }: ShopPageProps) {
+export default /**
+ * Performs shop page operation
+ *
+ * @param {ShopPageProps} { params } - The { params }
+ *
+ * @returns {any} The shoppage result
+ *
+ */
+function ShopPage({ params }: ShopPageProps) {
   const router = useRouter();
   const { addItem } = useCart();
   const { slug } = use(params);
@@ -205,7 +214,15 @@ export default function ShopPage({ params }: ShopPageProps) {
       const productsData = response.data || [];
       setProducts(productsData);
 
-      const brands = [
+      /**
+ * Performs brands operation
+ *
+ * @param {any} productsData.map((p - The productsdata.map((p
+ *
+ * @returns {any} The brands result
+ *
+ */
+const brands = [
         ...new Set(
           productsData
             .map((p) => p.brand)
@@ -398,7 +415,15 @@ export default function ShopPage({ params }: ShopPageProps) {
       price: number;
       /** Image */
       image: string;
-      /** Shop Id */
+      /** Shop /**
+ * Performs product operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The product result
+ *
+ */
+Id */
       shopId: string;
       /** Shop Name */
       shopName: string;

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -54,13 +55,29 @@ export async function GET(request: NextRequest) {
         .where("category_id", "==", categoryId)
         .get();
 
-      const products = productsSnap.docs.map((doc) => ({
+      /**
+ * Performs products operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The products result
+ *
+ */
+const products = productsSnap.docs.map((doc) => ({
         /** Id */
         id: doc.id,
         /** Name */
         name: doc.data().name,
         /** Status */
-        status: doc.data().status,
+        status: doc.data().s/**
+ * Performs published count operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The publishedcount result
+ *
+ */
+tatus,
         is_deleted: doc.data().is_deleted,
         category_id: doc.data().category_id,
       }));
@@ -74,7 +91,15 @@ export async function GET(request: NextRequest) {
         success: true,
         categoryId,
         /** Total Products */
-        totalProducts: products.length,
+        totalProducts: products.lengt/**
+ * Performs products operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The products result
+ *
+ */
+h,
         /** Published Products */
         publishedProducts: publishedCount,
         products,
@@ -82,7 +107,15 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all products grouped by category
-    const productsSnap = await db.collection(COLLECTIONS.PRODUCTS).get();
+    con/**
+ * Performs by category operation
+ *
+ * @param {any} (product - The (product
+ *
+ * @returns {any} The bycategory result
+ *
+ */
+st productsSnap = await db.collection(COLLECTIONS.PRODUCTS).get();
     const products = productsSnap.docs.map((doc) => ({
       /** Id */
       id: doc.id,
@@ -98,7 +131,15 @@ export async function GET(request: NextRequest) {
     products.forEach((product) => {
       const catId = product.category_id || "no_category";
       if (!byCategory[catId]) {
-        byCategory[catId] = {
+        byCategory[catId] = {/**
+ * Performs categories operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The categories result
+ *
+ */
+
           /** Total */
           total: 0,
           /** Published */

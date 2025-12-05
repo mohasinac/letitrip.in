@@ -4,7 +4,8 @@
  * @description This file contains functionality related to payment
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use server";
@@ -15,6 +16,18 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 
 // Validation schemas
+/**
+ * Performs initiate payment schema operation
+ *
+ * @param {object} {
+  
+  amount - The {
+  
+  amount
+ *
+ * @returns {any} The initiatepaymentschema result
+ *
+ */
 const initiatePaymentSchema = z.object({
   /** Amount */
   amount: z.number().positive("Amount must be positive"),
@@ -178,6 +191,16 @@ async function getCurrentUser(): Promise<{ uid: string } | null> {
   input);
  */
 
+/**
+ * Performs initiate payment operation
+ *
+ * @param {InitiatePaymentInput} input - The input
+ *
+ * @returns {Promise<PaymentResult>} The initiatepayment result
+ *
+ * @example
+ * initiatePayment(input);
+ */
 export async function initiatePayment(
   /** Input */
   input: InitiatePaymentInput
@@ -290,6 +313,16 @@ export async function initiatePayment(
  *
  * @param {VerifyPaymentInput} /** Input */
   input - The /**  input */
+/**
+ * Performs verify payment operation
+ *
+ * @param {VerifyPaymentInput} input - The input
+ *
+ * @returns {Promise<PaymentResult>} The verifypayment result
+ *
+ * @example
+ * verifyPayment(input);
+ */
   input
  *
  * @returns {Promise<any>} Promise resolving to verifypayment result
@@ -402,7 +435,17 @@ export async function verifyPayment(
  *
  * @returns {Promise<any>} Promise resolving to refundpayment result
  *
- * @throws {Error} When operation fails or validation errors occur
+ * @throws {Error} When op/**
+ * Performs refund payment operation
+ *
+ * @param {RefundPaymentInput} input - The input
+ *
+ * @returns {Promise<PaymentResult>} The refundpayment result
+ *
+ * @example
+ * refundPayment(input);
+ */
+eration fails or validation errors occur
  *
  * @example
  * refundPayment(input);

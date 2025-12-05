@@ -4,7 +4,8 @@
  * @description This file contains the RipLimitStats component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -94,6 +95,25 @@ interface RipLimitStatsProps {
 });
  */
 
+/**
+ * Performs rip limit stats cards operation
+ *
+ * @param {Readonly<RipLimitStatsProps>} {
+  stats,
+  loading,
+} - The {
+  stats,
+  loading,
+}
+ *
+ * @returns {any} The riplimitstatscards result
+ *
+ * @example
+ * RipLimitStatsCards({
+  stats,
+  loading,
+});
+ */
 export function RipLimitStatsCards({
   stats,
   loading,

@@ -4,7 +4,8 @@
  * @description This file contains the PaymentLogo component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -84,7 +85,15 @@ export function PaymentLogo({
     const loadLogo = async () => {
       try {
         setLoading(true);
-        const url = await getPaymentLogo(paymentId);
+        /**
+ * Performs url operation
+ *
+ * @param {any} paymentId - The paymentid
+ *
+ * @returns {any} The url result
+ *
+ */
+const url = await getPaymentLogo(paymentId);
         if (mounted) {
           setLogoUrl(url);
           setError(false);

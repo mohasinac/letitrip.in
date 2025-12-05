@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -45,7 +46,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function AdminEditShopPage() {
+export default /**
+ * Performs admin edit shop page operation
+ *
+ * @returns {any} The admineditshoppage result
+ *
+ */
+function AdminEditShopPage() {
   const router = useRouter();
   const params = useParams();
   const shopId = params.id as string;

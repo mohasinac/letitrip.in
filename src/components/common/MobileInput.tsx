@@ -4,7 +4,8 @@
  * @description This file contains the MobileInput component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -95,7 +96,15 @@ export const MobileInput = forwardRef<HTMLInputElement, MobileInputProps>(
   ) {
     const [showCountryPicker, setShowCountryPicker] = useState(false);
 
-    const selectedCountry =
+    /**
+ * Performs selected country operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The selectedcountry result
+ *
+ */
+const selectedCountry =
       COUNTRY_CODES.find((c) => c.code === countryCode) || COUNTRY_CODES[0];
     const isValid = value.length === PHONE_LENGTH && isValidIndianPhone(value);
 

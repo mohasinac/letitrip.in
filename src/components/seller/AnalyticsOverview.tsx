@@ -4,7 +4,8 @@
  * @description This file contains the AnalyticsOverview component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -60,7 +61,15 @@ interface Props {
   data: AnalyticsData;
 }
 
-export default function AnalyticsOverview({ data }: Props) {
+export default /**
+ * Performs analytics overview operation
+ *
+ * @param {Props} { data } - The { data }
+ *
+ * @returns {any} The analyticsoverview result
+ *
+ */
+function AnalyticsOverview({ data }: Props) {
   /**
    * Formats currency
    *

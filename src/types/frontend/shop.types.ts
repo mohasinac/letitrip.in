@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for shop
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -141,10 +142,15 @@ export interface ShopFE {
   badges: string[];
 
   // Backwards compatibility aliases
+  /** ProductCount */
   productCount?: number; // Alias for totalProducts
+  /** Follower_count */
   follower_count?: number; // For admin pages
+  /** Featured */
   featured?: boolean; // Derived from metadata
+  /** IsBanned */
   isBanned?: boolean; // status === 'banned'
+  /** BanReason */
   banReason?: string | null; // From metadata
 }
 
@@ -179,18 +185,23 @@ export interface ShopCardFE {
   // Backwards compatibility (admin pages)
   /** Email */
   email?: string;
+  /** Location */
   location?: string; // Formatted location string
   /** Featured */
   featured?: boolean;
   /** Is Banned */
   isBanned?: boolean;
+  /** ProductCount */
   productCount?: number; // Alias for totalProducts
   /** Review Count */
   reviewCount?: number;
   /** Owner Id */
   ownerId?: string;
+  /** Description */
   description?: string | null; // Shop description for cards
+  /** Banner */
   banner?: string | null; // Banner image for cards
+  /** CreatedAt */
   createdAt?: string; // Creation date for sorting
 }
 

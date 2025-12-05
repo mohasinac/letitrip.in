@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -258,7 +259,15 @@ export async function GET(req: NextRequest) {
 
     // Execute query
     const snapshot = await query.get();
-    const reviews = snapshot.docs.map((doc) =>
+    /**
+ * Performs reviews operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The reviews result
+ *
+ */
+const reviews = snapshot.docs.map((doc) =>
       transformReview(doc.id, doc.data())
     );
 
@@ -267,12 +276,28 @@ export async function GET(req: NextRequest) {
     if (productId) {
       const allReviewsSnapshot = await db
         .collection(COLLECTIONS.REVIEWS)
-        .where("product_id", "==", productId)
+ /**
+ * Performs all reviews operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The allreviews result
+ *
+ */
+       .where("product_id", "==", productId)
         .where("status", "==", "published")
         .get();
 
       const allReviews = allReviewsSnapshot.docs.map((doc) => doc.data());
-      const totalReviews = allReviews.length;
+      const totalReviews = allRevie/**
+ * Performs rating distribution operation
+ *
+ * @param {any} (r - The (r
+ *
+ * @returns {any} The ratingdistribution result
+ *
+ */
+ws.length;
 
       if (totalReviews > 0) {
         const totalRating = allReviews.reduce(

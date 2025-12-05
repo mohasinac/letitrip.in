@@ -4,7 +4,8 @@
  * @description This file contains functionality related to order.templates
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -94,11 +95,29 @@ interface ShippingUpdateData {
   data);
  */
 
+/**
+ * Retrieves order confirmation template
+ *
+ * @param {OrderConfirmationData} data - The data
+ *
+ * @returns {string} The getorderconfirmationtemplate result
+ *
+ * @example
+ * getOrderConfirmationTemplate(data);
+ */
 export function getOrderConfirmationTemplate(
   /** Data */
   data: OrderConfirmationData,
 ): string {
-  const itemsHtml = data.items
+  /**
+ * Performs items html operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The itemshtml result
+ *
+ */
+const itemsHtml = data.items
     .map(
       (item) => `
       <tr>

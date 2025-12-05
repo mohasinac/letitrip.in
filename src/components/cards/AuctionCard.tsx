@@ -4,7 +4,8 @@
  * @description This file contains the AuctionCard component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -65,6 +66,7 @@ export interface AuctionCardProps {
     slug: string;
     /** Images */
     images: string[];
+    /** Videos */
     videos?: string[]; // Video URLs for carousel
     /** Current Bid */
     currentBid: number;
@@ -184,7 +186,15 @@ const AuctionCardComponent = ({
   const hasVideos = auction.videos && auction.videos.length > 0;
 
   // Get all images
-  const allImages = React.useMemo(() => {
+  /**
+ * Performs all images operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The allimages result
+ *
+ */
+const allImages = React.useMemo(() => {
     return auction.images && auction.images.length > 0 ? auction.images : [];
   }, [auction.images]);
 

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to validation-middleware
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -108,7 +109,15 @@ export async function validateRequest(
     const validationErrors = validateFormData(body, schema);
 
     if (Object.keys(validationErrors).length > 0) {
-      const errors: ValidationError[] = Object.entries(validationErrors).map(
+      /**
+ * Performs errors operation
+ *
+ * @param {any} validationErrors - The validationerrors
+ *
+ * @returns {any} The errors result
+ *
+ */
+const errors: ValidationError[] = Object.entries(validationErrors).map(
         ([field, message]) => ({
           field,
           message,
@@ -198,7 +207,19 @@ export async function validateBulkRequest(
         /** Valid */
         valid: false,
         /** Errors */
-        errors: [{ field: "ids", message: "IDs must be a non-empty array" }],
+        errors:/**
+ * Performs action validation operation
+ *
+ * @param {any} action - The action
+ * @param {any} resourceType - The resourcetype
+ * @param {any} data - The data
+ *
+ * @returns {NextResponse} The actionvalidation result
+ *
+ * @example
+ * actionValidation(action, resourceType, data);
+ */
+ [{ field: "ids", message: "IDs must be a non-empty array" }],
       };
     }
 
@@ -268,6 +289,16 @@ export async function validateBulkRequest(
   errors);
  */
 
+/**
+ * Creates validation error response
+ *
+ * @param {ValidationError[]} errors - The errors
+ *
+ * @returns {NextResponse} The createvalidationerrorresponse result
+ *
+ * @example
+ * createValidationErrorResponse([]);
+ */
 export function createValidationErrorResponse(
   /** Errors */
   errors: ValidationError[],
@@ -318,7 +349,18 @@ export function createValidationErrorResponse(
  * @param {(req} /** Handler */
   handler - The /**  handler */
   handler
- * @param {any} validatedData - The validated data
+ * @param {a/**
+ * Performs validation operation
+ *
+ * @param {any} req - The req
+ * @param {any} resourceType - The resourcetype
+ *
+ * @returns {any} The validation result
+ *
+ * @example
+ * validation(req, resourceType);
+ */
+ny} validatedData - The validated data
  *
  * @returns {string} The withvalidation result
  *

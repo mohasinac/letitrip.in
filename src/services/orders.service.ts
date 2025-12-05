@@ -4,7 +4,8 @@
  * @description This file contains service functions for orders operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiService } from "./api.service";
@@ -187,7 +188,13 @@ class OrdersService {
     /** End Date */
     endDate?: string;
   }): Promise<OrderStatsFE> {
-    const params = new URLSearchParams();
+    /**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+const params = new URLSearchParams();
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {

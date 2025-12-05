@@ -4,7 +4,8 @@
  * @description This file contains the AddressSelector component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -81,6 +82,28 @@ interface AddressSelectorProps {
 });
  */
 
+/**
+ * Performs address selector operation
+ *
+ * @param {AddressSelectorProps} {
+  selectedId,
+  onSelect,
+  type,
+} - The {
+  selectedid,
+  onselect,
+  type,
+}
+ *
+ * @returns {any} The addressselector result
+ *
+ * @example
+ * AddressSelector({
+  selectedId,
+  onSelect,
+  type,
+});
+ */
 export function AddressSelector({
   selectedId,
   onSelect,
@@ -120,7 +143,15 @@ export function AddressSelector({
 
       // Auto-select default or first address
       if (!selectedId && data.length > 0) {
-        const defaultAddress = data.find((a: AddressFE) => a.isDefault);
+        /**
+ * Performs default address operation
+ *
+ * @param {AddressFE} (a - The (a
+ *
+ * @returns {any} The defaultaddress result
+ *
+ */
+const defaultAddress = data.find((a: AddressFE) => a.isDefault);
         onSelect(defaultAddress?.id || data[0].id);
       }
     } catch (error) {

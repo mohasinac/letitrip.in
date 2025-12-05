@@ -4,7 +4,8 @@
  * @description This file contains the CategoryFilter component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -93,7 +94,15 @@ export function CategoryFilter({
   >(new Set());
 
   // Filter categories based on search
-  const filteredOptions = useMemo(() => {
+  /**
+ * Performs filtered options operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The filteredoptions result
+ *
+ */
+const filteredOptions = useMemo(() => {
     if (!searchQuery.trim()) return options;
 
     const query = searchQuery.toLowerCase();
@@ -179,7 +188,15 @@ export function CategoryFilter({
      * Filters categories
      *
      * @param {CategoryOption[]} /** Categories */
-      categories - The /**  categories */
+  /**
+ * Performs filter categories operation
+ *
+ * @param {CategoryOption[]} categories - The categories
+ *
+ * @returns {CategoryOption[] =>} The filtercategories result
+ *
+ */
+    categories - The /**  categories */
       categories
      *
      * @returns {any} The filtercategories result
@@ -269,7 +286,15 @@ export function CategoryFilter({
    *
    * @param {string | number} categoryValue - The category value
    *
-   * @returns {string} The handletoggle result
+   */**
+ * Performs new value operation
+ *
+ * @param {any} categoryValue - The categoryvalue
+ *
+ * @returns {any} The newvalue result
+ *
+ */
+ @returns {string} The handletoggle result
    */
 
   /**

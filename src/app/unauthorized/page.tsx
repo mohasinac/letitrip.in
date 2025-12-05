@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -216,7 +217,13 @@ function UnauthorizedContent() {
   );
 }
 
-export default function Unauthorized() {
+export default /**
+ * Performs unauthorized operation
+ *
+ * @returns {any} The unauthorized result
+ *
+ */
+function Unauthorized() {
   return (
     <Suspense
       fallback={

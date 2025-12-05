@@ -4,7 +4,8 @@
  * @description This file contains the ProductTable component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -39,7 +40,23 @@ interface ProductTableProps {
   onRefresh?: () => void;
 }
 
-export default function ProductTable({
+export default /**
+ * Performs product table operation
+ *
+ * @param {ProductTableProps} [{
+  products,
+  isLoading = false,
+  onRefresh,
+}] - The {
+  products,
+  isloading = false,
+  onrefresh,
+}
+ *
+ * @returns {any} The producttable result
+ *
+ */
+function ProductTable({
   products,
   isLoading = false,
   onRefresh,
@@ -107,7 +124,16 @@ export default function ProductTable({
     onRefresh?.();
   };
 
-  const columns: Column<ProductCardFE>[] = [
+  /**
+ * Performs columns operation
+ *
+ * @param {any} _ - The _
+ * @param {any} ProductCardFE - The productcardfe
+ *
+ * @returns {any} The columns result
+ *
+ */
+const columns: Column<ProductCardFE>[] = [
     {
       /** Key */
       key: "image",

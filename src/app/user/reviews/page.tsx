@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -40,6 +41,13 @@ import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import type { ReviewFE } from "@/types/frontend/review.types";
 
 // Filter options
+/**
+ * STATUS_FILTERS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for status filters
+ */
 const STATUS_FILTERS = [
   { value: "all", label: "All Reviews" },
   { value: "approved", label: "Approved" },
@@ -341,7 +349,13 @@ function ReviewCard({
   );
 }
 
-export default function UserReviewsPage() {
+export default /**
+ * Performs user reviews page operation
+ *
+ * @returns {any} The userreviewspage result
+ *
+ */
+function UserReviewsPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [reviews, setReviews] = useState<ReviewFE[]>([]);
@@ -368,7 +382,15 @@ export default function UserReviewsPage() {
     averageRating: 0,
   });
 
-  const loadReviews = useCallback(async () => {
+  /**
+ * Performs load reviews operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadreviews result
+ *
+ */
+const loadReviews = useCallback(async () => {
     await execute(async () => {
       const filters: Record<string, any> = {
         /** User Id */
@@ -389,10 +411,27 @@ export default function UserReviewsPage() {
         filters.rating = ratingFilter;
       }
 
-      const response = await reviewsService.list(filters);
+      const response = await reviewsService/**
+ * Performs approved count operation
+ *
+ * @param {any} (r - The (r
+ *
+ * @returns {any} The approvedcount result
+ *
+ */
+.list(filters);
       setReviews(response.data || []);
 
       // Calculate stats
+/**
+ * Performs avg rating operation
+ *
+ * @param {any} (sum - The (sum
+ * @param {any} r - The r
+ *
+ * @returns {any} The avgrating result
+ *
+ */
       const allReviews = response.data || [];
       const approvedCount = allReviews.filter(
         (r) => r.status === "approved",
@@ -461,6 +500,14 @@ export default function UserReviewsPage() {
   };
 
   /**
+ * Performs filtered reviews operation
+ *
+ * @param {any} (review - The (review
+ *
+ * @returns {any} The filteredreviews result
+ *
+ */
+/**
    * Handles edit event
    *
    * @param {string} id - Unique identifier

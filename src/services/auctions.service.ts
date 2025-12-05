@@ -4,7 +4,8 @@
  * @description This file contains service functions for auctions operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiService } from "./api.service";
@@ -178,7 +179,15 @@ class AuctionsService {
         ? `/auctions/${id}/bid?${queryString}`
         : `/auctions/${id}/bid`;
 
-      const response =
+      /**
+ * Performs response operation
+ *
+ * @param {any} endpoint - The endpoint
+ *
+ * @returns {any} The response result
+ *
+ */
+const response =
         await apiService.get<PaginatedResponseBE<BidBE>>(endpoint);
 
       return {
@@ -307,7 +316,15 @@ class AuctionsService {
   async getMyBids(): Promise<BidFE[]> {
     try {
       const response = await apiService.get<{
-        /** Success */
+      /**
+ * Performs bids b e operation
+ *
+ * @param {any} (bid - The (bid
+ *
+ * @returns {any} The bidsbe result
+ *
+ */
+  /** Success */
         success: boolean;
         /** Data */
         data: BidBE[];

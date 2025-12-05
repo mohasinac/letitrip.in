@@ -4,7 +4,8 @@
  * @description This file contains the PageState component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -145,6 +146,22 @@ function FullPageWrapper({
  * @returns {any} The loading result
  */
 
+/**
+ * Performs loading operation
+ *
+ * @param {LoadingProps} [{
+  fullPage = true,
+  message = "Loading...",
+  className = "",
+}] - The {
+  fullpage = true,
+  message = "loading...",
+  classname = "",
+}
+ *
+ * @returns {any} The loading result
+ *
+ */
 function Loading({
   fullPage = true,
   message = "Loading...",

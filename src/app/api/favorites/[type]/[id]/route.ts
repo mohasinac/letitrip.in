@@ -4,13 +4,21 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
 
+/**
+ * VALID_TYPES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for valid types
+ */
 const VALID_TYPES = ["product", "shop", "category", "auction"];
 
 // POST /api/favorites/[type]/[id] - Add to favorites
@@ -48,6 +56,17 @@ const VALID_TYPES = ["product", "shop", "category", "auction"];
   request, {});
  */
 
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ type: string; id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The post result
+ *
+ * @example
+ * POST(request, {});
+ */
 export async function POST(
   /** Request */
   request: NextRequest,
@@ -119,7 +138,18 @@ export async function POST(
  * Performs d e l e t e operation
  *
  * @param {NextRequest} /** Request */
-  request - The /**  request */
+  request - The /**  reques/**
+ * Deletes 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ type: string; id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ * @example
+ * DELETE(request, {});
+ */
+t */
   request
  * @param {{ params} { params } - The { params }
  *
@@ -183,7 +213,18 @@ export async function DELETE(
  * @param {NextRequest} request - The request
  * @param {{ params} { params } - The { params }
  *
- * @returns {Promise<any>} Promise resolving to get result
+ * @returns {Promis/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ type: string; id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
+e<any>} Promise resolving to get result
  *
  * @throws {Error} When operation fails or validation errors occur
  *

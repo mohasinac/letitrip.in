@@ -4,7 +4,8 @@
  * @description This file contains the ProductVariants component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -118,7 +119,15 @@ export function ProductVariants({
        * @returns {any} The filtered result
        */
 
-      const filtered = (response.data || []).filter(
+      /**
+ * Performs filtered operation
+ *
+ * @param {any} response.data||[] - The response.data||[]
+ *
+ * @returns {any} The filtered result
+ *
+ */
+const filtered = (response.data || []).filter(
         (p: ProductCardFE) => p.id !== productId && p.categoryId === categoryId,
       );
 
@@ -175,7 +184,15 @@ export function ProductVariants({
    * @returns {any} The updatescrollbuttons result
    */
 
-  /**
+  /**/**
+ * Performs container operation
+ *
+ * @param {any} "product-variants-scroll" - The "product-variants-scroll"
+ *
+ * @returns {any} The container result
+ *
+ */
+
    * Updates existing scroll buttons
    *
    * @returns {any} The updatescrollbuttons result

@@ -4,7 +4,8 @@
  * @description This file contains the DocumentSelectorWithUpload component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -65,6 +66,13 @@ export interface Document {
   rejectionReason?: string;
 }
 
+/**
+ * DOCUMENT_TYPES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for document types
+ */
 const DOCUMENT_TYPES = [
   { value: "pan", label: "PAN Card" },
   { value: "aadhaar", label: "Aadhaar Card" },

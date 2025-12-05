@@ -4,7 +4,8 @@
  * @description This file contains the MediaPreviewCard component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -35,7 +36,29 @@ interface MediaPreviewCardProps {
   className?: string;
 }
 
-export default function MediaPreviewCard({
+export default /**
+ * Performs media preview card operation
+ *
+ * @param {MediaPreviewCardProps} [{
+  media,
+  onRemove,
+  onEdit,
+  onRetry,
+  showActions = true,
+  className = "",
+}] - The {
+  media,
+  onremove,
+  onedit,
+  onretry,
+  showactions = true,
+  classname = "",
+}
+ *
+ * @returns {any} The mediapreviewcard result
+ *
+ */
+function MediaPreviewCard({
   media,
   onRemove,
   onEdit,

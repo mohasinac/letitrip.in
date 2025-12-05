@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -19,7 +20,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function CreateCouponPage() {
+export default /**
+ * Creates coupon page
+ *
+ * @returns {any} The createcouponpage result
+ *
+ */
+function CreateCouponPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 

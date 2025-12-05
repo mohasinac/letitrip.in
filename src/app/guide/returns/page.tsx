@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -19,7 +20,13 @@ export const metadata: Metadata = {
     "Learn about our return policy, refund process, and how to initiate returns",
 };
 
-export default function ReturnsGuidePage() {
+export default /**
+ * Performs returns guide page operation
+ *
+ * @returns {any} The returnsguidepage result
+ *
+ */
+function ReturnsGuidePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container mx-auto px-4 max-w-4xl">

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -140,7 +141,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate cart total and apply coupon
-    const items = await Promise.all(
+    /**
+ * Performs items operation
+ *
+ * @param {any} cartSnapshot.docs.map(async(doc - The cartsnapshot.docs.map(async(doc
+ *
+ * @returns {Promise<any>} The items result
+ *
+ */
+const items = await Promise.all(
       cartSnapshot.docs.map(async (doc: any) => {
         const data = doc.data();
         const productDoc = await Collections.products()
@@ -154,7 +163,16 @@ export async function POST(request: NextRequest) {
           /** Product Id */
           productId: data.product_id,
           /** Category Id */
-          categoryId: product?.category_id || "",
+          categoryId: product?/**
+ * Performs subtotal operation
+ *
+ * @param {number} (sum - The (sum
+ * @param {any} item - The item
+ *
+ * @returns {any} The subtotal result
+ *
+ */
+.category_id || "",
           /** Quantity */
           quantity: data.quantity,
           /** Price */
@@ -306,7 +324,15 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const user = await getCurrentUser(request);
+    const /**
+ * Performs items operation
+ *
+ * @param {any} cartSnapshot.docs.map(async(doc - The cartsnapshot.docs.map(async(doc
+ *
+ * @returns {Promise<any>} The items result
+ *
+ */
+user = await getCurrentUser(request);
 
     if (!user) {
       return NextResponse.json(
@@ -316,7 +342,16 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Get cart items for recalculation
-    const cartSnapshot = await Collections.cart()
+    const cartSnapshot = await Collections./**
+ * Performs subtotal operation
+ *
+ * @param {number} (sum - The (sum
+ * @param {any} item - The item
+ *
+ * @returns {any} The subtotal result
+ *
+ */
+cart()
       .where("user_id", "==", user.id)
       .get();
 

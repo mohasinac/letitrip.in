@@ -4,7 +4,8 @@
  * @description This file contains the ThemeToggle component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -162,7 +163,15 @@ export function ThemeToggle({
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  /**
+ * Performs button ref operation
+ *
+ * @param {any} null - The null
+ *
+ * @returns {any} The buttonref result
+ *
+ */
+const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -278,7 +287,15 @@ export function ThemeToggle({
 
   const iconSizeClass = {
     /** Sm */
-    sm: "w-6 h-6",
+    sm:/**
+ * Performs current option operation
+ *
+ * @param {any} (opt - The (opt
+ *
+ * @returns {any} The currentoption result
+ *
+ */
+ "w-6 h-6",
     /** Md */
     md: "w-6 h-6",
     /** Lg */

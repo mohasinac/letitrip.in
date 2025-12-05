@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -142,7 +143,15 @@ function ProductsContent() {
    * @returns {any} The view result
    */
 
-  const view = (filters.view as "grid" | "table") || "grid";
+  /**
+ * Performs view operation
+ *
+ * @param {any} filters.viewas"grid"|"table" - The filters.viewas"grid"|"table"
+ *
+ * @returns {any} The view result
+ *
+ */
+const view = (filters.view as "grid" | "table") || "grid";
 
   // Load filter options on mount
   useEffect(() => {
@@ -172,7 +181,15 @@ function ProductsContent() {
 
   const loadFilterOptions = async () => {
     try {
-      const [categoriesData, shopsData] = await Promise.all([
+      const [categoriesData, shopsData] = await Promi/**
+ * Updates d filters
+ *
+ * @param {any} (section - The (section
+ *
+ * @returns {any} The updatedfilters result
+ *
+ */
+se.all([
         categoriesService.list({ limit: 100, status: "active" }),
         shopsService.list({ limit: 100, isVerified: true }),
       ]);
@@ -269,7 +286,15 @@ function ProductsContent() {
       // Get cursor for current page
       const startAfter = cursors[page - 1];
 
-      const response = await productsService.list({
+      const response = await productsService.list({/**
+ * Performs products data operation
+ *
+ * @param {any} productsData - The productsdata
+ *
+ * @returns {any} The productsdata result
+ *
+ */
+
         ...filterParams,
         /** Sort By */
         sortBy: sort?.field || "createdAt",
@@ -280,9 +305,28 @@ function ProductsContent() {
         limit,
       } as any);
 
-      const productsData = response.data || [];
+      const productsData = response./**
+ * Handles reset filters
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The handleresetfilters result
+ *
+ */
+data || [];
       setProducts(productsData);
-      setTotalItems(response.pagination?.total || productsData.length);
+      setTota/**
+ * Handles add to cart
+ *
+ * @param {string} async(productId - The async(productid
+ * @param {{
+        
+        name} [productDetails] - The productdetails
+ *
+ * @returns {Promise<any>} The handleaddtocart result
+ *
+ */
+lItems(response.pagination?.total || productsData.length);
 
       // Store cursor for next page
       if (response.pagination?.nextCursor && !cursors[page]) {
@@ -661,7 +705,13 @@ function ProductsContent() {
   );
 }
 
-export default function ProductsPage() {
+export default /**
+ * Performs products page operation
+ *
+ * @returns {any} The productspage result
+ *
+ */
+function ProductsPage() {
   return (
     <ErrorBoundary>
       <Suspense

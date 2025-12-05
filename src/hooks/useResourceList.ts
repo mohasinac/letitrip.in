@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useResourceList
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -204,6 +205,16 @@ export interface UseResourceListReturn<T>
   options);
  */
 
+/**
+ * Custom React hook for resource list
+ *
+ * @param {UseResourceListOptions<T>} options - The options
+ *
+ * @returns {UseResourceListReturn<T>} The useresourcelist result
+ *
+ * @example
+ * useResourceList(options);
+ */
 export function useResourceList<T = any>(
   /** Options */
   options: UseResourceListOptions<T>
@@ -242,7 +253,19 @@ export function useResourceList<T = any>(
   const [search, setSearchState] = useState<string>(initialSearch);
 
   // Loading state
-  const loadingState = useLoadingState<T[]>({
+  /**
+ * Performs loading state operation
+ *
+ * @param {object} {
+    
+    initialData - The {
+    
+    initialdata
+ *
+ * @returns {any} The loadingstate result
+ *
+ */
+const loadingState = useLoadingState<T[]>({
     /** Initial Data */
     initialData: [],
     /** On Load Success */
@@ -276,7 +299,15 @@ export function useResourceList<T = any>(
 
       // Pagination
       params.set("page", page.toString());
-      params.set("pageSize", pageSize.toString());
+      params/**
+ * Performs filter str operation
+ *
+ * @param {any} currentFilters - The currentfilters
+ *
+ * @returns {any} The filterstr result
+ *
+ */
+.set("pageSize", pageSize.toString());
 
       // Filters (Sieve format: filters=key==value,key2>value2)
       if (Object.keys(currentFilters).length > 0) {
@@ -422,34 +453,99 @@ export function useResourceList<T = any>(
     search,
   ]);
 
-  // Auto-fetch on mount or when dependencies change
+  // Auto/**
+ * Sets page
+ *
+ * @param {number} (page - The (page
+ *
+ * @returns {any} The setpage result
+ *
+ */
+-fetch on mount or when dependencies change
   useEffect(() => {
     if (autoFetch) {
       loadData();
     }
-  }, [pagination.page, pagination.pageSize, filters, sort, search]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pagination.page, pagination.pageSize, filters, sort, search]); // esli/**
+ * Performs next page operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The nextpage result
+ *
+ */
+nt-disable-line react-hooks/exhaustive-deps
 
-  // ==================== PAGINATION HANDLERS ====================
+  // ==================== PAGINATION HANDLE/**
+ * Performs prev page operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The prevpage result
+ *
+ */
+RS ====================
 
   const setPage = useCallback((page: number) => {
     setPagination((prev) => ({ ...prev, page }));
   }, []);
 
-  const setPageSize = useCallback((pageSize: number) => {
-    setPagination((prev) => ({ ...prev, pageSize, page: 1 })); // Reset to page 1 when changing page size
+  const setPageSiz/**
+ * Sets filters
+ *
+ * @param {FilterConfig} (newFilters - The (newfilters
+ *
+ * @returns {any} The setfilters result
+ *
+ */
+e = useCallback((pageSize: number) => {
+    setPagination((prev) => ({ ...pre/**
+ * Updates filter
+ *
+ * @param {string} (key - The (key
+ * @param {FilterValue} value - The value
+ *
+ * @returns {any} The updatefilter result
+ *
+ */
+v, pageSize, page: 1 })); // Reset to page 1 when changing page size
   }, []);
 
-  const nextPage = useCallback(() => {
+  con/**
+ * Performs clear filters operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The clearfilters result
+ *
+ */
+st nextPage = useCallback(() => {
     setPagination((prev) => {
       if (prev.hasNextPage) {
-        return { ...prev, page: prev.page + 1 };
+        return { ...p/**
+ * Sets sort
+ *
+ * @param {SortField | null} (newSort - The (newsort
+ *
+ * @returns {any} The setsort result
+ *
+ */
+rev, page: prev.page + 1 };
       }
       return prev;
     });
   }, []);
 
   const prevPage = useCallback(() => {
-    setPagination((prev) => {
+    setPagination((pre/**
+ * Sets search
+ *
+ * @param {string} (newSearch - The (newsearch
+ *
+ * @returns {any} The setsearch result
+ *
+ */
+v) => {
       if (prev.hasPreviousPage) {
         return { ...prev, page: prev.page - 1 };
       }
@@ -457,6 +553,14 @@ export function useResourceList<T = any>(
     });
   }, []);
 
+/**
+ * Performs reload operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The reload result
+ *
+ */
   // ==================== FILTER HANDLERS ====================
 
   const setFilters = useCallback((newFilters: FilterConfig) => {

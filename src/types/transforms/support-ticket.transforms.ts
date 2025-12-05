@@ -4,7 +4,8 @@
  * @description This file contains functionality related to support-ticket.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -219,6 +220,14 @@ const getPriorityLabel = (priority: TicketPriority): string => {
  * @returns {any} The statusbadge result
  */
 
+/**
+ * Retrieves status badge
+ *
+ * @param {TicketStatus} status - The status
+ *
+ * @returns {} The getstatusbadge result
+ *
+ */
 const getStatusBadge = (
   /** Status */
   status: TicketStatus,
@@ -260,7 +269,15 @@ const getStatusBadge = (
 /**
  * Retrieves priority badge
  *
- * @param {TicketPriority} /** Priority */
+ * @param {Ti/**
+ * Retrieves priority badge
+ *
+ * @param {TicketPriority} priority - The priority
+ *
+ * @returns {} The getprioritybadge result
+ *
+ */
+cketPriority} /** Priority */
   priority - The /**  priority */
   priority
  *
@@ -356,7 +373,17 @@ const getRoleLabel = (role: UserRole): string => {
  * toFESupportTicket(ticketBE);
  */
 
-/**
+/*/**
+ * Performs to f e support ticket operation
+ *
+ * @param {SupportTicketBE} ticketBE - The ticketbe
+ *
+ * @returns {SupportTicketFE =>} The tofesupportticket result
+ *
+ * @example
+ * toFESupportTicket(ticketBE);
+ */
+*
  * Performs to f e support ticket operation
  *
  * @param {SupportTicketBE} /** Ticket B E */
@@ -451,7 +478,17 @@ export const toFESupportTicket = (
  * Transform array of Support Ticket BE to FE
  */
 /**
+ * Pe/**
  * Performs to f e support tickets operation
+ *
+ * @param {SupportTicketBE[]} ticketsBE - The ticketsbe
+ *
+ * @returns {SupportTicketFE[] =>} The tofesupporttickets result
+ *
+ * @example
+ * toFESupportTickets([]);
+ */
+rforms to f e support tickets operation
  *
  * @param {SupportTicketBE[]} ticketsBE - The tickets b e
  *
@@ -475,7 +512,17 @@ export const toFESupportTicket = (
   ticketsBE);
  */
 
-export const toFESupportTickets = (
+export const toFESuppor/**
+ * Performs to f e support ticket card operation
+ *
+ * @param {SupportTicketBE} ticketBE - The ticketbe
+ *
+ * @returns {SupportTicketCardFE =>} The tofesupportticketcard result
+ *
+ * @example
+ * toFESupportTicketCard(ticketBE);
+ */
+tTickets = (
   /** Tickets B E */
   ticketsBE: SupportTicketBE[],
 ): SupportTicketFE[] => {
@@ -533,7 +580,17 @@ export const toFESupportTicketCard = (
     /** Category Label */
     categoryLabel: getCategoryLabel(ticketBE.category),
     /** Priority Label */
-    priorityLabel: getPriorityLabel(ticketBE.priority),
+    priorityLab/**
+ * Performs to f e support ticket cards operation
+ *
+ * @param {SupportTicketBE[]} ticketsBE - The ticketsbe
+ *
+ * @returns {SupportTicketCardFE[] =>} The tofesupportticketcards result
+ *
+ * @example
+ * toFESupportTicketCards([]);
+ */
+el: getPriorityLabel(ticketBE.priority),
     /** Formatted Created At */
     formattedCreatedAt: formatDate(createdAt),
     /** Formatted Updated At */
@@ -551,7 +608,17 @@ export const toFESupportTicketCard = (
 /**
  * Performs to f e support ticket cards operation
  *
- * @param {SupportTicketBE[]} ticketsBE - The tickets b e
+ * @param {SupportTicketBE[]} ticketsBE - The ticket/**
+ * Performs to f e support ticket message operation
+ *
+ * @param {SupportTicketMessageBE} messageBE - The messagebe
+ *
+ * @returns {SupportTicketMessageFE =>} The tofesupportticketmessage result
+ *
+ * @example
+ * toFESupportTicketMessage(messageBE);
+ */
+s b e
  *
  * @returns {any} The tofesupportticketcards result
  *
@@ -613,7 +680,17 @@ export const toFESupportTicketMessage = (
   messageBE: SupportTicketMessageBE,
 ): SupportTicketMessageFE => {
   const createdAt = messageBE.createdAt.toDate();
-  const isStaff = messageBE.senderRole === UserRole.ADMIN;
+  const isStaf/**
+ * Performs to f e support ticket messages operation
+ *
+ * @param {SupportTicketMessageBE[]} messagesBE - The messagesbe
+ *
+ * @returns {SupportTicketMessageFE[] =>} The tofesupportticketmessages result
+ *
+ * @example
+ * toFESupportTicketMessages([]);
+ */
+f = messageBE.senderRole === UserRole.ADMIN;
   const isCustomer =
     messageBE.senderRole === UserRole.USER ||
     messageBE.senderRole === UserRole.SELLER;
@@ -633,7 +710,17 @@ export const toFESupportTicketMessage = (
     attachments: messageBE.attachments,
     /** Is Internal */
     isInternal: messageBE.isInternal,
-    createdAt,
+    cre/**
+ * Performs to b e create support ticket request operation
+ *
+ * @param {SupportTicketFormFE} formData - The formdata
+ *
+ * @returns {CreateSupportTicketRequestBE =>} The tobecreatesupportticketrequest result
+ *
+ * @example
+ * toBECreateSupportTicketRequest(formData);
+ */
+atedAt,
     /** Formatted Created At */
     formattedCreatedAt: formatDateTime(createdAt),
     /** Time Ago */
@@ -672,6 +759,16 @@ export const toFESupportTicketMessage = (
  * toFESupportTicketMessages(/** Messages B E */
   messagesBE);
  */
+/**
+ * Performs to b e update support ticket request operation
+ *
+ * @param {UpdateTicketFormFE} formData - The formdata
+ *
+ * @returns {UpdateSupportTicketRequestBE =>} The tobeupdatesupportticketrequest result
+ *
+ * @example
+ * toBEUpdateSupportTicketRequest(formData);
+ */
 
 export const toFESupportTicketMessages = (
   /** Messages B E */
@@ -697,7 +794,17 @@ export const toFESupportTicketMessages = (
 /**
  * Performs to b e create support ticket request operation
  *
- * @param {SupportTicketFormFE} /** Form Data */
+ * @param {SupportTicketForm/**
+ * Performs to b e reply to ticket request operation
+ *
+ * @param {ReplyToTicketFormFE} formData - The formdata
+ *
+ * @returns {ReplyToTicketRequestBE =>} The tobereplytoticketrequest result
+ *
+ * @example
+ * toBEReplyToTicketRequest(formData);
+ */
+FE} /** Form Data */
   formData - The /**  form  data */
   form data
  *
@@ -722,7 +829,17 @@ export const toBECreateSupportTicketRequest = (
     /** Description */
     description: formData.description,
     /** Attachments */
-    attachments: formData.attachments,
+    attachments: formDat/**
+ * Performs to b e assign ticket request operation
+ *
+ * @param {AssignTicketFormFE} formData - The formdata
+ *
+ * @returns {AssignTicketRequestBE =>} The tobeassignticketrequest result
+ *
+ * @example
+ * toBEAssignTicketRequest(formData);
+ */
+a.attachments,
     /** Shop Id */
     shopId: formData.shopId,
     /** Order Id */
@@ -748,7 +865,17 @@ export const toBECreateSupportTicketRequest = (
  * Performs to b e update support ticket request operation
  *
  * @param {UpdateTicketFormFE} /** Form Data */
-  formData - The /**  form  data */
+  formData - The /**  form  dat/**
+ * Performs to b e escalate ticket request operation
+ *
+ * @param {EscalateTicketFormFE} formData - The formdata
+ *
+ * @returns {EscalateTicketRequestBE =>} The tobeescalateticketrequest result
+ *
+ * @example
+ * toBEEscalateTicketRequest(formData);
+ */
+a */
   form data
  *
  * @returns {any} The tobeupdatesupportticketrequest result

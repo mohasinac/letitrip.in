@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for support-ticket
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -72,11 +73,15 @@ export interface SupportTicketFE {
   canReply: boolean;
   /** Can Close */
   canClose: boolean;
+  /** FormattedCreatedAt */
   formattedCreatedAt: string; // "Jan 15, 2025 10:30 AM"
+  /** FormattedUpdatedAt */
   formattedUpdatedAt: string; // "2 hours ago"
   /** Formatted Resolved At */
   formattedResolvedAt?: string;
+  /** CategoryLabel */
   categoryLabel: string; // "Order Issue"
+  /** PriorityLabel */
   priorityLabel: string; // "High"
   /** Status Badge */
   statusBadge: {
@@ -92,7 +97,9 @@ export interface SupportTicketFE {
     /** Variant */
     variant: "success" | "warning" | "error" | "info";
   };
+  /** ResponseTime */
   responseTime?: string; // "Responded in 2 hours"
+  /** ResolutionTime */
   resolutionTime?: string; // "Resolved in 1 day"
 }
 
@@ -165,11 +172,17 @@ export interface SupportTicketMessageFE {
   createdAt: Date;
 
   // UI helpers
+  /** FormattedCreatedAt */
   formattedCreatedAt: string; // "Jan 15, 2025 10:30 AM"
+  /** TimeAgo */
   timeAgo: string; // "2 hours ago"
+  /** IsStaff */
   isStaff: boolean; // admin or staff message
+  /** IsCustomer */
   isCustomer: boolean; // user or seller message
+  /** RoleLabel */
   roleLabel: string; // "Support Agent", "Customer", etc.
+  /** SenderName */
   senderName?: string; // Populated by service if needed
 }
 
@@ -273,7 +286,10 @@ export interface SupportTicketStatsFE {
   closed: number;
   /** Escalated */
   escalated: number;
+  /** AverageResponseTime */
   averageResponseTime: string; // "2 hours"
+  /** AverageResolutionTime */
   averageResolutionTime: string; // "1 day"
+  /** SatisfactionRate */
   satisfactionRate?: number; // 0-100
 }

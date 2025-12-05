@@ -4,7 +4,8 @@
  * @description This file contains functionality related to formatters
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -772,6 +773,16 @@ export function formatStockStatus(stock: number): string {
   endTime);
  */
 
+/**
+ * Formats time remaining
+ *
+ * @param {Date | string | null | undefined} endTime - The endtime
+ *
+ * @returns {string} The formattimeremaining result
+ *
+ * @example
+ * formatTimeRemaining(endTime);
+ */
 export function formatTimeRemaining(
   /** End Time */
   endTime: Date | string | null | undefined

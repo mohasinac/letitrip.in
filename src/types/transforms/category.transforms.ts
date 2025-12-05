@@ -4,7 +4,8 @@
  * @description This file contains functionality related to category.transforms
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -191,6 +192,16 @@ export function toFECategory(data: CategoryBE | any): CategoryFE {
   nodeBE);
  */
 
+/**
+ * Performs to f e category tree node operation
+ *
+ * @param {CategoryTreeNodeBE} nodeBE - The nodebe
+ *
+ * @returns {CategoryTreeNodeFE} The tofecategorytreenode result
+ *
+ * @example
+ * toFECategoryTreeNode(nodeBE);
+ */
 export function toFECategoryTreeNode(
   /** Node B E */
   nodeBE: CategoryTreeNodeBE,
@@ -226,7 +237,17 @@ export function toFECategoryTreeNode(
 /**
  * Performs to f e category breadcrumb operation
  *
- * @param {CategoryBreadcrumbBE} /** Breadcrumb B E */
+ * @param {CategoryBreadcrumbBE}/**
+ * Performs to f e category breadcrumb operation
+ *
+ * @param {CategoryBreadcrumbBE} breadcrumbBE - The breadcrumbbe
+ *
+ * @returns {CategoryBreadcrumbFE} The tofecategorybreadcrumb result
+ *
+ * @example
+ * toFECategoryBreadcrumb(breadcrumbBE);
+ */
+ /** Breadcrumb B E */
   breadcrumbBE - The /**  breadcrumb  b  e */
   breadcrumb b e
  *
@@ -252,7 +273,17 @@ export function toFECategoryBreadcrumb(
  * Function: To B E Create Category Request
  */
 /**
+ * Performs to b e create category r/**
  * Performs to b e create category request operation
+ *
+ * @param {CategoryFormFE} formData - The formdata
+ *
+ * @returns {CreateCategoryRequestBE} The tobecreatecategoryrequest result
+ *
+ * @example
+ * toBECreateCategoryRequest(formData);
+ */
+equest operation
  *
  * @param {CategoryFormFE} formData - The form data
  *

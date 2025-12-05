@@ -4,7 +4,8 @@
  * @description This file contains functionality related to schema
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -296,6 +297,16 @@ export function generateProductSchema({
  * generateFAQSchema([]);
  */
 
+/**
+ * Performs generate f a q schema operation
+ *
+ * @param {Array<{ question} faqs - The faqs
+ *
+ * @returns {any} The generatefaqschema result
+ *
+ * @example
+ * generateFAQSchema({});
+ */
 export function generateFAQSchema(
   /** Faqs */
   faqs: Array<{ question: string; answer: string }>,
@@ -333,7 +344,17 @@ export function generateFAQSchema(
  */
 
 /**
+ * Performs generate breadcrumb schema o/**
  * Performs generate breadcrumb schema operation
+ *
+ * @param {Array<{ name} items - The items
+ *
+ * @returns {any} The generatebreadcrumbschema result
+ *
+ * @example
+ * generateBreadcrumbSchema({});
+ */
+peration
  *
  * @param {Array<{ name} /** Items */
   items - The /**  items */

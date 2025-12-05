@@ -4,7 +4,8 @@
  * @description This file contains the CategoryTagsStep component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { useState } from "react";
@@ -27,6 +28,13 @@ interface CategoryTagsStepProps {
   error?: string;
 }
 
+/**
+ * CATEGORIES constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for categories
+ */
 const CATEGORIES = [
   "News",
   "Guides",
@@ -87,6 +95,28 @@ const CATEGORIES = [
 });
  */
 
+/**
+ * Performs category tags step operation
+ *
+ * @param {CategoryTagsStepProps} {
+  formData,
+  onChange,
+  error,
+} - The {
+  formdata,
+  onchange,
+  error,
+}
+ *
+ * @returns {any} The categorytagsstep result
+ *
+ * @example
+ * CategoryTagsStep({
+  formData,
+  onChange,
+  error,
+});
+ */
 export function CategoryTagsStep({
   formData,
   onChange,
@@ -134,7 +164,15 @@ export function CategoryTagsStep({
    * @returns {any} The handlecustomcategorychange result
    */
 
-  const handleCustomCategoryChange = (
+  /**
+ * Handles custom category change
+ *
+ * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+ *
+ * @returns {any} The handlecustomcategorychange result
+ *
+ */
+const handleCustomCategoryChange = (
     /** E */
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {

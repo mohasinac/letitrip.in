@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -20,7 +21,13 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-export default function EditAuctionPage() {
+export default /**
+ * Performs edit auction page operation
+ *
+ * @returns {any} The editauctionpage result
+ *
+ */
+function EditAuctionPage() {
   const router = useRouter();
   const params = useParams();
   const slug = params.slug as string;
@@ -38,7 +45,15 @@ export default function EditAuctionPage() {
     }
   }, [slug]);
 
-  const loadAuction = useCallback(async () => {
+  /**
+ * Performs load auction operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadauction result
+ *
+ */
+const loadAuction = useCallback(async () => {
     await execute(async () => {
       const data = await auctionsService.getBySlug(slug);
       setAuction(data);

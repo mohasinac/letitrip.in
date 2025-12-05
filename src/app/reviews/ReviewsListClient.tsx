@@ -4,7 +4,8 @@
  * @description This file contains the ReviewsListClient component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -18,7 +19,13 @@ import { ShieldCheck, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function ReviewsListClient() {
+export default /**
+ * Performs reviews list client operation
+ *
+ * @returns {any} The reviewslistclient result
+ *
+ */
+function ReviewsListClient() {
   const [filters, setFilters] = useState<ReviewFiltersFE>({
     /** Status */
     status: "approved",
@@ -210,13 +217,30 @@ export default function ReviewsListClient() {
   };
 
   // Calculate rating distribution (would be better from API)
-  const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => ({
+  /**
+ * Performs rating distribution operation
+ *
+ * @param {any} (rating - The (rating
+ *
+ * @returns {any} The ratingdistribution result
+ *
+ */
+const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => ({
     rating,
     /** Count */
     count: reviews?.filter((r) => r.rating === rating).length || 0,
     /** Percentage */
     percentage:
-      reviews && reviews.length > 0
+      reviews &/**
+ * Performs average rating operation
+ *
+ * @param {any} (sum - The (sum
+ * @param {any} r - The r
+ *
+ * @returns {any} The averagerating result
+ *
+ */
+& reviews.length > 0
         ? (reviews.filter((r) => r.rating === rating).length / reviews.length) *
           100
         : 0,

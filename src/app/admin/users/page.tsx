@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -42,7 +43,9 @@ interface User {
   emailVerified: boolean;
   /** Phone Verified */
   phoneVerified: boolean;
+  /** Is_banned */
   is_banned?: boolean;
+  /** Ban_reason */
   ban_reason?: string;
   /** Created At */
   createdAt: string;
@@ -50,9 +53,23 @@ interface User {
   updatedAt: string;
 }
 
-export default function AdminUsersPage() {
+export default /**
+ * Performs admin users page operation
+ *
+ * @returns {any} The adminuserspage result
+ *
+ */
+function AdminUsersPage() {
   // Define columns for the resource page
-  const columns = [
+  /**
+ * Performs columns operation
+ *
+ * @param {User} user - The user
+ *
+ * @returns {any} The columns result
+ *
+ */
+const columns = [
     {
       /** Key */
       key: "user",
@@ -233,7 +250,15 @@ export default function AdminUsersPage() {
       apiFilters.role = options.filters.role;
     }
     if (options.filters?.status && options.filters.status !== "all") {
-      apiFilters.status = options.filters.status;
+      apiFilters.status /**
+ * Performs response operation
+ *
+ * @param {any} apiFilters - The apifilters
+ *
+ * @returns {any} The response result
+ *
+ */
+= options.filters.status;
     }
     if (options.search) {
       apiFilters.search = options.search;

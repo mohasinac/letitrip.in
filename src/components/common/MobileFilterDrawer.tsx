@@ -4,7 +4,8 @@
  * @description This file contains the MobileFilterDrawer component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -40,7 +41,31 @@ interface MobileFilterDrawerProps {
   className?: string;
 }
 
-export default function MobileFilterDrawer({
+export default /**
+ * Performs mobile filter drawer operation
+ *
+ * @param {MobileFilterDrawerProps} [{
+  isOpen,
+  onClose,
+  onApply,
+  onReset,
+  children,
+  title = "Filters",
+  className = "",
+}] - The {
+  isopen,
+  onclose,
+  onapply,
+  onreset,
+  children,
+  title = "filters",
+  classname = "",
+}
+ *
+ * @returns {any} The mobilefilterdrawer result
+ *
+ */
+function MobileFilterDrawer({
   isOpen,
   onClose,
   onApply,

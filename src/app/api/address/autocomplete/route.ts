@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -257,7 +258,15 @@ function getFallbackSuggestions(
       "Vijayawada, Andhra Pradesh",
     ];
 
-    const matched = indianCities
+    /**
+ * Performs matched operation
+ *
+ * @param {any} (city - The (city
+ *
+ * @returns {any} The matched result
+ *
+ */
+const matched = indianCities
       .filter((city) => city.toLowerCase().includes(queryLower))
       .slice(0, 10);
 
@@ -285,7 +294,15 @@ function getFallbackSuggestions(
       "Chicago, IL",
       "Houston, TX",
       "Phoenix, AZ",
-      "Philadelphia, PA",
+      "Philadelph/**
+ * Performs matched operation
+ *
+ * @param {any} (city - The (city
+ *
+ * @returns {any} The matched result
+ *
+ */
+ia, PA",
       "San Antonio, TX",
       "San Diego, CA",
       "Dallas, TX",

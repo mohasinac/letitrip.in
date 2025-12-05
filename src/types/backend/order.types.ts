@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for order
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -150,7 +151,9 @@ export interface OrderBE {
   shippingMethod: ShippingMethod;
   /** Shipping Address */
   shippingAddress: ShippingAddressBE;
+  /** BillingAddress */
   billingAddress?: ShippingAddressBE | null; // Optional billing address
+  /** ShippingProvider */
   shippingProvider?: string | null; // Provider name (India Post, Delhivery, etc.)
   /** Tracking Number */
   trackingNumber: string | null;
@@ -277,6 +280,7 @@ export interface CreateShipmentRequestBE {
   trackingNumber: string;
   /** Carrier */
   carrier: string;
+  /** Eta */
   eta?: string; // ISO date
 }
 
@@ -304,12 +308,15 @@ export interface OrderFiltersBE {
   paymentStatus?: PaymentStatus | PaymentStatus[];
   /** Payment Method */
   paymentMethod?: PaymentMethod | PaymentMethod[];
+  /** Search */
   search?: string; // Search in orderNumber, userEmail
   /** Min Total */
   minTotal?: number;
   /** Max Total */
   maxTotal?: number;
+  /** CreatedAfter */
   createdAfter?: string; // ISO date
+  /** CreatedBefore */
   createdBefore?: string; // ISO date
 }
 

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -52,6 +53,17 @@ import { NextRequest, NextResponse } from "next/server";
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: NextRequest,
@@ -93,7 +105,15 @@ export async function GET(
       .orderBy("createdAt", "asc")
       .get();
 
-    const messages = messagesSnapshot.docs
+    /**
+ * Performs messages operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The messages result
+ *
+ */
+const messages = messagesSnapshot.docs
       .map((doc: any) => {
         const data = doc.data();
         // Filter internal messages for non-admin users
@@ -187,7 +207,18 @@ export async function GET(
  * @param {NextRequest} /** Request */
   request - The /**  request */
   request
- * @param {{ params} { params } - The { params }
+ * @param {{ pa/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The patch result
+ *
+ * @example
+ * PATCH(request, {});
+ */
+rams} { params } - The { params }
  *
  * @returns {Promise<any>} Promise resolving to patch result
  *
@@ -299,6 +330,17 @@ export async function PATCH(
  *
  * @returns {Promise<any>} Promise resolving to delete result
  *
+/**
+ * Deletes 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ id: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ * @example
+ * DELETE(request, {});
+ */
  * @throws {Error} When operation fails or validation errors occur
  *
  * @example
@@ -345,7 +387,13 @@ export async function DELETE(
       return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
     }
 
-    // Delete all messages first
+    // Delete all messages first/**
+ * Performs batch operation
+ *
+ * @returns {any} The batch result
+ *
+ */
+
     const messagesSnapshot = await ticketRef
       .collection(SUBCOLLECTIONS.TICKET_MESSAGES)
       .get();

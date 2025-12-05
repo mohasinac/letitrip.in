@@ -4,7 +4,8 @@
  * @description This file contains the FeaturedBlogsSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -63,6 +64,25 @@ interface FeaturedBlogsSectionProps {
   limit);
  */
 
+/**
+ * Performs featured blogs section operation
+ *
+ * @param {FeaturedBlogsSectionProps} [{
+  limit = 10,
+  className = "",
+}] - The {
+  limit = 10,
+  classname = "",
+}
+ *
+ * @returns {any} The featuredblogssection result
+ *
+ * @example
+ * FeaturedBlogsSection({
+  limit = 10,
+  className = "",
+});
+ */
 export function FeaturedBlogsSection({
   limit = 10,
   className = "",

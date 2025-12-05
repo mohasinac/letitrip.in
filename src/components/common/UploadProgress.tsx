@@ -4,7 +4,8 @@
  * @description This file contains the UploadProgress component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -36,7 +37,13 @@ import { useUploadContext } from "@/contexts/UploadContext";
  * @example
  * const result = UploadProgress();
  */
-export default function UploadProgress() {
+export default /**
+ * Performs upload progress operation
+ *
+ * @returns {any} The uploadprogress result
+ *
+ */
+function UploadProgress() {
   const {
     uploads,
     pendingCount,
@@ -55,7 +62,15 @@ export default function UploadProgress() {
   // Don't show if no uploads
   if (uploads.length === 0) return null;
 
-  const activeUploads = uploads.filter(
+  /**
+ * Performs active uploads operation
+ *
+ * @param {any} (u - The (u
+ *
+ * @returns {any} The activeuploads result
+ *
+ */
+const activeUploads = uploads.filter(
     (u) => u.status === "pending" || u.status === "uploading",
   );
 

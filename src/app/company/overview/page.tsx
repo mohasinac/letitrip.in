@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -18,7 +19,13 @@ export const metadata: Metadata = {
     "Learn about Let It Rip - India's premier auction and e-commerce platform",
 };
 
-export default function CompanyOverviewPage() {
+export default /**
+ * Performs company overview page operation
+ *
+ * @returns {any} The companyoverviewpage result
+ *
+ */
+function CompanyOverviewPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container mx-auto px-4 max-w-5xl">

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { batchGetProducts } from "@/app/api/lib/batch-fetch";
@@ -145,11 +146,27 @@ async function createOrderHandler(request: Request) {
       const { shopId, shopName, items, couponCode } = shopOrder;
 
       // Validate products using batch fetch
-      const productIds = items.map((item: any) => item.productId);
+      /**
+ * Performs product ids operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The productids result
+ *
+ */
+const productIds = items.map((item: any) => item.productId);
       const productsMap = await batchGetProducts(productIds);
 
       const products = productIds
-        .map((id: string) => productsMap.get(id))
+        .map((id: string) => productsMap.g/**
+ * Performs product operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The product result
+ *
+ */
+et(id))
         .filter(Boolean);
 
       // Validate stock and product status
@@ -173,7 +190,15 @@ async function createOrderHandler(request: Request) {
         }
 
         if (product.status !== "active") {
-          return NextResponse.json(
+        /**
+ * Performs order items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The orderitems result
+ *
+ */
+  return NextResponse.json(
             { error: `Product ${product.name} is no longer available` },
             { status: 400 }
           );
@@ -341,7 +366,15 @@ async function createOrderHandler(request: Request) {
         updated_at: new Date(),
       };
 
-      const orderRef = await Collections.orders().add(orderData);
+      const orde/**
+ * Performs product operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The product result
+ *
+ */
+rRef = await Collections.orders().add(orderData);
       orderRefs.push({
         /** Id */
         id: orderRef.id,

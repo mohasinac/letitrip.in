@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for return
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -36,6 +37,7 @@ export interface ReturnBE {
   reason: ReturnReason;
   /** Description */
   description: string;
+  /** Media */
   media?: string[]; // Images/videos
 
   // Status

@@ -4,7 +4,8 @@
  * @description This file contains the SearchBar component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -18,7 +19,13 @@ import { Clock, FolderTree, Package, Search, Store, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-export default function SearchBar() {
+export default /**
+ * Performs search bar operation
+ *
+ * @returns {any} The searchbar result
+ *
+ */
+function SearchBar() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResultFE | null>(null);
@@ -26,7 +33,13 @@ export default function SearchBar() {
   const [showResults, setShowResults] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  /**
+ * Performs timeout ref operation
+ *
+ * @returns {any} The timeoutref result
+ *
+ */
+const timeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     // Load recent searches from localStorage
@@ -140,7 +153,15 @@ export default function SearchBar() {
    *
    * @param {string} searchQuery - The search query
    *
-   * @returns {string} The saverecentsearch result
+   * @returns {string} The sa/**
+ * Updates d
+ *
+ * @param {any} (s - The (s
+ *
+ * @returns {any} The updated result
+ *
+ */
+verecentsearch result
    */
 
   const saveRecentSearch = (searchQuery: string) => {

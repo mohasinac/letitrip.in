@@ -4,7 +4,8 @@
  * @description This file contains the layout component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -12,7 +13,22 @@
 import { TabNav } from "@/components/navigation/TabNav";
 import { ADMIN_BLOG_TABS } from "@/constants/tabs";
 
-export default function AdminBlogLayout({
+export default /**
+ * AdminBlogLayout component
+ *
+ * @param {{
+  
+  children: React.ReactNode;
+}} {
+  children,
+} - The {
+  children,
+}
+ *
+ * @returns {any} The adminbloglayout result
+ *
+ */
+function AdminBlogLayout({
   children,
 }: {
   /** Children */

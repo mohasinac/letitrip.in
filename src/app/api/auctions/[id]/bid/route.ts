@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -91,7 +92,15 @@ export async function GET(
     const hasNextPage = docs.length > limit;
     const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
 
-    const data = resultDocs.map((d) => ({ id: d.id, ...d.data() }));
+    /**
+ * Performs data operation
+ *
+ * @param {any} (d - The (d
+ *
+ * @returns {any} The data result
+ *
+ */
+const data = resultDocs.map((d) => ({ id: d.id, ...d.data() }));
     const nextCursor =
       hasNextPage && resultDocs.length > 0
         ? resultDocs[resultDocs.length - 1].id

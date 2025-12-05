@@ -4,7 +4,8 @@
  * @description This file contains functionality related to operators
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -707,6 +708,16 @@ export function isFirestoreSupported(operator: FilterOperator): boolean {
   type);
  */
 
+/**
+ * Retrieves operators for type
+ *
+ * @param {"string" | "number" | "boolean" | "date"} type - The type
+ *
+ * @returns {FilterOperator[]} The getoperatorsfortype result
+ *
+ * @example
+ * getOperatorsForType(type);
+ */
 export function getOperatorsForType(
   /** Type */
   type: "string" | "number" | "boolean" | "date",

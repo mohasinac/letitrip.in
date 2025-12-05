@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -30,11 +31,15 @@ import { useCallback, useEffect } from "react";
 interface Bid {
   /** Id */
   id: string;
+  /** Auction_id */
   auction_id: string;
+  /** User_id */
   user_id: string;
   /** Amount */
   amount: number;
+  /** Created_at */
   created_at: any;
+  /** Is_auto_bid */
   is_auto_bid?: boolean;
 }
 
@@ -63,6 +68,7 @@ interface AuctionDetails {
   endTime: Date | string;
   /** Status */
   status: string;
+  /** Highest_bidder_id */
   highest_bidder_id?: string;
 }
 
@@ -81,7 +87,13 @@ interface BidWithAuction extends Bid {
   isOutbid?: boolean;
 }
 
-export default function MyBidsPage() {
+export default /**
+ * Performs my bids page operation
+ *
+ * @returns {any} The mybidspage result
+ *
+ */
+function MyBidsPage() {
   const { user } = useAuth();
   const {
     /** Data */
@@ -92,8 +104,22 @@ export default function MyBidsPage() {
     execute,
   } = useLoadingState<BidWithAuction[]>({ initialData: [] });
 
-  const loadBids = useCallback(async () => {
-    // Fetch user's bids with auction details
+  /**
+ * Performs load bids operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadbids result
+ *
+ */
+const loadBids = useCallback(async () => {
+    // Fetch user's bids with auction d/**
+ * Performs auction bids map operation
+ *
+ * @returns {any} The auctionbidsmap result
+ *
+ */
+etails
     const bidsData = await auctionsService.getMyBids();
 
     // Group bids by auction and get latest bid per auction
@@ -102,7 +128,15 @@ export default function MyBidsPage() {
       const existing = auctionBidsMap.get(bid.auction_id);
       if (
         !existing ||
-        new Date(bid.created_at) > new Date(existing.created_at)
+        new Date(bid.created/**
+ * Performs bids with status operation
+ *
+ * @param {any} (bid - The (bid
+ *
+ * @returns {any} The bidswithstatus result
+ *
+ */
+_at) > new Date(existing.created_at)
       ) {
         auctionBidsMap.set(bid.auction_id, bid);
       }
@@ -146,7 +180,15 @@ export default function MyBidsPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-whi/**
+ * Performs winning bids operation
+ *
+ * @param {any} (b - The (b
+ *
+ * @returns {any} The winningbids result
+ *
+ */
+te">
             Please log in to view your bids
           </h3>
         </div>

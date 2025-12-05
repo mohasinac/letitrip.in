@@ -4,7 +4,8 @@
  * @description This file contains the ViewingHistoryContext component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -100,6 +101,25 @@ interface ViewingHistoryProviderProps {
   recentlyViewedLimit);
  */
 
+/**
+ * Performs viewing history provider operation
+ *
+ * @param {ViewingHistoryProviderProps} [{
+  children,
+  recentlyViewedLimit = 8,
+}] - The {
+  children,
+  recentlyviewedlimit = 8,
+}
+ *
+ * @returns {any} The viewinghistoryprovider result
+ *
+ * @example
+ * ViewingHistoryProvider({
+  children,
+  recentlyViewedLimit = 8,
+});
+ */
 export function ViewingHistoryProvider({
   children,
   recentlyViewedLimit = 8,
@@ -139,20 +159,44 @@ export function ViewingHistoryProvider({
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  const recentlyViewed = useMemo(
+  /**
+ * Performs recently viewed operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The recentlyviewed result
+ *
+ */
+const recentlyViewed = useMemo(
     () => history.slice(0, recentlyViewedLimit),
     [history, recentlyViewedLimit],
   );
 
   const addToHistory = useCallback(
     (item: Omit<ViewingHistoryItem, "viewed_at">): void => {
-      viewingHistoryService.addToHistory(item);
+      /**
+ * Performs remove from history operation
+ *
+ * @param {string} (itemId - The (itemid
+ *
+ * @returns {void =>} The removefromhistory result
+ *
+ */
+viewingHistoryService.addToHistory(item);
       setHistory(viewingHistoryService.getHistory());
     },
     [],
   );
 
-  const removeFromHistory = useCallback((itemId: string): void => {
+  const removeFromHistory = useCallback((i/**
+ * Checks if in history
+ *
+ * @param {string} (itemId - The (itemid
+ *
+ * @returns {boolean =>} The isinhistory result
+ *
+ */
+temId: string): void => {
     viewingHistoryService.removeFromHistory(itemId);
     setHistory(viewingHistoryService.getHistory());
   }, []);

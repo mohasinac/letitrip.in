@@ -4,7 +4,8 @@
  * @description This file contains functionality related to timestamp-helpers
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -44,7 +45,9 @@ import { Timestamp } from "firebase-admin/firestore";
 
 export function toFirebaseTimestamp(timestamp: Timestamp): FirebaseTimestamp {
   return {
+    /** _seconds */
     _seconds: timestamp.seconds,
+    /** _nanoseconds */
     _nanoseconds: timestamp.nanoseconds,
   };
 }

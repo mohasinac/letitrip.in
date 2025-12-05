@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -13,6 +14,13 @@ import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // Status requirements for each action
+/**
+ * STATUS_REQUIREMENTS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for status requirements
+ */
 const STATUS_REQUIREMENTS: Record<
   string,
   { required?: string[]; excluded?: string[]; message: string }

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -73,7 +74,15 @@ export async function GET(request: NextRequest) {
       .get();
 
     // Sum up unread counts for this user across all conversations
-    let totalUnread = 0;
+    /**
+ * Performs total unread operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The totalunread result
+ *
+ */
+let totalUnread = 0;
     conversationsSnapshot.docs.forEach((doc) => {
       const data = doc.data();
       totalUnread += data.unreadCount?.[userId] || 0;

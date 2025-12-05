@@ -4,7 +4,8 @@
  * @description This file contains functionality related to footer
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 // Footer Constants

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -243,7 +244,15 @@ function CategoryDetailContent({ params }: PageProps) {
   ) => {
     try {
       if (!productDetails) {
-        const product = products.find((p) => p.id === productId);
+        /**
+ * Performs product operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The product result
+ *
+ */
+const product = products.find((p) => p.id === productId);
         if (!product) {
           throw new Error("Product not found");
         }
@@ -691,7 +700,15 @@ function CategoryDetailContent({ params }: PageProps) {
   );
 }
 
-export default function CategoryDetailPage({ params }: PageProps) {
+export default /**
+ * Performs category detail page operation
+ *
+ * @param {PageProps} { params } - The { params }
+ *
+ * @returns {any} The categorydetailpage result
+ *
+ */
+function CategoryDetailPage({ params }: PageProps) {
   return (
     <Suspense
       fallback={

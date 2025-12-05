@@ -4,7 +4,8 @@
  * @description This file contains the PincodeInput component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -100,7 +101,15 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
     const [lastLookedUp, setLastLookedUp] = useState<string>("");
 
     // Auto-lookup when pincode is complete
-    const performLookup = useCallback(
+    /**
+ * Performs perform lookup operation
+ *
+ * @param {string} async(pincode - The async(pincode
+ *
+ * @returns {Promise<any>} The performlookup result
+ *
+ */
+const performLookup = useCallback(
       async (pincode: string) => {
         if (pincode === lastLookedUp) return;
         if (!locationService.isValidPincode(pincode)) return;

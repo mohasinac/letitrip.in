@@ -4,7 +4,8 @@
  * @description This file contains the VideoRecorder component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -28,10 +29,27 @@ interface VideoRecorderProps {
   onClose: () => void;
   /** Source */
   source?: "camera" | "screen";
+  /** MaxDuration */
   maxDuration?: number; // in seconds
 }
 
-export default function VideoRecorder({
+export default /**
+ * Performs video recorder operation
+ *
+ * @param {VideoRecorderProps} [{
+  onRecorded,
+  onClose,
+  
+  source] - The {
+  onrecorded,
+  onclose,
+  
+  source
+ *
+ * @returns {any} The videorecorder result
+ *
+ */
+function VideoRecorder({
   onRecorded,
   onClose,
   /** Source */

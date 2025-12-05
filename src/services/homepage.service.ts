@@ -4,7 +4,8 @@
  * @description This file contains service functions for homepage operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiService } from "./api.service";
@@ -369,7 +370,15 @@ class HomepageService {
        * @returns {any} The products result
        */
 
-      const products = (response.data || []).filter(
+      /**
+ * Performs products operation
+ *
+ * @param {any} response.data||[] - The response.data||[]
+ *
+ * @returns {any} The products result
+ *
+ */
+const products = (response.data || []).filter(
         (p: any) =>
           (p.stock_count || p.stock_quantity || p.stockCount || 0) > 0,
       );
@@ -534,7 +543,15 @@ class HomepageService {
       /**
        * Performs products operation
        *
-       * @param {any} response.data || []).filter(
+       * @param {any} response.data /**
+ * Performs products operation
+ *
+ * @param {any} response.data||[] - The response.data||[]
+ *
+ * @returns {any} The products result
+ *
+ */
+|| []).filter(
         (p - The response.data || []).filter(
         (p
        *

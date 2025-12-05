@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -47,7 +48,15 @@ interface ProductPageProps {
   }>;
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
+export default /**
+ * Performs product page operation
+ *
+ * @param {ProductPageProps} { params } - The { params }
+ *
+ * @returns {any} The productpage result
+ *
+ */
+function ProductPage({ params }: ProductPageProps) {
   const router = useRouter();
   const { slug } = use(params);
 
@@ -181,7 +190,15 @@ export default function ProductPage({ params }: ProductPageProps) {
   }
 
   // Prepare media for gallery
-  const media = [
+  /**
+ * Performs media operation
+ *
+ * @param {string} (url - The (url
+ *
+ * @returns {any} The media result
+ *
+ */
+const media = [
     ...product.images.map((url: string) => ({ url, type: "image" as const })),
     ...(product.videos || []).map((url: string) => ({
       url,

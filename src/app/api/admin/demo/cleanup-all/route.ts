@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { NextResponse } from "next/server";
@@ -324,7 +325,15 @@ export async function DELETE() {
           for (let i = 0; i < relatedIdsArray.length; i += 30) {
             const batch = relatedIdsArray.slice(i, i + 30);
             if (batch.length > 0) {
-              const snapshot = await db
+              /**
+ * Performs snapshot operation
+ *
+ * @param {any} collection.name - The collection.name
+ *
+ * @returns {any} The snapshot result
+ *
+ */
+const snapshot = await db
                 .collection(collection.name)
                 .where(collection.relatedField, "in", batch)
                 .get();
@@ -347,7 +356,16 @@ export async function DELETE() {
 
         // Delete in batches of 500 (Firestore limit)
         if (demoDocRefs.length > 0) {
-          const batchSize = 500;
+          cons/**
+ * Performs batch refs operation
+ *
+ * @param {any} i - The i
+ * @param {any} i+batchSize - The i+batchsize
+ *
+ * @returns {any} The batchrefs result
+ *
+ */
+t batchSize = 500;
           for (let i = 0; i < demoDocRefs.length; i += batchSize) {
             const batch = db.batch();
             const batchRefs = demoDocRefs.slice(i, i + batchSize);
@@ -358,7 +376,16 @@ export async function DELETE() {
           }
           deletionResults.push({
             /** Collection */
-            collection: collection.name,
+            collecti/**
+ * Performs total deleted operation
+ *
+ * @param {any} (sum - The (sum
+ * @param {any} r - The r
+ *
+ * @returns {any} The totaldeleted result
+ *
+ */
+on: collection.name,
             /** Count */
             count: demoDocRefs.length,
           });

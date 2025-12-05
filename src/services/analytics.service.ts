@@ -4,7 +4,8 @@
  * @description This file contains service functions for analytics operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { apiService } from "./api.service";
@@ -30,7 +31,13 @@ class AnalyticsService {
     /** Filters */
     filters?: AnalyticsFiltersFE,
   ): Promise<AnalyticsOverviewFE> {
-    const params = new URLSearchParams();
+    /**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+const params = new URLSearchParams();
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -48,7 +55,13 @@ class AnalyticsService {
 
   // Get sales data (time series)
   async getSalesData(
-    /** Filters */
+    /** Filte/**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+rs */
     filters?: AnalyticsFiltersFE,
   ): Promise<SalesDataPointFE[]> {
     const params = new URLSearchParams();
@@ -67,7 +80,13 @@ class AnalyticsService {
       : "/analytics/sales";
 
     return apiService.get<SalesDataPointFE[]>(endpoint);
-  }
+  /**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+}
 
   // Get top products
   async getTopProducts(
@@ -87,7 +106,13 @@ class AnalyticsService {
     const queryString = params.toString();
     const endpoint = queryString
       ? `/analytics/top-products?${queryString}`
-      : "/analytics/top-products";
+      : "/analyt/**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+ics/top-products";
 
     return apiService.get<TopProductFE[]>(endpoint);
   }
@@ -108,7 +133,13 @@ class AnalyticsService {
     }
 
     const queryString = params.toString();
-    const endpoint = queryString
+    const endpoint/**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+ = queryString
       ? `/analytics/categories?${queryString}`
       : "/analytics/categories";
 
@@ -126,6 +157,12 @@ class AnalyticsService {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           params.append(key, value.toString());
+/**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
         }
       });
     }
@@ -147,7 +184,13 @@ class AnalyticsService {
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
+        if (value !== undefined && value !== /**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+null) {
           params.append(key, value.toString());
         }
       });

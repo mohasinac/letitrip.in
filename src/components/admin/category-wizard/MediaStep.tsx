@@ -4,7 +4,8 @@
  * @description This file contains the MediaStep component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -26,7 +27,15 @@ interface MediaStepProps {
   onChange: OnChange;
 }
 
-export default function MediaStep({ formData, onChange }: MediaStepProps) {
+export default /**
+ * Performs media step operation
+ *
+ * @param {MediaStepProps} { formData, onChange } - The { formdata, onchange }
+ *
+ * @returns {any} The mediastep result
+ *
+ */
+function MediaStep({ formData, onChange }: MediaStepProps) {
   return (
     <div className="space-y-6">
       <FormInput

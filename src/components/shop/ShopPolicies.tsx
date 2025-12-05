@@ -4,7 +4,8 @@
  * @description This file contains the ShopPolicies component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -130,7 +131,15 @@ export function ShopPolicies({ shop, className = "" }: ShopPoliciesProps) {
     setActivePolicy(activePolicy === policyId ? null : policyId);
   };
 
-  const hasAnyPolicy = policies.some((p) => p.content);
+  /**
+ * Checks if has any policy
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The hasanypolicy result
+ *
+ */
+const hasAnyPolicy = policies.some((p) => p.content);
 
   if (!hasAnyPolicy) {
     return (

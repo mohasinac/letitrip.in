@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -30,9 +31,11 @@ import { NextRequest, NextResponse } from "next/server";
 interface ResendWebhookEvent {
   /** Type */
   type: string;
+  /** Created_at */
   created_at: string;
   /** Data */
   data: {
+    /** Email_id */
     email_id: string;
     /** To */
     to: string;
@@ -40,7 +43,9 @@ interface ResendWebhookEvent {
     from: string;
     /** Subject */
     subject: string;
+    /** Clicked_link */
     clicked_link?: string;
+    /** Bounce_type */
     bounce_type?: string;
   };
 }
@@ -58,6 +63,7 @@ interface SendGridWebhookEvent {
   email: string;
   /** Timestamp */
   timestamp: number;
+  /** Sg_message_id */
   sg_message_id: string;
   /** Url */
   url?: string;
@@ -152,6 +158,14 @@ export async function POST(req: NextRequest) {
  * @throws {Error} When operation fails or validation errors occur
  */
 
+/**
+ * Handles resend webhook
+ *
+ * @param {ResendWebhookEvent | ResendWebhookEvent[]} events - The events
+ *
+ * @returns {Promise<any>} The handleresendwebhook result
+ *
+ */
 async function handleResendWebhook(
   /** Events */
   events: ResendWebhookEvent | ResendWebhookEvent[]
@@ -238,7 +252,15 @@ async function handleResendWebhook(
  * Handles send grid webhook event
  *
  * @param {SendGridWebhookEvent | SendGridWebhookEvent[]} /** Events */
-  events - The /**  events */
+  events - The /** /**
+ * Handles send grid webhook
+ *
+ * @param {SendGridWebhookEvent | SendGridWebhookEvent[]} events - The events
+ *
+ * @returns {Promise<any>} The handlesendgridwebhook result
+ *
+ */
+ events */
   events
  *
  * @returns {Promise<any>} Promise resolving to handlesendgridwebhook result

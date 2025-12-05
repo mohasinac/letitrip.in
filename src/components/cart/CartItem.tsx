@@ -4,7 +4,8 @@
  * @description This file contains the CartItem component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -145,7 +146,15 @@ export function CartItem({
     : 0;
 
   // Swipe-to-delete action for mobile
-  const deleteAction = createDeleteAction(() => setShowDeleteDialog(true));
+  /**
+ * Deletes action
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The deleteaction result
+ *
+ */
+const deleteAction = createDeleteAction(() => setShowDeleteDialog(true));
 
   /**
    * Performs cart item content operation

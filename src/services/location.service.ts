@@ -4,7 +4,8 @@
  * @description This file contains service functions for location operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -206,7 +207,14 @@ class LocationService {
    * Calculate distance between two coordinates (in km)
    */
   calculateDistance(from: GeoCoordinates, to: GeoCoordinates): number {
-    const R = 6371; // Earth's radius in km
+    /**
+ * R constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for r
+ */
+const R = 6371; // Earth's radius in km
     const dLat = this.toRad(to.latitude - from.latitude);
     const dLon = this.toRad(to.longitude - from.longitude);
     const lat1 = this.toRad(from.latitude);

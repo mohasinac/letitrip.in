@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -31,6 +32,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+/**
+ * STEPS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for steps
+ */
 const STEPS = [
   {
     /** Id */
@@ -56,7 +64,13 @@ const STEPS = [
   },
 ];
 
-export default function CreateCategoryWizardPage() {
+export default /**
+ * Creates category wizard page
+ *
+ * @returns {any} The createcategorywizardpage result
+ *
+ */
+function CreateCategoryWizardPage() {
   const router = useRouter();
   const { isAdmin, loading: authLoading } = useAuth();
 

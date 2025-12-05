@@ -4,7 +4,8 @@
  * @description This file contains functionality related to payment-gateways.config
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -111,6 +112,7 @@ export interface PaymentGatewayConfig {
   logo: string;
   /** Enabled */
   enabled: boolean;
+  /** Priority */
   priority: number; // Lower number = higher priority
 
   // Supported regions
@@ -1857,6 +1859,16 @@ export function getEnabledGateways(): PaymentGatewayConfig[] {
   type);
  */
 
+/**
+ * Retrieves gateways by type
+ *
+ * @param {PaymentGatewayType} type - The type
+ *
+ * @returns {PaymentGatewayConfig[]} The getgatewaysbytype result
+ *
+ * @example
+ * getGatewaysByType(type);
+ */
 export function getGatewaysByType(
   /** Type */
   type: PaymentGatewayType
@@ -1883,7 +1895,17 @@ export function getGatewaysByType(
 /**
  * Retrieves gateways by currency
  *
- * @param {CurrencyCode} /** Currency */
+ * @param {/**
+ * Retrieves gateways by currency
+ *
+ * @param {CurrencyCode} currency - The currency
+ *
+ * @returns {PaymentGatewayConfig[]} The getgatewaysbycurrency result
+ *
+ * @example
+ * getGatewaysByCurrency(currency);
+ */
+CurrencyCode} /** Currency */
   currency - The /**  currency */
   currency
  *
@@ -1907,7 +1929,17 @@ export function getGatewaysByCurrency(
  * Get gateways supporting a specific country
  */
 /**
+ * Retriev/**
  * Retrieves gateways by country
+ *
+ * @param {CountryCode} country - The country
+ *
+ * @returns {PaymentGatewayConfig[]} The getgatewaysbycountry result
+ *
+ * @example
+ * getGatewaysByCountry(country);
+ */
+es gateways by country
  *
  * @param {CountryCode} country - The country
  *
@@ -1937,7 +1969,17 @@ export function getGatewaysByCountry(
 ): PaymentGatewayConfig[] {
   return PAYMENT_GATEWAYS.filter((gateway) =>
     gateway.supportedCountries.includes(country)
-  ).sort((a, b) => a.priority - b.priority);
+  ).sort((a, /**
+ * Retrieves gateways by capability
+ *
+ * @param {keyof PaymentGatewayConfig["capabilities"]} capability - The capability
+ *
+ * @returns {PaymentGatewayConfig[]} The getgatewaysbycapability result
+ *
+ * @example
+ * getGatewaysByCapability(capability);
+ */
+b) => a.priority - b.priority);
 }
 
 /**
@@ -2070,7 +2112,15 @@ export function validateGatewayField(
     return { isValid: false, error: "Gateway not found" };
   }
 
-  const field = gateway.config[mode].find((f) => f.key === fieldKey);
+  /**
+ * Performs field operation
+ *
+ * @param {any} (f - The (f
+ *
+ * @returns {any} The field result
+ *
+ */
+const field = gateway.config[mode].find((f) => f.key === fieldKey);
   if (!field) {
     return { isValid: false, error: "Field not found" };
   }

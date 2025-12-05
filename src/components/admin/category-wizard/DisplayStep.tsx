@@ -4,7 +4,8 @@
  * @description This file contains the DisplayStep component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -28,12 +29,36 @@ interface DisplayStepProps {
   onChange: OnChange;
 }
 
-export default function DisplayStep({
+export default /**
+ * Performs display step operation
+ *
+ * @param {DisplayStepProps} {
+  formData,
+  categories,
+  onChange,
+} - The {
+  formdata,
+  categories,
+  onchange,
+}
+ *
+ * @returns {any} The displaystep result
+ *
+ */
+function DisplayStep({
   formData,
   categories,
   onChange,
 }: DisplayStepProps) {
-  const parentName = formData.parentCategory
+  /**
+ * Performs parent name operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The parentname result
+ *
+ */
+const parentName = formData.parentCategory
     ? categories.find((c) => c.id === formData.parentCategory)?.name
     : "Top Level";
 

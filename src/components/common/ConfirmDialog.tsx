@@ -4,7 +4,8 @@
  * @description This file contains the ConfirmDialog component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -30,6 +31,7 @@ export interface ConfirmDialogProps {
   title: string;
   /** Description */
   description?: string;
+  /** Children */
   children?: React.ReactNode; // Support custom content
   /** Confirm Label */
   confirmLabel?: string;
@@ -75,7 +77,15 @@ export function ConfirmDialog({
   isLoading = false,
 }: ConfirmDialogProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  /**
+ * Performs dialog ref operation
+ *
+ * @param {any} null - The null
+ *
+ * @returns {any} The dialogref result
+ *
+ */
+const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     /**

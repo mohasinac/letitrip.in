@@ -4,7 +4,8 @@
  * @description This file contains the CouponFilters component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -82,7 +83,16 @@ export const CouponFilters: React.FC<CouponFiltersProps> = ({
 }) => {
   const hasActiveFilters = Object.keys(filters).length > 0;
 
-  const updateFilter = <K extends keyof CouponFilterValues>(
+  /**
+ * Updates filter
+ *
+ * @param {K} key - The key
+ * @param {CouponFilterValues[K]} value - The value
+ *
+ * @returns {any} The updatefilter result
+ *
+ */
+const updateFilter = <K extends keyof CouponFilterValues>(
     /** Key */
     key: K,
     /** Value */
@@ -104,7 +114,15 @@ export const CouponFilters: React.FC<CouponFiltersProps> = ({
    *
    * @param {string} value - The value
    *
-   * @returns {string} The togglearrayfilter result
+   * /**
+ * Updates d
+ *
+ * @param {any} value - The value
+ *
+ * @returns {any} The updated result
+ *
+ */
+@returns {string} The togglearrayfilter result
    */
 
   const toggleArrayFilter = (value: string) => {

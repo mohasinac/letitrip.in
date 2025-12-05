@@ -4,7 +4,8 @@
  * @description This file contains service functions for sms operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { logError } from "@/lib/firebase-error-logger";
@@ -24,6 +25,7 @@ import { logError } from "@/lib/firebase-error-logger";
  * @interface SendSMSRequest
  */
 export interface SendSMSRequest {
+  /** To */
   to: string; // Phone number with country code (e.g., +919876543210)
   /** Message */
   message: string;

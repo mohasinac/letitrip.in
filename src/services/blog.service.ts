@@ -4,7 +4,8 @@
  * @description This file contains service functions for blog operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { PAGINATION } from "@/constants/limits";
@@ -144,7 +145,13 @@ class BlogService {
     /** Filters */
     filters?: BlogFilters
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
-    const params = new URLSearchParams();
+    /**
+ * Performs params operation
+ *
+ * @returns {any} The params result
+ *
+ */
+const params = new URLSearchParams();
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {

@@ -4,7 +4,8 @@
  * @description This file contains the layout component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -26,7 +27,22 @@ export const metadata: Metadata = {
   description: "Manage your orders, favorites, settings, and more on Letitrip",
 };
 
-export default function UserLayout({
+export default /**
+ * UserLayout component
+ *
+ * @param {{
+  
+  children: React.ReactNode;
+}} {
+  children,
+} - The {
+  children,
+}
+ *
+ * @returns {any} The userlayout result
+ *
+ */
+function UserLayout({
   children,
 }: {
   /** Children */

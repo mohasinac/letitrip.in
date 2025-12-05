@@ -4,7 +4,8 @@
  * @description This file contains the SmartLink component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -192,7 +193,15 @@ export const SmartLink = forwardRef<HTMLAnchorElement, SmartLinkProps>(
     ref,
   ) => {
     // Determine link type and behavior
-    const linkInfo = useMemo(() => {
+    /**
+ * Performs link info operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The linkinfo result
+ *
+ */
+const linkInfo = useMemo(() => {
       // Empty or disabled - render as span
       if (!href || disabled) {
         return {
@@ -235,7 +244,15 @@ export const SmartLink = forwardRef<HTMLAnchorElement, SmartLinkProps>(
         openInNewTab,
         /** Resolved Href */
         resolvedHref: resolveUrl(href),
-        isDownloadable,
+        isDownloadabl/**
+ * Performs computed rel operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The computedrel result
+ *
+ */
+e,
       };
     }, [href, external, internal, newTab, download, disabled]);
 
@@ -256,11 +273,27 @@ export const SmartLink = forwardRef<HTMLAnchorElement, SmartLinkProps>(
       }
 
       return relParts.length > 0 ? [...new Set(relParts)].join(" ") : undefined;
-    }, [rel, linkInfo.openInNewTab, linkInfo.isInternal, relAppend]);
+    /**
+ * Performs download attr operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The downloadattr result
+ *
+ */
+}, [rel, linkInfo.openInNewTab, linkInfo.isInternal, relAppend]);
 
     // Build target attribute
     const computedTarget =
-      target || (linkInfo.openInNewTab ? "_blank" : undefined);
+      target |/**
+ * Performs computed aria label operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The computedarialabel result
+ *
+ */
+| (linkInfo.openInNewTab ? "_blank" : undefined);
 
     // Build download attribute
     const downloadAttr = useMemo(() => {

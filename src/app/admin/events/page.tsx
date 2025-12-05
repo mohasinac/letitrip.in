@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -54,9 +55,23 @@ interface Event {
   updatedAt: string;
 }
 
-export default function AdminEventsPage() {
+export default /**
+ * Performs admin events page operation
+ *
+ * @returns {any} The admineventspage result
+ *
+ */
+function AdminEventsPage() {
   // Define columns
-  const columns = [
+  /**
+ * Performs columns operation
+ *
+ * @param {Event} event - The event
+ *
+ * @returns {any} The columns result
+ *
+ */
+const columns = [
     {
       /** Key */
       key: "title",
@@ -293,7 +308,15 @@ export default function AdminEventsPage() {
       /** Options */
       options: [
         { value: "draft", label: "Draft" },
-        { value: "published", label: "Published" },
+        { value: "published", l/**
+ * Performs bulk actions operation
+ *
+ * @param {string[]} ids - The ids
+ *
+ * @returns {Promise<any>} The bulkactions result
+ *
+ */
+abel: "Published" },
         { value: "archived", label: "Archived" },
       ],
     },

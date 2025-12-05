@@ -4,7 +4,8 @@
  * @description This file contains the FAQItem component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -27,7 +28,23 @@ interface FAQItemProps {
   defaultOpen?: boolean;
 }
 
-export default function FAQItem({
+export default /**
+ * Performs f a q item operation
+ *
+ * @param {FAQItemProps} [{
+  question,
+  answer,
+  defaultOpen = false,
+}] - The {
+  question,
+  answer,
+  defaultopen = false,
+}
+ *
+ * @returns {any} The faqitem result
+ *
+ */
+function FAQItem({
   question,
   answer,
   defaultOpen = false,

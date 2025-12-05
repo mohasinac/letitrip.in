@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -17,7 +18,13 @@ import type { ComparisonProduct } from "@/services/comparison.service";
 import { ArrowLeft, GitCompare, Heart, ShoppingCart, X } from "lucide-react";
 import Link from "next/link";
 
-export default function ComparePage() {
+export default /**
+ * Performs compare page operation
+ *
+ * @returns {any} The comparepage result
+ *
+ */
+function ComparePage() {
   const { products, removeFromComparison, clearComparison } = useComparison();
 
   if (products.length === 0) {
@@ -146,7 +153,15 @@ export default function ComparePage() {
    */
 
   const getBestValue = (key: string, type: string): string | number | null => {
-    const values = products
+    /**
+ * Performs values operation
+ *
+ * @param {any} (p - The (p
+ *
+ * @returns {any} The values result
+ *
+ */
+const values = products
       .map((p) => getValue(p, key))
       .filter((v) => v !== null);
     if (values.length === 0) return null;

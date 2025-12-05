@@ -4,7 +4,8 @@
  * @description This file contains the EventCountdown component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -161,7 +162,16 @@ export function EventCountdown({
     };
 
     calculateTime();
-    const interval = setInterval(calculateTime, 1000);
+    /**
+ * Performs interval operation
+ *
+ * @param {any} calculateTime - The calculatetime
+ * @param {any} 1000 - The 1000
+ *
+ * @returns {any} The interval result
+ *
+ */
+const interval = setInterval(calculateTime, 1000);
 
     return () => clearInterval(interval);
   }, [targetDate, onComplete, timeRemaining.isComplete]);

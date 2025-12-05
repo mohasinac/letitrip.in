@@ -4,7 +4,8 @@
  * @description This file contains the Header component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -17,7 +18,13 @@ import SubNavbar from "./SubNavbar";
 import SearchBar, { SearchBarRef } from "./SearchBar";
 import MobileSidebar from "./MobileSidebar";
 
-export default function Header() {
+export default /**
+ * Performs header operation
+ *
+ * @returns {any} The header result
+ *
+ */
+function Header() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const searchBarRef = useRef<SearchBarRef>(null);

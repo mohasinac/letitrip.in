@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useHeaderStats
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -55,6 +56,13 @@ const defaultStats: HeaderStats = {
   hasUnpaidAuctions: false,
 };
 
+/**
+ * POLL_INTERVAL constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for poll interval
+ */
 const POLL_INTERVAL = 30000; // 30 seconds
 
 /**
@@ -108,7 +116,15 @@ export function useHeaderStats() {
         setIsLoading(true);
         setError(null);
 
-        const response = await apiService.get<{
+        /**
+ * Performs response operation
+ *
+ * @param {any} "/header/stats" - The "/header/stats"
+ *
+ * @returns {any} The response result
+ *
+ */
+const response = await apiService.get<{
           /** Success */
           success: boolean;
           /** Data */
@@ -171,7 +187,15 @@ export function useHeaderStats() {
     };
 
     globalThis.addEventListener?.("focus", handleFocus);
-    return () => globalThis.removeEventListener?.("focus", handleFocus);
+    return/**
+ * Updates cart count
+ *
+ * @param {number} (count - The (count
+ *
+ * @returns {any} The updatecartcount result
+ *
+ */
+ () => globalThis.removeEventListener?.("focus", handleFocus);
   }, [isAuthenticated, fetchStats]);
 
   // Optimistic update functions

@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -121,11 +122,27 @@ export async function GET(request: NextRequest) {
     accountsQuery = accountsQuery.limit(query.pageSize);
 
     const snapshot = await accountsQuery.get();
-    const accounts = snapshot.docs.map((doc) => ({
+    /**
+ * Performs accounts operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The accounts result
+ *
+ */
+const accounts = snapshot.docs.map((doc) => ({
       /** User Id */
       userId: doc.id,
       ...doc.data(),
-    })) as RipLimitAccountBE[];
+    })) as RipLimitAccountBE/**
+ * Custom React hook for rs with details
+ *
+ * @param {any} accounts.map(async(account - The accounts.map(async(account
+ *
+ * @returns {Promise<any>} The userswithdetails result
+ *
+ */
+[];
 
     // Fetch user details for each account
     const usersCollection = db.collection(COLLECTIONS.USERS);

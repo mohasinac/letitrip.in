@@ -4,7 +4,8 @@
  * @description This file contains the ProductInfo component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -56,7 +57,9 @@ interface ProductInfoProps {
     rating?: number;
     /** Review Count */
     reviewCount?: number;
+    /** Shop_id */
     shop_id: string;
+    /** Shop_name */
     shop_name: string;
     /** Returnable */
     returnable?: boolean;

@@ -4,7 +4,8 @@
  * @description This file contains the ActionMenu component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -78,7 +79,15 @@ export function ActionMenu({
   className = "",
 }: ActionMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  /**
+ * Performs menu ref operation
+ *
+ * @param {any} null - The null
+ *
+ * @returns {any} The menuref result
+ *
+ */
+const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     /**

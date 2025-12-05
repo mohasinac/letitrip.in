@@ -4,7 +4,8 @@
  * @description This file contains the FeaturedCategoriesSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -69,7 +70,21 @@ interface Props {
   productsPerCategory?: number;
 }
 
-export default function FeaturedCategoriesSection({
+export default /**
+ * Performs featured categories section operation
+ *
+ * @param {Props} [{
+  maxCategories = 3,
+  productsPerCategory = 5,
+}] - The {
+  maxcategories = 3,
+  productspercategory = 5,
+}
+ *
+ * @returns {any} The featuredcategoriessection result
+ *
+ */
+function FeaturedCategoriesSection({
   maxCategories = 3,
   productsPerCategory = 5,
 }: Props) {
@@ -111,9 +126,25 @@ export default function FeaturedCategoriesSection({
           response.data?.featuredItems?.categories || [];
 
         // Filter active items and sort by position
-        const activeItems = featuredItems
+        /**
+ * Performs active items operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The activeitems result
+ *
+ */
+const activeItems = featuredItems
           .filter((item) => item.active)
-          .sort((a, b) => a.position - b.position)
+          .so/**
+ * Performs category ids operation
+ *
+ * @param {any} (item - The (item
+ *
+ * @returns {any} The categoryids result
+ *
+ */
+rt((a, b) => a.position - b.position)
           .slice(0, maxCategories);
 
         if (activeItems.length > 0) {
@@ -126,7 +157,15 @@ export default function FeaturedCategoriesSection({
 
       // Use curated categories or fallback to homepage query
       let topCategories: CategoryFE[];
-      if (curatedCategories.length > 0) {
+      if (curatedCategories.length > /**
+ * Performs categories data operation
+ *
+ * @param {CategoryFE} topCategories.map(async(category - The topcategories.map(async(category
+ *
+ * @returns {Promise<any>} The categoriesdata result
+ *
+ */
+0) {
         topCategories = curatedCategories;
       } else {
         const categories = await categoriesService.getHomepage();

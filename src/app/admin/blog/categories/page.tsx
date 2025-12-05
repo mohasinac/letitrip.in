@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -200,7 +201,15 @@ function CategoryModal({
   if (!isOpen) return null;
 
   // Filter out current category and its children from parent options
-  const availableParents = categories.filter(
+  /**
+ * Performs available parents operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The availableparents result
+ *
+ */
+const availableParents = categories.filter(
     (c) => c.id !== category?.id && c.parentId !== category?.id,
   );
 
@@ -314,7 +323,15 @@ function CategoryRow({
   /** Categories */
   categories: BlogCategory[];
   /** On Edit */
-  onEdit: (category: BlogCategory) => void;
+  onEdit: /**
+ * Performs children operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The children result
+ *
+ */
+(category: BlogCategory) => void;
   /** On Delete */
   onDelete: (id: string) => void;
   /** Level */
@@ -393,7 +410,13 @@ function CategoryRow({
   );
 }
 
-export default function BlogCategoriesPage() {
+export default /**
+ * Performs blog categories page operation
+ *
+ * @returns {any} The blogcategoriespage result
+ *
+ */
+function BlogCategoriesPage() {
   const { isAdmin } = useAuth();
   const {
     /** Is Loading */
@@ -632,7 +655,13 @@ export default function BlogCategoriesPage() {
   /**
    * Performs open create modal operation
    *
-   * @returns {any} The opencreatemodal result
+   * @returns {any} The opencreatemoda/**
+ * Performs filtered categories operation
+ *
+ * @returns {any} The filteredcategories result
+ *
+ */
+l result
    */
 
   /**
@@ -644,7 +673,15 @@ export default function BlogCategoriesPage() {
   const openCreateModal = () => {
     setEditCategory(null);
     setModalOpen(true);
-  };
+  }/**
+ * Performs root categories operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The rootcategories result
+ *
+ */
+;
 
   // Filter categories
   const filteredCategories =

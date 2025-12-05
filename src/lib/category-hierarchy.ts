@@ -4,7 +4,8 @@
  * @description This file contains functionality related to category-hierarchy
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -48,6 +49,16 @@ import { logError } from "@/lib/firebase-error-logger";
  * getAllDescendantIds("example");
  */
 
+/**
+ * Retrieves all descendant ids
+ *
+ * @param {string} categoryId - The categoryid
+ *
+ * @returns {Promise<string[]>} The getalldescendantids result
+ *
+ * @example
+ * getAllDescendantIds("example");
+ */
 export async function getAllDescendantIds(
   /** Category Id */
   categoryId: string,
@@ -218,7 +229,17 @@ export async function wouldCreateCycle(
   categoryId - /** Category Id */
   category identifier
  *
- * @returns {Promise<any>} Promise resolving to countleafcategoryproducts result
+ * @re/**
+ * Performs count leaf category products operation
+ *
+ * @param {string} categoryId - The categoryid
+ *
+ * @returns {Promise<number>} The countleafcategoryproducts result
+ *
+ * @example
+ * countLeafCategoryProducts("example");
+ */
+turns {Promise<any>} Promise resolving to countleafcategoryproducts result
  *
  * @throws {Error} When operation fails or validation errors occur
  *
@@ -240,7 +261,15 @@ export async function countLeafCategoryProducts(
     .get();
 
   // Filter out deleted products (handles both is_deleted: true and missing field)
-  const validProducts = productsSnapshot.docs.filter(
+  /**
+ * Performs valid products operation
+ *
+ * @param {any} (doc - The (doc
+ *
+ * @returns {any} The validproducts result
+ *
+ */
+const validProducts = productsSnapshot.docs.filter(
     (doc) => doc.data().is_deleted !== true,
   );
 
@@ -258,7 +287,17 @@ export async function countLeafCategoryProducts(
  *
  * @returns {Promise<any>} Promise resolving to countparentcategoryproducts result
  *
- * @throws {Error} When operation fails or validation errors occur
+ * @throws {Error} When operation fails or validation errors o/**
+ * Performs count parent category products operation
+ *
+ * @param {string} categoryId - The categoryid
+ *
+ * @returns {Promise<number>} The countparentcategoryproducts result
+ *
+ * @example
+ * countParentCategoryProducts("example");
+ */
+ccur
  *
  * @example
  * countParentCategoryProducts("example");
@@ -309,7 +348,17 @@ export async function countParentCategoryProducts(
 /**
  * Count products in a category
  * - Leaf nodes: count actual products
- * - Parent nodes: sum children counts
+ * - Parent nodes: sum childr/**
+ * Performs count category products operation
+ *
+ * @param {string} categoryId - The categoryid
+ *
+ * @returns {Promise<number>} The countcategoryproducts result
+ *
+ * @example
+ * countCategoryProducts("example");
+ */
+en counts
  */
 /**
  * Performs count category products operation
@@ -349,7 +398,17 @@ export async function countCategoryProducts(
     // Leaf node: count actual products
     return countLeafCategoryProducts(categoryId);
   } else {
-    // Parent node: sum children counts
+    ///**
+ * Updates category product counts
+ *
+ * @param {string} categoryId - The categoryid
+ *
+ * @returns {Promise<void>} The updatecategoryproductcounts result
+ *
+ * @example
+ * updateCategoryProductCounts("example");
+ */
+ Parent node: sum children counts
     return countParentCategoryProducts(categoryId);
   }
 }
@@ -439,7 +498,17 @@ export async function updateCategoryProductCounts(
     let ancestorInStock = 0;
     let ancestorOutOfStock = 0;
 
-    for (const childDoc of childrenSnapshot.docs) {
+    for (const childDoc of children/**
+ * Retrieves category ids for query
+ *
+ * @param {string} categoryId - The categoryid
+ *
+ * @returns {Promise<string[]>} The getcategoryidsforquery result
+ *
+ * @example
+ * getCategoryIdsForQuery("example");
+ */
+Snapshot.docs) {
       const childData = childDoc.data();
       ancestorInStock += childData.in_stock_count || 0;
       ancestorOutOfStock += childData.out_of_stock_count || 0;
@@ -538,7 +607,17 @@ export async function validateParentAssignments(
     errors.push("A category cannot be its own parent");
   }
 
-  // Check for cycles
+  // Check for cyc/**
+ * Calculates category level
+ *
+ * @param {string} categoryId - The categoryid
+ *
+ * @returns {Promise<number>} The calculatecategorylevel result
+ *
+ * @example
+ * calculateCategoryLevel("example");
+ */
+les
   for (const parentId of parentIds) {
     const wouldCycle = await wouldCreateCycle(categoryId, parentId);
     if (wouldCycle) {
@@ -704,7 +783,17 @@ export async function getCategoryProducts(
   },
 ): Promise<string[]> {
   const db = getFirestoreAdmin();
-  const categoryIds = await getCategoryIdsForQuery(categoryId);
+  const categoryIds = /**
+ * Updates category auction counts
+ *
+ * @param {string} categoryId - The categoryid
+ *
+ * @returns {Promise<void>} The updatecategoryauctioncounts result
+ *
+ * @example
+ * updateCategoryAuctionCounts("example");
+ */
+await getCategoryIdsForQuery(categoryId);
 
   const productIds: string[] = [];
   const batchSize = 10;
@@ -718,7 +807,13 @@ export async function getCategoryProducts(
       .where("is_deleted", "==", false);
 
     if (options?.status) {
-      query = query.where("status", "==", options.status);
+      query = query.whe/**
+ * Performs snapshot operation
+ *
+ * @returns {any} The snapshot result
+ *
+ */
+re("status", "==", options.status);
     }
 
     if (options?.limit) {

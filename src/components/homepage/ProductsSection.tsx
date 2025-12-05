@@ -4,7 +4,8 @@
  * @description This file contains the ProductsSection component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -64,6 +65,28 @@ interface ProductsSectionProps {
   latestLimit);
  */
 
+/**
+ * Performs products section operation
+ *
+ * @param {ProductsSectionProps} [{
+  latestLimit = 8,
+  featuredLimit = 8,
+  className = "",
+}] - The {
+  latestlimit = 8,
+  featuredlimit = 8,
+  classname = "",
+}
+ *
+ * @returns {any} The productssection result
+ *
+ * @example
+ * ProductsSection({
+  latestLimit = 8,
+  featuredLimit = 8,
+  className = "",
+});
+ */
 export function ProductsSection({
   latestLimit = 8,
   featuredLimit = 8,
@@ -144,7 +167,15 @@ export function ProductsSection({
   }
 
   // Combine and dedupe products - featured first, then latest (excluding duplicates)
-  const featuredIds = new Set(featuredProducts.map((p) => p.id));
+  /**
+ * Performs featured ids operation
+ *
+ * @param {any} featuredProducts.map((p - The featuredproducts.map((p
+ *
+ * @returns {any} The featuredids result
+ *
+ */
+const featuredIds = new Set(featuredProducts.map((p) => p.id));
   const uniqueLatest = latestProducts.filter((p) => !featuredIds.has(p.id));
   const allProducts = [...featuredProducts, ...uniqueLatest];
 

@@ -4,7 +4,8 @@
  * @description This file contains service functions for shiprocket operations
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -179,7 +180,15 @@ class ShiprocketService {
     params: RateCalculationParams
   ): Promise<CourierRate | null> {
     try {
-      const rates = await this.calculateRates(params);
+      /**
+ * Performs rates operation
+ *
+ * @param {any} params - The params
+ *
+ * @returns {any} The rates result
+ *
+ */
+const rates = await this.calculateRates(params);
       return rates.find((rate) => rate.recommended) || rates[0] || null;
     } catch (error) {
       logError(error as Error, {

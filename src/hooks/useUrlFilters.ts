@@ -4,7 +4,8 @@
  * @description This file contains functionality related to useUrlFilters
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -144,6 +145,16 @@ export interface UseUrlFiltersReturn {
   options);
  */
 
+/**
+ * Custom React hook for url filters
+ *
+ * @param {UseUrlFiltersOptions} [options] - The options
+ *
+ * @returns {UseUrlFiltersReturn} The useurlfilters result
+ *
+ * @example
+ * useUrlFilters(options);
+ */
 export function useUrlFilters(
   /** Options */
   options: UseUrlFiltersOptions = {}
@@ -162,7 +173,16 @@ export function useUrlFilters(
 
   // Initialize state from URL params
   const [filters, setFilters] = useState<FilterState>(() => {
-    const urlFilters: FilterState = { ...initialFilters };
+    /**
+ * Performs url filters operation
+ *
+ * @param {any} (value - The (value
+ * @param {any} key - The key
+ *
+ * @returns {any} The urlfilters result
+ *
+ */
+const urlFilters: FilterState = { ...initialFilters };
     searchParams.forEach((value, key) => {
       if (
         key !== "sort" &&
@@ -200,7 +220,15 @@ export function useUrlFilters(
     return urlLimit ? parseInt(urlLimit, 10) : initialLimit;
   });
 
-  // Debounce timer
+  // D/**
+ * Builds query string
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {string =>} The buildquerystring result
+ *
+ */
+ebounce timer
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
     null
   );
@@ -231,7 +259,15 @@ export function useUrlFilters(
       params.set("page", String(page));
     }
     if (limit !== initialLimit) {
-      params.set("limit", String(limit));
+     /**
+ * Performs timer operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The timer result
+ *
+ */
+ params.set("limit", String(limit));
     }
 
     return params.toString();
@@ -243,11 +279,36 @@ export function useUrlFilters(
       clearTimeout(debounceTimer);
     }
 
-    const timer = setTimeout(() => {
+    const timer = /**
+ * Updates filter
+ *
+ * @param {string} (key - The (key
+ * @param {any} value - The value
+ *
+ * @returns {any} The updatefilter result
+ *
+ */
+setTimeout(() => {
       const queryString = buildQueryString();
-      const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+      const newUrl = queryStr/**
+ * Updates filters
+ *
+ * @param {Partial<FilterState>} (newFilters - The (newfilters
+ *
+ * @returns {any} The updatefilters result
+ *
+ */
+ing ? `${pathname}?${queryString}` : pathname;
       router.push(newUrl, { scroll: false });
-    }, debounceMs);
+    }, debou/**
+ * Performs clear filter operation
+ *
+ * @param {string} (key - The (key
+ *
+ * @returns {any} The clearfilter result
+ *
+ */
+nceMs);
 
     setDebounceTimer(timer);
 
@@ -256,10 +317,26 @@ export function useUrlFilters(
     };
   }, [filters, sort, page, limit]);
 
-  // Update single filter
+  // Upd/**
+ * Performs reset filters operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The resetfilters result
+ *
+ */
+ate single filter
   const updateFilter = useCallback((key: string, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value } as FilterState));
-    // Reset to page 1 when filters change
+    // Reset to page 1 when fi/**
+ * Performs active filter count operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The activefiltercount result
+ *
+ */
+lters change
     setPage(1);
   }, []);
 

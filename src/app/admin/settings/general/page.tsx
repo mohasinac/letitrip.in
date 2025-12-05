@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -36,7 +37,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function AdminGeneralSettingsPage() {
+export default /**
+ * Performs admin general settings page operation
+ *
+ * @returns {any} The admingeneralsettingspage result
+ *
+ */
+function AdminGeneralSettingsPage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -134,7 +141,16 @@ export default function AdminGeneralSettingsPage() {
     }
   };
 
-  const updateField = <K extends keyof GeneralSettings>(
+  /**
+ * Updates field
+ *
+ * @param {K} field - The field
+ * @param {GeneralSettings[K]} value - The value
+ *
+ * @returns {any} The updatefield result
+ *
+ */
+const updateField = <K extends keyof GeneralSettings>(
     /** Field */
     field: K,
     /** Value */

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Metadata } from "next";
@@ -17,7 +18,13 @@ export const metadata: Metadata = {
   description: "Information about international shipping rates and policies",
 };
 
-export default function InternationalShippingPage() {
+export default /**
+ * Performs international shipping page operation
+ *
+ * @returns {any} The internationalshippingpage result
+ *
+ */
+function InternationalShippingPage() {
   const regions = [
     {
       /** Name */

@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -25,7 +26,13 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function MyShopsPage() {
+export default /**
+ * Performs my shops page operation
+ *
+ * @returns {any} The myshopspage result
+ *
+ */
+function MyShopsPage() {
   const [view, setView] = useState<"grid" | "table">("table");
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,7 +48,15 @@ export default function MyShopsPage() {
     execute,
   } = useLoadingState<ShopFE[]>({ initialData: [] });
 
-  const loadShops = useCallback(async () => {
+  /**
+ * Performs load shops operation
+ *
+ * @param {any} async( - The async(
+ *
+ * @returns {Promise<any>} The loadshops result
+ *
+ */
+const loadShops = useCallback(async () => {
     const data: any = await shopsService.list();
     return data.data || data.shops || data || [];
   }, []);
@@ -70,7 +85,15 @@ export default function MyShopsPage() {
    *
    * @returns {Promise<any>} Promise resolving to async  result
    *
-   * @throws {Error} When operation fails or validation errors occur
+   * @throw/**
+ * Performs shop to delete operation
+ *
+ * @param {any} (shop - The (shop
+ *
+ * @returns {any} The shoptodelete result
+ *
+ */
+s {Error} When operation fails or validation errors occur
    */
 
   const handleDelete = async (shopId: string) => {
@@ -81,7 +104,15 @@ export default function MyShopsPage() {
       await shopsService.delete(shopToDelete.slug);
       setShops(shopsList.filter((shop) => shop.id !== shopId));
       setDeleteShopId(null);
-    } catch (error) {
+    } catch (/**
+ * Performs filtered shops operation
+ *
+ * @param {any} (shop - The (shop
+ *
+ * @returns {any} The filteredshops result
+ *
+ */
+error) {
       logError(error as Error, {
         /** Component */
         component: "SellerShops.handleDelete",

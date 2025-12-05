@@ -4,7 +4,8 @@
  * @description This file contains functionality related to robots
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { MetadataRoute } from "next";
@@ -17,7 +18,13 @@ import { MetadataRoute } from "next";
  * @example
  * const result = robots();
  */
-export default function robots(): MetadataRoute.Robots {
+export default /**
+ * Performs robots operation
+ *
+ * @returns {MetadataRoute.Robots} The robots result
+ *
+ */
+function robots(): MetadataRoute.Robots {
   const baseUrl = "https://letitrip.in";
 
   return {

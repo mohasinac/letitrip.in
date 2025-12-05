@@ -4,7 +4,8 @@
  * @description This file contains the BasicInfoStep component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -30,7 +31,23 @@ interface BasicInfoStepProps {
   onChange: OnChange;
 }
 
-export default function BasicInfoStep({
+export default /**
+ * Performs basic info step operation
+ *
+ * @param {BasicInfoStepProps} {
+  formData,
+  categories,
+  onChange,
+} - The {
+  formdata,
+  categories,
+  onchange,
+}
+ *
+ * @returns {any} The basicinfostep result
+ *
+ */
+function BasicInfoStep({
   formData,
   categories,
   onChange,

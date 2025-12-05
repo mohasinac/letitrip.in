@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -53,7 +54,9 @@ interface RazorpayOrderResponse {
   entity: string;
   /** Amount */
   amount: number;
+  /** Amount_paid */
   amount_paid: number;
+  /** Amount_due */
   amount_due: number;
   /** Currency */
   currency: string;
@@ -65,6 +68,7 @@ interface RazorpayOrderResponse {
   attempts: number;
   /** Notes */
   notes: Record<string, string>;
+  /** Created_at */
   created_at: number;
 }
 

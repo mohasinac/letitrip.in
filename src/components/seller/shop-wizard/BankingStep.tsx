@@ -4,7 +4,8 @@
  * @description This file contains the BankingStep component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -25,7 +26,15 @@ interface BankingStepProps {
   onChange: OnChange;
 }
 
-export default function BankingStep({ formData, onChange }: BankingStepProps) {
+export default /**
+ * Performs banking step operation
+ *
+ * @param {BankingStepProps} { formData, onChange } - The { formdata, onchange }
+ *
+ * @returns {any} The bankingstep result
+ *
+ */
+function BankingStep({ formData, onChange }: BankingStepProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <FormInput

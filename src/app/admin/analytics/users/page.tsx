@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -77,7 +78,16 @@ function UserSegmentChart({
   /** Data */
   data: { label: string; value: number; color: string }[];
 }) {
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  /**
+ * Performs total operation
+ *
+ * @param {any} (sum - The (sum
+ * @param {any} item - The item
+ *
+ * @returns {any} The total result
+ *
+ */
+const total = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -86,7 +96,16 @@ function UserSegmentChart({
       </h3>
 
       <div className="flex items-center justify-center mb-6">
-        <div className="relative w-40 h-40">
+        <div className="re/**
+ * Performs start angle operation
+ *
+ * @param {any} 0 - The 0
+ * @param {any} index - The index
+ *
+ * @returns {any} The startangle result
+ *
+ */
+lative w-40 h-40">
           <svg className="w-full h-full" viewBox="0 0 100 100">
             {data.map((segment, index) => {
               const startAngle = data
@@ -387,7 +406,13 @@ function ActivityTimeline() {
   );
 }
 
-export default function AdminUsersAnalyticsPage() {
+export default /**
+ * Performs admin users analytics page operation
+ *
+ * @returns {any} The adminusersanalyticspage result
+ *
+ */
+function AdminUsersAnalyticsPage() {
   const [period, setPeriod] = useState("month");
   const {
     /** Is Loading */
@@ -423,7 +448,15 @@ export default function AdminUsersAnalyticsPage() {
     /** Active Users Growth */
     activeUsersGrowth: 12.1,
     /** Churn Rate Change */
-    churnRateChange: -0.5,
+    chu/**
+ * Performs load data operation
+ *
+ * @param {any} ( - The (
+ *
+ * @returns {any} The loaddata result
+ *
+ */
+rnRateChange: -0.5,
   });
 
   const userSegments = [

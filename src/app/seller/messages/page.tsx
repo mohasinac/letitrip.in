@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -43,7 +44,13 @@ import {
   Store,
 } from "lucide-react";
 
-export default function SellerMessagesPage() {
+export default /**
+ * Performs seller messages page operation
+ *
+ * @returns {any} The sellermessagespage result
+ *
+ */
+function SellerMessagesPage() {
   const { user } = useAuth();
   const [conversations, setConversations] = useState<ConversationFE[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -77,7 +84,15 @@ export default function SellerMessagesPage() {
 
         // Filter to only show conversations where seller is a participant
         // and the other party is a buyer (user type)
-        const sellerConversations = result.conversations.filter(
+        /**
+ * Performs seller conversations operation
+ *
+ * @param {any} (c - The (c
+ *
+ * @returns {any} The sellerconversations result
+ *
+ */
+const sellerConversations = result.conversations.filter(
           (c) => c.otherParticipant.type === "user",
         );
 
@@ -124,7 +139,15 @@ export default function SellerMessagesPage() {
   /**
    * Handles load more event
    *
-   * @returns {any} The handleloadmore result
+   * @returns {any} The handleloadmor/**
+ * Performs filtered conversations operation
+ *
+ * @param {any} (conv - The (conv
+ *
+ * @returns {any} The filteredconversations result
+ *
+ */
+e result
    */
 
   const handleLoadMore = () => {

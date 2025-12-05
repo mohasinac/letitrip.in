@@ -4,7 +4,8 @@
  * @description This file contains TypeScript type definitions for user
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -35,6 +36,7 @@ export interface UserFE {
   photoURL: string | null;
   /** Phone Number */
   phoneNumber: string | null;
+  /** Phone */
   phone?: string | null; // Alias for phoneNumber
   /** Role */
   role: UserRole;
@@ -46,7 +48,9 @@ export interface UserFE {
   firstName: string | null;
   /** Last Name */
   lastName: string | null;
+  /** FullName */
   fullName: string; // Computed: firstName + lastName or displayName
+  /** Initials */
   initials: string; // Computed: First letters of name
   /** Bio */
   bio: string | null;
@@ -58,6 +62,7 @@ export interface UserFE {
   emailVerified: boolean;
   /** Phone Verified */
   phoneVerified: boolean;
+  /** IsVerified */
   isVerified: boolean; // Computed: emailVerified && phoneVerified
 
   // Shop (for sellers)
@@ -67,6 +72,7 @@ export interface UserFE {
   shopName: string | null;
   /** Shop Slug */
   shopSlug: string | null;
+  /** HasShop */
   hasShop: boolean; // Computed: shopId !== null
 
   // Stats
@@ -86,9 +92,13 @@ export interface UserFE {
   reviewCount: number;
 
   // Formatted stats
+  /** FormattedTotalSpent */
   formattedTotalSpent: string; // "₹12,450"
+  /** FormattedTotalSales */
   formattedTotalSales: string; // "₹45,600"
+  /** RatingStars */
   ratingStars: number; // Rounded: 4.7 → 5
+  /** RatingDisplay */
   ratingDisplay: string; // "4.7 (123 reviews)"
 
   // Preferences
@@ -115,19 +125,29 @@ export interface UserFE {
   lastLoginAt: Date | null;
 
   // Formatted dates
+  /** MemberSince */
   memberSince: string; // "Member since Nov 2024"
+  /** LastLoginDisplay */
   lastLoginDisplay: string; // "Last seen 2 hours ago" or "Never"
+  /** AccountAge */
   accountAge: string; // "2 months"
 
   // UI States
+  /** IsActive */
   isActive: boolean; // status === 'active'
+  /** IsBlocked */
   isBlocked: boolean; // status === 'blocked'
+  /** IsSuspended */
   isSuspended: boolean; // status === 'suspended'
+  /** IsAdmin */
   isAdmin: boolean; // role === 'admin'
+  /** IsSeller */
   isSeller: boolean; // role === 'seller'
+  /** IsUser */
   isUser: boolean; // role === 'user'
 
   // Badges
+  /** Badges */
   badges: string[]; // ["Verified", "Top Seller", "New", etc.]
 
   // Metadata
@@ -271,6 +291,7 @@ export interface UserStatsFE {
     /** Suspended */
     suspended: number;
   };
+  /** GrowthRate */
   growthRate: string; // "+15% from last month"
 }
 

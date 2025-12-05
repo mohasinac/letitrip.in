@@ -4,7 +4,8 @@
  * @description This file contains the LoadingSkeleton component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -20,12 +21,38 @@ interface LoadingSkeletonProps {
   className?: string;
 }
 
-export default function LoadingSkeleton({
+export default /**
+ * Performs loading skeleton operation
+ *
+ * @param {LoadingSkeletonProps} [{
+  type = "card",
+  count = 1,
+  className = "",
+}] - The {
+  type = "card",
+  count = 1,
+  classname = "",
+}
+ *
+ * @returns {any} The loadingskeleton result
+ *
+ */
+function LoadingSkeleton({
   type = "card",
   count = 1,
   className = "",
 }: LoadingSkeletonProps) {
-  const skeletons = Array.from({ length: count }, (_, i) => i);
+  /**
+ * Performs skeletons operation
+ *
+ * @param {object} { length - The { length
+ * @param {any} (_ - The (_
+ * @param {any} i - The i
+ *
+ * @returns {any} The skeletons result
+ *
+ */
+const skeletons = Array.from({ length: count }, (_, i) => i);
 
   if (type === "card") {
     return (

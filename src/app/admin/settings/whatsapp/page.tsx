@@ -4,7 +4,8 @@
  * @description This file contains the page component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -77,7 +78,13 @@ interface WhatsAppSettings {
 // COMPONENT
 // ============================================================================
 
-export default function WhatsAppSettingsPage() {
+export default /**
+ * Performs whats app settings page operation
+ *
+ * @returns {any} The whatsappsettingspage result
+ *
+ */
+function WhatsAppSettingsPage() {
   const [settings, setSettings] = useState<WhatsAppSettings>({
     /** Twilio Enabled */
     twilioEnabled: false,
@@ -196,7 +203,16 @@ export default function WhatsAppSettingsPage() {
 
     await testConnection(async () => {
       try {
-        const response = await apiService.post<{ status: string }>(
+        /**
+ * Performs response operation
+ *
+ * @param {any} `/admin/settings/whatsapp/test/${provider}` - The `/admin/settings/whatsapp/test/${provider}`
+ * @param {object} {} - The {}
+ *
+ * @returns {any} The response result
+ *
+ */
+const response = await apiService.post<{ status: string }>(
           `/admin/settings/whatsapp/test/${provider}`,
           {}
         );

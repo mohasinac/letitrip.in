@@ -4,7 +4,8 @@
  * @description This file contains the ShopInlineForm component and its related functionality
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
@@ -83,6 +84,28 @@ interface ShopInlineFormProps {
 });
  */
 
+/**
+ * Performs shop inline form operation
+ *
+ * @param {ShopInlineFormProps} {
+  shop,
+  onSuccess,
+  onCancel,
+} - The {
+  shop,
+  onsuccess,
+  oncancel,
+}
+ *
+ * @returns {any} The shopinlineform result
+ *
+ * @example
+ * ShopInlineForm({
+  shop,
+  onSuccess,
+  onCancel,
+});
+ */
 export function ShopInlineForm({
   shop,
   onSuccess,

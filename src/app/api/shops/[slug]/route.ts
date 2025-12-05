@@ -4,7 +4,8 @@
  * @description This file contains functionality related to route
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -68,6 +69,17 @@ import { NextRequest, NextResponse } from "next/server";
   request, {});
  */
 
+/**
+ * Retrieves 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The get result
+ *
+ * @example
+ * GET(request, {});
+ */
 export async function GET(
   /** Request */
   request: NextRequest,
@@ -213,7 +225,18 @@ export async function GET(
  * @param {NextRequest} /** Request */
   request - The /**  request */
   request
- * @param {{ params} { params } - The { params }
+ * @param {{ /**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The patch result
+ *
+ * @example
+ * PATCH(request, {});
+ */
+params} { params } - The { params }
  *
  * @returns {Promise<any>} Promise resolving to patch result
  *
@@ -319,7 +342,13 @@ export async function PATCH(
         updated_at: new Date(),
       });
 
-    const updated = await Collections.shops().doc(docId).get();
+    /**
+ * Updates d
+ *
+ * @returns {any} The updated result
+ *
+ */
+const updated = await Collections.shops().doc(docId).get();
     return NextResponse.json({
       /** Success */
       success: true,
@@ -352,7 +381,18 @@ export async function PATCH(
  * @param {NextRequest} request - The request
  * @param {{ params} { params } - The { params }
  *
- * @returns {Promise<any>} Promise resolving to delete result
+ * @returns {Promise<any>} Promise resolving to delete result/**
+ * Deletes 
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params: Promise<{ slug: string }> }} { params } - The { params }
+ *
+ * @returns {Promise<any>} The delete result
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
  *
  * @throws {Error} When operation fails or validation errors occur
  *
@@ -462,7 +502,15 @@ export async function DELETE(
       .where("status", "in", [
         "pending",
         "confirmed",
-        "processing",
+  /**
+ * Performs orders snap operation
+ *
+ * @param {any} 1 - The 1
+ *
+ * @returns {any} The orderssnap result
+ *
+ */
+      "processing",
         "shipped",
       ])) as any;
     const ordersSnap = await ordersSnapshot.limit(1).get();

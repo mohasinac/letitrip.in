@@ -4,7 +4,8 @@
  * @description This file contains functionality related to payment-logos
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -15,6 +16,13 @@
 import { getPaymentLogoUrl } from "@/services/static-assets-client.service";
 
 // Default fallback logos (base64 or text-based)
+/**
+ * DEFAULT_LOGOS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for default logos
+ */
 const DEFAULT_LOGOS: Record<string, string> = {
   visa: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32"><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%231A1F71" font-family="Arial,sans-serif" font-size="12" font-weight="bold">VISA</text></svg>',
   /** Mastercard */

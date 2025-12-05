@@ -4,7 +4,8 @@
  * @description This file contains utility functions for price
  * 
  * @created 2025-12-05
- * @author Development Team
+ * @author mohasinac
+ * @see {@link https://mohasin.chinnapattan.com}
  */
 
 /**
@@ -33,6 +34,13 @@ interface CurrencyConfig {
   position: "before" | "after";
 }
 
+/**
+ * CURRENCY_CONFIGS constant
+ * 
+ * @constant
+ * @type {any}
+ * @description Configuration constant for currency configs
+ */
 const CURRENCY_CONFIGS: Record<Currency, CurrencyConfig> = {
   /** I N R */
   INR: { symbol: "₹", locale: "en-IN", position: "before" },
