@@ -1,8 +1,11 @@
 "use client";
 
-import { AdminPageHeader, LoadingSpinner, toast } from "@/components/admin";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
+import { toast } from "@/components/admin/Toast";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { FormInput, FormTextarea } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";

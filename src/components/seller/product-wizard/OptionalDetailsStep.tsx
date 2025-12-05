@@ -1,6 +1,8 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { FormInput, FormTextarea, FormSelect } from "@/components/forms";
-import { Price } from "@/components/common/values";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormTextarea } from "@/components/forms/FormTextarea";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { Price } from "@/components/common/values/Price";
 import type { OptionalStepProps } from "./types";
 
 export function OptionalDetailsStep({

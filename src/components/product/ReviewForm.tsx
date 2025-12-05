@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { Star, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
-import { FormInput, FormLabel, FormTextarea } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { logError } from "@/lib/error-logger";
 import { reviewsService } from "@/services/reviews.service";
 import MediaUploader from "@/components/media/MediaUploader";

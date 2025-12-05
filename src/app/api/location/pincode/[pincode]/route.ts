@@ -6,7 +6,8 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { fetchPincodeData, validatePincode } from "@/app/api/lib/location";
+import { fetchPincodeData } from "@/app/api/lib/location/pincode";
+import { validatePincode } from "@/app/api/lib/location/pincode";
 
 interface RouteParams {
   params: Promise<{

@@ -1,9 +1,7 @@
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import {
-  createPaginationMeta,
-  parseSieveQuery,
-  reviewsSieveConfig,
-} from "@/app/api/lib/sieve";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { reviewsSieveConfig } from "@/app/api/lib/sieve/config";
 import {
   getUserFromRequest,
   requireAuth,

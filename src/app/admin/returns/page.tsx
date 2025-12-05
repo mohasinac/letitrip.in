@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/useMobile";
 import { useLoadingState } from "@/hooks/useLoadingState";
-import { DateDisplay } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 
 export default function AdminReturnsPage() {
   const router = useRouter();

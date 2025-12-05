@@ -6,7 +6,7 @@
  */
 
 import { getAuthFromRequest } from "@/app/api/lib/auth";
-import { getBalanceDetails } from "@/app/api/lib/riplimit";
+import { getBalanceDetails } from "@/app/api/lib/riplimit/account";
 import { NextRequest, NextResponse } from "next/server";
 
 /**

@@ -14,7 +14,7 @@ import { payoutsService } from "@/services/payouts.service";
 import { toast } from "@/components/admin/Toast";
 import { Eye, CheckCircle, XCircle } from "lucide-react";
 import { useLoadingState } from "@/hooks/useLoadingState";
-import { DateDisplay } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 
 export default function AdminPayoutsPage() {
   const router = useRouter();

@@ -12,8 +12,9 @@ import {
 import { toast } from "sonner";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
-import { FormInput } from "@/components/forms";
-import { Price, DateDisplay } from "@/components/common/values";
+import { FormInput } from "@/components/forms/FormInput";
+import { Price } from "@/components/common/values/Price";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE } from "@/types/frontend/coupon.types";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 
 interface SliderControlProps {
   label: string;

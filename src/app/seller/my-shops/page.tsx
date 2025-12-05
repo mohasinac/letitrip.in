@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { PageState } from "@/components/common/PageState";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { FormInput } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";

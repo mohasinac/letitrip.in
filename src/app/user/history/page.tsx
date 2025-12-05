@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Clock, Trash2, X, ShoppingBag } from "lucide-react";
 import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { Price, RelativeDate } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
+import { RelativeDate } from "@/components/common/values/RelativeDate";
 
 export default function HistoryPage() {
   const { history, removeFromHistory, clearHistory } = useViewingHistory();

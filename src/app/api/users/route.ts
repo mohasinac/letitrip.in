@@ -1,9 +1,7 @@
 import { Collections } from "@/app/api/lib/firebase/collections";
-import {
-  createPaginationMeta,
-  parseSieveQuery,
-  usersSieveConfig,
-} from "@/app/api/lib/sieve";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { usersSieveConfig } from "@/app/api/lib/sieve/config";
 import { requireRole } from "@/app/api/middleware/rbac-auth";
 import {
   VALIDATION_MESSAGES,

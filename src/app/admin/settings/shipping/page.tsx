@@ -13,7 +13,7 @@
  * - Restricted pincodes
  */
 
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import {

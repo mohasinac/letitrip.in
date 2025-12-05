@@ -1,6 +1,6 @@
 "use client";
 
-import { FormInput } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
 import type { ShopFormData, OnChange } from "./types";
 
 interface BankingStepProps {

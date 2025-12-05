@@ -16,7 +16,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { FormInput } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
 import { messagesService } from "@/services/messages.service";
 import type { ConversationFE } from "@/types/frontend/message.types";
 import { formatDistanceToNow } from "date-fns";

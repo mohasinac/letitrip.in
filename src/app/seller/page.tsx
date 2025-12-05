@@ -2,7 +2,8 @@
 
 import { PageState } from "@/components/common/PageState";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
-import { CompactPrice, Price } from "@/components/common/values";
+import { CompactPrice } from "@/components/common/values/CompactPrice";
+import { Price } from "@/components/common/values/Price";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { analyticsService } from "@/services/analytics.service";

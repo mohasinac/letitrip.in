@@ -4,11 +4,11 @@ import { useState } from "react";
 import { Loader2, Grid, List, Filter as FilterIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { FormSelect } from "@/components/forms";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   ProductFilters,

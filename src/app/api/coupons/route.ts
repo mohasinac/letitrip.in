@@ -6,11 +6,9 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { getUserShops } from "../lib/auth-helpers";
-import {
-  parseSieveQuery,
-  couponsSieveConfig,
-  createPaginationMeta,
-} from "@/app/api/lib/sieve";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { couponsSieveConfig } from "@/app/api/lib/sieve/config";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
 
 // Extended Sieve config with field mappings for coupons
 const couponsConfig = {

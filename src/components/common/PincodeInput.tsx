@@ -5,7 +5,7 @@ import { Loader2, CheckCircle2, XCircle, MapPin } from "lucide-react";
 import { locationService } from "@/services/location.service";
 import type { PincodeLookupResult } from "@/types/shared/location.types";
 import { PINCODE_LENGTH } from "@/constants/location";
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 
 export interface PincodeInputProps {
   value: string;

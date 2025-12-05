@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
 import { useIsMobile } from "@/hooks/useMobile";
-import { DateDisplay } from "@/components/common/values";
-import { FormSelect } from "@/components/forms";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 

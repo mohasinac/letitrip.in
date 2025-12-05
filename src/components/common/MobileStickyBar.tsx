@@ -7,7 +7,7 @@
 import { ShoppingCart, Gavel, Heart } from "lucide-react";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 
 interface MobileStickyBarProps {
   type?: "product" | "auction";

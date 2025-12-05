@@ -7,7 +7,7 @@ import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollC
 import { ProductCard } from "@/components/cards/ProductCard";
 import AuctionCard from "@/components/cards/AuctionCard";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { Rating } from "@/components/common/values";
+import { Rating } from "@/components/common/values/Rating";
 import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";
 import type { ShopWithItems } from "@/services/homepage.service";

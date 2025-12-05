@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
-import { adminClearUnpaidAuction } from "@/app/api/lib/riplimit";
+import { adminClearUnpaidAuction } from "@/app/api/lib/riplimit/admin";
 
 interface RouteParams {
   params: Promise<{ id: string }>;

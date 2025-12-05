@@ -10,7 +10,7 @@ import {
   MobileSwipeActions,
   createDeleteAction,
 } from "@/components/mobile/MobileSwipeActions";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 import type { CartItemFE as CartItemType } from "@/types/frontend/cart.types";
 
 interface CartItemProps {

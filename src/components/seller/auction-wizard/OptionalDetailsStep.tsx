@@ -2,14 +2,12 @@
 
 import { ChevronDown, ChevronUp, Info } from "lucide-react";
 import DateTimePicker from "@/components/common/DateTimePicker";
-import {
-  FormInput,
-  FormTextarea,
-  FormSelect,
-  FormLabel,
-  FormCheckbox,
-} from "@/components/forms";
-import { Price } from "@/components/common/values";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormTextarea } from "@/components/forms/FormTextarea";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { FormLabel } from "@/components/forms/FormLabel";
+import { FormCheckbox } from "@/components/forms/FormCheckbox";
+import { Price } from "@/components/common/values/Price";
 import type { OptionalStepProps } from "./types";
 
 export function OptionalDetailsStep({

@@ -8,7 +8,7 @@
 
 import { useState } from "react";
 import { Zap, X, Check, AlertTriangle } from "lucide-react";
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 import { formatCurrency } from "@/lib/formatters";
 
 interface AutoBidSetupProps {

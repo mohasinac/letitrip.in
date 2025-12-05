@@ -5,7 +5,8 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { logError } from "@/lib/firebase-error-logger";
 import SlugInput from "@/components/common/SlugInput";
-import { FormInput, FormTextarea } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { productsService } from "@/services/products.service";
 import type { ProductFE, ProductCardFE } from "@/types/frontend/product.types";
 

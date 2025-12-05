@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { formatCurrency, formatTimeRemaining } from "@/lib/formatters";
 import { getTimeRemaining, getNextMinimumBid } from "@/lib/validation/auction";
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 
 export interface AuctionQuickViewProps {
   auction: {

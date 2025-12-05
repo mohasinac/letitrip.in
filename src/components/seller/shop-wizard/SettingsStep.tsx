@@ -1,6 +1,8 @@
 "use client";
 
-import { FormField, FormInput, FormCheckbox } from "@/components/forms";
+import { FormField } from "@/components/forms/FormField";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import type { ShopFormData, OnShopChange } from "./types";
 
 interface SettingsStepProps {

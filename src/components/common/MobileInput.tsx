@@ -9,7 +9,7 @@ import {
   PHONE_LENGTH,
 } from "@/constants/location";
 import { locationService } from "@/services/location.service";
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 
 export interface MobileInputProps {
   value: string;

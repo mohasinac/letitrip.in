@@ -1,6 +1,6 @@
 "use client";
 
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 import type { StepProps } from "./types";
 
 export function ReviewStep({ formData }: StepProps) {

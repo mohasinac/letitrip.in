@@ -3,7 +3,7 @@
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
 import { shopsService } from "@/services/shops.service";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { Store, CheckCircle, XCircle } from "lucide-react";
 import { getShopBulkActions } from "@/constants/bulk-actions";

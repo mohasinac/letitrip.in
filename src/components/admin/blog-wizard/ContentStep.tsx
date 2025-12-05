@@ -1,4 +1,4 @@
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import type { BlogFormData, OnBlogChange } from "./types";
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { FormField, FormInput } from "@/components/forms";
+import { FormField } from "@/components/forms/FormField";
+import { FormInput } from "@/components/forms/FormInput";
 import { AddressSelectorWithCreate } from "@/components/common/AddressSelectorWithCreate";
 import type { ShopFormData, OnShopChange } from "./types";
 

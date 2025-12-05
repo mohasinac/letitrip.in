@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import OptimizedImage from "@/components/common/OptimizedImage";

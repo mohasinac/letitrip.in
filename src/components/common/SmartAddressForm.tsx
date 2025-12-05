@@ -1,6 +1,6 @@
 "use client";
 
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 import { MobileBottomSheet } from "@/components/mobile/MobileBottomSheet";
 import {
   ADDRESS_TYPES,

@@ -3,7 +3,7 @@
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import AuctionForm from "@/components/seller/AuctionForm";
-import { Card } from "@/components/ui";
+import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";

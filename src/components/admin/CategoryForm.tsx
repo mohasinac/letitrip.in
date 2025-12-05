@@ -6,14 +6,14 @@ import CategorySelector, {
 import OptimizedImage from "@/components/common/OptimizedImage";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import SlugInput from "@/components/common/SlugInput";
-import {
-  FormField,
-  FormInput,
-  FormLabel,
-  FormTextarea,
-} from "@/components/forms";
+import { FormField } from "@/components/forms/FormField";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import MediaUploader from "@/components/media/MediaUploader";
-import { Card, Checkbox, FormActions } from "@/components/ui";
+import { Card } from "@/components/ui/Card";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { FormActions } from "@/components/ui/FormActions";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";

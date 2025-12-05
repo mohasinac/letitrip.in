@@ -1,5 +1,5 @@
 import { apiService } from "./api.service";
-import { PaginatedResponseBE } from "@/types";
+import { PaginatedResponseBE } from "@/types/backend/pagination.types";
 import { PAGINATION } from "@/constants/limits";
 import { BLOG_STATUS, type BlogStatus } from "@/constants/statuses";
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Tag, X, Loader2, Store } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 
 interface ShopOrderSummaryProps {
   shopId: string;

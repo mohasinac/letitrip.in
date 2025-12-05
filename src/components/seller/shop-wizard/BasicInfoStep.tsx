@@ -1,8 +1,9 @@
 "use client";
 
-import { FormInput, FormTextarea } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import SlugInput from "@/components/common/SlugInput";
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 import MobileInput from "@/components/common/MobileInput";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import type { ShopFormData, OnChange } from "./types";

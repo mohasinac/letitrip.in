@@ -2,7 +2,8 @@
 
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay, Price } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { Price } from "@/components/common/values/Price";
 import { SellerResourcePage } from "@/components/seller/SellerResourcePage";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";

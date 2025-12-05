@@ -1,6 +1,7 @@
 "use client";
 
-import { FormField, FormTextarea } from "@/components/forms";
+import { FormField } from "@/components/forms/FormField";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import type { ShopFormData, OnShopChange } from "./types";
 
 interface PoliciesStepProps {

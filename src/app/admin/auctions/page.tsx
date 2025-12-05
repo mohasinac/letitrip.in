@@ -3,7 +3,7 @@
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
 import { auctionsService } from "@/services/auctions.service";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { Price } from "@/components/common/values/Price";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { Gavel, Clock, TrendingUp } from "lucide-react";

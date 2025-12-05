@@ -3,7 +3,7 @@
 import { EmptyState } from "@/components/common/EmptyState";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { FormSelect } from "@/components/forms";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { CATEGORY_FILTERS } from "@/constants/filters";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { useIsMobile } from "@/hooks/useMobile";

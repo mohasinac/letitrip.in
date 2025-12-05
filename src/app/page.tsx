@@ -1,19 +1,19 @@
 "use client";
 
-import { useIsMobile } from "@/hooks/useMobile";
-import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
+import FAQSection from "@/components/faq/FAQSection";
 import {
-  WelcomeHero,
-  ValueProposition,
-  HeroSection,
+  FeaturedBlogsSection,
   FeaturedCategoriesSection,
   FeaturedShopsSection,
+  HeroSection,
   RecentReviewsSection,
-  FeaturedBlogsSection,
+  ValueProposition,
+  WelcomeHero,
 } from "@/components/homepage";
-import { ProductsSection } from "@/components/homepage/ProductsSection";
 import { AuctionsSection } from "@/components/homepage/AuctionsSection";
-import FAQSection from "@/components/faq/FAQSection";
+import { ProductsSection } from "@/components/homepage/ProductsSection";
+import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
+import { useIsMobile } from "@/hooks/useMobile";
 
 export default function Home() {
   const isMobile = useIsMobile();

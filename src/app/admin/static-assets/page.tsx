@@ -1,7 +1,7 @@
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { FormInput } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";

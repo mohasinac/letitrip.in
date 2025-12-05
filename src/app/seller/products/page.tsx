@@ -4,7 +4,7 @@ import { SellerResourcePage } from "@/components/seller/SellerResourcePage";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import Link from "next/link";
 import { Eye, ExternalLink } from "lucide-react";

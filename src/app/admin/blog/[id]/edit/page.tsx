@@ -2,13 +2,11 @@
 
 import OptimizedImage from "@/components/common/OptimizedImage";
 import RichTextEditor from "@/components/common/RichTextEditor";
-import { DateDisplay } from "@/components/common/values";
-import {
-  FormInput,
-  FormLabel,
-  FormSelect,
-  FormTextarea,
-} from "@/components/forms";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";

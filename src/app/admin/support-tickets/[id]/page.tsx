@@ -2,7 +2,8 @@
 
 import AuthGuard from "@/components/auth/AuthGuard";
 import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { FormInput, FormTextarea } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { supportService } from "@/services/support.service";

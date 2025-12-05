@@ -1,17 +1,15 @@
 "use client";
 
-import {
-  AdminPageHeader,
-  LoadingSpinner,
-  ToggleSwitch,
-  toast,
-} from "@/components/admin";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
+import { ToggleSwitch } from "@/components/admin/ToggleSwitch";
+import { toast } from "@/components/admin/Toast";
 import { BannerEditor } from "@/components/admin/homepage/BannerEditor";
 import { SectionCard } from "@/components/admin/homepage/SectionCard";
 import { SliderControl } from "@/components/admin/homepage/SliderControl";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { DateDisplay } from "@/components/common/values";
-import { FormLabel } from "@/components/forms";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { FormLabel } from "@/components/forms/FormLabel";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import {

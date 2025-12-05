@@ -1,7 +1,7 @@
 "use client";
 
 import { Package, Store, Star, Tag } from "lucide-react";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 
 export interface CategoryStatsProps {
   productCount: number;

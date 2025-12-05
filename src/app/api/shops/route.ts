@@ -7,11 +7,9 @@ import { Collections } from "@/app/api/lib/firebase/collections";
 import { UserRole } from "@/app/api/lib/firebase/queries";
 import { logError } from "@/lib/firebase-error-logger";
 import { withCache } from "@/app/api/middleware/cache";
-import {
-  parseSieveQuery,
-  shopsSieveConfig,
-  createPaginationMeta,
-} from "@/app/api/lib/sieve";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { shopsSieveConfig } from "@/app/api/lib/sieve/config";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
 import {
   VALIDATION_RULES,
   VALIDATION_MESSAGES,

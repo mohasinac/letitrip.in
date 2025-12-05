@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { FormSelect } from "@/components/forms";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { shopsService } from "@/services/shops.service";
 import { logError } from "@/lib/firebase-error-logger";
 import { useLoadingState } from "@/hooks/useLoadingState";

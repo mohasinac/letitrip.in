@@ -6,8 +6,8 @@
  */
 
 import { getAuthFromRequest } from "@/app/api/lib/auth";
-import { getTransactionHistory } from "@/app/api/lib/riplimit";
-import { parseSieveQuery } from "@/app/api/lib/sieve";
+import { getTransactionHistory } from "@/app/api/lib/riplimit/transactions";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
 import { RipLimitTransactionType } from "@/types/backend/riplimit.types";
 import { NextRequest, NextResponse } from "next/server";
 

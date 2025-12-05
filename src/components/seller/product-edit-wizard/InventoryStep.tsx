@@ -1,6 +1,7 @@
 "use client";
 
-import { FormInput, FormSelect } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormSelect } from "@/components/forms/FormSelect";
 import type { StepProps } from "./types";
 
 export function InventoryStep({ formData, setFormData }: StepProps) {

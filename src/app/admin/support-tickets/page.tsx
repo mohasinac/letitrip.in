@@ -11,7 +11,7 @@ import { useLoadingState } from "@/hooks/useLoadingState";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { SimplePagination } from "@/components/common/Pagination";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
-import { DateDisplay } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 
 export default function SupportTicketsPage() {
   return (

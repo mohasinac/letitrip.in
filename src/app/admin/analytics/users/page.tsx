@@ -15,7 +15,9 @@
 
 import { PeriodSelector } from "@/components/common/PeriodSelector";
 import { StatCard } from "@/components/common/StatCard";
-import { DateDisplay, Price, Quantity } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { Price } from "@/components/common/values/Price";
+import { Quantity } from "@/components/common/values/Quantity";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { analyticsService } from "@/services/analytics.service";

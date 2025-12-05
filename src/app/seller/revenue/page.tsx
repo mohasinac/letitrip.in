@@ -1,8 +1,10 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { DateDisplay, Price } from "@/components/common/values";
-import { FormInput, FormSelect } from "@/components/forms";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { Price } from "@/components/common/values/Price";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { getTodayDateInputValue, toDateInputValue } from "@/lib/date-utils";
 import { logError } from "@/lib/firebase-error-logger";
