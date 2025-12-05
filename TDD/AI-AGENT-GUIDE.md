@@ -35,6 +35,7 @@
 | `bg-white` without dark mode              | `bg-white dark:bg-gray-800`                   |
 | Admin list page with 600-900 lines        | `<AdminResourcePage />` wrapper               |
 | `console.log()` for errors                | `logError()` from error logger                |
+| Creating `index.ts` barrel exports        | Import directly from actual files             |
 
 ---
 
@@ -52,6 +53,7 @@
 8. **Check for reusable components** - Before creating new components, check if similar ones exist
 9. **Split large files** - Files over 350 lines should be split into smaller, focused components
 10. **Use Sieve pagination** - For all list endpoints, use Sieve middleware from `src/app/api/lib/sieve/`
+11. **NO index.ts files** - Always import directly from actual component files, never create barrel export `index.ts` files
 
 ### Migration Status
 
@@ -68,6 +70,42 @@
 ✅ **Validation Constants Created** - `VALIDATION_RULES` and `VALIDATION_MESSAGES` constants available. Migration to use in Zod schemas and API routes is in progress (Task 25).
 
 ### Code Style & Standards
+
+### Import Patterns
+
+**CRITICAL**: Always import directly from actual files:
+
+```typescript
+// ❌ DON'T: Create or use index.ts barrel exports
+import { Component } from "@/components/feature";
+
+// ✅ DO: Import directly from the actual file
+import { Component } from "@/components/feature/Component";
+import ComponentName from "@/components/feature/ComponentName"; // for default exports
+```
+
+**Rules**:
+
+- Never create `index.ts` files for re-exporting components
+- Always specify the actual filename in import paths
+- Use named imports `{ Component }` for named exports
+- Use default imports `Component` for default exports
+- For types, use `import type { Type }` from the types file
+
+**Examples**:
+
+```typescript
+// Wizard components (default exports)
+import BasicInfoStep from "@/components/seller/shop-wizard/BasicInfoStep";
+import BrandingStep from "@/components/seller/shop-wizard/BrandingStep";
+
+// Homepage sections (named exports)
+import { WelcomeHero } from "@/components/homepage/WelcomeHero";
+import { FeaturedProductsSection } from "@/components/homepage/FeaturedProductsSection";
+
+// Types from dedicated type files
+import type { ProductFormData } from "@/components/seller/product-wizard/types";
+```
 
 ### File Size Guidelines
 
@@ -223,7 +261,7 @@ const throttledValue = useThrottle(value, 1000);
 import { useFilters } from "@/hooks/useFilters";
 const { filters, appliedFilters, applyFilters, resetFilters } = useFilters(
   { status: "", sort: "-createdAt" },
-  { syncWithUrl: true },
+  { syncWithUrl: true }
 );
 ```
 
@@ -253,7 +291,7 @@ useSafeLoad(loadData, {
 import { useSlugValidation } from "@/hooks/useSlugValidation";
 const { slug, isChecking, isAvailable, error } = useSlugValidation(
   name,
-  "products",
+  "products"
 );
 
 // ✅ For unsaved changes protection
@@ -1112,7 +1150,7 @@ const buttonClass = cn(
   "px-4 py-2 rounded",
   isPrimary && "bg-blue-600 text-white",
   isDisabled && "opacity-50 cursor-not-allowed",
-  className, // Allow override
+  className // Allow override
 );
 ```
 
@@ -1361,7 +1399,7 @@ import { useFilters } from "@/hooks/useFilters";
 
 const { filters, applyFilters, resetFilters } = useFilters(
   { status: "", sort: "-createdAt" },
-  { syncWithUrl: true },
+  { syncWithUrl: true }
 );
 ```
 
