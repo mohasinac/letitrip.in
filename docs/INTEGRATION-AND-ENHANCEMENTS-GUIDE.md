@@ -150,7 +150,7 @@ NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_xxxxx
 
 ---
 
-### 1.2 PayU Integration (Alternative Gateway)
+### 1.2 PayU Integration (Alternative Gateway - India)
 
 **Follow similar pattern as Razorpay:**
 
@@ -159,6 +159,2005 @@ NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_xxxxx
 - API routes
 - Checkout integration
 - Webhook handling
+
+---
+
+### 1.3 PayPal Integration (International Payments)
+
+#### Current Status
+
+- ❌ No PayPal integration
+- ⚠️ Required for international customers (non-Indian pincodes)
+
+#### Implementation Tasks
+
+**Task 1.3.1: Admin Settings UI**
+
+- **File**: `src/app/admin/settings/payment/page.tsx`
+- **Action**: Add PayPal configuration section
+- **Components**:
+
+  ```tsx
+  // PayPal Settings Section
+  <SettingsSection title="PayPal Configuration (International)">
+    <FormField label="PayPal Client ID" required>
+      <FormInput
+        type="text"
+        value={settings.paypal?.clientId}
+        onChange={(e) => updateSetting("paypal.clientId", e.target.value)}
+        placeholder="AXXXXXXxxxxxx"
+      />
+    </FormField>
+
+    <FormField label="PayPal Secret Key" required>
+      <FormInput
+        type="password"
+        value={settings.paypal?.secretKey}
+        onChange={(e) => updateSetting("paypal.secretKey", e.target.value)}
+      />
+    </FormField>
+
+    <FormField label="PayPal Webhook ID">
+      <FormInput
+        type="text"
+        value={settings.paypal?.webhookId}
+        onChange={(e) => updateSetting("paypal.webhookId", e.target.value)}
+      />
+    </FormField>
+
+    <FormField label="Environment">
+      <FormSelect
+        value={settings.paypal?.environment || "sandbox"}
+        onChange={(e) => updateSetting("paypal.environment", e.target.value)}
+      >
+        <option value="sandbox">Sandbox (Testing)</option>
+        <option value="live">Live (Production)</option>
+      </FormSelect>
+    </FormField>
+
+    <FormField label="Supported Currencies">
+      <TagInput
+        value={
+          settings.paypal?.supportedCurrencies || [
+            "USD",
+            "EUR",
+            "GBP",
+            "AUD",
+            "CAD",
+          ]
+        }
+        onChange={(tags) => updateSetting("paypal.supportedCurrencies", tags)}
+        placeholder="Add currency code (e.g., USD)"
+      />
+    </FormField>
+
+    <FormField label="Enable for International Orders">
+      <FormCheckbox
+        checked={settings.paypal?.enabled}
+        onChange={(e) => updateSetting("paypal.enabled", e.target.checked)}
+        label="Automatically enable PayPal for non-Indian pincodes"
+      />
+    </FormField>
+  </SettingsSection>
+  ```
+
+**Task 1.3.2: Backend Service**
+
+- **File**: `src/services/payment.service.ts` (UPDATE)
+- **Methods**:
+
+  ```typescript
+  // PayPal-specific methods
+  async createPayPalOrder(orderData: {
+    amount: number;
+    currency: string;
+    orderId: string;
+    items: Array<{
+      name: string;
+      quantity: number;
+      unitAmount: number;
+    }>;
+    shippingAddress: Address;
+  }): Promise<{ orderId: string; approvalUrl: string }> {
+    const settings = await this.getPayPalSettings();
+
+    const response = await fetch(`${settings.apiUrl}/v2/checkout/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${await this.getPayPalAccessToken()}`,
+      },
+      body: JSON.stringify({
+        intent: 'CAPTURE',
+        purchase_units: [{
+          reference_id: orderData.orderId,
+          amount: {
+            currency_code: orderData.currency,
+            value: orderData.amount.toFixed(2),
+            breakdown: {
+              item_total: {
+                currency_code: orderData.currency,
+                value: this.calculateItemTotal(orderData.items),
+              },
+            },
+          },
+          items: orderData.items.map(item => ({
+            name: item.name,
+            quantity: item.quantity.toString(),
+            unit_amount: {
+              currency_code: orderData.currency,
+              value: item.unitAmount.toFixed(2),
+            },
+          })),
+          shipping: {
+            address: {
+              address_line_1: orderData.shippingAddress.line1,
+              address_line_2: orderData.shippingAddress.line2,
+              admin_area_2: orderData.shippingAddress.city,
+              admin_area_1: orderData.shippingAddress.state,
+              postal_code: orderData.shippingAddress.postalCode,
+              country_code: orderData.shippingAddress.country,
+            },
+          },
+        }],
+        application_context: {
+          return_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success`,
+          cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout`,
+          brand_name: 'JustForView',
+          shipping_preference: 'SET_PROVIDED_ADDRESS',
+        },
+      }),
+    });
+
+    const order = await response.json();
+
+    return {
+      orderId: order.id,
+      approvalUrl: order.links.find((link: any) => link.rel === 'approve')?.href,
+    };
+  }
+
+  async capturePayPalOrder(paypalOrderId: string): Promise<PaymentResult> {
+    const settings = await this.getPayPalSettings();
+
+    const response = await fetch(
+      `${settings.apiUrl}/v2/checkout/orders/${paypalOrderId}/capture`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await this.getPayPalAccessToken()}`,
+        },
+      }
+    );
+
+    const capture = await response.json();
+
+    if (capture.status === 'COMPLETED') {
+      return {
+        success: true,
+        transactionId: capture.purchase_units[0].payments.captures[0].id,
+        amount: parseFloat(capture.purchase_units[0].payments.captures[0].amount.value),
+        currency: capture.purchase_units[0].payments.captures[0].amount.currency_code,
+        paymentMethod: 'paypal',
+      };
+    }
+
+    throw new Error('PayPal payment capture failed');
+  }
+
+  async refundPayPalPayment(captureId: string, amount?: number): Promise<void> {
+    const settings = await this.getPayPalSettings();
+
+    const refundData: any = {
+      note_to_payer: 'Refund for your order',
+    };
+
+    if (amount) {
+      refundData.amount = {
+        value: amount.toFixed(2),
+        currency_code: 'USD', // Get from original transaction
+      };
+    }
+
+    await fetch(`${settings.apiUrl}/v2/payments/captures/${captureId}/refund`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${await this.getPayPalAccessToken()}`,
+      },
+      body: JSON.stringify(refundData),
+    });
+  }
+
+  async verifyPayPalWebhook(
+    webhookId: string,
+    headers: Record<string, string>,
+    body: any
+  ): Promise<boolean> {
+    const settings = await this.getPayPalSettings();
+
+    const response = await fetch(
+      `${settings.apiUrl}/v1/notifications/verify-webhook-signature`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await this.getPayPalAccessToken()}`,
+        },
+        body: JSON.stringify({
+          transmission_id: headers['paypal-transmission-id'],
+          transmission_time: headers['paypal-transmission-time'],
+          cert_url: headers['paypal-cert-url'],
+          auth_algo: headers['paypal-auth-algo'],
+          transmission_sig: headers['paypal-transmission-sig'],
+          webhook_id: webhookId,
+          webhook_event: body,
+        }),
+      }
+    );
+
+    const result = await response.json();
+    return result.verification_status === 'SUCCESS';
+  }
+
+  private async getPayPalAccessToken(): Promise<string> {
+    const settings = await this.getPayPalSettings();
+    const auth = Buffer.from(`${settings.clientId}:${settings.secretKey}`).toString('base64');
+
+    const response = await fetch(`${settings.apiUrl}/v1/oauth2/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${auth}`,
+      },
+      body: 'grant_type=client_credentials',
+    });
+
+    const data = await response.json();
+    return data.access_token;
+  }
+
+  async getCurrencyForCountry(countryCode: string): Promise<string> {
+    // Map country codes to currencies
+    const currencyMap: Record<string, string> = {
+      'US': 'USD',
+      'GB': 'GBP',
+      'EU': 'EUR',
+      'AU': 'AUD',
+      'CA': 'CAD',
+      'SG': 'SGD',
+      'AE': 'AED',
+      // Add more as needed
+    };
+
+    return currencyMap[countryCode] || 'USD';
+  }
+
+  async convertCurrency(
+    amount: number,
+    fromCurrency: string,
+    toCurrency: string
+  ): Promise<number> {
+    // Integrate with currency conversion API (e.g., exchangerate-api.com)
+    const response = await fetch(
+      `https://api.exchangerate-api.com/v4/latest/${fromCurrency}`
+    );
+    const data = await response.json();
+    const rate = data.rates[toCurrency];
+
+    return amount * rate;
+  }
+  ```
+
+**Task 1.3.3: API Routes**
+
+- **Create**: `src/app/api/payments/paypal/order/route.ts` (POST)
+
+  ```typescript
+  export async function POST(request: NextRequest) {
+    try {
+      const body = await request.json();
+      const { orderId, currency } = body;
+
+      // Get order details
+      const order = await ordersService.getById(orderId);
+
+      // Verify address is international
+      if (!isInternationalAddress(order.shippingAddress)) {
+        return NextResponse.json(
+          { error: "PayPal is only available for international orders" },
+          { status: 400 }
+        );
+      }
+
+      // Create PayPal order
+      const paypalOrder = await paymentService.createPayPalOrder({
+        amount: order.total,
+        currency:
+          currency ||
+          (await paymentService.getCurrencyForCountry(
+            order.shippingAddress.country
+          )),
+        orderId: order.id,
+        items: order.items,
+        shippingAddress: order.shippingAddress,
+      });
+
+      return NextResponse.json(paypalOrder);
+    } catch (error) {
+      logError(error, { context: "PayPal order creation" });
+      return NextResponse.json(
+        { error: "Failed to create PayPal order" },
+        { status: 500 }
+      );
+    }
+  }
+  ```
+
+- **Create**: `src/app/api/payments/paypal/capture/route.ts` (POST)
+
+  ```typescript
+  export async function POST(request: NextRequest) {
+    try {
+      const body = await request.json();
+      const { paypalOrderId, orderId } = body;
+
+      // Capture PayPal payment
+      const result = await paymentService.capturePayPalOrder(paypalOrderId);
+
+      // Update order status
+      await ordersService.updatePaymentStatus(orderId, {
+        status: "paid",
+        transactionId: result.transactionId,
+        paymentMethod: "paypal",
+        amount: result.amount,
+        currency: result.currency,
+        paidAt: new Date(),
+      });
+
+      return NextResponse.json(result);
+    } catch (error) {
+      logError(error, { context: "PayPal capture" });
+      return NextResponse.json(
+        { error: "Failed to capture PayPal payment" },
+        { status: 500 }
+      );
+    }
+  }
+  ```
+
+- **Create**: `src/app/api/payments/paypal/refund/route.ts` (POST)
+- **Create**: `src/app/api/payments/paypal/webhook/route.ts` (POST)
+
+  ```typescript
+  export async function POST(request: NextRequest) {
+    try {
+      const body = await request.json();
+      const headers = Object.fromEntries(request.headers.entries());
+
+      // Verify webhook signature
+      const isValid = await paymentService.verifyPayPalWebhook(
+        process.env.PAYPAL_WEBHOOK_ID!,
+        headers,
+        body
+      );
+
+      if (!isValid) {
+        return NextResponse.json(
+          { error: "Invalid signature" },
+          { status: 401 }
+        );
+      }
+
+      // Handle webhook events
+      switch (body.event_type) {
+        case "PAYMENT.CAPTURE.COMPLETED":
+          await handlePaymentCompleted(body.resource);
+          break;
+        case "PAYMENT.CAPTURE.REFUNDED":
+          await handlePaymentRefunded(body.resource);
+          break;
+        case "PAYMENT.CAPTURE.DENIED":
+          await handlePaymentDenied(body.resource);
+          break;
+      }
+
+      return NextResponse.json({ success: true });
+    } catch (error) {
+      logError(error, { context: "PayPal webhook" });
+      return NextResponse.json(
+        { error: "Webhook processing failed" },
+        { status: 500 }
+      );
+    }
+  }
+  ```
+
+**Task 1.3.4: Checkout Integration**
+
+- **File**: `src/app/checkout/page.tsx`
+- **Action**: Add PayPal payment option for international addresses
+- **Logic**:
+
+  ```tsx
+  // Detect if address is international
+  const isInternational = shippingAddress?.country !== "IN";
+
+  // Show PayPal option only for international orders
+  {
+    isInternational && (
+      <div className="border rounded-lg p-4">
+        <div className="flex items-center justify-between mb-4">
+          <label className="flex items-center">
+            <input
+              type="radio"
+              name="paymentMethod"
+              value="paypal"
+              checked={paymentMethod === "paypal"}
+              onChange={() => setPaymentMethod("paypal")}
+              className="mr-2"
+            />
+            <span className="font-medium">PayPal</span>
+          </label>
+          <img src="/images/paypal-logo.png" alt="PayPal" className="h-6" />
+        </div>
+
+        {paymentMethod === "paypal" && (
+          <div className="mt-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              You will be redirected to PayPal to complete your payment
+              securely.
+            </p>
+
+            {/* Currency selector */}
+            <FormField label="Payment Currency">
+              <FormSelect
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+              >
+                <option value="USD">USD - US Dollar</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="GBP">GBP - British Pound</option>
+                <option value="AUD">AUD - Australian Dollar</option>
+                <option value="CAD">CAD - Canadian Dollar</option>
+              </FormSelect>
+            </FormField>
+
+            {/* Show converted amount */}
+            <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded">
+              <p className="text-sm">
+                Total: <Price amount={totalINR} /> (₹) ≈ {convertedAmount}{" "}
+                {currency}
+              </p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                * Exchange rate updated in real-time
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Payment handler
+  const handlePayPalPayment = async () => {
+    try {
+      setProcessing(true);
+
+      // Create PayPal order
+      const response = await fetch("/api/payments/paypal/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: order.id,
+          currency: currency,
+        }),
+      });
+
+      const { orderId, approvalUrl } = await response.json();
+
+      // Redirect to PayPal
+      window.location.href = approvalUrl;
+    } catch (error) {
+      toast.error("Failed to initiate PayPal payment");
+      setProcessing(false);
+    }
+  };
+  ```
+
+**Task 1.3.5: Success Page Handler**
+
+- **File**: `src/app/checkout/success/page.tsx`
+- **Action**: Handle PayPal return
+
+  ```tsx
+  useEffect(() => {
+    const capturePayPalPayment = async () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const paypalOrderId = searchParams.get("token");
+      const orderId = searchParams.get("orderId");
+
+      if (paypalOrderId && orderId) {
+        try {
+          await fetch("/api/payments/paypal/capture", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paypalOrderId, orderId }),
+          });
+
+          toast.success("Payment successful!");
+          router.push(`/orders/${orderId}`);
+        } catch (error) {
+          toast.error("Payment capture failed");
+        }
+      }
+    };
+
+    capturePayPalPayment();
+  }, []);
+  ```
+
+**Task 1.3.6: Database Schema**
+
+```typescript
+// Update payment_transactions collection
+interface PaymentTransaction {
+  id: string;
+  orderId: string;
+  gateway: "razorpay" | "payu" | "paypal" | "cod";
+  transactionId: string;
+  amount: number;
+  currency: string; // NEW: 'INR', 'USD', 'EUR', etc.
+  amountInINR?: number; // NEW: Converted amount for reporting
+  exchangeRate?: number; // NEW: Rate used for conversion
+  status: "pending" | "processing" | "completed" | "failed" | "refunded";
+  paymentMethod?: string; // 'card', 'netbanking', 'upi', 'paypal', 'wallet'
+  payerEmail?: string; // NEW: PayPal payer email
+  payerId?: string; // NEW: PayPal payer ID
+  metadata?: {
+    gatewayOrderId?: string;
+    gatewaySignature?: string;
+    errorCode?: string;
+    errorDescription?: string;
+    paypalOrderId?: string; // NEW
+    paypalCaptureId?: string; // NEW
+  };
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+```
+
+**Task 1.3.7: Shop Settings Integration**
+
+- **File**: `src/app/seller/shops/[slug]/settings/page.tsx`
+- **Action**: Add international payment toggle
+
+  ```tsx
+  <FormField label="Accept International Payments">
+    <FormCheckbox
+      checked={shopSettings.acceptInternationalPayments}
+      onChange={(e) =>
+        updateSetting("acceptInternationalPayments", e.target.checked)
+      }
+      label="Enable PayPal for orders outside India"
+    />
+  </FormField>;
+
+  {
+    shopSettings.acceptInternationalPayments && (
+      <>
+        <FormField label="Supported Countries">
+          <TagInput
+            value={shopSettings.internationalCountries || []}
+            onChange={(tags) => updateSetting("internationalCountries", tags)}
+            placeholder="Enter country code (e.g., US, GB, AU)"
+          />
+        </FormField>
+
+        <FormField label="International Shipping Markup">
+          <FormInput
+            type="number"
+            value={shopSettings.internationalShippingMarkup || 0}
+            onChange={(e) =>
+              updateSetting(
+                "internationalShippingMarkup",
+                parseFloat(e.target.value)
+              )
+            }
+            suffix="%"
+          />
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Additional percentage added to base shipping cost for international
+            orders
+          </p>
+        </FormField>
+      </>
+    );
+  }
+  ```
+
+**Task 1.3.8: Address Validation**
+
+- **File**: `src/lib/validators/address.validator.ts` (CREATE NEW)
+
+  ```typescript
+  export function isInternationalAddress(address: Address): boolean {
+    return address.country !== "IN" && address.country !== "India";
+  }
+
+  export function isPayPalEligibleCountry(countryCode: string): boolean {
+    const eligibleCountries = [
+      "US",
+      "GB",
+      "CA",
+      "AU",
+      "NZ",
+      "SG",
+      "AE",
+      "EU",
+      // Add more PayPal-supported countries
+    ];
+    return eligibleCountries.includes(countryCode);
+  }
+
+  export function validateInternationalAddress(address: Address): string[] {
+    const errors: string[] = [];
+
+    if (!address.country || address.country.length !== 2) {
+      errors.push("Valid 2-letter country code required");
+    }
+
+    if (!address.postalCode) {
+      errors.push("Postal/ZIP code required for international shipping");
+    }
+
+    if (!address.state) {
+      errors.push("State/Province required for international shipping");
+    }
+
+    return errors;
+  }
+  ```
+
+**Task 1.3.9: Environment Variables**
+
+```env
+# PayPal Configuration
+PAYPAL_CLIENT_ID=AXXXXXXxxxxxx
+PAYPAL_SECRET_KEY=EXXXXXXxxxxxx
+PAYPAL_WEBHOOK_ID=WH-XXXXXXXXXXXXX
+PAYPAL_ENVIRONMENT=sandbox # or 'live'
+PAYPAL_API_URL=https://api-m.sandbox.paypal.com # or https://api-m.paypal.com
+
+# Currency Conversion API
+EXCHANGE_RATE_API_KEY=xxxxx
+
+# Public variables
+NEXT_PUBLIC_PAYPAL_CLIENT_ID=AXXXXXXxxxxxx
+```
+
+**Task 1.3.10: Admin Dashboard - Payment Analytics**
+
+- **File**: `src/app/admin/analytics/payments/page.tsx`
+- **Features**:
+  - Payment gateway breakdown (Razorpay vs PayU vs PayPal)
+  - Currency-wise revenue (INR, USD, EUR, etc.)
+  - International vs domestic payment split
+  - Average order value by country
+  - PayPal transaction fees analysis
+  - Currency conversion loss/gain tracking
+
+---
+
+### 1.4 Third-Party Payment Gateway Integration System
+
+#### Overview
+
+Flexible system allowing admins to enable/configure multiple payment gateways from a centralized settings panel. Supports both pre-built integrations and custom gateway configurations.
+
+#### Current Status
+
+- ❌ No unified gateway management system
+- ⚠️ Need extensible architecture for adding new gateways
+
+#### Implementation Tasks
+
+**Task 1.4.1: Payment Gateway Registry**
+
+- **File**: `src/config/payment-gateways.config.ts` (CREATE NEW)
+- **Purpose**: Central registry of all supported payment gateways
+
+```typescript
+export interface PaymentGatewayConfig {
+  id: string;
+  name: string;
+  displayName: string;
+  logo: string;
+  description: string;
+  type: "domestic" | "international" | "both";
+  supportedCurrencies: string[];
+  supportedCountries: string[];
+  supportedPaymentMethods: string[];
+  fees: {
+    fixed?: number;
+    percentage?: number;
+    currency: string;
+  };
+  features: {
+    refunds: boolean;
+    partialRefunds: boolean;
+    recurring: boolean;
+    webhooks: boolean;
+    instantSettlement: boolean;
+  };
+  configFields: PaymentGatewayConfigField[];
+  status: "active" | "beta" | "deprecated";
+  documentation: string;
+}
+
+export interface PaymentGatewayConfigField {
+  key: string;
+  label: string;
+  type: "text" | "password" | "select" | "toggle" | "multiselect";
+  required: boolean;
+  placeholder?: string;
+  description?: string;
+  validation?: {
+    pattern?: string;
+    minLength?: number;
+    maxLength?: number;
+  };
+  options?: Array<{ value: string; label: string }>;
+  defaultValue?: any;
+  isSecret?: boolean; // Encrypt in database
+}
+
+// Pre-configured gateways
+export const PAYMENT_GATEWAYS: Record<string, PaymentGatewayConfig> = {
+  razorpay: {
+    id: "razorpay",
+    name: "Razorpay",
+    displayName: "Razorpay",
+    logo: "/images/gateways/razorpay.png",
+    description:
+      "Leading payment gateway in India with UPI, Cards, Netbanking, and Wallets",
+    type: "domestic",
+    supportedCurrencies: ["INR"],
+    supportedCountries: ["IN"],
+    supportedPaymentMethods: ["card", "upi", "netbanking", "wallet"],
+    fees: { percentage: 2, currency: "INR" },
+    features: {
+      refunds: true,
+      partialRefunds: true,
+      recurring: true,
+      webhooks: true,
+      instantSettlement: false,
+    },
+    configFields: [
+      {
+        key: "keyId",
+        label: "Key ID",
+        type: "text",
+        required: true,
+        placeholder: "rzp_test_xxxxx",
+        validation: { pattern: "^rzp_(test|live)_[A-Za-z0-9]+$" },
+      },
+      {
+        key: "keySecret",
+        label: "Key Secret",
+        type: "password",
+        required: true,
+        isSecret: true,
+      },
+      {
+        key: "webhookSecret",
+        label: "Webhook Secret",
+        type: "password",
+        required: false,
+        isSecret: true,
+      },
+      {
+        key: "autoCapture",
+        label: "Auto Capture Payments",
+        type: "toggle",
+        required: false,
+        defaultValue: true,
+      },
+      {
+        key: "paymentMethods",
+        label: "Enabled Payment Methods",
+        type: "multiselect",
+        required: true,
+        options: [
+          { value: "card", label: "Debit/Credit Cards" },
+          { value: "upi", label: "UPI" },
+          { value: "netbanking", label: "Net Banking" },
+          { value: "wallet", label: "Wallets" },
+        ],
+        defaultValue: ["card", "upi", "netbanking"],
+      },
+    ],
+    status: "active",
+    documentation: "https://razorpay.com/docs/api",
+  },
+
+  payu: {
+    id: "payu",
+    name: "PayU",
+    displayName: "PayU India",
+    logo: "/images/gateways/payu.png",
+    description:
+      "Popular payment gateway in India with wide payment method support",
+    type: "domestic",
+    supportedCurrencies: ["INR"],
+    supportedCountries: ["IN"],
+    supportedPaymentMethods: ["card", "upi", "netbanking", "wallet", "emi"],
+    fees: { percentage: 2.5, currency: "INR" },
+    features: {
+      refunds: true,
+      partialRefunds: true,
+      recurring: true,
+      webhooks: true,
+      instantSettlement: false,
+    },
+    configFields: [
+      {
+        key: "merchantKey",
+        label: "Merchant Key",
+        type: "text",
+        required: true,
+      },
+      {
+        key: "merchantSalt",
+        label: "Merchant Salt",
+        type: "password",
+        required: true,
+        isSecret: true,
+      },
+      {
+        key: "environment",
+        label: "Environment",
+        type: "select",
+        required: true,
+        options: [
+          { value: "test", label: "Test" },
+          { value: "production", label: "Production" },
+        ],
+        defaultValue: "test",
+      },
+    ],
+    status: "active",
+    documentation: "https://docs.payu.in",
+  },
+
+  paypal: {
+    id: "paypal",
+    name: "PayPal",
+    displayName: "PayPal",
+    logo: "/images/gateways/paypal.png",
+    description: "Global payment platform for international transactions",
+    type: "international",
+    supportedCurrencies: ["USD", "EUR", "GBP", "AUD", "CAD", "SGD", "AED"],
+    supportedCountries: ["*"], // All countries
+    supportedPaymentMethods: ["paypal", "card"],
+    fees: { percentage: 3.9, fixed: 0.3, currency: "USD" },
+    features: {
+      refunds: true,
+      partialRefunds: true,
+      recurring: true,
+      webhooks: true,
+      instantSettlement: false,
+    },
+    configFields: [
+      {
+        key: "clientId",
+        label: "Client ID",
+        type: "text",
+        required: true,
+        placeholder: "AXXXXXXxxxxxx",
+      },
+      {
+        key: "clientSecret",
+        label: "Client Secret",
+        type: "password",
+        required: true,
+        isSecret: true,
+      },
+      {
+        key: "webhookId",
+        label: "Webhook ID",
+        type: "text",
+        required: false,
+      },
+      {
+        key: "environment",
+        label: "Environment",
+        type: "select",
+        required: true,
+        options: [
+          { value: "sandbox", label: "Sandbox" },
+          { value: "live", label: "Live" },
+        ],
+        defaultValue: "sandbox",
+      },
+    ],
+    status: "active",
+    documentation: "https://developer.paypal.com/docs",
+  },
+
+  stripe: {
+    id: "stripe",
+    name: "Stripe",
+    displayName: "Stripe",
+    logo: "/images/gateways/stripe.png",
+    description: "Global payment infrastructure for internet businesses",
+    type: "both",
+    supportedCurrencies: ["INR", "USD", "EUR", "GBP", "AUD", "CAD", "SGD"],
+    supportedCountries: ["*"],
+    supportedPaymentMethods: ["card", "wallet", "bank_transfer", "upi"],
+    fees: { percentage: 2.9, fixed: 0.3, currency: "USD" },
+    features: {
+      refunds: true,
+      partialRefunds: true,
+      recurring: true,
+      webhooks: true,
+      instantSettlement: false,
+    },
+    configFields: [
+      {
+        key: "publishableKey",
+        label: "Publishable Key",
+        type: "text",
+        required: true,
+        placeholder: "pk_test_xxxxx",
+      },
+      {
+        key: "secretKey",
+        label: "Secret Key",
+        type: "password",
+        required: true,
+        isSecret: true,
+      },
+      {
+        key: "webhookSecret",
+        label: "Webhook Signing Secret",
+        type: "password",
+        required: false,
+        isSecret: true,
+      },
+    ],
+    status: "active",
+    documentation: "https://stripe.com/docs/api",
+  },
+
+  instamojo: {
+    id: "instamojo",
+    name: "Instamojo",
+    displayName: "Instamojo",
+    logo: "/images/gateways/instamojo.png",
+    description: "Simple payment gateway for Indian businesses",
+    type: "domestic",
+    supportedCurrencies: ["INR"],
+    supportedCountries: ["IN"],
+    supportedPaymentMethods: ["card", "upi", "netbanking", "wallet"],
+    fees: { percentage: 2, fixed: 3, currency: "INR" },
+    features: {
+      refunds: true,
+      partialRefunds: false,
+      recurring: false,
+      webhooks: true,
+      instantSettlement: false,
+    },
+    configFields: [
+      {
+        key: "apiKey",
+        label: "API Key",
+        type: "text",
+        required: true,
+      },
+      {
+        key: "authToken",
+        label: "Auth Token",
+        type: "password",
+        required: true,
+        isSecret: true,
+      },
+      {
+        key: "environment",
+        label: "Environment",
+        type: "select",
+        required: true,
+        options: [
+          { value: "test", label: "Test" },
+          { value: "production", label: "Production" },
+        ],
+        defaultValue: "test",
+      },
+    ],
+    status: "active",
+    documentation: "https://docs.instamojo.com",
+  },
+
+  ccavenue: {
+    id: "ccavenue",
+    name: "CCAvenue",
+    displayName: "CCAvenue",
+    logo: "/images/gateways/ccavenue.png",
+    description: "One of India's largest payment gateways",
+    type: "domestic",
+    supportedCurrencies: ["INR"],
+    supportedCountries: ["IN"],
+    supportedPaymentMethods: ["card", "upi", "netbanking", "wallet"],
+    fees: { percentage: 2.5, currency: "INR" },
+    features: {
+      refunds: true,
+      partialRefunds: true,
+      recurring: true,
+      webhooks: true,
+      instantSettlement: false,
+    },
+    configFields: [
+      {
+        key: "merchantId",
+        label: "Merchant ID",
+        type: "text",
+        required: true,
+      },
+      {
+        key: "accessCode",
+        label: "Access Code",
+        type: "text",
+        required: true,
+      },
+      {
+        key: "workingKey",
+        label: "Working Key",
+        type: "password",
+        required: true,
+        isSecret: true,
+      },
+    ],
+    status: "active",
+    documentation: "https://www.ccavenue.com/integration_kit.jsp",
+  },
+
+  phonepe: {
+    id: "phonepe",
+    name: "PhonePe",
+    displayName: "PhonePe Payment Gateway",
+    logo: "/images/gateways/phonepe.png",
+    description: "UPI-focused payment gateway by PhonePe",
+    type: "domestic",
+    supportedCurrencies: ["INR"],
+    supportedCountries: ["IN"],
+    supportedPaymentMethods: ["upi", "card", "netbanking"],
+    fees: { percentage: 1.5, currency: "INR" },
+    features: {
+      refunds: true,
+      partialRefunds: true,
+      recurring: false,
+      webhooks: true,
+      instantSettlement: true,
+    },
+    configFields: [
+      {
+        key: "merchantId",
+        label: "Merchant ID",
+        type: "text",
+        required: true,
+      },
+      {
+        key: "saltKey",
+        label: "Salt Key",
+        type: "password",
+        required: true,
+        isSecret: true,
+      },
+      {
+        key: "saltIndex",
+        label: "Salt Index",
+        type: "text",
+        required: true,
+      },
+    ],
+    status: "active",
+    documentation: "https://developer.phonepe.com/docs",
+  },
+
+  cashfree: {
+    id: "cashfree",
+    name: "Cashfree",
+    displayName: "Cashfree Payments",
+    logo: "/images/gateways/cashfree.png",
+    description: "Payment and banking APIs for India",
+    type: "domestic",
+    supportedCurrencies: ["INR"],
+    supportedCountries: ["IN"],
+    supportedPaymentMethods: ["card", "upi", "netbanking", "wallet"],
+    fees: { percentage: 1.99, currency: "INR" },
+    features: {
+      refunds: true,
+      partialRefunds: true,
+      recurring: true,
+      webhooks: true,
+      instantSettlement: true,
+    },
+    configFields: [
+      {
+        key: "appId",
+        label: "App ID",
+        type: "text",
+        required: true,
+      },
+      {
+        key: "secretKey",
+        label: "Secret Key",
+        type: "password",
+        required: true,
+        isSecret: true,
+      },
+      {
+        key: "environment",
+        label: "Environment",
+        type: "select",
+        required: true,
+        options: [
+          { value: "sandbox", label: "Sandbox" },
+          { value: "production", label: "Production" },
+        ],
+        defaultValue: "sandbox",
+      },
+    ],
+    status: "active",
+    documentation: "https://docs.cashfree.com",
+  },
+};
+
+// Helper functions
+export function getGatewayById(id: string): PaymentGatewayConfig | undefined {
+  return PAYMENT_GATEWAYS[id];
+}
+
+export function getGatewaysByType(
+  type: "domestic" | "international" | "both"
+): PaymentGatewayConfig[] {
+  return Object.values(PAYMENT_GATEWAYS).filter(
+    (gateway) => gateway.type === type || gateway.type === "both"
+  );
+}
+
+export function getGatewaysByCurrency(
+  currency: string
+): PaymentGatewayConfig[] {
+  return Object.values(PAYMENT_GATEWAYS).filter(
+    (gateway) =>
+      gateway.supportedCurrencies.includes(currency) ||
+      gateway.supportedCurrencies.includes("*")
+  );
+}
+
+export function getGatewaysByCountry(
+  countryCode: string
+): PaymentGatewayConfig[] {
+  return Object.values(PAYMENT_GATEWAYS).filter(
+    (gateway) =>
+      gateway.supportedCountries.includes(countryCode) ||
+      gateway.supportedCountries.includes("*")
+  );
+}
+```
+
+**Task 1.4.2: Admin Gateway Management UI**
+
+- **File**: `src/app/admin/settings/payment-gateways/page.tsx` (CREATE NEW)
+- **Purpose**: Central dashboard for managing all payment gateways
+
+```tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import { useLoadingState } from "@/hooks/useLoadingState";
+import { PAYMENT_GATEWAYS } from "@/config/payment-gateways.config";
+import {
+  FormField,
+  FormInput,
+  FormSelect,
+  FormCheckbox,
+} from "@/components/forms";
+import { toast } from "react-hot-toast";
+
+export default function PaymentGatewaysSettingsPage() {
+  const [selectedGateway, setSelectedGateway] = useState<string | null>(null);
+  const [gatewayConfigs, setGatewayConfigs] = useState<Record<string, any>>({});
+
+  const {
+    data: enabledGateways,
+    isLoading,
+    execute,
+  } = useLoadingState<string[]>({
+    initialData: [],
+  });
+
+  useEffect(() => {
+    execute(async () => {
+      const response = await fetch("/api/admin/settings/payment-gateways");
+      const data = await response.json();
+      setGatewayConfigs(data.configs || {});
+      return data.enabled || [];
+    });
+  }, []);
+
+  const handleToggleGateway = async (gatewayId: string, enabled: boolean) => {
+    try {
+      await fetch("/api/admin/settings/payment-gateways/toggle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gatewayId, enabled }),
+      });
+
+      toast.success(
+        `${PAYMENT_GATEWAYS[gatewayId].displayName} ${
+          enabled ? "enabled" : "disabled"
+        }`
+      );
+      execute(async () => {
+        const response = await fetch("/api/admin/settings/payment-gateways");
+        const data = await response.json();
+        return data.enabled || [];
+      });
+    } catch (error) {
+      toast.error("Failed to update gateway status");
+    }
+  };
+
+  const handleSaveConfig = async (gatewayId: string, config: any) => {
+    try {
+      await fetch("/api/admin/settings/payment-gateways/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gatewayId, config }),
+      });
+
+      toast.success("Configuration saved successfully");
+      setSelectedGateway(null);
+    } catch (error) {
+      toast.error("Failed to save configuration");
+    }
+  };
+
+  const handleTestConnection = async (gatewayId: string) => {
+    try {
+      const response = await fetch(
+        "/api/admin/settings/payment-gateways/test",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ gatewayId }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success("Connection test successful!");
+      } else {
+        toast.error(`Connection test failed: ${result.error}`);
+      }
+    } catch (error) {
+      toast.error("Connection test failed");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Payment Gateways
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            Configure and manage payment gateway integrations
+          </p>
+        </div>
+
+        <button
+          onClick={() => setSelectedGateway("custom")}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Add Custom Gateway
+        </button>
+      </div>
+
+      {/* Gateway Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Object.values(PAYMENT_GATEWAYS).map((gateway) => {
+          const isEnabled = enabledGateways.includes(gateway.id);
+          const isConfigured = gatewayConfigs[gateway.id]?.configured;
+
+          return (
+            <div
+              key={gateway.id}
+              className="border rounded-lg p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+            >
+              {/* Gateway Logo & Name */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={gateway.logo}
+                    alt={gateway.displayName}
+                    className="h-10 w-10 object-contain"
+                  />
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      {gateway.displayName}
+                    </h3>
+                    {gateway.status === "beta" && (
+                      <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                        Beta
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Enable/Disable Toggle */}
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isEnabled}
+                    onChange={(e) =>
+                      handleToggleGateway(gateway.id, e.target.checked)
+                    }
+                    className="sr-only peer"
+                    disabled={!isConfigured}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+
+              {/* Description */}
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                {gateway.description}
+              </p>
+
+              {/* Metadata */}
+              <div className="space-y-2 text-xs text-gray-500 dark:text-gray-400 mb-4">
+                <div className="flex items-center justify-between">
+                  <span>Type:</span>
+                  <span className="font-medium capitalize">{gateway.type}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Currencies:</span>
+                  <span className="font-medium">
+                    {gateway.supportedCurrencies.slice(0, 3).join(", ")}
+                    {gateway.supportedCurrencies.length > 3 && " +more"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Fees:</span>
+                  <span className="font-medium">
+                    {gateway.fees.percentage}%
+                    {gateway.fees.fixed &&
+                      ` + ${gateway.fees.fixed} ${gateway.fees.currency}`}
+                  </span>
+                </div>
+              </div>
+
+              {/* Status Badge */}
+              {!isConfigured && (
+                <div className="mb-4 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded text-xs text-yellow-800 dark:text-yellow-200">
+                  ⚠️ Not configured
+                </div>
+              )}
+
+              {isConfigured && isEnabled && (
+                <div className="mb-4 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded text-xs text-green-800 dark:text-green-200">
+                  ✅ Active & Configured
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setSelectedGateway(gateway.id)}
+                  className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  Configure
+                </button>
+
+                {isConfigured && (
+                  <button
+                    onClick={() => handleTestConnection(gateway.id)}
+                    className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Test
+                  </button>
+                )}
+              </div>
+
+              {/* Documentation Link */}
+              <a
+                href={gateway.documentation}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block mt-3 text-xs text-blue-600 dark:text-blue-400 hover:underline text-center"
+              >
+                View Documentation →
+              </a>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Configuration Modal */}
+      {selectedGateway && (
+        <GatewayConfigModal
+          gatewayId={selectedGateway}
+          initialConfig={gatewayConfigs[selectedGateway]}
+          onSave={handleSaveConfig}
+          onClose={() => setSelectedGateway(null)}
+        />
+      )}
+    </div>
+  );
+}
+```
+
+**Task 1.4.3: Gateway Configuration Modal**
+
+- **Component**: `GatewayConfigModal` (in same file or separate)
+
+```tsx
+function GatewayConfigModal({
+  gatewayId,
+  initialConfig,
+  onSave,
+  onClose,
+}: {
+  gatewayId: string;
+  initialConfig: any;
+  onSave: (gatewayId: string, config: any) => void;
+  onClose: () => void;
+}) {
+  const gateway = PAYMENT_GATEWAYS[gatewayId];
+  const [config, setConfig] = useState(initialConfig || {});
+
+  if (!gateway) return null;
+
+  const handleFieldChange = (key: string, value: any) => {
+    setConfig((prev: any) => ({ ...prev, [key]: value }));
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            Configure {gateway.displayName}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {gateway.configFields.map((field) => {
+            switch (field.type) {
+              case "text":
+              case "password":
+                return (
+                  <FormField
+                    key={field.key}
+                    label={field.label}
+                    required={field.required}
+                  >
+                    <FormInput
+                      type={field.type}
+                      value={config[field.key] || ""}
+                      onChange={(e) =>
+                        handleFieldChange(field.key, e.target.value)
+                      }
+                      placeholder={field.placeholder}
+                    />
+                    {field.description && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        {field.description}
+                      </p>
+                    )}
+                  </FormField>
+                );
+
+              case "select":
+                return (
+                  <FormField
+                    key={field.key}
+                    label={field.label}
+                    required={field.required}
+                  >
+                    <FormSelect
+                      value={config[field.key] || field.defaultValue}
+                      onChange={(e) =>
+                        handleFieldChange(field.key, e.target.value)
+                      }
+                    >
+                      {field.options?.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </FormSelect>
+                  </FormField>
+                );
+
+              case "toggle":
+                return (
+                  <FormField key={field.key} label={field.label}>
+                    <FormCheckbox
+                      checked={config[field.key] ?? field.defaultValue}
+                      onChange={(e) =>
+                        handleFieldChange(field.key, e.target.checked)
+                      }
+                      label={field.description || ""}
+                    />
+                  </FormField>
+                );
+
+              case "multiselect":
+                return (
+                  <FormField
+                    key={field.key}
+                    label={field.label}
+                    required={field.required}
+                  >
+                    <div className="space-y-2">
+                      {field.options?.map((option) => (
+                        <FormCheckbox
+                          key={option.value}
+                          checked={(config[field.key] || []).includes(
+                            option.value
+                          )}
+                          onChange={(e) => {
+                            const current = config[field.key] || [];
+                            const updated = e.target.checked
+                              ? [...current, option.value]
+                              : current.filter(
+                                  (v: string) => v !== option.value
+                                );
+                            handleFieldChange(field.key, updated);
+                          }}
+                          label={option.label}
+                        />
+                      ))}
+                    </div>
+                  </FormField>
+                );
+
+              default:
+                return null;
+            }
+          })}
+        </div>
+
+        <div className="flex justify-end space-x-3 mt-6">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onSave(gatewayId, config)}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Save Configuration
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+**Task 1.4.4: Backend API Routes**
+
+- **Create**: `src/app/api/admin/settings/payment-gateways/route.ts` (GET)
+
+```typescript
+export async function GET(request: NextRequest) {
+  try {
+    const user = await getCurrentUser();
+    if (user?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    const settingsDoc = await adminDb
+      .collection(COLLECTIONS.SETTINGS)
+      .doc("payment-gateways")
+      .get();
+
+    const settings = settingsDoc.data() || {
+      enabled: [],
+      configs: {},
+    };
+
+    return NextResponse.json(settings);
+  } catch (error) {
+    logError(error, { context: "Get payment gateways" });
+    return NextResponse.json(
+      { error: "Failed to fetch gateways" },
+      { status: 500 }
+    );
+  }
+}
+```
+
+- **Create**: `src/app/api/admin/settings/payment-gateways/toggle/route.ts` (POST)
+- **Create**: `src/app/api/admin/settings/payment-gateways/config/route.ts` (POST)
+- **Create**: `src/app/api/admin/settings/payment-gateways/test/route.ts` (POST)
+
+```typescript
+// Test gateway connection
+export async function POST(request: NextRequest) {
+  try {
+    const user = await getCurrentUser();
+    if (user?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    const { gatewayId } = await request.json();
+    const gateway = PAYMENT_GATEWAYS[gatewayId];
+
+    if (!gateway) {
+      return NextResponse.json({ error: "Invalid gateway" }, { status: 400 });
+    }
+
+    // Get gateway config
+    const configDoc = await adminDb
+      .collection(COLLECTIONS.SETTINGS)
+      .doc("payment-gateways")
+      .get();
+
+    const gatewayConfig = configDoc.data()?.configs?.[gatewayId];
+
+    if (!gatewayConfig) {
+      return NextResponse.json(
+        { error: "Gateway not configured" },
+        { status: 400 }
+      );
+    }
+
+    // Test connection based on gateway type
+    const testResult = await testGatewayConnection(gatewayId, gatewayConfig);
+
+    return NextResponse.json({
+      success: testResult.success,
+      error: testResult.error,
+    });
+  } catch (error) {
+    logError(error, { context: "Test payment gateway" });
+    return NextResponse.json(
+      { error: "Connection test failed" },
+      { status: 500 }
+    );
+  }
+}
+
+async function testGatewayConnection(
+  gatewayId: string,
+  config: any
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    switch (gatewayId) {
+      case "razorpay":
+        // Test Razorpay connection
+        const razorpay = new Razorpay({
+          key_id: config.keyId,
+          key_secret: config.keySecret,
+        });
+        await razorpay.payments.fetch("dummy"); // This will fail but validates credentials
+        return { success: true };
+
+      case "paypal":
+        // Test PayPal connection
+        const token = await getPayPalAccessToken(config);
+        return { success: !!token };
+
+      case "stripe":
+        // Test Stripe connection
+        const stripe = new Stripe(config.secretKey);
+        await stripe.balance.retrieve();
+        return { success: true };
+
+      default:
+        return { success: false, error: "Gateway test not implemented" };
+    }
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+```
+
+**Task 1.4.5: Dynamic Checkout Integration**
+
+- **File**: `src/app/checkout/page.tsx`
+- **Action**: Dynamically load enabled gateways
+
+```tsx
+const [availableGateways, setAvailableGateways] = useState<
+  PaymentGatewayConfig[]
+>([]);
+
+useEffect(() => {
+  const loadGateways = async () => {
+    // Determine if order is domestic or international
+    const isDomestic = shippingAddress?.country === "IN";
+    const currency = isDomestic
+      ? "INR"
+      : await getCurrencyForCountry(shippingAddress?.country);
+
+    // Fetch enabled gateways
+    const response = await fetch("/api/payments/available-gateways", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        country: shippingAddress?.country,
+        currency,
+        amount: totalAmount,
+      }),
+    });
+
+    const gateways = await response.json();
+    setAvailableGateways(gateways);
+  };
+
+  if (shippingAddress) {
+    loadGateways();
+  }
+}, [shippingAddress, totalAmount]);
+
+// Render payment options
+{
+  availableGateways.map((gateway) => (
+    <div key={gateway.id} className="border rounded-lg p-4">
+      <label className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <input
+            type="radio"
+            name="paymentMethod"
+            value={gateway.id}
+            checked={selectedGateway === gateway.id}
+            onChange={() => setSelectedGateway(gateway.id)}
+            className="mr-2"
+          />
+          <img src={gateway.logo} alt={gateway.displayName} className="h-6" />
+          <span className="font-medium">{gateway.displayName}</span>
+        </div>
+
+        {/* Show supported payment methods */}
+        <div className="flex space-x-2">
+          {gateway.supportedPaymentMethods.slice(0, 3).map((method) => (
+            <span
+              key={method}
+              className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded"
+            >
+              {method.toUpperCase()}
+            </span>
+          ))}
+        </div>
+      </label>
+
+      {/* Show fees */}
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 ml-6">
+        Processing fee: {gateway.fees.percentage}%
+        {gateway.fees.fixed &&
+          ` + ${gateway.fees.fixed} ${gateway.fees.currency}`}
+      </p>
+    </div>
+  ));
+}
+```
+
+**Task 1.4.6: Gateway Service Abstraction**
+
+- **File**: `src/services/payment-gateway.service.ts` (CREATE NEW)
+- **Purpose**: Abstract gateway-specific logic
+
+```typescript
+class PaymentGatewayService {
+  async createOrder(
+    gatewayId: string,
+    orderData: {
+      amount: number;
+      currency: string;
+      orderId: string;
+      customer: any;
+    }
+  ): Promise<any> {
+    const gateway = PAYMENT_GATEWAYS[gatewayId];
+
+    if (!gateway) {
+      throw new Error("Invalid gateway");
+    }
+
+    // Route to gateway-specific implementation
+    switch (gatewayId) {
+      case "razorpay":
+        return this.createRazorpayOrder(orderData);
+      case "paypal":
+        return this.createPayPalOrder(orderData);
+      case "stripe":
+        return this.createStripeOrder(orderData);
+      case "phonepe":
+        return this.createPhonePeOrder(orderData);
+      case "cashfree":
+        return this.createCashfreeOrder(orderData);
+      default:
+        throw new Error("Gateway not implemented");
+    }
+  }
+
+  async verifyPayment(gatewayId: string, paymentData: any): Promise<boolean> {
+    switch (gatewayId) {
+      case "razorpay":
+        return this.verifyRazorpayPayment(paymentData);
+      case "paypal":
+        return this.verifyPayPalPayment(paymentData);
+      case "stripe":
+        return this.verifyStripePayment(paymentData);
+      default:
+        throw new Error("Gateway verification not implemented");
+    }
+  }
+
+  async refundPayment(
+    gatewayId: string,
+    transactionId: string,
+    amount?: number
+  ): Promise<void> {
+    switch (gatewayId) {
+      case "razorpay":
+        return this.refundRazorpayPayment(transactionId, amount);
+      case "paypal":
+        return this.refundPayPalPayment(transactionId, amount);
+      case "stripe":
+        return this.refundStripePayment(transactionId, amount);
+      default:
+        throw new Error("Gateway refund not implemented");
+    }
+  }
+
+  // Gateway-specific implementations
+  private async createRazorpayOrder(orderData: any): Promise<any> {
+    // Razorpay-specific logic
+  }
+
+  private async createPayPalOrder(orderData: any): Promise<any> {
+    // PayPal-specific logic
+  }
+
+  private async createStripeOrder(orderData: any): Promise<any> {
+    // Stripe-specific logic
+  }
+
+  private async createPhonePeOrder(orderData: any): Promise<any> {
+    // PhonePe-specific logic
+  }
+
+  private async createCashfreeOrder(orderData: any): Promise<any> {
+    // Cashfree-specific logic
+  }
+
+  // Add more gateway-specific methods as needed
+}
+
+export const paymentGatewayService = new PaymentGatewayService();
+```
+
+**Task 1.4.7: Database Schema**
+
+```typescript
+// Collection: settings/payment-gateways
+interface PaymentGatewaySettings {
+  enabled: string[]; // Array of enabled gateway IDs
+  configs: Record<
+    string,
+    {
+      configured: boolean;
+      config: Record<string, any>; // Gateway-specific config
+      lastTested?: Timestamp;
+      lastTestResult?: {
+        success: boolean;
+        error?: string;
+      };
+    }
+  >;
+  updatedAt: Timestamp;
+  updatedBy: string;
+}
+```
+
+**Task 1.4.8: Environment Variables**
+
+```env
+# All gateway credentials stored in database (encrypted)
+# Only non-secret public keys in .env
+
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_live_xxxxx
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxxxx
+NEXT_PUBLIC_PAYPAL_CLIENT_ID=AXXXXXXxxxxxx
+
+# Encryption key for storing gateway secrets
+GATEWAY_SECRETS_ENCRYPTION_KEY=xxxxx
+```
+
+**Task 1.4.9: Gateway Selection Logic**
+
+- **File**: `src/lib/payment-gateway-selector.ts` (CREATE NEW)
+
+```typescript
+export async function selectBestGateway(criteria: {
+  country: string;
+  currency: string;
+  amount: number;
+  paymentMethod?: string;
+}): Promise<PaymentGatewayConfig | null> {
+  // Get enabled gateways from settings
+  const response = await fetch("/api/admin/settings/payment-gateways");
+  const settings = await response.json();
+  const enabledGatewayIds = settings.enabled || [];
+
+  // Filter gateways based on criteria
+  const availableGateways = enabledGatewayIds
+    .map((id: string) => PAYMENT_GATEWAYS[id])
+    .filter((gateway: PaymentGatewayConfig) => {
+      // Check country support
+      if (
+        !gateway.supportedCountries.includes("*") &&
+        !gateway.supportedCountries.includes(criteria.country)
+      ) {
+        return false;
+      }
+
+      // Check currency support
+      if (!gateway.supportedCurrencies.includes(criteria.currency)) {
+        return false;
+      }
+
+      // Check payment method support
+      if (
+        criteria.paymentMethod &&
+        !gateway.supportedPaymentMethods.includes(criteria.paymentMethod)
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+
+  if (availableGateways.length === 0) {
+    return null;
+  }
+
+  // Sort by fees (lowest first)
+  availableGateways.sort((a, b) => {
+    const feeA = calculateFee(a, criteria.amount);
+    const feeB = calculateFee(b, criteria.amount);
+    return feeA - feeB;
+  });
+
+  // Return gateway with lowest fees
+  return availableGateways[0];
+}
+
+function calculateFee(gateway: PaymentGatewayConfig, amount: number): number {
+  const percentageFee = (amount * (gateway.fees.percentage || 0)) / 100;
+  const fixedFee = gateway.fees.fixed || 0;
+  return percentageFee + fixedFee;
+}
+```
 
 ---
 
