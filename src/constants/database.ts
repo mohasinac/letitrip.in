@@ -22,6 +22,7 @@ export const COLLECTIONS = {
   // Payment & Financial Collections
   PAYMENTS: "payments",
   PAYMENT_TRANSACTIONS: "payment_transactions",
+  PAYMENT_REFUNDS: "payment_refunds",
   REFUNDS: "refunds",
   PAYOUTS: "payouts",
 
@@ -67,6 +68,8 @@ export const COLLECTIONS = {
   NOTIFICATIONS: "notifications",
   EMAIL_QUEUE: "email_queue",
   SMS_QUEUE: "sms_queue",
+  WHATSAPP_OPT_INS: "whatsapp_opt_ins",
+  WHATSAPP_MESSAGES: "whatsapp_messages",
 
   // Messaging Collections
   MESSAGES: "messages",
@@ -88,6 +91,7 @@ export const COLLECTIONS = {
   FAQS: "faqs",
 
   // Settings Collections
+  SETTINGS: "settings",
   SITE_SETTINGS: "site_settings",
   PAYMENT_SETTINGS: "payment_settings",
   SHIPPING_ZONES: "shipping_zones",

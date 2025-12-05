@@ -7,14 +7,80 @@
  *
  * Trigger Functions:
  * - onCategoryWrite: Rebuilds tree when categories are modified
+ *
+ * Webhook Functions:
+ * - razorpayWebhook: Handle Razorpay payment webhooks
+ * - paypalWebhook: Handle PayPal payment webhooks
+ * - stripeWebhook: Handle Stripe payment webhooks
  */
 
-import * as functions from "firebase-functions/v1";
 import * as admin from "firebase-admin";
+import * as functions from "firebase-functions/v1";
 import { notificationService } from "./services/notification.service";
 
 // Initialize Firebase Admin
 admin.initializeApp();
+
+// Export Firestore triggers
+export { checkEndedAuctions } from "./triggers/auctionEndHandler";
+export { onBidCreated } from "./triggers/bidNotification";
+export { onImageDelete, onImageUpload } from "./triggers/imageOptimization";
+export { orderStatusUpdate } from "./triggers/orderStatusUpdate";
+export {
+  onReviewCreated,
+  updateReviewStatus,
+} from "./triggers/reviewModeration";
+export {
+  aggregateUserActivity,
+  onOrderComplete,
+  onProductView,
+  onSearchQuery,
+} from "./triggers/userActivityLog";
+
+// Export payment webhook handlers
+export { cashfreeWebhook } from "./webhooks/cashfree";
+export { paypalWebhook } from "./webhooks/paypal";
+export { payuWebhook } from "./webhooks/payu";
+export { phonepeWebhook } from "./webhooks/phonepe";
+export { razorpayWebhook } from "./webhooks/razorpay";
+export { stripeWebhook } from "./webhooks/stripe";
+
+// Export shipping automation functions
+export { autoSchedulePickups } from "./shipping/autoPickup";
+export { generateLabelOnConfirmation } from "./shipping/generateLabel";
+export { shiprocketWebhook } from "./shipping/trackingUpdates";
+
+// Export WhatsApp notification functions
+export { sendBidNotification } from "./notifications/whatsapp/bidNotifications";
+export { sendBulkWhatsApp } from "./notifications/whatsapp/bulkMessages";
+export { sendOrderNotification } from "./notifications/whatsapp/orderNotifications";
+
+// Export Email notification functions
+export {
+  sendOrderConfirmation as sendOrderConfirmationEmail,
+  sendOrderDelivered,
+  sendOrderShipped,
+  sendPaymentReceived,
+} from "./notifications/email/orderEmails";
+
+export {
+  sendAuctionEndingSoon,
+  sendAuctionOutbid,
+  sendAuctionWon,
+} from "./notifications/email/auctionEmails";
+
+export {
+  sendPasswordReset,
+  sendVerification,
+  sendWelcome,
+} from "./notifications/email/accountEmails";
+
+export {
+  sendMonthlyNewsletter,
+  sendWeeklyNewsletter,
+} from "./notifications/email/scheduledNewsletter";
+
+export { processEmailQueue } from "./notifications/email/queueProcessor";
 
 const db = admin.firestore();
 
@@ -52,7 +118,7 @@ export const processAuctions = functions
       // Log performance metrics
       if (duration > 8000) {
         console.warn(
-          `[Auction Cron] SLOW EXECUTION: ${duration}ms (threshold: 8000ms)`,
+          `[Auction Cron] SLOW EXECUTION: ${duration}ms (threshold: 8000ms)`
         );
       }
 
@@ -91,7 +157,7 @@ export const triggerAuctionProcessing = functions
     if (!context.auth) {
       throw new functions.https.HttpsError(
         "unauthenticated",
-        "User must be authenticated",
+        "User must be authenticated"
       );
     }
 
@@ -102,7 +168,7 @@ export const triggerAuctionProcessing = functions
     if (!user || user.role !== "admin") {
       throw new functions.https.HttpsError(
         "permission-denied",
-        "Admin access required",
+        "Admin access required"
       );
     }
 
@@ -120,7 +186,7 @@ export const triggerAuctionProcessing = functions
       console.error("[Auction Cron] Error in manual trigger:", error);
       throw new functions.https.HttpsError(
         "internal",
-        error instanceof Error ? error.message : String(error),
+        error instanceof Error ? error.message : String(error)
       );
     }
   });
@@ -158,7 +224,7 @@ async function processEndedAuctions(): Promise<{
   const failed = results.filter((r) => r.status === "rejected").length;
 
   console.log(
-    `[Auction Cron] Processed ${snapshot.size}: ${successful} successful, ${failed} failed`,
+    `[Auction Cron] Processed ${snapshot.size}: ${successful} successful, ${failed} failed`
   );
 
   // Log failures
@@ -166,7 +232,7 @@ async function processEndedAuctions(): Promise<{
     if (result.status === "rejected") {
       console.error(
         `[Auction Cron] Failed to process auction ${snapshot.docs[index].id}:`,
-        result.reason,
+        result.reason
       );
     }
   });
@@ -238,7 +304,7 @@ async function closeAuction(auctionId: string): Promise<void> {
           },
         });
         console.log(
-          `[Auction Cron] Notified seller of no-bid auction: ${auction.seller_id}`,
+          `[Auction Cron] Notified seller of no-bid auction: ${auction.seller_id}`
         );
       }
     } catch (error) {
@@ -261,7 +327,7 @@ async function closeAuction(auctionId: string): Promise<void> {
     });
 
     console.log(
-      `[Auction Cron] Auction ${auctionId} ended - reserve price not met`,
+      `[Auction Cron] Auction ${auctionId} ended - reserve price not met`
     );
 
     // Notify seller and highest bidder
@@ -299,7 +365,7 @@ async function closeAuction(auctionId: string): Promise<void> {
           },
         });
         console.log(
-          "[Auction Cron] Notified seller and bidder of reserve not met",
+          "[Auction Cron] Notified seller and bidder of reserve not met"
         );
       }
     } catch (error) {
@@ -318,7 +384,7 @@ async function closeAuction(auctionId: string): Promise<void> {
   });
 
   console.log(
-    `[Auction Cron] Auction ${auctionId} won by user ${winnerId} for ₹${finalBid}`,
+    `[Auction Cron] Auction ${auctionId} won by user ${winnerId} for ₹${finalBid}`
   );
 
   // Create order for winner
@@ -371,7 +437,7 @@ async function closeAuction(auctionId: string): Promise<void> {
         },
       });
       console.log(
-        "[Auction Cron] Notified winner and seller of auction completion",
+        "[Auction Cron] Notified winner and seller of auction completion"
       );
     }
   } catch (error) {
@@ -391,7 +457,7 @@ async function createWinnerOrder(
   auction: Record<string, unknown>,
   auctionId: string,
   winnerId: string,
-  finalBid: number,
+  finalBid: number
 ): Promise<void> {
   try {
     // Get winner details
@@ -476,7 +542,7 @@ async function createWinnerOrder(
     await db.collection("orders").add(orderData);
 
     console.log(
-      `[Auction Cron] Created order ${orderId} for winner ${winnerId}`,
+      `[Auction Cron] Created order ${orderId} for winner ${winnerId}`
     );
   } catch (error) {
     console.error("[Auction Cron] Error creating winner order:", error);
@@ -502,7 +568,7 @@ async function updateInventory(productId: string): Promise<void> {
       });
 
       console.log(
-        `[Auction Cron] Updated inventory for product ${productId}: ${newStock} remaining`,
+        `[Auction Cron] Updated inventory for product ${productId}: ${newStock} remaining`
       );
     }
   } catch (error) {
@@ -564,7 +630,7 @@ export const rebuildCategoryTree = functions
     try {
       const result = await buildAndSaveCategoryTree();
       console.log(
-        `[Category Tree] Scheduled rebuild complete: ${result.totalCount} categories`,
+        `[Category Tree] Scheduled rebuild complete: ${result.totalCount} categories`
       );
       return result;
     } catch (error) {
@@ -585,7 +651,7 @@ export const onCategoryWrite = functions
   .firestore.document("categories/{categoryId}")
   .onWrite(async (change, context) => {
     console.log(
-      `[Category Tree] Category ${context.params.categoryId} changed, triggering rebuild...`,
+      `[Category Tree] Category ${context.params.categoryId} changed, triggering rebuild...`
     );
 
     // Debounce: Only rebuild if last update was more than 5 seconds ago
@@ -623,7 +689,7 @@ export const triggerCategoryTreeRebuild = functions
     if (!context.auth) {
       throw new functions.https.HttpsError(
         "unauthenticated",
-        "User must be authenticated",
+        "User must be authenticated"
       );
     }
 
@@ -634,13 +700,13 @@ export const triggerCategoryTreeRebuild = functions
     if (!user || user.role !== "admin") {
       throw new functions.https.HttpsError(
         "permission-denied",
-        "Admin access required",
+        "Admin access required"
       );
     }
 
     console.log(
       "[Category Tree] Manual rebuild triggered by:",
-      context.auth.uid,
+      context.auth.uid
     );
 
     try {
@@ -653,7 +719,7 @@ export const triggerCategoryTreeRebuild = functions
       console.error("[Category Tree] Manual rebuild failed:", error);
       throw new functions.https.HttpsError(
         "internal",
-        error instanceof Error ? error.message : String(error),
+        error instanceof Error ? error.message : String(error)
       );
     }
   });
@@ -730,7 +796,7 @@ async function buildAndSaveCategoryTree(): Promise<{
   function buildNode(
     catId: string,
     level: number,
-    ancestors: Array<{ id: string; name: string; slug: string }>,
+    ancestors: Array<{ id: string; name: string; slug: string }>
   ): CategoryNode {
     const cat = categoryMap.get(catId)!;
     const childIds = childrenMap.get(catId) || [];
@@ -743,7 +809,7 @@ async function buildAndSaveCategoryTree(): Promise<{
     const children = childIds
       .map((childId) => buildNode(childId, level + 1, currentAncestors))
       .sort(
-        (a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name),
+        (a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name)
       );
 
     const path = [...ancestors.map((a) => a.name), cat.name].join(" > ");
@@ -796,7 +862,7 @@ async function buildAndSaveCategoryTree(): Promise<{
   function getMaxDepth(nodes: CategoryNode[], currentDepth: number): number {
     if (nodes.length === 0) return currentDepth;
     return Math.max(
-      ...nodes.map((n) => getMaxDepth(n.children, currentDepth + 1)),
+      ...nodes.map((n) => getMaxDepth(n.children, currentDepth + 1))
     );
   }
   const maxDepth = tree.length > 0 ? getMaxDepth(tree, 0) : 0;
@@ -817,7 +883,7 @@ async function buildAndSaveCategoryTree(): Promise<{
 
   console.log(
     `[Category Tree] Saved tree with ${categoryMap.size} categories, ` +
-      `${rootIds.length} roots, ${leaves.length} leaves, depth ${maxDepth}`,
+      `${rootIds.length} roots, ${leaves.length} leaves, depth ${maxDepth}`
   );
 
   return {
@@ -860,7 +926,7 @@ export const onOrderStatusChange = functions
     const oldStatus = before.status || before.order_status;
 
     console.log(
-      `[Order Trigger] Order ${orderId} status changed: ${oldStatus} -> ${newStatus}`,
+      `[Order Trigger] Order ${orderId} status changed: ${oldStatus} -> ${newStatus}`
     );
 
     try {
@@ -877,7 +943,7 @@ export const onOrderStatusChange = functions
 
       await db.collection("notifications").add(notificationData);
       console.log(
-        `[Order Trigger] Created notification for user ${after.user_id}`,
+        `[Order Trigger] Created notification for user ${after.user_id}`
       );
 
       // If order is confirmed, notify seller
@@ -889,13 +955,15 @@ export const onOrderStatusChange = functions
             userId: shop.owner_id,
             type: "new_order",
             title: "New Order Received",
-            message: `You have a new order #${after.order_id || orderId} to fulfill.`,
+            message: `You have a new order #${
+              after.order_id || orderId
+            } to fulfill.`,
             orderId: orderId,
             read: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
           });
           console.log(
-            `[Order Trigger] Notified seller ${shop.owner_id} of new order`,
+            `[Order Trigger] Notified seller ${shop.owner_id} of new order`
           );
         }
       }
@@ -914,13 +982,13 @@ export const onOrderStatusChange = functions
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
         console.log(
-          `[Order Trigger] Created review request notification for order ${orderId}`,
+          `[Order Trigger] Created review request notification for order ${orderId}`
         );
       }
     } catch (error) {
       console.error(
         `[Order Trigger] Error processing order ${orderId}:`,
-        error,
+        error
       );
     }
   });
@@ -986,7 +1054,7 @@ export const onPaymentStatusChange = functions
     }
 
     console.log(
-      `[Payment Trigger] Payment ${paymentId} status changed: ${before.status} -> ${after.status}`,
+      `[Payment Trigger] Payment ${paymentId} status changed: ${before.status} -> ${after.status}`
     );
 
     try {
@@ -1015,7 +1083,7 @@ export const onPaymentStatusChange = functions
                 updated_at: admin.firestore.FieldValue.serverTimestamp(),
               });
               console.log(
-                `[Payment Trigger] Auto-confirmed order ${after.order_id}`,
+                `[Payment Trigger] Auto-confirmed order ${after.order_id}`
               );
             }
           }
@@ -1036,14 +1104,14 @@ export const onPaymentStatusChange = functions
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
           });
           console.log(
-            `[Payment Trigger] Notified user ${after.user_id} of payment failure`,
+            `[Payment Trigger] Notified user ${after.user_id} of payment failure`
           );
         }
       }
     } catch (error) {
       console.error(
         `[Payment Trigger] Error processing payment ${paymentId}:`,
-        error,
+        error
       );
     }
   });
@@ -1074,7 +1142,7 @@ export const onReturnStatusChange = functions
     }
 
     console.log(
-      `[Return Trigger] Return ${returnId} status changed: ${before.status} -> ${after.status}`,
+      `[Return Trigger] Return ${returnId} status changed: ${before.status} -> ${after.status}`
     );
 
     try {
@@ -1092,7 +1160,7 @@ export const onReturnStatusChange = functions
 
       await db.collection("notifications").add(notificationData);
       console.log(
-        `[Return Trigger] Created notification for user ${after.user_id}`,
+        `[Return Trigger] Created notification for user ${after.user_id}`
       );
 
       // If return is approved, notify seller
@@ -1110,7 +1178,7 @@ export const onReturnStatusChange = functions
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
           });
           console.log(
-            `[Return Trigger] Notified seller ${shop.owner_id} of approved return`,
+            `[Return Trigger] Notified seller ${shop.owner_id} of approved return`
           );
         }
       }
@@ -1127,7 +1195,9 @@ export const onReturnStatusChange = functions
                 updated_at: admin.firestore.FieldValue.serverTimestamp(),
               });
               console.log(
-                `[Return Trigger] Restored ${item.quantity || 1} units to product ${item.product_id}`,
+                `[Return Trigger] Restored ${
+                  item.quantity || 1
+                } units to product ${item.product_id}`
               );
             }
           }
@@ -1136,7 +1206,7 @@ export const onReturnStatusChange = functions
     } catch (error) {
       console.error(
         `[Return Trigger] Error processing return ${returnId}:`,
-        error,
+        error
       );
     }
   });
@@ -1203,14 +1273,14 @@ export const onTicketStatusChange = functions
     }
 
     console.log(
-      `[Ticket Trigger] Ticket ${ticketId} status changed: ${before.status} -> ${after.status}`,
+      `[Ticket Trigger] Ticket ${ticketId} status changed: ${before.status} -> ${after.status}`
     );
 
     try {
       const userId = after.userId || after.user_id;
       if (!userId) {
         console.warn(
-          `[Ticket Trigger] No user ID found for ticket ${ticketId}`,
+          `[Ticket Trigger] No user ID found for ticket ${ticketId}`
         );
         return;
       }
@@ -1230,7 +1300,7 @@ export const onTicketStatusChange = functions
     } catch (error) {
       console.error(
         `[Ticket Trigger] Error processing ticket ${ticketId}:`,
-        error,
+        error
       );
     }
   });
@@ -1316,13 +1386,15 @@ export const onNewBid = functions
           userId: previousHighestBidderId,
           type: "outbid",
           title: "You've Been Outbid!",
-          message: `Someone placed a higher bid of ₹${bid.amount.toLocaleString("en-IN")} on "${auction.name}".`,
+          message: `Someone placed a higher bid of ₹${bid.amount.toLocaleString(
+            "en-IN"
+          )} on "${auction.name}".`,
           auctionId: bid.auction_id,
           read: false,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
         console.log(
-          `[Bid Trigger] Notified previous bidder ${previousHighestBidderId} of outbid`,
+          `[Bid Trigger] Notified previous bidder ${previousHighestBidderId} of outbid`
         );
       }
 
@@ -1333,7 +1405,9 @@ export const onNewBid = functions
           userId: sellerId,
           type: "new_bid",
           title: "New Bid Received",
-          message: `A new bid of ₹${bid.amount.toLocaleString("en-IN")} was placed on "${auction.name}".`,
+          message: `A new bid of ₹${bid.amount.toLocaleString(
+            "en-IN"
+          )} was placed on "${auction.name}".`,
           auctionId: bid.auction_id,
           read: false,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -1365,7 +1439,7 @@ export const onNewReview = functions
     const { reviewId } = context.params;
 
     console.log(
-      `[Review Trigger] New review ${reviewId} for ${review.type || "product"}`,
+      `[Review Trigger] New review ${reviewId} for ${review.type || "product"}`
     );
 
     try {
@@ -1388,7 +1462,9 @@ export const onNewReview = functions
             userId: shop.owner_id,
             type: "new_review",
             title: "New Review",
-            message: `You received a ${review.rating}-star review${review.product_id ? " for a product" : ""}.`,
+            message: `You received a ${review.rating}-star review${
+              review.product_id ? " for a product" : ""
+            }.`,
             reviewId: reviewId,
             shopId: review.shop_id,
             productId: review.product_id,
@@ -1396,14 +1472,14 @@ export const onNewReview = functions
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
           });
           console.log(
-            `[Review Trigger] Notified seller ${shop.owner_id} of new review`,
+            `[Review Trigger] Notified seller ${shop.owner_id} of new review`
           );
         }
       }
     } catch (error) {
       console.error(
         `[Review Trigger] Error processing review ${reviewId}:`,
-        error,
+        error
       );
     }
   });
@@ -1440,7 +1516,9 @@ async function updateShopRating(shopId: string): Promise<void> {
       });
 
     console.log(
-      `[Review Trigger] Updated shop ${shopId} rating to ${averageRating.toFixed(1)}`,
+      `[Review Trigger] Updated shop ${shopId} rating to ${averageRating.toFixed(
+        1
+      )}`
     );
   } catch (error) {
     console.error("[Review Trigger] Error updating shop rating:", error);
@@ -1479,7 +1557,9 @@ async function updateProductRating(productId: string): Promise<void> {
       });
 
     console.log(
-      `[Review Trigger] Updated product ${productId} rating to ${averageRating.toFixed(1)}`,
+      `[Review Trigger] Updated product ${productId} rating to ${averageRating.toFixed(
+        1
+      )}`
     );
   } catch (error) {
     console.error("[Review Trigger] Error updating product rating:", error);
@@ -1516,7 +1596,7 @@ export const cleanupOldBids = functions
       const cutoffTimestamp = admin.firestore.Timestamp.fromDate(oneMonthAgo);
 
       console.log(
-        `[Cleanup] Cleaning bids older than ${oneMonthAgo.toISOString()}`,
+        `[Cleanup] Cleaning bids older than ${oneMonthAgo.toISOString()}`
       );
 
       // Step 1: Get all ended auctions with winning bids
@@ -1542,7 +1622,9 @@ export const cleanupOldBids = functions
       });
 
       console.log(
-        `[Cleanup] Found ${Object.keys(winningBidInfo).length} auctions with winning bids`,
+        `[Cleanup] Found ${
+          Object.keys(winningBidInfo).length
+        } auctions with winning bids`
       );
 
       // Step 2: Get all old bids
@@ -1553,7 +1635,7 @@ export const cleanupOldBids = functions
         .get();
 
       console.log(
-        `[Cleanup] Found ${oldBidsSnapshot.size} bids older than 1 month`,
+        `[Cleanup] Found ${oldBidsSnapshot.size} bids older than 1 month`
       );
 
       if (oldBidsSnapshot.empty) {
@@ -1584,7 +1666,7 @@ export const cleanupOldBids = functions
           // Preserve winning bids
           preservedCount++;
           console.log(
-            `[Cleanup] Preserving winning bid ${bidDoc.id} for auction ${auctionId}`,
+            `[Cleanup] Preserving winning bid ${bidDoc.id} for auction ${auctionId}`
           );
         } else {
           // Delete non-winning bids
@@ -1605,12 +1687,12 @@ export const cleanupOldBids = functions
       if (batchCount > 0) {
         await batch.commit();
         console.log(
-          `[Cleanup] Committed final batch of ${batchCount} deletions`,
+          `[Cleanup] Committed final batch of ${batchCount} deletions`
         );
       }
 
       console.log(
-        `[Cleanup] Bid cleanup complete: deleted ${deletedCount}, preserved ${preservedCount}`,
+        `[Cleanup] Bid cleanup complete: deleted ${deletedCount}, preserved ${preservedCount}`
       );
 
       return {
@@ -1662,7 +1744,7 @@ export const cleanupExpiredSessions = functions
 
       await batch.commit();
       console.log(
-        `[Cleanup] Deleted ${sessionsSnapshot.size} expired sessions`,
+        `[Cleanup] Deleted ${sessionsSnapshot.size} expired sessions`
       );
 
       return { cleaned: sessionsSnapshot.size };
@@ -1798,7 +1880,9 @@ export const onProductWrite = functions
     const shopChanged = before?.shop_id !== after?.shop_id;
 
     console.log(
-      `[Product Trigger] Product ${productId} ${wasCreated ? "created" : wasDeleted ? "deleted" : "updated"}`,
+      `[Product Trigger] Product ${productId} ${
+        wasCreated ? "created" : wasDeleted ? "deleted" : "updated"
+      }`
     );
 
     try {
@@ -1845,7 +1929,9 @@ export const onAuctionWrite = functions
     const shopChanged = before?.shop_id !== after?.shop_id;
 
     console.log(
-      `[Auction Trigger] Auction ${auctionId} ${wasCreated ? "created" : wasDeleted ? "deleted" : "updated"}`,
+      `[Auction Trigger] Auction ${auctionId} ${
+        wasCreated ? "created" : wasDeleted ? "deleted" : "updated"
+      }`
     );
 
     try {
@@ -1890,7 +1976,7 @@ async function updateShopProductCount(shopId: string): Promise<void> {
     });
 
     console.log(
-      `[Shop Stats] Updated shop ${shopId} product count to ${productCount}`,
+      `[Shop Stats] Updated shop ${shopId} product count to ${productCount}`
     );
   } catch (error) {
     console.error("[Shop Stats] Error updating product count:", error);
@@ -1918,7 +2004,7 @@ async function updateShopAuctionCount(shopId: string): Promise<void> {
     });
 
     console.log(
-      `[Shop Stats] Updated shop ${shopId} auction count to ${auctionCount}`,
+      `[Shop Stats] Updated shop ${shopId} auction count to ${auctionCount}`
     );
   } catch (error) {
     console.error("[Shop Stats] Error updating auction count:", error);
@@ -1993,7 +2079,7 @@ async function updateCategoryProductCount(categoryId: string): Promise<void> {
     });
 
     console.log(
-      `[Category Stats] Updated category ${categoryId} product count to ${productCount}`,
+      `[Category Stats] Updated category ${categoryId} product count to ${productCount}`
     );
   } catch (error) {
     console.error("[Category Stats] Error updating product count:", error);
