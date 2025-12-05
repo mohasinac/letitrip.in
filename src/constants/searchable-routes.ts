@@ -79,6 +79,24 @@ export const PUBLIC_ROUTES: SearchableRoute[] = [
     icon: "search",
     category: "main",
   },
+  {
+    id: "events",
+    name: "Events",
+    path: "/events",
+    description: "Browse upcoming events",
+    keywords: ["event", "events", "happening", "calendar"],
+    icon: "calendar",
+    category: "main",
+  },
+  {
+    id: "compare",
+    name: "Compare Products",
+    path: "/compare",
+    description: "Compare products side by side",
+    keywords: ["compare", "comparison", "vs", "versus"],
+    icon: "git-compare",
+    category: "main",
+  },
 ];
 
 // User account routes
@@ -182,6 +200,33 @@ export const USER_ROUTES: SearchableRoute[] = [
     icon: "rotate-ccw",
     category: "user",
   },
+  {
+    id: "user-notifications",
+    name: "Notifications",
+    path: "/user/notifications",
+    description: "View your notifications",
+    keywords: ["notification", "notifications", "alert", "alerts"],
+    icon: "bell",
+    category: "user",
+  },
+  {
+    id: "user-riplimit",
+    name: "RipLimit",
+    path: "/user/riplimit",
+    description: "Manage your RipLimit",
+    keywords: ["riplimit", "limit", "credit", "balance"],
+    icon: "credit-card",
+    category: "user",
+  },
+  {
+    id: "user-tickets",
+    name: "Support Tickets",
+    path: "/user/tickets",
+    description: "View your support tickets",
+    keywords: ["ticket", "tickets", "support", "help"],
+    icon: "life-buoy",
+    category: "user",
+  },
 ];
 
 // Seller routes
@@ -247,6 +292,69 @@ export const SELLER_ROUTES: SearchableRoute[] = [
     description: "View revenue reports",
     keywords: ["revenue", "earnings", "income", "money", "payout"],
     icon: "dollar-sign",
+    category: "seller",
+  },
+  {
+    id: "seller-coupons",
+    name: "Coupons",
+    path: "/seller/coupons",
+    description: "Manage your coupons",
+    keywords: ["coupon", "coupons", "discount", "promo"],
+    icon: "ticket",
+    category: "seller",
+  },
+  {
+    id: "seller-returns",
+    name: "Returns",
+    path: "/seller/returns",
+    description: "Manage customer returns",
+    keywords: ["return", "returns", "refund"],
+    icon: "rotate-ccw",
+    category: "seller",
+  },
+  {
+    id: "seller-reviews",
+    name: "Reviews",
+    path: "/seller/reviews",
+    description: "View your reviews",
+    keywords: ["review", "reviews", "rating", "feedback"],
+    icon: "star",
+    category: "seller",
+  },
+  {
+    id: "seller-messages",
+    name: "Messages",
+    path: "/seller/messages",
+    description: "View customer messages",
+    keywords: ["message", "messages", "chat", "inbox"],
+    icon: "message-square",
+    category: "seller",
+  },
+  {
+    id: "seller-support-tickets",
+    name: "Support Tickets",
+    path: "/seller/support-tickets",
+    description: "View support tickets",
+    keywords: ["ticket", "tickets", "support", "help"],
+    icon: "life-buoy",
+    category: "seller",
+  },
+  {
+    id: "seller-settings",
+    name: "Seller Settings",
+    path: "/seller/settings",
+    description: "Manage seller settings",
+    keywords: ["setting", "settings", "preferences", "config"],
+    icon: "settings",
+    category: "seller",
+  },
+  {
+    id: "seller-help",
+    name: "Help Center",
+    path: "/seller/help",
+    description: "Get help and guidance",
+    keywords: ["help", "guide", "support", "how"],
+    icon: "book-open",
     category: "seller",
   },
 ];
@@ -396,6 +504,15 @@ export const AUTH_ROUTES: SearchableRoute[] = [
     icon: "key",
     category: "main",
   },
+  {
+    id: "reset-password",
+    name: "Reset Password",
+    path: "/reset-password",
+    description: "Create new password",
+    keywords: ["reset", "password", "new", "change"],
+    icon: "key",
+    category: "main",
+  },
 ];
 
 // Combined routes for search
@@ -419,13 +536,13 @@ export function searchNavigationRoutes(
     includeUser?: boolean;
     includeSeller?: boolean;
     includeAdmin?: boolean;
-  },
+  }
 ): SearchableRoute[] {
   if (!query || query.length < 1) {
     // Return popular routes when no query
     return [...PUBLIC_ROUTES.slice(0, 5), ...SUPPORT_ROUTES.slice(0, 3)].slice(
       0,
-      maxResults,
+      maxResults
     );
   }
 
@@ -472,7 +589,7 @@ export function searchNavigationRoutes(
 
     // Keyword matches
     const keywordMatches = route.keywords.filter((kw) =>
-      queryWords.some((qw) => kw.includes(qw) || qw.includes(kw)),
+      queryWords.some((qw) => kw.includes(qw) || qw.includes(kw))
     );
     score += keywordMatches.length * 10;
 

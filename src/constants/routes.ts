@@ -17,8 +17,8 @@ export const PUBLIC_ROUTES = {
   LOGIN: "/login",
   REGISTER: "/register",
   LOGOUT: "/logout",
-  // NOTE: /forgot-password route does not exist - password reset is handled via /login
-  // FORGOT_PASSWORD: "/forgot-password", // REMOVED - Route does not exist
+  FORGOT_PASSWORD: "/forgot-password",
+  RESET_PASSWORD: "/reset-password",
 
   // Browse
   PRODUCTS: "/products",
@@ -49,6 +49,14 @@ export const PUBLIC_ROUTES = {
   REFUND_POLICY: "/refund-policy",
   SHIPPING_POLICY: "/shipping-policy",
   COOKIE_POLICY: "/cookie-policy",
+  LEGAL: "/legal",
+
+  // Events
+  EVENTS: "/events",
+  EVENT_DETAIL: (slug: string) => `/events/${slug}`,
+
+  // Compare
+  COMPARE: "/compare",
 
   // Guide Pages
   GUIDE_NEW_USER: "/guide/new-user",
@@ -106,10 +114,13 @@ export const USER_ROUTES = {
   TICKETS: "/user/tickets",
   TICKET_DETAIL: (id: string) => `/user/tickets/${id}`,
 
-  // NOTE: These routes do not exist yet - pending implementation
-  // NOTIFICATIONS: "/user/notifications", // E016 - Not implemented
+  // Notifications & Reviews
+  NOTIFICATIONS: "/user/notifications",
+  REVIEWS: "/user/reviews",
   RETURNS: "/user/returns",
-  // REVIEWS: "/user/reviews", // Uses /reviews for now
+
+  // RipLimit
+  RIPLIMIT: "/user/riplimit",
 } as const;
 
 // ============================================
@@ -163,12 +174,11 @@ export const SELLER_ROUTES = {
   // Support Tickets
   SUPPORT_TICKETS: "/seller/support-tickets",
   SUPPORT_TICKET_DETAIL: (id: string) => `/seller/support-tickets/${id}`,
-  // NOTE: /seller/support-tickets/create does not exist - use support/create or inline creation
 
   // Settings & Reviews
   SETTINGS: "/seller/settings",
   REVIEWS: "/seller/reviews",
-  // HELP: "/seller/help", // REMOVED - Not implemented
+  HELP: "/seller/help",
 } as const;
 
 // ============================================
@@ -183,10 +193,15 @@ export const ADMIN_ROUTES = {
   HERO_SLIDES: "/admin/hero-slides",
   HERO_SLIDE_EDIT: (id: string) => `/admin/hero-slides/${id}/edit`,
   HOMEPAGE: "/admin/homepage",
+  FEATURED_SECTIONS: "/admin/featured-sections",
   CATEGORIES: "/admin/categories",
   CATEGORY_EDIT: (id: string) => `/admin/categories/${id}/edit`,
   STATIC_ASSETS: "/admin/static-assets",
-  // NOTE: /admin/featured-sections does not exist - use homepage instead
+
+  // Events
+  EVENTS: "/admin/events",
+  EVENT_CREATE: "/admin/events/create",
+  EVENT_EDIT: (id: string) => `/admin/events/${id}/edit`,
 
   // Marketplace
   SHOPS: "/admin/shops",
@@ -215,9 +230,14 @@ export const ADMIN_ROUTES = {
   RETURNS: "/admin/returns",
   RETURN_DETAIL: (id: string) => `/admin/returns/${id}`,
 
-  // Support
+  // Support & Tickets
   SUPPORT_TICKETS: "/admin/support-tickets",
   SUPPORT_TICKET_DETAIL: (id: string) => `/admin/support-tickets/${id}`,
+  TICKETS: "/admin/tickets",
+  TICKET_DETAIL: (id: string) => `/admin/tickets/${id}`,
+
+  // RipLimit Management
+  RIPLIMIT: "/admin/riplimit",
 
   // Blog
   BLOG: "/admin/blog",
