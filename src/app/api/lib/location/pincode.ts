@@ -117,18 +117,13 @@ export function transformPincodeResponse(
   };
 }
 
+// Re-export from formatters for backward compatibility
+export { formatPincode } from "@/lib/formatters";
+
 /**
  * Validates pincode format
  */
 export function validatePincode(pincode: string): boolean {
   const cleaned = pincode.replace(/\D/g, "");
   return cleaned.length === 6 && /^[1-9]/.test(cleaned);
-}
-
-/**
- * Formats pincode for display (adds space in middle if needed)
- */
-export function formatPincode(pincode: string): string {
-  const cleaned = pincode.replace(/\D/g, "");
-  return cleaned.slice(0, 6);
 }

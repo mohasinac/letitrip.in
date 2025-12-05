@@ -115,10 +115,5 @@ export function formatPhone(
   return phone;
 }
 
-/**
- * Formats a pincode for display
- */
-export function formatPincode(pincode: string): string {
-  const cleaned = pincode.replace(/\D/g, "");
-  return cleaned.slice(0, PINCODE_LENGTH);
-}
+// Re-export from formatters for backward compatibility
+export { formatPincode } from "@/lib/formatters";

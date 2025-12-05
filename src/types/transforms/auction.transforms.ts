@@ -19,18 +19,11 @@ import {
 import { safeToISOString } from "@/lib/date-utils";
 import { AuctionStatus, AuctionType } from "../shared/common.types";
 import { formatDate } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 
 function parseDate(date: Timestamp | string | null): Date | null {
   if (!date) return null;
   return date instanceof Timestamp ? date.toDate() : new Date(date);
-}
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(price);
 }
 
 function formatTimeRemaining(endTime: Date | null): {

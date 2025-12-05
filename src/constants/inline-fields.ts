@@ -6,37 +6,35 @@
  */
 
 import { InlineField } from "@/types/inline-edit";
+import {
+  validateEmail as isValidEmail,
+  validatePhone as isValidPhone,
+  validateUrl as isValidUrl,
+} from "@/lib/validators";
 
 /**
  * Validation Functions
+ * Wrappers that return error messages (null = valid)
  */
 
 // Email validation
 export const validateEmail = (value: string): string | null => {
   if (!value) return "Email is required";
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(value)) return "Invalid email format";
+  if (!isValidEmail(value)) return "Invalid email format";
   return null;
 };
 
 // URL validation
 export const validateUrl = (value: string): string | null => {
   if (!value) return null; // Optional by default
-  try {
-    new URL(value);
-    return null;
-  } catch {
-    return "Invalid URL format";
-  }
+  if (!isValidUrl(value)) return "Invalid URL format";
+  return null;
 };
 
 // Phone validation (Indian format)
 export const validatePhone = (value: string): string | null => {
   if (!value) return null; // Optional by default
-  const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
-  if (!phoneRegex.test(value.replace(/\s/g, ""))) {
-    return "Invalid phone number";
-  }
+  if (!isValidPhone(value)) return "Invalid phone number";
   return null;
 };
 

@@ -5,8 +5,11 @@
  * Used throughout the application for display purposes
  */
 
+import { formatPrice } from "@/lib/price.utils";
+
 /**
  * Format currency in Indian Rupees
+ * @deprecated Use formatPrice from @/lib/price.utils for better null handling and consistency
  */
 export function formatCurrency(
   amount: number,
@@ -198,6 +201,14 @@ export function formatPhoneNumber(phone: string): string {
   }
 
   return phone;
+}
+
+/**
+ * Format pincode (6 digits)
+ */
+export function formatPincode(pincode: string): string {
+  const cleaned = pincode.replace(/\D/g, "");
+  return cleaned.slice(0, 6);
 }
 
 /**

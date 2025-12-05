@@ -12,6 +12,7 @@ import {
   CartSummaryFE,
   AddToCartFormFE,
 } from "../frontend/cart.types";
+import { formatPrice } from "@/lib/price.utils";
 
 /**
  * Parse Firestore Timestamp or ISO string to Date
@@ -22,17 +23,6 @@ function parseDate(date: Timestamp | string | null): Date | null {
     return date.toDate();
   }
   return new Date(date);
-}
-
-/**
- * Format price as Indian Rupees
- */
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(price);
 }
 
 /**
