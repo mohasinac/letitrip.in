@@ -1,7 +1,7 @@
 import {
   FILE_SIZE_LIMITS,
-  SUPPORTED_FORMATS,
   IMAGE_CONSTRAINTS,
+  SUPPORTED_FORMATS,
   VIDEO_CONSTRAINTS,
 } from "@/constants/media";
 import type { MediaType, MediaValidationResult } from "@/types/media";
@@ -16,7 +16,7 @@ import type { MediaType, MediaValidationResult } from "@/types/media";
  */
 export function validateFileSize(
   file: File,
-  resourceType: keyof typeof FILE_SIZE_LIMITS,
+  resourceType: keyof typeof FILE_SIZE_LIMITS
 ): { isValid: boolean; error?: string } {
   const maxSize = FILE_SIZE_LIMITS[resourceType];
 
@@ -37,7 +37,7 @@ export function validateFileSize(
  */
 export function validateFileType(
   file: File,
-  allowedTypes: MediaType[],
+  allowedTypes: MediaType[]
 ): { isValid: boolean; error?: string } {
   const fileType = file.type;
   const getFormatKey = (type: MediaType): keyof typeof SUPPORTED_FORMATS => {
@@ -54,7 +54,9 @@ export function validateFileType(
   if (!isValid) {
     return {
       isValid: false,
-      error: `File type "${fileType}" is not supported. Allowed types: ${allowedTypes.join(", ")}`,
+      error: `File type "${fileType}" is not supported. Allowed types: ${allowedTypes.join(
+        ", "
+      )}`,
     };
   }
 
@@ -66,7 +68,7 @@ export function validateFileType(
  */
 export async function validateImageDimensions(
   file: File,
-  constraintType: keyof typeof IMAGE_CONSTRAINTS,
+  constraintType: keyof typeof IMAGE_CONSTRAINTS
 ): Promise<{
   isValid: boolean;
   error?: string;
@@ -139,7 +141,9 @@ export async function validateImageDimensions(
 
           resolve({
             isValid: true, // Warning, not error
-            error: `Recommended aspect ratio is ${recommendedRatioStr}, but image is ${actualRatio.toFixed(2)}`,
+            error: `Recommended aspect ratio is ${recommendedRatioStr}, but image is ${actualRatio.toFixed(
+              2
+            )}`,
             dimensions: { width, height },
           });
           return;
@@ -166,7 +170,7 @@ export async function validateImageDimensions(
  */
 export async function validateVideoConstraints(
   file: File,
-  constraintType: keyof typeof VIDEO_CONSTRAINTS,
+  constraintType: keyof typeof VIDEO_CONSTRAINTS
 ): Promise<{
   isValid: boolean;
   error?: string;
@@ -190,7 +194,9 @@ export async function validateVideoConstraints(
       if (constraints.maxDuration && duration > constraints.maxDuration) {
         resolve({
           isValid: false,
-          error: `Video duration (${duration.toFixed(0)}s) exceeds maximum allowed (${constraints.maxDuration}s)`,
+          error: `Video duration (${duration.toFixed(
+            0
+          )}s) exceeds maximum allowed (${constraints.maxDuration}s)`,
           metadata: { duration, width: videoWidth, height: videoHeight },
         });
         return;
@@ -236,7 +242,7 @@ export async function validateMedia(
   file: File,
   resourceType: keyof typeof FILE_SIZE_LIMITS,
   mediaType: MediaType,
-  constraintKey?: string,
+  constraintKey?: string
 ): Promise<MediaValidationResult> {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -261,7 +267,7 @@ export async function validateMedia(
   ) {
     const dimensionsValidation = await validateImageDimensions(
       file,
-      constraintKey as keyof typeof IMAGE_CONSTRAINTS,
+      constraintKey as keyof typeof IMAGE_CONSTRAINTS
     );
     if (!dimensionsValidation.isValid && dimensionsValidation.error) {
       // Check if it's a warning (aspect ratio)
@@ -281,7 +287,7 @@ export async function validateMedia(
   ) {
     const videoValidation = await validateVideoConstraints(
       file,
-      constraintKey as keyof typeof VIDEO_CONSTRAINTS,
+      constraintKey as keyof typeof VIDEO_CONSTRAINTS
     );
     if (!videoValidation.isValid && videoValidation.error) {
       errors.push(videoValidation.error);
@@ -315,7 +321,7 @@ export function getMediaType(file: File): MediaType | null {
 
   if (
     (SUPPORTED_FORMATS.DOCUMENTS.mimeTypes as readonly string[]).includes(
-      mimeType,
+      mimeType
     )
   ) {
     return "document";
@@ -324,24 +330,5 @@ export function getMediaType(file: File): MediaType | null {
   return null;
 }
 
-/**
- * Format file size for display
- */
-export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes";
-
-  const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-}
-
-/**
- * Format duration for display (seconds to MM:SS)
- */
-export function formatDuration(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-}
+// Re-export formatting utilities from formatters.ts to avoid duplication
+export { formatDuration, formatFileSize } from "@/lib/formatters";

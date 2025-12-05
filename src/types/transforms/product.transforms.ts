@@ -38,15 +38,7 @@ function parseDate(timestamp: any): Date {
   return new Date();
 }
 
-/**
- * Format price to Indian currency
- */
-function formatPrice(price: number | undefined | null): string {
-  if (price === undefined || price === null || isNaN(price)) {
-    return "₹0";
-  }
-  return `₹${price.toLocaleString("en-IN")}`;
-}
+import { formatPrice } from "@/lib/price.utils";
 
 /**
  * Calculate discount
