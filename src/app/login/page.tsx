@@ -7,6 +7,7 @@ import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import { COMPANY_NAME } from "@/constants/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { useI18n } from "@/lib/i18n/useI18n";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -16,6 +17,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, isAuthenticated } = useAuth();
+  const { t } = useI18n();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -69,12 +71,12 @@ function LoginForm() {
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
               {COMPANY_NAME}
             </h1>
-          </Link>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Welcome Back
+            {t('auth.login.title')}
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Sign in to your account to continue
+            {t('auth.login.subtitle')}
+          </p>gn in to your account to continue
           </p>
         </div>
 
@@ -91,16 +93,16 @@ function LoginForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <FormField
-              label="Email Address"
+              label={t('auth.login.email')}
               required
-              error={error && !formData.email ? "Email is required" : ""}
+              error={error && !formData.email ? t('auth.login.emailRequired') : ""}
             >
               <FormInput
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="you@example.com"
+                placeholder={t('auth.login.emailPlaceholder')}
                 autoComplete="email"
               />
             </FormField>
@@ -108,10 +110,10 @@ function LoginForm() {
             {/* Password with show/hide */}
             <div>
               <FormField
-                label="Password"
+                label={t('auth.login.password')}
                 required
                 error={
-                  error && !formData.password ? "Password is required" : ""
+                  error && !formData.password ? t('auth.login.passwordRequired') : ""
                 }
               >
                 <div className="relative">
@@ -145,7 +147,7 @@ function LoginForm() {
             <div className="flex items-center justify-between">
               <FormCheckbox
                 id="remember-me"
-                label="Remember me"
+                label={t('auth.login.rememberMe')}
                 checked={false}
                 onChange={() => {}}
               />
@@ -153,7 +155,7 @@ function LoginForm() {
                 href="/forgot-password"
                 className="text-sm text-yellow-600 hover:text-yellow-700 font-medium py-2"
               >
-                Forgot password?
+                {t('auth.login.forgotPassword')}
               </Link>
             </div>
 
@@ -185,10 +187,10 @@ function LoginForm() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Signing in...
+                  {t('common.loading')}
                 </span>
               ) : (
-                "Sign In"
+                t('auth.login.signIn')
               )}
             </button>
           </form>
@@ -201,7 +203,7 @@ function LoginForm() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                  Or continue with
+                  {t('auth.login.orContinueWith')}
                 </span>
               </div>
             </div>
@@ -220,7 +222,7 @@ function LoginForm() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                  Don&apos;t have an account?
+                  {t('auth.login.noAccount')}
                 </span>
               </div>
             </div>
@@ -232,23 +234,23 @@ function LoginForm() {
               href="/register"
               className="block w-full min-h-[48px] py-3 px-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:border-yellow-500 hover:text-yellow-600 active:bg-yellow-50 dark:active:bg-yellow-900/30 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all text-center"
             >
-              Create Account
+              {t('auth.login.createAccount')}
             </Link>
           </div>
         </div>
 
         {/* Footer */}
         <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-          By signing in, you agree to our{" "}
+          {t('auth.login.agreementText')}{" "}
           <Link href="/terms" className="text-yellow-600 hover:text-yellow-700">
-            Terms of Service
+            {t('auth.login.termsOfService')}
           </Link>{" "}
-          and{" "}
+          {t('auth.login.and')}{" "}
           <Link
             href="/privacy"
             className="text-yellow-600 hover:text-yellow-700"
           >
-            Privacy Policy
+            {t('auth.login.privacyPolicy')}
           </Link>
         </p>
       </div>

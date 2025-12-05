@@ -1,0 +1,147 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "uploading": "Uploading...",
+    "pleaseWait": "Please wait...",
+    "processing": "Processing...",
+    "search": "Search...",
+    "filter": "Filter",
+    "sortBy": "Sort by",
+    "apply": "Apply",
+    "reset": "Reset",
+    "clear": "Clear",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "saveChanges": "Save Changes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "continue": "Continue",
+    "submit": "Submit",
+    "close": "Close",
+    "viewAll": "View All",
+    "seeAll": "See All"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to your account to continue",
+      "email": "Email Address",
+      "emailPlaceholder": "you@example.com",
+      "emailRequired": "Email is required",
+      "password": "Password",
+      "passwordRequired": "Password is required",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign In",
+      "signInWithGoogle": "Sign in with Google",
+      "orContinueWith": "Or continue with",
+      "noAccount": "Don't have an account?",
+      "createAccount": "Create Account",
+      "agreementText": "By signing in, you agree to our",
+      "termsOfService": "Terms of Service",
+      "and": "and",
+      "privacyPolicy": "Privacy Policy"
+    },
+    "register": {
+      "title": "Create Your Account",
+      "subtitle": "Join us and start shopping today",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "passwordHint": "Must be at least 8 characters",
+      "agreeToTerms": "I agree to the Terms of Service and Privacy Policy",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign In",
+      "createAccountButton": "Create Account",
+      "signUpWithGoogle": "Sign up with Google"
+    }
+  },
+  "nav": {
+    "header": {
+      "welcome": "Welcome to {{companyName}}",
+      "tagline": "Your Gateway to Authentic Collectibles",
+      "searchPlaceholder": "Search products, shops, auctions...",
+      "products": "Products",
+      "auctions": "Auctions",
+      "shops": "Shops",
+      "categories": "Categories",
+      "about": "About",
+      "contact": "Contact",
+      "cart": "Cart",
+      "myAccount": "My Account",
+      "signIn": "Sign In",
+      "signOut": "Sign Out"
+    }
+  },
+  "product": {
+    "card": {
+      "addToCart": "Add to Cart",
+      "quickView": "Quick View",
+      "addToFavorites": "Add to Favorites",
+      "outOfStock": "Out of Stock",
+      "inStock": "In Stock",
+      "freeShipping": "Free Shipping"
+    },
+    "details": {
+      "description": "Description",
+      "specifications": "Specifications",
+      "reviews": "Reviews",
+      "relatedProducts": "Related Products",
+      "addToCart": "Add to Cart",
+      "buyNow": "Buy Now",
+      "quantity": "Quantity",
+      "inStock": "{{count}} in stock",
+      "onlyLeft": "Only {{count}} left"
+    }
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Cart is empty",
+    "continueShopping": "Continue Shopping",
+    "proceedCheckout": "Proceed to Checkout",
+    "remove": "Remove",
+    "quantity": "Quantity",
+    "price": "Price",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "itemsInCart": "{{count}} items in cart"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "shippingAddress": "Shipping Address",
+    "paymentMethod": "Payment Method",
+    "orderSummary": "Order Summary",
+    "placeOrder": "Place Order",
+    "total": "Total"
+  },
+  "order": {
+    "myOrders": "My Orders",
+    "orderNumber": "Order #{{number}}",
+    "orderDate": "Order Date",
+    "orderStatus": "Order Status",
+    "trackOrder": "Track Order",
+    "cancelOrder": "Cancel Order",
+    "noOrders": "No orders yet",
+    "startShopping": "Start shopping to see your orders here"
+  },
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "messages": {
+    "success": "Success!",
+    "error": "Error",
+    "somethingWrong": "Something went wrong",
+    "tryAgain": "Please try again"
+  }
+}

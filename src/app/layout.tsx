@@ -1,25 +1,26 @@
+import { ToastContainer } from "@/components/admin/Toast";
+import ErrorInitializer from "@/components/common/ErrorInitializer";
+import BottomNav from "@/components/layout/BottomNav";
+import Breadcrumb from "@/components/layout/Breadcrumb";
+import Footer from "@/components/layout/Footer";
+import Header from "@/components/layout/Header";
+import { MobileInstallPrompt } from "@/components/mobile/MobileInstallPrompt";
+import { MobileOfflineIndicator } from "@/components/mobile/MobileOfflineIndicator";
+import { ComparisonBar } from "@/components/products/ComparisonBar";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ComparisonProvider } from "@/contexts/ComparisonContext";
+import { ThemeProvider, ThemeScript } from "@/contexts/ThemeContext";
+import { ViewingHistoryProvider } from "@/contexts/ViewingHistoryContext";
+import { I18nProvider } from "@/lib/i18n/I18nProvider";
+import { defaultMetadata } from "@/lib/seo/metadata";
+import {
+  generateJSONLD,
+  generateOrganizationSchema,
+  generateWebSiteSchema,
+} from "@/lib/seo/schema";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import BottomNav from "@/components/layout/BottomNav";
-import Breadcrumb from "@/components/layout/Breadcrumb";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { ThemeProvider, ThemeScript } from "@/contexts/ThemeContext";
-import { ComparisonProvider } from "@/contexts/ComparisonContext";
-import { ViewingHistoryProvider } from "@/contexts/ViewingHistoryContext";
-import { ComparisonBar } from "@/components/products/ComparisonBar";
-import { defaultMetadata } from "@/lib/seo/metadata";
-import {
-  generateOrganizationSchema,
-  generateWebSiteSchema,
-  generateJSONLD,
-} from "@/lib/seo/schema";
-import { ToastContainer } from "@/components/admin/Toast";
-import ErrorInitializer from "@/components/common/ErrorInitializer";
-import { MobileInstallPrompt } from "@/components/mobile/MobileInstallPrompt";
-import { MobileOfflineIndicator } from "@/components/mobile/MobileOfflineIndicator";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -79,28 +80,30 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}
       >
-        <ThemeProvider defaultTheme="dark" enableStorage>
-          <AuthProvider>
-            <ComparisonProvider>
-              <ViewingHistoryProvider>
-                <ErrorInitializer />
-                <ToastContainer />
-                <MobileOfflineIndicator />
-                <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
-                  <Header />
-                  <Breadcrumb />
-                  <main className="flex-1 pb-16 lg:pb-0 bg-white dark:bg-gray-900">
-                    {children}
-                  </main>
-                  <Footer />
-                  <BottomNav />
-                  <MobileInstallPrompt />
-                  <ComparisonBar />
-                </div>
-              </ViewingHistoryProvider>
-            </ComparisonProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <I18nProvider>
+          <ThemeProvider defaultTheme="dark" enableStorage>
+            <AuthProvider>
+              <ComparisonProvider>
+                <ViewingHistoryProvider>
+                  <ErrorInitializer />
+                  <ToastContainer />
+                  <MobileOfflineIndicator />
+                  <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+                    <Header />
+                    <Breadcrumb />
+                    <main className="flex-1 pb-16 lg:pb-0 bg-white dark:bg-gray-900">
+                      {children}
+                    </main>
+                    <Footer />
+                    <BottomNav />
+                    <MobileInstallPrompt />
+                    <ComparisonBar />
+                  </div>
+                </ViewingHistoryProvider>
+              </ComparisonProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </I18nProvider>
       </body>
     </html>
   );

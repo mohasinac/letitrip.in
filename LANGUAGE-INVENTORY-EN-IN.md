@@ -1,6 +1,7 @@
 # Language Inventory - English (India)
 
 ## Overview
+
 Comprehensive inventory of all English text used across the website (justforview.in). This document catalogs all user-facing text, messages, labels, placeholders, and content for future internationalization (i18n) implementation.
 
 **Language Code**: `en-IN` (English - India)  
@@ -11,6 +12,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ---
 
 ## Table of Contents
+
 1. [Common UI Elements](#common-ui-elements)
 2. [Authentication & User Management](#authentication--user-management)
 3. [Navigation & Layout](#navigation--layout)
@@ -31,6 +33,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Common UI Elements
 
 ### General
+
 - "Loading..."
 - "Uploading..."
 - "Please wait..."
@@ -63,6 +66,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "See All"
 
 ### Pagination
+
 - "Page {number}"
 - "Previous"
 - "Next"
@@ -73,6 +77,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Last"
 
 ### Time & Dates
+
 - "Just now"
 - "1 minute ago"
 - "{n} minutes ago"
@@ -88,6 +93,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "{n} years ago"
 
 ### Numbers & Currency
+
 - "₹{amount}"
 - "{number} items"
 - "{number} results"
@@ -103,6 +109,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Authentication & User Management
 
 ### Login Page
+
 - "Welcome Back"
 - "Sign in to your account to continue"
 - "Email Address"
@@ -123,6 +130,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Hide password"
 
 ### Register Page
+
 - "Create Your Account"
 - "Join us and start shopping today"
 - "Full Name"
@@ -144,6 +152,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Sign up with Google"
 
 ### Password Reset
+
 - "Reset your password"
 - "Enter your new password below"
 - "Back to login"
@@ -164,6 +173,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Failed to reset password"
 
 ### User Profile
+
 - "My Profile"
 - "Account Settings"
 - "Edit Profile"
@@ -178,6 +188,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Phone verification code sent"
 
 ### Verification
+
 - "Verify Your Email"
 - "Verify Your Phone"
 - "Enter OTP"
@@ -194,6 +205,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Navigation & Layout
 
 ### Header / NavBar
+
 - "Welcome to {Company Name}"
 - "Your Gateway to Authentic Collectibles"
 - "Search products, shops, auctions..."
@@ -216,6 +228,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "₹{amount} total"
 
 ### Footer
+
 - "About Let It Rip"
 - "About Let It Rip"
 - "Terms of Service"
@@ -242,6 +255,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Copyright © 2015-2025 letitrip.com. All Rights Reserved"
 
 ### Breadcrumbs
+
 - "Home"
 - "Products"
 - "Auctions"
@@ -253,6 +267,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Product & Shopping
 
 ### Product Cards
+
 - "Add to Cart"
 - "Quick View"
 - "Add to Favorites"
@@ -272,6 +287,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Free Shipping"
 
 ### Product Details
+
 - "Product Details"
 - "Description"
 - "Specifications"
@@ -302,6 +318,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Removed from compare list"
 
 ### Product Listing
+
 - "All Products"
 - "Featured Products"
 - "Latest Products"
@@ -331,6 +348,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Try adjusting your filters"
 
 ### Shopping Cart
+
 - "Shopping Cart"
 - "Your Cart"
 - "Cart is empty"
@@ -356,6 +374,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Item removed from cart"
 
 ### Comparison
+
 - "Compare Products"
 - "Add to Compare"
 - "Remove from Compare"
@@ -373,6 +392,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Features"
 
 ### Recently Viewed
+
 - "Recently Viewed Products"
 - "Continue Browsing"
 - "View History"
@@ -384,6 +404,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Auctions
 
 ### Auction Cards
+
 - "Current Bid"
 - "Starting Bid"
 - "Reserve Price"
@@ -399,6 +420,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Featured Auction"
 
 ### Auction Details
+
 - "Auction Details"
 - "Place Your Bid"
 - "Your Maximum Bid"
@@ -425,6 +447,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Auction lost"
 
 ### Auction Listing
+
 - "All Auctions"
 - "Live Auctions"
 - "Hot Auctions"
@@ -451,6 +474,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Orders & Checkout
 
 ### Checkout
+
 - "Checkout"
 - "Shipping Address"
 - "Billing Address"
@@ -476,6 +500,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Your payment information is encrypted and secure"
 
 ### Address Form
+
 - "Full Name"
 - "Phone Number"
 - "Address Line 1"
@@ -495,6 +520,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Delete Address"
 
 ### Payment
+
 - "Card Number"
 - "Cardholder Name"
 - "Expiry Date"
@@ -510,6 +536,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Transaction ID"
 
 ### Orders
+
 - "My Orders"
 - "Order History"
 - "Order #{orderNumber}"
@@ -541,6 +568,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Start shopping to see your orders here"
 
 ### Returns & Refunds
+
 - "Return Order"
 - "Request Return"
 - "Return Reason"
@@ -571,6 +599,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Shop Management
 
 ### Shop Dashboard
+
 - "Seller Dashboard"
 - "My Shop"
 - "Shop Overview"
@@ -588,6 +617,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "({reviewCount} reviews)"
 
 ### Shop Profile
+
 - "Shop Details"
 - "Shop Name"
 - "Shop Description"
@@ -603,6 +633,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Shop updated successfully"
 
 ### Product Management
+
 - "My Products"
 - "Add New Product"
 - "Edit Product"
@@ -633,6 +664,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Product deleted successfully"
 
 ### Auction Management
+
 - "My Auctions"
 - "Create Auction"
 - "Edit Auction"
@@ -659,6 +691,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Auction cancelled"
 
 ### Order Management
+
 - "Shop Orders"
 - "New Orders"
 - "Processing Orders"
@@ -685,6 +718,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Admin Interface
 
 ### Admin Dashboard
+
 - "Admin Dashboard"
 - "Dashboard Overview"
 - "Total Users"
@@ -698,6 +732,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "System Stats"
 
 ### User Management
+
 - "All Users"
 - "Active Users"
 - "Banned Users"
@@ -720,6 +755,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "User unbanned successfully"
 
 ### Shop Management
+
 - "All Shops"
 - "Pending Shops"
 - "Active Shops"
@@ -739,6 +775,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Shop suspended"
 
 ### Content Management
+
 - "Categories"
 - "Add Category"
 - "Edit Category"
@@ -753,6 +790,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Category deleted successfully"
 
 ### Settings
+
 - "Site Settings"
 - "General Settings"
 - "Email Settings"
@@ -775,13 +813,15 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Forms & Validation
 
 ### Common Labels
+
 - "Required field"
 - "Optional"
-- "* Required"
+- "\* Required"
 - "This field is required"
 - "Please fill in all required fields"
 
 ### Validation Messages
+
 - "Please enter a valid email address"
 - "Email is required"
 - "Email already registered"
@@ -823,6 +863,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "You must agree to the terms and conditions"
 
 ### Input Placeholders
+
 - "Enter your name"
 - "Enter your email"
 - "Enter your password"
@@ -844,6 +885,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Status & States
 
 ### Loading States
+
 - "Loading..."
 - "Please wait..."
 - "Processing..."
@@ -857,6 +899,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Fetching data..."
 
 ### Success Messages
+
 - "Success!"
 - "Done!"
 - "Saved successfully"
@@ -870,6 +913,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Action completed successfully"
 
 ### Error Messages
+
 - "Error"
 - "Something went wrong"
 - "Failed to load"
@@ -895,6 +939,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Please login again"
 
 ### Warning Messages
+
 - "Warning"
 - "Are you sure?"
 - "This action cannot be undone"
@@ -908,6 +953,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Verification required"
 
 ### Info Messages
+
 - "Info"
 - "Note"
 - "Tip"
@@ -922,6 +968,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Actions & Buttons
 
 ### Primary Actions
+
 - "Submit"
 - "Save"
 - "Save Changes"
@@ -961,6 +1008,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Dismiss"
 
 ### Shopping Actions
+
 - "Add to Cart"
 - "Buy Now"
 - "Checkout"
@@ -980,6 +1028,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "View Details"
 
 ### Auction Actions
+
 - "Place Bid"
 - "Confirm Bid"
 - "Watch Auction"
@@ -988,6 +1037,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Bid History"
 
 ### Social Actions
+
 - "Like"
 - "Unlike"
 - "Follow"
@@ -1004,6 +1054,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Empty States & Errors
 
 ### Empty States
+
 - "No results found"
 - "No results found for \"{query}\""
 - "No items found"
@@ -1027,6 +1078,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Be the first to comment"
 
 ### Error Pages
+
 - "404 - Page Not Found"
 - "The page you're looking for doesn't exist"
 - "Go to Home"
@@ -1049,6 +1101,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Legal & Policies
 
 ### Policy Pages
+
 - "Terms of Service"
 - "Privacy Policy"
 - "Refund Policy"
@@ -1069,6 +1122,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Effective date: {date}"
 
 ### Cookie Consent
+
 - "We use cookies"
 - "This website uses cookies to enhance your experience"
 - "We use cookies to improve your experience and analyze site traffic"
@@ -1085,6 +1139,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Support & Help
 
 ### Help Center
+
 - "Help Center"
 - "How can we help you?"
 - "Search help articles"
@@ -1102,6 +1157,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Get in touch with our support team"
 
 ### Contact Support
+
 - "Contact Us"
 - "Customer Support"
 - "Send us a message"
@@ -1116,6 +1172,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "We'll respond within 24-48 hours"
 
 ### Support Tickets
+
 - "Customer Ticket"
 - "Create Ticket"
 - "My Tickets"
@@ -1141,6 +1198,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Reopen Ticket"
 
 ### FAQ
+
 - "Frequently Asked Questions"
 - "FAQ"
 - "Common Questions"
@@ -1160,6 +1218,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Notifications & Alerts
 
 ### Notification Types
+
 - "New Order"
 - "Order Shipped"
 - "Order Delivered"
@@ -1178,6 +1237,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Security Alert"
 
 ### Toast Messages
+
 - "Added to cart"
 - "Removed from cart"
 - "Added to favorites"
@@ -1195,6 +1255,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Filters & Sorting
 
 ### Filter Labels
+
 - "Filter by"
 - "All Filters"
 - "Category"
@@ -1216,6 +1277,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "In Stock Only"
 
 ### Sort Options
+
 - "Sort by"
 - "Relevance"
 - "Newest First"
@@ -1236,6 +1298,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Homepage Sections
 
 ### Welcome & Hero
+
 - "Welcome to {Company Name}"
 - "Your Gateway to Authentic Collectibles"
 - "India's Premier Platform for Beyblades, TCG & Collectibles"
@@ -1246,6 +1309,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "View Auctions"
 
 ### Featured Sections
+
 - "Featured Products"
 - "Latest Products"
 - "Best Sellers"
@@ -1261,6 +1325,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Recently Viewed Products"
 
 ### Value Proposition
+
 - "Why Choose Us"
 - "Authentic Products"
 - "Secure Payments"
@@ -1276,6 +1341,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Search & Discovery
 
 ### Search
+
 - "Search"
 - "Search products, shops, auctions..."
 - "What are you looking for?"
@@ -1289,6 +1355,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Clear search"
 
 ### Autocomplete
+
 - "Suggestions"
 - "Products"
 - "Shops"
@@ -1301,6 +1368,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Reviews & Ratings
 
 ### Review Form
+
 - "Write a Review"
 - "Rate this product"
 - "How would you rate this product?"
@@ -1316,6 +1384,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Thank you for your review"
 
 ### Review Display
+
 - "Customer Reviews"
 - "Reviews"
 - "Rating"
@@ -1340,6 +1409,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Shop Pages
 
 ### Shop Header
+
 - "Visit Shop"
 - "Follow Shop"
 - "Following"
@@ -1351,6 +1421,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Report Shop"
 
 ### Shop Tabs
+
 - "Products"
 - "Auctions"
 - "Reviews"
@@ -1358,6 +1429,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Policies"
 
 ### Shop Policies
+
 - "Shipping Policy"
 - "Return Policy"
 - "Refund Policy"
@@ -1371,6 +1443,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Mobile Specific
 
 ### Mobile Navigation
+
 - "Menu"
 - "Open menu"
 - "Close menu"
@@ -1381,6 +1454,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Account"
 
 ### Mobile Actions
+
 - "Tap to view"
 - "Tap to edit"
 - "Swipe to delete"
@@ -1392,6 +1466,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Date & Time Formats
 
 ### Relative Time
+
 - "Just now"
 - "{n}m ago" (minutes)
 - "{n}h ago" (hours)
@@ -1401,6 +1476,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "{n}y ago" (years)
 
 ### Absolute Time
+
 - "Today at {time}"
 - "Yesterday at {time}"
 - "{day} at {time}"
@@ -1409,6 +1485,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "DD/MM/YYYY"
 
 ### Duration
+
 - "{n} seconds"
 - "{n} minutes"
 - "{n} hours"
@@ -1422,6 +1499,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Special Features
 
 ### Wishlist
+
 - "My Wishlist"
 - "Wishlist"
 - "Save for Later"
@@ -1433,6 +1511,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Make Private"
 
 ### Favorites
+
 - "My Favorites"
 - "Favorites"
 - "Saved Items"
@@ -1441,6 +1520,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "{count} favorites"
 
 ### Compare
+
 - "Compare Products"
 - "Comparison List"
 - "Add to Compare"
@@ -1451,6 +1531,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "View Comparison"
 
 ### Notifications
+
 - "Notifications"
 - "All Notifications"
 - "Mark as Read"
@@ -1469,6 +1550,7 @@ Comprehensive inventory of all English text used across the website (justforview
 ## Analytics & Tracking (Internal/Admin)
 
 ### Metrics
+
 - "Views"
 - "Clicks"
 - "Sales"
@@ -1482,6 +1564,7 @@ Comprehensive inventory of all English text used across the website (justforview
 - "Return Visitors"
 
 ### Performance
+
 - "Performance"
 - "Statistics"
 - "Analytics"
@@ -1498,12 +1581,14 @@ Comprehensive inventory of all English text used across the website (justforview
 **Total Unique Strings**: ~1,200+
 
 **Next Steps**:
+
 1. Create centralized constants file (`i18n.constants.ts`)
 2. Implement translation system (i18next or similar)
 3. Add language selector
 4. Support additional Indian languages (Hindi, Tamil, Telugu, etc.)
 
 **Maintenance Notes**:
+
 - Update this inventory when adding new features
 - Keep constants file in sync with this document
 - Test all strings in UI after updates
