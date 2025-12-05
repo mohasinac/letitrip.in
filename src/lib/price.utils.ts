@@ -27,11 +27,18 @@ const CURRENCY_CONFIGS: Record<Currency, CurrencyConfig> = {
  * @param showSymbol - Whether to show currency symbol (default: true)
  * @returns Formatted price string or "N/A"
  */
+export interface FormatPriceOptions {
+  currency?: Currency;
+  showSymbol?: boolean;
+  showDecimals?: boolean;
+}
+
 export function formatPrice(
   value: number | null | undefined,
-  currency: Currency = "INR",
-  showSymbol: boolean = true,
+  options: FormatPriceOptions = {}
 ): string {
+  const { currency = "INR", showSymbol = true, showDecimals = true } = options;
+
   // Handle null, undefined, NaN
   if (value == null || isNaN(value)) {
     return "N/A";
@@ -39,8 +46,8 @@ export function formatPrice(
 
   const config = CURRENCY_CONFIGS[currency];
   const formattedNumber = value.toLocaleString(config.locale, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: showDecimals ? 2 : 0,
+    maximumFractionDigits: showDecimals ? 2 : 0,
   });
 
   if (!showSymbol) {
@@ -62,7 +69,7 @@ export function formatPrice(
  */
 export function safeToLocaleString(
   value: number | null | undefined,
-  locale: string = "en-IN",
+  locale: string = "en-IN"
 ): string {
   if (value == null || isNaN(value)) {
     return "0";
@@ -84,17 +91,19 @@ export function safeToLocaleString(
 export function formatPriceRange(
   min: number | null | undefined,
   max: number | null | undefined,
-  currency: Currency = "INR",
+  currency: Currency = "INR"
 ): string {
   if (min == null || max == null || isNaN(min) || isNaN(max)) {
     return "N/A";
   }
 
   if (min === max) {
-    return formatPrice(min, currency);
+    return formatPrice(min, { currency });
   }
 
-  return `${formatPrice(min, currency)} - ${formatPrice(max, currency)}`;
+  return `${formatPrice(min, { currency })} - ${formatPrice(max, {
+    currency,
+  })}`;
 }
 
 /**
@@ -106,7 +115,7 @@ export function formatPriceRange(
  */
 export function formatDiscount(
   originalPrice: number | null | undefined,
-  currentPrice: number | null | undefined,
+  currentPrice: number | null | undefined
 ): string | null {
   if (
     originalPrice == null ||
@@ -130,7 +139,7 @@ export function formatDiscount(
  * @returns Formatted price with ₹ symbol or "N/A"
  */
 export function formatINR(value: number | null | undefined): string {
-  return formatPrice(value, "INR", true);
+  return formatPrice(value, { currency: "INR", showSymbol: true });
 }
 
 /**

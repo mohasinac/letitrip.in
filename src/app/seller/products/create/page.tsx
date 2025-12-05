@@ -2,11 +2,9 @@
 
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
 import { WizardSteps } from "@/components/forms/WizardSteps";
-import {
-  OptionalDetailsStep,
-  RequiredInfoStep,
-  type ProductFormData,
-} from "@/components/seller/product-wizard";
+import { OptionalDetailsStep } from "@/components/seller/product-wizard/OptionalDetailsStep";
+import { RequiredInfoStep } from "@/components/seller/product-wizard/RequiredInfoStep";
+import type { ProductFormData } from "@/components/seller/product-wizard/types";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";

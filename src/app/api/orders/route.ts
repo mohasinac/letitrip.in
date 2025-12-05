@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import { userOwnsShop } from "@/app/api/lib/firebase/queries";
+import { ordersSieveConfig } from "@/app/api/lib/sieve/config";
+import { createPaginationMeta } from "@/app/api/lib/sieve/firestore";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
 import {
   getUserFromRequest,
   requireAuth,
 } from "@/app/api/middleware/rbac-auth";
-import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ValidationError } from "@/lib/api-errors";
-import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
-import { ordersSieveConfig } from "@/app/api/lib/sieve/config";
-import { createPaginationMeta } from "@/app/api/lib/sieve/api";
+import { NextRequest, NextResponse } from "next/server";
 
 // Extended Sieve config with field mappings for orders
 const ordersConfig = {
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
       if (!owns) {
         return NextResponse.json(
           { success: false, error: "Forbidden" },
-          { status: 403 },
+          { status: 403 }
         );
       }
       query = query.where("shop_id", "==", shopId);
@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
         query = query.where(
           dbField,
           filter.operator as FirebaseFirestore.WhereFilterOp,
-          filter.value,
+          filter.value
         );
       }
     }
@@ -186,7 +186,7 @@ export async function GET(request: NextRequest) {
     console.error("Orders list error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to list orders" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
     const { shop_id, items, amount } = body;
     if (!shop_id || !Array.isArray(items) || !Number.isFinite(Number(amount))) {
       throw new ValidationError(
-        "Invalid payload: shop_id, items array, and amount are required",
+        "Invalid payload: shop_id, items array, and amount are required"
       );
     }
     const now = new Date().toISOString();
@@ -220,13 +220,13 @@ export async function POST(request: NextRequest) {
     const created = await docRef.get();
     return NextResponse.json(
       { success: true, data: { id: created.id, ...created.data() } },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Create order error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create order" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

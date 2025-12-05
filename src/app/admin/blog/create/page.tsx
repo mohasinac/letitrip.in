@@ -1,12 +1,10 @@
 "use client";
 
-import {
-  BasicInfoStep,
-  CategoryTagsStep,
-  ContentStep,
-  MediaStep,
-  type BlogFormData,
-} from "@/components/admin/blog-wizard";
+import { BasicInfoStep } from "@/components/admin/blog-wizard/BasicInfoStep";
+import { CategoryTagsStep } from "@/components/admin/blog-wizard/CategoryTagsStep";
+import { ContentStep } from "@/components/admin/blog-wizard/ContentStep";
+import { MediaStep } from "@/components/admin/blog-wizard/MediaStep";
+import type { BlogFormData } from "@/components/admin/blog-wizard/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
@@ -71,8 +69,11 @@ export default function CreateBlogPostPage() {
     useMediaUploadWithCleanup();
   const uploadedUrls = getUploadedUrls();
 
-  const handleChange = (field: keyof BlogFormData, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (field: keyof BlogFormData, value: unknown) => {
+    setFormData((prev: BlogFormData) => ({
+      ...prev,
+      [field as string]: value,
+    }));
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
@@ -161,7 +162,7 @@ export default function CreateBlogPostPage() {
     } catch (error) {
       console.error("Failed to create blog post:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to create blog post",
+        error instanceof Error ? error.message : "Failed to create blog post"
       );
     } finally {
       setLoading(false);
@@ -172,7 +173,7 @@ export default function CreateBlogPostPage() {
     if (formData.title || formData.content || uploadedUrls.length > 0) {
       if (
         confirm(
-          "Are you sure you want to cancel? All unsaved changes will be lost.",
+          "Are you sure you want to cancel? All unsaved changes will be lost."
         )
       ) {
         cleanupUploadedMedia();
@@ -229,8 +230,8 @@ export default function CreateBlogPostPage() {
                       currentStep > step.id
                         ? "border-green-500 bg-green-500 text-white"
                         : currentStep === step.id
-                          ? "border-purple-600 bg-purple-600 text-white"
-                          : "border-gray-300 bg-white text-gray-400"
+                        ? "border-purple-600 bg-purple-600 text-white"
+                        : "border-gray-300 bg-white text-gray-400"
                     }`}
                   >
                     {currentStep > step.id ? (

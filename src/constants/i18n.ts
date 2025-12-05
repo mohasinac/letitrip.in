@@ -1,13 +1,13 @@
 /**
  * Internationalization Constants - English (India)
- * 
+ *
  * Central location for all user-facing text in the application.
  * Language: English (India) - en-IN
- * 
+ *
  * Usage:
  * import { LANG } from '@/constants/i18n';
  * <button>{LANG.COMMON.BUTTONS.SAVE}</button>
- * 
+ *
  * Structure:
  * - COMMON: Shared UI elements
  * - AUTH: Authentication & user management
@@ -909,9 +909,11 @@ export const FORM = {
     PINCODE_LENGTH: "Postal code must be 6 digits",
     USERNAME_TAKEN: "This username is already taken",
     USERNAME_MIN_LENGTH: "Username must be at least 3 characters",
-    USERNAME_CHARS: "Username can only contain letters, numbers, underscores and hyphens",
+    USERNAME_CHARS:
+      "Username can only contain letters, numbers, underscores and hyphens",
     NAME_MIN_LENGTH: "Name must be at least 2 characters",
-    NAME_CHARS: "Name can only contain letters, spaces, dots, apostrophes, and hyphens",
+    NAME_CHARS:
+      "Name can only contain letters, spaces, dots, apostrophes, and hyphens",
     PRICE_NEGATIVE: "Price cannot be negative",
     PRICE_REQUIRED: "Price is required",
     STOCK_NEGATIVE: "Stock cannot be negative",
@@ -921,7 +923,8 @@ export const FORM = {
     SKU_REQUIRED: "SKU is required",
     SKU_MIN_LENGTH: "SKU must be at least 3 characters",
     SLUG_REQUIRED: "Slug is required",
-    SLUG_FORMAT: "Slug can only contain lowercase letters, numbers, and hyphens",
+    SLUG_FORMAT:
+      "Slug can only contain lowercase letters, numbers, and hyphens",
     DATE_REQUIRED: "Date is required",
     DATE_FUTURE: "Date must be in the future",
     DATE_INVALID: "Invalid date",
@@ -1046,7 +1049,7 @@ export const EMPTY = {
   // Empty states
   STATES: {
     NO_RESULTS: "No results found",
-    NO_RESULTS_QUERY: "No results found for \"{query}\"",
+    NO_RESULTS_QUERY: 'No results found for "{query}"',
     NO_ITEMS: "No items found",
     NOTHING_HERE: "Nothing here yet",
     NO_DATA: "No data available",
@@ -1070,20 +1073,20 @@ export const EMPTY = {
 
   // Error pages
   PAGES: {
-    404_TITLE: "404 - Page Not Found",
-    404_MESSAGE: "The page you're looking for doesn't exist",
+    "404_TITLE": "404 - Page Not Found",
+    "404_MESSAGE": "The page you're looking for doesn't exist",
     GO_HOME: "Go to Home",
     GO_BACK: "Go Back",
-    403_TITLE: "403 - Forbidden",
-    403_MESSAGE: "You don't have permission to access this page",
-    401_TITLE: "401 - Unauthorized",
-    401_MESSAGE: "Please log in to continue",
-    500_TITLE: "500 - Server Error",
-    500_MESSAGE: "Something went wrong on our end",
-    500_WORKING: "We're working to fix this",
+    "403_TITLE": "403 - Forbidden",
+    "403_MESSAGE": "You don't have permission to access this page",
+    "401_TITLE": "401 - Unauthorized",
+    "401_MESSAGE": "Please log in to continue",
+    "500_TITLE": "500 - Server Error",
+    "500_MESSAGE": "Something went wrong on our end",
+    "500_WORKING": "We're working to fix this",
     TRY_LATER: "Try again later",
-    503_TITLE: "503 - Service Unavailable",
-    503_MESSAGE: "We'll be back soon",
+    "503_TITLE": "503 - Service Unavailable",
+    "503_MESSAGE": "We'll be back soon",
     MAINTENANCE: "Under Maintenance",
     MAINTENANCE_MESSAGE: "Scheduled maintenance in progress",
   },
@@ -1120,7 +1123,8 @@ export const LEGAL = {
   COOKIES: {
     TITLE: "We use cookies",
     MESSAGE: "This website uses cookies to enhance your experience",
-    MESSAGE_LONG: "We use cookies to improve your experience and analyze site traffic",
+    MESSAGE_LONG:
+      "We use cookies to improve your experience and analyze site traffic",
     ACCEPT_ALL: "Accept All",
     ACCEPT_NECESSARY: "Accept Necessary",
     REJECT_ALL: "Reject All",
@@ -1365,7 +1369,7 @@ export const SEARCH = {
     POPULAR: "Popular Searches",
     RECENT: "Recent Searches",
     RESULTS: "Search Results",
-    RESULTS_FOR: "Search Results for \"{query}\"",
+    RESULTS_FOR: 'Search Results for "{query}"',
     COUNT_FOUND: "{count} results found",
     NO_RESULTS: "No results found",
     TRY_DIFFERENT: "Try different keywords",

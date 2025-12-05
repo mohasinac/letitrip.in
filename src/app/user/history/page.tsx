@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { Clock, Trash2, X, ShoppingBag } from "lucide-react";
-import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { RelativeDate } from "@/components/common/values/DateDisplay";
 import { Price } from "@/components/common/values/Price";
-import { RelativeDate } from "@/components/common/values/RelativeDate";
+import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
+import { Clock, ShoppingBag, Trash2, X } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function HistoryPage() {
   const { history, removeFromHistory, clearHistory } = useViewingHistory();

@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
 import { blogSieveConfig } from "@/app/api/lib/sieve/config";
-import { createPaginationMeta } from "@/app/api/lib/sieve/api";
+import { createPaginationMeta } from "@/app/api/lib/sieve/firestore";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { NextRequest, NextResponse } from "next/server";
 
 const COLLECTION = "blog_posts";
 
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
         query = query.where(
           dbField,
           filter.operator as FirebaseFirestore.WhereFilterOp,
-          filter.value,
+          filter.value
         );
       }
     }
@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
     // Execute query
     const snapshot = await query.get();
     const data = snapshot.docs.map((doc) =>
-      transformBlogPost(doc.id, doc.data()),
+      transformBlogPost(doc.id, doc.data())
     );
 
     // Build response with Sieve pagination meta
@@ -135,7 +135,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching blog posts:", error);
     return NextResponse.json(
       { error: "Failed to fetch blog posts" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -162,7 +162,7 @@ export async function POST(req: NextRequest) {
     if (!title || !slug || !content) {
       return NextResponse.json(
         { error: "Missing required fields: title, slug, content" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
     if (existingDoc.exists) {
       return NextResponse.json(
         { error: "A blog post with this slug already exists" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -206,7 +206,7 @@ export async function POST(req: NextRequest) {
     console.error("Error creating blog post:", error);
     return NextResponse.json(
       { error: "Failed to create blog post" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

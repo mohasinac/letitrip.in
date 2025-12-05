@@ -19,7 +19,7 @@ export function formatCompactCurrency(amount: number): string {
     // 1 Thousand or more
     return `₹${(amount / 1000).toFixed(1)}K`;
   }
-  return formatCurrency(amount, { showDecimals: false });
+  return `₹${Math.round(amount).toLocaleString("en-IN")}`;
 }
 
 /**

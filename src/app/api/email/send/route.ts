@@ -6,21 +6,29 @@
  * Frontend sends template type + data, backend generates the email
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { emailService } from "@/app/api/lib/email/email.service";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
+import { emailService } from "@/app/api/lib/email/email.service";
+import {
+  getAuctionWonTemplate,
+  getBidOutbidTemplate,
+} from "@/app/api/lib/email/templates/auction.templates";
+import {
+  getOrderConfirmationTemplate,
+  getShippingUpdateTemplate,
+} from "@/app/api/lib/email/templates/order.templates";
+import {
+  getPasswordResetEmailTemplate,
+  getPasswordResetEmailText,
+} from "@/app/api/lib/email/templates/password-reset.template";
 import {
   getVerificationEmailTemplate,
   getVerificationEmailText,
-  getPasswordResetEmailTemplate,
-  getPasswordResetEmailText,
+} from "@/app/api/lib/email/templates/verification.template";
+import {
   getWelcomeEmailTemplate,
   getWelcomeEmailText,
-  getOrderConfirmationTemplate,
-  getShippingUpdateTemplate,
-  getAuctionWonTemplate,
-  getBidOutbidTemplate,
-} from "@/app/api/lib/email/templates/index";
+} from "@/app/api/lib/email/templates/welcome.template";
+import { NextRequest, NextResponse } from "next/server";
 
 // Template types
 type EmailTemplateType =
@@ -53,18 +61,18 @@ const TEMPLATE_SUBJECTS: Record<EmailTemplateType, string> = {
 // Generate email content based on template type
 function generateEmailContent(
   template: EmailTemplateType,
-  data: Record<string, unknown>,
+  data: Record<string, unknown>
 ): { html: string; text: string } {
   switch (template) {
     case "verification":
       return {
         html: getVerificationEmailTemplate(
           data.name as string,
-          data.verificationLink as string,
+          data.verificationLink as string
         ),
         text: getVerificationEmailText(
           data.name as string,
-          data.verificationLink as string,
+          data.verificationLink as string
         ),
       };
 
@@ -72,11 +80,11 @@ function generateEmailContent(
       return {
         html: getPasswordResetEmailTemplate(
           data.name as string,
-          data.resetLink as string,
+          data.resetLink as string
         ),
         text: getPasswordResetEmailText(
           data.name as string,
-          data.resetLink as string,
+          data.resetLink as string
         ),
       };
 
@@ -102,7 +110,11 @@ function generateEmailContent(
           total: data.total as number,
           shippingAddress: data.shippingAddress as string,
         }),
-        text: `Order Confirmation\n\nHi ${data.customerName},\n\nYour order #${data.orderNumber} has been confirmed.\n\nTotal: ₹${(data.total as number).toLocaleString()}\n\nThank you for shopping with Letitrip!`,
+        text: `Order Confirmation\n\nHi ${data.customerName},\n\nYour order #${
+          data.orderNumber
+        } has been confirmed.\n\nTotal: ₹${(
+          data.total as number
+        ).toLocaleString()}\n\nThank you for shopping with Letitrip!`,
       };
 
     case "shipping_update":
@@ -127,7 +139,11 @@ function generateEmailContent(
           auctionEndTime: data.auctionEndTime as string,
           itemUrl: data.itemUrl as string,
         }),
-        text: `Congratulations!\n\nHi ${data.customerName},\n\nYou won the auction for "${data.itemName}" with a bid of ₹${(data.winningBid as number).toLocaleString()}!\n\nComplete your purchase: ${data.itemUrl}`,
+        text: `Congratulations!\n\nHi ${
+          data.customerName
+        },\n\nYou won the auction for "${data.itemName}" with a bid of ₹${(
+          data.winningBid as number
+        ).toLocaleString()}!\n\nComplete your purchase: ${data.itemUrl}`,
       };
 
     case "bid_outbid":
@@ -139,7 +155,15 @@ function generateEmailContent(
           yourBid: data.yourBid as number,
           itemUrl: data.itemUrl as string,
         }),
-        text: `You've been outbid!\n\nHi ${data.customerName},\n\nSomeone placed a higher bid on "${data.itemName}".\n\nYour bid: ₹${(data.yourBid as number).toLocaleString()}\nCurrent bid: ₹${(data.currentBid as number).toLocaleString()}\n\nPlace a higher bid: ${data.itemUrl}`,
+        text: `You've been outbid!\n\nHi ${
+          data.customerName
+        },\n\nSomeone placed a higher bid on "${
+          data.itemName
+        }".\n\nYour bid: ₹${(
+          data.yourBid as number
+        ).toLocaleString()}\nCurrent bid: ₹${(
+          data.currentBid as number
+        ).toLocaleString()}\n\nPlace a higher bid: ${data.itemUrl}`,
       };
 
     default:
@@ -161,7 +185,7 @@ export async function POST(request: NextRequest) {
     if (!body.to || !body.template || !body.data) {
       return NextResponse.json(
         { error: "Missing required fields: to, template, data" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -169,7 +193,7 @@ export async function POST(request: NextRequest) {
     if (!TEMPLATE_SUBJECTS[body.template]) {
       return NextResponse.json(
         { error: `Invalid template type: ${body.template}` },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -192,7 +216,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: result.error || "Failed to send email",
         },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -210,7 +234,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: errorMessage,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

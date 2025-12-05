@@ -1,13 +1,11 @@
 "use client";
 
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
-import {
-  BasicInfoStep,
-  BrandingStep,
-  ContactLegalStep,
-  PoliciesStep,
-  SettingsStep,
-} from "@/components/seller/shop-wizard";
+import BasicInfoStep from "@/components/seller/shop-wizard/BasicInfoStep";
+import BrandingStep from "@/components/seller/shop-wizard/BrandingStep";
+import ContactLegalStep from "@/components/seller/shop-wizard/ContactLegalStep";
+import PoliciesStep from "@/components/seller/shop-wizard/PoliciesStep";
+import SettingsStep from "@/components/seller/shop-wizard/SettingsStep";
 import { logError } from "@/lib/firebase-error-logger";
 import { shopsService } from "@/services/shops.service";
 import {
@@ -88,7 +86,7 @@ export default function CreateShopWizardPage() {
 
     if (!/^[a-z0-9-]+$/.test(slug)) {
       setSlugError(
-        "Slug can only contain lowercase letters, numbers, and hyphens",
+        "Slug can only contain lowercase letters, numbers, and hyphens"
       );
     } else {
       setSlugError("");
@@ -225,8 +223,8 @@ export default function CreateShopWizardPage() {
                       currentStep > step.id
                         ? "border-green-500 bg-green-500 text-white"
                         : currentStep === step.id
-                          ? "border-primary bg-primary text-white"
-                          : "border-gray-300 bg-white text-gray-400"
+                        ? "border-primary bg-primary text-white"
+                        : "border-gray-300 bg-white text-gray-400"
                     }`}
                   >
                     {currentStep > step.id ? (

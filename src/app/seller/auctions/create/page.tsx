@@ -2,11 +2,9 @@
 
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
 import { WizardSteps } from "@/components/forms/WizardSteps";
-import {
-  OptionalDetailsStep,
-  RequiredInfoStep,
-  type AuctionFormData,
-} from "@/components/seller/auction-wizard";
+import { OptionalDetailsStep } from "@/components/seller/auction-wizard/OptionalDetailsStep";
+import { RequiredInfoStep } from "@/components/seller/auction-wizard/RequiredInfoStep";
+import type { AuctionFormData } from "@/components/seller/auction-wizard/types";
 import { logError } from "@/lib/firebase-error-logger";
 import { auctionsService } from "@/services/auctions.service";
 import { categoriesService } from "@/services/categories.service";
@@ -60,7 +58,7 @@ export default function CreateAuctionWizardPage() {
   const [isValidatingSlug, setIsValidatingSlug] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
-    {},
+    {}
   );
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [errorSteps, setErrorSteps] = useState<number[]>([]);
@@ -147,8 +145,8 @@ export default function CreateAuctionWizardPage() {
     }
   };
 
-  const handleChange = (field: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (field: string, value: unknown) => {
+    setFormData((prev: AuctionFormData) => ({ ...prev, [field]: value }));
   };
 
   const validateStep = useCallback(
@@ -181,7 +179,7 @@ export default function CreateAuctionWizardPage() {
       }
       return errors;
     },
-    [formData, slugError],
+    [formData, slugError]
   );
 
   const handleValidate = useCallback(() => {
@@ -206,7 +204,7 @@ export default function CreateAuctionWizardPage() {
       const errorSummary = Object.entries(allErrors)
         .map(
           ([step, errors]) =>
-            `${errors.length} error${errors.length > 1 ? "s" : ""} in ${step}`,
+            `${errors.length} error${errors.length > 1 ? "s" : ""} in ${step}`
         )
         .join(", ");
       toast.error(`Please fix: ${errorSummary}`);
@@ -320,10 +318,10 @@ export default function CreateAuctionWizardPage() {
   // Check if form has minimum required fields
   const isFormValid = Boolean(
     formData.title.trim() &&
-    formData.slug.trim() &&
-    formData.category &&
-    parseFloat(formData.startingBid) > 0 &&
-    formData.images.length > 0,
+      formData.slug.trim() &&
+      formData.category &&
+      parseFloat(formData.startingBid) > 0 &&
+      formData.images.length > 0
   );
 
   const duration =
@@ -331,7 +329,7 @@ export default function CreateAuctionWizardPage() {
       ? Math.round(
           ((formData.endTime.getTime() - formData.startTime.getTime()) /
             (1000 * 60 * 60 * 24)) *
-            10,
+            10
         ) / 10
       : 0;
 

@@ -1,7 +1,7 @@
-import { apiService } from "./api.service";
-import { PaginatedResponseBE } from "@/types/backend/pagination.types";
 import { PAGINATION } from "@/constants/limits";
 import { BLOG_STATUS, type BlogStatus } from "@/constants/statuses";
+import { PaginatedResponseBE } from "@/types/shared/common.types";
+import { apiService } from "./api.service";
 
 export interface BlogPost {
   id: string;
@@ -53,16 +53,15 @@ interface CreateBlogPostData {
   publishedAt?: Date;
 }
 
-interface UpdateBlogPostData extends Partial<
-  Omit<CreateBlogPostData, "status">
-> {
+interface UpdateBlogPostData
+  extends Partial<Omit<CreateBlogPostData, "status">> {
   status?: BlogStatus;
 }
 
 class BlogService {
   // List blog posts (role-filtered)
   async list(
-    filters?: BlogFilters,
+    filters?: BlogFilters
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     const params = new URLSearchParams();
 
@@ -139,7 +138,7 @@ class BlogService {
   async toggleLike(id: string): Promise<{ liked: boolean; likes: number }> {
     return apiService.post<{ liked: boolean; likes: number }>(
       `/blog/${id}/like`,
-      {},
+      {}
     );
   }
 
@@ -160,7 +159,7 @@ class BlogService {
   async getByCategory(
     category: string,
     page?: number,
-    limit?: number,
+    limit?: number
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({ category, status: BLOG_STATUS.PUBLISHED, page, limit });
   }
@@ -169,7 +168,7 @@ class BlogService {
   async getByTag(
     tag: string,
     page?: number,
-    limit?: number,
+    limit?: number
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({ tag, status: BLOG_STATUS.PUBLISHED, page, limit });
   }
@@ -178,7 +177,7 @@ class BlogService {
   async getByAuthor(
     authorId: string,
     page?: number,
-    limit?: number,
+    limit?: number
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({
       author: authorId,
@@ -192,7 +191,7 @@ class BlogService {
   async search(
     query: string,
     page?: number,
-    limit?: number,
+    limit?: number
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({
       search: query,

@@ -1,28 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import BasicInfoStep from "@/components/admin/category-wizard/BasicInfoStep";
+import DisplayStep from "@/components/admin/category-wizard/DisplayStep";
+import MediaStep from "@/components/admin/category-wizard/MediaStep";
+import SeoStep from "@/components/admin/category-wizard/SeoStep";
 import { useAuth } from "@/contexts/AuthContext";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
 import {
-  BasicInfoStep,
-  MediaStep,
-  SeoStep,
-  DisplayStep,
-} from "@/components/admin/category-wizard";
-import {
   ArrowLeft,
   ArrowRight,
   Check,
-  Info,
   FolderTree,
   Image as ImageIcon,
+  Info,
+  Loader2,
   Search,
   Settings,
-  Loader2,
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const STEPS = [
   {
@@ -77,8 +75,8 @@ export default function CreateCategoryWizardPage() {
     loadCategories();
   }, []);
 
-  const handleChange = (field: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (field: string, value: unknown) => {
+    setFormData((prev: typeof formData) => ({ ...prev, [field]: value }));
   };
 
   const validateSlug = (slug: string) => {
@@ -88,7 +86,7 @@ export default function CreateCategoryWizardPage() {
     }
     if (!/^[a-z0-9-]+$/.test(slug)) {
       setSlugError(
-        "Slug can only contain lowercase letters, numbers, and hyphens",
+        "Slug can only contain lowercase letters, numbers, and hyphens"
       );
     } else {
       setSlugError("");
@@ -221,8 +219,8 @@ export default function CreateCategoryWizardPage() {
                       currentStep > step.id
                         ? "border-green-500 bg-green-500 text-white"
                         : currentStep === step.id
-                          ? "border-primary bg-primary text-white"
-                          : "border-gray-300 bg-white text-gray-400"
+                        ? "border-primary bg-primary text-white"
+                        : "border-gray-300 bg-white text-gray-400"
                     }`}
                   >
                     {currentStep > step.id ? (
@@ -261,14 +259,18 @@ export default function CreateCategoryWizardPage() {
             <BasicInfoStep
               formData={formData as any}
               categories={categories}
-              onChange={(field, value) => handleChange(field as any, value)}
+              onChange={(field: string, value: unknown) =>
+                handleChange(field as any, value)
+              }
             />
           )}
 
           {currentStep === 2 && (
             <MediaStep
               formData={formData as any}
-              onChange={(field, value) => handleChange(field as any, value)}
+              onChange={(field: string, value: unknown) =>
+                handleChange(field as any, value)
+              }
             />
           )}
 
@@ -277,7 +279,9 @@ export default function CreateCategoryWizardPage() {
               formData={formData as any}
               slugError={slugError}
               validateSlug={validateSlug}
-              onChange={(field, value) => handleChange(field as any, value)}
+              onChange={(field: string, value: unknown) =>
+                handleChange(field as any, value)
+              }
             />
           )}
 
@@ -285,7 +289,9 @@ export default function CreateCategoryWizardPage() {
             <DisplayStep
               formData={formData as any}
               categories={categories}
-              onChange={(field, value) => handleChange(field as any, value)}
+              onChange={(field: string, value: unknown) =>
+                handleChange(field as any, value)
+              }
             />
           )}
         </div>

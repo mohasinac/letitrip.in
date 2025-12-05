@@ -14,22 +14,24 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   CLEANUP_STEP_CONFIG,
-  CredentialsData,
-  DeletionBreakdown,
   DEMO_PREFIX,
-  DemoActionButtons,
-  DemoCredentials,
-  DemoDeletionResult,
-  DemoProgressBar,
-  DemoScaleControl,
-  DemoStats,
-  DemoStepCard,
-  ExtendedSummary,
   GENERATION_STEPS,
   getEmptySummary,
   getInitialStepStatuses,
+} from "./components/config";
+import { DemoActionButtons } from "./components/DemoActionButtons";
+import { DemoCredentials } from "./components/DemoCredentials";
+import { DemoDeletionResult } from "./components/DemoDeletionResult";
+import { DemoProgressBar } from "./components/DemoProgressBar";
+import { DemoScaleControl } from "./components/DemoScaleControl";
+import { DemoStats } from "./components/DemoStats";
+import { DemoStepCard } from "./components/DemoStepCard";
+import type {
+  CredentialsData,
+  DeletionBreakdown,
+  ExtendedSummary,
   StepStatus,
-} from "./components";
+} from "./components/types";
 
 export default function AdminDemoPage() {
   const {
@@ -72,7 +74,7 @@ export default function AdminDemoPage() {
 
   // Step-by-step cleanup state
   const [currentCleanupStep, setCurrentCleanupStep] = useState<DemoStep | null>(
-    null,
+    null
   );
   const [cleanupStepStatuses, setCleanupStepStatuses] = useState<
     Record<DemoStep, StepStatus>
@@ -86,7 +88,7 @@ export default function AdminDemoPage() {
       setSummary(
         data.exists && data.summary
           ? (data.summary as ExtendedSummary)
-          : getEmptySummary(),
+          : getEmptySummary()
       );
     } catch {
       // Keep existing summary on error
@@ -102,7 +104,7 @@ export default function AdminDemoPage() {
       setSummary(
         data.exists && data.summary
           ? (data.summary as ExtendedSummary)
-          : getEmptySummary(),
+          : getEmptySummary()
       );
     });
   }, [execute]);
@@ -125,7 +127,7 @@ export default function AdminDemoPage() {
   const runStep = useCallback(
     async (
       step: DemoStep,
-      state: GenerationState,
+      state: GenerationState
     ): Promise<{ success: boolean; state: GenerationState }> => {
       setCurrentStep(step);
       updateStepStatus(step, { status: "running" });
@@ -178,7 +180,7 @@ export default function AdminDemoPage() {
             result = await demoDataService.generateProducts(
               state.shops,
               state.categoryMap,
-              scale,
+              scale
             );
             if (result.success && result.data) {
               state.products = result.data.products;
@@ -196,7 +198,7 @@ export default function AdminDemoPage() {
             result = await demoDataService.generateAuctions(
               state.shops,
               state.productsByShop,
-              scale,
+              scale
             );
             if (result.success && result.data) {
               state.auctions = result.data.auctions;
@@ -213,7 +215,7 @@ export default function AdminDemoPage() {
             result = await demoDataService.generateBids(
               state.auctions,
               state.buyers,
-              scale,
+              scale
             );
             if (result.success && result.data) {
               updateStepStatus(step, {
@@ -229,7 +231,7 @@ export default function AdminDemoPage() {
             result = await demoDataService.generateReviews(
               state.products,
               state.buyers,
-              scale,
+              scale
             );
             if (result.success && result.data) {
               updateStepStatus(step, {
@@ -246,7 +248,7 @@ export default function AdminDemoPage() {
               state.shops,
               state.buyers,
               state.productsByShop,
-              scale,
+              scale
             );
             if (result.success && result.data) {
               updateStepStatus(step, {
@@ -270,7 +272,7 @@ export default function AdminDemoPage() {
             if (result.success && result.data) {
               const totalExtras = Object.values(result.data).reduce(
                 (a: number, b: unknown) => a + (typeof b === "number" ? b : 0),
-                0,
+                0
               );
               updateStepStatus(step, {
                 status: "completed",
@@ -305,7 +307,7 @@ export default function AdminDemoPage() {
         return { success: false, state };
       }
     },
-    [scale, updateStepStatus],
+    [scale, updateStepStatus]
   );
 
   const handleGenerateAll = async () => {
@@ -340,13 +342,13 @@ export default function AdminDemoPage() {
 
         const { success, state: newState } = await runStep(
           stepConfig.id,
-          state,
+          state
         );
         state = newState;
 
         if (!success) {
           toast.error(
-            `Failed at step: ${stepConfig.label}. You can retry from this step.`,
+            `Failed at step: ${stepConfig.label}. You can retry from this step.`
           );
           return;
         }
@@ -407,7 +409,7 @@ export default function AdminDemoPage() {
     (step: DemoStep, status: StepStatus) => {
       setCleanupStepStatuses((prev) => ({ ...prev, [step]: status }));
     },
-    [],
+    []
   );
 
   const runCleanupStep = useCallback(
@@ -437,13 +439,13 @@ export default function AdminDemoPage() {
         return { success: false, count: 0 };
       }
     },
-    [updateCleanupStepStatus],
+    [updateCleanupStepStatus]
   );
 
   const handleStepByStepCleanup = async () => {
     if (
       !confirm(
-        `Are you sure you want to delete ALL demo data with ${DEMO_PREFIX} prefix? This will delete data step by step.`,
+        `Are you sure you want to delete ALL demo data with ${DEMO_PREFIX} prefix? This will delete data step by step.`
       )
     ) {
       return;
@@ -512,7 +514,7 @@ export default function AdminDemoPage() {
 
       if (result.success) {
         toast.success(
-          `${step} cleaned successfully! Deleted ${result.count} items.`,
+          `${step} cleaned successfully! Deleted ${result.count} items.`
         );
         await refreshStats();
       } else {
@@ -553,10 +555,10 @@ export default function AdminDemoPage() {
 
   // Calculate progress
   const completedSteps = Object.values(stepStatuses).filter(
-    (s) => s.status === "completed",
+    (s) => s.status === "completed"
   ).length;
   const completedCleanupSteps = Object.values(cleanupStepStatuses).filter(
-    (s) => s.status === "completed",
+    (s) => s.status === "completed"
   ).length;
 
   if (loading) {
@@ -646,21 +648,26 @@ export default function AdminDemoPage() {
               Generation Steps
             </h2>
             <div className="space-y-3">
-              {GENERATION_STEPS.map((stepConfig, index) => (
-                <DemoStepCard
-                  key={stepConfig.id}
-                  stepConfig={stepConfig}
-                  status={stepStatuses[stepConfig.id]}
-                  isActive={currentStep === stepConfig.id}
-                  canRun={
-                    index === 0 ||
-                    stepStatuses[GENERATION_STEPS[index - 1].id]?.status ===
-                      "completed"
-                  }
-                  disabled={generating || cleaning}
-                  onRun={handleGenerateSingleStep}
-                />
-              ))}
+              {GENERATION_STEPS.map(
+                (
+                  stepConfig: (typeof GENERATION_STEPS)[number],
+                  index: number
+                ) => (
+                  <DemoStepCard
+                    key={stepConfig.id}
+                    stepConfig={stepConfig}
+                    status={stepStatuses[stepConfig.id as DemoStep]}
+                    isActive={currentStep === stepConfig.id}
+                    canRun={
+                      index === 0 ||
+                      stepStatuses[GENERATION_STEPS[index - 1].id as DemoStep]
+                        ?.status === "completed"
+                    }
+                    disabled={generating || cleaning}
+                    onRun={handleGenerateSingleStep}
+                  />
+                )
+              )}
             </div>
           </div>
 
@@ -681,20 +688,22 @@ export default function AdminDemoPage() {
               />
 
               <div className="space-y-3 mt-4">
-                {CLEANUP_STEP_CONFIG.map((stepConfig) => (
-                  <DemoStepCard
-                    key={stepConfig.id}
-                    stepConfig={stepConfig}
-                    status={cleanupStepStatuses[stepConfig.id]}
-                    isActive={currentCleanupStep === stepConfig.id}
-                    canRun={true}
-                    isCleanup
-                    disabled={
-                      generating || (cleaning && currentCleanupStep !== null)
-                    }
-                    onRun={handleCleanupSingleStep}
-                  />
-                ))}
+                {CLEANUP_STEP_CONFIG.map(
+                  (stepConfig: (typeof CLEANUP_STEP_CONFIG)[number]) => (
+                    <DemoStepCard
+                      key={stepConfig.id}
+                      stepConfig={stepConfig}
+                      status={cleanupStepStatuses[stepConfig.id as DemoStep]}
+                      isActive={currentCleanupStep === stepConfig.id}
+                      canRun={true}
+                      isCleanup
+                      disabled={
+                        generating || (cleaning && currentCleanupStep !== null)
+                      }
+                      onRun={handleCleanupSingleStep}
+                    />
+                  )
+                )}
               </div>
             </div>
           )}
