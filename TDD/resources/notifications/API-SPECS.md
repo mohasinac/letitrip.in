@@ -4,6 +4,15 @@
 
 Notification APIs for managing user alerts, preferences, and platform-wide announcements.
 
+**Phase 1 Implementation**: Multi-channel notification system implemented:
+
+- Email notifications (Resend/SendGrid)
+- WhatsApp notifications (Twilio/Gupshup)
+- In-app notifications (Firestore)
+- Push notifications (planned)
+
+**Related**: [E039: Phase 1 Backend Infrastructure](/TDD/epics/E039-phase1-backend-infrastructure.md)
+
 ---
 
 ## Data Models
@@ -392,18 +401,117 @@ Update notification preferences.
 
 ---
 
+## Phase 1: Multi-Channel Notification System
+
+### Email Notifications (Implemented)
+
+**Firebase Functions**:
+
+- `functions/src/notifications/email/orderEmail.ts` - Order status emails
+- `functions/src/notifications/email/shipmentEmail.ts` - Shipping updates
+- `functions/src/notifications/email/returnEmail.ts` - Return confirmations
+- `functions/src/notifications/email/payoutEmail.ts` - Payout notifications
+- `functions/src/notifications/email/scheduledNewsletter.ts` - Weekly/monthly newsletters
+
+**Features**:
+
+- Template-based emails (Firestore)
+- Multi-provider support (Resend/SendGrid)
+- Webhook event tracking
+- Open/click rate analytics
+- Batch processing for newsletters
+
+**Admin API Routes**:
+
+- `GET /api/admin/email/templates` - List templates
+- `POST /api/admin/email/templates` - Create template
+- `PUT /api/admin/email/templates/:id` - Update template
+- `DELETE /api/admin/email/templates/:id` - Delete template
+- `GET /api/admin/email/logs` - View email logs
+- `POST /api/admin/email/webhook` - Webhook handler
+
+### WhatsApp Notifications (Implemented)
+
+**Firebase Functions**:
+
+- `functions/src/notifications/whatsapp/orderWhatsApp.ts` - Order updates
+- `functions/src/notifications/whatsapp/shipmentWhatsApp.ts` - Tracking updates
+- `functions/src/notifications/whatsapp/auctionWhatsApp.ts` - Auction alerts
+
+**Features**:
+
+- Multi-provider support (Twilio/Gupshup)
+- Template management
+- Delivery status tracking
+- Opt-in/opt-out support
+
+**Admin Configuration**:
+
+- `POST /api/admin/settings/whatsapp` - Configure provider
+- `GET /api/admin/settings/whatsapp/templates` - List templates
+- `POST /api/admin/settings/whatsapp/test` - Test delivery
+
+### Notification Preferences API
+
+#### PUT /api/user/notification-preferences
+
+Update notification preferences.
+
+**Request Body**:
+
+```json
+{
+  "email": {
+    "orderUpdates": true,
+    "auctionAlerts": true,
+    "priceDrops": false,
+    "promotions": false,
+    "newsletter": true
+  },
+  "whatsapp": {
+    "orderUpdates": true,
+    "auctionAlerts": false,
+    "priceDrops": false
+  },
+  "inApp": {
+    "orderUpdates": true,
+    "auctionAlerts": true,
+    "priceDrops": true,
+    "promotions": true,
+    "systemAlerts": true
+  }
+}
+```
+
+**Response (200)**:
+
+```json
+{
+  "success": true,
+  "data": {
+    "userId": "user_123",
+    "email": { "orderUpdates": true, "newsletter": true },
+    "whatsapp": { "orderUpdates": true },
+    "inApp": { "orderUpdates": true, "auctionAlerts": true },
+    "updatedAt": "2024-12-06T10:00:00Z"
+  }
+}
+```
+
+---
+
 ## Notification Triggers
 
-### Order Notifications
+### Order Notifications (Phase 1: Email + WhatsApp)
 
-| Event           | Type  | Recipients | Channels           |
-| --------------- | ----- | ---------- | ------------------ |
-| Order Placed    | order | Customer   | email, inApp       |
-| Order Confirmed | order | Customer   | email, inApp       |
-| Order Shipped   | order | Customer   | email, push, inApp |
-| Order Delivered | order | Customer   | email, push, inApp |
-| Order Cancelled | order | Customer   | email, inApp       |
-| New Order       | order | Seller     | email, push, inApp |
+| Event           | Type  | Recipients | Channels                     |
+| --------------- | ----- | ---------- | ---------------------------- |
+| Order Placed    | order | Customer   | email, whatsapp, inApp       |
+| Order Confirmed | order | Customer   | email, whatsapp, inApp       |
+| Order Shipped   | order | Customer   | email, whatsapp, push, inApp |
+| Order Delivered | order | Customer   | email, whatsapp, push, inApp |
+| Order Cancelled | order | Customer   | email, whatsapp, inApp       |
+| New Order       | order | Seller     | email, whatsapp, push, inApp |
 
 ### Auction Notifications
 
