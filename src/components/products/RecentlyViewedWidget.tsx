@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useRef } from "react";
-import Link from "next/link";
-import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
-import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import { formatPrice } from "@/lib/price.utils";
+import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import Link from "next/link";
+import { useRef } from "react";
 
 interface RecentlyViewedWidgetProps {
   /** Maximum items to show */

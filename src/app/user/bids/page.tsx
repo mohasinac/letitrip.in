@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Gavel, AlertCircle, Loader2, TrendingUp, Trophy } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { auctionsService } from "@/services/auctions.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { PageState } from "@/components/common/PageState";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { formatDate } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
-import Link from "next/link";
+import { auctionsService } from "@/services/auctions.service";
+import { AlertCircle, Gavel, TrendingUp, Trophy } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useCallback, useEffect } from "react";
 
 interface Bid {
   id: string;
@@ -81,7 +81,7 @@ export default function MyBidsPage() {
     // Sort by created_at descending
     bidsWithStatus.sort(
       (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
 
     return bidsWithStatus;
@@ -255,9 +255,7 @@ export default function MyBidsPage() {
                             Current Bid
                           </div>
                           <div className="font-semibold text-gray-900 dark:text-white">
-                            {formatPrice(
-                              bid.auction?.currentBid || bid.amount,
-                            )}
+                            {formatPrice(bid.auction?.currentBid || bid.amount)}
                           </div>
                         </div>
                         <div>

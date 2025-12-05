@@ -36,7 +36,7 @@ export default function SellerRevenuePage() {
     endDate: string;
   }>({
     startDate: toDateInputValue(
-      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     ),
     endDate: getTodayDateInputValue(),
   });
@@ -87,7 +87,7 @@ export default function SellerRevenuePage() {
           endDate: dateRange.endDate,
           period,
         },
-        format,
+        format
       );
       const url = globalThis.URL?.createObjectURL(blob) || "";
       const link = document.createElement("a");
@@ -305,7 +305,7 @@ export default function SellerRevenuePage() {
                   <div className="h-64 flex items-end justify-between gap-2">
                     {salesData.map((data, index) => {
                       const maxRevenue = Math.max(
-                        ...salesData.map((d) => d.revenue),
+                        ...salesData.map((d) => d.revenue)
                       );
                       const height = (data.revenue / maxRevenue) * 100;
                       return (
@@ -317,7 +317,9 @@ export default function SellerRevenuePage() {
                             <div
                               className="bg-indigo-500 rounded-t hover:bg-indigo-600 transition-all cursor-pointer"
                               style={{ height: `${height}%`, minHeight: "4px" }}
-                              title={`${formatPrice(data.revenue)} - ${data.orders} orders`}
+                              title={`${formatPrice(data.revenue)} - ${
+                                data.orders
+                              } orders`}
                             >
                               <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                                 <Price amount={data.revenue} />

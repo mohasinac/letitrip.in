@@ -6,10 +6,10 @@
 
 "use client";
 
-import { useState } from "react";
-import { Zap, X, Check, AlertTriangle } from "lucide-react";
 import { FormLabel } from "@/components/forms/FormLabel";
 import { formatPrice } from "@/lib/price.utils";
+import { AlertTriangle, Check, X, Zap } from "lucide-react";
+import { useState } from "react";
 
 interface AutoBidSetupProps {
   auctionId: string;

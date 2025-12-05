@@ -1,26 +1,25 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
-import {
-  Trophy,
-  AlertCircle,
-  Loader2,
-  Package,
-  Download,
-  DollarSign,
-  Clock,
-  CheckCircle,
-} from "lucide-react";
+import { PageState } from "@/components/common/PageState";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { formatDate } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
 import { auctionsService } from "@/services/auctions.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { PageState } from "@/components/common/PageState";
-import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
-import Link from "next/link";
-import Image from "next/image";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  Download,
+  Package,
+  Trophy,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useCallback, useEffect } from "react";
 
 export default function WonAuctionsPage() {
   const { user } = useAuth();
@@ -69,13 +68,13 @@ export default function WonAuctionsPage() {
 
   const totalWinnings = auctionsList.reduce(
     (sum, auction) => sum + (auction.currentBid || 0),
-    0,
+    0
   );
   const pendingPayment = auctionsList.filter(
-    (a) => !(a as any).order_id || (a as any).order_status === "pending",
+    (a) => !(a as any).order_id || (a as any).order_status === "pending"
   );
   const completedOrders = auctionsList.filter(
-    (a) => (a as any).order_id && (a as any).order_status === "completed",
+    (a) => (a as any).order_id && (a as any).order_status === "completed"
   );
 
   return (

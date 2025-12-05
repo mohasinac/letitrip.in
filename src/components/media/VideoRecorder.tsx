@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
-import { Video, X, Square, Pause, Play, Monitor, Camera } from "lucide-react";
 import { logError } from "@/lib/error-logger";
-import { MediaFile } from "@/types/media";
 import { formatDuration } from "@/lib/formatters";
+import { MediaFile } from "@/types/media";
+import { Camera, Monitor, Pause, Play, Square, Video, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface VideoRecorderProps {
   onRecorded: (mediaFile: MediaFile) => void;
